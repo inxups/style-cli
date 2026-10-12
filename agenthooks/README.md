@@ -1,0 +1,274 @@
+<div align="center">
+ <a href="https://www.speakeasy.com/" target="_blank">
+  <img width="1500" height="500" alt="Speakeasy" src="https://github.com/user-attachments/assets/0e56055b-02a3-4476-9130-4be299e5a39c" />
+ </a>
+ <br />
+ <br />
+  <div>
+   <a href="https://www.speakeasy.com/resources/ai-control-plane" target="_blank"><b>AI Control Plane</b></a>&nbsp;&nbsp;//&nbsp;&nbsp;<a href="https://go.speakeasy.com/slack" target="_blank"><b>Join us on Slack</b></a>
+  </div>
+ <br />
+
+</div>
+
+<hr />
+
+<p align="center">
+  <h1 align="center"><b>agenthooks</b></h1>
+  <p align="center">Author coding-agent hooks once in Go; run them on Claude Code, Cursor, OpenAI Codex, Gemini CLI, OpenCode, Kimi Code, OpenClaw, GitHub Copilot CLI, and Copilot Chat in VS Code.</p>
+  <p align="center">
+    <!-- Go Doc Badge -->
+    <a href="https://pkg.go.dev/github.com/speakeasy-api/agenthooks"><img alt="Go Doc" src="https://img.shields.io/badge/godoc-reference-blue.svg?style=for-the-badge"></a>
+    <!-- Release Version Badge -->
+    <a href="https://github.com/speakeasy-api/agenthooks/releases/latest"><img alt="Release" src="https://img.shields.io/github/release/speakeasy-api/agenthooks.svg?style=for-the-badge"></a>
+    <!-- Go Report Card Badge -->
+    <a href="https://goreportcard.com/report/github.com/speakeasy-api/agenthooks"><img alt="Go Report Card" src="https://goreportcard.com/badge/github.com/speakeasy-api/agenthooks?style=for-the-badge"></a>
+    <!-- CI Badge -->
+    <a href="https://github.com/speakeasy-api/agenthooks/actions/workflows/ci.yaml"><img alt="GitHub Action: CI" src="https://img.shields.io/github/actions/workflow/status/speakeasy-api/agenthooks/ci.yaml?style=for-the-badge"></a>
+    <!-- Line Break --><br/>
+    <!-- Go Version Badge -->
+    <a href="https://golang.org/"><img alt="Go Version" src="https://img.shields.io/badge/go-1.25+-00ADD8.svg?style=for-the-badge&logo=go"></a>
+    <!-- Platform Support Badge -->
+    <a href="https://github.com/speakeasy-api/agenthooks"><img alt="Platform Support" src="https://img.shields.io/badge/platform-linux%20%7C%20macos%20%7C%20windows-lightgrey.svg?style=for-the-badge"></a>
+    <!-- Stars Badge -->
+    <a href="https://github.com/speakeasy-api/agenthooks/stargazers"><img alt="GitHub stars" src="https://img.shields.io/github/stars/speakeasy-api/agenthooks.svg?style=for-the-badge&logo=github"></a>
+    <!-- Line Break --><br/>
+    <!-- Built By Speakeasy Badge -->
+    <a href="https://speakeasy.com/"><img alt="Built by Speakeasy" src="https://www.speakeasy.com/assets/badges/built-by-speakeasy.svg" /></a>
+    <!-- License Badge -->
+    <a href="/LICENSE"><img alt="Software License" src="https://img.shields.io/badge/license-MIT-blue.svg?style=for-the-badge"></a>
+  </p>
+</p>
+
+One clear interface, zero data-fidelity loss: the library owns the wire (JSON
+dialects, exit codes, stderr discipline, provider quirks), the consumer owns
+the logic. See [DESIGN.md](DESIGN.md) for the full design and the provider
+research behind it.
+
+```go
+package main
+
+import (
+	"context"
+
+	"github.com/speakeasy-api/agenthooks"
+)
+
+func main() {
+	r := agenthooks.New(
+		agenthooks.WithPolicy(agenthooks.Policy{
+			Fail:        agenthooks.FailClosed,
+			AskFallback: agenthooks.FallbackDeny,
+		}),
+	)
+
+	r.OnToolPre(func(ctx context.Context, e *agenthooks.ToolPreEvent) (agenthooks.ToolPreDecision, error) {
+		if e.Tool.Canonical == agenthooks.ToolShell {
+			return agenthooks.AskUser("shell commands need confirmation"), nil
+		}
+		return agenthooks.NoDecision(), nil
+	})
+
+	// Fidelity escape hatch: every event, mapped or not, raw payload intact.
+	r.OnAny(func(ctx context.Context, e *agenthooks.Event) error {
+		agenthooks.Logger(ctx).Info("event", "provider", e.Provider, "native", e.NativeName)
+		return nil
+	})
+
+	agenthooks.Main(r)
+}
+```
+
+## Composing handlers
+
+Registration is variadic and stacks: handlers run in order, a neutral
+decision falls through, and the first conclusive decision wins. Combinators
+turn handlers into handlers, so compositions register exactly like leaves:
+
+```go
+r.OnToolPre(
+	// Gate MCP calls; everything else falls through to the next stage.
+	agenthooks.When(agenthooks.MatchMCP("*"), gateMCP),
+	// Run every check, merge: most restrictive kind wins, contexts append.
+	agenthooks.All(auditCommand, agenthooks.When(agenthooks.MatchCanonical(agenthooks.ToolShell), gateShell)),
+)
+
+// Middleware wraps the typed pipeline, outermost first: transform the
+// normalized projection, short-circuit, or post-process the decision.
+r.Use(func(ctx context.Context, typed any, next agenthooks.Next) (agenthooks.Decision, error) {
+	return next(ctx, typed)
+})
+```
+
+- `Any(hs...)` — first conclusive decision wins, short-circuits (identical to
+  stacked registration).
+- `All(hs...)` — every handler runs; the most restrictive kind wins
+  (deny > ask > allow > neutral), contexts append in order, errors join.
+- `When(m, h)` — guard a handler by tool identity. `Matcher` is a one-method
+  interface; `MatchTools`/`MatchMCP`/`MatchCanonical` wrap `ToolMatcher`, and
+  custom (e.g. CEL-backed) matchers plug in.
+- `Walk(fn)` — introspect the registered stages in dispatch order. Stage
+  names are the reflected function names, so register named funcs or method
+  values where readable Walk output matters.
+
+Embedding the runner outside a hook process (e.g. server-side)?
+`r.Decide(ctx, event)` runs the same pipeline — observers, middleware,
+handlers — and returns the winning `Decision` (readable via `Kind()`,
+`Reason()`, `Context()`, ...) with no wire encoding and no capability
+degradation; stage errors return as errors.
+
+## Packages
+
+| Package | Purpose |
+|---|---|
+| `agenthooks` | Envelope, decisions, capability matrix, policy, runtime (`Main`/`Run`), quirk registry |
+| `provider/{claudecode,codex,cursor,gemini,opencode,openclaw,kimicode,copilot}` | Complete typed native structs with unknown-field capture — the fidelity guarantee |
+| `install` | One Go `Manifest` → correct `hooks.json` / `settings.json` / `config.toml` / plugin scaffolding per provider, workarounds baked in |
+| `transcript` | Best-effort JSONL transcript readers |
+| `agenthookstest` | Fixture corpus, in-process harness, fake-provider spawner |
+| `e2e` | Opt-in end-to-end suite driving real local agent CLIs (`AGENTHOOKS_E2E=1 go test ./e2e`) |
+| `examples/secretguard` | Working example: detect secrets in tool inputs, prompt the user to accept the risk or block |
+
+## Installing hooks
+
+```go
+m := install.Manifest{
+	Command: []string{"/usr/local/bin/myhooks"},
+	Hooks: []install.HookSpec{
+		{Kind: agenthooks.KindToolPre, Blocking: true, Timeout: 30 * time.Second},
+		{Kind: agenthooks.KindStop, Blocking: true},
+	},
+	Identity: install.Identity{Name: "myhooks", Version: "1.0.0"},
+	Fail:     agenthooks.FailClosed,
+}
+err := install.Install(ctx, m, install.Target{
+	Provider: agenthooks.ProviderClaudeCode,
+	Scope:    install.ScopeProject,
+	Dir:      repoRoot,
+})
+```
+
+Generated configs bake in the argv contract (`mybinary agenthooks run
+--provider=...`), per-provider timeout units, async workarounds (sync `Stop`
+on Claude cowork, backgrounder wrapper on Codex), Cursor `failClosed`, and
+Codex trust-hash pre-seeding. Copilot configs omit `matcher` entirely: an
+empty matcher is a validation error there that discards the whole plugin hook
+config, and an absent one already means match-all.
+
+## Semantics worth knowing
+
+- `NoDecision() != Allow()`: an empty-opinion response defers to the
+  provider's own permission flow; it never force-allows.
+- Decisions are readable: `DecisionKind` constants (`DecisionDeny`,
+  `DecisionAsk`, ...) with `String()` for logs, read accessors on every
+  decision type — including `Blocks()`, true exactly when the decision
+  prevents the action (deny, block-prompt), so boundaries never enumerate
+  kinds — and the common `Decision` interface returned by `Runner.Decide`
+  and middleware.
+- Capability degradation is explicit: `Policy.Unsupported` chooses `Degrade`
+  (nearest supported intent, logged) or `Strict` (handler error →
+  `Policy.Fail`). Check `e.Can(agenthooks.CapAsk)` when you care.
+- `Event.Raw` is the verbatim provider payload, always. Unknown fields decode
+  into `Extra` on every native struct. Normalization is a projection.
+- Provider gaps are backfilled best-effort: Kimi's and Cursor's print modes
+  never fire their prompt-submitted hooks, so the runner synthesizes a
+  reporting-only `prompt.submitted` before the next event that implies one —
+  once per recovered prompt per session, so resumed headless turns
+  (`-p --resume`) backfill again. Backfilled events carry `Backfilled: true`,
+  a nil `Raw` (nothing is fabricated), no capabilities, and any returned
+  decision is discarded — the prompt already reached the model. To gate on a
+  recovered prompt, record what the `PromptSubmitted` handler saw and deny in
+  the triggering event's handler: the backfill dispatches in the same process
+  immediately before it. The prompt text is recovered best-effort — from
+  Kimi's session store; on Cursor from the session transcript every hook
+  payload names (covering stdin-piped prompts), falling back to the agent
+  process's own argv. Disable with `WithoutBackfill()`.
+- MCP tool calls carry the target server's transport: `MCPCall.URL`/`Command`
+  come from Cursor and Gemini MCP payloads and are otherwise resolved from
+  the provider's own MCP config files (`.mcp.json`, `~/.claude.json`,
+  `~/.codex/config.toml`, `.cursor/mcp.json`, `.gemini/settings.json` plus
+  extension manifests, `.kimi-code/mcp.json`, `~/.kimi/mcp.json`,
+  `opencode.json(c)`). OpenCode's
+  shim uses the running server's resolved inventory, including custom, inline,
+  remote, and managed configuration. Codex replays launch `-c` overrides and
+  profiles into a detached `codex mcp list --json` warm, keyed by the recovered
+  launch context. On Claude Code, servers absent from
+  config files (plugins, claude.ai connectors) are attributed via
+  `claude mcp list`, started
+  as a detached `SessionStart` warm in the launching process's project and
+  configuration context. The first MCP hook waits for that same context's
+  in-flight snapshot only when discovery has not finished. On Claude Code
+  2.1.214+, launch-only `--mcp-config`, `--strict-mcp-config`, `--settings`,
+  `--setting-sources`, `--plugin-dir`, `--bare`, and
+  `--safe-mode` semantics are recovered through `CLAUDE_PID`; older versions
+  fall back to the ordinary on-disk context. Inventories are cached briefly by
+  a secret-safe context digest under the user cache directory and replaced on
+  refresh so removals propagate.
+  Remote `--plugin-url` servers stay unattributed rather than being refetched
+  with potentially different code during hook dispatch.
+  Config-resolved transport is flagged `FromConfig` and is best-effort —
+  ambiguous or unrecoverable matches stay empty.
+  Disable with `WithoutMCPResolution()` (everything) or
+  `WithoutMCPListFallback()` (provider CLI probes).
+- Copilot ships **two dialects behind one name**: the CLI's camelCase wire
+  (`copilot-cli`) and Copilot Chat in VS Code, which speaks the Claude-shaped
+  dialect (`vscode-copilot`). Both runtimes glob the same two hook
+  directories, so the `vscode-copilot` file serves both — its PascalCase
+  event keys are the CLI's Claude-compat mode, and the CLI's own `COPILOT_*`
+  env demotes the session to `copilot-cli` before decode, so each runtime gets
+  its own capability row and response schema (VS Code nested, the CLI flat).
+  Install `vscode-copilot` for both runtimes (8 events) or `copilot-cli` for 12
+  mapped CLI events; the CLI's two other native events currently decode only as
+  `KindOther` and cannot be registered by generated configs. Installing both
+  targets double-fires in the CLI. Cross-runtime
+  registration is verified against Copilot CLI 1.0.81 for the five events a
+  headless turn can drive; `SubagentStart`, `SubagentStop` and `PreCompact`
+  are unmeasured there.
+- The CLI dialect needs the most repair: most payloads omit their own event
+  name, so the codec reconstructs it from the shape — the shapes are disjoint,
+  so this is exact. `toolArgs` is a JSON-encoded *string* on
+  `pre`/`postToolUse` while `permissionRequest` ships a plain object in
+  `toolInput`; both normalize to an object. No tool-call id ships at all, so
+  ids are synthesized. `preToolUse` denies the call on **any** non-zero exit
+  regardless of stdout, so the codec never signals through the exit code — it
+  always exits 0 and puts the verdict on stdout, which keeps a crashed hook
+  from becoming a total tool-call outage. `prompt.submitted` declares an empty
+  capability set: Copilot drops command-hook output for `userPromptSubmitted`,
+  so pretending to block there would silently allow.
+- The quirk registry (`agenthooks.Quirks()`) is the machine-readable list of
+  provider glue this library hides, and doubles as the conformance-test plan.
+
+## Contributing
+
+This repository is maintained by Speakeasy, but we welcome and encourage
+contributions from the community to help improve its capabilities and
+stability.
+
+### How to Contribute
+
+1. **Discussions**: Have a feature request or want to discuss the roadmap? Use
+   [GitHub Discussions](https://github.com/speakeasy-api/agenthooks/discussions)
+   to share your ideas and engage with the community.
+
+2. **Issues**: Found a bug or technical issue? Open a
+   [GitHub Issue](https://github.com/speakeasy-api/agenthooks/issues) to report
+   it with details about the problem. Provider-behavior reports are especially
+   valuable — the [quirk registry](quirks.go) only grows through observation.
+
+3. **Pull Requests**: We welcome pull requests! If you'd like to contribute
+   code:
+   - Fork the repository
+   - Create a new branch for your feature/fix
+   - Submit a PR with a clear description of the changes and any related issues
+
+4. **Feedback**: Share your experience using the library or suggest
+   improvements.
+
+All contributions, whether they're feature requests, bug reports, or code
+changes, help make this project better for everyone. Please ensure your
+contributions adhere to the existing code style and include appropriate tests
+where applicable.
+
+## License
+
+Released under the [MIT License](LICENSE).
