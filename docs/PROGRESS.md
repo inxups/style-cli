@@ -141,3 +141,25 @@
 
 - 结果：解析器测试、根 module 全量测试、agenthooks 全量测试及两边 vet 均通过。测试用临时包覆盖 `STYLE.yaml`、单文件 frontmatter、显式和 glob `from:`、深层 glob、排序、`file:`、`text:`、默认 ID、路径逃逸和两种 md 角色限制。agenthooks 源码未改动。
 - 下一步：T12 规则优先级合并、`enabled: false` 和重复 ID 检查。
+
+### 2026-10-13 — T12/B1.3 `[x]`
+
+- 任务：完成规则字段合并、默认值、停用过滤和 ID 冲突检查；按维护性要求先拆分 `core/spec` 实现文件。
+- 实现：`types.go` 定义 parsed/resolved 模型；`load.go` 加载目录和单文件包；`frontmatter.go` 解析 YAML/frontmatter；`package_files.go` 实现安全文件访问和 glob；`values.go` 提供字段复制和 reads 并集；`merge.go` 负责有效字段。合并顺序为规范默认 → 包级 priority/budget → `defaults` → 规则 frontmatter → `from:` 覆盖；除 `reads` 并集外均为顶层替换。所有规则的 `reads` 声明并入包级，保留声明顺序并去重。实现动作、target 相关默认和 `enabled: false` 过滤，原始包字段保留不变。重复 ID、defaults 白名单、from 禁止覆盖 `target`/`id` 留给后续 T13 校验。
+- 命令（仓库根；Go 缓存隔离并清理 `CODEX_HOME`、`CODEX_SANDBOX`）：
+
+  ```sh
+  env -u CODEX_HOME -u CODEX_SANDBOX \
+    GOPATH=/tmp/style-cli-gopath \
+    GOMODCACHE=/tmp/style-cli-gomodcache \
+    GOCACHE=/tmp/style-cli-gocache \
+    GOPROXY=off GOSUMDB=off \
+    go test -count=1 ./core/spec
+
+  make test-go
+  make vet-go
+  git diff --check
+  ```
+
+- 结果：合并测试和模块全量测试/静态检查通过。测试覆盖字段优先级、完整 `when` 替换、`reads` 并集和次序、默认值、block 的 repeat 行为和 disabled 过滤。
+- 下一步：T13 schema 与 validate 错误码。

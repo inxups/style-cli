@@ -1,0 +1,91 @@
+package spec
+
+// Merge applies standard, package, rule-file, and from-entry values in
+// increasing precedence. Reads declarations are unioned across sources.
+// Disabled rules are omitted; Package remains available for validation of the
+// original declarations, including disabled rules.
+func Merge(pkg *Package) (*ResolvedPackage, error) {
+	if pkg == nil {
+		return nil, parseErr("invalid-package", "", "cannot merge a nil package", nil)
+	}
+	metadata := pkg.Metadata
+	packageDefaults := asStringMap(metadata["defaults"])
+	readDeclarations := []any{metadata["reads"]}
+	for _, rule := range pkg.Rules {
+		readDeclarations = append(readDeclarations, rule.Fields["reads"], rule.Overrides["reads"])
+	}
+	packagePriority, hasPackagePriority := metadata["priority"]
+	if !hasPackagePriority {
+		packagePriority = 50
+	}
+	packageMaxTokens := any(400)
+	if budget := asStringMap(metadata["budget"]); budget != nil {
+		if value, ok := budget["per_rule"]; ok {
+			packageMaxTokens = value
+		}
+	}
+
+	resolved := &ResolvedPackage{Package: pkg, Reads: unionReads(readDeclarations...)}
+	for _, original := range pkg.Rules {
+		effective := map[string]any{
+			"action":     "inject",
+			"fallback":   "degrade",
+			"enabled":    true,
+			"priority":   packagePriority,
+			"max_tokens": packageMaxTokens,
+			"sources":    []any{"startup", "clear", "fork"},
+		}
+		for key, value := range packageDefaults {
+			effective[key] = cloneValue(value)
+		}
+		for key, value := range original.Fields {
+			if key != "reads" && key != "from" {
+				effective[key] = cloneValue(value)
+			}
+		}
+		for key, value := range original.Overrides {
+			if key != "reads" {
+				effective[key] = cloneValue(value)
+			}
+		}
+		if len(resolved.Reads) != 0 {
+			effective["reads"] = cloneMap(resolved.Reads)
+		}
+		if _, ok := effective["at"]; !ok {
+			if effective["action"] == "block" {
+				effective["at"] = "before"
+			} else {
+				effective["at"] = "after"
+			}
+		}
+		if _, ok := effective["reinject_on_compact"]; !ok {
+			effective["reinject_on_compact"] = effective["target"] == "system"
+		}
+		if effective["target"] == "system" {
+			if _, ok := effective["mode"]; !ok {
+				effective["mode"] = "append"
+			}
+		}
+		if action, _ := effective["action"].(string); action == "block" {
+			// Block decisions are deliberately never deduplicated. Preserve any
+			// source declaration in Fields so validation can still warn about it.
+			delete(effective, "repeat")
+		} else if _, ok := effective["repeat"]; !ok {
+			if action == "warn" {
+				effective["repeat"] = "every"
+			} else {
+				effective["repeat"] = "session"
+			}
+		}
+
+		if enabled, isBool := effective["enabled"].(bool); isBool && !enabled {
+			continue
+		}
+		mergedRule := original
+		mergedRule.Fields = cloneMap(original.Fields)
+		mergedRule.Overrides = cloneMap(original.Overrides)
+		mergedRule.Effective = effective
+		resolved.Rules = append(resolved.Rules, mergedRule)
+	}
+	return resolved, nil
+}
