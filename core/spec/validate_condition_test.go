@@ -33,6 +33,19 @@ func TestValidateConditionSelectorsAndOptionalFields(t *testing.T) {
 			rule: "  - id: base\n    target: mcp\n    mcp: server/tool\n    text: body\n    when:\n      conditions:\n        - field: tool.added\n          op: contains\n          pattern: TODO\n",
 			want: "condition-field-wrong-event", severity: SeverityError,
 		},
+		{
+			name: "tool output on skill before",
+			rule: "  - id: base\n    target: skill\n    skill: review\n    at: before\n    text: body\n    when:\n      conditions:\n        - field: tool.output\n          op: contains\n          pattern: marker\n",
+			want: "condition-field-wrong-event", severity: SeverityError,
+		},
+		{
+			name: "tool output on skill after",
+			rule: "  - id: base\n    target: skill\n    skill: review\n    at: after\n    text: body\n    when:\n      conditions:\n        - field: tool.output\n          op: contains\n          pattern: marker\n",
+		},
+		{
+			name: "prompt remains available on skill before explicit event",
+			rule: "  - id: base\n    target: skill\n    skill: review\n    at: before\n    text: body\n    when:\n      conditions:\n        - field: prompt\n          op: contains\n          pattern: review\n",
+		},
 	}
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {

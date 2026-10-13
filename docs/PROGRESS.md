@@ -274,3 +274,10 @@
 - 回归：`core/spec/validate_condition_test.go` 新增原生 `Edit` 单名和名字列表两例；修复前均出现 `condition-field-wrong-event`，修复后通过。原有 shell/file.write/mcp 正负例通过。
 - 验证：`env -u CODEX_HOME -u CODEX_SANDBOX GOPATH=/tmp/style-cli-gopath GOMODCACHE=/tmp/style-cli-gomodcache GOCACHE=/tmp/style-cli-gocache GOPROXY=off GOSUMDB=off go test -count=1 ./core/spec`；`git diff --check`；均通过。
 - 状态：任务、测试矩阵和回顾报告同步标记 R05 完成；继续 R06。
+
+### 2026-10-13 — RV-T13-04/R06 `[x]`
+
+- 修复：skill 规则根据有效 `at` 推导隐式 `tool.pre`/`tool.post`，未指定时沿用 action 默认（block=before，其余=after）；`skill.explicit` 独立可用，不再因此错误放宽隐式工具字段。
+- 回归：`core/spec/validate_condition_test.go` 验证 skill before + tool.output 被拒绝、after + tool.output 接受，以及 before + prompt 可由显式触发点使用。修复前第一例未报错，修复后通过。
+- 验证：`env -u CODEX_HOME -u CODEX_SANDBOX GOPATH=/tmp/style-cli-gopath GOMODCACHE=/tmp/style-cli-gomodcache GOCACHE=/tmp/style-cli-gocache GOPROXY=off GOSUMDB=off go test -count=1 ./core/spec`；`git diff --check`；均通过。
+- 状态：任务、测试矩阵和回顾报告同步标记 R06 完成；继续 R07。

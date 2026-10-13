@@ -189,7 +189,18 @@ func (v *validator) conditionFieldAvailable(field string, rule Rule) bool {
 			allowedEvents["tool.post"] = true
 		}
 	case "skill":
-		allowedEvents["tool.pre"], allowedEvents["tool.post"], allowedEvents["skill.explicit"] = true, true, true
+		fallbackAt := "after"
+		if v.effectiveRuleString(rule, "action", "inject") == "block" {
+			fallbackAt = "before"
+		}
+		if v.effectiveRuleString(rule, "at", fallbackAt) == "before" {
+			allowedEvents["tool.pre"] = true
+		} else {
+			allowedEvents["tool.post"] = true
+		}
+		// Explicit skill invocation is a separate evaluation point and is
+		// available regardless of the implicit tool timing.
+		allowedEvents["skill.explicit"] = true
 	case "event":
 		allowedEvents[event] = true
 	}
