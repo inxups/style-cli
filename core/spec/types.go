@@ -45,6 +45,20 @@ type ParseError struct {
 	Err  error
 }
 
+// Diagnostic is a stable, source-associated validation result. Warnings do
+// not prevent a package from being used; errors do.
+type Diagnostic struct {
+	Code     string
+	Path     string
+	Message  string
+	Severity string
+}
+
+const (
+	SeverityError   = "error"
+	SeverityWarning = "warning"
+)
+
 func (e *ParseError) Error() string {
 	where := ""
 	if e.Path != "" {
@@ -58,11 +72,27 @@ func (e *ParseError) Error() string {
 
 func (e *ParseError) Unwrap() error { return e.Err }
 
+func (e *ParseError) ErrorCode() string { return e.Code }
+
+func (d Diagnostic) Error() string {
+	where := ""
+	if d.Path != "" {
+		where = d.Path + ": "
+	}
+	return where + d.Message
+}
+
+func (d Diagnostic) ErrorCode() string { return d.Code }
+
 // ErrorCode returns the parse or validation code embedded in err.
 func ErrorCode(err error) string {
 	var parseErr *ParseError
 	if errors.As(err, &parseErr) {
 		return parseErr.Code
+	}
+	var coded interface{ ErrorCode() string }
+	if errors.As(err, &coded) {
+		return coded.ErrorCode()
 	}
 	return ""
 }

@@ -51,6 +51,7 @@ env -u CODEX_HOME -u CODEX_SANDBOX \
 
 - [x] **B1.2 T11 目录包、单文件包和规则来源**：`go test -count=1 ./core/spec` 覆盖目录包、单文件包、`STYLE.yaml`、规则 frontmatter、`file:`、`text:`、显式 `from:`、递归 `**` glob（零层及多层）、glob 相对路径排序、未声明规则不自动加载、单文件默认 ID、路径逃逸、符号链接、文件大小、UTF-8/NUL、正文 frontmatter 和 `file-into-rules`。完整根/agenthooks 测试和 vet 通过。证据：`core/spec/spec_test.go`、`docs/PROGRESS.md` T11/B1.2。
 - [x] **B1.3 T12 规则字段合并**：覆盖标准默认、包 priority/budget、包级 defaults、规则 frontmatter、from 覆盖顺序；覆盖 `reads` 并集、`when` 整体替换、动态 target/action 默认、block repeat 忽略和停用过滤。根/agenthooks 全量测试与 vet 通过。重复 ID、`defaults` schema 白名单、禁止覆盖 `target`/`id` 在 T13 validate 中检查。证据：`core/spec/merge_test.go`、`docs/PROGRESS.md` T12/B1.3。
+- [x] **B1.4 T13 validate**：`go test -count=1 ./core/spec ./internal/tokenestimate` 覆盖包/规则 schema、单文件规则清单限制、重复 ID、from 覆盖、未声明文件、模板变量和运行时 reads、条件字段事件可用性、`tool.added` 适用工具、负向可选字段告警、RE2、effort、合法动作组合、T005/T006/T007、诊断码和稳定顺序；离线 token 估算有独立公式测试。`make test-go`、`make vet-go`、`go mod tidy -diff` 和 `git diff --check` 通过。证据：`core/spec/validate*_test.go`、`internal/tokenestimate/estimate_test.go`、`docs/PROGRESS.md` T13/B1.4。
 
 ## M1a：STYLE 离线验收
 

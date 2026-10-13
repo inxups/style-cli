@@ -163,3 +163,31 @@
 
 - 结果：合并测试和模块全量测试/静态检查通过。测试覆盖字段优先级、完整 `when` 替换、`reads` 并集和次序、默认值、block 的 repeat 行为和 disabled 过滤。
 - 下一步：T13 schema 与 validate 错误码。
+
+### 2026-10-13 — T13/B1.4 `[x]`
+
+- 任务：完成 `core/spec` 的包校验、规则校验和规范诊断，并按职责拆分校验实现，避免回到单个过大的 spec 文件。
+- 实现：新增 `Validate(*Package) []Diagnostic` 及稳定的错误码/来源/严重级别；包、规则、条件、模板、reads、lint、未声明规则扫描和公共值操作分别位于 `core/spec/validate_package.go`、`validate_rules.go`、`validate_conditions.go`、`validate_template.go`、`validate_reads.go`、`validate_lints.go`、`validate_files.go`、`validate_values.go`。覆盖 metadata/defaults、名称/版本、规则 ID、from 覆盖、单文件规则清单、未声明文件、运行时 reads、模板变量、正则/effort、条件字段适用事件、`tool.added` 文件工具限制、`negated-optional-field`、`T005`、`T006` 和 `T007`。离线 token 估算抽到 `internal/tokenestimate`，供后续 plan/compile 复用。
+- 命令（仓库根；Go 缓存隔离并清理 `CODEX_HOME`、`CODEX_SANDBOX`）：
+
+  ```sh
+  env -u CODEX_HOME -u CODEX_SANDBOX \
+    GOPATH=/tmp/style-cli-gopath \
+    GOMODCACHE=/tmp/style-cli-gomodcache \
+    GOCACHE=/tmp/style-cli-gocache \
+    GOPROXY=off GOSUMDB=off \
+    go test -count=1 ./core/spec ./internal/tokenestimate
+
+  make test-go
+  make vet-go
+  env -u CODEX_HOME -u CODEX_SANDBOX \
+    GOPATH=/tmp/style-cli-gopath \
+    GOMODCACHE=/tmp/style-cli-gomodcache \
+    GOCACHE=/tmp/style-cli-gocache \
+    GOPROXY=off GOSUMDB=off \
+    go mod tidy -diff
+  git diff --check
+  ```
+
+- 结果：核心校验、token 估算、根 module 和 agenthooks module 全部通过；vet、依赖整理和 diff 检查通过。CLI 的 A1 仍等待 T51 接入 `style validate`，不在本条提前标记。
+- 下一步：T14 模板/条件运行时语义，随后进入 T15。
