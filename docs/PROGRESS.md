@@ -196,3 +196,36 @@
 
 - 变更：保留 `STYLE_DOCS/STYLE-spec.md` 为入口、范围说明和决定总览；新增包结构、规则、运行时语义、编译产物四篇章节文档。编号、章节顺序及原正文均保留；CLI 设计文档仍通过原规范入口链接。
 - 验证：拆分时按原文标题边界切片，并在写回前检查各章节字符串拼接与原文完全相同；章节编号顺序和规范文档间导航目标检查通过。规范最大单文件从 827 行降至 243 行。
+
+### 2026-10-13 — T14/B1.5 `[x]`
+
+- 任务：实现独立的模板解析/渲染与条件归一化/匹配，并提交当前 T14 工作后继续回顾已完成项。
+- 实现：`core/template` 提供 Parse/ParseExpression、不可变 Parts、静态/动态分类、Render/RenderStatic、默认值与 `\{{` 转义；引号内 `|`、`}}` 保留为默认文本。`core/spec` 的模板校验和 token lint 复用该解析器，移除未使用的旧表达式包装函数。
+- 条件：`core/when` 提供 Normalize/Compile/Match、字段 AND/列表 OR、模型 glob 和 `**/`、effort 七档比较及独立 `open`、agent 默认范围、provider 永不匹配、缺失字段不匹配、FieldReader/FieldMap/FieldFunc。matcher 复制输入规则并预编译正则；JSON 往返保留显式空 selector 以及归一化后的 agent 范围。
+- 提交前修正：新增测试先复现空 model/effort 在 JSON 往返后变为无条件规则，以及带 `agent_id`、类型名为 `main` 的子 agent 误命中主 agent 规则；修正后同一测试通过。主 agent 始终按 `agent_id` 是否缺失判定。
+- 命令（仓库根；Go 缓存隔离并清理 `CODEX_HOME`、`CODEX_SANDBOX`）：
+
+  ```sh
+  env -u CODEX_HOME -u CODEX_SANDBOX \
+    GOPATH=/tmp/style-cli-gopath \
+    GOMODCACHE=/tmp/style-cli-gomodcache \
+    GOCACHE=/tmp/style-cli-gocache \
+    GOPROXY=off GOSUMDB=off \
+    go test -count=1 ./core/template ./core/when ./core/spec
+
+  GOPROXY=off GOSUMDB=off make test-go
+  GOPROXY=off GOSUMDB=off make vet-go
+  env -u CODEX_HOME -u CODEX_SANDBOX \
+    GOPATH=/tmp/style-cli-gopath \
+    GOMODCACHE=/tmp/style-cli-gomodcache \
+    GOCACHE=/tmp/style-cli-gocache \
+    GOPROXY=off GOSUMDB=off \
+    go mod tidy -diff
+  gofmt -l core/template core/when core/spec/validate_template.go core/spec/validate_lints.go core/spec/validate_template_parser_test.go
+  git diff --check
+  git status --short --branch
+  ```
+
+- 结果：T14 定向测试、根 module/agenthooks module 全量测试和 vet 通过；依赖整理无差异，gofmt 和 diff 检查通过。agenthooks 源码及依赖未改动。原生 payload 字段提取和 runtime engine 接入留在 adapter/engine 任务，A10/A11 与 M1a/M1b 不提前标记。
+- 证据：`core/template/template_test.go`、`template_edges_test.go`；`core/when/when_test.go`、`json_test.go`、`match_test.go`；`core/spec/validate_template_parser_test.go`。
+- 下一步：完成已实现 T10–T14 的回顾结论和待修正条目；按用户要求停止功能推进，不进入 T15。

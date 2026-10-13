@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 
+	styletemplate "github.com/inxups/style-cli/core/template"
 	"github.com/inxups/style-cli/internal/tokenestimate"
 )
 
@@ -19,41 +20,28 @@ func estimateTokens(text string) int { return tokenestimate.Estimate(text) }
 
 func estimateTemplateTokens(text string, pkg *Package, rule Rule) int {
 	var rendered strings.Builder
-	for offset := 0; offset < len(text); {
-		start := strings.Index(text[offset:], "{{")
-		if start < 0 {
-			rendered.WriteString(text[offset:])
-			break
-		}
-		start += offset
-		if start > 0 && text[start-1] == '\\' {
-			rendered.WriteString(text[offset : start+2])
-			offset = start + 2
+	parsed, err := styletemplate.Parse(text)
+	if err != nil {
+		return tokenestimate.Estimate(text)
+	}
+	for _, part := range parsed.Parts() {
+		if part.Kind == styletemplate.TextPart {
+			rendered.WriteString(part.Text)
 			continue
 		}
-		end := strings.Index(text[start+2:], "}}")
-		if end < 0 {
-			rendered.WriteString(text[offset:])
-			break
-		}
-		end += start + 2
-		rendered.WriteString(text[offset:start])
-		expression := strings.TrimSpace(text[start+2 : end])
-		name, hasDefault, valid := parseTemplateExpression(expression)
-		if valid && isRuntimeTemplateName(name) {
+		if isRuntimeTemplateName(part.Name) {
 			length := 64
-			if name == "harness.cwd" {
+			if part.Name == "harness.cwd" {
 				length = 128
 			}
 			rendered.WriteString(strings.Repeat("x", length))
-		} else if value, ok := staticTemplateValue(name, pkg, rule); ok {
+		} else if value, ok := staticTemplateValue(part.Name, pkg, rule); ok {
 			rendered.WriteString(value)
-		} else if hasDefault {
-			rendered.WriteString(templateDefaultValue(expression))
+		} else if part.HasDefault {
+			rendered.WriteString(part.Default)
 		} else {
 			rendered.WriteString("")
 		}
-		offset = end + 2
 	}
 	return tokenestimate.Estimate(rendered.String())
 }
@@ -93,16 +81,4 @@ func staticTemplateValue(name string, pkg *Package, rule Rule) (string, bool) {
 		}
 	}
 	return "", false
-}
-
-func templateDefaultValue(expression string) string {
-	parts := strings.SplitN(expression, "|", 2)
-	if len(parts) != 2 {
-		return ""
-	}
-	value := strings.TrimSpace(strings.TrimPrefix(strings.TrimSpace(parts[1]), "default:"))
-	if len(value) >= 2 && ((value[0] == '"' && value[len(value)-1] == '"') || (value[0] == '\'' && value[len(value)-1] == '\'')) {
-		return value[1 : len(value)-1]
-	}
-	return ""
 }

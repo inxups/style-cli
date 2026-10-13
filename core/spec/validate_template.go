@@ -1,63 +1,24 @@
 package spec
 
 import (
-	"fmt"
-	"regexp"
 	"strings"
+
+	styletemplate "github.com/inxups/style-cli/core/template"
 )
 
-var templateNamePattern = regexp.MustCompile(`^[A-Za-z_][A-Za-z0-9_.]*$`)
 var eventTemplateNames = []string{"prompt", "tool.name", "tool.input", "tool.added", "tool.output", "mcp.server", "mcp.tool", "skill.name"}
 
 func (v *validator) validateTemplate(text, source string, rule Rule) {
-	for offset := 0; offset < len(text); {
-		start := strings.Index(text[offset:], "{{")
-		if start < 0 {
-			return
+	parsed, err := styletemplate.Parse(text)
+	if err != nil {
+		v.add("invalid-template", source, err.Error())
+		return
+	}
+	for _, part := range parsed.Parts() {
+		if part.Kind == styletemplate.VariablePart {
+			v.validateTemplateName(part.Name, part.HasDefault, source, rule)
 		}
-		start += offset
-		if start > 0 && text[start-1] == '\\' {
-			offset = start + 2
-			continue
-		}
-		end := strings.Index(text[start+2:], "}}")
-		if end < 0 {
-			v.add("invalid-template", source, "template expression has no closing }}")
-			return
-		}
-		end += start + 2
-		expression := strings.TrimSpace(text[start+2 : end])
-		name, hasDefault, valid := parseTemplateExpression(expression)
-		if !valid {
-			v.add("invalid-template", source, fmt.Sprintf("invalid template expression %q", expression))
-		} else {
-			v.validateTemplateName(name, hasDefault, source, rule)
-		}
-		offset = end + 2
 	}
-}
-
-func parseTemplateExpression(expression string) (name string, hasDefault, valid bool) {
-	parts := strings.Split(expression, "|")
-	name = strings.TrimSpace(parts[0])
-	if !templateNamePattern.MatchString(name) {
-		return "", false, false
-	}
-	if len(parts) == 1 {
-		return name, false, true
-	}
-	if len(parts) != 2 {
-		return "", false, false
-	}
-	defaultExpr := strings.TrimSpace(parts[1])
-	if !strings.HasPrefix(defaultExpr, "default:") {
-		return "", false, false
-	}
-	value := strings.TrimSpace(strings.TrimPrefix(defaultExpr, "default:"))
-	if len(value) < 2 || !((value[0] == '"' && value[len(value)-1] == '"') || (value[0] == '\'' && value[len(value)-1] == '\'')) {
-		return "", false, false
-	}
-	return name, true, true
 }
 
 func (v *validator) validateTemplateName(name string, hasDefault bool, source string, rule Rule) {
@@ -103,7 +64,7 @@ func (v *validator) validateTemplateName(name string, hasDefault bool, source st
 }
 
 func isRuntimeTemplateName(name string) bool {
-	return name == "model" || name == "thinking_effort" || name == "thinking_effort_raw" || strings.HasPrefix(name, "harness.")
+	return styletemplate.IsRuntimeVariable(name)
 }
 
 func runtimeReadForTemplate(name string) string {

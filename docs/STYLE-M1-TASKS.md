@@ -27,7 +27,7 @@
 - [x] **T11 `core/spec` 解析**：新增目录包和 `<name>.style.md` 单文件包解析；读取 `STYLE.yaml`、拆分规则 frontmatter/正文、读取 `file:` 和 `text:`，按声明展开 `from:` 文件及递归 glob（glob 命中按相对路径排序）。保留未合并字段供 T12 使用；拒绝正文 frontmatter、`file:` 指向 `rules/`、路径逃逸、符号链接、超限和无效文本。实现按模型、加载器、frontmatter、包内文件/路径及字段操作职责拆分在 `core/spec/types.go`、`load.go`、`frontmatter.go`、`package_files.go`、`values.go`；合并逻辑位于 `merge.go`。证据：`core/spec/spec_test.go`；命令和结果见 `docs/PROGRESS.md` T11/B1.2。
 - [x] **T12 规则合并**：按规范默认值、包级字段/`defaults`、规则文件 frontmatter、`from:` 覆盖的优先级生成有效规则；`reads` 取并集，其他字段按顶层整体覆盖；过滤 `enabled: false`，保留原始声明供 T13 校验。证据：`core/spec/merge.go`、`core/spec/merge_test.go`；命令和结果见 `docs/PROGRESS.md` T12/B1.3。
 - [x] **T13 `validate`**：实现 schema、路径/名字/ID 限制、重复 ID、未声明规则、模板变量、`reads`、正则、合法组合、T005/T006/T007 和规范错误码。校验实现按包、规则、条件、模板、reads、lint、文件扫描和值工具拆分在 `core/spec/validate_*.go`；token 离线估算复用 `internal/tokenestimate`。证据：`core/spec/validate*_test.go`、`internal/tokenestimate/estimate_test.go`；命令和结果见 `docs/PROGRESS.md` T13/B1.4。
-- [ ] **T14 模板和条件**：实现静态/动态模板、默认值、运行时变量、`when` 的 AND/OR 语义、effort 比较和条件字段读取。
+- [x] **T14 模板和条件**：新增 `core/template` 的替换语法解析、静态/动态分类、默认值、转义和渲染；spec 校验和 lint 复用同一解析器。新增 `core/when` 的字段 AND/列表 OR、模型 glob、effort 比较展开、agent 默认范围、缺失数据不匹配和条件字段读取接口；编译后 matcher 可复用，JSON 往返保留空 selector 语义。原生 payload 字段读取由后续 adapter 接入 `FieldReader`。证据：`core/template/*_test.go`、`core/when/*_test.go`、`core/spec/validate_template_parser_test.go`；命令和结果见 `docs/PROGRESS.md` T14/B1.5。
 - [ ] **T15 `warn` 首句提取**：覆盖中英文标点、空行、多行、无句末标点和动态正文。
 
 ### 规划、预算和编译
