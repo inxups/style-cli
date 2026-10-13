@@ -14,7 +14,7 @@
 
 ## 当前基线
 
-- [x] **T01 仓库和资料检查**：已检查 STYLE 规范、CLI 设计、20 张 SVG 流程图、示例 `STYLE.yaml` 和当前 Git 结构。证据：`STYLE_DOCS/STYLE-spec.md`、`STYLE_DOCS/STYLE-cli-design.md`、`STYLE_DOCS/svg/*.svg`。
+- [x] **T01 仓库和资料检查**：已检查 STYLE 规范、CLI 设计、20 张 SVG 流程图、示例 `STYLE.yaml` 和当前 Git 结构。规范入口为 `STYLE_DOCS/STYLE-spec.md`，正文按包结构、规则、运行时语义和编译产物拆分在 `STYLE_DOCS/STYLE-spec-*.md`。证据：`STYLE_DOCS/STYLE-spec*.md`、`STYLE_DOCS/STYLE-cli-design.md`、`STYLE_DOCS/svg/*.svg`。
 - [x] **T02 agenthooks 职责边界**：已确认 `agenthooks/` 提供统一事件、provider codec、工具/MCP/skill 识别、能力矩阵、配置渲染和测试 fixture；STYLE 仍需实现规则包、编译、状态、预算、trust/sync 和 CLI。证据：`agenthooks/DESIGN.md` §3–7、`STYLE_DOCS/STYLE-cli-design.md` §2–8。
 - [x] **T03 agenthooks 可重复基线**：清理会影响 provider 检测的外部环境变量后，`go test ./...` 和 `go vet ./...` 通过；完整结果见 `docs/STYLE-M1-TESTS.md` 和 `docs/PROGRESS.md`。
 - [x] **T04 持久化执行约定**：新增根目录 `AGENTS.md`，规定任务/测试文档同步、独立验收后 Git 提交、提交报告和环境隔离。证据：`AGENTS.md`。
