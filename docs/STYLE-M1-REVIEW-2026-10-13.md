@@ -16,7 +16,7 @@
 | R04 | [x] | 原始嵌套 mapping 报 schema 错误，map 转换拒绝有损输入；`core/spec/validate_map_keys_test.go` 覆盖包、规则和覆盖字段，`go test -count=1 ./core/spec` 通过 |
 | R05 | [x] | native `names` 选择器可参与 `tool.added` 事件适用性判断；adapter 决定实际提取，字段缺失不匹配；`core/spec/validate_condition_test.go`，`go test -count=1 ./core/spec` 通过 |
 | R06 | [x] | skill 隐式事件按 `at` 和 block 默认时机派生，显式事件另行保留；`tool.output` 仅在 after 可用；`core/spec/validate_condition_test.go`，`go test -count=1 ./core/spec` 通过 |
-| R07 | [!] | 待修复 |
+| R07 | [x] | validate 与 Compile 共用 `core/when.ValidateModelGlob`，无效模式报 `bad-model-glob`；`core/spec/validate_model_glob_test.go`，`go test -count=1 ./core/spec ./core/when` 通过 |
 | R08 | [!] | 待修复 |
 
 ## 已完成范围

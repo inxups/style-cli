@@ -21,7 +21,7 @@ func Compile(rule Rule) (*Matcher, error) {
 		}
 	}
 	for _, pattern := range rule.Model {
-		if err := validateModelGlob(pattern); err != nil {
+		if err := ValidateModelGlob(pattern); err != nil {
 			return nil, fmt.Errorf("when.model: %w", err)
 		}
 	}

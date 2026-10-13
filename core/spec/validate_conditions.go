@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"regexp"
 	"strings"
+
+	stylewhen "github.com/inxups/style-cli/core/when"
 )
 
 var effortLevels = stringSet("none", "minimal", "low", "medium", "high", "xhigh", "max")
@@ -23,6 +25,12 @@ func (v *validator) validateWhen(value any, rule Rule, source string) {
 		case "model":
 			if !isStringOrStringList(item) {
 				v.add("invalid-schema", source, "when.model must be a string or list of strings")
+			} else {
+				for _, pattern := range stringValues(item) {
+					if err := stylewhen.ValidateModelGlob(pattern); err != nil {
+						v.add("bad-model-glob", source, "when.model contains an invalid glob pattern")
+					}
+				}
 			}
 			v.requireRuntimeRead("model", source)
 		case "thinking_effort":

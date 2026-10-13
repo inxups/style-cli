@@ -5,7 +5,9 @@ import (
 	"strings"
 )
 
-func validateModelGlob(pattern string) error {
+// ValidateModelGlob checks STYLE model glob syntax using the same rules as
+// matching and compilation.
+func ValidateModelGlob(pattern string) error {
 	_, err := path.Match(strings.TrimPrefix(pattern, "**/"), "")
 	return err
 }

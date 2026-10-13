@@ -281,3 +281,10 @@
 - 回归：`core/spec/validate_condition_test.go` 验证 skill before + tool.output 被拒绝、after + tool.output 接受，以及 before + prompt 可由显式触发点使用。修复前第一例未报错，修复后通过。
 - 验证：`env -u CODEX_HOME -u CODEX_SANDBOX GOPATH=/tmp/style-cli-gopath GOMODCACHE=/tmp/style-cli-gomodcache GOCACHE=/tmp/style-cli-gocache GOPROXY=off GOSUMDB=off go test -count=1 ./core/spec`；`git diff --check`；均通过。
 - 状态：任务、测试矩阵和回顾报告同步标记 R06 完成；继续 R07。
+
+### 2026-10-13 — RV-T13-05/R07 `[x]`
+
+- 修复：`core/when.ValidateModelGlob` 暴露 model glob 语法检查并被 Compile 复用；spec validate 对单值/列表逐项调用同一实现，无效模式输出稳定 `bad-model-glob` 诊断。
+- 回归：`core/spec/validate_model_glob_test.go` 覆盖未闭合 `[` 的多种位置和合法普通/`**/` glob；修复前非法模式都无诊断，修复后符合预期。既有 when compile glob 测试通过。
+- 验证：`env -u CODEX_HOME -u CODEX_SANDBOX GOPATH=/tmp/style-cli-gopath GOMODCACHE=/tmp/style-cli-gomodcache GOCACHE=/tmp/style-cli-gocache GOPROXY=off GOSUMDB=off go test -count=1 ./core/spec ./core/when`；`git diff --check`；均通过。
+- 状态：任务、测试矩阵和回顾报告同步标记 R07 完成；继续 R08。

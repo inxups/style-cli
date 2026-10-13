@@ -82,7 +82,7 @@
 - [x] **RV-T13-02/R04**：嵌套 YAML 的非字符串键被转换时静默丢弃。 已修复；递归检查原始 mapping，拒绝非字符串键；asStringMap 拒绝有损转换。证据：`core/spec/validate_map_keys_test.go` 覆盖包/规则/覆盖字段及合法字符串键；`go test -count=1 ./core/spec` 通过。
 - [x] **RV-T13-03/R05**：native tool name selector 无法使 `tool.added` 条件通过事件可用性校验。 已修复；native `names` selector 参与 `tool.added` 可用性判断，具体提取由 adapter 决定，缺失值仍不匹配。证据：`core/spec/validate_condition_test.go` 覆盖 `Edit` 单值及名字列表；`go test -count=1 ./core/spec` 通过。
 - [x] **RV-T13-04/R06**：skill 的 `at` 不参与隐式 tool 事件可用性判断。 已修复；skill 隐式事件按 `at` 派生，并尊重 block 默认 before；`skill.explicit` 仍独立可用。证据：`core/spec/validate_condition_test.go` 覆盖 before/after `tool.output` 与显式 prompt；`go test -count=1 ./core/spec` 通过。
-- [!] **RV-T13-05/R07**：非法 `when.model` glob 通过静态 validate，后续 compile 才失败。
+- [x] **RV-T13-05/R07**：非法 `when.model` glob 通过静态 validate，后续 compile 才失败。 已修复；validate 与 Compile 共用 `core/when.ValidateModelGlob`，非法模式稳定返回 `bad-model-glob`。证据：`core/spec/validate_model_glob_test.go`；`go test -count=1 ./core/spec ./core/when` 通过。
 - [!] **RV-T13-06/R08**：单文件 native schema 与目录包 schema 不一致。
 
 详细复现、影响和修正方向见 `docs/STYLE-M1-REVIEW-2026-10-13.md`。
