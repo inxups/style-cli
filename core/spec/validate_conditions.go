@@ -210,6 +210,12 @@ func (v *validator) conditionFieldAvailable(field string, rule Rule) bool {
 	}
 	if field == "tool.added" {
 		if target == "tool" {
+			// Native-name support is provider-specific. Accept the selector here
+			// and let the adapter expose tool.added only when it can extract it;
+			// the runtime matcher treats unavailable fields as non-matches.
+			if len(v.effectiveRuleStringValues(rule, "names")) > 0 {
+				return allowedEvents["tool.pre"] || allowedEvents["tool.post"]
+			}
 			for _, tool := range v.effectiveRuleStringValues(rule, "tool") {
 				if tool == "file.edit" || tool == "file.write" {
 					return allowedEvents["tool.pre"] || allowedEvents["tool.post"]

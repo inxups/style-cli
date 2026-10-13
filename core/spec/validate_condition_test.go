@@ -16,6 +16,14 @@ func TestValidateConditionSelectorsAndOptionalFields(t *testing.T) {
 			rule: "  - id: base\n    target: tool\n    tool: file.write\n    text: body\n    when:\n      conditions:\n        - field: tool.added\n          op: contains\n          pattern: TODO\n",
 		},
 		{
+			name: "tool added for native Edit selector",
+			rule: "  - id: base\n    target: tool\n    names: Edit\n    at: before\n    text: body\n    when:\n      conditions:\n        - field: tool.added\n          op: contains\n          pattern: TODO\n",
+		},
+		{
+			name: "tool added for native name list",
+			rule: "  - id: base\n    target: tool\n    names: [Edit, Bash]\n    at: after\n    text: body\n    when:\n      conditions:\n        - field: tool.added\n          op: contains\n          pattern: TODO\n",
+		},
+		{
 			name: "negative operation on optional field",
 			rule: "  - id: base\n    target: tool\n    tool: file.edit\n    text: body\n    when:\n      conditions:\n        - field: tool.added\n          op: not_contains\n          pattern: TODO\n",
 			want: "negated-optional-field", severity: SeverityWarning,

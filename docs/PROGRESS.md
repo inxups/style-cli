@@ -267,3 +267,10 @@
 - 回归：`core/spec/validate_map_keys_test.go` 覆盖 vars、reads、budget、defaults、conditions、native 嵌套 data 和 from 覆盖；合法字符串键保持不变。将新增测试放入 `fc9243a` 的临时 archive，确认 vars/reads/budget/defaults/native/转换场景失败；修复后通过。
 - 验证：`env -u CODEX_HOME -u CODEX_SANDBOX GOPATH=/tmp/style-cli-gopath GOMODCACHE=/tmp/style-cli-gomodcache GOCACHE=/tmp/style-cli-gocache GOPROXY=off GOSUMDB=off go test -count=1 ./core/spec`；`git diff --check`；均通过。
 - 状态：任务、测试矩阵和回顾报告同步标记 R04 完成；继续 R05。
+
+### 2026-10-13 — RV-T13-03/R05 `[x]`
+
+- 修复：target tool 的 native `names` 选择器可用于 tool.added 可用性判定，但仅限规则实际挂载的 pre/post 事件。core 不复制 harness 名称或行为表；具体字段提取由 adapter 决定，字段缺失按 runtime matcher 语义不匹配。
+- 回归：`core/spec/validate_condition_test.go` 新增原生 `Edit` 单名和名字列表两例；修复前均出现 `condition-field-wrong-event`，修复后通过。原有 shell/file.write/mcp 正负例通过。
+- 验证：`env -u CODEX_HOME -u CODEX_SANDBOX GOPATH=/tmp/style-cli-gopath GOMODCACHE=/tmp/style-cli-gomodcache GOCACHE=/tmp/style-cli-gocache GOPROXY=off GOSUMDB=off go test -count=1 ./core/spec`；`git diff --check`；均通过。
+- 状态：任务、测试矩阵和回顾报告同步标记 R05 完成；继续 R06。
