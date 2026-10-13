@@ -1,6 +1,6 @@
 # STYLE CLI M1 测试清单
 
-更新时间：2026-10-13
+更新时间：2026-10-14
 
 本文件记录测试矩阵和每项当前状态。测试通过必须有命令输出、fixture/golden 文件或真实环境记录作为证据。
 
@@ -56,6 +56,7 @@ env -u CODEX_HOME -u CODEX_SANDBOX \
 - [x] **B1.6 T15 `warn` 首句提取**：`go test -count=1 ./core/warn ./core/template` 覆盖中英文句末标点、英文标点的空白/行尾边界、首个非空行、前导空行、多行、无标点、CRLF、空正文及动态模板渲染后提取。完整根/agenthooks 测试和 vet 通过。证据：`core/warn/sentence_test.go`、`docs/PROGRESS.md` T15/B1.6。compile/engine 对静态与动态规则的调度接入仍未完成。
 - [x] **B1.7 T20 `core/plan`**：隔离环境下 `go test -count=1 ./core/plan ./core/spec ./core/template ./core/when` 覆盖 Requirement 的事件/能力/数据需求，native/degraded/partial/skipped/never-trigger/install-error 状态，tool 替代时机、条件数据缺失、block→warn 且不走静态回退、warn 部分能力、skill 隐式+显式事件、fallback skip/error、动态/静态 system、replace 降级、静态槽位缺失、harness 过滤、可选模板值告警、文本与 JSON 报告不泄漏正文并保持确定性，以及 Load→Validate→Merge→Build 整合。`make test-go`、`make vet-go`、`go mod tidy -diff`、gofmt、diff 检查通过。证据：`core/plan/plan_test.go`、`docs/PROGRESS.md` T20/B1.7。A2 的 CLI golden 和 token 部分仍未完成。
 - [x] **B1.8 T21 `core/tokens`**：隔离环境下 `go test -count=1 ./core/tokens ./core/spec ./internal/tokenestimate` 覆盖估算公式与 Unicode rune 数、静态包/规则/settings/vars 值、64/128 字符运行时占位符、默认值/非法模板、warn 首句和 `model_text`、prompt block 不计模型输入、动态 system/static fallback、T001/T002/T004 严重程度与限值、adapter Layout 原生事件/工具聚合、block 与 inject/warn 分隔符及最坏情况、跨包 T003 token/字符 80% 边界、共享 T005/T006/T007、稳定 JSON 和正文不泄漏。双 module `make test-go`、`make vet-go`、`go mod tidy -diff`、gofmt 和 `git diff --check` 均通过；agenthooks 没有改动。证据：`core/tokens/*_test.go`、`core/spec/validate_lints_test.go`、`internal/tokenestimate/estimate_test.go`、`docs/PROGRESS.md` T21/B1.8。T003 的完整调用仍由后续 adapter/install 集成提供已安装包清单和 adapter 上限；CLI golden/A18 尚未完成。
+- [x] **B1.9 T22 适配器一致性接口**：隔离环境下 `go test -count=1 ./internal/adapter ./core/plan ./core/tokens` 覆盖 provider 注册的稳定排序/重复拒绝/查找复制、检测结果规范化与错误传播、能力/数据来源/静态位置投影、route priority 和 Plan/Apply/Remove/Status 生命周期、输入上限单位与超限策略、compact signal 校验，以及 `core` 不导入 `agenthooks` 或 `internal/adapter` 的边界扫描。`go vet ./internal/adapter`、完整双 module `make test-go`/`make vet-go`、`go mod tidy -diff`、gofmt 和 `git diff --check` 通过；未修改 `agenthooks/`。证据：`internal/adapter/registry_test.go`、`internal/adapter/boundary_test.go`、`docs/PROGRESS.md` T22/B1.9。具体 provider adapter、effort 映射和 runtime Enrich 仍由后续任务接入。
 
 ## M1a：STYLE 离线验收
 

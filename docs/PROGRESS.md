@@ -346,3 +346,10 @@
 - 回归：`core/plan/plan_test.go` 覆盖能力/需求、静态与动态 system、fallback 阶梯、skill 隐式+显式评估点、条件数据替代、空静态槽位、replace、harness 过滤、可选模板变量、fallback:error 和 Load→Validate→Merge→Build 集成。
 - 验证：隔离环境 `go test -count=1 ./core/plan ./core/spec ./core/template ./core/when`、`GOPROXY=off GOSUMDB=off make test-go`、`GOPROXY=off GOSUMDB=off make vet-go`、`go mod tidy -diff`、gofmt 和 `git diff --check` 均通过；`agenthooks/` 无源代码修改。
 - 状态：T20、B1.7 已在任务清单和测试矩阵标记 `[x]`。按用户要求，本次不更新 review 文档；待 T2X 阶段完成后统一回顾 T20 系列。A2 CLI golden、token 预算、compile/engine 和 M1a 仍未完成。
+
+### 2026-10-14 — T22/B1.9 `[x]`
+
+- 实现：新增 `internal/adapter` 适配器端口和显式 `Registry`。`ProviderID`/compact event 直接复用 `agenthooks`；检测、能力、数据来源、盲区、静态位置、路线、trust、changeset、输入上限及超限行为均按使用方拆成窄接口或明确 DTO。`Definition` 将这些端口组合起来，注册时校验 provider/route 唯一性、上限单位和 compact 元数据，并按稳定 provider 顺序查找；`BuildPlanAdapter` 将丰富的 provider facts 投影为 `core/plan.Adapter`。
+- 边界：`core` 只依赖 `core/plan`、`core/spec` 和 `core/tokens` 的抽象，不导入 `agenthooks` 或 `internal/adapter`；T22 没有复制 hook codec、事件解析或安装渲染。具体 Codex/Claude 实现、effort 映射和 runtime Enrich 留给 T41–T45。
+- 回归：`internal/adapter/registry_test.go` 覆盖注册确定性、查找复制、定义校验、检测、路由生命周期和规划事实投影；`boundary_test.go` 扫描 core imports，防止 provider 依赖倒灌。
+- 验证：隔离环境下 `go test -count=1 ./internal/adapter ./core/plan ./core/tokens`、`go vet ./internal/adapter`、`GOPROXY=off GOSUMDB=off make test-go`、`GOPROXY=off GOSUMDB=off make vet-go`、`go mod tidy -diff`、gofmt 和 `git diff --check` 均通过；`agenthooks/` 无修改。任务清单 T22 与测试矩阵 B1.9 已标记 `[x]`；按用户要求暂不更新 review 文档，待 T2X 完成后统一回顾。
