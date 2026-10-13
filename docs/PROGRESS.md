@@ -318,3 +318,12 @@
 - 回归：`core/warn/sentence_test.go` 覆盖中英文标点、ASCII decimal period、空白/行尾边界、前导空行、多行、无标点、CRLF、空内容及 `core/template` 动态渲染后提取。
 - 验证：隔离环境下 `go test -count=1 ./core/warn ./core/template`、`GOPROXY=off GOSUMDB=off make test-go`、`GOPROXY=off GOSUMDB=off make vet-go`、`go mod tidy -diff`、gofmt 和 `git diff --check` 均通过；代码、测试和状态文档按 T15 独立提交。
 - 文档：T15、A21、B1.6 已在任务清单/测试矩阵标记 `[x]`，review 报告新增 T15 完成项；静态编译与动态运行时的接线仍属于后续 compile/engine 任务。
+
+### 2026-10-13 — T20/B1.7 `[x]`
+
+- 实现：新增 `core/plan`，将合并规则转换为 adapter-independent `Requirement`，提取事件、能力、条件字段和模板运行时数据需求；`Build` 通过窄 `Adapter` 事实接口生成确定的 `Report`。核心不导入 `agenthooks` 或 provider 包。
+- 策略：实现 system 静态位置与动态双评估点、tool/MCP/skill/event 路由、备用 before/after、静态注入回退、warn 部分能力、block→warn、fallback `skip`/`error`、条件数据全缺失的 never-trigger、adapter blind spot、native M2 跳过和 harness selector。`mode: replace` 无静态位置时按规范跳过或阻止安装。
+- 报告：结构化 placement 只保留事件、动作、状态、能力、降级来源、缺失数据和警告；人类可读/JSON 报告不写入规则正文或内部静态前缀，序列化结果稳定。静态 fallback 的前缀留在内存 placement，供后续 compile 消费。
+- 回归：`core/plan/plan_test.go` 覆盖能力/需求、静态与动态 system、fallback 阶梯、skill 隐式+显式评估点、条件数据替代、空静态槽位、replace、harness 过滤、可选模板变量、fallback:error 和 Load→Validate→Merge→Build 集成。
+- 验证：隔离环境 `go test -count=1 ./core/plan ./core/spec ./core/template ./core/when`、`GOPROXY=off GOSUMDB=off make test-go`、`GOPROXY=off GOSUMDB=off make vet-go`、`go mod tidy -diff`、gofmt 和 `git diff --check` 均通过；`agenthooks/` 无源代码修改。
+- 状态：T20、B1.7 已在任务清单和测试矩阵标记 `[x]`。按用户要求，本次不更新 review 文档；待 T2X 阶段完成后统一回顾 T20 系列。A2 CLI golden、token 预算、compile/engine 和 M1a 仍未完成。
