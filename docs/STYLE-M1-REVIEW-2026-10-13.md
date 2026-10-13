@@ -113,3 +113,10 @@ env -u CODEX_HOME -u CODEX_SANDBOX \
 ## 暂停点
 
 T14 已在 `ff32b99` 提交并验证；R01–R08 已逐项修复并有独立提交与回归测试，详情见上方修复跟进表和 `docs/PROGRESS.md`。T15 尚未开始；A1–A22、adapter conformance、Codex/Claude 真实环境和 M1a/M1b 仍未完成。按用户要求，完成回顾问题修复后停止，等待下一步指令。
+
+## Go 与 CLI 设计研究跟进（2026-10-13）
+
+- [x] 已完成当前 module、STYLE core、CLI 基线和 `agenthooks` 边界的维护性评估。
+- [x] 已形成模块化单体、application 用例层、薄 CLI、窄 adapter 接口、稳定输出契约和双 module 发布策略。
+- [x] 已写入完整设计报告：[STYLE-GO-CLI-DESIGN-2026-10-13.md](STYLE-GO-CLI-DESIGN-2026-10-13.md)，覆盖依赖方向、CLI 生命周期、错误/输出、文件事务、测试和 P0–P3 实施顺序。
+- [x] 本项只完成研究和文档登记，没有进入 T15，也没有修改 `agenthooks` 源码；后续按用户指令推进。

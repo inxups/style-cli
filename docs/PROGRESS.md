@@ -302,3 +302,12 @@
 - 最终验证：同一隔离环境运行 `go test -count=1 ./core/spec ./core/when ./core/template ./internal/tokenestimate`；`GOPROXY=off GOSUMDB=off make test-go`；`GOPROXY=off GOSUMDB=off make vet-go`；`go mod tidy -diff`；gofmt 和 `git diff --check`。全部通过。
 - 探针对照：按回顾报告中的复制和 `go run` 命令重新运行 13 个场景，输出保存为 `docs/review/M1-2026-10-13-fixed-results.json`。保留原 results 作为修复前记录；R03 无效包被校验拒绝，探针刻意继续 Merge 导致的 JSON 错误也保留说明。
 - 边界：本次没有改 agenthooks 源码或依赖，不提前完成 adapter/engine/CLI、M1a/M1b。按用户要求，完成修复后停止并等待指令。
+
+### 2026-10-13 — GO-CLI-DESIGN-001 `[x]`
+
+- 任务：评估 Go module、STYLE core、CLI 设计和 `agenthooks` 边界，形成高维护性设计建议。
+- 结论：采用模块化单体；根 module 保留 CLI 和 STYLE core，`agenthooks/` 保持独立 module；CLI 只处理参数和渲染，`internal/app` 编排用例，core 保持 harness 无关，adapter 按调用方拆成窄接口。
+- 文档：新增 `docs/STYLE-GO-CLI-DESIGN-2026-10-13.md`，记录当前差距、目标目录、依赖方向、module 发布策略、输出/错误契约、事务、测试矩阵和 P0–P3 顺序。
+- Review：`docs/STYLE-M1-REVIEW-2026-10-13.md` 已追加本项跟进并标记 `[x]`。
+- 外部参考：登记 Go 官方模块与代码评审文档、Cobra 与 GitHub CLI 项目入口；本次执行环境 DNS/TLS 访问失败，未声称已实时核验网页。评估以仓库源码和已有设计为基础。
+- 范围：只完成设计评估和文档记录；不开始 T15、不修改 `agenthooks` 源码，等待用户下一步指令。
