@@ -239,3 +239,10 @@
 - 复现命令：从根目录将探针复制到 `/tmp/style-cli-m1-review-probe.go`，使用 T14 同一隔离环境执行 `go run /tmp/style-cli-m1-review-probe.go`；完整命令见报告。重复运行输出与存档结果逐字节一致；报告内源码链接及 13 个观察/8 个发现编号检查通过。
 - 文档：新增 `docs/STYLE-M1-REVIEW-2026-10-13.md`，并在任务清单、测试矩阵加入 `[!]` 跟进项；历史 T11/T13 `[x]` 状态保留。规范拆分后的最大实际文件为 242 行，先前进度中的 243 行是 EOF 空行计数差异。
 - 状态：T14 已提交 `ff32b99`；T15、M1a、M1b 和 CLI/engine/adapter 集成仍未完成。下一步应先处理 R01–R08，再由用户决定后续规划。
+
+### 2026-10-13 — RV-T11-01/R01 `[x]`
+
+- 修复：使用 YAML decoder 要求单一 mapping 文档，第二次解码必须到 EOF；第二文档、空文档及非法尾部统一返回 `invalid-yaml`，保留来源路径。
+- 回归：`core/spec/frontmatter_test.go` 新增完整文档测试与目录包入口测试。修复前第二文档/非法尾部与 Load 测试失败，修复后通过；结束标记和尾部注释保持合法。
+- 验证：`env -u CODEX_HOME -u CODEX_SANDBOX GOPATH=/tmp/style-cli-gopath GOMODCACHE=/tmp/style-cli-gomodcache GOCACHE=/tmp/style-cli-gocache GOPROXY=off GOSUMDB=off go test -count=1 ./core/spec`；`git diff --check`；均通过。
+- 状态：任务、测试矩阵和回顾报告同步标记 R01 完成；继续 R02，不进入 T15。

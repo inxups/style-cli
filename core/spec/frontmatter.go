@@ -2,6 +2,7 @@ package spec
 
 import (
 	"bytes"
+	"io"
 	"strings"
 	"unicode"
 	"unicode/utf8"
@@ -11,11 +12,16 @@ import (
 
 func parseYAMLMap(data []byte, source string) (map[string]any, error) {
 	var fields map[string]any
-	if err := yaml.Unmarshal(data, &fields); err != nil {
+	decoder := yaml.NewDecoder(bytes.NewReader(data))
+	if err := decoder.Decode(&fields); err != nil {
 		return nil, parseErr("invalid-yaml", source, "parse YAML", err)
 	}
 	if fields == nil {
 		return nil, parseErr("invalid-yaml", source, "expected a YAML mapping", nil)
+	}
+	var trailing yaml.Node
+	if err := decoder.Decode(&trailing); err != io.EOF {
+		return nil, parseErr("invalid-yaml", source, "expected exactly one YAML document", err)
 	}
 	return fields, nil
 }

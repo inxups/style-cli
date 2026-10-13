@@ -91,7 +91,7 @@ env -u CODEX_HOME -u CODEX_SANDBOX \
 
 B1.2 和 B1.4 的历史通过状态表示原有测试套件在声明范围内通过，不覆盖所有输入边界。回顾探针新增以下待修正项：
 
-- [!] **RV-T11-01/R01**：多 YAML 文档和非法尾部被忽略。
+- [x] **RV-T11-01/R01**：多 YAML 文档和非法尾部被忽略。 已修复；证据：`core/spec/frontmatter_test.go`：拒绝第二个文档、空第二文档、非法尾部和非 mapping；接受单文档结束标记与尾部注释。`go test -count=1 ./core/spec` 通过。
 - [!] **RV-T11-02/R02**：非 Markdown `from:` 被加载。
 - [!] **RV-T13-01/R03**：NaN/Inf 通过 validate，合并值无法 JSON 编码。
 - [!] **RV-T13-02/R04**：非字符串嵌套键被静默丢弃。
