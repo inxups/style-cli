@@ -82,6 +82,9 @@ func expandFrom(root, pattern string) ([]string, error) {
 		return nil, err
 	}
 	if !strings.ContainsAny(clean, "*?[") {
+		if !validRuleSource(clean) {
+			return nil, parseErr("invalid-schema", clean, "from must reference Markdown files under rules/", nil)
+		}
 		return []string{clean}, nil
 	}
 	if err := validateGlob(clean); err != nil {
@@ -116,7 +119,17 @@ func expandFrom(root, pattern string) ([]string, error) {
 	if len(matches) == 0 {
 		return nil, parseErr("file-not-found", clean, "from glob matched no files", nil)
 	}
+	for _, source := range matches {
+		if !validRuleSource(source) {
+			return nil, parseErr("invalid-schema", source, "from must reference Markdown files under rules/", nil)
+		}
+	}
 	return matches, nil
+}
+
+func validRuleSource(source string) bool {
+	clean, err := cleanRelativePath(source)
+	return err == nil && strings.HasPrefix(clean, "rules/") && strings.HasSuffix(clean, ".md")
 }
 
 func validateGlob(pattern string) error {

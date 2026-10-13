@@ -64,8 +64,8 @@ func (v *validator) validateRuleFields(rule Rule, source string) {
 		}
 	}
 	if rule.From != "" {
-		if !strings.HasPrefix(filepath.ToSlash(rule.Source), "rules/") {
-			v.add("invalid-schema", source, "from must reference a file under rules/")
+		if !validRuleSource(filepath.ToSlash(rule.Source)) {
+			v.add("invalid-schema", source, "from must reference Markdown files under rules/")
 		}
 		for _, forbidden := range []string{"id", "file", "text"} {
 			if _, exists := rule.Overrides[forbidden]; exists {

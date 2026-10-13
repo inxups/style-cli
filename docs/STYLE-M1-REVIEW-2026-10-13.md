@@ -11,7 +11,7 @@
 | 编号 | 状态 | 修复结果与证据 |
 |---|---|---|
 | R01 | [x] | YAML decoder 完整消费输入，拒绝第二文档或非法尾部；`core/spec/frontmatter_test.go`，`go test -count=1 ./core/spec` 通过 |
-| R02 | [!] | 待修复 |
+| R02 | [x] | 显式来源和 glob 结果必须为 `rules/**/*.md`，validate 复查；`core/spec/from_source_test.go`，`go test -count=1 ./core/spec` 通过 |
 | R03 | [!] | 待修复 |
 | R04 | [!] | 待修复 |
 | R05 | [!] | 待修复 |

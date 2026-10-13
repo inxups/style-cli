@@ -246,3 +246,10 @@
 - 回归：`core/spec/frontmatter_test.go` 新增完整文档测试与目录包入口测试。修复前第二文档/非法尾部与 Load 测试失败，修复后通过；结束标记和尾部注释保持合法。
 - 验证：`env -u CODEX_HOME -u CODEX_SANDBOX GOPATH=/tmp/style-cli-gopath GOMODCACHE=/tmp/style-cli-gomodcache GOCACHE=/tmp/style-cli-gocache GOPROXY=off GOSUMDB=off go test -count=1 ./core/spec`；`git diff --check`；均通过。
 - 状态：任务、测试矩阵和回顾报告同步标记 R01 完成；继续 R02，不进入 T15。
+
+### 2026-10-13 — RV-T11-02/R02 `[x]`
+
+- 修复：显式 from 与 glob 命中结果使用同一来源检查，只接受 rules/ 下的 .md 文件；非 Markdown 与目录外来源返回 `invalid-schema`。validate 再次检查来源，避免手工构造 Package 绕过约束。
+- 回归：`core/spec/from_source_test.go`；修复前四个加载场景失败，修复后通过。现有递归 glob、排序和路径安全测试继续通过。
+- 验证：`env -u CODEX_HOME -u CODEX_SANDBOX GOPATH=/tmp/style-cli-gopath GOMODCACHE=/tmp/style-cli-gomodcache GOCACHE=/tmp/style-cli-gocache GOPROXY=off GOSUMDB=off go test -count=1 ./core/spec`；`git diff --check`；均通过。
+- 状态：任务、测试矩阵和回顾报告同步标记 R02 完成；继续 R03。
