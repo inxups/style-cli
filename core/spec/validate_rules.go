@@ -59,7 +59,7 @@ func (v *validator) validateRuleFields(rule Rule, source string) {
 	}
 	isRuleFile := strings.HasPrefix(filepath.ToSlash(source), "rules/")
 	for _, key := range sortedMapKeys(fields) {
-		if !ruleFields[key] && !(fields["target"] == "native" && (key == "codex" || key == "claude-code")) {
+		if !ruleFields[key] && !(fields["target"] == "native" && isNativeProviderField(key)) {
 			v.add("invalid-schema", source, fmt.Sprintf("unknown rule field %q", key))
 		}
 		if isRuleFile && isPackageField(key) && key != "priority" && key != "reads" {

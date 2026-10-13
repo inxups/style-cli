@@ -1,0 +1,155 @@
+[
+  {
+    "case": "R01 second YAML document",
+    "load_error": "STYLE.yaml: expected exactly one YAML document",
+    "load_code": "invalid-yaml",
+    "diagnostics": []
+  },
+  {
+    "case": "R01 malformed trailing YAML",
+    "load_error": "STYLE.yaml: expected exactly one YAML document: yaml: line 9: did not find expected ',' or ']'",
+    "load_code": "invalid-yaml",
+    "diagnostics": []
+  },
+  {
+    "case": "R02 explicit non-Markdown from",
+    "load_error": "rules/test.txt: from must reference Markdown files under rules/",
+    "load_code": "invalid-schema",
+    "diagnostics": []
+  },
+  {
+    "case": "R02 glob non-Markdown from",
+    "load_error": "rules/test.txt: from must reference Markdown files under rules/",
+    "load_code": "invalid-schema",
+    "diagnostics": []
+  },
+  {
+    "case": "R03 NaN priority",
+    "package_name": "audit",
+    "rule_ids": [
+      "base"
+    ],
+    "diagnostics": [
+      {
+        "code": "invalid-schema",
+        "path": "STYLE.yaml",
+        "message": "priority must be a number",
+        "severity": "error"
+      }
+    ],
+    "effective_json_error": "json: unsupported value: NaN"
+  },
+  {
+    "case": "R03 infinite budget",
+    "package_name": "audit",
+    "rule_ids": [
+      "base"
+    ],
+    "diagnostics": [
+      {
+        "code": "invalid-schema",
+        "path": "STYLE.yaml",
+        "message": "budget.per_rule must be a positive number",
+        "severity": "error"
+      }
+    ],
+    "effective_json_error": "json: unsupported value: +Inf"
+  },
+  {
+    "case": "R04 non-string vars key",
+    "package_name": "audit",
+    "rule_ids": [
+      "base"
+    ],
+    "diagnostics": [
+      {
+        "code": "invalid-schema",
+        "path": "STYLE.yaml",
+        "message": "YAML mappings must use string keys",
+        "severity": "error"
+      },
+      {
+        "code": "invalid-schema",
+        "path": "STYLE.yaml",
+        "message": "vars must be a mapping",
+        "severity": "error"
+      }
+    ]
+  },
+  {
+    "case": "R04 non-string reads key",
+    "package_name": "audit",
+    "rule_ids": [
+      "base"
+    ],
+    "diagnostics": [
+      {
+        "code": "invalid-schema",
+        "path": "STYLE.yaml",
+        "message": "YAML mappings must use string keys",
+        "severity": "error"
+      },
+      {
+        "code": "invalid-schema",
+        "path": "STYLE.yaml",
+        "message": "reads must be a mapping",
+        "severity": "error"
+      }
+    ]
+  },
+  {
+    "case": "R05 native Edit with tool.added",
+    "package_name": "audit",
+    "rule_ids": [
+      "base"
+    ],
+    "diagnostics": []
+  },
+  {
+    "case": "R06 skill before with tool.output",
+    "package_name": "audit",
+    "rule_ids": [
+      "base"
+    ],
+    "diagnostics": [
+      {
+        "code": "condition-field-wrong-event",
+        "path": "STYLE.yaml#base:when.conditions[0]",
+        "message": "tool.output is unavailable on this rule's events",
+        "severity": "error"
+      }
+    ]
+  },
+  {
+    "case": "R07 malformed model glob",
+    "package_name": "audit",
+    "rule_ids": [
+      "base"
+    ],
+    "diagnostics": [
+      {
+        "code": "bad-model-glob",
+        "path": "STYLE.yaml#base",
+        "message": "when.model contains an invalid glob pattern",
+        "severity": "error"
+      }
+    ],
+    "normalize_error": "when.model: syntax error in pattern"
+  },
+  {
+    "case": "R08 directory native rule",
+    "package_name": "audit",
+    "rule_ids": [
+      "native"
+    ],
+    "diagnostics": []
+  },
+  {
+    "case": "R08 single-file native rule",
+    "package_name": "native",
+    "rule_ids": [
+      "native"
+    ],
+    "diagnostics": []
+  }
+]

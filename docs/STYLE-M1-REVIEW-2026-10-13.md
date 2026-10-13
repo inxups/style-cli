@@ -2,7 +2,7 @@
 
 日期：2026-10-13
 
-结论：T10–T14 的基础实现已经形成清楚的分层，`agenthooks/` 仍负责 hook 协议和 provider 事实，STYLE core 负责包、合并、校验、模板和条件语义；这条边界应继续保留。已完成的测试没有发现 P0/P1 问题，但边界探针发现 8 个 P2 校验/解析问题。建议先修复这些问题，再进入 T15、CLI、engine 和 adapter 集成。当前停止功能推进，M1 尚未完成。
+结论：T10–T14 的基础实现已经形成清楚的分层，`agenthooks/` 仍负责 hook 协议和 provider 事实，STYLE core 负责包、合并、校验、模板和条件语义；这条边界应继续保留。已完成的测试没有发现 P0/P1 问题；边界探针发现的 8 个 P2 校验/解析问题已全部修复，并分别添加回归测试、更新状态和提交。当前停止功能推进，M1 尚未完成。
 
 ## 修复跟进
 
@@ -17,7 +17,7 @@
 | R05 | [x] | native `names` 选择器可参与 `tool.added` 事件适用性判断；adapter 决定实际提取，字段缺失不匹配；`core/spec/validate_condition_test.go`，`go test -count=1 ./core/spec` 通过 |
 | R06 | [x] | skill 隐式事件按 `at` 和 block 默认时机派生，显式事件另行保留；`tool.output` 仅在 after 可用；`core/spec/validate_condition_test.go`，`go test -count=1 ./core/spec` 通过 |
 | R07 | [x] | validate 与 Compile 共用 `core/when.ValidateModelGlob`，无效模式报 `bad-model-glob`；`core/spec/validate_model_glob_test.go`，`go test -count=1 ./core/spec ./core/when` 通过 |
-| R08 | [!] | 待修复 |
+| R08 | [x] | 单文件包在 `target: native` 时接受与目录规则相同的 `codex`/`claude-code` hook 字段；`core/spec/validate_native_single_file_test.go` 验证两家 provider、两种包格式及非法字段，`go test -count=1 ./core/spec` 通过 |
 
 ## 已完成范围
 
@@ -57,13 +57,13 @@ env -u CODEX_HOME -u CODEX_SANDBOX \
 git diff --check
 ```
 
-T14 的定向测试覆盖模板默认值和转义、静态/动态分类、引号内分隔符、条件 AND/OR、模型 glob、effort 比较、agent 范围、缺失字段、provider 永不匹配、matcher 复用和 JSON 往返。完整测试通过只说明已覆盖行为保持一致；它们没有覆盖下面列出的包输入边界。
+T14 的定向测试覆盖模板默认值和转义、静态/动态分类、引号内分隔符、条件 AND/OR、模型 glob、effort 比较、agent 范围、缺失字段、provider 永不匹配、matcher 复用和 JSON 往返。原完整测试没有覆盖下面列出的包输入边界；本次新增回归测试已覆盖 R01–R08。修复后的定向测试、`make test-go`、`make vet-go`、`go mod tidy -diff`、gofmt 和 diff 检查均通过。
 
-## 需要修正的 8 个边界问题
+## 原回顾发现的 8 个边界问题
 
 优先级均为 P2：会让无效包通过 validate、阻止有效规则通过校验，或让错误延迟到后续编译/运行阶段。
 
-| 编号 | 复现输入 | 当前观察 | 修正方向 |
+| 编号 | 复现输入 | 修复前观察 | 修正方向 |
 |---|---|---|---|
 | R01 | `STYLE.yaml` 的有效内容后追加第二个 YAML 文档，或追加一个未闭合的 YAML 文档 | `Load` 成功，只有第一份文档进入包；`Validate` 无诊断，尾部错误被忽略 | 使用 YAML decoder 检查完整输入；要求单一 mapping，并拒绝剩余文档或非法尾部 |
 | R02 | `from: rules/test.txt`，或 `from: rules/*.txt` | `Load` 成功，`.txt` 被当成规则，默认 ID 为 `test.txt` | 对显式 `from:` 和 glob 结果统一强制 `rules/**/*.md`，并在 validate 阶段再次检查来源 |
@@ -99,7 +99,9 @@ env -u CODEX_HOME -u CODEX_SANDBOX \
   go run /tmp/style-cli-m1-review-probe.go
 ```
 
-探针是观察工具，当前行为本身不会让命令失败；修复时应把 R01–R08 转成失败回归测试，并把错误码和诊断路径固定下来。
+修复后的 13 个场景观察结果见 [M1-2026-10-13-fixed-results.json](review/M1-2026-10-13-fixed-results.json)，原结果保留用于对照。R01/R02 已在 Load 阶段拒绝；R03/R04/R06/R07 输出校验错误；R05/R08 有效输入通过。探针会刻意继续合并无效包，因此 R03 仍记录 JSON 编码错误；使用者必须先确认 Validate 没有错误，合法有限数字的 JSON 编码另有回归测试。
+
+探针本身不会因不合规行为失败；R01–R08 已由新增回归测试固定期望，修复前失败、修复后通过。
 
 ## 维护性和文档结论
 
@@ -110,4 +112,4 @@ env -u CODEX_HOME -u CODEX_SANDBOX \
 
 ## 暂停点
 
-T14 已在 `ff32b99` 提交并验证。T15 尚未开始；A1–A22、adapter conformance、Codex/Claude 真实环境和 M1a/M1b 仍未完成。下一次继续时，优先顺序是 R01–R08 的修正与回归测试，然后再规划 T15 和 CLI/engine 的下一步。
+T14 已在 `ff32b99` 提交并验证；R01–R08 已逐项修复并有独立提交与回归测试，详情见上方修复跟进表和 `docs/PROGRESS.md`。T15 尚未开始；A1–A22、adapter conformance、Codex/Claude 真实环境和 M1a/M1b 仍未完成。按用户要求，完成回顾问题修复后停止，等待下一步指令。

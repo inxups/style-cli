@@ -74,7 +74,7 @@
 
 - [x] **REVIEW-001 已完成项回顾**：复核 T10–T14 的职责边界、测试证据、源码和规范，固化 13 个探针场景及结果；报告见 `docs/STYLE-M1-REVIEW-2026-10-13.md`，证据见 `docs/review/M1-2026-10-13-*`。回顾完成后按用户要求停止功能推进。
 
-历史条目 T11/T13 的已通过状态保留；以下是回顾中新增、尚未修正的边界问题，修复后分别补充回归证据：
+历史条目 T11/T13 的已通过状态保留；以下是回顾中新增的边界问题，现已全部修复并补充回归证据：
 
 - [x] **RV-T11-01/R01**：`STYLE.yaml` 追加第二个 YAML 文档或非法尾部时被静默忽略。 已修复；证据：`core/spec/frontmatter_test.go`：拒绝第二个文档、空第二文档、非法尾部和非 mapping；接受单文档结束标记与尾部注释。`go test -count=1 ./core/spec` 通过。
 - [x] **RV-T11-02/R02**：`from:` 显式路径和 glob 接受 `rules/**/*.txt` 等非 Markdown 来源。 已修复；证据：显式路径与 glob 结果统一限制为 `rules/**/*.md`，validate 复查来源；`core/spec/from_source_test.go` 覆盖 `.txt`、混合 glob、rules 外路径及绕过 Load 的校验。`go test -count=1 ./core/spec` 通过。
@@ -83,7 +83,7 @@
 - [x] **RV-T13-03/R05**：native tool name selector 无法使 `tool.added` 条件通过事件可用性校验。 已修复；native `names` selector 参与 `tool.added` 可用性判断，具体提取由 adapter 决定，缺失值仍不匹配。证据：`core/spec/validate_condition_test.go` 覆盖 `Edit` 单值及名字列表；`go test -count=1 ./core/spec` 通过。
 - [x] **RV-T13-04/R06**：skill 的 `at` 不参与隐式 tool 事件可用性判断。 已修复；skill 隐式事件按 `at` 派生，并尊重 block 默认 before；`skill.explicit` 仍独立可用。证据：`core/spec/validate_condition_test.go` 覆盖 before/after `tool.output` 与显式 prompt；`go test -count=1 ./core/spec` 通过。
 - [x] **RV-T13-05/R07**：非法 `when.model` glob 通过静态 validate，后续 compile 才失败。 已修复；validate 与 Compile 共用 `core/when.ValidateModelGlob`，非法模式稳定返回 `bad-model-glob`。证据：`core/spec/validate_model_glob_test.go`；`go test -count=1 ./core/spec ./core/when` 通过。
-- [!] **RV-T13-06/R08**：单文件 native schema 与目录包 schema 不一致。
+- [x] **RV-T13-06/R08**：单文件 native schema 与目录包 schema 不一致。 已修复；单文件包的 provider native hook 字段与目录规则共用 native schema 判定。证据：`core/spec/validate_native_single_file_test.go` 以相同内容分别验证目录包和单文件包；`go test -count=1 ./core/spec` 通过。
 
 详细复现、影响和修正方向见 `docs/STYLE-M1-REVIEW-2026-10-13.md`。
 

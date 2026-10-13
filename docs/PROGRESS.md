@@ -288,3 +288,17 @@
 - 回归：`core/spec/validate_model_glob_test.go` 覆盖未闭合 `[` 的多种位置和合法普通/`**/` glob；修复前非法模式都无诊断，修复后符合预期。既有 when compile glob 测试通过。
 - 验证：`env -u CODEX_HOME -u CODEX_SANDBOX GOPATH=/tmp/style-cli-gopath GOMODCACHE=/tmp/style-cli-gomodcache GOCACHE=/tmp/style-cli-gocache GOPROXY=off GOSUMDB=off go test -count=1 ./core/spec ./core/when`；`git diff --check`；均通过。
 - 状态：任务、测试矩阵和回顾报告同步标记 R07 完成；继续 R08。
+
+### 2026-10-13 — RV-T13-06/R08 `[x]`
+
+- 修复：单文件包顶层 schema 现在仅在 `target: native` 时把 `codex`/`claude-code` 识别为 native rule 字段，与目录包规则校验一致；其他未知字段仍报错。
+- 回归：`core/spec/validate_native_single_file_test.go` 使用相同 native rule 字段验证目录包及单文件包。修复前单文件报 `unknown package field "codex"`，修复后两者均无错误。
+- 验证：`env -u CODEX_HOME -u CODEX_SANDBOX GOPATH=/tmp/style-cli-gopath GOMODCACHE=/tmp/style-cli-gomodcache GOCACHE=/tmp/style-cli-gocache GOPROXY=off GOSUMDB=off go test -count=1 ./core/spec`；`git diff --check`；均通过。
+- 状态：R01–R08 已全部修复；任务、测试矩阵和回顾报告均标为完成。开始最终全套验证，完成后等待用户指令，不进入 T15。
+
+### 2026-10-13 — R01–R08 最终验证与暂停
+
+- 完成：八项修复均有回归测试；review 的修复跟进表、任务清单、测试矩阵均为 `[x]`。R08 的共享 native 字段判断和测试覆盖 Codex、Claude、两者共存、未知字段、非 native provider 字段以及错误 hook 类型，目录包与单文件包结果一致。
+- 最终验证：同一隔离环境运行 `go test -count=1 ./core/spec ./core/when ./core/template ./internal/tokenestimate`；`GOPROXY=off GOSUMDB=off make test-go`；`GOPROXY=off GOSUMDB=off make vet-go`；`go mod tidy -diff`；gofmt 和 `git diff --check`。全部通过。
+- 探针对照：按回顾报告中的复制和 `go run` 命令重新运行 13 个场景，输出保存为 `docs/review/M1-2026-10-13-fixed-results.json`。保留原 results 作为修复前记录；R03 无效包被校验拒绝，探针刻意继续 Merge 导致的 JSON 错误也保留说明。
+- 边界：本次没有改 agenthooks 源码或依赖，不提前完成 adapter/engine/CLI、M1a/M1b。按用户要求，完成修复后停止并等待指令。

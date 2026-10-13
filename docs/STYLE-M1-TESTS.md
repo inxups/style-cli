@@ -89,7 +89,7 @@ env -u CODEX_HOME -u CODEX_SANDBOX \
 
 ## 完成后回顾发现
 
-B1.2 和 B1.4 的历史通过状态表示原有测试套件在声明范围内通过，不覆盖所有输入边界。回顾探针新增以下待修正项：
+B1.2 和 B1.4 的历史通过状态表示原有测试套件在声明范围内通过，不覆盖所有输入边界。回顾探针新增以下边界项，现已全部修复并补齐回归覆盖：
 
 - [x] **RV-T11-01/R01**：多 YAML 文档和非法尾部被忽略。 已修复；证据：`core/spec/frontmatter_test.go`：拒绝第二个文档、空第二文档、非法尾部和非 mapping；接受单文档结束标记与尾部注释。`go test -count=1 ./core/spec` 通过。
 - [x] **RV-T11-02/R02**：非 Markdown `from:` 被加载。 已修复；证据：显式路径与 glob 结果统一限制为 `rules/**/*.md`，validate 复查来源；`core/spec/from_source_test.go` 覆盖 `.txt`、混合 glob、rules 外路径及绕过 Load 的校验。`go test -count=1 ./core/spec` 通过。
@@ -98,9 +98,9 @@ B1.2 和 B1.4 的历史通过状态表示原有测试套件在声明范围内通
 - [x] **RV-T13-03/R05**：native name selector 与 `tool.added` 的可用性判断不一致。 已修复；native `names` selector 参与 `tool.added` 可用性判断，具体提取由 adapter 决定，缺失值仍不匹配。证据：`core/spec/validate_condition_test.go` 覆盖 `Edit` 单值及名字列表；`go test -count=1 ./core/spec` 通过。
 - [x] **RV-T13-04/R06**：skill `at` 未参与隐式事件判断。 已修复；skill 隐式事件按 `at` 派生，并尊重 block 默认 before；`skill.explicit` 仍独立可用。证据：`core/spec/validate_condition_test.go` 覆盖 before/after `tool.output` 与显式 prompt；`go test -count=1 ./core/spec` 通过。
 - [x] **RV-T13-05/R07**：非法 model glob 延迟到 compile 才失败。 已修复；validate 与 Compile 共用 `core/when.ValidateModelGlob`，非法模式稳定返回 `bad-model-glob`。证据：`core/spec/validate_model_glob_test.go`；`go test -count=1 ./core/spec ./core/when` 通过。
-- [!] **RV-T13-06/R08**：单文件 native schema 与目录包不一致。
+- [x] **RV-T13-06/R08**：单文件 native schema 与目录包不一致。 已修复；单文件包的 provider native hook 字段与目录规则共用 native schema 判定。证据：`core/spec/validate_native_single_file_test.go` 以相同内容分别验证目录包和单文件包；`go test -count=1 ./core/spec` 通过。
 
-复现源文件和结果见 `docs/review/M1-2026-10-13-probe.go.txt`、`docs/review/M1-2026-10-13-results.json`；修复这些条目之前不应把 M1a 标为完成。
+复现源文件和结果见 `docs/review/M1-2026-10-13-probe.go.txt`、`docs/review/M1-2026-10-13-results.json`；修复后的探针结果见 `docs/review/M1-2026-10-13-fixed-results.json`。R01–R08 已完成，M1a 仍需其余离线验收条目。
 
 ## M1b：Codex 真实环境
 
