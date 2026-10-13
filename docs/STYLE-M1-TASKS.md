@@ -70,6 +70,23 @@
 - [?] **M1b Codex 真实环境**：B1–B12 全部完成，记录 Codex 版本、路线、信任行为、compact/resume、skill 和性能。
 - [?] **M1b Claude Code 真实环境**：C1–C9 全部完成，记录 Claude Code 版本、工作区信任、compact/model switch、skill、warn 和性能。
 
+## 回顾跟进项（2026-10-13）
+
+- [x] **REVIEW-001 已完成项回顾**：复核 T10–T14 的职责边界、测试证据、源码和规范，固化 13 个探针场景及结果；报告见 `docs/STYLE-M1-REVIEW-2026-10-13.md`，证据见 `docs/review/M1-2026-10-13-*`。回顾完成后按用户要求停止功能推进。
+
+历史条目 T11/T13 的已通过状态保留；以下是回顾中新增、尚未修正的边界问题，修复后分别补充回归证据：
+
+- [!] **RV-T11-01/R01**：`STYLE.yaml` 追加第二个 YAML 文档或非法尾部时被静默忽略。
+- [!] **RV-T11-02/R02**：`from:` 显式路径和 glob 接受 `rules/**/*.txt` 等非 Markdown 来源。
+- [!] **RV-T13-01/R03**：NaN/Inf 数字通过校验，导致合并值无法 JSON 编码。
+- [!] **RV-T13-02/R04**：嵌套 YAML 的非字符串键被转换时静默丢弃。
+- [!] **RV-T13-03/R05**：native tool name selector 无法使 `tool.added` 条件通过事件可用性校验。
+- [!] **RV-T13-04/R06**：skill 的 `at` 不参与隐式 tool 事件可用性判断。
+- [!] **RV-T13-05/R07**：非法 `when.model` glob 通过静态 validate，后续 compile 才失败。
+- [!] **RV-T13-06/R08**：单文件 native schema 与目录包 schema 不一致。
+
+详细复现、影响和修正方向见 `docs/STYLE-M1-REVIEW-2026-10-13.md`。
+
 ## 后续 backlog
 
 - [ ] **M2**：`target: native`、`style stats`、跨包去重、Claude `~/.claude/rules/` 静态位置和 replace 评估。

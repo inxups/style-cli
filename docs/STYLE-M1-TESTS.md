@@ -87,6 +87,21 @@ env -u CODEX_HOME -u CODEX_SANDBOX \
 - [ ] **A16** core 不直接 import `adapter/codex` 或 `adapter/claude`。
 - [ ] **A18** token estimator 与 golden 一致；T001–T007 各有触发 fixture；T003 超限安装不产生变更。
 
+## 完成后回顾发现
+
+B1.2 和 B1.4 的历史通过状态表示原有测试套件在声明范围内通过，不覆盖所有输入边界。回顾探针新增以下待修正项：
+
+- [!] **RV-T11-01/R01**：多 YAML 文档和非法尾部被忽略。
+- [!] **RV-T11-02/R02**：非 Markdown `from:` 被加载。
+- [!] **RV-T13-01/R03**：NaN/Inf 通过 validate，合并值无法 JSON 编码。
+- [!] **RV-T13-02/R04**：非字符串嵌套键被静默丢弃。
+- [!] **RV-T13-03/R05**：native name selector 与 `tool.added` 的可用性判断不一致。
+- [!] **RV-T13-04/R06**：skill `at` 未参与隐式事件判断。
+- [!] **RV-T13-05/R07**：非法 model glob 延迟到 compile 才失败。
+- [!] **RV-T13-06/R08**：单文件 native schema 与目录包不一致。
+
+复现源文件和结果见 `docs/review/M1-2026-10-13-probe.go.txt`、`docs/review/M1-2026-10-13-results.json`；修复这些条目之前不应把 M1a 标为完成。
+
 ## M1b：Codex 真实环境
 
 - [?] **CDEX-01/B1** 全新安装、信任一次、第二包安装/卸载/sync 后不重复信任。

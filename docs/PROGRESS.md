@@ -229,3 +229,13 @@
 - 结果：T14 定向测试、根 module/agenthooks module 全量测试和 vet 通过；依赖整理无差异，gofmt 和 diff 检查通过。agenthooks 源码及依赖未改动。原生 payload 字段提取和 runtime engine 接入留在 adapter/engine 任务，A10/A11 与 M1a/M1b 不提前标记。
 - 证据：`core/template/template_test.go`、`template_edges_test.go`；`core/when/when_test.go`、`json_test.go`、`match_test.go`；`core/spec/validate_template_parser_test.go`。
 - 下一步：完成已实现 T10–T14 的回顾结论和待修正条目；按用户要求停止功能推进，不进入 T15。
+
+### 2026-10-13 — REVIEW-001 `[x]`（发现项 `[!]`）
+
+- 任务：完成 T10–T14 的回顾，检查架构边界、测试证据、规范拆分和输入边界；按用户要求在回顾后停止功能推进。
+- 结论：模块边界和规则合并逻辑保留；没有发现 P0/P1，但发现 R01–R08 八个 P2 问题，集中在 YAML 完整消费、来源后缀、非有限数字、非字符串键、native selector 事件判断、skill `at`、model glob 静态检查和单文件 native schema。
+- 复现：`docs/review/M1-2026-10-13-probe.go.txt` 是观察探针源文件，`docs/review/M1-2026-10-13-results.json` 是在提交 `ff32b99` 工作树上生成的结果。探针观察到 R01/R02/R04/R06/R07 的 validate 无诊断，R03 的 JSON 编码分别报 `NaN`/`+Inf`，R05 报错误的 `condition-field-wrong-event`，R08 目录包通过而单文件包报 `unknown package field "codex"`。
+- 验证：T14 定向测试、`make test-go`、`make vet-go`、`go mod tidy -diff` 和 `git diff --check` 均通过；这说明已有覆盖范围稳定，不代表上述无效输入已被拒绝。
+- 复现命令：从根目录将探针复制到 `/tmp/style-cli-m1-review-probe.go`，使用 T14 同一隔离环境执行 `go run /tmp/style-cli-m1-review-probe.go`；完整命令见报告。重复运行输出与存档结果逐字节一致；报告内源码链接及 13 个观察/8 个发现编号检查通过。
+- 文档：新增 `docs/STYLE-M1-REVIEW-2026-10-13.md`，并在任务清单、测试矩阵加入 `[!]` 跟进项；历史 T11/T13 `[x]` 状态保留。规范拆分后的最大实际文件为 242 行，先前进度中的 243 行是 EOF 空行计数差异。
+- 状态：T14 已提交 `ff32b99`；T15、M1a、M1b 和 CLI/engine/adapter 集成仍未完成。下一步应先处理 R01–R08，再由用户决定后续规划。
