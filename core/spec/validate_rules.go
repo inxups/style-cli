@@ -223,10 +223,7 @@ func validRuleFieldValue(key string, value any) bool {
 }
 
 func validRuleFieldEnum(key string, value any) bool {
-	text, ok := value.(string)
-	if !ok {
-		return false
-	}
+	text, _ := value.(string)
 	switch key {
 	case "action":
 		return stringSet("inject", "warn", "block")[text]

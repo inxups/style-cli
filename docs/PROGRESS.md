@@ -253,3 +253,10 @@
 - 回归：`core/spec/from_source_test.go`；修复前四个加载场景失败，修复后通过。现有递归 glob、排序和路径安全测试继续通过。
 - 验证：`env -u CODEX_HOME -u CODEX_SANDBOX GOPATH=/tmp/style-cli-gopath GOMODCACHE=/tmp/style-cli-gomodcache GOCACHE=/tmp/style-cli-gocache GOPROXY=off GOSUMDB=off go test -count=1 ./core/spec`；`git diff --check`；均通过。
 - 状态：任务、测试矩阵和回顾报告同步标记 R02 完成；继续 R03。
+
+### 2026-10-13 — RV-T13-01/R03 `[x]`
+
+- 修复：数字类型检查统一拒绝非有限值，vars scalar 使用相同检查。数字 defaults 原先被字符串枚举检查误拒绝，现只对枚举字段检查字符串取值。
+- 回归：`core/spec/validate_numbers_test.go` 覆盖 .nan/.inf/-.inf 在 package priority、defaults、规则、from 覆盖、budget 三字段和 vars 的行为；修复前复现漏检，修复后全部拒绝。合法有限数字和 defaults 通过 validate，合并字段可 JSON 编码。
+- 验证：`env -u CODEX_HOME -u CODEX_SANDBOX GOPATH=/tmp/style-cli-gopath GOMODCACHE=/tmp/style-cli-gomodcache GOCACHE=/tmp/style-cli-gocache GOPROXY=off GOSUMDB=off go test -count=1 ./core/spec`；`git diff --check`；均通过。
+- 状态：任务、测试矩阵和回顾报告同步标记 R03 完成；继续 R04。

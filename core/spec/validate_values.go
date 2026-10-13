@@ -1,6 +1,9 @@
 package spec
 
-import "sort"
+import (
+	"math"
+	"sort"
+)
 
 func stringSet(values ...string) map[string]bool {
 	set := make(map[string]bool, len(values))
@@ -38,7 +41,8 @@ func isStringOrStringList(value any) bool {
 func isNumber(value any) bool {
 	switch value.(type) {
 	case int, int32, int64, uint, uint32, uint64, float32, float64:
-		return true
+		number := toFloat64(value)
+		return !math.IsNaN(number) && !math.IsInf(number, 0)
 	default:
 		return false
 	}
@@ -69,9 +73,9 @@ func toFloat64(value any) float64 {
 
 func isScalar(value any) bool {
 	switch value.(type) {
-	case string, bool, int, int32, int64, uint, uint32, uint64, float32, float64:
+	case string, bool:
 		return true
 	default:
-		return false
+		return isNumber(value)
 	}
 }
