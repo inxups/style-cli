@@ -33,7 +33,7 @@
 ### 规划、预算和编译
 
 - [x] **T20 `core/plan`**：`RequirementFor` 从合并规则提取事件、能力、条件/模板数据需求；`Build` 查询纯事实 Adapter 接口，按规范执行 static/dynamic system、tool/MCP/skill/event 路由、替代事件、warn 部分输出、block→warn、静态回退、fallback skip/error 和盲区处理；输出稳定结构及不含正文的文本报告。Adapter 不依赖具体 harness，`core/plan` 不导入 `agenthooks`。证据：`core/plan/*_test.go` 覆盖能力/需求、降级、数据源缺失、skill 双触发点、harness 选择、system 动静态和 Load→Validate→Merge→Build 集成；B1.7 和 `docs/PROGRESS.md` T20。
-- [ ] **T21 `core/tokens`**：实现字符/token 估算、`per_rule`、`per_event`、`always_on` 和 T001–T007。
+- [x] **T21 `core/tokens`**：实现 Unicode rune 字符计数与离线 token 估算；静态变量和动态占位符渲染；按 adapter Layout 聚合原生事件/工具的最坏成本；实现 `per_rule`、`per_event`、`always_on`、跨已安装包/适配器单位的 T003，以及 T001–T007 报告。`core/spec.Validate` 产出的 T001/T005/T006/T007 lint 由 token 报告统一复用；T002/T004 依赖具体 plan。block 与 inject/warn 的互斥最坏情况和输出分隔符分别计算。证据：`core/tokens/*_test.go`、`internal/tokenestimate/estimate_test.go`、`core/spec/validate_lints_test.go`；B1.8 和 `docs/PROGRESS.md` T21/B1.8。
 - [ ] **T22 适配器一致性接口**：定义 provider 注册、能力、数据来源、静态位置、路线、上限和 compact 信号接口。
 - [ ] **T23 `core/compile`**：生成稳定的 `build/index.json`，包含静态条目、评估点、顺序、匹配条件、正文片段和估算值。
 - [ ] **T24 index schema/golden**：为示例包建立 index schema 和逐字节 golden 输出。

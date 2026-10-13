@@ -44,6 +44,23 @@ func TestValidateT006AndT007Warnings(t *testing.T) {
 	}
 }
 
+func TestValidateT001UsesEffectiveLimitAndModelFacingWarnText(t *testing.T) {
+	tooLong := testManifest("lint-t001-error", "budget:\n  per_rule: 1\n  on: error\n", "  - id: long\n    target: system\n    action: inject\n    text: abcde\n")
+	if diagnostics := loadAndValidate(t, tooLong, nil); !hasDiagnostic(diagnostics, "T001", SeverityError) {
+		t.Fatalf("T001 should follow budget.on: error; diagnostics = %#v", diagnostics)
+	}
+
+	shortWarnModelText := testManifest("lint-t001-warn", "budget:\n  per_rule: 2\n", "  - id: warning\n    target: tool\n    tool: shell\n    action: warn\n    text: 'OK. "+strings.Repeat("x", 80)+"'\n    model_text: hi\n")
+	if diagnostics := loadAndValidate(t, shortWarnModelText, nil); hasDiagnostic(diagnostics, "T001", SeverityWarning) || hasDiagnostic(diagnostics, "T001", SeverityError) {
+		t.Fatalf("T001 should estimate warn.model_text, not its user message; diagnostics = %#v", diagnostics)
+	}
+
+	perRuleOverride := testManifest("lint-t001-override", "budget:\n  per_rule: 20\ndefaults:\n  max_tokens: 4\n", "  - id: override\n    target: system\n    max_tokens: 2\n    text: abcdefghijk\n")
+	if diagnostics := loadAndValidate(t, perRuleOverride, nil); !hasDiagnostic(diagnostics, "T001", SeverityWarning) {
+		t.Fatalf("rule max_tokens should override package/default limits; diagnostics = %#v", diagnostics)
+	}
+}
+
 func TestEstimateTokensMatchesOfflineFormula(t *testing.T) {
 	for _, tc := range []struct {
 		text string

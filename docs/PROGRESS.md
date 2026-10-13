@@ -238,6 +238,25 @@
 - 验证：T14 定向测试、`make test-go`、`make vet-go`、`go mod tidy -diff` 和 `git diff --check` 均通过；这说明已有覆盖范围稳定，不代表上述无效输入已被拒绝。
 - 复现命令：从根目录将探针复制到 `/tmp/style-cli-m1-review-probe.go`，使用 T14 同一隔离环境执行 `go run /tmp/style-cli-m1-review-probe.go`；完整命令见报告。重复运行输出与存档结果逐字节一致；报告内源码链接及 13 个观察/8 个发现编号检查通过。
 - 文档：新增 `docs/STYLE-M1-REVIEW-2026-10-13.md`，并在任务清单、测试矩阵加入 `[!]` 跟进项；历史 T11/T13 `[x]` 状态保留。规范拆分后的最大实际文件为 242 行，先前进度中的 243 行是 EOF 空行计数差异。
+
+### 2026-10-13 — T21/B1.8 `[x]`
+
+- 任务：完成 `core/tokens` 的离线字符/token 估算、预算分析和 T001–T007 报告，供 `plan`、后续 `compile` 和 CLI 重用。
+- 实现：`internal/tokenestimate` 统一公式、Unicode rune 数、安装期静态值和动态占位符；`core/spec.Validate` 的 T001 按最终模型输入估算 warn 首句/`model_text`，遵循包预算与规则 `max_tokens` 优先级及 `budget.on`。`core/tokens` 在 `plan.Report` 上按规则、always-on 和 adapter Layout 的原生事件/工具分组计算估算；block 与 inject/warn 输出互斥时取最坏值，按运行时分隔符计费；跨已安装包 T003 支持 token/字符单位并严格按超过 80% 报错。T005–T007 复用共享 spec 诊断，报告不包含正文。
+- 定向命令：
+
+  ```sh
+  env -u CODEX_HOME -u CODEX_SANDBOX \
+    GOPATH=/tmp/style-cli-gopath \
+    GOMODCACHE=/tmp/style-cli-gomodcache \
+    GOCACHE=/tmp/style-cli-gocache \
+    GOPROXY=off GOSUMDB=off \
+    go test -count=1 ./core/tokens ./core/spec ./internal/tokenestimate
+  ```
+
+- 全量命令：`GOPROXY=off GOSUMDB=off make test-go`、`GOPROXY=off GOSUMDB=off make vet-go`、隔离环境 `go mod tidy -diff`、`gofmt -l core/tokens core/spec/validate_lints.go core/spec/validate_lints_test.go internal/tokenestimate/estimate.go internal/tokenestimate/estimate_test.go`、`git diff --check`。
+- 结果：T21 定向测试、根 module 与 agenthooks module 全量测试和 vet 均通过；`go mod tidy -diff` 无输出；gofmt 与 diff 检查通过。新增测试覆盖字符/占位符、预算边界、warn 与 block 计费、native hook grouping、跨包 80% 边界、lint 传播、报告稳定性和正文不泄漏。`agenthooks/` 未修改。
+- 下一步：T22 定义适配器一致性接口；T003 的已安装包清单和 provider 上限将在后续 install/adapter 集成接入。按用户要求，review 文档等 T2X 完成后统一更新。
 - 状态：T14 已提交 `ff32b99`；T15、M1a、M1b 和 CLI/engine/adapter 集成仍未完成。下一步应先处理 R01–R08，再由用户决定后续规划。
 
 ### 2026-10-13 — RV-T11-01/R01 `[x]`
