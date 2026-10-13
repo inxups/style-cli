@@ -1,6 +1,6 @@
 # STYLE CLI 工作进度
 
-更新时间：2026-10-12
+更新时间：2026-10-13
 
 本文件采用追加式记录。每条记录包含日期、任务/测试编号、命令或依据、结果和下一步。
 
@@ -94,3 +94,28 @@
 - 结果：新增根目录 `AGENTS.md`，明确任务文档、测试证据、独立验收、Git 提交和提交后报告规则；检查通过。
 - 证据：`AGENTS.md`；本条目对应提交记录见 Git 历史。
 - 下一步：开始 T10 顶层 Go module/workspace；完成后同步任务、测试和进度文档并单独提交。
+
+### 2026-10-13 — T10/B1.1 `[x]`
+
+- 任务：建立独立的 STYLE CLI 根 module 和本地 agenthooks 依赖，并提供双模块测试入口。
+- 用户约定：hook 方面直接在 `agenthooks/` 演进，CLI 单独开发；不复制 hook 实现，不合并两个 module，不重写 agenthooks 的 import 路径。
+- 实现：根 `go.mod` 声明 `github.com/inxups/style-cli`，通过 `replace` 使用 `./agenthooks`；`go.work` 注册两个 module。`Makefile` 的 `test-go`、`vet-go` 分别在两个 module 执行检查；根依赖烟测通过 `agenthooks.New()` 验证本地依赖可编译。
+- 依据：Go 的 `./...` 不跨越嵌套 module；只有 workspace 不会自动扩大根命令的测试范围，因此聚合入口必须显式执行两边。
+- 命令（目录：仓库根；Makefile 内配置临时 `GOPATH`、`GOMODCACHE`、`GOCACHE`，清理 `CODEX_HOME`、`CODEX_SANDBOX`）：
+
+  ```sh
+  make test-go
+  make vet-go
+
+  env -u CODEX_HOME -u CODEX_SANDBOX \
+    GOPATH=/tmp/style-cli-gopath \
+    GOMODCACHE=/tmp/style-cli-gomodcache \
+    GOCACHE=/tmp/style-cli-gocache \
+    go list -m all
+
+  git diff --check
+  git status --short --branch
+  ```
+
+- 结果：根依赖烟测、agenthooks 全量单元/集成测试、两边 vet 通过；模块图包含本地的 `github.com/inxups/style-cli` 与 `github.com/speakeasy-api/agenthooks`。agenthooks 代码和依赖文件没有改动。
+- 下一步：T11 `core/spec` 解析目录包、单文件包、frontmatter、`from:` 文件和 glob。

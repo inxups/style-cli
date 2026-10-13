@@ -1,6 +1,6 @@
 # STYLE CLI M1 任务清单
 
-更新时间：2026-10-12
+更新时间：2026-10-13
 
 本文件是 STYLE CLI 的持久化任务清单。每项任务完成后必须同时补充证据（命令、fixture、golden 文件或真实运行记录），不能只根据对话上下文标记完成。
 
@@ -23,7 +23,7 @@
 
 ### 基础工程和规则包
 
-- [ ] **T10 顶层 Go module/workspace**：建立 STYLE CLI 的顶层构建入口，声明 `agenthooks` 依赖方式，确保 `go test ./...` 可以覆盖 STYLE 和底层库。
+- [x] **T10 顶层 Go module/workspace**：根 module `github.com/inxups/style-cli` 用本地 `replace` 依赖独立的 `agenthooks/` module；`go.work` 注册两个 module。Go 的根 `./...` 不跨越嵌套 module，统一入口 `make test-go` 分别执行两边 `go test ./...`，`make vet-go` 执行两边 vet。证据：`go.mod`、`go.work`、`Makefile`、`internal/agenthookscheck/agenthooks_test.go`；命令和结果见 `docs/PROGRESS.md` T10/B1.1。
 - [ ] **T11 `core/spec` 解析**：支持目录包、单文件包、`STYLE.yaml`、frontmatter、`from:` 文件和 glob 展开。
 - [ ] **T12 规则合并**：实现规范默认值、包级 `defaults`、规则文件 frontmatter、`from:` 覆盖的优先级和 `enabled: false`。
 - [ ] **T13 `validate`**：实现 schema、路径/名字/ID 限制、重复 ID、未声明规则、模板变量、`reads`、正则、合法组合和规范错误码。

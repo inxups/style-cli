@@ -1,6 +1,6 @@
 # STYLE CLI M1 测试清单
 
-更新时间：2026-10-12
+更新时间：2026-10-13
 
 本文件记录测试矩阵和每项当前状态。测试通过必须有命令输出、fixture/golden 文件或真实环境记录作为证据。
 
@@ -42,6 +42,10 @@ env -u CODEX_HOME -u CODEX_SANDBOX \
 - [x] **B0.4 能力降级定向测试**：Codex 不支持 ask 时按策略降级；Claude deny 输出通过。
 - [x] **B0.5 安装渲染定向测试**：Codex async/trust、定义哈希、幂等合并和外部条目保留通过。
 - [~] **B0.6 继承宿主环境的全量测试**：`TestCopilotDetection` 会因外部 `CODEX_SANDBOX` 优先于测试设置的 `COPILOT_CLI` 而失败；清理变量后通过。按当前策略只记录，不修改 agenthooks。
+
+## 顶层构建和模块
+
+- [x] **B1.1 T10 双模块入口**：从仓库根目录执行 `make test-go`、`make vet-go` 通过；根依赖烟测可以调用本地 `agenthooks.New()`，agenthooks 全量测试及 vet 通过。`go list -m all` 显示根 module 和本地 agenthooks module。Go `./...` 不跨越嵌套 module，所以聚合入口明确分别执行两个 module 的命令；两边均使用临时 Go 缓存并清理 `CODEX_HOME`、`CODEX_SANDBOX`。证据：`Makefile`、`internal/agenthookscheck/agenthooks_test.go` 和 `docs/PROGRESS.md` T10/B1.1。
 
 ## M1a：STYLE 离线验收
 
