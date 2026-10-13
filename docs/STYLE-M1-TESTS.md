@@ -53,6 +53,7 @@ env -u CODEX_HOME -u CODEX_SANDBOX \
 - [x] **B1.3 T12 规则字段合并**：覆盖标准默认、包 priority/budget、包级 defaults、规则 frontmatter、from 覆盖顺序；覆盖 `reads` 并集、`when` 整体替换、动态 target/action 默认、block repeat 忽略和停用过滤。根/agenthooks 全量测试与 vet 通过。重复 ID、`defaults` schema 白名单、禁止覆盖 `target`/`id` 在 T13 validate 中检查。证据：`core/spec/merge_test.go`、`docs/PROGRESS.md` T12/B1.3。
 - [x] **B1.4 T13 validate**：`go test -count=1 ./core/spec ./internal/tokenestimate` 覆盖包/规则 schema、单文件规则清单限制、重复 ID、from 覆盖、未声明文件、模板变量和运行时 reads、条件字段事件可用性、`tool.added` 适用工具、负向可选字段告警、RE2、effort、合法动作组合、T005/T006/T007、诊断码和稳定顺序；离线 token 估算有独立公式测试。`make test-go`、`make vet-go`、`go mod tidy -diff` 和 `git diff --check` 通过。证据：`core/spec/validate*_test.go`、`internal/tokenestimate/estimate_test.go`、`docs/PROGRESS.md` T13/B1.4。
 - [x] **B1.5 T14 模板和条件**：`go test -count=1 ./core/template ./core/when ./core/spec` 覆盖静态/动态分类、默认值、缺失/空字符串、转义、引号内 `|`/`}}`、无效模板、字段 AND/列表 OR、大小写不敏感模型 glob、`**/`、effort 档位和比较（排除 `open`）、主/子 agent 默认、provider 永不匹配、条件字段缺失时否定不匹配、FieldReader、matcher 数据独立及复用、JSON 往返保留空 selector 和 agent 范围。`make test-go`、`make vet-go`、`go mod tidy -diff`、gofmt 和 diff 检查通过。证据：`core/template/*_test.go`、`core/when/*_test.go`、`core/spec/validate_template_parser_test.go`、`docs/PROGRESS.md` T14/B1.5。实际 harness 字段提取、effort 来源和 engine 集成仍在后续任务，不提前标记 A10/A11 完成。
+- [x] **B1.6 T15 `warn` 首句提取**：`go test -count=1 ./core/warn ./core/template` 覆盖中英文句末标点、英文标点的空白/行尾边界、首个非空行、前导空行、多行、无标点、CRLF、空正文及动态模板渲染后提取。完整根/agenthooks 测试和 vet 通过。证据：`core/warn/sentence_test.go`、`docs/PROGRESS.md` T15/B1.6。compile/engine 对静态与动态规则的调度接入仍未完成。
 
 ## M1a：STYLE 离线验收
 
@@ -61,7 +62,7 @@ env -u CODEX_HOME -u CODEX_SANDBOX \
 - [ ] **A1** 示例包 validate 退出 0；所有 invalid fixture 对应错误码退出 1：`dup-id`、`from-and-inline`、`inline-missing-id`、`file-and-text`、`file-into-rules`、`body-has-frontmatter`、`rule-file-pkg-field`、`empty-body`、`override-target`、`defaults-field`、`undeclared-var`、`reads-missing`、`event-var-in-template`、`sensitive-reserved`、`condition-field-wrong-event`、`bad-regex`、`bad-effort-expr`、`action-target`、`block-after`、`replace-non-system`、`bad-name`、`bad-id`、`path-escape`、`symlink`、`file-too-large`、`bad-encoding`、`marker-in-body`。
 - [ ] **A2** 示例包 `style plan` 与 Codex/Claude golden 逐字一致，含 token 报告。
 - [ ] **A3** 示例包生成的 `index.json` 与 golden 逐字一致，并通过 schema。
-- [ ] **A21** `warn` 首句提取覆盖中英文、无标点、多行和开头空行。
+- [x] **A21** `warn` 首句提取覆盖中英文、无标点、多行和开头空行；新增 ASCII 句末条件、CRLF 和动态模板值用例。证据：`core/warn/sentence_test.go`、B1.6。
 - [ ] **A22** 非交互安装没有 `--yes` 退出 1；replace 没有 `--allow-replace` 被拒绝。
 
 ### engine、state、codec 和输出

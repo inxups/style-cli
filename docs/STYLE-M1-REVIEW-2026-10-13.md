@@ -29,6 +29,7 @@
 | T13 | `a91c497` | schema、路径、模板变量、条件、lint 和诊断完成 |
 | 规范拆分 | `632d5fa` | 规范入口、包结构、规则、运行时、编译产物五篇文档完成 |
 | T14 | `ff32b99` | `core/template`、`core/when`、spec 校验/lint 复用模板解析器完成 |
+| T15 | 本次提交 | `core/warn.FirstSentence` 与中英文、多行、空行、无标点、CRLF 和动态模板渲染用例完成；A21/B1.6 已标记 `[x]` |
 
 T14 的边界已经明确：`FieldReader` 是 core 与 adapter 之间的接口，实际 payload 字段提取、effort 来源和 runtime engine 接入留给后续 adapter/engine 任务。这些尚未完成的部分不应伪装成 M1a 或 M1b 通过。
 
@@ -110,9 +111,9 @@ env -u CODEX_HOME -u CODEX_SANDBOX \
 - 规范入口和 CLI 设计仍有“尚未实现”的历史状态文字。`STYLE_DOCS/STYLE-cli-design.md` 被忽略、未跟踪，新 clone 中规范到它的链接不可用；示例 `example/terse-reviewer/STYLE.yaml`、附录引用的 `style-gen/cross-harness.md`、`thinking-effort.md` 和 `style-review/solution-2026-10-12.md` 也缺失。由负责 plan/docs 的对话统一处理状态文字和引用。
 - `agenthooks/` 在 T10–T14 没有源代码改动；根 module 通过本地 `replace` 使用它，符合“hook 直接在 agenthooks、CLI 另起 module”的约定。
 
-## 暂停点
+## 当前进展
 
-T14 已在 `ff32b99` 提交并验证；R01–R08 已逐项修复并有独立提交与回归测试，详情见上方修复跟进表和 `docs/PROGRESS.md`。T15 尚未开始；A1–A22、adapter conformance、Codex/Claude 真实环境和 M1a/M1b 仍未完成。按用户要求，完成回顾问题修复后停止，等待下一步指令。
+T14 已在 `ff32b99` 提交并验证；R01–R08 已逐项修复并有独立提交与回归测试，详情见上方修复跟进表和 `docs/PROGRESS.md`。随后按新指令继续完成 T15；A1–A20、A22、adapter conformance、Codex/Claude 真实环境和 M1a/M1b 仍未完成。
 
 ## Go 与 CLI 设计研究跟进（2026-10-13）
 
@@ -120,3 +121,10 @@ T14 已在 `ff32b99` 提交并验证；R01–R08 已逐项修复并有独立提�
 - [x] 已形成模块化单体、application 用例层、薄 CLI、窄 adapter 接口、稳定输出契约和双 module 发布策略。
 - [x] 已写入完整设计报告：[STYLE-GO-CLI-DESIGN-2026-10-13.md](STYLE-GO-CLI-DESIGN-2026-10-13.md)，覆盖依赖方向、CLI 生命周期、错误/输出、文件事务、测试和 P0–P3 实施顺序。
 - [x] 本项只完成研究和文档登记，没有进入 T15，也没有修改 `agenthooks` 源码；后续按用户指令推进。
+
+## T15 `warn` 首句提取跟进（2026-10-13）
+
+- [x] 实现 `core/warn.FirstSentence`，严格按规则处理渲染正文的首个非空行和中英文句末标点。
+- [x] `core/warn/sentence_test.go` 覆盖开头空行、多行、ASCII/中文标点、无句末标点、CRLF、空内容，以及先用 `core/template` 渲染动态正文再提取。
+- [x] `docs/STYLE-M1-TASKS.md`、`docs/STYLE-M1-TESTS.md` 和 `docs/PROGRESS.md` 已同步；A21、B1.6 以定向/全量测试证据标记完成。
+- 范围：此条只提供可复用的提取函数，不提前标记 compile、runtime engine 或完整 A1–A22 通过。

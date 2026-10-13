@@ -311,3 +311,10 @@
 - Review：`docs/STYLE-M1-REVIEW-2026-10-13.md` 已追加本项跟进并标记 `[x]`。
 - 外部参考：登记 Go 官方模块与代码评审文档、Cobra 与 GitHub CLI 项目入口；本次执行环境 DNS/TLS 访问失败，未声称已实时核验网页。评估以仓库源码和已有设计为基础。
 - 范围：只完成设计评估和文档记录；不开始 T15、不修改 `agenthooks` 源码，等待用户下一步指令。
+
+### 2026-10-13 — T15/B1.6 `[x]`
+
+- 实现：新增 `core/warn.FirstSentence`，跳过开头空行并仅检查第一个非空行；`。！？` 直接截断，ASCII `.!?` 仅在后接 Unicode 空白或行尾时截断；无标点取整行，空正文返回空串。调用方传入渲染后的文本，因此动态模板值与静态正文走同一逻辑。
+- 回归：`core/warn/sentence_test.go` 覆盖中英文标点、ASCII decimal period、空白/行尾边界、前导空行、多行、无标点、CRLF、空内容及 `core/template` 动态渲染后提取。
+- 验证：隔离环境下 `go test -count=1 ./core/warn ./core/template`、`GOPROXY=off GOSUMDB=off make test-go`、`GOPROXY=off GOSUMDB=off make vet-go`、`go mod tidy -diff`、gofmt 和 `git diff --check` 均通过；代码、测试和状态文档按 T15 独立提交。
+- 文档：T15、A21、B1.6 已在任务清单/测试矩阵标记 `[x]`，review 报告新增 T15 完成项；静态编译与动态运行时的接线仍属于后续 compile/engine 任务。
