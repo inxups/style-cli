@@ -13,7 +13,7 @@
 | R01 | [x] | YAML decoder 完整消费输入，拒绝第二文档或非法尾部；`core/spec/frontmatter_test.go`，`go test -count=1 ./core/spec` 通过 |
 | R02 | [x] | 显式来源和 glob 结果必须为 `rules/**/*.md`，validate 复查；`core/spec/from_source_test.go`，`go test -count=1 ./core/spec` 通过 |
 | R03 | [x] | 数字/scalar 校验统一拒绝 NaN/Inf，修正合法数字 defaults 的枚举误判；`core/spec/validate_numbers_test.go` 覆盖数字来源与有效值 JSON 编码，`go test -count=1 ./core/spec` 通过 |
-| R04 | [!] | 待修复 |
+| R04 | [x] | 原始嵌套 mapping 报 schema 错误，map 转换拒绝有损输入；`core/spec/validate_map_keys_test.go` 覆盖包、规则和覆盖字段，`go test -count=1 ./core/spec` 通过 |
 | R05 | [!] | 待修复 |
 | R06 | [!] | 待修复 |
 | R07 | [!] | 待修复 |

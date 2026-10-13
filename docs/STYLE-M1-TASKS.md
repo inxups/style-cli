@@ -79,7 +79,7 @@
 - [x] **RV-T11-01/R01**：`STYLE.yaml` 追加第二个 YAML 文档或非法尾部时被静默忽略。 已修复；证据：`core/spec/frontmatter_test.go`：拒绝第二个文档、空第二文档、非法尾部和非 mapping；接受单文档结束标记与尾部注释。`go test -count=1 ./core/spec` 通过。
 - [x] **RV-T11-02/R02**：`from:` 显式路径和 glob 接受 `rules/**/*.txt` 等非 Markdown 来源。 已修复；证据：显式路径与 glob 结果统一限制为 `rules/**/*.md`，validate 复查来源；`core/spec/from_source_test.go` 覆盖 `.txt`、混合 glob、rules 外路径及绕过 Load 的校验。`go test -count=1 ./core/spec` 通过。
 - [x] **RV-T13-01/R03**：NaN/Inf 数字通过校验，导致合并值无法 JSON 编码。 已修复；统一数字与 scalar 检查拒绝 NaN/Inf；覆盖包、defaults、规则、from 覆盖、budget 和 vars，合法数字 defaults 与 JSON 编码通过。证据：`core/spec/validate_numbers_test.go`；`go test -count=1 ./core/spec` 通过。
-- [!] **RV-T13-02/R04**：嵌套 YAML 的非字符串键被转换时静默丢弃。
+- [x] **RV-T13-02/R04**：嵌套 YAML 的非字符串键被转换时静默丢弃。 已修复；递归检查原始 mapping，拒绝非字符串键；asStringMap 拒绝有损转换。证据：`core/spec/validate_map_keys_test.go` 覆盖包/规则/覆盖字段及合法字符串键；`go test -count=1 ./core/spec` 通过。
 - [!] **RV-T13-03/R05**：native tool name selector 无法使 `tool.added` 条件通过事件可用性校验。
 - [!] **RV-T13-04/R06**：skill 的 `at` 不参与隐式 tool 事件可用性判断。
 - [!] **RV-T13-05/R07**：非法 `when.model` glob 通过静态 validate，后续 compile 才失败。

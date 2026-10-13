@@ -48,14 +48,42 @@ func asStringMap(value any) map[string]any {
 	case map[any]any:
 		converted := make(map[string]any, len(typed))
 		for key, item := range typed {
-			if stringKey, ok := key.(string); ok {
-				converted[stringKey] = item
+			stringKey, ok := key.(string)
+			if !ok {
+				return nil
 			}
+			converted[stringKey] = item
 		}
 		return converted
 	default:
 		return nil
 	}
+}
+
+// hasNonStringMapKey detects YAML mappings that would otherwise lose entries
+// when converted from map[any]any to map[string]any.
+func hasNonStringMapKey(value any) bool {
+	switch typed := value.(type) {
+	case map[any]any:
+		for key, item := range typed {
+			if _, ok := key.(string); !ok || hasNonStringMapKey(item) {
+				return true
+			}
+		}
+	case map[string]any:
+		for _, item := range typed {
+			if hasNonStringMapKey(item) {
+				return true
+			}
+		}
+	case []any:
+		for _, item := range typed {
+			if hasNonStringMapKey(item) {
+				return true
+			}
+		}
+	}
+	return false
 }
 
 func unionReads(values ...any) map[string]any {

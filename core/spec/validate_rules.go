@@ -54,6 +54,9 @@ func (v *validator) validateRules() {
 
 func (v *validator) validateRuleFields(rule Rule, source string) {
 	fields := rule.Fields
+	if hasNonStringMapKey(fields) || hasNonStringMapKey(rule.Overrides) {
+		v.add("invalid-schema", source, "YAML mappings must use string keys")
+	}
 	isRuleFile := strings.HasPrefix(filepath.ToSlash(source), "rules/")
 	for _, key := range sortedMapKeys(fields) {
 		if !ruleFields[key] && !(fields["target"] == "native" && (key == "codex" || key == "claude-code")) {

@@ -25,6 +25,9 @@ func (v *validator) packageSource() string {
 
 func (v *validator) validatePackage() {
 	manifest := v.pkg.Manifest
+	if hasNonStringMapKey(manifest) || hasNonStringMapKey(v.pkg.Metadata) {
+		v.add("invalid-schema", v.packageSource(), "YAML mappings must use string keys")
+	}
 	if v.pkg.SingleFile && hasKey(v.pkg.Metadata, "rules") {
 		v.add("invalid-schema", v.packageSource(), "single-file packages contain exactly one rule and cannot declare rules")
 	}
