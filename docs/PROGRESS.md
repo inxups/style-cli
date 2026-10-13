@@ -119,3 +119,25 @@
 
 - 结果：根依赖烟测、agenthooks 全量单元/集成测试、两边 vet 通过；模块图包含本地的 `github.com/inxups/style-cli` 与 `github.com/speakeasy-api/agenthooks`。agenthooks 代码和依赖文件没有改动。
 - 下一步：T11 `core/spec` 解析目录包、单文件包、frontmatter、`from:` 文件和 glob。
+
+### 2026-10-13 — T11/B1.2 `[x]`
+
+- 任务：实现 STYLE 目录包和单文件包的 `core/spec` 解析。
+- 实现：解析 `STYLE.yaml` 和单文件包 frontmatter，保留原始 manifest/规则字段与 `from:` 覆盖字段供 T12 合并；提取规则 frontmatter 与正文；支持规则 `file:`、`text:`、显式 `from:` 文件和含 `**` 的递归 glob。`from:` 匹配按相对路径排序，未声明文件不会自动成为规则。检查文件大小、UTF-8/NUL、符号链接和包内相对路径；拒绝正文 frontmatter 及 `file:` 指向 `rules/`。
+- 命令（仓库根；Go 缓存隔离并清理 `CODEX_HOME`、`CODEX_SANDBOX`）：
+
+  ```sh
+  env -u CODEX_HOME -u CODEX_SANDBOX \
+    GOPATH=/tmp/style-cli-gopath \
+    GOMODCACHE=/tmp/style-cli-gomodcache \
+    GOCACHE=/tmp/style-cli-gocache \
+    GOPROXY=off GOSUMDB=off \
+    go test -count=1 ./core/spec
+
+  make test-go
+  make vet-go
+  git diff --check
+  ```
+
+- 结果：解析器测试、根 module 全量测试、agenthooks 全量测试及两边 vet 均通过。测试用临时包覆盖 `STYLE.yaml`、单文件 frontmatter、显式和 glob `from:`、深层 glob、排序、`file:`、`text:`、默认 ID、路径逃逸和两种 md 角色限制。agenthooks 源码未改动。
+- 下一步：T12 规则优先级合并、`enabled: false` 和重复 ID 检查。

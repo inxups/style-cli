@@ -24,7 +24,7 @@
 ### 基础工程和规则包
 
 - [x] **T10 顶层 Go module/workspace**：根 module `github.com/inxups/style-cli` 用本地 `replace` 依赖独立的 `agenthooks/` module；`go.work` 注册两个 module。Go 的根 `./...` 不跨越嵌套 module，统一入口 `make test-go` 分别执行两边 `go test ./...`，`make vet-go` 执行两边 vet。证据：`go.mod`、`go.work`、`Makefile`、`internal/agenthookscheck/agenthooks_test.go`；命令和结果见 `docs/PROGRESS.md` T10/B1.1。
-- [ ] **T11 `core/spec` 解析**：支持目录包、单文件包、`STYLE.yaml`、frontmatter、`from:` 文件和 glob 展开。
+- [x] **T11 `core/spec` 解析**：新增目录包和 `<name>.style.md` 单文件包解析；读取 `STYLE.yaml`、拆分规则 frontmatter/正文、读取 `file:` 和 `text:`，按声明展开 `from:` 文件及递归 glob（glob 命中按相对路径排序）。保留未合并字段供 T12 使用；拒绝正文 frontmatter、`file:` 指向 `rules/`、路径逃逸、符号链接、超限和无效文本。证据：`core/spec/spec.go`、`core/spec/spec_test.go`；命令和结果见 `docs/PROGRESS.md` T11/B1.2。
 - [ ] **T12 规则合并**：实现规范默认值、包级 `defaults`、规则文件 frontmatter、`from:` 覆盖的优先级和 `enabled: false`。
 - [ ] **T13 `validate`**：实现 schema、路径/名字/ID 限制、重复 ID、未声明规则、模板变量、`reads`、正则、合法组合和规范错误码。
 - [ ] **T14 模板和条件**：实现静态/动态模板、默认值、运行时变量、`when` 的 AND/OR 语义、effort 比较和条件字段读取。
