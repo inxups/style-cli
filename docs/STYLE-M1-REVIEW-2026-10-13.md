@@ -236,3 +236,7 @@ git diff --check
 验证：`GOPROXY=off GOSUMDB=off make test-go` 与 `GOPROXY=off GOSUMDB=off make vet-go` 通过；Makefile 为两个 module 分别清理 `CODEX_HOME`、`CODEX_SANDBOX`，并使用 `/tmp/style-cli-gopath`、`/tmp/style-cli-gomodcache`、`/tmp/style-cli-gocache`。gofmt 和 `git diff --check` 通过。
 
 边界：离线测试证明 Codex payload 经 Runner 能编码 additionalContext，但不能证明实际 Codex 会把内容投递给子 agent；该结论仍由 U7/M1b 验证。`skills.read` 尚未进入固定订阅面，显式 `$name` 到 runtime evaluation point 的接线与 scope.agent_id projection 留在 T44；因此 A11 保持 `[~]`，M1a/M1b 不提前标记通过。
+
+## RV-T41-01 模块依赖修正（2026-10-15）
+
+回顾 T41 后发现根 module 的 `internal/adapter/codex/effort.go` 直接导入 `github.com/pelletier/go-toml/v2`，但 `go.mod` 仍将该依赖标为 indirect。已将其移入直接依赖；`go mod tidy -diff` 与 nested `agenthooks` 的 tidy diff 均通过。该修正不改变运行时行为，只让模块声明与源码导入保持一致。

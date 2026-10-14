@@ -115,6 +115,7 @@ B1.2 和 B1.4 的历史通过状态表示原有测试套件在声明范围内通
 - [x] **RV-T13-06/R08**：单文件 native schema 与目录包不一致。 已修复；单文件包的 provider native hook 字段与目录规则共用 native schema 判定。证据：`core/spec/validate_native_single_file_test.go` 以相同内容分别验证目录包和单文件包；`go test -count=1 ./core/spec` 通过。
 - [x] **RV-T2X-01**：事件级 `target: event` 挂到 `tool.pre` 时，compiler 原先生成空 `match`，导致有效规则生成的 index 被自己的 schema 拒绝。证据：`core/compile/golden_test.go:TestEventTargetAtToolPointCompilesWithoutMatch` 端到端编译并验证 schema；golden 包含每个条目的 `target`。
 - [x] **RV-T2X-02**：空/空白 tool、native names、skill selector 及格式错误 MCP selector 原先通过 Validate。证据：`core/spec/validate_edge_test.go` 覆盖错误输入和合法 MCP wildcard；`core/compile/golden_test.go:TestNormalizedMatchRejectsInvalidSelectors` 覆盖 compile 防御性拒绝；schema 负向用例覆盖 target/match 不一致、空 selector 列表和 MCP slash/空白约束；定向 spec/compile 测试通过。
+- [x] **RV-T41-01**：Go TOML parser 在 `internal/adapter/codex` 被直接导入，但根 `go.mod` 仍将其声明为 indirect。依赖层级已修正；`GOPROXY=off GOSUMDB=off go mod tidy -diff` 和 nested `agenthooks` tidy diff 通过。
 - 完整回顾和处理结论：`docs/STYLE-M1-REVIEW-2026-10-13.md` 的“T20–T24 完成后回顾”；全量复验和提交记录见 `docs/PROGRESS.md` 的 `RV-T2X-01/RV-T2X-02`。
 
 复现源文件和结果见 `docs/review/M1-2026-10-13-probe.go.txt`、`docs/review/M1-2026-10-13-results.json`；修复后的探针结果见 `docs/review/M1-2026-10-13-fixed-results.json`。R01–R08 已完成，M1a 仍需其余离线验收条目。

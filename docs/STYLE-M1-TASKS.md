@@ -88,6 +88,7 @@
 - [x] **RV-T2X-01**：event-wide `target: event` 挂在 `tool.pre` 时产生空 `match`，与 T24 schema 冲突。已修复；index 保留 `target`，schema 允许 event-wide tool 条目不带 match、要求 routed tool/MCP/skill 条目带 match。证据：`core/compile/golden_test.go:TestEventTargetAtToolPointCompilesWithoutMatch` 编译该规则并以 Draft 2020-12 schema 验证输出；`testdata/golden/index.json` 更新。
 - [x] **RV-T2X-02**：空/空白 tool、names、skill selectors 及 malformed MCP selector 可通过 Validate。已修复；Validate、Compile 和 index schema 共同检查非空 selector、target 与 match 类型一致，以及 MCP 单个 `/` 和非空组件。证据：`core/spec/validate_edge_test.go`、`core/compile/golden_test.go:TestNormalizedMatchRejectsInvalidSelectors` 与 schema 负向用例覆盖拒绝和 wildcard 接受；两篇 STYLE 规范同步格式约束。
 - [x] **RV-T3X-01**：回顾 T30–T34 的 state、repeat、engine/runtime、输出策略和动态 system 集成；未发现需要改变分层的缺陷。20 个独立进程竞争同一 session key 仅一个输出，state 错误 fail-open 和 safe logging 另有回归用例。真实 Codex/Claude 字段映射及 native model-switch 事件仍留在 T41/T42/T44/T45，相关 A10/A11 保持部分状态。结论与验证见 `docs/STYLE-M1-REVIEW-2026-10-13.md` 的“T30–T34 完成后回顾”和 `docs/PROGRESS.md`。
+- [x] **RV-T41-01**：回顾发现 T41 的根 module 直接导入 `github.com/pelletier/go-toml/v2`，但 `go.mod` 仍标为 indirect，导致 `go mod tidy -diff` 报告差异。已将其移入直接依赖并通过双 module tidy diff；证据见 `docs/STYLE-M1-REVIEW-2026-10-13.md` 和 `docs/PROGRESS.md`。
 
 T20–T24 与 T30–T34 回顾结论和剩余范围见 `docs/STYLE-M1-REVIEW-2026-10-13.md`；各项处理和验证结果见 `docs/PROGRESS.md`。M1a/M1b 仍未完成。
 

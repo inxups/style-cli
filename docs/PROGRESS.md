@@ -424,3 +424,8 @@
 - 回归：`agenthooks/runner_test.go` 新增 Codex 子 agent context/旧 observer 和 Claude prompt expansion 的 Runner 级精确输出测试；`agenthooks/codec_test.go`、`agenthooks/provider/claudecode/claudecode_test.go`、`agenthooks/claude_skill_test.go`、`internal/adapter/codex/skill_test.go` 覆盖字段、解析和方言边界。
 - 验证：`GOPROXY=off GOSUMDB=off make test-go` 和 `GOPROXY=off GOSUMDB=off make vet-go` 通过，覆盖根 module 和 `agenthooks` nested module。环境清理 `CODEX_HOME`/`CODEX_SANDBOX`，使用 Makefile 配置的临时 Go 缓存；gofmt、`git diff --check` 通过。
 - 文档：任务清单 T42、测试矩阵 B1.19 和 review 文档 T42 段落均已标记 `[x]`。A11 保持 `[~]`：实际 engine Enrich/scope 投影留 T44，Codex 原生 delivery 留 U7/M1b。M1a/M1b 未完成。
+
+### 2026-10-15 — RV-T41-01 `[x]`
+
+- 回顾修正：`internal/adapter/codex/effort.go` 直接使用 `github.com/pelletier/go-toml/v2`，根 `go.mod` 已从 indirect 调整为 direct dependency。
+- 验证：`GOPROXY=off GOSUMDB=off go mod tidy -diff` 与 `go -C agenthooks mod tidy -diff` 通过；未改变运行时代码或测试行为。
