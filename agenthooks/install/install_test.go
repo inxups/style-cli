@@ -191,6 +191,43 @@ func TestRenderClaudeTimeoutRoundingAndDefault(t *testing.T) {
 	}
 }
 
+func TestRenderClaudeNativeEventsAndMatchers(t *testing.T) {
+	manifest := Manifest{
+		Command: []string{"/tmp/style"},
+		Owner:   "style",
+		Hooks: []HookSpec{
+			{Kind: agenthooks.KindPromptExpansion, NativeMatcher: `^review$`, Blocking: true},
+			{Kind: agenthooks.KindOther, NativeEvent: "PostModelSwitch", Blocking: false},
+		},
+	}
+	fsys, err := Render(manifest, Target{Provider: agenthooks.ProviderClaudeCode, Scope: ScopeUser})
+	if err != nil {
+		t.Fatal(err)
+	}
+	var cfg claudeConfig
+	if err := json.Unmarshal(readRendered(t, fsys, "settings.json"), &cfg); err != nil {
+		t.Fatal(err)
+	}
+	review := cfg.Hooks["UserPromptExpansion"]
+	if len(review) != 1 || review[0].Matcher != `^review$` || len(review[0].Hooks) != 1 || review[0].Hooks[0].Async {
+		t.Errorf("native prompt-expansion matcher rendered incorrectly: %#v", review)
+	}
+	switchEvent := cfg.Hooks["PostModelSwitch"]
+	if len(switchEvent) != 1 || len(switchEvent[0].Hooks) != 1 || !switchEvent[0].Hooks[0].Async {
+		t.Errorf("direct native observer event rendered incorrectly: %#v", switchEvent)
+	}
+}
+
+func TestRenderClaudeRejectsInvalidNativeMatcher(t *testing.T) {
+	manifest := Manifest{
+		Command: []string{"/tmp/style"},
+		Hooks:   []HookSpec{{Kind: agenthooks.KindPromptExpansion, NativeMatcher: "[", Blocking: true}},
+	}
+	if _, err := Render(manifest, Target{Provider: agenthooks.ProviderClaudeCode, Scope: ScopeUser}); err == nil || !strings.Contains(err.Error(), "invalid native Claude matcher") {
+		t.Fatalf("invalid native matcher error = %v", err)
+	}
+}
+
 func containsArg(args []string, want string) bool {
 	for _, arg := range args {
 		if arg == want {

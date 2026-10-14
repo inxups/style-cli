@@ -132,5 +132,5 @@ func mergeValues(base, point map[string]string, input when.Input) map[string]str
 }
 
 func isPromptPoint(point string) bool {
-	return point == "prompt.submitted" || point == "skill.explicit"
+	return point == "prompt.submitted"
 }

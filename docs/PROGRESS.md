@@ -445,3 +445,11 @@
 - 回顾修正：测试发现并修正 static-only plan/remove 丢失、嵌套路线根目录选错、native selector blind-spot 判断遗漏、隐式 skill 数据源声明遗漏、复合 JSON 输入模板值遗漏、未确认 plugin route 误报 trusted 和 SubagentStart runtime callback 缺失。定向测试覆盖这些边界，且 `ApplyFiles` 在写入前核对全部 Before 快照以拒绝 stale changeset。
 - 验证：`env -u CODEX_HOME -u CODEX_SANDBOX GOPATH=/tmp/style-cli-gopath GOMODCACHE=/tmp/style-cli-gomodcache GOCACHE=/tmp/style-cli-gocache GOPROXY=off GOSUMDB=off go test -count=1 ./...`、同环境 `go test -C agenthooks -count=1 ./...`、`GOPROXY=off GOSUMDB=off make vet-go` 和 `go test -race -count=1 ./internal/adapter/codex ./internal/runtime ./agenthooks/install` 均通过；gofmt 与 `git diff --check` 通过。
 - 状态：任务清单 T44、测试矩阵 B1.21 和回顾文档 T44 段落均标记 `[x]`。A10/A11 因 Claude adapter/真实 Codex 投递保留 `[~]`；T45、CLI 生命周期和 M1a/M1b 验收仍未完成。
+
+### 2026-10-15 — T45/B1.22 `[x]`
+
+- 实现：新增 Claude adapter 的动态 surface、Facts/Detector/Definition、用户级 settings route 和 `CLAUDE.md` 标记块托管。surface 按 native event+matcher 合并并稳定排序，PostModelSwitch 作为原生观察事件保留；settings 复用 `agenthooks/install` 的 exec renderer、owner 合并、卸载和 stale snapshot 检查。静态块保留外部和用户字节，malformed marker 拒绝，workspace trust 只报告为 `TrustWorkspace`，不从文件存在性伪报已信任。
+- runtime：新增 Claude Enricher，按 event→`CLAUDE_EFFORT`→session 解析 effort，支持后续事件覆盖已解析状态；映射 prompt、UserPromptExpansion 显式 skill、Edit/Write `tool.added`、MCP、隐式 Skill、tool output、nested input 和 agent scope。Runtime 注册 `OnPromptExpansion`；engine 仅在普通 `prompt.submitted` block 时设置 Claude `suppressOriginalPrompt`，避免显式 skill 使用不支持的字段。
+- 证据：`internal/adapter/claude/{adapter_test.go,route_test.go,runtime_test.go}`、`internal/runtime/runtime_test.go:TestClaudePromptExpansionRuntimeUsesAdapterAndRunnerHandler`、`agenthooks/install/install_test.go`。
+- 验证：隔离环境下根 module `go test -count=1 ./...`、nested `agenthooks` `go test -count=1 ./...`、`GOPROXY=off GOSUMDB=off make vet-go`、`go test -race -count=1 ./internal/adapter/claude ./internal/runtime ./agenthooks/install`、gofmt 和 `git diff --check` 通过。
+- 状态：任务清单 T45、测试矩阵 B1.22 和 review 文档 T45 段落标记 `[x]`；A10、A14 的离线部分完成，A11 保持 `[~]`，A12/A13/A18/A22、CLI T50–T55、adapter conformance 和真实 Codex/Claude CDEX/CLAUDE 场景仍未完成。

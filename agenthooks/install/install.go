@@ -67,10 +67,15 @@ type ToolMatcher = agenthooks.ToolMatcher
 // HookSpec subscribes one unified event kind.
 type HookSpec struct {
 	Kind agenthooks.EventKind
+	// NativeEvent optionally names a provider event directly. This is useful
+	// for provider events that have no unified EventKind (for example Claude
+	// Code's PostModelSwitch observer). When set, the provider renderer uses it
+	// instead of deriving an event name from Kind.
+	NativeEvent string
 	// Tools is the provider-neutral matcher. NativeMatcher optionally pins a
-	// provider-native matcher for renderers that support raw patterns (currently
-	// Codex); when set, that renderer uses it verbatim instead of compiling
-	// Tools.
+	// provider-native matcher for renderers that support raw patterns (Codex
+	// and Claude); when set, that renderer uses it verbatim instead of
+	// compiling Tools.
 	Tools         ToolMatcher
 	NativeMatcher string
 	Blocking      bool // decision path vs telemetry path

@@ -266,3 +266,17 @@ fail-closed 的范围收窄为 `Manifest.Fail == FailClosed`、`Blocking` 且 `K
 验证：`GOPROXY=off GOSUMDB=off make test-go` 和 `make vet-go` 通过，覆盖根 module 与 `agenthooks` nested module；隔离 Go 缓存下 `go test -race -count=1 ./internal/adapter/codex ./internal/runtime ./agenthooks/install` 通过；gofmt、`git diff --check` 通过。T44、B1.21 和本节 review 状态已同步。
 
 边界：离线 Runner/fixture 验证不等同真实 Codex 子 agent context 投递（U7/M1b）。Codex `skills.read` 工具未纳入固定订阅面；A10 仍等 Claude adapter/真实 hook 输入，A11 仍等真实 Codex 验收。T45、CLI lifecycle/A1–A2/A12–A14/A18/A22 和完整 adapter conformance 未完成，M1a/M1b 不标记通过。
+
+## T45 Claude adapter 完成后回顾（2026-10-15）
+
+结论：T45 继续使用 `internal/adapter` 的窄接口和 `agenthooks/install` 的共享 owner 生命周期，没有为 Claude 复制 hook codec 或配置合并。Claude adapter 负责动态订阅面、原生字段到 engine point 的映射、用户级路线和 `CLAUDE.md` 标记块；workspace trust 只在 `TrustInfo` 中声明为外部信任要求，`Status` 不从配置文件存在性推断已信任。
+
+| 检查项 | 状态 | 结论与证据 |
+|---|---|---|
+| RV-T45-01 surface/facts | [x] | 相同 native event+matcher 合并、点位去重和稳定排序；PostModelSwitch 作为原生观察事件保留；能力矩阵、数据源、静态位置和 native matcher blind-spot 通过 `internal/adapter/claude/adapter_test.go`。 |
+| RV-T45-02 route/static | [x] | user-level `settings.json` 复用 `PlanFiles`/`PlanUninstallFiles`/`ApplyFiles`，保留外部 handler；`CLAUDE.md` 以 `style:<package>` 标记块增删，malformed marker 拒绝，静态-only 变更和幂等由 `route_test.go` 覆盖。 |
+| RV-T45-03 runtime/output | [x] | event→`CLAUDE_EFFORT`→session effort、后续事件覆盖、prompt/explicit skill、Edit/Write added text、MCP、implicit skill、tool output 和 agent scope 有 fixture；`UserPromptExpansion` 已接入 runtime，skill block 不再输出只适用于普通 prompt 的 `suppressOriginalPrompt`。证据：`internal/adapter/claude/runtime_test.go`、`internal/runtime/runtime_test.go:TestClaudePromptExpansionRuntimeUsesAdapterAndRunnerHandler`、`core/engine/process.go`。 |
+
+本轮复核修正了一处输出边界：原先 engine 将所有 prompt 类点位都设置 Claude 的 `suppressOriginalPrompt`，导致 `skill.explicit` 经过 UserPromptExpansion codec 时会产生不支持的字段；现在只对 `prompt.submitted` 设置该字段。共享 renderer 另补充了 direct `NativeEvent`、原生正则 matcher 和 `UserPromptExpansion` 映射。
+
+验证：根 module `go test -count=1 ./...`、nested `agenthooks` `go test -count=1 ./...`、`GOPROXY=off GOSUMDB=off make vet-go`、定向 `go test -race -count=1 ./internal/adapter/claude ./internal/runtime ./agenthooks/install`、gofmt 与 `git diff --check` 均通过。真实 Claude workspace trust、compact、model switch、性能和 CLI lifecycle 仍属于 C1–C9/T50–T55，M1a/M1b 不提前标记完成。

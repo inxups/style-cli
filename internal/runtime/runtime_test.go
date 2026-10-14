@@ -16,6 +16,7 @@ import (
 	"github.com/inxups/style-cli/core/state"
 	"github.com/inxups/style-cli/core/tokens"
 	"github.com/inxups/style-cli/core/when"
+	claudeadapter "github.com/inxups/style-cli/internal/adapter/claude"
 	codexadapter "github.com/inxups/style-cli/internal/adapter/codex"
 	"github.com/speakeasy-api/agenthooks"
 )
@@ -213,6 +214,33 @@ func TestClaudePromptBlockSuppressesOriginalPrompt(t *testing.T) {
 	want := `{"decision":"block","hookSpecificOutput":{"hookEventName":"UserPromptSubmit","suppressOriginalPrompt":true},"reason":"prompt needs a safer form"}`
 	if stdout.String() != want {
 		t.Fatalf("prompt block response = %q, want %q", stdout.String(), want)
+	}
+}
+
+func TestClaudePromptExpansionRuntimeUsesAdapterAndRunnerHandler(t *testing.T) {
+	const reason = "skill disabled"
+	entry := runtimeTestEntry("pkg/skill", "skill.explicit", "skill", "block", staticBody(reason))
+	entry.Match = &compile.Match{Skill: []string{"review"}}
+	store, err := state.New(t.TempDir())
+	if err != nil {
+		t.Fatal(err)
+	}
+	core, err := engine.New(runtimeTestIndex(map[string][]compile.Entry{"skill.explicit": {entry}}), store)
+	if err != nil {
+		t.Fatal(err)
+	}
+	runtime, err := New(core, store, claudeadapter.NewEnricher(), agenthooks.ProviderClaudeCode, false)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var stdout, stderr bytes.Buffer
+	payload := `{"session_id":"expansion-runtime","cwd":"/repo","hook_event_name":"UserPromptExpansion","expansion_type":"slash_command","command_name":"review","prompt":"/review","effort":{"level":"high"}}`
+	if code := runtime.Run(context.Background(), claudeRunArgs(), strings.NewReader(payload), &stdout, &stderr); code != 0 {
+		t.Fatalf("Run exit=%d stderr=%q", code, stderr.String())
+	}
+	want := `{"decision":"block","reason":"skill disabled"}`
+	if stdout.String() != want {
+		t.Fatalf("UserPromptExpansion response = %q, want %q", stdout.String(), want)
 	}
 }
 

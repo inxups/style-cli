@@ -79,6 +79,10 @@ func (e *Engine) Process(input Input, limit tokens.InputLimit) (Output, error) {
 			}
 			reasons = append(reasons, item.modelText)
 			output.Records = append(output.Records, Record{Entry: item.entry.Entry, Action: item.entry.Action, Result: "blocked"})
+			// Claude's suppressOriginalPrompt field is valid only for the
+			// ordinary UserPromptSubmit hook. UserPromptExpansion already
+			// represents the expanded slash-command prompt and its codec does
+			// not accept the suppression field.
 			if isPromptPoint(item.point.Name) && input.Harness == "claude-code" {
 				output.SuppressOriginalPrompt = true
 			}

@@ -102,6 +102,13 @@ func (r *Runtime) Register(runner *agenthooks.Runner) error {
 		}
 		return promptDecision(output), nil
 	})
+	runner.OnPromptExpansion(func(ctx context.Context, event *agenthooks.PromptExpansionEvent) (agenthooks.PromptDecision, error) {
+		output, err := handle(ctx, &event.Event, event)
+		if err != nil {
+			return agenthooks.PromptDecision{}, err
+		}
+		return promptDecision(output), nil
+	})
 	runner.OnToolPre(func(ctx context.Context, event *agenthooks.ToolPreEvent) (agenthooks.ToolPreDecision, error) {
 		output, err := handle(ctx, &event.Event, event)
 		if err != nil {

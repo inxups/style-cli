@@ -3,6 +3,7 @@ package install
 import (
 	"errors"
 	"io/fs"
+	"regexp"
 	"strconv"
 	"strings"
 
@@ -16,6 +17,7 @@ var kindToClaude = map[agenthooks.EventKind]string{
 	agenthooks.KindSessionStart:    "SessionStart",
 	agenthooks.KindSessionEnd:      "SessionEnd",
 	agenthooks.KindPromptSubmitted: "UserPromptSubmit",
+	agenthooks.KindPromptExpansion: "UserPromptExpansion",
 	agenthooks.KindToolPre:         "PreToolUse",
 	agenthooks.KindToolPost:        "PostToolUse",
 	agenthooks.KindToolError:       "PostToolUseFailure",
@@ -63,11 +65,17 @@ func renderClaudeForUninstall(m Manifest, t Target) (fs.FS, error) {
 func renderClaudeConfig(m Manifest, t Target) (fs.FS, error) {
 	hooks := map[string][]claudeMatcherEntry{}
 	for _, spec := range m.Hooks {
-		event, ok := kindToClaude[spec.Kind]
+		event, ok := spec.NativeEvent, spec.NativeEvent != ""
+		if !ok {
+			event, ok = kindToClaude[spec.Kind]
+		}
 		if !ok {
 			continue
 		}
-		matcher, _ := agenthooks.CompileMatcher(agenthooks.ProviderClaudeCode, spec.Tools)
+		matcher, err := claudeMatcher(spec)
+		if err != nil {
+			return nil, err
+		}
 		async := !spec.Blocking
 		// cowork drops async Stop hooks (quirk #1): Stop is forced sync.
 		if event == "Stop" {
@@ -126,6 +134,17 @@ func renderClaudeConfig(m Manifest, t Target) (fs.FS, error) {
 		files["settings.json"] = hooksJSON
 	}
 	return memFS(files), nil
+}
+
+func claudeMatcher(spec HookSpec) (string, error) {
+	if spec.NativeMatcher != "" {
+		if _, err := regexp.Compile(spec.NativeMatcher); err != nil {
+			return "", errors.New("install: invalid native Claude matcher " + strconv.Quote(spec.NativeMatcher))
+		}
+		return spec.NativeMatcher, nil
+	}
+	matcher, _ := agenthooks.CompileMatcher(agenthooks.ProviderClaudeCode, spec.Tools)
+	return matcher, nil
 }
 
 func needsClaudeFailClosed(m Manifest) bool {
