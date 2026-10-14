@@ -65,6 +65,7 @@ env -u CODEX_HOME -u CODEX_SANDBOX \
 - [x] **B1.15 T33 白名单和 fail policy**：Codex/Claude fixture 精确 stdout、Claude prompt suppress whitelist、missing/invalid index 与 invalid state fail-open、Claude fail-closed exit code、敏感内容不进入 stdout/log/stats 均有测试。证据：`internal/runtime/runtime_test.go`、`agenthooks/runner_test.go`。
 - [x] **B1.16 T34 动态 system**：startup/prompt 双评估、effort/model 更新后重渲染、相同正文去重、正文变化补发和 compact 选择性重注入通过 runtime/engine 集成测试。证据：`internal/runtime/runtime_test.go:TestRuntimeReevaluatesDynamicSystemWhenModelChanges`、`core/engine/engine_test.go:TestDynamicSystemReevaluatesAndDeduplicatesByRenderedBody`。
 - [x] **B1.17 T40 安装层 F1–F4**：Codex canonical shell matcher 编译为 `Bash`；`install.Uninstall` 只删除匹配 `--owner` 的 JSON/TOML 内容并保留同组其他 handler；重复安装保持幂等；Codex 插件生成 `.codex-plugin/plugin.json`、`hooks/hooks.json`、可执行 `bin/style` 和 CODEX_HOME trust 配置，长格式插件 trust key 与 `DefinitionHash` 一致；owner 解析和命令行回读有覆盖。证据：`agenthooks/matcher_test.go`、`agenthooks/install/install_test.go`、`agenthooks/detect_test.go`、`agenthooks/e2e/codex_test.go`（真实运行需 `AGENTHOOKS_E2E=1`）。
+- [x] **B1.18 T41 F5–F6**：`SessionInfo` 保留 effort/raw/approx/harness version，Claude `effort.level` 解码；映射表解析拒绝重复/未知档位，未知值保留 raw 且不伪造近似结果；Codex `-c`、profile、受信项目和用户 TOML 优先级及 `--ignore-user-config` 有 fixture；Claude 事件/环境/状态优先级有 fixture；会话状态原子持久化近似标记和一次性解析位。证据：`agenthooks/codec_test.go`、`agenthooks/detect_test.go`、`internal/adapter/effortmap/*_test.go`、`internal/adapter/codex/effort_test.go`、`internal/adapter/claude/effort_test.go`、`core/state/state_test.go`；真实 provider 的 adapter Enrich/版本检测留在 T44/T45。
 
 ## M1a：STYLE 离线验收
 
@@ -84,7 +85,7 @@ env -u CODEX_HOME -u CODEX_SANDBOX \
 - [x] **A7** 20 个并发独立进程对同一去重键恰好一个输出。证据：`core/engine/engine_test.go:TestTwentyProcessesEmitOneRepeatSessionEntry`。
 - [x] **A8** startup/resume/clear/compact 来源和 gen/epoch/prompt_count 行为正确。证据：`core/state/state_test.go:TestUpdateMaintainsSessionAndScopeLifecycle`、`TestStartupResetsScopeAndReservations`。
 - [x] **A9** model/effort 变化触发动态 system 重评估；相同渲染正文去重、变化正文补发。证据：`internal/runtime/runtime_test.go:TestRuntimeReevaluatesDynamicSystemWhenModelChanges`、`core/engine/engine_test.go:TestDynamicSystemReevaluatesAndDeduplicatesByRenderedBody`。
-- [~] **A10** core effort 条件比较已有覆盖；Codex/Claude 原始值、未知值、来源优先级和近似标记的真实映射留待 T41/T42/T44/T45 adapter 完成后验收。
+- [~] **A10** core effort 条件比较、Codex/Claude 映射表、未知值、来源优先级和近似标记已有离线 fixture（T41/B1.18）；实际 provider adapter 的 Enrich 接线、版本检测和真实 hook payload 仍留待 T44/T45。
 - [~] **A11** core 的 main 默认、subagent.start 的 any 默认、显式 any 和该事件不去重均有测试；真实 adapter 事件产生及 payload agent context 留待 T42/T44。
 - [x] **A15** engine 输出字段 whitelist，Claude prompt block 带 `suppressOriginalPrompt`；Codex 不接受该 Claude 专用字段。证据：`core/engine/engine_test.go:TestClaudePromptBlockSetsOnlyAllowedSuppressField`、`internal/runtime/runtime_test.go:TestClaudePromptBlockSuppressesOriginalPrompt`、`agenthooks/runner_test.go`。
 - [x] **A17** 缺失/损坏 index 与损坏 state 默认空输出并记录安全错误码；Claude fail-closed 返回失败码。证据：`internal/runtime/runtime_test.go:TestMissingOrInvalidIndexUsesCodecFailPolicy`、`TestStateFailureUsesFailOpenAndLogsOnlySafeCode`。

@@ -49,7 +49,7 @@
 ### agenthooks 和两个适配器
 
 - [x] **T40 F1–F4 安装层改动**：修 Codex shell matcher、补卸载、改 STYLE owner 标记、补 Codex 插件路线和信任键。证据：`agenthooks/matcher_test.go`、`agenthooks/install/install_test.go`、`agenthooks/e2e/codex_test.go`；离线安装/卸载、owner 隔离、插件权限、长 trust key 和 DefinitionHash 定向测试通过，真实 Codex 运行仍留在 M1b。
-- [ ] **T41 F5–F6 运行时数据/状态改动**：补 effort、原始 effort、近似标记、harness 版本和 STYLE 会话状态接口。
+- [x] **T41 F5–F6 运行时数据/状态改动**：`SessionInfo`/`core/state` 保存 effort、原始值、近似标记、harness 版本及一次性解析状态；新增 `internal/adapter/effortmap` 和 Codex/Claude 映射表，Codex 按 `-c`→profile→受信项目→用户配置解析 `model_reasoning_effort`，Claude 按事件→`CLAUDE_EFFORT`→会话状态解析。证据：`agenthooks/codec_test.go`、`agenthooks/detect_test.go`、`internal/adapter/effortmap/*_test.go`、`internal/adapter/codex/effort_test.go`、`internal/adapter/claude/effort_test.go`、`core/state/state_test.go`；完整验证见 `docs/PROGRESS.md` T41/B1.18。
 - [ ] **T42 F7–F9 事件/codec 改动**：补 Codex 子 agent context；补 skill 识别和显式 `$name`；核对并补 Claude prompt/effort/MCP/model-switch 字段和输出字段。
 - [ ] **T43 F10 Claude exec 安装**：支持 command/args、timeout 和可选 fail-closed 配置。
 - [ ] **T44 Codex adapter**：实现固定订阅面、插件/用户级路线、`developer_instructions` 静态托管区、配置 effort 读取和 MCP/skill Enrich。

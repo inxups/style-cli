@@ -45,6 +45,20 @@ func TestDecodeClaudePreToolUse(t *testing.T) {
 	}
 }
 
+func TestDecodeClaudeEffortLevelIsRetainedAsRawSessionFact(t *testing.T) {
+	typed, err := decodeClaude(VariantUnknown, DetectionConfig, testNow, []byte(`{"session_id":"s","hook_event_name":"PreToolUse","effort":{"level":"XHIGH"},"tool_name":"Bash","tool_input":{}}`))
+	if err != nil {
+		t.Fatal(err)
+	}
+	event := eventOf(typed)
+	if event.Session.EffortRaw != "XHIGH" {
+		t.Fatalf("EffortRaw = %q, want XHIGH", event.Session.EffortRaw)
+	}
+	if event.Session.Effort != "" || event.Session.EffortApprox != nil {
+		t.Fatalf("codec should preserve provider raw value without claiming a mapping: %#v", event.Session)
+	}
+}
+
 func TestDecodeClaudeSkillPostToolUseBackfillsModelOutput(t *testing.T) {
 	content := "---\nname: review\n---\n\nInspect the change.\n"
 	cwd := t.TempDir()

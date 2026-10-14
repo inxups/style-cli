@@ -8,6 +8,25 @@ import (
 	"strings"
 )
 
+// CodexLaunchSettings exposes only the launch facts STYLE needs to interpret
+// Codex effort configuration. Arbitrary -c values remain private because they
+// may contain unrelated or sensitive settings.
+type CodexLaunchSettings struct {
+	Profile              string
+	ModelReasoningEffort string
+	IgnoreUserConfig     bool
+}
+
+// CurrentCodexLaunchSettings recovers the invoking Codex command from the
+// ancestor process list. The boolean is false when no Codex ancestor is found.
+func CurrentCodexLaunchSettings(cwd string) (CodexLaunchSettings, bool) {
+	launch, ok := currentCodexLaunchContext(cwd)
+	if !ok {
+		return CodexLaunchSettings{}, false
+	}
+	return launch.styleSettings(), true
+}
+
 type codexLaunchContext struct {
 	CWD          string   `json:"cwd"`
 	Executable   string   `json:"executable,omitempty"`
@@ -105,6 +124,32 @@ func (c codexLaunchContext) replayArgs() []string {
 
 func (c codexLaunchContext) hasOverrides() bool {
 	return c.Profile != "" || len(c.Overrides) > 0 || c.Unreplayable
+}
+
+func (c codexLaunchContext) styleSettings() CodexLaunchSettings {
+	settings := CodexLaunchSettings{Profile: c.Profile, IgnoreUserConfig: c.Unreplayable}
+	for i := 0; i+1 < len(c.Overrides); i += 2 {
+		if c.Overrides[i] != "--config" {
+			continue
+		}
+		key, value, ok := strings.Cut(c.Overrides[i+1], "=")
+		if ok && strings.TrimSpace(key) == "model_reasoning_effort" {
+			settings.ModelReasoningEffort = unquoteCodexValue(strings.TrimSpace(value))
+		}
+	}
+	return settings
+}
+
+func unquoteCodexValue(value string) string {
+	if len(value) >= 2 && value[0] == '"' && value[len(value)-1] == '"' {
+		if decoded, err := strconv.Unquote(value); err == nil {
+			return decoded
+		}
+	}
+	if len(value) >= 2 && value[0] == '\'' && value[len(value)-1] == '\'' {
+		return value[1 : len(value)-1]
+	}
+	return value
 }
 
 func (c codexLaunchContext) cacheKey() string {

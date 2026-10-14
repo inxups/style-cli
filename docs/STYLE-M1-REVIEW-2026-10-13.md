@@ -195,3 +195,28 @@ env -u CODEX_HOME -u CODEX_SANDBOX \
 ```
 
 已知边界：离线测试不能证明当前机器上的 Codex 版本会实际加载插件、要求一次信任并发送 `Bash` hook；该验证保留在 `M1b/CDEX-01`、`CDEX-10` 和真实 e2e。完整 CLI 生命周期的字节级恢复、路线切换和 trust/sync 仍由后续 T52–T55/A12–A14 完成。
+
+## T41 完成后回顾（2026-10-15）
+
+结论：F5–F6 已按现有分层完成离线实现；没有把 Codex 配置解析或 Claude effort 来源塞进 `core`，也没有另造一套 session store。`agenthooks` 只暴露受限的 Codex 启动事实并保留 Claude 原始 `effort.level`，`internal/adapter/effortmap` 和两个 provider 包负责映射与来源优先级，`core/state` 负责跨 hook 的会话持久化。
+
+| 条目 | 状态 | 完成结果与证据 |
+|---|---|---|
+| F5 | [x] | `SessionInfo` 新增 `Effort`、`EffortRaw`、`EffortApprox`、`HarnessVersion`；Claude payload 的 `effort.level` 保留为 raw；`effortmap` 嵌入式 YAML 表支持七档/别名、未知 raw 保留和近似标记；Codex 按 `-c`、profile、受信项目、用户配置解析，Claude 按事件、`CLAUDE_EFFORT`、session 优先级解析。证据：`agenthooks/codec_test.go`、`agenthooks/detect_test.go`、`internal/adapter/effortmap/*_test.go`、`internal/adapter/codex/effort_test.go`、`internal/adapter/claude/effort_test.go`。 |
+| F6 | [x] | session JSON 新增 tri-state `effort_approx` 和 `effort_resolved`；runtime 把 session effort/raw/approx/version 投影到 engine 变量；状态仍使用原子写、私有权限和既有 session/scope 路径。证据：`core/state/state_test.go`、`internal/runtime/runtime.go`。 |
+
+已知边界：T41 提供 provider-neutral 的解析和持久化端口；将实际事件 Enrich、harness 版本 Detect、Codex/Claude 订阅面接入运行时分别留在 T44/T45。未知 effort 不会被降级成某个档位，`EffortApprox` 保持 nil；这保证条件缺失时不误触发。
+
+离线验证：
+
+```sh
+env -u CODEX_HOME -u CODEX_SANDBOX \
+  GOPATH=/tmp/style-cli-gopath GOMODCACHE=/tmp/style-cli-gomodcache \
+  GOCACHE=/tmp/style-cli-gocache GOPROXY=off GOSUMDB=off \
+  go test ./internal/adapter/... ./core/state ./core/engine ./internal/runtime ./agenthooks
+GOPROXY=off GOSUMDB=off make test-go
+GOPROXY=off GOSUMDB=off make vet-go
+git diff --check
+```
+
+以上命令均通过；真实 Claude/Codex effort 来源和版本值仍需 M1b 环境记录，不能由离线 fixture 代替。

@@ -58,7 +58,7 @@ type PlanningFacts interface {
 // Implementations own provider-specific payload interpretation; the engine
 // only receives normalized points, fields, values, and output limits.
 type RuntimeEnricher interface {
-	StateUpdate(event *agenthooks.Event, typed any) state.EventUpdate
+	StateUpdate(event *agenthooks.Event, typed any, previous state.Session) state.EventUpdate
 	Enrich(event *agenthooks.Event, typed any, session state.Session, scope state.Scope) (engine.Input, tokens.InputLimit, error)
 }
 

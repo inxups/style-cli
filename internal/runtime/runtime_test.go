@@ -66,6 +66,44 @@ func TestRunDecodesClaudeHookAndEmitsOnlyWhitelistedBlock(t *testing.T) {
 	}
 }
 
+func TestProcessProjectsSessionEffortFactsIntoPersistentState(t *testing.T) {
+	root := t.TempDir()
+	store, err := state.New(root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	entry := runtimeTestEntry("pkg/guard", "tool.pre", "event", "inject", staticBody("context"))
+	core, err := engine.New(runtimeTestIndex(map[string][]compile.Entry{"tool.pre": {entry}}), store)
+	if err != nil {
+		t.Fatal(err)
+	}
+	runtime, err := New(core, store, testEnricher{}, agenthooks.ProviderClaudeCode, false)
+	if err != nil {
+		t.Fatal(err)
+	}
+	approx := false
+	event := &agenthooks.Event{
+		Provider:   agenthooks.ProviderClaudeCode,
+		Kind:       agenthooks.KindToolPre,
+		NativeName: "PreToolUse",
+		Session: agenthooks.SessionInfo{
+			ID: "session-facts", Model: "claude-sonnet", Effort: "high", EffortRaw: "HIGH",
+			EffortApprox: &approx, HarnessVersion: "2.1.300",
+		},
+		Raw: []byte(`{"session_id":"session-facts","hook_event_name":"PreToolUse"}`),
+	}
+	if _, err := runtime.process(context.Background(), event, event); err != nil {
+		t.Fatal(err)
+	}
+	session, _, err := store.Read("session-facts", "main")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if session.Model != "claude-sonnet" || session.ThinkingEffort != "high" || session.EffortRaw != "HIGH" || session.EffortApprox == nil || *session.EffortApprox || session.HarnessVersion != "2.1.300" {
+		t.Fatalf("persisted session facts = %#v", session)
+	}
+}
+
 func TestRunMatchesCodexAndClaudeFixturesToExactBlockResponses(t *testing.T) {
 	const reason = "blocked by STYLE"
 	entry := runtimeTestEntry("pkg/guard", "tool.pre", "tool", "block", staticBody(reason))
@@ -294,7 +332,7 @@ func TestRuntimeReevaluatesDynamicSystemWhenModelChanges(t *testing.T) {
 
 type testEnricher struct{}
 
-func (testEnricher) StateUpdate(event *agenthooks.Event, typed any) state.EventUpdate {
+func (testEnricher) StateUpdate(event *agenthooks.Event, typed any, previous state.Session) state.EventUpdate {
 	update := state.EventUpdate{Model: event.Session.Model}
 	var testFields struct {
 		Effort string `json:"test_effort"`

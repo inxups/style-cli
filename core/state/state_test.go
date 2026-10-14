@@ -16,8 +16,9 @@ func TestUpdateMaintainsSessionAndScopeLifecycle(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	approx := false
 	started, main, err := store.Update("session-1", "", EventUpdate{
-		Source: "startup", Model: "model-a", ThinkingEffort: "high", EffortRaw: "ultra", HarnessVersion: "1.2",
+		Source: "startup", Model: "model-a", ThinkingEffort: "high", EffortRaw: "ultra", EffortApprox: &approx, EffortResolved: true, HarnessVersion: "1.2",
 	})
 	if err != nil {
 		t.Fatal(err)
@@ -25,7 +26,7 @@ func TestUpdateMaintainsSessionAndScopeLifecycle(t *testing.T) {
 	if main.AgentID != "main" || main.Generation != 0 || main.Epoch != 0 || main.PromptCount != 0 {
 		t.Fatalf("startup scope = %#v", main)
 	}
-	if started.Model != "model-a" || started.ThinkingEffort != "high" || started.EffortRaw != "ultra" || started.HarnessVersion != "1.2" {
+	if started.Model != "model-a" || started.ThinkingEffort != "high" || started.EffortRaw != "ultra" || started.EffortApprox == nil || *started.EffortApprox || !started.EffortResolved || started.HarnessVersion != "1.2" {
 		t.Fatalf("startup session = %#v", started)
 	}
 
@@ -59,6 +60,20 @@ func TestUpdateMaintainsSessionAndScopeLifecycle(t *testing.T) {
 	}
 	if main.Generation != 1 || main.Epoch != 1 {
 		t.Fatalf("resume changed counters: %#v", main)
+	}
+}
+
+func TestSessionEffortApproximationRemainsUnknownUntilProvided(t *testing.T) {
+	store, err := New(filepath.Join(t.TempDir(), "state"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	started, _, err := store.Update("session", "main", EventUpdate{Source: "startup", EffortRaw: "custom", EffortResolved: true})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if started.ThinkingEffort != "" || started.EffortApprox != nil || !started.EffortResolved || started.EffortRaw != "custom" {
+		t.Fatalf("unknown effort state = %#v", started)
 	}
 }
 

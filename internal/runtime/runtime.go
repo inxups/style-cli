@@ -134,7 +134,13 @@ func (r *Runtime) Register(runner *agenthooks.Runner) error {
 		if event == nil {
 			return fmt.Errorf("runtime: missing model-switch event")
 		}
-		update := r.Adapter.StateUpdate(event, event)
+		previous, err := r.State.ReadSession(event.Session.ID)
+		if err != nil {
+			r.logError(event, "state-error")
+			return fmt.Errorf("runtime: model-switch state read failed")
+		}
+		update := r.Adapter.StateUpdate(event, event, previous)
+		applySessionFacts(&update, event.Session)
 		if _, _, err := r.State.Update(event.Session.ID, runtimeAgentID(event), update); err != nil {
 			r.logError(event, "state-error")
 			return fmt.Errorf("runtime: model-switch state update failed")
@@ -185,10 +191,13 @@ func (r *Runtime) process(ctx context.Context, event *agenthooks.Event, typed an
 		r.logError(event, "index-invalid")
 		return engine.Output{}, fmt.Errorf("runtime: index is unavailable")
 	}
-	update := r.Adapter.StateUpdate(event, typed)
-	if event.Session.Model != "" {
-		update.Model = event.Session.Model
+	previous, err := r.State.ReadSession(event.Session.ID)
+	if err != nil {
+		r.logError(event, "state-error")
+		return engine.Output{}, fmt.Errorf("runtime: state read failed")
 	}
+	update := r.Adapter.StateUpdate(event, typed, previous)
+	applySessionFacts(&update, event.Session)
 	if event.Kind == agenthooks.KindPromptSubmitted {
 		update.PromptSubmitted = true
 	}
@@ -224,6 +233,12 @@ func (r *Runtime) process(ctx context.Context, event *agenthooks.Event, typed an
 	if session.EffortRaw != "" {
 		input.Variables["thinking_effort_raw"] = session.EffortRaw
 	}
+	if session.EffortApprox != nil {
+		input.Variables["thinking_effort_approx"] = strconv.FormatBool(*session.EffortApprox)
+	}
+	if session.HarnessVersion != "" {
+		input.Variables["harness.version"] = session.HarnessVersion
+	}
 	if event.Session.TurnID != "" {
 		input.TurnID = event.Session.TurnID
 	} else if input.TurnID == "" {
@@ -240,6 +255,25 @@ func (r *Runtime) process(ctx context.Context, event *agenthooks.Event, typed an
 	}
 	r.record(event, output)
 	return output, nil
+}
+
+func applySessionFacts(update *state.EventUpdate, session agenthooks.SessionInfo) {
+	if session.Model != "" {
+		update.Model = session.Model
+	}
+	if session.Effort != "" {
+		update.ThinkingEffort = session.Effort
+	}
+	if session.EffortRaw != "" {
+		update.EffortRaw = session.EffortRaw
+	}
+	if session.EffortApprox != nil {
+		value := *session.EffortApprox
+		update.EffortApprox = &value
+	}
+	if session.HarnessVersion != "" {
+		update.HarnessVersion = session.HarnessVersion
+	}
 }
 
 func promptDecision(output engine.Output) agenthooks.PromptDecision {

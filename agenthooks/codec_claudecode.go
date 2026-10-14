@@ -29,12 +29,15 @@ var claudeKinds = map[string]EventKind{
 }
 
 type claudeIn struct {
-	SessionID            string          `json:"session_id"`
-	TranscriptPath       string          `json:"transcript_path"`
-	CWD                  string          `json:"cwd"`
-	HookEventName        string          `json:"hook_event_name"`
-	PermissionMode       string          `json:"permission_mode"`
-	Model                string          `json:"model"`
+	SessionID      string `json:"session_id"`
+	TranscriptPath string `json:"transcript_path"`
+	CWD            string `json:"cwd"`
+	HookEventName  string `json:"hook_event_name"`
+	PermissionMode string `json:"permission_mode"`
+	Model          string `json:"model"`
+	Effort         struct {
+		Level string `json:"level"`
+	} `json:"effort"`
 	PromptID             string          `json:"prompt_id"`
 	ToolName             string          `json:"tool_name"`
 	ToolInput            json.RawMessage `json:"tool_input"`
@@ -78,6 +81,7 @@ func decodeClaude(v Variant, conf DetectionConfidence, now time.Time, payload []
 			WorkspaceRoots: rootsFor(in.CWD),
 			TranscriptPath: in.TranscriptPath,
 			Model:          in.Model,
+			EffortRaw:      in.Effort.Level,
 			PermissionMode: in.PermissionMode,
 		},
 		Raw: json.RawMessage(payload),

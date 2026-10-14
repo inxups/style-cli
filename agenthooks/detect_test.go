@@ -47,6 +47,14 @@ func TestParseArgsOwner(t *testing.T) {
 	}
 }
 
+func TestCodexLaunchStyleSettingsAllowlistEffortOnly(t *testing.T) {
+	launch := parseCodexLaunchArgs([]string{"codex", "-p", "fast", "-c", "model_reasoning_effort=\"ultra\"", "-c", "model=secret"}, "/work")
+	settings := launch.styleSettings()
+	if settings.Profile != "fast" || settings.ModelReasoningEffort != "ultra" || settings.IgnoreUserConfig {
+		t.Fatalf("style settings = %#v", settings)
+	}
+}
+
 func TestDetectClaudeCodeMarker(t *testing.T) {
 	for _, v := range []string{
 		"CURSOR_VERSION", "CURSOR_TRACE_ID", "CURSOR_AGENT", "CODEX_HOME", "CODEX_SANDBOX",

@@ -115,6 +115,10 @@ type SessionInfo struct {
 	WorkspaceRoots []string // cursor multi-root; others: [CWD] or project dir
 	TranscriptPath string   // "" if unavailable; format is provider-specific (see transcript pkg)
 	Model          string   // "" if not reported
+	Effort         string   // normalized effort tier, populated by an adapter
+	EffortRaw      string   // native/requested effort value when reported
+	EffortApprox   *bool    // nil when unavailable; otherwise whether Effort is approximate
+	HarnessVersion string   // detected provider version; "" when unknown
 	PermissionMode string   // claude/codex permission_mode; "" elsewhere
 	UserEmail      string   // cursor user_email; "" elsewhere
 }

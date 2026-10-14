@@ -408,3 +408,10 @@
   - `GOPROXY=off GOSUMDB=off make test-go` 与 `make vet-go` 通过。
   - `git diff --check`、gofmt 通过。
 - 状态：任务清单 T40、测试矩阵 B1.17 和回顾文档 T40 段落已标记 `[x]`。A13、A14 及 M1b 真实 Codex 插件/信任/路线切换仍未提前完成；下一项按依赖顺序为 T41。
+
+## T41 / B1.18（2026-10-15）
+
+- 状态：T41 F5–F6、测试矩阵 B1.18 和回顾文档 T41 段落已标记 `[x]`。`SessionInfo` 新增 effort/raw/approx/harness version；Claude codec 保留 `effort.level` 原值；`internal/adapter/effortmap` 提供嵌入式 YAML 映射、七档/别名和未知值语义；Codex adapter 按 `-c` → profile → 受信项目 → 用户配置解析 `model_reasoning_effort`，Claude adapter 按事件 → `CLAUDE_EFFORT` → session 状态解析；state/session JSON 持久化 `effort_approx` 和 `effort_resolved`，runtime 投影 effort/raw/approx/version 变量。
+- 定向验证：`env -u CODEX_HOME -u CODEX_SANDBOX GOPATH=/tmp/style-cli-gopath GOMODCACHE=/tmp/style-cli-gomodcache GOCACHE=/tmp/style-cli-gocache GOPROXY=off GOSUMDB=off go test ./internal/adapter/... ./core/state ./core/engine ./internal/runtime ./agenthooks` 通过。
+- 全量验证：`GOPROXY=off GOSUMDB=off make test-go`、`GOPROXY=off GOSUMDB=off make vet-go`、`git diff --check` 通过。新增 fixture 覆盖 Claude event/env/session 优先级、Codex 配置优先级与不可信项目、未知 effort raw 保留、近似值 tri-state 和一次性解析。
+- 边界：真实 provider hook 的 Enrich 接线和版本检测仍由 T44/T45 完成；因此 A10 维持 `[~]`，M1a/M1b 不提前完成。

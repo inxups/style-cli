@@ -1,6 +1,7 @@
 package engine
 
 import (
+	"strconv"
 	"strings"
 
 	"github.com/inxups/style-cli/core/compile"
@@ -76,6 +77,11 @@ func mergeWhenInput(point when.Input, input Input) when.Input {
 	}
 	if merged.ThinkingEffort == "" {
 		merged.ThinkingEffort = input.Variables["thinking_effort"]
+	}
+	if merged.ThinkingEffortApprox == nil {
+		if value, err := strconv.ParseBool(input.Variables["thinking_effort_approx"]); err == nil {
+			merged.ThinkingEffortApprox = &value
+		}
 	}
 	if merged.AgentID == "" && input.Scope.AgentID != "main" {
 		merged.AgentID = input.Scope.AgentID

@@ -1,0 +1,11 @@
+harness: codex
+exact:
+  - none
+  - minimal
+  - low
+  - medium
+  - high
+  - xhigh
+  - max
+aliases:
+  ultra: max

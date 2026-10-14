@@ -31,6 +31,8 @@ type Session struct {
 	Model          string    `json:"model,omitempty"`
 	ThinkingEffort string    `json:"effort,omitempty"`
 	EffortRaw      string    `json:"effort_raw,omitempty"`
+	EffortApprox   *bool     `json:"effort_approx,omitempty"`
+	EffortResolved bool      `json:"effort_resolved,omitempty"`
 	HarnessVersion string    `json:"harness_version,omitempty"`
 	UpdatedAt      time.Time `json:"updated_at"`
 }
@@ -52,6 +54,8 @@ type EventUpdate struct {
 	Model           string
 	ThinkingEffort  string
 	EffortRaw       string
+	EffortApprox    *bool
+	EffortResolved  bool
 	HarnessVersion  string
 }
 
@@ -133,6 +137,13 @@ func (s *Store) Update(sessionID, agentID string, update EventUpdate) (Session, 
 	if update.EffortRaw != "" {
 		session.EffortRaw = update.EffortRaw
 	}
+	if update.EffortApprox != nil {
+		value := *update.EffortApprox
+		session.EffortApprox = &value
+	}
+	if update.EffortResolved {
+		session.EffortResolved = true
+	}
 	if update.HarnessVersion != "" {
 		session.HarnessVersion = update.HarnessVersion
 	}
@@ -168,6 +179,21 @@ func (s *Store) Read(sessionID, agentID string) (Session, Scope, error) {
 	}
 	scope.SessionID, scope.AgentID = sessionID, agentID
 	return session, scope, nil
+}
+
+// ReadSession returns the session-wide facts without requiring an agent scope
+// to exist. Runtime adapters use it before enrichment to honor cached values.
+func (s *Store) ReadSession(sessionID string) (Session, error) {
+	if s == nil || sessionID == "" {
+		return Session{}, fmt.Errorf("state: store and session ID are required")
+	}
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	var session Session
+	if err := readJSON(filepath.Join(s.root, component(sessionID), "session.json"), &session); err != nil {
+		return Session{}, err
+	}
+	return session, nil
 }
 
 // Cleanup removes session directories whose newest state file is older than
