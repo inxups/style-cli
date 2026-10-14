@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"io"
 	"log/slog"
 	"os"
 	"path/filepath"
@@ -15,6 +16,7 @@ import (
 	"github.com/inxups/style-cli/core/state"
 	"github.com/inxups/style-cli/core/tokens"
 	"github.com/inxups/style-cli/core/when"
+	codexadapter "github.com/inxups/style-cli/internal/adapter/codex"
 	"github.com/speakeasy-api/agenthooks"
 )
 
@@ -152,6 +154,39 @@ func TestRunMatchesCodexAndClaudeFixturesToExactBlockResponses(t *testing.T) {
 				t.Fatalf("hook output = %q, want %q", stdout.String(), fixture.want)
 			}
 		})
+	}
+}
+
+func TestCodexSubagentStartRuntimeDeliversContextForAgentType(t *testing.T) {
+	store, err := state.New(t.TempDir())
+	if err != nil {
+		t.Fatal(err)
+	}
+	entry := runtimeTestEntry("pkg/subagent", "subagent.start", "event", "inject", staticBody("review the repository instructions"))
+	entry.When.Agent = []string{"reviewer"}
+	entry.When.ThinkingEffortApprox = nil
+	index := runtimeTestIndex(map[string][]compile.Entry{"subagent.start": {entry}})
+	core, err := engine.New(index, store)
+	if err != nil {
+		t.Fatal(err)
+	}
+	runtime, err := New(core, store, codexadapter.NewEnricher(), agenthooks.ProviderCodex, false)
+	if err != nil {
+		t.Fatal(err)
+	}
+	runtime.Logger = slog.New(slog.NewTextHandler(io.Discard, nil))
+	const payload = `{"session_id":"codex-subagent-session","cwd":"/repo","hook_event_name":"SubagentStart","agent_id":"child-7","agent_type":"reviewer"}`
+	var stdout, stderr bytes.Buffer
+	code := runtime.Run(context.Background(), []string{"agenthooks", "run", "--provider=codex"}, strings.NewReader(payload), &stdout, &stderr)
+	if code != 0 || stderr.Len() != 0 {
+		t.Fatalf("Run exit=%d stderr=%q", code, stderr.String())
+	}
+	want := `{"hookSpecificOutput":{"additionalContext":"review the repository instructions","hookEventName":"SubagentStart"}}`
+	if stdout.String() != want {
+		t.Fatalf("SubagentStart response = %q, want %q", stdout.String(), want)
+	}
+	if _, _, err := store.Read("codex-subagent-session", "child-7"); err != nil {
+		t.Fatalf("subagent scope state was not written: %v", err)
 	}
 }
 

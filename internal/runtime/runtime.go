@@ -130,6 +130,17 @@ func (r *Runtime) Register(runner *agenthooks.Runner) error {
 		}
 		return toolPostDecision(output), nil
 	})
+	runner.OnSubagentStartDecision(func(ctx context.Context, event *agenthooks.SubagentStartEvent) (agenthooks.SubagentStartDecision, error) {
+		output, err := handle(ctx, &event.Event, event)
+		if err != nil {
+			return agenthooks.NoSubagentStartDecision(), err
+		}
+		decision := agenthooks.NoSubagentStartDecision()
+		if output.AdditionalContext != "" {
+			decision = decision.WithContext(output.AdditionalContext)
+		}
+		return decision, nil
+	})
 	runner.OnOther("PostModelSwitch", func(_ context.Context, event *agenthooks.Event) error {
 		if event == nil {
 			return fmt.Errorf("runtime: missing model-switch event")

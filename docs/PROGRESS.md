@@ -437,3 +437,11 @@
 - Owner 兼容：JSON owner 扫描现在同时识别旧 `command` 文本及 exec `args` 中的 `--owner=...`；重复安装和卸载测试证明能替换/删除 STYLE handler 并保留外部条目。Claude 降级或当前版本缺失时，卸载仍按 owner 清理，不被新安装的版本门槛阻塞。
 - 验证：`go -C agenthooks test ./install -count=1`、`GOPROXY=off GOSUMDB=off make test-go`、`GOPROXY=off GOSUMDB=off make vet-go`、gofmt 与 `git diff --check` 通过。测试使用临时 Go 缓存，并清理 `CODEX_HOME`、`CODEX_SANDBOX`。
 - 文档：任务清单 T43、测试矩阵 B1.20、review 文档 T43 段落均标记 `[x]`，`agenthooks/DESIGN.md` 同步 exec 与 fail-closed 规则。T45 仍需把真实检测到的 Claude 版本接入 `Target.HarnessVersion`；CLI 当前尚无 `--fail-closed` 到 `internal/runtime.Load` 的命令解析接线，留后续 CLI 任务做端到端验证；实际 Claude 环境验收保留 M1b，M1a/M1b 未标记完成。
+
+### 2026-10-15 — T44/B1.21 `[x]`
+
+- 实现：新增 Codex adapter 定义和固定 hook surface（SessionStart、UserPromptSubmit、Pre/PostToolUse、SubagentStart），提供 plugin 与 user routes、Codex facts、`developer_instructions` root static slot 和配置 effort/runtime enrichment。Codex route 在 `agenthooks/install` 共用安装层新增的 `PlanFiles`、`PlanUninstallFiles`、`ApplyFiles` 上组合 hook/trust 配置及 static blocks，不另造 hook renderer 或 owner 生命周期。
+- runtime：按信任判定解析 Codex launch `-c`、profile、trusted project 和 user config effort，缓存 session facts；把 prompt、显式 `$skill`、agenthooks 识别的隐式 skill、MCP identity、nested tool input/output 与 apply_patch added lines 映射为 engine point/fields/template values。`Runtime.Register` 接入 `SubagentStartDecision`，保留 agent id/type 的子 agent scope，并通过 Codex HSO codec 发 context。
+- 回顾修正：测试发现并修正 static-only plan/remove 丢失、嵌套路线根目录选错、native selector blind-spot 判断遗漏、隐式 skill 数据源声明遗漏、复合 JSON 输入模板值遗漏、未确认 plugin route 误报 trusted 和 SubagentStart runtime callback 缺失。定向测试覆盖这些边界，且 `ApplyFiles` 在写入前核对全部 Before 快照以拒绝 stale changeset。
+- 验证：`env -u CODEX_HOME -u CODEX_SANDBOX GOPATH=/tmp/style-cli-gopath GOMODCACHE=/tmp/style-cli-gomodcache GOCACHE=/tmp/style-cli-gocache GOPROXY=off GOSUMDB=off go test -count=1 ./...`、同环境 `go test -C agenthooks -count=1 ./...`、`GOPROXY=off GOSUMDB=off make vet-go` 和 `go test -race -count=1 ./internal/adapter/codex ./internal/runtime ./agenthooks/install` 均通过；gofmt 与 `git diff --check` 通过。
+- 状态：任务清单 T44、测试矩阵 B1.21 和回顾文档 T44 段落均标记 `[x]`。A10/A11 因 Claude adapter/真实 Codex 投递保留 `[~]`；T45、CLI 生命周期和 M1a/M1b 验收仍未完成。

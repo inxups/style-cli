@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/fs"
 	"path/filepath"
+	"regexp"
 	"runtime"
 	"sort"
 	"strings"
@@ -66,7 +67,10 @@ func renderCodex(m Manifest, t Target) (fs.FS, error) {
 		if !ok {
 			continue
 		}
-		matcher, _ := agenthooks.CompileMatcher(agenthooks.ProviderCodex, spec.Tools)
+		matcher, err := codexMatcher(spec)
+		if err != nil {
+			return nil, fmt.Errorf("install: Codex %s matcher: %w", event, err)
+		}
 		command := hookCommand(m, agenthooks.ProviderCodex, spec)
 		if plugin {
 			command = codexPluginHookCommand(m, spec)
@@ -137,6 +141,17 @@ func renderCodex(m Manifest, t Target) (fs.FS, error) {
 		}), nil
 	}
 	return memFS(files), nil
+}
+
+func codexMatcher(spec HookSpec) (string, error) {
+	if spec.NativeMatcher == "" {
+		matcher, _ := agenthooks.CompileMatcher(agenthooks.ProviderCodex, spec.Tools)
+		return matcher, nil
+	}
+	if _, err := regexp.Compile(spec.NativeMatcher); err != nil {
+		return "", fmt.Errorf("invalid native matcher %q: %w", spec.NativeMatcher, err)
+	}
+	return spec.NativeMatcher, nil
 }
 
 func codexPluginLauncher(command []string) string {

@@ -66,10 +66,15 @@ type ToolMatcher = agenthooks.ToolMatcher
 
 // HookSpec subscribes one unified event kind.
 type HookSpec struct {
-	Kind     agenthooks.EventKind
-	Tools    ToolMatcher
-	Blocking bool // decision path vs telemetry path
-	Timeout  time.Duration
+	Kind agenthooks.EventKind
+	// Tools is the provider-neutral matcher. NativeMatcher optionally pins a
+	// provider-native matcher for renderers that support raw patterns (currently
+	// Codex); when set, that renderer uses it verbatim instead of compiling
+	// Tools.
+	Tools         ToolMatcher
+	NativeMatcher string
+	Blocking      bool // decision path vs telemetry path
+	Timeout       time.Duration
 }
 
 // Manifest is the single source from which every provider config is
@@ -156,37 +161,17 @@ func Install(ctx context.Context, m Manifest, t Target, opts ...InstallOption) e
 	for _, o := range opts {
 		o(&cfg)
 	}
-	if t.Dir == "" {
-		return errors.New("install: Target.Dir is required")
-	}
-	if t.Provider == agenthooks.ProviderCodex && t.Scope == ScopePlugin && t.ConfigDir == "" {
-		return errors.New("install: Codex plugin scope requires Target.ConfigDir for trust state")
-	}
-	planned, err := plan(m, t)
+	planned, err := PlanFiles(m, t)
 	if err != nil {
 		return err
 	}
-	for _, p := range planned {
-		if err := ctx.Err(); err != nil {
-			return err
-		}
-		if p.state == StateUnchanged || cfg.dryRun {
-			continue
-		}
-		dest := filepath.Join(p.root, filepath.FromSlash(p.path))
-		if err := os.MkdirAll(filepath.Dir(dest), 0o755); err != nil {
-			return fmt.Errorf("install: %w", err)
-		}
-		if err := os.WriteFile(dest, p.final, p.mode); err != nil {
-			return fmt.Errorf("install: %w", err)
-		}
-		if p.mode&0o111 != 0 {
-			if err := os.Chmod(dest, p.mode); err != nil {
-				return fmt.Errorf("install: chmod %s: %w", p.path, err)
-			}
-		}
+	if err := ctx.Err(); err != nil {
+		return err
 	}
-	return nil
+	if cfg.dryRun {
+		return nil
+	}
+	return ApplyFiles(ctx, planned)
 }
 
 // Diff reports what Install would do, without writing.
@@ -224,11 +209,12 @@ func Fingerprint(m Manifest, t Target) (string, error) {
 }
 
 type plannedFile struct {
-	path  string
-	root  string
-	final []byte
-	mode  fs.FileMode
-	state ChangeState
+	path   string
+	root   string
+	before []byte
+	final  []byte
+	mode   fs.FileMode
+	state  ChangeState
 }
 
 func plan(m Manifest, t Target) ([]plannedFile, error) {
@@ -276,79 +262,10 @@ func plan(m Manifest, t Target) ([]plannedFile, error) {
 			if bytes.Equal(existing, final) && modeMatches {
 				state = StateUnchanged
 			}
-			out = append(out, plannedFile{path: p, root: root, final: final, mode: mode, state: state})
+			out = append(out, plannedFile{path: p, root: root, before: cloneBytes(existing), final: final, mode: mode, state: state})
 		}
 	}
 	return out, nil
-}
-
-// Uninstall removes one consumer's hook entries from the provider configs in
-// Target while preserving other owners and unrelated configuration. Generated
-// standalone files are removed only when their bytes still match this manifest.
-func Uninstall(ctx context.Context, m Manifest, t Target) error {
-	if t.Dir == "" {
-		return errors.New("install: Target.Dir is required")
-	}
-	owner, err := ownerName(m)
-	if err != nil {
-		return err
-	}
-	var rendered fs.FS
-	if t.Provider == agenthooks.ProviderClaudeCode {
-		rendered, err = renderClaudeForUninstall(m, t)
-	} else {
-		rendered, err = Render(m, t)
-	}
-	if err != nil {
-		return err
-	}
-	paths, contents, err := flatten(rendered)
-	if err != nil {
-		return err
-	}
-	for i, path := range paths {
-		if err := ctx.Err(); err != nil {
-			return err
-		}
-		root := renderedRoot(t, path)
-		dest := filepath.Join(root, filepath.FromSlash(path))
-		existing, err := os.ReadFile(dest)
-		if errors.Is(err, os.ErrNotExist) {
-			continue
-		}
-		if err != nil {
-			return fmt.Errorf("install: read %s for uninstall: %w", path, err)
-		}
-		var updated []byte
-		removeFile := false
-		changed := false
-		switch {
-		case isMergeableJSON(path):
-			updated, removeFile, changed, err = removeOwnedJSON(existing, owner)
-		case isMergeableTOML(path):
-			updated, changed = removeManagedTOML(existing, owner)
-			removeFile = changed && len(bytes.TrimSpace(updated)) == 0
-		default:
-			if bytes.Equal(existing, contents[i]) {
-				removeFile, changed = true, true
-			}
-		}
-		if err != nil {
-			return fmt.Errorf("install: remove owner %q from %s: %w", owner, path, err)
-		}
-		if !changed {
-			continue
-		}
-		if removeFile {
-			if err := os.Remove(dest); err != nil && !errors.Is(err, os.ErrNotExist) {
-				return fmt.Errorf("install: remove %s: %w", path, err)
-			}
-		} else if err := os.WriteFile(dest, updated, 0o644); err != nil {
-			return fmt.Errorf("install: update %s: %w", path, err)
-		}
-		pruneEmptyDirs(root, filepath.Dir(dest))
-	}
-	return nil
 }
 
 func removeOwnedJSON(existing []byte, owner string) (updated []byte, removeFile, changed bool, err error) {

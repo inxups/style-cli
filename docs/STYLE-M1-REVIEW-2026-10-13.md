@@ -250,3 +250,19 @@ fail-closed 的范围收窄为 `Manifest.Fail == FailClosed`、`Blocking` 且 `K
 回归覆盖：`TestRenderClaudePlugin` 验证 exact command/args、timeout、onFailure 与 telemetry 例外；`TestClaudeExecArgsAndFailClosedVersionGate` 覆盖带空格的 executable/argv、最低版本与解析边界、fail-open 和非阻断 hook；`TestRenderClaudeTimeoutRoundingAndDefault` 覆盖超时向上取整及 SessionStart 默认值；merge/uninstall 测试覆盖 owner 位于 args 时替换/删除、保留外部 handler，及缺失/降级版本下仍能卸载。
 
 验证：隔离环境下安装包定向测试、`GOPROXY=off GOSUMDB=off make test-go`、`make vet-go`、gofmt、两 module 的 `go mod tidy -diff` 和 `git diff --check` 通过。T43/B1.20 的离线 renderer 与 owner 生命周期证据完整；Claude 的真实版本检测将由 T45 接入，当前 CLI 尚未实现把 `--fail-closed` 接至 `internal/runtime.Load` 的命令解析，该 argv→runtime 路径由后续 CLI 工作覆盖。真实 Claude 对 `command`/`args` 与 `onFailure` 的接受仍由 M1b 实机验证，不提前标记通过。
+
+## T44 Codex adapter 完成后回顾（2026-10-15）
+
+结论：T44 沿用 T22 定义的 adapter port，并把 Codex 专属事实、路线和 payload enrichment 放在 `internal/adapter/codex`；hook protocol、provider codec、manifest renderer 和 owner merge/uninstall 继续由 `agenthooks/` 承担。没有发现需要改变分层的 P0/P1 问题。T30–T34（T3X）此前已完成，本轮在 Codex adapter 接入后再次执行双 module 全量测试，并额外做了相关包 race 检查。
+
+| 检查项 | 状态 | 结论与证据 |
+|---|---|---|
+| RV-T44-01 固定订阅面与事实 | [x] | `Surface` 固定五类 hook；工具 matcher 只订阅 Codex 可观察的 Bash、apply_patch 与 MCP。native names 与 canonical tool selector 都参与 blind-spot 判断；用户已占用 `developer_instructions` 时不报告静态槽位；隐式 skill 的 `skill.name` 数据源在 tool hook 上有明确声明。证据：`internal/adapter/codex/route_test.go:TestCodexSurfaceAndManifestStayFixed`、`TestCodexFactsDetectUnavailableStaticSlotAndUnobservableTools`。 |
+| RV-T44-02 路线变更与静态区 | [x] | Plugin/user route 通过 `PlanFiles` 生成含 Before 快照的 changeset，再用共享 `ApplyFiles` 检查 stale plan；静态 instructions 与 hook/trust TOML 同路径合并。静态-only 更新/移除不依赖 hook 文件是否变化，嵌套目录按最具体根路径归属，外部 TOML 保持原字节；未安装或尚未确认的 plugin route 不报告已信任。证据：`internal/adapter/codex/route_test.go` 的静态-only、残留清理、幂等、stale、nested-root 和 trust 状态用例；底层安装计划见 `agenthooks/install/install_test.go`。 |
+| RV-T44-03 runtime Enrich | [x] | Codex session/model/effort 一次性状态解析、prompt 和 `$skill` 显式点、agenthooks 隐式 skill、MCP identity、patch added lines、tool output、嵌套输入条件和模板值均有测试。Codex `SubagentStart` callback 将 engine context 送入专用 decision codec，并写入 child scope state。证据：`internal/adapter/codex/runtime_test.go`、`internal/runtime/runtime_test.go:TestCodexSubagentStartRuntimeDeliversContextForAgentType`。 |
+
+复核过程中补齐了七处边界：静态内容单独变化或卸载时仍要更新 `config.toml`；plugin 与 CODEX_HOME 路径嵌套时必须选择最窄根目录；未订阅的 native tool 名必须被识别为 blind spot；隐式 skill 字段必须在 planning facts 中声明；复合 JSON 输入路径也要同时可用于条件和模板；SubagentStart 不能停留在解析层，必须接入 runtime decision handler；未确认的 plugin route 不能伪报 trusted。各处均由上述可重复测试覆盖。
+
+验证：`GOPROXY=off GOSUMDB=off make test-go` 和 `make vet-go` 通过，覆盖根 module 与 `agenthooks` nested module；隔离 Go 缓存下 `go test -race -count=1 ./internal/adapter/codex ./internal/runtime ./agenthooks/install` 通过；gofmt、`git diff --check` 通过。T44、B1.21 和本节 review 状态已同步。
+
+边界：离线 Runner/fixture 验证不等同真实 Codex 子 agent context 投递（U7/M1b）。Codex `skills.read` 工具未纳入固定订阅面；A10 仍等 Claude adapter/真实 hook 输入，A11 仍等真实 Codex 验收。T45、CLI lifecycle/A1–A2/A12–A14/A18/A22 和完整 adapter conformance 未完成，M1a/M1b 不标记通过。

@@ -200,6 +200,125 @@ func containsArg(args []string, want string) bool {
 	return false
 }
 
+func TestPlanFilesReturnsMergedChangesWithoutWriting(t *testing.T) {
+	dir := t.TempDir()
+	target := Target{Provider: agenthooks.ProviderCodex, Scope: ScopeUser, Dir: dir}
+	manifest := testManifest()
+	manifest.Owner = "style"
+	if err := os.WriteFile(filepath.Join(dir, "hooks.json"), []byte(`{"hooks":{"Other":[{"hooks":[{"type":"command","command":"other-tool"}]}]}}`), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(dir, "config.toml"), []byte("model = \"o4\"\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	changes, err := PlanFiles(manifest, target)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(changes) != 2 {
+		t.Fatalf("PlanFiles returned %d changes, want 2: %#v", len(changes), changes)
+	}
+	for _, change := range changes {
+		if change.Path != filepath.Join(dir, "hooks.json") && change.Path != filepath.Join(dir, "config.toml") {
+			t.Errorf("unexpected planned path %q", change.Path)
+		}
+		if len(change.Before) == 0 || len(change.After) == 0 {
+			t.Errorf("planned change omitted bytes: %#v", change)
+		}
+		if change.Remove {
+			t.Errorf("install plan unexpectedly removes %q", change.Path)
+		}
+	}
+	hooks, err := os.ReadFile(filepath.Join(dir, "hooks.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if string(hooks) != `{"hooks":{"Other":[{"hooks":[{"type":"command","command":"other-tool"}]}]}}` {
+		t.Fatalf("PlanFiles modified hooks.json: %s", hooks)
+	}
+	for _, change := range changes {
+		if !strings.Contains(string(change.After), "other-tool") && filepath.Base(change.Path) == "hooks.json" {
+			t.Errorf("merged hooks omitted foreign handler: %s", change.After)
+		}
+	}
+}
+
+func TestApplyFilesRejectsStalePlanAndAppliesFreshPlan(t *testing.T) {
+	dir := t.TempDir()
+	path := filepath.Join(dir, "nested", "config.json")
+	changes := []PlannedFile{{Path: path, Root: dir, After: []byte("new\n"), Mode: 0o644}}
+	if err := ApplyFiles(context.Background(), changes); err != nil {
+		t.Fatal(err)
+	}
+	if got, err := os.ReadFile(path); err != nil || string(got) != "new\n" {
+		t.Fatalf("applied plan = %q, err=%v", got, err)
+	}
+	stale := PlannedFile{Path: path, Root: dir, Before: []byte("old\n"), After: []byte("newer\n"), Mode: 0o644}
+	if err := ApplyFiles(context.Background(), []PlannedFile{stale}); err == nil {
+		t.Fatal("ApplyFiles accepted a stale plan")
+	}
+}
+
+func TestPlanUninstallFilesReturnsOwnerScopedChanges(t *testing.T) {
+	dir := t.TempDir()
+	target := Target{Provider: agenthooks.ProviderCodex, Scope: ScopeUser, Dir: dir}
+	manifest := testManifest()
+	manifest.Owner = "style"
+	if err := Install(context.Background(), manifest, target); err != nil {
+		t.Fatal(err)
+	}
+	changes, err := PlanUninstallFiles(manifest, target)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(changes) != 2 {
+		t.Fatalf("PlanUninstallFiles returned %d changes, want 2: %#v", len(changes), changes)
+	}
+	for _, change := range changes {
+		if len(change.Before) == 0 {
+			t.Errorf("uninstall plan omitted before bytes: %#v", change)
+		}
+		if !change.Remove && len(change.After) == 0 {
+			t.Errorf("uninstall update omitted after bytes: %#v", change)
+		}
+	}
+	if _, err := os.Stat(filepath.Join(dir, "hooks.json")); err != nil {
+		t.Fatal(err)
+	}
+	if err := Uninstall(context.Background(), manifest, target); err != nil {
+		t.Fatal(err)
+	}
+	for _, name := range []string{"hooks.json", "config.toml"} {
+		if _, err := os.Stat(filepath.Join(dir, name)); !os.IsNotExist(err) {
+			t.Errorf("%s remains after uninstall, err=%v", name, err)
+		}
+	}
+}
+
+func TestRenderCodexUsesAndValidatesNativeMatcher(t *testing.T) {
+	manifest := Manifest{
+		Command: []string{"/usr/local/bin/style"},
+		Hooks:   []HookSpec{{Kind: agenthooks.KindToolPre, NativeMatcher: `^(Bash|apply_patch|mcp__.*)$`, Blocking: true}},
+		Owner:   "style",
+	}
+	fsys, err := Render(manifest, Target{Provider: agenthooks.ProviderCodex, Scope: ScopeUser, Dir: t.TempDir()})
+	if err != nil {
+		t.Fatal(err)
+	}
+	var config claudeConfig
+	if err := json.Unmarshal(readRendered(t, fsys, "hooks.json"), &config); err != nil {
+		t.Fatal(err)
+	}
+	entries := config.Hooks["PreToolUse"]
+	if len(entries) != 1 || entries[0].Matcher != `^(Bash|apply_patch|mcp__.*)$` {
+		t.Fatalf("native Codex matcher = %#v", entries)
+	}
+	manifest.Hooks[0].NativeMatcher = "["
+	if _, err := Render(manifest, Target{Provider: agenthooks.ProviderCodex, Scope: ScopeUser, Dir: t.TempDir()}); err == nil {
+		t.Fatal("invalid native Codex matcher was accepted")
+	}
+}
+
 func TestRenderCursorFailClosed(t *testing.T) {
 	fsys, err := Render(testManifest(), Target{Provider: agenthooks.ProviderCursor, Scope: ScopeProject})
 	if err != nil {

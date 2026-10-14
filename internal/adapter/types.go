@@ -187,6 +187,7 @@ type FileChange struct {
 	Before     []byte
 	After      []byte
 	CreateOnly bool
+	Remove     bool
 }
 
 // Changeset is an ordered, reviewable set of file updates.
