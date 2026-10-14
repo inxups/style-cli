@@ -417,21 +417,25 @@ func (r *Runner) Run(ctx context.Context, args []string, stdin io.Reader, stdout
 	}
 
 	var core decisionCore
+	failClosedError := false
 	if err := hctx.Err(); err != nil {
 		r.logger.Error("agenthooks: handler failed", "kind", base.Kind, "error", err)
 		core = failCore(pol, base)
+		failClosedError = true
 	} else {
 		var herr error
 		core, herr = r.dispatch(hctx, typed)
 		if herr != nil {
 			r.logger.Error("agenthooks: handler failed", "kind", base.Kind, "error", herr)
 			core = failCore(pol, base)
+			failClosedError = true
 		}
 	}
 	core = r.applyPolicy(typed, base, core, pol)
 
 	wire, encErr := encodeDecision(typed, core)
 	if encErr != nil {
+		failClosedError = true
 		if errors.Is(encErr, ErrLossyUpdate) && pol.Unsupported == Degrade {
 			r.logger.Warn("agenthooks: dropping lossy input rewrite (shallow-merge provider)", "native", base.NativeName)
 			core.hasUpdatedInput = false
@@ -446,6 +450,9 @@ func (r *Runner) Run(ctx context.Context, args []string, stdin io.Reader, stdout
 				wire = noOpResponse(provider)
 			}
 		}
+	}
+	if failClosedError && pol.Fail == FailClosed && pol.FailClosedExitCode > 0 && provider == ProviderClaudeCode && base.Kind == KindToolPre {
+		wire.ExitCode = pol.FailClosedExitCode
 	}
 	if len(wire.Stdout) > 0 {
 		_, _ = stdout.Write(wire.Stdout)
@@ -590,7 +597,11 @@ func failCore(pol Policy, base *Event) decisionCore {
 		case KindToolPre, KindPermission:
 			return decisionCore{kind: DecisionDeny, reason: "agenthooks: hook handler failed (fail-closed policy)"}
 		case KindPromptSubmitted:
-			return decisionCore{kind: DecisionBlockPrompt, reason: "agenthooks: hook handler failed (fail-closed policy)"}
+			decision := decisionCore{kind: DecisionBlockPrompt, reason: "agenthooks: hook handler failed (fail-closed policy)"}
+			if base.Provider == ProviderClaudeCode {
+				decision.suppressOriginalPrompt = true
+			}
+			return decision
 		}
 	}
 	return decisionCore{kind: DecisionNoDecision}

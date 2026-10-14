@@ -1,8 +1,8 @@
 # STYLE M1 已完成工作回顾
 
-初稿日期：2026-10-13；T20–T24 回顾更新：2026-10-14
+初稿日期：2026-10-13；T20–T24、T30–T34 回顾更新：2026-10-14
 
-结论：T10–T14 与 T20–T24 的实现维持清楚的分层，`agenthooks/` 负责 hook 协议和 provider 事实，STYLE core 负责包、规则语义、规划、预算和编译；这条边界应继续保留。两轮回顾均未发现 P0/P1；T10–T14 的 8 个 P2 问题，以及 T20–T24 回顾发现的 2 个 P2 边界问题，均已加回归测试并修复。M1a/M1b 尚未完成，当前暂停后续任务。
+结论：T10–T14、T20–T24 与 T30–T34 的实现维持清楚的分层，`agenthooks/` 负责 hook 协议和 provider 事实，STYLE core 负责包、规则语义、规划、预算、编译和运行时策略；这条边界应继续保留。三轮回顾均未发现 P0/P1；T10–T14 的 8 个 P2 问题，以及 T20–T24 回顾发现的 2 个 P2 边界问题，均已加回归测试并修复。M1a/M1b 尚未完成，按任务依赖继续推进。
 
 ## 修复跟进
 
@@ -113,7 +113,7 @@ env -u CODEX_HOME -u CODEX_SANDBOX \
 
 ## 当前进展
 
-T14 已在 `ff32b99` 提交并验证；R01–R08 已逐项修复并有独立提交与回归测试，详情见上方修复跟进表和 `docs/PROGRESS.md`。随后按新指令继续完成 T15；A1–A20、A22、adapter conformance、Codex/Claude 真实环境和 M1a/M1b 仍未完成。
+T30–T34 已完成双 module 全量测试和运行时/状态 race 检查；A4–A9、A15、A17、A19、A20 已有离线证据，A10/A11 因实际 adapter 映射仍未完成而保持部分状态。A1、A2、A12–A14、A18、A22、adapter conformance 及 Codex/Claude 真实环境尚未验收。提交和验证结果见下方 T30–T34 记录及 `docs/PROGRESS.md`。
 
 ## Go 与 CLI 设计研究跟进（2026-10-13）
 
@@ -140,4 +140,20 @@ T14 已在 `ff32b99` 提交并验证；R01–R08 已逐项修复并有独立提�
 
 验证命令和结果记录在 `docs/PROGRESS.md` 的 `RV-T2X-01/RV-T2X-02` 条目。T20–T24 commits 为 `19a3d89`、`8e144cc`、`372f923`、`9c8f5ad`、`bf0572f`；回顾修复及文档提交随后独立提交。双 module 全量测试、vet 和 diff 检查通过；本次未修改 module files，独立 tidy 检查因临时缓存缺少仅供依赖自身测试使用的模块、且网络被关闭而未通过（详见进度日志）。未修改 `agenthooks/`。
 
-维护结论：继续采用当前模块化单体与窄 adapter ports，不需要为 T20–T24 重写架构。运行时仍需消费 index 中的 `target`，属于 T32 的后续接线；没有因此标记 runtime/CLI/真实 harness 验收完成。完成回顾后停止，等待下一步指令。
+维护结论：继续采用当前模块化单体与窄 adapter ports，不需要为 T20–T24 重写架构。该轮回顾结束时，index 的 `target` 消费仍列为 T32 后续工作；T30–T34 已在下一节完成并复核，但这不代表 CLI 或真实 harness 验收完成。
+
+## T30–T34 完成后回顾（2026-10-14）
+
+结论：state、去重、运行时 engine 与 `agenthooks` codec/runner 的职责仍然分明。`core/engine` 消费 provider-neutral 的已解码输入与能力事实；`internal/runtime` 负责生命周期拼接；stdin、hook 事件解码、输出 codec 和 Claude fail-closed 机制落在 `agenthooks/`。本轮没有发现需要改动该分层的 P0/P1 问题。T33 对 `agenthooks/` 的改动分别补充了 Claude prompt block 的 `suppressOriginalPrompt` 和 Claude tool-pre fail-closed 退出码，均有 codec/runner/runtime 用例。
+
+| 条目 | 状态 | 完成结果与证据 |
+|---|---|---|
+| T30 | [x] | session/scope 生命周期、来源、gen/epoch/prompt_count、原子私有状态文件和过期清理；`core/state/state_test.go` 覆盖 startup/resume/clear/compact、权限、损坏状态及清理 |
+| T31 | [x] | turn/session/every、正文变化、compact epoch、block/subagent.start 例外和 `O_EXCL` 预留释放；`core/state/state_test.go` 与 `core/engine/engine_test.go:TestTwentyProcessesEmitOneRepeatSessionEntry` 覆盖 |
+| T32 | [x] | schema 校验、matcher 预编译、Enrich、条件和模板、block 优先、warn/inject merge、上限裁剪、stats/log；`core/engine/`、`internal/runtime/` 有定向测试 |
+| T33 | [x] | 输出 whitelist；缺失/损坏 index、state 失败默认空输出；Claude fail-closed 的拒绝和非零退出码；日志/stat 不带输入正文。证据：`internal/runtime/runtime_test.go`、`agenthooks/runner_test.go` |
+| T34 | [x] | startup 与 prompt 双挂载，model/effort 变化后的动态渲染和按正文去重，compact 选择性重注入；`internal/runtime/runtime_test.go:TestRuntimeReevaluatesDynamicSystemWhenModelChanges` |
+
+可复现验证：双 module 根测试和 `agenthooks` 测试均以 `-count=1` 通过；state/engine/runtime/schema 的 race 测试通过；双 module vet 通过。index-only 200 样本 p95 为 128.083µs，300 次 benchmark 为 33,567 ns/op。完整命令及运行结果保存在 `docs/PROGRESS.md` 对应条目。
+
+边界：本轮 runtime 集成使用测试 `RuntimeEnricher` 验证 provider-neutral engine；Codex/Claude 原始 effort 映射、native model-switch 事件完整解码、子 agent context 以及实际订阅面仍由 T41/T42/T44/T45 落地。故 A10 与 A11 标为 `[~]`，M1a/M1b 不提前通过。继续现有架构并推进 T40，不需要重写 T30–T34。

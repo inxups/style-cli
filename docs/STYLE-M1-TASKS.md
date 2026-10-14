@@ -40,11 +40,11 @@
 
 ### 运行时
 
-- [ ] **T30 `core/state`**：实现 session、scope、gen、epoch、prompt_count、会话来源和过期状态清理。
-- [ ] **T31 repeat 去重**：实现 `every`、`turn`、`session`、正文哈希、compact 重注入和 `O_EXCL` 并发占位。
-- [ ] **T32 runtime engine**：实现 stdin 解码、Enrich、match/when、模板渲染、block 优先、inject/warn 合并、上限裁剪和 stats/log。
-- [ ] **T33 输出白名单和 fail-open**：只输出 STYLE 允许的字段；index、模板、状态或编码失败时默认空输出并记录日志。
-- [ ] **T34 动态 system**：实现 `session.start` 与 `prompt.submitted` 双挂载，以及模型/强度改变后的重新评估。
+- [x] **T30 `core/state`**：新增持久 session/scope state，维护 gen、epoch、prompt_count、model/effort/harness version；startup/clear/compact/resume 按来源更新计数，支持显式过期清理。JSON 原子写、严格读、私有权限和路径安全有回归覆盖。证据：`core/state/state.go`、`core/state/state_test.go`、`docs/PROGRESS.md` T30–T34。
+- [x] **T31 repeat 去重**：实现 `every`、`turn`、`session`、渲染正文哈希、compact 重注入及 `O_EXCL` 占位/释放；block 与 `subagent.start` 不去重。单测验证 turn、generation、epoch、正文变化与并发进程唯一输出。证据：`core/state/dedup.go`、`core/state/state_test.go`、`core/engine/engine_test.go`。
+- [x] **T32 runtime engine**：新增 schema 校验和预编译 index、point/target/source/when 匹配、模板值渲染、block 优先、inject/warn 合并、输入上限裁剪、失败占位释放及 metadata-only stats/log；stdin 解码和 provider codec 继续由 `agenthooks.Runner` 负责。证据：`core/engine/`、`internal/runtime/`、双 module 测试和 `docs/PROGRESS.md`。
+- [x] **T33 输出白名单和 fail-open**：输出由 engine whitelist 与 agenthooks provider codec 双重约束；默认 index/state/evaluation 错误 fail-open，Claude 可选 fail-closed 并返回失败码；日志/stat 不含 prompt 或工具正文。证据：`core/engine/engine_test.go`、`internal/runtime/runtime_test.go`、`agenthooks/runner_test.go`。
+- [x] **T34 动态 system**：system 条目可在 `session.start` 与 `prompt.submitted` 双挂载；模型/effort 改变时重渲染，并仅在正文变化时补发；compact 仅重注入选择加入的条目。运行时数据提取由测试 adapter 验证，真实 provider 映射仍在 T41/T42/T44/T45。证据：`internal/runtime/runtime_test.go:TestRuntimeReevaluatesDynamicSystemWhenModelChanges`、`core/engine/engine_test.go:TestDynamicSystemReevaluatesAndDeduplicatesByRenderedBody`。
 
 ### agenthooks 和两个适配器
 
@@ -70,7 +70,7 @@
 - [?] **M1b Codex 真实环境**：B1–B12 全部完成，记录 Codex 版本、路线、信任行为、compact/resume、skill 和性能。
 - [?] **M1b Claude Code 真实环境**：C1–C9 全部完成，记录 Claude Code 版本、工作区信任、compact/model switch、skill、warn 和性能。
 
-## 回顾跟进项（2026-10-13）
+## 回顾跟进项（2026-10-13 起）
 
 - [x] **REVIEW-001 已完成项回顾**：复核 T10–T14 的职责边界、测试证据、源码和规范，固化 13 个探针场景及结果；报告见 `docs/STYLE-M1-REVIEW-2026-10-13.md`，证据见 `docs/review/M1-2026-10-13-*`。回顾完成后按用户要求停止功能推进。
 
@@ -86,8 +86,9 @@
 - [x] **RV-T13-06/R08**：单文件 native schema 与目录包 schema 不一致。 已修复；单文件包的 provider native hook 字段与目录规则共用 native schema 判定。证据：`core/spec/validate_native_single_file_test.go` 以相同内容分别验证目录包和单文件包；`go test -count=1 ./core/spec` 通过。
 - [x] **RV-T2X-01**：event-wide `target: event` 挂在 `tool.pre` 时产生空 `match`，与 T24 schema 冲突。已修复；index 保留 `target`，schema 允许 event-wide tool 条目不带 match、要求 routed tool/MCP/skill 条目带 match。证据：`core/compile/golden_test.go:TestEventTargetAtToolPointCompilesWithoutMatch` 编译该规则并以 Draft 2020-12 schema 验证输出；`testdata/golden/index.json` 更新。
 - [x] **RV-T2X-02**：空/空白 tool、names、skill selectors 及 malformed MCP selector 可通过 Validate。已修复；Validate、Compile 和 index schema 共同检查非空 selector、target 与 match 类型一致，以及 MCP 单个 `/` 和非空组件。证据：`core/spec/validate_edge_test.go`、`core/compile/golden_test.go:TestNormalizedMatchRejectsInvalidSelectors` 与 schema 负向用例覆盖拒绝和 wildcard 接受；两篇 STYLE 规范同步格式约束。
+- [x] **RV-T3X-01**：回顾 T30–T34 的 state、repeat、engine/runtime、输出策略和动态 system 集成；未发现需要改变分层的缺陷。20 个独立进程竞争同一 session key 仅一个输出，state 错误 fail-open 和 safe logging 另有回归用例。真实 Codex/Claude 字段映射及 native model-switch 事件仍留在 T41/T42/T44/T45，相关 A10/A11 保持部分状态。结论与验证见 `docs/STYLE-M1-REVIEW-2026-10-13.md` 的“T30–T34 完成后回顾”和 `docs/PROGRESS.md`。
 
-T20–T24 回顾结论和剩余范围见 `docs/STYLE-M1-REVIEW-2026-10-13.md` 的“T20–T24 完成后回顾”；两项均已修复并在 `docs/PROGRESS.md` 留下全量验证结果。M1 及后续 runtime/CLI/真实 harness 验收仍未完成。
+T20–T24 与 T30–T34 回顾结论和剩余范围见 `docs/STYLE-M1-REVIEW-2026-10-13.md`；各项处理和验证结果见 `docs/PROGRESS.md`。M1a/M1b 仍未完成。
 
 详细复现、影响和修正方向见 `docs/STYLE-M1-REVIEW-2026-10-13.md`。
 

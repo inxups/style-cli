@@ -329,6 +329,41 @@ func TestRunFailModes(t *testing.T) {
 	}
 }
 
+func TestClaudeFailClosedExitCodeAppliesOnlyToHandlerFailure(t *testing.T) {
+	failure := quietRunner(WithPolicy(Policy{Fail: FailClosed, FailClosedExitCode: 1}))
+	failure.OnToolPre(func(context.Context, *ToolPreEvent) (ToolPreDecision, error) {
+		return NoDecision(), errors.New("private handler error")
+	})
+	output, code := runWith(t, failure, claudeArgs(), fixture(t, "claude/pre_tool_use.json"))
+	if code != 1 || !strings.Contains(output, `"permissionDecision":"deny"`) {
+		t.Fatalf("Claude failed hook = %q (exit %d), want deny and exit 1", output, code)
+	}
+	if strings.Contains(output, "private handler error") {
+		t.Fatalf("handler error leaked to provider response: %q", output)
+	}
+
+	success := quietRunner(WithPolicy(Policy{Fail: FailClosed, FailClosedExitCode: 1}))
+	success.OnToolPre(func(context.Context, *ToolPreEvent) (ToolPreDecision, error) {
+		return Deny("policy"), nil
+	})
+	output, code = runWith(t, success, claudeArgs(), fixture(t, "claude/pre_tool_use.json"))
+	if code != 0 || !strings.Contains(output, `"permissionDecision":"deny"`) {
+		t.Fatalf("normal Claude denial = %q (exit %d), want exit 0", output, code)
+	}
+}
+
+func TestClaudeFailClosedPromptBlockSuppressesOriginalPrompt(t *testing.T) {
+	runner := quietRunner(WithPolicy(Policy{Fail: FailClosed}))
+	runner.OnPromptSubmitted(func(context.Context, *PromptEvent) (PromptDecision, error) {
+		return PromptDecision{}, errors.New("handler failed")
+	})
+	output, code := runWith(t, runner, claudeArgs(), fixture(t, "claude/user_prompt_submit.json"))
+	want := `{"decision":"block","reason":"agenthooks: hook handler failed (fail-closed policy)","suppressOriginalPrompt":true}`
+	if code != 0 || output != want {
+		t.Fatalf("fail-closed prompt output = %q (exit %d), want %q", output, code, want)
+	}
+}
+
 func TestRunPanicRecovery(t *testing.T) {
 	r := quietRunner(WithPolicy(Policy{Fail: FailClosed}))
 	r.OnToolPre(func(ctx context.Context, e *ToolPreEvent) (ToolPreDecision, error) {

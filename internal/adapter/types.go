@@ -6,8 +6,10 @@ import (
 	"io/fs"
 	"time"
 
+	"github.com/inxups/style-cli/core/engine"
 	"github.com/inxups/style-cli/core/plan"
 	"github.com/inxups/style-cli/core/spec"
+	"github.com/inxups/style-cli/core/state"
 	"github.com/inxups/style-cli/core/tokens"
 	"github.com/speakeasy-api/agenthooks"
 )
@@ -50,6 +52,14 @@ type PlanningFacts interface {
 	DataSourceProvider
 	BlindSpotProvider
 	StaticLocationProvider
+}
+
+// RuntimeEnricher turns decoded agenthooks events into core runtime facts.
+// Implementations own provider-specific payload interpretation; the engine
+// only receives normalized points, fields, values, and output limits.
+type RuntimeEnricher interface {
+	StateUpdate(event *agenthooks.Event, typed any) state.EventUpdate
+	Enrich(event *agenthooks.Event, typed any, session state.Session, scope state.Scope) (engine.Input, tokens.InputLimit, error)
 }
 
 // CapabilitySupport records why one output capability is or is not available

@@ -59,6 +59,11 @@ env -u CODEX_HOME -u CODEX_SANDBOX \
 - [x] **B1.9 T22 适配器一致性接口**：隔离环境下 `go test -count=1 ./internal/adapter ./core/plan ./core/tokens` 覆盖 provider 注册的稳定排序/重复拒绝/查找复制、检测结果规范化与错误传播、能力/数据来源/静态位置投影、route priority 和 Plan/Apply/Remove/Status 生命周期、输入上限单位与超限策略、compact signal 校验，以及 `core` 不导入 `agenthooks` 或 `internal/adapter` 的边界扫描。`go vet ./internal/adapter`、完整双 module `make test-go`/`make vet-go`、`go mod tidy -diff`、gofmt 和 `git diff --check` 通过；未修改 `agenthooks/`。证据：`internal/adapter/registry_test.go`、`internal/adapter/boundary_test.go`、`docs/PROGRESS.md` T22/B1.9。具体 provider adapter、effort 映射和 runtime Enrich 仍由后续任务接入。
 - [x] **B1.10 T23 `core/compile`**：隔离环境下 `go test -count=1 ./core/compile ./core/plan ./core/tokens ./core/spec ./core/when ./core/template ./core/warn ./internal/tokenestimate` 覆盖静态 system/settings 渲染、动态 system 双评估点、model/effort/harness/conditions 归一化、tool block、skill 隐式/显式 match、warn 的显式 `model_text` 与动态首句处理、来源/正文 SHA256、settings 和 runtime 默认值、fractional priority、多包顺序不受输入顺序影响、index JSON 往返与稳定编码、无 HTML 转义、blocked/错包/不完整/过期 plan、来源缺失、非法评估点和静态槽位。双 module `make test-go`/`make vet-go`、`go mod tidy -diff`、gofmt 和 diff 检查通过；`agenthooks/` 未修改。证据：`core/compile/build_test.go`、`docs/PROGRESS.md` T23/B1.10。逐字节 example golden 与 JSON Schema 属于 T24/A3，运行时消费属于 T32，均未提前标记。
 - [x] **B1.11 T24 index schema/golden**：`core/compile/golden_test.go` 从 `example/terse-reviewer/STYLE.yaml` 执行 Load→Validate→Merge→Plan→Compile，使用 Draft 2020-12 JSON Schema 验证 `testdata/golden/index.json`，并对编译输出做逐字节比较。负向用例覆盖缺少必需字段、未知评估点、session 缺少 `sources`、session 错带 `match`、prompt 错带 `sources`、routed skill entry 缺少 `match`、未知 entry 属性；正向边界覆盖负 priority、重复 `sources`，以及 event-wide tool entry 无 `match`。`make test-go`、`make vet-go`、`go mod tidy -diff`、gofmt 与 `git diff --check` 通过，均使用隔离 Go 缓存且 `GOPROXY=off GOSUMDB=off`；新增 schema 测试依赖 `github.com/google/jsonschema-go`。证据：`schema/index.schema.json`、`example/terse-reviewer/`、`testdata/golden/index.json` 和 `docs/PROGRESS.md` T24/B1.11。
+- [x] **B1.12 T30 `core/state`**：`go test -count=1 ./core/state` 覆盖启动/恢复/清理/压缩来源、scope counters、原子写、严格 JSON、0600/0700 权限、unsafe ID、过期清理；全量 race 测试见 T30–T34 验证记录。证据：`core/state/state_test.go`。
+- [x] **B1.13 T31 repeat 去重**：state 单测覆盖 session/turn/every、body hash 变化、block 与 `subagent.start` 例外、compact 重注入、释放与并发 claim；engine 子进程测试覆盖 20 个进程竞争且恰好一个输出。证据：`core/state/state_test.go`、`core/engine/engine_test.go:TestTwentyProcessesEmitOneRepeatSessionEntry`。
+- [x] **B1.14 T32 runtime engine**：engine/runtime 测试覆盖 schema load、预编译 matcher、target/source/when、模板渲染、block 优先、inject/warn 顺序、cap 裁剪和 reservation release、metadata-only stats/log。证据：`core/engine/engine_test.go`、`internal/runtime/runtime_test.go`。
+- [x] **B1.15 T33 白名单和 fail policy**：Codex/Claude fixture 精确 stdout、Claude prompt suppress whitelist、missing/invalid index 与 invalid state fail-open、Claude fail-closed exit code、敏感内容不进入 stdout/log/stats 均有测试。证据：`internal/runtime/runtime_test.go`、`agenthooks/runner_test.go`。
+- [x] **B1.16 T34 动态 system**：startup/prompt 双评估、effort/model 更新后重渲染、相同正文去重、正文变化补发和 compact 选择性重注入通过 runtime/engine 集成测试。证据：`internal/runtime/runtime_test.go:TestRuntimeReevaluatesDynamicSystemWhenModelChanges`、`core/engine/engine_test.go:TestDynamicSystemReevaluatesAndDeduplicatesByRenderedBody`。
 
 ## M1a：STYLE 离线验收
 
@@ -72,25 +77,25 @@ env -u CODEX_HOME -u CODEX_SANDBOX \
 
 ### engine、state、codec 和输出
 
-- [ ] **A4** Codex/Claude payload fixture 的 hook stdout 与 golden 一致。
-- [ ] **A5** inject/warn 合并顺序正确；命中 block 时只输出拒绝。
-- [ ] **A6** session/turn/every、正文哈希变化、block 不去重、warn 每次发送。
-- [ ] **A7** 20 个并发进程对同一去重键恰好一个输出。
-- [ ] **A8** startup/resume/clear/compact 来源和 gen/epoch 行为正确。
-- [ ] **A9** model/effort 改变后动态 system 重新评估且只补发变化正文。
-- [ ] **A10** Codex/Claude effort 映射、未知值、比较表达式和来源优先级正确。
-- [ ] **A11** 主 agent/subagent/any 默认范围和 subagent.start 去重行为正确。
-- [ ] **A15** 所有输出通过白名单；Claude prompt block 带 `suppressOriginalPrompt`。
-- [ ] **A17** 损坏 index 默认空输出、记录日志；Claude fail-closed 返回失败码。
-- [ ] **A19** 动态正文超过 harness 上限时从 order 大的一端裁剪并释放占位。
-- [ ] **A20** index-only 热路径 p95 小于 50ms（不含 shell 启动）。
+- [x] **A4** Codex/Claude `pre_tool_use.json` fixture 的 hook stdout 与精确 golden 一致。证据：`internal/runtime/runtime_test.go:TestRunMatchesCodexAndClaudeFixturesToExactBlockResponses`。
+- [x] **A5** inject/warn 依 order 合并，block 优先且只输出拒绝。证据：`core/engine/engine_test.go:TestInjectAndWarnEntriesMergeInOrder`、`TestBlockTakesPrecedenceAndDoesNotClaimOtherEntries`。
+- [x] **A6** session/turn/every、正文哈希变化、block 不去重、warn 每次发送均有覆盖。证据：`core/state/state_test.go`、`core/engine/engine_test.go:TestWarnRepeatEverySendsEveryMatchingInvocation`。
+- [x] **A7** 20 个并发独立进程对同一去重键恰好一个输出。证据：`core/engine/engine_test.go:TestTwentyProcessesEmitOneRepeatSessionEntry`。
+- [x] **A8** startup/resume/clear/compact 来源和 gen/epoch/prompt_count 行为正确。证据：`core/state/state_test.go:TestUpdateMaintainsSessionAndScopeLifecycle`、`TestStartupResetsScopeAndReservations`。
+- [x] **A9** model/effort 变化触发动态 system 重评估；相同渲染正文去重、变化正文补发。证据：`internal/runtime/runtime_test.go:TestRuntimeReevaluatesDynamicSystemWhenModelChanges`、`core/engine/engine_test.go:TestDynamicSystemReevaluatesAndDeduplicatesByRenderedBody`。
+- [~] **A10** core effort 条件比较已有覆盖；Codex/Claude 原始值、未知值、来源优先级和近似标记的真实映射留待 T41/T42/T44/T45 adapter 完成后验收。
+- [~] **A11** core 的 main 默认、subagent.start 的 any 默认、显式 any 和该事件不去重均有测试；真实 adapter 事件产生及 payload agent context 留待 T42/T44。
+- [x] **A15** engine 输出字段 whitelist，Claude prompt block 带 `suppressOriginalPrompt`；Codex 不接受该 Claude 专用字段。证据：`core/engine/engine_test.go:TestClaudePromptBlockSetsOnlyAllowedSuppressField`、`internal/runtime/runtime_test.go:TestClaudePromptBlockSuppressesOriginalPrompt`、`agenthooks/runner_test.go`。
+- [x] **A17** 缺失/损坏 index 与损坏 state 默认空输出并记录安全错误码；Claude fail-closed 返回失败码。证据：`internal/runtime/runtime_test.go:TestMissingOrInvalidIndexUsesCodecFailPolicy`、`TestStateFailureUsesFailOpenAndLogsOnlySafeCode`。
+- [x] **A19** 超出输入上限时从 order 大的一端裁剪并释放被裁条目的占位。证据：`core/engine/engine_test.go:TestCapDropsHighestOrderAndReleasesItsReservation`。
+- [x] **A20** index-only engine `Process` 的 200 次样本 p95 为 128.083µs，低于 50ms；独立 benchmark 为 33,567 ns/op（300 次），不含 shell 启动。证据：`docs/PROGRESS.md` T30–T34 验证记录。
 
 ### 安装、信任和 token
 
 - [ ] **A12** 普通包改动由 sync 阻塞并由 trust 确认；link 包行为符合设计；trust 基于同一份内存字节。
 - [ ] **A13** install/uninstall 保留外部配置、重复安装幂等、换路线无残留。
 - [ ] **A14** Codex 静态托管区位置正确；用户自定义 developer instructions 时降为动态；Claude 标记块正确增删。
-- [ ] **A16** core 不直接 import `adapter/codex` 或 `adapter/claude`。
+- [x] **A16** core 不直接 import `adapter/codex` 或 `adapter/claude`。证据：`internal/adapter/boundary_test.go`。
 - [ ] **A18** token estimator 与 golden 一致；T001–T007 各有触发 fixture；T003 超限安装不产生变更。
 
 ## 完成后回顾发现

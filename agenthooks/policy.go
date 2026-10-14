@@ -47,6 +47,10 @@ type Policy struct {
 	Fail        FailMode
 	Unsupported DegradeMode
 	AskFallback AskFallback
+	// FailClosedExitCode overrides a handled failure's process code when the
+	// host uses a non-zero exit as an additional fail-closed signal. Zero keeps
+	// the provider codec's normal success code.
+	FailClosedExitCode int
 	// ContinuationCap caps ContinueWith loops; 0 means DefaultContinuationCap.
 	ContinuationCap int
 	// Timeout bounds handler execution. 0 derives a deadline from the

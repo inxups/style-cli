@@ -173,6 +173,9 @@ func encodeClaude(base *Event, d decisionCore) (wireResponse, error) {
 		if d.kind == DecisionBlockPrompt {
 			out["decision"] = "block"
 			out["reason"] = d.reason
+			if base.Provider == ProviderClaudeCode && d.suppressOriginalPrompt {
+				out["suppressOriginalPrompt"] = true
+			}
 		}
 		if ctx != "" {
 			hso["additionalContext"] = ctx

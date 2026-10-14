@@ -72,6 +72,9 @@ func encodeDecision(typed any, d decisionCore) (wireResponse, error) {
 	if base == nil {
 		return wireResponse{}, errors.New("agenthooks: nil event")
 	}
+	if d.suppressOriginalPrompt && (base.Provider != ProviderClaudeCode || base.Kind != KindPromptSubmitted || d.kind != DecisionBlockPrompt) {
+		return wireResponse{}, ErrUnsupportedDecision
+	}
 	switch base.Provider {
 	case ProviderClaudeCode:
 		return encodeClaude(base, d)

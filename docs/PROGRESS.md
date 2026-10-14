@@ -380,3 +380,18 @@
 - 全量验证：`env -u CODEX_HOME -u CODEX_SANDBOX GOPATH=/tmp/style-cli-gopath GOMODCACHE=/tmp/style-cli-gomodcache GOCACHE=/tmp/style-cli-gocache GOPROXY=off GOSUMDB=off make test-go` 与同环境 `make vet-go` 通过，覆盖根 module 和 `agenthooks` nested module；`gofmt` 和 `git diff --check` 通过。此次没有修改 `go.mod`/`go.sum`；单独运行 `go mod tidy -diff` 未通过，因为临时 module cache 缺少 `gopkg.in/check.v1` 与 `github.com/google/go-cmp` 且 GOPROXY 关闭，既有 T24 记录中的 tidy check 曾通过。
 - 文档：T20–T24 结论和两个已完成修复已写入 `docs/STYLE-M1-REVIEW-2026-10-13.md`；任务清单和测试矩阵增加 RV-T2X-01/02 `[x]` 及可重复回归证据。此项代码、测试与状态文档一起独立提交，提交 hash 由交付回复记录。
 - 状态：按用户要求完成回顾后暂停；不继续 T30 或其他 M1 功能。
+
+### 2026-10-14 — T30–T34/B1.12–B1.16 `[x]`
+
+- 实现：`core/state` 持久化 session/scope、来源、gen/epoch/prompt_count 和 model/effort/version；使用 0700 目录、0600 文件、严格 JSON、临时文件加 rename 原子写、过期清理和安全 ID 路径组件。`core/state.Claim` 实现 `every`、`turn`、`session`、正文 SHA256 前缀、compact epoch、block/subagent.start 豁免与 `O_EXCL` 预留/释放。
+- 引擎：`core/engine` 在加载前校验 index schema，限制 index 到 16 MiB，strict decode 并预编译条件 matcher；逐点匹配 target/source/when，渲染动态模板，执行 block 优先、inject/warn 合并、输入上限裁剪和占位释放。`internal/runtime` 将 agenthooks typed event 交给 provider-neutral `RuntimeEnricher` 与 engine，并只写入有界元数据 stats 和安全错误码日志。
+- agenthooks 边界：新增 Claude prompt block 的 `suppressOriginalPrompt` codec 字段及 Claude tool-pre fail-closed 可配置退出码；runtime 不复制 stdin/event codec。其他 provider 行为不变，相关输出仅由允许的字段组成。
+- 动态 system：`session.start` 与 `prompt.submitted` 双挂载；根据持久 model/effort 状态渲染，正文未变时去重、改变时补发；compact 只让 `reinject_on_compact` 条目重发。测试使用 fake `RuntimeEnricher`，实际 Codex/Claude 字段映射留在 T41/T42/T44/T45。
+- 回归：state 测试覆盖 lifecycle、startup reset、resume/clear/compact、私有权限、严格解码、清理、重复键、正文变化和并发 claims；engine 测试覆盖 schema/index、target/condition/source、block、warn/inject 顺序、cap release、动态 system、白名单及 20 个独立进程恰好一个重复输出；runtime 测试覆盖 Codex/Claude fixture 精确 stdout、敏感输入不进入输出/log/stats、损坏 index/state fail-open 与 Claude fail-closed、model/effort/compact 重评估。
+- 验证（均隔离临时 Go 缓存、移除 `CODEX_HOME`/`CODEX_SANDBOX`，关闭网络依赖获取）：
+  - `env -u CODEX_HOME -u CODEX_SANDBOX GOPATH=/tmp/style-cli-gopath GOMODCACHE=/tmp/style-cli-gomodcache GOCACHE=/tmp/style-cli-gocache GOPROXY=off GOSUMDB=off go test -count=1 ./...` 通过。
+  - `env -u CODEX_HOME -u CODEX_SANDBOX GOPATH=/tmp/style-cli-gopath GOMODCACHE=/tmp/style-cli-gomodcache GOCACHE=/tmp/style-cli-gocache GOPROXY=off GOSUMDB=off go test -C agenthooks -count=1 ./...` 通过。
+  - `env -u CODEX_HOME -u CODEX_SANDBOX GOPATH=/tmp/style-cli-gopath GOMODCACHE=/tmp/style-cli-gomodcache GOCACHE=/tmp/style-cli-gocache GOPROXY=off GOSUMDB=off go test -race -count=1 ./core/state ./core/engine ./internal/runtime ./schema` 通过；新增 state-error 回归用例随后定向 `go test -count=1 ./internal/runtime` 通过。
+  - `GOPROXY=off GOSUMDB=off make vet-go` 通过；gofmt 与 `git diff --check` 待本次文档修改后最终复核。
+  - `go test -count=1 -v ./core/engine -run '^TestEngineProcessLatencyP95Below50ms$'`：200 样本 p95 `128.083µs`，低于 50ms；`go test ./core/engine -run '^$' -bench '^BenchmarkEngineProcessIndexOnly$' -benchtime=300x -count=1`：`33,567 ns/op`、`81,402 B/op`、`166 allocs/op`。
+- 状态：T30–T34、A4–A9/A15/A17/A19/A20、A16 标记完成；A10/A11 记为部分完成，等待具体 provider adapter；任务清单、测试矩阵和回顾文档同步更新。M1a/M1b 未完成，继续 T40。

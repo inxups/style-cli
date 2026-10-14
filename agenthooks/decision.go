@@ -90,17 +90,18 @@ type Decision interface {
 }
 
 type decisionCore struct {
-	kind              DecisionKind
-	reason            string
-	instruction       string // ContinueWith payload
-	context           []string
-	systemMessage     string
-	stopAgent         bool
-	stopReason        string
-	updatedInput      any
-	hasUpdatedInput   bool
-	replacedOutput    any
-	hasReplacedOutput bool
+	kind                   DecisionKind
+	reason                 string
+	instruction            string // ContinueWith payload
+	context                []string
+	systemMessage          string
+	stopAgent              bool
+	stopReason             string
+	suppressOriginalPrompt bool
+	updatedInput           any
+	hasUpdatedInput        bool
+	replacedOutput         any
+	hasReplacedOutput      bool
 }
 
 // firstNonEmpty picks the first candidate that is not the empty string,
@@ -253,6 +254,15 @@ func (d PromptDecision) WithContext(s string) PromptDecision {
 
 func (d PromptDecision) WithSystemMessage(s string) PromptDecision {
 	d.core.systemMessage = s
+	return d
+}
+
+// WithSuppressOriginalPrompt prevents Claude Code from appending the
+// submitted prompt to a block response. Other codecs never emit this field.
+func (d PromptDecision) WithSuppressOriginalPrompt() PromptDecision {
+	if d.core.kind == DecisionBlockPrompt {
+		d.core.suppressOriginalPrompt = true
+	}
 	return d
 }
 
