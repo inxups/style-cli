@@ -1,8 +1,8 @@
 # STYLE M1 已完成工作回顾
 
-日期：2026-10-13
+初稿日期：2026-10-13；T20–T24 回顾更新：2026-10-14
 
-结论：T10–T14 的基础实现已经形成清楚的分层，`agenthooks/` 仍负责 hook 协议和 provider 事实，STYLE core 负责包、合并、校验、模板和条件语义；这条边界应继续保留。已完成的测试没有发现 P0/P1 问题；边界探针发现的 8 个 P2 校验/解析问题已全部修复，并分别添加回归测试、更新状态和提交。当前停止功能推进，M1 尚未完成。
+结论：T10–T14 与 T20–T24 的实现维持清楚的分层，`agenthooks/` 负责 hook 协议和 provider 事实，STYLE core 负责包、规则语义、规划、预算和编译；这条边界应继续保留。两轮回顾均未发现 P0/P1；T10–T14 的 8 个 P2 问题，以及 T20–T24 回顾发现的 2 个 P2 边界问题，均已加回归测试并修复。M1a/M1b 尚未完成，当前暂停后续任务。
 
 ## 修复跟进
 
@@ -106,9 +106,9 @@ env -u CODEX_HOME -u CODEX_SANDBOX \
 
 ## 维护性和文档结论
 
-- `core/spec` 已按 loader、frontmatter、文件安全、merge、package/rule/condition/template/reads/lint/value 校验拆分。`validate_rules.go` 仍约 299 行，包含相关的 schema、ID、正文和有效值逻辑；后续若继续增长，可再拆 schema 与语义，但现在不需要重写。
+- `core/spec` 已按 loader、frontmatter、文件安全、merge、package/rule/condition/template/reads/lint/value 校验拆分。`validate_rules.go` 在 2026-10-13 基线约 299 行，当前新增 target selector 检查；后续若继续增长，可再拆 schema 与语义，但现在不需要重写。
 - 规范拆分保留了章节编号和正文顺序，最大单文件实际为 242 行；进度日志中曾写 243 行，是切片时保留的 EOF 空行造成的计数差异，本次记录以实际文件计数为准。
-- 规范入口和 CLI 设计仍有“尚未实现”的历史状态文字。`STYLE_DOCS/STYLE-cli-design.md` 被忽略、未跟踪，新 clone 中规范到它的链接不可用；示例 `example/terse-reviewer/STYLE.yaml`、附录引用的 `style-gen/cross-harness.md`、`thinking-effort.md` 和 `style-review/solution-2026-10-12.md` 也缺失。由负责 plan/docs 的对话统一处理状态文字和引用。
+- 规范入口和 CLI 设计仍有“尚未实现”的历史状态文字。`STYLE_DOCS/STYLE-cli-design.md` 被忽略、未跟踪，新 clone 中规范到它的链接不可用；附录引用的 `style-gen/cross-harness.md`、`thinking-effort.md` 和 `style-review/solution-2026-10-12.md` 仍缺失。T24 已补上示例 `example/terse-reviewer/STYLE.yaml` 并修正其跟踪规范链接。由负责 plan/docs 的对话统一处理剩余状态文字和引用。
 - `agenthooks/` 在 T10–T14 没有源代码改动；根 module 通过本地 `replace` 使用它，符合“hook 直接在 agenthooks、CLI 另起 module”的约定。
 
 ## 当前进展
@@ -128,3 +128,16 @@ T14 已在 `ff32b99` 提交并验证；R01–R08 已逐项修复并有独立提�
 - [x] `core/warn/sentence_test.go` 覆盖开头空行、多行、ASCII/中文标点、无句末标点、CRLF、空内容，以及先用 `core/template` 渲染动态正文再提取。
 - [x] `docs/STYLE-M1-TASKS.md`、`docs/STYLE-M1-TESTS.md` 和 `docs/PROGRESS.md` 已同步；A21、B1.6 以定向/全量测试证据标记完成。
 - 范围：此条只提供可复用的提取函数，不提前标记 compile、runtime engine 或完整 A1–A22 通过。
+
+## T20–T24 完成后回顾（2026-10-14）
+
+结论：规划、token analysis、adapter contracts、index compiler 和 schema/golden 的职责分界整体合理；`core` 不引入具体 provider，`agenthooks/` 不需要复制实现。两个 P2 边界问题已修复：事件级 `target: event` 挂到 tool 事件时原先编译出空 `match`，与 schema 的 selector 要求冲突；空/空白 tool、native-name、skill selector 及 malformed MCP selector 原先能通过 Validate。修复没有改变 hook 协议或 adapter 事实。
+
+| 编号 | 状态 | 复现与影响 | 修复和证据 |
+|---|---|---|---|
+| RV-T2X-01 | [x] | `target: event` + `event: tool.pre` 是规范允许的全局规则，但 compiler 输出 `{}` match，正式 schema 拒绝该 index | 编译条目保留原 `target`；event-wide tool 条目不输出 match，schema 区分全局 event 与 routed selectors。`core/compile/golden_test.go:TestEventTargetAtToolPointCompilesWithoutMatch` 直接编译并验证 schema；golden 已更新 |
+| RV-T2X-02 | [x] | `tool: ''`、空 `names`/`skill` 列表、空白 selector、没有或多于一个 `/` 的 MCP selector 原先通过 Validate，可能匹配不到事件或产生非法 index | Validate 和 Compile 检查非空 selector、MCP 单分隔符/非空组件；T24 schema 现在要求 match 与 target 类型一致、列表非空，并拒绝 MCP 组件里的 `/` 和首尾空白。`core/spec/validate_edge_test.go`、`core/compile/golden_test.go:TestNormalizedMatchRejectsInvalidSelectors` 及 schema 负向用例覆盖坏例和合法 MCP wildcard；两份规范已同步约束 |
+
+验证命令和结果记录在 `docs/PROGRESS.md` 的 `RV-T2X-01/RV-T2X-02` 条目。T20–T24 commits 为 `19a3d89`、`8e144cc`、`372f923`、`9c8f5ad`、`bf0572f`；回顾修复及文档提交随后独立提交。双 module 全量测试、vet 和 diff 检查通过；本次未修改 module files，独立 tidy 检查因临时缓存缺少仅供依赖自身测试使用的模块、且网络被关闭而未通过（详见进度日志）。未修改 `agenthooks/`。
+
+维护结论：继续采用当前模块化单体与窄 adapter ports，不需要为 T20–T24 重写架构。运行时仍需消费 index 中的 `target`，属于 T32 的后续接线；没有因此标记 runtime/CLI/真实 harness 验收完成。完成回顾后停止，等待下一步指令。

@@ -50,6 +50,7 @@ type Entry struct {
 	SourceSHA256           string          `json:"src_sha256"`
 	BodySHA256             string          `json:"body_sha256"`
 	Order                  Order           `json:"order"`
+	Target                 string          `json:"target"`
 	Action                 string          `json:"action"`
 	Match                  *Match          `json:"match,omitempty"`
 	When                   when.Rule       `json:"when"`

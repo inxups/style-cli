@@ -45,9 +45,9 @@
 | target | 字段 | 挂在哪个统一事件上 |
 |---|---|---|
 | `system` | `mode: append \| replace`（默认 `append`） | 没有 `when`、正文是静态的 → 写进 harness 的**静态位置**（第 10 节），不走 hook。否则是**动态 system**：挂在 `session.start`，同时在每条 `prompt.submitted` 上重新评估（3.7） |
-| `tool` | `tool:` 工具分类，可写列表；或 `names:` 原生工具名 | `at: before` → `tool.pre`；`after` → `tool.post` |
-| `mcp` | `mcp: "server/tool"`，支持 `server/*`、`*/tool`，可写列表 | 同 `tool` |
-| `skill` | `skill: <名字>`，可写列表；名字不区分大小写，全等比较 | **隐式**（模型自己去用 skill）：按 `at` 挂 `tool.pre` / `tool.post`；**显式**（用户点名）：`skill.explicit` |
+| `tool` | `tool:` 工具分类，可写非空列表；或 `names:` 原生工具名，可写非空列表。selector 不得为空、只含空白或含首尾空白 | `at: before` → `tool.pre`；`after` → `tool.post` |
+| `mcp` | `mcp: "server/tool"`，必须恰好一个 `/` 且两侧非空；各分量不得含首尾空白。支持 `server/*`、`*/tool`，可写非空列表 | 同 `tool` |
+| `skill` | `skill: <名字>`，可写非空列表；selector 不得为空、只含空白或含首尾空白；名字不区分大小写，全等比较 | **隐式**（模型自己去用 skill）：按 `at` 挂 `tool.pre` / `tool.post`；**显式**（用户点名）：`skill.explicit` |
 | `event` | `event:` 统一事件名，见下 | 原样 |
 | `native` | 以 harness 名为键，写原生 hook | 不经过规则引擎。**M2 实现**：M1 的 validate 接受，plan 报"跳过（M2）" |
 

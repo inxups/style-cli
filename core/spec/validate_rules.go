@@ -157,15 +157,17 @@ func (v *validator) validateRuleFields(rule Rule, source string) {
 			v.add("invalid-schema", source, "event target requires a supported event")
 		}
 	}
-	if target := v.effectiveRuleString(rule, "target", ""); target == "tool" && !ruleHasField(rule, "tool") && !ruleHasField(rule, "names") {
+	target := v.effectiveRuleString(rule, "target", "")
+	if target == "tool" && !ruleHasField(rule, "tool") && !ruleHasField(rule, "names") {
 		v.add("invalid-schema", source, "tool target requires tool or names")
 	}
-	if target := v.effectiveRuleString(rule, "target", ""); target == "mcp" && !ruleHasField(rule, "mcp") {
+	if target == "mcp" && !ruleHasField(rule, "mcp") {
 		v.add("invalid-schema", source, "mcp target requires mcp")
 	}
-	if target := v.effectiveRuleString(rule, "target", ""); target == "skill" && !ruleHasField(rule, "skill") {
+	if target == "skill" && !ruleHasField(rule, "skill") {
 		v.add("invalid-schema", source, "skill target requires skill")
 	}
+	v.validateTargetSelectors(rule, target, source)
 	if target := v.effectiveRuleString(rule, "target", ""); target == "native" && !ruleHasField(rule, "codex") && !ruleHasField(rule, "claude-code") {
 		v.add("invalid-schema", source, "native target requires a harness hook mapping")
 	}
@@ -203,6 +205,50 @@ func (v *validator) validateRuleFields(rule Rule, source string) {
 	repeat := v.effectiveRuleString(rule, "repeat", "session")
 	if v.effectiveRuleString(rule, "action", "inject") == "inject" && (repeat == "every" || repeat == "turn") && !hasKey(fields, "reason") && !hasKey(rule.Overrides, "reason") {
 		v.warn("T007", source, "inject with repeat every or turn should include reason")
+	}
+}
+
+func (v *validator) validateTargetSelectors(rule Rule, target, source string) {
+	fields := []string(nil)
+	switch target {
+	case "tool":
+		fields = []string{"tool", "names"}
+	case "mcp":
+		fields = []string{"mcp"}
+	case "skill":
+		fields = []string{"skill"}
+	default:
+		return
+	}
+	for _, key := range fields {
+		if !ruleHasField(rule, key) {
+			continue
+		}
+		value, ok := rule.Overrides[key]
+		if !ok {
+			value = rule.Fields[key]
+		}
+		if !isStringOrStringList(value) {
+			continue // The field type diagnostic is emitted by validateRuleFields.
+		}
+		selectors := stringValues(value)
+		if len(selectors) == 0 {
+			v.add("invalid-schema", source, fmt.Sprintf("%s selectors must not be empty", key))
+			continue
+		}
+		for _, selector := range selectors {
+			if strings.TrimSpace(selector) == "" || selector != strings.TrimSpace(selector) {
+				v.add("invalid-schema", source, fmt.Sprintf("%s selector must not be empty or have surrounding whitespace", key))
+				continue
+			}
+			if target == "mcp" {
+				server, tool, ok := strings.Cut(selector, "/")
+				if !ok || server == "" || tool == "" || strings.Contains(tool, "/") ||
+					server != strings.TrimSpace(server) || tool != strings.TrimSpace(tool) {
+					v.add("invalid-schema", source, fmt.Sprintf("mcp selector %q must be server/tool with non-empty components", selector))
+				}
+			}
+		}
 	}
 }
 

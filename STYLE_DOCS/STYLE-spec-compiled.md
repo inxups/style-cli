@@ -28,8 +28,9 @@
 | `src_sha256` | string | 是 | 来源**文件**的 sha256，给 `trust` 比对 |
 | `body_sha256` | string | 是 | 渲染前的正文（模板原文）的 sha256，用来区分"这条规则变了"和"同一文件里别的东西变了" |
 | `order` | [number, int, int] | 是 | `[priority, 包安装序号, 包内序号]`，`priority` 可为有限小数，包内序号是它在 `rules[]` 里的位置 |
+| `target` | string | 是 | 规则的原 target：`system`、`event`、`tool`、`mcp`、`skill`。运行时可据此区分评估点上的 selector 匹配和事件级全局规则 |
 | `action` | string | 是 | 降级之后的最终动作：`inject` / `warn` / `block` |
-| `match` | object | `tool.*`、`skill.explicit` 上必有 | 见 9.3 |
+| `match` | object | `tool`、`mcp`、`skill` target 的匹配评估点必有 | 见 9.3；`target: event` 对 `tool.*` 事件没有 selector，故不输出此字段 |
 | `when` | object | 是 | 规范化后的条件，见 9.4。至少有 `agent` |
 | `repeat` | string | 是 | `every` / `turn` / `session`，已按 3.5 补上默认值 |
 | `reinject_on_compact` | bool | 是 | |
@@ -56,6 +57,8 @@
 ```
 
 - `canonical`、`names` 和 agenthooks 的 `ToolMatcher` 同义；`mcp` 里 `"*"` 是通配。
+- 对应的 selector 列表必须非空；selector 不得为空、只含空白或含首尾空白；MCP `server` 和 `tool` 分量各自非空且不得再含 `/`。
+- `target: event` 是评估点级规则，在 `tool.pre`、`tool.post`、`tool.error` 上覆盖该事件的全部工具，不带 `match`；`target: tool`、`mcp`、`skill` 则必须带对应 selector。
 - `tool.pre` / `tool.post` 上的 `skill` 表示隐式调用；`skill.explicit` 上的 `skill` 表示显式调用。
 - MCP 的服务名：Claude 取事件里的 `mcp_server.name`，Codex 从 `mcp__<server>__<tool>` 拆出来。
 

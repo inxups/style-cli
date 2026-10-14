@@ -370,3 +370,13 @@
 - 文档：修正已跟踪 spec 文档中示例包相对链接；CLI design 文件在仓库 `.gitignore` 下保持非跟踪状态，不纳入本次提交。
 - 验证：隔离环境 `go test -count=1 ./core/compile`、`GOPROXY=off GOSUMDB=off make test-go`、`GOPROXY=off GOSUMDB=off make vet-go`、`go mod tidy -diff`、gofmt 和 `git diff --check` 全部通过；没有修改 `agenthooks/`。
 - 状态：任务清单 T24、测试矩阵 B1.11 和离线验收 A3 标记 `[x]`。按用户要求，本条仍不单独写回顾文档；T2X 完成后统一审查 T20–T24。
+
+### 2026-10-14 — RV-T2X-01/RV-T2X-02 `[x]`
+
+- 回顾范围：T20 `core/plan`、T21 `core/tokens`、T22 adapter contracts、T23 `core/compile`、T24 index schema/golden。总体分层合理；未发现 P0/P1，也没有理由重写 core/adapter 边界或修改 `agenthooks/`。M1a/M1b、runtime 与真实 harness 验收仍未完成。
+- RV-T2X-01 修复：合法的 `target: event` + `event: tool.pre` 原先编译为没有字段的空 `match`，与 schema 要求冲突。Entry 现在保留原 `target`；schema 按 target 区分带 selector 的 routed tool/MCP/skill entries 与覆盖整类工具的 event entries。更新 golden 与规范。`core/compile/golden_test.go:TestEventTargetAtToolPointCompilesWithoutMatch` 端到端生成 JSON 并通过 Draft 2020-12 schema 验证。
+- RV-T2X-02 修复：Validate 原先接受空 tool、native-name、skill selectors，及无 slash/多 slash/空组件/首尾空白 MCP selector。现在 Validate 拒绝空列表、空白值和不符合单 `server/tool` 形状的 MCP selector；Compile 同步保留防御性检查，index schema 强制 target-match 对应、非空列表、selector trim 和 MCP 组件不含额外 `/`。`core/spec/validate_edge_test.go` 覆盖无效输入和合法 wildcard；`core/compile/golden_test.go:TestNormalizedMatchRejectsInvalidSelectors` 及 schema 负向用例覆盖拒绝路径；STYLE 规范已同步。
+- 定向验证：隔离缓存环境下 `go test -count=1 ./core/spec ./core/compile ./core/plan ./core/tokens ./core/when ./core/template ./core/warn ./internal/tokenestimate ./internal/adapter` 通过。
+- 全量验证：`env -u CODEX_HOME -u CODEX_SANDBOX GOPATH=/tmp/style-cli-gopath GOMODCACHE=/tmp/style-cli-gomodcache GOCACHE=/tmp/style-cli-gocache GOPROXY=off GOSUMDB=off make test-go` 与同环境 `make vet-go` 通过，覆盖根 module 和 `agenthooks` nested module；`gofmt` 和 `git diff --check` 通过。此次没有修改 `go.mod`/`go.sum`；单独运行 `go mod tidy -diff` 未通过，因为临时 module cache 缺少 `gopkg.in/check.v1` 与 `github.com/google/go-cmp` 且 GOPROXY 关闭，既有 T24 记录中的 tidy check 曾通过。
+- 文档：T20–T24 结论和两个已完成修复已写入 `docs/STYLE-M1-REVIEW-2026-10-13.md`；任务清单和测试矩阵增加 RV-T2X-01/02 `[x]` 及可重复回归证据。此项代码、测试与状态文档一起独立提交，提交 hash 由交付回复记录。
+- 状态：按用户要求完成回顾后暂停；不继续 T30 或其他 M1 功能。

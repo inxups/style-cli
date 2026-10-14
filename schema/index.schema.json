@@ -124,26 +124,32 @@
         "conditions": {"type": "array", "items": {"$ref": "#/$defs/condition"}}
       }
     },
+    "selector": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^([^\\s].*[^\\s]|[^\\s])$"
+    },
     "match": {
       "type": "object",
       "minProperties": 1,
       "additionalProperties": false,
       "properties": {
-        "canonical": {"type": "array", "items": {"type": "string", "minLength": 1}},
-        "names": {"type": "array", "items": {"type": "string", "minLength": 1}},
+        "canonical": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/selector"}},
+        "names": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/selector"}},
         "mcp": {
           "type": "array",
+          "minItems": 1,
           "items": {
             "type": "object",
             "required": ["server", "tool"],
             "additionalProperties": false,
             "properties": {
-              "server": {"type": "string", "minLength": 1},
-              "tool": {"type": "string", "minLength": 1}
+              "server": {"$ref": "#/$defs/selector", "pattern": "^[^/]+$"},
+              "tool": {"$ref": "#/$defs/selector", "pattern": "^[^/]+$"}
             }
           }
         },
-        "skill": {"type": "array", "items": {"type": "string", "minLength": 1}}
+        "skill": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/selector"}}
       }
     },
     "order": {
@@ -160,7 +166,7 @@
     "entry": {
       "type": "object",
       "required": [
-        "rule", "entry", "src", "src_sha256", "body_sha256", "order", "action",
+        "rule", "entry", "src", "src_sha256", "body_sha256", "order", "target", "action",
         "when", "repeat", "reinject_on_compact", "needs", "body", "est", "degraded_from"
       ],
       "additionalProperties": false,
@@ -171,6 +177,7 @@
         "src_sha256": {"$ref": "#/$defs/sha256"},
         "body_sha256": {"$ref": "#/$defs/sha256"},
         "order": {"$ref": "#/$defs/order"},
+        "target": {"enum": ["system", "event", "tool", "mcp", "skill"]},
         "action": {"enum": ["inject", "warn", "block"]},
         "match": {"$ref": "#/$defs/match"},
         "when": {"$ref": "#/$defs/when"},
@@ -210,6 +217,65 @@
         {"not": {"required": ["sources"]}}
       ]
     },
+    "routedToolEntry": {
+      "allOf": [
+        {"$ref": "#/$defs/entryWithMatch"}
+      ],
+      "oneOf": [
+        {
+          "properties": {
+            "target": {"const": "tool"},
+            "match": {
+              "allOf": [
+                {"$ref": "#/$defs/match"},
+                {"anyOf": [{"required": ["canonical"]}, {"required": ["names"]}]},
+                {"not": {"anyOf": [{"required": ["mcp"]}, {"required": ["skill"]}]}}
+              ]
+            }
+          },
+          "required": ["target", "match"]
+        },
+        {
+          "properties": {
+            "target": {"const": "mcp"},
+            "match": {
+              "allOf": [
+                {"$ref": "#/$defs/match"},
+                {"required": ["mcp"]},
+                {"not": {"anyOf": [{"required": ["canonical"]}, {"required": ["names"]}, {"required": ["skill"]}]}}
+              ]
+            }
+          },
+          "required": ["target", "match"]
+        },
+        {
+          "properties": {
+            "target": {"const": "skill"},
+            "match": {
+              "allOf": [
+                {"$ref": "#/$defs/match"},
+                {"required": ["skill"]},
+                {"not": {"anyOf": [{"required": ["canonical"]}, {"required": ["names"]}, {"required": ["mcp"]}]}}
+              ]
+            }
+          },
+          "required": ["target", "match"]
+        }
+      ]
+    },
+    "eventToolEntry": {
+      "allOf": [
+        {"$ref": "#/$defs/entry"},
+        {"properties": {"target": {"const": "event"}}, "required": ["target"]},
+        {"not": {"anyOf": [{"required": ["match"]}, {"required": ["sources"]}]}}
+      ]
+    },
+    "toolHookEntry": {
+      "oneOf": [
+        {"$ref": "#/$defs/routedToolEntry"},
+        {"$ref": "#/$defs/eventToolEntry"}
+      ]
+    },
     "entryWithoutMatchOrSources": {
       "allOf": [
         {"$ref": "#/$defs/entry"},
@@ -219,8 +285,21 @@
     "sessionEntry": {
       "allOf": [
         {"$ref": "#/$defs/entry"},
+        {"properties": {"target": {"enum": ["system", "event"]}}, "required": ["target"]},
         {"required": ["sources"]},
         {"not": {"required": ["match"]}}
+      ]
+    },
+    "promptEntry": {
+      "allOf": [
+        {"$ref": "#/$defs/entryWithoutMatchOrSources"},
+        {"properties": {"target": {"enum": ["system", "event"]}}, "required": ["target"]}
+      ]
+    },
+    "explicitSkillEntry": {
+      "allOf": [
+        {"$ref": "#/$defs/entryWithMatch"},
+        {"properties": {"target": {"const": "skill"}}, "required": ["target"]}
       ]
     },
     "harness": {
@@ -228,11 +307,11 @@
       "additionalProperties": false,
       "properties": {
         "session.start": {"type": "array", "items": {"$ref": "#/$defs/sessionEntry"}},
-        "prompt.submitted": {"type": "array", "items": {"$ref": "#/$defs/entryWithoutMatchOrSources"}},
-        "skill.explicit": {"type": "array", "items": {"$ref": "#/$defs/entryWithMatch"}},
-        "tool.pre": {"type": "array", "items": {"$ref": "#/$defs/entryWithMatch"}},
-        "tool.post": {"type": "array", "items": {"$ref": "#/$defs/entryWithMatch"}},
-        "tool.error": {"type": "array", "items": {"$ref": "#/$defs/entryWithMatch"}},
+        "prompt.submitted": {"type": "array", "items": {"$ref": "#/$defs/promptEntry"}},
+        "skill.explicit": {"type": "array", "items": {"$ref": "#/$defs/explicitSkillEntry"}},
+        "tool.pre": {"type": "array", "items": {"$ref": "#/$defs/toolHookEntry"}},
+        "tool.post": {"type": "array", "items": {"$ref": "#/$defs/toolHookEntry"}},
+        "tool.error": {"type": "array", "items": {"$ref": "#/$defs/toolHookEntry"}},
         "subagent.start": {"type": "array", "items": {"$ref": "#/$defs/entryWithoutMatchOrSources"}}
       }
     }

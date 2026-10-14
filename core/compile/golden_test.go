@@ -88,7 +88,20 @@ func TestIndexSchemaRejectsInvalidDocuments(t *testing.T) {
 			entry(doc, plan.SessionStart, 0)["match"] = map[string]any{"canonical": []any{"shell"}}
 		}},
 		{"prompt entry with sources", func(doc map[string]any) { entry(doc, plan.PromptSubmitted, 0)["sources"] = []any{"startup"} }},
-		{"tool entry without match", func(doc map[string]any) { delete(entry(doc, plan.ToolPre, 0), "match") }},
+		{"explicit skill entry without match", func(doc map[string]any) { delete(entry(doc, plan.SkillExplicit, 0), "match") }},
+		{"tool target with mcp match", func(doc map[string]any) { entry(doc, plan.ToolPre, 0)["target"] = "tool" }},
+		{"mcp match component contains slash", func(doc map[string]any) {
+			entry(doc, plan.ToolPre, 0)["match"].(map[string]any)["mcp"].([]any)[0].(map[string]any)["tool"] = "create_pull_request/extra"
+		}},
+		{"mcp match component has surrounding whitespace", func(doc map[string]any) {
+			entry(doc, plan.ToolPre, 0)["match"].(map[string]any)["mcp"].([]any)[0].(map[string]any)["server"] = "github "
+		}},
+		{"empty match selector list", func(doc map[string]any) {
+			entry(doc, plan.ToolPre, 1)["match"].(map[string]any)["canonical"] = []any{}
+		}},
+		{"whitespace-only match selector", func(doc map[string]any) {
+			entry(doc, plan.ToolPre, 1)["match"].(map[string]any)["canonical"] = []any{" "}
+		}},
 		{"unknown entry property", func(doc map[string]any) { entry(doc, plan.SessionStart, 0)["body_text"] = "unknown" }},
 	}
 	for _, tc := range cases {
@@ -112,6 +125,62 @@ func TestIndexSchemaAllowsNegativePriorityAndDuplicateSources(t *testing.T) {
 	entry(document, plan.SessionStart, 0)["sources"] = []any{"startup", "startup"}
 	if err := loadIndexSchema(t).Validate(document); err != nil {
 		t.Fatalf("schema rejected values accepted by STYLE: %v", err)
+	}
+}
+
+func TestEventTargetAtToolPointCompilesWithoutMatch(t *testing.T) {
+	pkg := loadResolved(t, "event-target", `  - id: every-tool
+    target: event
+    event: tool.pre
+    text: Check every tool call.
+`)
+	input := inputFor(t, pkg, 1)
+	result, err := Build(Request{StyleVersion: "1.0.0", Packages: []PackageInput{input}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	entries := result.Index.Harnesses["codex"][plan.ToolPre]
+	if len(entries) != 1 {
+		t.Fatalf("tool.pre entries = %#v", entries)
+	}
+	if entries[0].Target != "event" || entries[0].Match != nil {
+		t.Fatalf("event-wide entry target/match = %q/%#v", entries[0].Target, entries[0].Match)
+	}
+	raw, err := Encode(result.Index)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := loadIndexSchema(t).Validate(decodeJSON(t, raw)); err != nil {
+		t.Fatalf("valid event-wide tool rule does not satisfy index schema: %v", err)
+	}
+}
+
+func TestNormalizedMatchRejectsInvalidSelectors(t *testing.T) {
+	cases := []struct {
+		name   string
+		fields map[string]any
+	}{
+		{"empty tool selector", map[string]any{"target": "tool", "tool": ""}},
+		{"empty tool selector list", map[string]any{"target": "tool", "names": []any{}}},
+		{"empty canonical selector beside native name", map[string]any{"target": "tool", "tool": []any{}, "names": []any{"Edit"}}},
+		{"blank native name", map[string]any{"target": "tool", "names": []any{"Edit", " "}}},
+		{"blank skill", map[string]any{"target": "skill", "skill": []any{" "}}},
+		{"mcp selector missing slash", map[string]any{"target": "mcp", "mcp": "server"}},
+		{"mcp selector extra slash", map[string]any{"target": "mcp", "mcp": "server/tool/extra"}},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			if _, err := normalizedMatch(tc.fields, plan.ToolPre); err == nil {
+				t.Fatalf("normalizedMatch(%#v) succeeded, want invalid selector error", tc.fields)
+			}
+		})
+	}
+	match, err := normalizedMatch(map[string]any{"target": "mcp", "mcp": []any{"server/*", "*/search"}}, plan.ToolPre)
+	if err != nil {
+		t.Fatalf("normalizedMatch() rejected MCP wildcards: %v", err)
+	}
+	if len(match.MCP) != 2 {
+		t.Fatalf("normalized MCP wildcard selectors = %#v", match.MCP)
 	}
 }
 

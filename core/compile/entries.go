@@ -113,7 +113,7 @@ func makeEntry(pkg *spec.ResolvedPackage, rule spec.Rule, planned plan.RulePlan,
 		repeat = "session"
 	}
 	entry := Entry{Rule: ref, Entry: ref + "@" + placement.Event, Source: source, SourceSHA256: sourceHash,
-		BodySHA256: bodyHash, Order: order, Action: placement.Action, Match: match, When: whenRule,
+		BodySHA256: bodyHash, Order: order, Target: text(effective["target"]), Action: placement.Action, Match: match, When: whenRule,
 		Repeat: repeat, ReinjectOnCompact: boolValue(effective["reinject_on_compact"]),
 		Reevaluate: placement.Reevaluate, Needs: sortedStrings(planned.Needs), Body: body,
 		Estimate: tokens.Estimate{}, DegradedFrom: optionalString(placement.DegradedFrom)}
@@ -175,6 +175,9 @@ func normalizedMatch(fields map[string]any, event string) (*Match, error) {
 		return nil, nil
 	}
 	target := text(fields["target"])
+	if target != "tool" && target != "mcp" && target != "skill" {
+		return nil, nil
+	}
 	match := &Match{}
 	var err error
 	switch target {
@@ -183,19 +186,57 @@ func normalizedMatch(fields map[string]any, event string) (*Match, error) {
 		if err == nil {
 			match.Names, err = stringsValue(fields["names"])
 		}
+		if err == nil && len(match.Canonical)+len(match.Names) == 0 {
+			err = fmt.Errorf("tool target requires a non-empty selector")
+		}
+		if err == nil && fields["tool"] != nil && len(match.Canonical) == 0 {
+			err = fmt.Errorf("tool selector list must not be empty")
+		}
+		if err == nil && fields["names"] != nil && len(match.Names) == 0 {
+			err = fmt.Errorf("native name selector list must not be empty")
+		}
+		if err == nil {
+			for _, selectors := range [][]string{match.Canonical, match.Names} {
+				for _, selector := range selectors {
+					if !validSelector(selector) {
+						err = fmt.Errorf("tool selector %q must not be empty or have surrounding whitespace", selector)
+						break
+					}
+				}
+				if err != nil {
+					break
+				}
+			}
+		}
 	case "mcp":
 		values, valueErr := stringsValue(fields["mcp"])
 		err = valueErr
+		if err == nil && fields["mcp"] != nil && len(values) == 0 {
+			err = fmt.Errorf("mcp selector list must not be empty")
+		}
+		if err == nil && len(values) == 0 {
+			err = fmt.Errorf("mcp target requires a non-empty selector")
+		}
 		for _, value := range values {
 			server, tool, ok := strings.Cut(value, "/")
-			if !ok || server == "" || tool == "" {
+			if !ok || !validSelector(server) || !validSelector(tool) || strings.Contains(tool, "/") {
 				return nil, fmt.Errorf("mcp selector %q must be server/tool", value)
 			}
 			match.MCP = append(match.MCP, MCPSelector{Server: server, Tool: tool})
 		}
 	case "skill":
 		match.Skill, err = stringsValue(fields["skill"])
+		if err == nil && fields["skill"] != nil && len(match.Skill) == 0 {
+			err = fmt.Errorf("skill selector list must not be empty")
+		}
+		if err == nil && len(match.Skill) == 0 {
+			err = fmt.Errorf("skill target requires a non-empty selector")
+		}
 		for i := range match.Skill {
+			if !validSelector(match.Skill[i]) {
+				err = fmt.Errorf("skill selector %q must not be empty or have surrounding whitespace", match.Skill[i])
+				break
+			}
 			match.Skill[i] = strings.ToLower(match.Skill[i])
 		}
 	}
@@ -206,6 +247,10 @@ func normalizedMatch(fields map[string]any, event string) (*Match, error) {
 		sort.Strings(match.Skill)
 	}
 	return match, nil
+}
+
+func validSelector(value string) bool {
+	return value != "" && value == strings.TrimSpace(value)
 }
 
 func sourceDigest(files map[string][]byte, source string) string {
