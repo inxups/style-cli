@@ -27,7 +27,7 @@
 | `src` | string | 是 | 正文来源：规则文件或正文文件的包内路径；`text:` 内联时是 `STYLE.yaml#<规则 id>` |
 | `src_sha256` | string | 是 | 来源**文件**的 sha256，给 `trust` 比对 |
 | `body_sha256` | string | 是 | 渲染前的正文（模板原文）的 sha256，用来区分"这条规则变了"和"同一文件里别的东西变了" |
-| `order` | [int, int, int] | 是 | `[priority, 包安装序号, 包内序号]`，包内序号是它在 `rules[]` 里的位置 |
+| `order` | [number, int, int] | 是 | `[priority, 包安装序号, 包内序号]`，`priority` 可为有限小数，包内序号是它在 `rules[]` 里的位置 |
 | `action` | string | 是 | 降级之后的最终动作：`inject` / `warn` / `block` |
 | `match` | object | `tool.*`、`skill.explicit` 上必有 | 见 9.3 |
 | `when` | object | 是 | 规范化后的条件，见 9.4。至少有 `agent` |
@@ -38,6 +38,7 @@
 | `needs` | string[] | 是 | 正文变量 ∪ `when` 用到的运行时数据：`model`、`thinking_effort`、`harness.<键>` |
 | `body` | object | 是 | `inject`：给模型的正文；`warn`：给用户的全文；`block`：拒绝理由。写法 `{"static": "…"}` 或 `{"parts": ["文本", {"var": "model", "default": "未知"}, …]}` |
 | `model_body` | object | `warn` 上必有 | 给模型的那一句，写法同 `body` |
+| `model_body_first_sentence` | bool | 否 | 仅隐式生成的动态 `warn` 正文可能为 `true`；运行时在模板渲染后提取首句。显式 `model_text` 不截断，静态正文在编译时已截断 |
 | `est` | object | 是 | 给模型那份文字的估算 `{tokens, chars}`；动态部分按占位长度（CLI 设计第 11 节） |
 | `degraded_from` | string \| null | 是 | 原本的评估点；没降级为 `null` |
 

@@ -7,6 +7,17 @@ import (
 	"github.com/inxups/style-cli/internal/tokenestimate"
 )
 
+// EstimatePlacement estimates exactly one plan placement's model-facing text.
+// Unsupported or user-only output has zero model cost. Compilation uses the
+// same policy as Analyze so index estimates cannot diverge from plan reports.
+func EstimatePlacement(rule spec.Rule, placement plan.Placement, pkg *spec.ResolvedPackage) (Estimate, error) {
+	text, include, err := modelText(rule, placement, pkg)
+	if err != nil || !include {
+		return Estimate{}, err
+	}
+	return EstimateText(text), nil
+}
+
 func estimateRule(rule spec.Rule, planned plan.RulePlan, pkg *spec.ResolvedPackage) (RuleEstimate, []placementEstimate, error) {
 	result := RuleEstimate{RuleID: planned.ID, Action: planned.Action, Status: planned.Status}
 	placements := make([]placementEstimate, 0, len(planned.Placements))

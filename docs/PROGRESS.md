@@ -353,3 +353,12 @@
 - 边界：`core` 只依赖 `core/plan`、`core/spec` 和 `core/tokens` 的抽象，不导入 `agenthooks` 或 `internal/adapter`；T22 没有复制 hook codec、事件解析或安装渲染。具体 Codex/Claude 实现、effort 映射和 runtime Enrich 留给 T41–T45。
 - 回归：`internal/adapter/registry_test.go` 覆盖注册确定性、查找复制、定义校验、检测、路由生命周期和规划事实投影；`boundary_test.go` 扫描 core imports，防止 provider 依赖倒灌。
 - 验证：隔离环境下 `go test -count=1 ./internal/adapter ./core/plan ./core/tokens`、`go vet ./internal/adapter`、`GOPROXY=off GOSUMDB=off make test-go`、`GOPROXY=off GOSUMDB=off make vet-go`、`go mod tidy -diff`、gofmt 和 `git diff --check` 均通过；`agenthooks/` 无修改。任务清单 T22 与测试矩阵 B1.9 已标记 `[x]`；按用户要求暂不更新 review 文档，待 T2X 完成后统一回顾。
+
+### 2026-10-14 — T23/B1.10 `[x]`
+
+- 实现：新增 `core/compile`，`Build` 消费已校验/合并的包、安装顺序、settings、lock identity 和按 harness 选定的 plan，输出纯内存 `Index` 及静态托管正文；`Encode` 生成缩进、稳定键序和尾换行的 JSON。编译阶段不重新跑 fallback 策略、不读磁盘，source hash 使用 `spec.Load` 已读取的内存文件字节。
+- 编译内容：生成静态条目与 event entries，归一化 match/when，写入 package/rule/order、来源和正文 SHA256、repeat/session sources/reeval/needs、body 静态文本或运行时片段及 placement 估算；`warn` 支持显式 `model_text`，隐式动态正文在运行时渲染后提取首句。为保持 index 格式完整，拒绝缺失静态值、来源字节、非法 plan、评估点和静态 slot；静态列表保留重复 rule 的独立记录且确定排序。
+- 规范：更新 `STYLE_DOCS/STYLE-spec-compiled.md`，明确 `order.priority` 可为有限小数，并定义 `model_body_first_sentence` 的动态处理时机。
+- 回归：`core/compile/build_test.go` 覆盖静态和动态内容、安装 settings、默认值、skill/tool 选择器、条件规范化、warn、hash、fractional priority、多包确定性、JSON 往返、HTML 字符及输入拒绝边界。
+- 验证：隔离环境下定向 `go test -count=1 ./core/compile ./core/plan ./core/tokens ./core/spec ./core/when ./core/template ./core/warn ./internal/tokenestimate`、双 module `GOPROXY=off GOSUMDB=off make test-go` 和 `make vet-go`、`go mod tidy -diff`、gofmt、空白检查全部通过；未修改 `agenthooks/`。
+- 状态：任务清单 T23、测试矩阵 B1.10 已标为 `[x]`。A3 的 example schema/golden 继续留在 T24；runtime 接线留给 T32；按用户要求 review 文档不在 T23 单独改动，待 T2X 完成后统一回顾。
