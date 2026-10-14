@@ -28,8 +28,8 @@ func Build(request Request) (Result, error) {
 		metadata := input.Package.Package.Metadata
 		info := PackageInfo{Name: text(metadata["name"]), Version: text(metadata["version"]),
 			Seq: input.Sequence, Lock: input.Lock, Link: input.Link}
-		if info.Name == "" || info.Version == "" || info.Seq <= 0 || info.Lock == "" {
-			return Result{}, fmt.Errorf("compile: package name, version, positive sequence and lock are required")
+		if info.Name == "" || info.Version == "" || info.Seq <= 0 || !validSHA256(info.Lock) {
+			return Result{}, fmt.Errorf("compile: package name, version, positive sequence and valid sha256 lock are required")
 		}
 		if names[info.Name] || sequences[info.Seq] {
 			return Result{}, fmt.Errorf("compile: duplicate package name or installation sequence")

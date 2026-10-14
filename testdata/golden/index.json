@@ -1,0 +1,530 @@
+{
+  "format": 1,
+  "style_version": "0.3.0",
+  "packages": [
+    {
+      "name": "terse-reviewer",
+      "version": "0.3.0",
+      "seq": 1,
+      "lock": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+      "link": false
+    }
+  ],
+  "static": {
+    "codex": [
+      {
+        "rule": "terse-reviewer/style",
+        "slot": "developer_instructions",
+        "src": "prompts/style.md",
+        "body_sha256": "sha256:bc7360b223dca1f518dd56fcf9facfc782597cea27fa2460f4ac49386cd5f91b",
+        "est": {
+          "tokens": 27,
+          "chars": 90
+        }
+      }
+    ]
+  },
+  "harnesses": {
+    "codex": {
+      "prompt.submitted": [
+        {
+          "rule": "terse-reviewer/session-info",
+          "entry": "terse-reviewer/session-info@prompt.submitted",
+          "src": "prompts/session-info.md",
+          "src_sha256": "sha256:3285ca9cfc76a02a501007c5325df03eefef5ac7f2f2582994bb88ef93198104",
+          "body_sha256": "sha256:3285ca9cfc76a02a501007c5325df03eefef5ac7f2f2582994bb88ef93198104",
+          "order": [
+            50,
+            1,
+            2
+          ],
+          "action": "inject",
+          "when": {
+            "thinking_effort_approx": null,
+            "agent": [
+              "main"
+            ]
+          },
+          "repeat": "session",
+          "reinject_on_compact": true,
+          "reeval": true,
+          "needs": [
+            "agent",
+            "model",
+            "thinking_effort"
+          ],
+          "body": {
+            "parts": [
+              "Current session: model ",
+              {
+                "var": "model",
+                "default": "unknown"
+              },
+              ", effort ",
+              {
+                "var": "thinking_effort",
+                "default": "unknown"
+              },
+              ".\n"
+            ]
+          },
+          "est": {
+            "tokens": 43,
+            "chars": 162
+          },
+          "degraded_from": null
+        },
+        {
+          "rule": "terse-reviewer/low-effort-guard",
+          "entry": "terse-reviewer/low-effort-guard@prompt.submitted",
+          "src": "prompts/low-effort.md",
+          "src_sha256": "sha256:8fc6166eb3c6b4e27f0ad3a00c4584e3760cf1f1ff2d3dc23682c9a0d1f1c988",
+          "body_sha256": "sha256:8fc6166eb3c6b4e27f0ad3a00c4584e3760cf1f1ff2d3dc23682c9a0d1f1c988",
+          "order": [
+            50,
+            1,
+            3
+          ],
+          "action": "inject",
+          "when": {
+            "thinking_effort": [
+              "none",
+              "minimal",
+              "low"
+            ],
+            "thinking_effort_approx": null,
+            "agent": [
+              "main"
+            ]
+          },
+          "repeat": "session",
+          "reinject_on_compact": true,
+          "reeval": true,
+          "needs": [
+            "agent",
+            "thinking_effort"
+          ],
+          "body": {
+            "static": "Use a concise review format for low-effort runs.\n"
+          },
+          "est": {
+            "tokens": 15,
+            "chars": 49
+          },
+          "degraded_from": null
+        },
+        {
+          "rule": "terse-reviewer/on-review-prompt",
+          "entry": "terse-reviewer/on-review-prompt@prompt.submitted",
+          "src": "STYLE.yaml#on-review-prompt",
+          "src_sha256": "sha256:522e7a5ca47a3ffa6bf4cf7dc09311f32eb00bf170983a778ae704e3f3201c32",
+          "body_sha256": "sha256:d7410546ba0a3fc218c962c96a2526dc2cb381e0a1d7b95047d87b8f70815570",
+          "order": [
+            50,
+            1,
+            8
+          ],
+          "action": "warn",
+          "when": {
+            "model": [
+              "gpt-5*",
+              "**/claude-*"
+            ],
+            "thinking_effort_approx": null,
+            "harness": {
+              "name": [
+                "codex"
+              ]
+            },
+            "agent": [
+              "main"
+            ],
+            "conditions": [
+              {
+                "field": "prompt",
+                "op": "regex",
+                "pattern": "(?i)review|评审"
+              }
+            ]
+          },
+          "repeat": "every",
+          "reinject_on_compact": false,
+          "needs": [
+            "agent",
+            "harness.name",
+            "model",
+            "prompt"
+          ],
+          "body": {
+            "static": "Review request received. Keep findings concise."
+          },
+          "model_body": {
+            "static": "Review request received."
+          },
+          "est": {
+            "tokens": 7,
+            "chars": 24
+          },
+          "degraded_from": null
+        }
+      ],
+      "session.start": [
+        {
+          "rule": "terse-reviewer/session-info",
+          "entry": "terse-reviewer/session-info@session.start",
+          "src": "prompts/session-info.md",
+          "src_sha256": "sha256:3285ca9cfc76a02a501007c5325df03eefef5ac7f2f2582994bb88ef93198104",
+          "body_sha256": "sha256:3285ca9cfc76a02a501007c5325df03eefef5ac7f2f2582994bb88ef93198104",
+          "order": [
+            50,
+            1,
+            2
+          ],
+          "action": "inject",
+          "when": {
+            "thinking_effort_approx": null,
+            "agent": [
+              "main"
+            ]
+          },
+          "repeat": "session",
+          "reinject_on_compact": true,
+          "sources": [
+            "startup",
+            "clear",
+            "fork",
+            "compact"
+          ],
+          "needs": [
+            "agent",
+            "model",
+            "thinking_effort"
+          ],
+          "body": {
+            "parts": [
+              "Current session: model ",
+              {
+                "var": "model",
+                "default": "unknown"
+              },
+              ", effort ",
+              {
+                "var": "thinking_effort",
+                "default": "unknown"
+              },
+              ".\n"
+            ]
+          },
+          "est": {
+            "tokens": 43,
+            "chars": 162
+          },
+          "degraded_from": null
+        },
+        {
+          "rule": "terse-reviewer/low-effort-guard",
+          "entry": "terse-reviewer/low-effort-guard@session.start",
+          "src": "prompts/low-effort.md",
+          "src_sha256": "sha256:8fc6166eb3c6b4e27f0ad3a00c4584e3760cf1f1ff2d3dc23682c9a0d1f1c988",
+          "body_sha256": "sha256:8fc6166eb3c6b4e27f0ad3a00c4584e3760cf1f1ff2d3dc23682c9a0d1f1c988",
+          "order": [
+            50,
+            1,
+            3
+          ],
+          "action": "inject",
+          "when": {
+            "thinking_effort": [
+              "none",
+              "minimal",
+              "low"
+            ],
+            "thinking_effort_approx": null,
+            "agent": [
+              "main"
+            ]
+          },
+          "repeat": "session",
+          "reinject_on_compact": true,
+          "sources": [
+            "startup",
+            "clear",
+            "fork",
+            "compact"
+          ],
+          "needs": [
+            "agent",
+            "thinking_effort"
+          ],
+          "body": {
+            "static": "Use a concise review format for low-effort runs.\n"
+          },
+          "est": {
+            "tokens": 15,
+            "chars": 49
+          },
+          "degraded_from": null
+        }
+      ],
+      "skill.explicit": [
+        {
+          "rule": "terse-reviewer/review-skill",
+          "entry": "terse-reviewer/review-skill@skill.explicit",
+          "src": "prompts/skill-code-review.md",
+          "src_sha256": "sha256:0ee43fbf6db1b6b384dc72adea2f79c4a1030abc64f1cd630942ed92557cb5b9",
+          "body_sha256": "sha256:0ee43fbf6db1b6b384dc72adea2f79c4a1030abc64f1cd630942ed92557cb5b9",
+          "order": [
+            50,
+            1,
+            4
+          ],
+          "action": "inject",
+          "match": {
+            "skill": [
+              "code-review"
+            ]
+          },
+          "when": {
+            "thinking_effort_approx": null,
+            "agent": [
+              "main"
+            ]
+          },
+          "repeat": "session",
+          "reinject_on_compact": false,
+          "needs": [
+            "agent"
+          ],
+          "body": {
+            "static": "When using the code-review skill, report at most 8 findings.\n"
+          },
+          "est": {
+            "tokens": 19,
+            "chars": 61
+          },
+          "degraded_from": null
+        }
+      ],
+      "tool.post": [
+        {
+          "rule": "terse-reviewer/no-todo-comments",
+          "entry": "terse-reviewer/no-todo-comments@tool.post",
+          "src": "rules/no-todo-comments.md",
+          "src_sha256": "sha256:c4f11e2095272fafe94a95b779f78ec2aeedd6469d8dbd99d331ef7807e0ea2d",
+          "body_sha256": "sha256:555c5b06986ea56ba5c0db476bf96c2281defd488e8992294e0b29874c0a3e68",
+          "order": [
+            40,
+            1,
+            0
+          ],
+          "action": "warn",
+          "match": {
+            "canonical": [
+              "file.edit",
+              "file.write"
+            ]
+          },
+          "when": {
+            "thinking_effort_approx": null,
+            "agent": [
+              "main"
+            ],
+            "conditions": [
+              {
+                "field": "tool.added",
+                "op": "contains",
+                "pattern": "TODO"
+              }
+            ]
+          },
+          "repeat": "every",
+          "reinject_on_compact": false,
+          "needs": [
+            "agent",
+            "tool.added"
+          ],
+          "body": {
+            "static": "Do not leave TODO comments in code. Report unfinished work in the response."
+          },
+          "model_body": {
+            "static": "Do not leave TODO comments in code."
+          },
+          "est": {
+            "tokens": 11,
+            "chars": 35
+          },
+          "degraded_from": null
+        },
+        {
+          "rule": "terse-reviewer/review-skill",
+          "entry": "terse-reviewer/review-skill@tool.post",
+          "src": "prompts/skill-code-review.md",
+          "src_sha256": "sha256:0ee43fbf6db1b6b384dc72adea2f79c4a1030abc64f1cd630942ed92557cb5b9",
+          "body_sha256": "sha256:0ee43fbf6db1b6b384dc72adea2f79c4a1030abc64f1cd630942ed92557cb5b9",
+          "order": [
+            50,
+            1,
+            4
+          ],
+          "action": "inject",
+          "match": {
+            "skill": [
+              "code-review"
+            ]
+          },
+          "when": {
+            "thinking_effort_approx": null,
+            "agent": [
+              "main"
+            ]
+          },
+          "repeat": "session",
+          "reinject_on_compact": false,
+          "needs": [
+            "agent"
+          ],
+          "body": {
+            "static": "When using the code-review skill, report at most 8 findings.\n"
+          },
+          "est": {
+            "tokens": 19,
+            "chars": 61
+          },
+          "degraded_from": null
+        },
+        {
+          "rule": "terse-reviewer/after-git-diff",
+          "entry": "terse-reviewer/after-git-diff@tool.post",
+          "src": "prompts/tool-git-diff.md",
+          "src_sha256": "sha256:7c35aa8372ce922b63ead97d6d9e4b706b62df9daf67d1fb37cefe8c826810aa",
+          "body_sha256": "sha256:7c35aa8372ce922b63ead97d6d9e4b706b62df9daf67d1fb37cefe8c826810aa",
+          "order": [
+            50,
+            1,
+            5
+          ],
+          "action": "inject",
+          "match": {
+            "canonical": [
+              "shell"
+            ]
+          },
+          "when": {
+            "thinking_effort_approx": null,
+            "agent": [
+              "main"
+            ],
+            "conditions": [
+              {
+                "field": "tool.input.command",
+                "op": "regex",
+                "pattern": "\\bgit\\s+(diff|log|show)\\b"
+              }
+            ]
+          },
+          "repeat": "session",
+          "reinject_on_compact": false,
+          "needs": [
+            "agent",
+            "tool.input.command"
+          ],
+          "body": {
+            "static": "After inspecting a diff, check changed behavior and tests before summarizing.\n"
+          },
+          "est": {
+            "tokens": 23,
+            "chars": 78
+          },
+          "degraded_from": null
+        }
+      ],
+      "tool.pre": [
+        {
+          "rule": "terse-reviewer/before-create-pr",
+          "entry": "terse-reviewer/before-create-pr@tool.pre",
+          "src": "prompts/mcp-create-pr.md",
+          "src_sha256": "sha256:2c6c7eab07b0856228995a7164099c26bda17b61513e5d9770fee5f1af39d478",
+          "body_sha256": "sha256:2c6c7eab07b0856228995a7164099c26bda17b61513e5d9770fee5f1af39d478",
+          "order": [
+            50,
+            1,
+            6
+          ],
+          "action": "inject",
+          "match": {
+            "mcp": [
+              {
+                "server": "github",
+                "tool": "create_pull_request"
+              }
+            ]
+          },
+          "when": {
+            "thinking_effort_approx": null,
+            "agent": [
+              "main"
+            ]
+          },
+          "repeat": "session",
+          "reinject_on_compact": false,
+          "needs": [
+            "agent"
+          ],
+          "body": {
+            "static": "Before creating a pull request, confirm the branch and test status.\n"
+          },
+          "est": {
+            "tokens": 21,
+            "chars": 68
+          },
+          "degraded_from": null
+        },
+        {
+          "rule": "terse-reviewer/no-force-push",
+          "entry": "terse-reviewer/no-force-push@tool.pre",
+          "src": "STYLE.yaml#no-force-push",
+          "src_sha256": "sha256:522e7a5ca47a3ffa6bf4cf7dc09311f32eb00bf170983a778ae704e3f3201c32",
+          "body_sha256": "sha256:fb48a21df69005425af64782ecf5c15b72716d04490b6474f277147569e37f4f",
+          "order": [
+            50,
+            1,
+            7
+          ],
+          "action": "block",
+          "match": {
+            "canonical": [
+              "shell"
+            ]
+          },
+          "when": {
+            "thinking_effort_approx": null,
+            "agent": [
+              "*"
+            ],
+            "conditions": [
+              {
+                "field": "tool.input.command",
+                "op": "regex",
+                "pattern": "git\\s+(?:-C\\s+\\S+\\s+)?push\\b.*(?:\\s--force(?:\\s|$)|\\s-f(?:\\s|$)|\\s\\+\\S)"
+              }
+            ]
+          },
+          "repeat": "every",
+          "reinject_on_compact": false,
+          "needs": [
+            "agent",
+            "tool.input.command"
+          ],
+          "body": {
+            "static": "Do not force push; create a new commit."
+          },
+          "est": {
+            "tokens": 12,
+            "chars": 39
+          },
+          "degraded_from": null
+        }
+      ]
+    }
+  }
+}

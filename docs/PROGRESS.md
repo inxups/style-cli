@@ -362,3 +362,11 @@
 - 回归：`core/compile/build_test.go` 覆盖静态和动态内容、安装 settings、默认值、skill/tool 选择器、条件规范化、warn、hash、fractional priority、多包确定性、JSON 往返、HTML 字符及输入拒绝边界。
 - 验证：隔离环境下定向 `go test -count=1 ./core/compile ./core/plan ./core/tokens ./core/spec ./core/when ./core/template ./core/warn ./internal/tokenestimate`、双 module `GOPROXY=off GOSUMDB=off make test-go` 和 `make vet-go`、`go mod tidy -diff`、gofmt、空白检查全部通过；未修改 `agenthooks/`。
 - 状态：任务清单 T23、测试矩阵 B1.10 已标为 `[x]`。A3 的 example schema/golden 继续留在 T24；runtime 接线留给 T32；按用户要求 review 文档不在 T23 单独改动，待 T2X 完成后统一回顾。
+
+### 2026-10-14 — T24/B1.11 `[x]`
+
+- 实现：新增 `example/terse-reviewer/` 可重复的 STYLE 示例包、`schema/index.schema.json`（Draft 2020-12）和 `testdata/golden/index.json`。编译测试从包加载、校验、合并、规划并生成 index，直接调用 `github.com/google/jsonschema-go` 验证正式 schema，再逐字节比较 golden；schema 将 session 来源、事件 selector、warn model body、body 编码、哈希、estimate 和未知字段约束固化。
+- 回归：无效文档用例覆盖必需字段、未知事件、session 缺来源/错带 match、prompt 错带来源、tool 缺 selector、未知 entry 字段；有效边界覆盖负 priority、重复 sources。编译器现在拒绝格式错误或大写的 package SHA256 lock，避免生成不符合 schema 的 index。
+- 文档：修正已跟踪 spec 文档中示例包相对链接；CLI design 文件在仓库 `.gitignore` 下保持非跟踪状态，不纳入本次提交。
+- 验证：隔离环境 `go test -count=1 ./core/compile`、`GOPROXY=off GOSUMDB=off make test-go`、`GOPROXY=off GOSUMDB=off make vet-go`、`go mod tidy -diff`、gofmt 和 `git diff --check` 全部通过；没有修改 `agenthooks/`。
+- 状态：任务清单 T24、测试矩阵 B1.11 和离线验收 A3 标记 `[x]`。按用户要求，本条仍不单独写回顾文档；T2X 完成后统一审查 T20–T24。

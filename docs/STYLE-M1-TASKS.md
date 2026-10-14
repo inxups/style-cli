@@ -36,7 +36,7 @@
 - [x] **T21 `core/tokens`**：实现 Unicode rune 字符计数与离线 token 估算；静态变量和动态占位符渲染；按 adapter Layout 聚合原生事件/工具的最坏成本；实现 `per_rule`、`per_event`、`always_on`、跨已安装包/适配器单位的 T003，以及 T001–T007 报告。`core/spec.Validate` 产出的 T001/T005/T006/T007 lint 由 token 报告统一复用；T002/T004 依赖具体 plan。block 与 inject/warn 的互斥最坏情况和输出分隔符分别计算。证据：`core/tokens/*_test.go`、`internal/tokenestimate/estimate_test.go`、`core/spec/validate_lints_test.go`；B1.8 和 `docs/PROGRESS.md` T21/B1.8。
 - [x] **T22 适配器一致性接口**：新增 `internal/adapter` 的窄接口和显式注册表：复用 `agenthooks.Provider`/`EventKind`，定义检测与安装、能力事实、运行时数据来源、静态位置、路线生命周期、trust、changeset、输入上限/单位/超限行为和 compact 信号；注册表做确定性 provider/route 校验与查找，且可投影为 `core/plan.Adapter`。`core` 不导入 provider 或具体 adapter 实现，具体 Codex/Claude adapter 留给 T44/T45。证据：`internal/adapter/*.go`、`internal/adapter/*_test.go`、B1.9 和 `docs/PROGRESS.md` T22/B1.9。
 - [x] **T23 `core/compile`**：新增纯编译器，把已合并包、安装值和选定 plan 编译为确定的 index 与静态托管正文；记录静态条目、规范化 event/match/when、来源和正文哈希、顺序、runtime body parts、session 默认值及 placement 估算。拒绝 blocked/不匹配 plan、缺失来源字节、未知评估点和静态槽位；输出按包序、规则 priority 和包内序号稳定排序。规范同步了小数 priority 顺序与动态 warn 首句标记。证据：`core/compile/*_test.go`、`STYLE_DOCS/STYLE-spec-compiled.md` §9；B1.10 与 `docs/PROGRESS.md` T23/B1.10。
-- [ ] **T24 index schema/golden**：为示例包建立 index schema 和逐字节 golden 输出。
+- [x] **T24 index schema/golden**：新增 `example/terse-reviewer/` 示例包、Draft 2020-12 `schema/index.schema.json` 和 `testdata/golden/index.json`；编译测试通过真实 JSON Schema 验证器检查 golden 与必需/禁止字段边界，并逐字节比较输出。验证和证据见 B1.11、A3、`docs/PROGRESS.md` T24/B1.11。
 
 ### 运行时
 

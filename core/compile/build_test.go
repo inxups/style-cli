@@ -277,6 +277,8 @@ func TestBuildRejectsBlockedMismatchedAndIncompletePlans(t *testing.T) {
 		{"wrong package", func(in *PackageInput) { in.Plans[0].Package = "other" }},
 		{"missing rule", func(in *PackageInput) { in.Plans[0].Rules = nil }},
 		{"missing source bytes", func(in *PackageInput) { delete(in.Package.Package.Files, "STYLE.yaml") }},
+		{"invalid lock digest", func(in *PackageInput) { in.Lock = "not-a-digest" }},
+		{"uppercase lock digest", func(in *PackageInput) { in.Lock = "sha256:" + strings.Repeat("A", 64) }},
 		{"unknown evaluation point", func(in *PackageInput) { in.Plans[0].Rules[0].Placements[0].Event = "unknown.event" }},
 		{"stale plan source", func(in *PackageInput) { in.Plans[0].Rules[0].Source = "rules/old.md" }},
 		{"unknown action", func(in *PackageInput) { in.Plans[0].Rules[0].Placements[0].Action = "side-effect" }},

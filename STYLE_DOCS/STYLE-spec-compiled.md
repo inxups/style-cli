@@ -79,7 +79,7 @@
 
 ### 9.5 示例（和示例包一致）
 
-[example/terse-reviewer](example/terse-reviewer/STYLE.yaml) 的 `rules[]`：0 `no-todo-comments`（`from:` 引入，`priority: 40`）、1 `style`、2 `session-info`、3 `low-effort-guard`、4 `review-skill`、5 `after-git-diff`、6 `before-create-pr`、7 `no-force-push`、8 `on-review-prompt`、9 `codex-only-notify`。包是第 1 个安装的。下面摘几个 Codex 上的条目（哈希省略）：
+[example/terse-reviewer](../example/terse-reviewer/STYLE.yaml) 的 `rules[]`：0 `no-todo-comments`（`from:` 引入，`priority: 40`）、1 `style`、2 `session-info`、3 `low-effort-guard`、4 `review-skill`、5 `after-git-diff`、6 `before-create-pr`、7 `no-force-push`、8 `on-review-prompt`、9 `codex-only-notify`。包是第 1 个安装的。下面摘几个 Codex 上的条目（哈希省略）：
 
 ```json
 {

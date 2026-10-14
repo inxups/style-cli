@@ -1,0 +1,74 @@
+# STYLE.yaml —— deterministic compile fixture
+spec: style/v0.3
+name: terse-reviewer
+version: 0.3.0
+description: deterministic compile fixture for STYLE index tests
+authors: [inxups]
+reads:
+  model: true
+  thinking_effort: true
+  harness: [name]
+vars:
+  lang: zh-CN
+settings:
+  - name: max_findings
+    description: maximum findings
+    default: "10"
+priority: 50
+budget:
+  per_rule: 400
+  per_event: 1200
+  always_on: 600
+defaults:
+  fallback: degrade
+rules:
+  - from: rules/no-todo-comments.md
+    priority: 40
+  - id: style
+    target: system
+    file: prompts/style.md
+  - id: session-info
+    target: system
+    file: prompts/session-info.md
+  - id: low-effort-guard
+    target: system
+    file: prompts/low-effort.md
+    when:
+      thinking_effort: "<=low"
+  - id: review-skill
+    target: skill
+    skill: code-review
+    file: prompts/skill-code-review.md
+  - id: after-git-diff
+    target: tool
+    tool: shell
+    when:
+      conditions:
+        - {field: tool.input.command, op: regex, pattern: '\bgit\s+(diff|log|show)\b'}
+    file: prompts/tool-git-diff.md
+  - id: before-create-pr
+    target: mcp
+    mcp: github/create_pull_request
+    at: before
+    file: prompts/mcp-create-pr.md
+    fallback: skip
+  - id: no-force-push
+    target: tool
+    tool: shell
+    action: block
+    when:
+      agent: any
+      conditions:
+        - {field: tool.input.command, op: regex, pattern: 'git\s+(?:-C\s+\S+\s+)?push\b.*(?:\s--force(?:\s|$)|\s-f(?:\s|$)|\s\+\S)'}
+    text: Do not force push; create a new commit.
+  - id: on-review-prompt
+    target: event
+    event: prompt.submitted
+    action: warn
+    when:
+      model: [gpt-5*, '**/claude-*']
+      harness: {name: codex}
+      conditions:
+        - {field: prompt, op: regex, pattern: '(?i)review|评审'}
+    text: Review request received. Keep findings concise.
+  - from: rules/codex-only-notify.md

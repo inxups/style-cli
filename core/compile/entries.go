@@ -225,6 +225,18 @@ func digest(data []byte) string {
 	return "sha256:" + hex.EncodeToString(sum[:])
 }
 
+func validSHA256(value string) bool {
+	if !strings.HasPrefix(value, "sha256:") {
+		return false
+	}
+	encoded := strings.TrimPrefix(value, "sha256:")
+	if len(encoded) != sha256.Size*2 || encoded != strings.ToLower(encoded) {
+		return false
+	}
+	_, err := hex.DecodeString(encoded)
+	return err == nil
+}
+
 func boolValue(value any) bool { result, _ := value.(bool); return result }
 
 func optionalString(value string) *string {

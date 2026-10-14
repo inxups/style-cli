@@ -1,0 +1,240 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://style.dev/schema/index.schema.json",
+  "title": "STYLE runtime index",
+  "type": "object",
+  "required": ["format", "style_version", "packages", "static", "harnesses"],
+  "additionalProperties": false,
+  "properties": {
+    "format": {"const": 1},
+    "style_version": {"type": "string", "minLength": 1},
+    "packages": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/package"}
+    },
+    "static": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "array",
+        "items": {"$ref": "#/$defs/staticEntry"}
+      }
+    },
+    "harnesses": {
+      "type": "object",
+      "propertyNames": {"minLength": 1},
+      "additionalProperties": {"$ref": "#/$defs/harness"}
+    }
+  },
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "package": {
+      "type": "object",
+      "required": ["name", "version", "seq", "lock", "link"],
+      "additionalProperties": false,
+      "properties": {
+        "name": {"type": "string", "minLength": 1},
+        "version": {"type": "string", "minLength": 1},
+        "seq": {"type": "integer", "minimum": 1},
+        "lock": {"$ref": "#/$defs/sha256"},
+        "link": {"type": "boolean"}
+      }
+    },
+    "estimate": {
+      "type": "object",
+      "required": ["tokens", "chars"],
+      "additionalProperties": false,
+      "properties": {
+        "tokens": {"type": "integer", "minimum": 0},
+        "chars": {"type": "integer", "minimum": 0}
+      }
+    },
+    "staticEntry": {
+      "type": "object",
+      "required": ["rule", "slot", "src", "body_sha256", "est"],
+      "additionalProperties": false,
+      "properties": {
+        "rule": {"type": "string", "minLength": 1},
+        "slot": {"enum": ["developer_instructions", "model_instructions_file", "claude_md"]},
+        "src": {"type": "string", "minLength": 1},
+        "body_sha256": {"$ref": "#/$defs/sha256"},
+        "est": {"$ref": "#/$defs/estimate"}
+      }
+    },
+    "variable": {
+      "type": "object",
+      "required": ["var"],
+      "additionalProperties": false,
+      "properties": {
+        "var": {"type": "string", "pattern": "^[A-Za-z_][A-Za-z0-9_.]*$"},
+        "default": {"type": "string"}
+      }
+    },
+    "body": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": ["static"],
+          "additionalProperties": false,
+          "properties": {"static": {"type": "string"}}
+        },
+        {
+          "type": "object",
+          "required": ["parts"],
+          "additionalProperties": false,
+          "properties": {
+            "parts": {
+              "type": "array",
+              "items": {"oneOf": [{"type": "string"}, {"$ref": "#/$defs/variable"}]}
+            }
+          }
+        }
+      ]
+    },
+    "condition": {
+      "type": "object",
+      "required": ["field", "op", "pattern"],
+      "additionalProperties": false,
+      "properties": {
+        "field": {"type": "string", "minLength": 1},
+        "op": {"enum": ["regex", "contains", "equals", "not_contains", "starts_with", "ends_with"]},
+        "pattern": {"type": "string"}
+      }
+    },
+    "when": {
+      "type": "object",
+      "required": ["agent", "thinking_effort_approx"],
+      "additionalProperties": false,
+      "properties": {
+        "model": {"type": "array", "items": {"type": "string"}},
+        "provider": {"type": "array", "items": {"type": "string"}},
+        "thinking_effort": {"type": "array", "items": {"type": "string"}},
+        "thinking_effort_approx": {"type": ["boolean", "null"]},
+        "harness": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "name": {"type": "array", "items": {"enum": ["codex", "claude-code"]}},
+            "permission_mode": {"type": "array", "items": {"type": "string"}}
+          }
+        },
+        "agent": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+        "conditions": {"type": "array", "items": {"$ref": "#/$defs/condition"}}
+      }
+    },
+    "match": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": false,
+      "properties": {
+        "canonical": {"type": "array", "items": {"type": "string", "minLength": 1}},
+        "names": {"type": "array", "items": {"type": "string", "minLength": 1}},
+        "mcp": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["server", "tool"],
+            "additionalProperties": false,
+            "properties": {
+              "server": {"type": "string", "minLength": 1},
+              "tool": {"type": "string", "minLength": 1}
+            }
+          }
+        },
+        "skill": {"type": "array", "items": {"type": "string", "minLength": 1}}
+      }
+    },
+    "order": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "prefixItems": [
+        {"type": "number"},
+        {"type": "integer", "minimum": 1},
+        {"type": "integer", "minimum": 0}
+      ],
+      "items": false
+    },
+    "entry": {
+      "type": "object",
+      "required": [
+        "rule", "entry", "src", "src_sha256", "body_sha256", "order", "action",
+        "when", "repeat", "reinject_on_compact", "needs", "body", "est", "degraded_from"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "rule": {"type": "string", "minLength": 1},
+        "entry": {"type": "string", "minLength": 1},
+        "src": {"type": "string", "minLength": 1},
+        "src_sha256": {"$ref": "#/$defs/sha256"},
+        "body_sha256": {"$ref": "#/$defs/sha256"},
+        "order": {"$ref": "#/$defs/order"},
+        "action": {"enum": ["inject", "warn", "block"]},
+        "match": {"$ref": "#/$defs/match"},
+        "when": {"$ref": "#/$defs/when"},
+        "repeat": {"enum": ["every", "turn", "session"]},
+        "reinject_on_compact": {"type": "boolean"},
+        "sources": {"type": "array", "items": {"type": "string"}},
+        "reeval": {"type": "boolean"},
+        "needs": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+        "body": {"$ref": "#/$defs/body"},
+        "model_body": {"$ref": "#/$defs/body"},
+        "model_body_first_sentence": {"type": "boolean"},
+        "est": {"$ref": "#/$defs/estimate"},
+        "degraded_from": {"type": ["string", "null"]}
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"action": {"const": "warn"}}, "required": ["action"]},
+          "then": {"required": ["model_body"]},
+          "else": {"not": {"required": ["model_body"]}}
+        },
+        {
+          "if": {
+            "properties": {"model_body_first_sentence": {"const": true}},
+            "required": ["model_body_first_sentence"]
+          },
+          "then": {
+            "required": ["model_body"],
+            "properties": {"action": {"const": "warn"}}
+          }
+        }
+      ]
+    },
+    "entryWithMatch": {
+      "allOf": [
+        {"$ref": "#/$defs/entry"},
+        {"required": ["match"]},
+        {"not": {"required": ["sources"]}}
+      ]
+    },
+    "entryWithoutMatchOrSources": {
+      "allOf": [
+        {"$ref": "#/$defs/entry"},
+        {"not": {"anyOf": [{"required": ["match"]}, {"required": ["sources"]}]}}
+      ]
+    },
+    "sessionEntry": {
+      "allOf": [
+        {"$ref": "#/$defs/entry"},
+        {"required": ["sources"]},
+        {"not": {"required": ["match"]}}
+      ]
+    },
+    "harness": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "session.start": {"type": "array", "items": {"$ref": "#/$defs/sessionEntry"}},
+        "prompt.submitted": {"type": "array", "items": {"$ref": "#/$defs/entryWithoutMatchOrSources"}},
+        "skill.explicit": {"type": "array", "items": {"$ref": "#/$defs/entryWithMatch"}},
+        "tool.pre": {"type": "array", "items": {"$ref": "#/$defs/entryWithMatch"}},
+        "tool.post": {"type": "array", "items": {"$ref": "#/$defs/entryWithMatch"}},
+        "tool.error": {"type": "array", "items": {"$ref": "#/$defs/entryWithMatch"}},
+        "subagent.start": {"type": "array", "items": {"$ref": "#/$defs/entryWithoutMatchOrSources"}}
+      }
+    }
+  }
+}

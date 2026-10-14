@@ -13,7 +13,7 @@
 
 **和 CLI 设计的分工**：本规范定义包格式、运行时语义、token 预算、安全约束和编译产物 `index.json`。命令、本地布局、两个适配器的具体做法、fork 改动、里程碑、验收和未决项在 [STYLE-cli-design.md](STYLE-cli-design.md)。两份冲突时，格式和语义以本规范为准，实现细节以 CLI 设计为准。
 
-**完整示例**：[example/terse-reviewer/STYLE.yaml](example/terse-reviewer/STYLE.yaml)
+**完整示例**：[example/terse-reviewer/STYLE.yaml](../example/terse-reviewer/STYLE.yaml)
 
 **出处标记**：
 
