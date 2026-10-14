@@ -3,6 +3,8 @@ package install
 import (
 	"errors"
 	"io/fs"
+	"strconv"
+	"strings"
 
 	"github.com/speakeasy-api/agenthooks"
 )
@@ -28,10 +30,12 @@ var kindToClaude = map[agenthooks.EventKind]string{
 }
 
 type claudeHookCmd struct {
-	Type    string `json:"type"`
-	Command string `json:"command"`
-	Timeout int    `json:"timeout,omitempty"`
-	Async   bool   `json:"async,omitempty"`
+	Type      string   `json:"type"`
+	Command   string   `json:"command"`
+	Args      []string `json:"args,omitempty"`
+	Timeout   int      `json:"timeout,omitempty"`
+	Async     bool     `json:"async,omitempty"`
+	OnFailure string   `json:"onFailure,omitempty"`
 }
 
 type claudeMatcherEntry struct {
@@ -40,6 +44,23 @@ type claudeMatcherEntry struct {
 }
 
 func renderClaude(m Manifest, t Target) (fs.FS, error) {
+	if len(m.Command) == 0 || strings.TrimSpace(m.Command[0]) == "" {
+		return nil, errors.New("install: Claude Code command executable is required")
+	}
+	if needsClaudeFailClosed(m) && !claudeSupportsOnFailure(t.HarnessVersion) {
+		return nil, claudeVersionError(t.HarnessVersion)
+	}
+	return renderClaudeConfig(m, t)
+}
+
+// renderClaudeForUninstall skips new-install compatibility checks because
+// removal only needs the provider paths and owner marker. In particular, a
+// Claude downgrade must not strand a previously installed fail-closed hook.
+func renderClaudeForUninstall(m Manifest, t Target) (fs.FS, error) {
+	return renderClaudeConfig(m, t)
+}
+
+func renderClaudeConfig(m Manifest, t Target) (fs.FS, error) {
 	hooks := map[string][]claudeMatcherEntry{}
 	for _, spec := range m.Hooks {
 		event, ok := kindToClaude[spec.Kind]
@@ -52,13 +73,27 @@ func renderClaude(m Manifest, t Target) (fs.FS, error) {
 		if event == "Stop" {
 			async = false
 		}
+		command := ""
+		var args []string
+		if len(m.Command) > 0 {
+			command = m.Command[0]
+			args = append(args, m.Command[1:]...)
+		}
+		args = append(args, hookArgs(m, agenthooks.ProviderClaudeCode, spec)...)
+		onFailure := ""
+		if isClaudeFailClosedPreTool(m, spec) {
+			onFailure = "block"
+			args = append(args, "--fail-closed")
+		}
 		hooks[event] = append(hooks[event], claudeMatcherEntry{
 			Matcher: matcher,
 			Hooks: []claudeHookCmd{{
-				Type:    "command",
-				Command: hookCommand(m, agenthooks.ProviderClaudeCode, spec),
-				Timeout: timeoutSeconds(spec),
-				Async:   async,
+				Type:      "command",
+				Command:   command,
+				Args:      args,
+				Timeout:   timeoutSeconds(spec),
+				Async:     async,
+				OnFailure: onFailure,
 			}},
 		})
 	}
@@ -91,4 +126,60 @@ func renderClaude(m Manifest, t Target) (fs.FS, error) {
 		files["settings.json"] = hooksJSON
 	}
 	return memFS(files), nil
+}
+
+func needsClaudeFailClosed(m Manifest) bool {
+	for _, spec := range m.Hooks {
+		if isClaudeFailClosedPreTool(m, spec) {
+			return true
+		}
+	}
+	return false
+}
+
+func isClaudeFailClosedPreTool(m Manifest, spec HookSpec) bool {
+	return m.Fail == agenthooks.FailClosed && spec.Blocking && spec.Kind == agenthooks.KindToolPre
+}
+
+func claudeVersionError(version string) error {
+	if strings.TrimSpace(version) == "" {
+		return errors.New("install: Claude Code version is required for fail-closed PreToolUse hooks (requires >= 2.1.295)")
+	}
+	return errors.New("install: Claude Code " + version + " does not support fail-closed PreToolUse hooks (requires >= 2.1.295)")
+}
+
+func claudeSupportsOnFailure(version string) bool {
+	version = strings.TrimSpace(strings.TrimPrefix(version, "v"))
+	if version == "" {
+		return false
+	}
+	// `claude --version` may append a human-readable product label.
+	version = strings.Fields(version)[0]
+	// Ignore build metadata. A prerelease of the minimum version is still
+	// below the stable onFailure support floor.
+	version = strings.SplitN(version, "+", 2)[0]
+	prerelease := strings.Contains(version, "-")
+	version = strings.SplitN(version, "-", 2)[0]
+	parts := strings.Split(version, ".")
+	if len(parts) != 3 {
+		return false
+	}
+	values := [3]int{}
+	for i, part := range parts {
+		if part == "" {
+			return false
+		}
+		value, err := strconv.Atoi(part)
+		if err != nil || value < 0 {
+			return false
+		}
+		values[i] = value
+	}
+	minimum := [3]int{2, 1, 295}
+	for i := range values {
+		if values[i] != minimum[i] {
+			return values[i] > minimum[i]
+		}
+	}
+	return !prerelease
 }

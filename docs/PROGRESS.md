@@ -429,3 +429,11 @@
 
 - 回顾修正：`internal/adapter/codex/effort.go` 直接使用 `github.com/pelletier/go-toml/v2`，根 `go.mod` 已从 indirect 调整为 direct dependency。
 - 验证：`GOPROXY=off GOSUMDB=off go mod tidy -diff` 与 `go -C agenthooks mod tidy -diff` 通过；未改变运行时代码或测试行为。
+
+### 2026-10-15 — T43/B1.20 `[x]`
+
+- 实现：Claude Code renderer 使用 exec schema，`Manifest.Command[0]` 写入 `command`，其余可执行参数与 `hookArgs` 按原顺序写入 `args`，不经过 shell join；timeout 继续使用既有 seconds 转换。`Target.HarnessVersion` 用于 fail-closed 版本门槛。
+- Fail-closed：只有 blocking `KindToolPre` 且 Manifest `FailClosed` 时输出 `onFailure: "block"` 并在 argv 加 `--fail-closed`；未知/低于 2.1.295/格式错误版本会拒绝该配置。fail-open、telemetry 与非阻断 pre-tool hook 不触发版本要求。
+- Owner 兼容：JSON owner 扫描现在同时识别旧 `command` 文本及 exec `args` 中的 `--owner=...`；重复安装和卸载测试证明能替换/删除 STYLE handler 并保留外部条目。Claude 降级或当前版本缺失时，卸载仍按 owner 清理，不被新安装的版本门槛阻塞。
+- 验证：`go -C agenthooks test ./install -count=1`、`GOPROXY=off GOSUMDB=off make test-go`、`GOPROXY=off GOSUMDB=off make vet-go`、gofmt 与 `git diff --check` 通过。测试使用临时 Go 缓存，并清理 `CODEX_HOME`、`CODEX_SANDBOX`。
+- 文档：任务清单 T43、测试矩阵 B1.20、review 文档 T43 段落均标记 `[x]`，`agenthooks/DESIGN.md` 同步 exec 与 fail-closed 规则。T45 仍需把真实检测到的 Claude 版本接入 `Target.HarnessVersion`；CLI 当前尚无 `--fail-closed` 到 `internal/runtime.Load` 的命令解析接线，留后续 CLI 任务做端到端验证；实际 Claude 环境验收保留 M1b，M1a/M1b 未标记完成。

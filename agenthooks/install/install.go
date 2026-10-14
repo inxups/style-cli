@@ -39,6 +39,10 @@ type Target struct {
 	Provider agenthooks.Provider
 	Scope    Scope
 	Dir      string
+	// HarnessVersion is the detected provider version. Claude Code requires
+	// this to be known and at least 2.1.295 before rendering fail-closed
+	// PreToolUse hooks, which rely on its onFailure setting.
+	HarnessVersion string
 	// ConfigDir is the provider's user config root when the rendered files
 	// also include a separately installed plugin bundle. Codex ScopePlugin
 	// writes its plugin under Dir and trust state under ConfigDir.
@@ -289,7 +293,12 @@ func Uninstall(ctx context.Context, m Manifest, t Target) error {
 	if err != nil {
 		return err
 	}
-	rendered, err := Render(m, t)
+	var rendered fs.FS
+	if t.Provider == agenthooks.ProviderClaudeCode {
+		rendered, err = renderClaudeForUninstall(m, t)
+	} else {
+		rendered, err = Render(m, t)
+	}
 	if err != nil {
 		return err
 	}
@@ -540,9 +549,10 @@ func removeOwnedHookGroups(groups []json.RawMessage, owner string) ([]json.RawMe
 		remaining := make([]json.RawMessage, 0, len(handlers))
 		for _, rawHandler := range handlers {
 			var handler struct {
-				Command string `json:"command"`
+				Command string   `json:"command"`
+				Args    []string `json:"args"`
 			}
-			if err := json.Unmarshal(rawHandler, &handler); err != nil || !commandHasOwner(handler.Command, owner) {
+			if err := json.Unmarshal(rawHandler, &handler); err != nil || !handlerHasOwner(handler.Command, handler.Args, owner) {
 				remaining = append(remaining, rawHandler)
 			}
 		}
@@ -574,6 +584,19 @@ func commandHasOwner(command, owner string) bool {
 	want := "--owner=" + owner
 	for _, field := range strings.Fields(command) {
 		if strings.Trim(field, `"'`) == want {
+			return true
+		}
+	}
+	return false
+}
+
+func handlerHasOwner(command string, args []string, owner string) bool {
+	if commandHasOwner(command, owner) {
+		return true
+	}
+	want := "--owner=" + owner
+	for _, arg := range args {
+		if arg == want {
 			return true
 		}
 	}

@@ -240,3 +240,13 @@ git diff --check
 ## RV-T41-01 模块依赖修正（2026-10-15）
 
 回顾 T41 后发现根 module 的 `internal/adapter/codex/effort.go` 直接导入 `github.com/pelletier/go-toml/v2`，但 `go.mod` 仍将该依赖标为 indirect。已将其移入直接依赖；`go mod tidy -diff` 与 nested `agenthooks` 的 tidy diff 均通过。该修正不改变运行时行为，只让模块声明与源码导入保持一致。
+
+## T43 完成后回顾（2026-10-15）
+
+结论：F10 已在既有 `agenthooks/install` renderer 内完成，没有为 Claude 另造安装路径。Claude handler 以 exec 形式分别写出 `command` 与 `args`，保留传入 argv 和空格；owner 识别同时兼容旧 shell command 与新的 args 数组，保证升级后 merge/uninstall 可识别已有条目。卸载绕过新安装的版本门槛，避免 Claude 降级或检测不到版本时遗留已安装 hook。未发现需要改变分层的架构问题。
+
+fail-closed 的范围收窄为 `Manifest.Fail == FailClosed`、`Blocking` 且 `KindToolPre` 三项同时成立：只有这条 hook 增加 `--fail-closed` 和 `onFailure: "block"`。`Target.HarnessVersion` 缺失、不可解析或低于 2.1.295 时拒绝生成该配置；fail-open 和 telemetry 不要求版本。timeout 继续复用既有秒单位转换和默认值。
+
+回归覆盖：`TestRenderClaudePlugin` 验证 exact command/args、timeout、onFailure 与 telemetry 例外；`TestClaudeExecArgsAndFailClosedVersionGate` 覆盖带空格的 executable/argv、最低版本与解析边界、fail-open 和非阻断 hook；`TestRenderClaudeTimeoutRoundingAndDefault` 覆盖超时向上取整及 SessionStart 默认值；merge/uninstall 测试覆盖 owner 位于 args 时替换/删除、保留外部 handler，及缺失/降级版本下仍能卸载。
+
+验证：隔离环境下安装包定向测试、`GOPROXY=off GOSUMDB=off make test-go`、`make vet-go`、gofmt、两 module 的 `go mod tidy -diff` 和 `git diff --check` 通过。T43/B1.20 的离线 renderer 与 owner 生命周期证据完整；Claude 的真实版本检测将由 T45 接入，当前 CLI 尚未实现把 `--fail-closed` 接至 `internal/runtime.Load` 的命令解析，该 argv→runtime 路径由后续 CLI 工作覆盖。真实 Claude 对 `command`/`args` 与 `onFailure` 的接受仍由 M1b 实机验证，不提前标记通过。

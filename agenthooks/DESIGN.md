@@ -601,9 +601,15 @@ Per-target rendering encodes the workaround knowledge:
 
 - **Claude Code**: plugin layout (`.claude-plugin/plugin.json` +
   `hooks/hooks.json` — *must* be at `hooks/hooks.json`, not plugin root) or
-  settings.json fragments. `Blocking: false` renders `async: true` **except
-  `Stop`, which is forced synchronous** (cowork drops async Stop hooks).
-  Timeouts in seconds; `SessionStart` interactive flows get raised timeouts.
+  settings.json fragments. Exec hooks put the executable in `command` and
+  preserve argv in `args` without shell joining. `Blocking: false` renders
+  `async: true` **except `Stop`, which is forced synchronous** (cowork drops
+  async Stop hooks). Timeouts in seconds; `SessionStart` interactive flows
+  get raised timeouts. Fail-closed blocking `PreToolUse` requires a detected
+  Claude Code version >= 2.1.295, then sets `onFailure: "block"` and passes
+  `--fail-closed`; other events and telemetry hooks do not get that setting.
+  Uninstall remains version-independent so a downgrade cannot strand an
+  already installed owner entry.
 - **Cursor**: `hooks.json` v1. Decision hooks get `"failClosed": true` when
   `Policy` is FailClosed; telemetry hooks stay fail-open. Timeout in seconds;
   the library warns when `Timeout` × retry budget exceeds the hook timeout.

@@ -9,6 +9,7 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
+	"reflect"
 	"runtime"
 	"strings"
 	"testing"
@@ -44,16 +45,18 @@ type claudeConfig struct {
 	Hooks map[string][]struct {
 		Matcher string `json:"matcher"`
 		Hooks   []struct {
-			Type    string `json:"type"`
-			Command string `json:"command"`
-			Timeout int    `json:"timeout"`
-			Async   bool   `json:"async"`
+			Type      string   `json:"type"`
+			Command   string   `json:"command"`
+			Args      []string `json:"args"`
+			Timeout   int      `json:"timeout"`
+			Async     bool     `json:"async"`
+			OnFailure string   `json:"onFailure"`
 		} `json:"hooks"`
 	} `json:"hooks"`
 }
 
 func TestRenderClaudePlugin(t *testing.T) {
-	fsys, err := Render(testManifest(), Target{Provider: agenthooks.ProviderClaudeCode, Scope: ScopePlugin})
+	fsys, err := Render(testManifest(), Target{Provider: agenthooks.ProviderClaudeCode, Scope: ScopePlugin, HarnessVersion: "2.1.295"})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -74,7 +77,7 @@ func TestRenderClaudePlugin(t *testing.T) {
 		t.Fatalf("PreToolUse entry wrong: %+v", pre)
 	}
 	cmd := pre[0].Hooks[0]
-	if !strings.Contains(cmd.Command, "agenthooks run --provider=claude-code") || cmd.Timeout != 30 || cmd.Async {
+	if cmd.Command != "/usr/local/bin/myhooks" || !reflect.DeepEqual(cmd.Args, []string{"agenthooks", "run", "--provider=claude-code", "--owner=agenthooks", "--timeout=30s", "--fail-closed"}) || cmd.Timeout != 30 || cmd.Async || cmd.OnFailure != "block" {
 		t.Errorf("PreToolUse command wrong: %+v", cmd)
 	}
 	// quirk #1: Stop is forced synchronous even for telemetry hooks.
@@ -82,11 +85,119 @@ func TestRenderClaudePlugin(t *testing.T) {
 	if len(stop) != 1 || stop[0].Hooks[0].Async {
 		t.Errorf("Stop must render async:false (cowork drops async Stop): %+v", stop)
 	}
+	if stop[0].Hooks[0].OnFailure != "" || containsArg(stop[0].Hooks[0].Args, "--fail-closed") {
+		t.Errorf("Stop telemetry hook must not use fail-closed settings: %+v", stop[0].Hooks[0])
+	}
 	// Telemetry hooks elsewhere stay async.
 	post := cfg.Hooks["PostToolUse"]
 	if len(post) != 1 || !post[0].Hooks[0].Async {
 		t.Errorf("non-blocking PostToolUse should be async: %+v", post)
 	}
+	if post[0].Hooks[0].OnFailure != "" || containsArg(post[0].Hooks[0].Args, "--fail-closed") {
+		t.Errorf("PostToolUse telemetry hook must not use fail-closed settings: %+v", post[0].Hooks[0])
+	}
+}
+
+func TestClaudeExecArgsAndFailClosedVersionGate(t *testing.T) {
+	m := testManifest()
+	m.Command = []string{"/opt/STYLE runtime/bin/style", "--config", "/tmp/config with spaces.json"}
+	m.Owner = "style"
+	target := Target{Provider: agenthooks.ProviderClaudeCode, Scope: ScopeUser, HarnessVersion: "2.1.295"}
+	fsys, err := Render(m, target)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var cfg claudeConfig
+	if err := json.Unmarshal(readRendered(t, fsys, "settings.json"), &cfg); err != nil {
+		t.Fatal(err)
+	}
+	pre := cfg.Hooks["PreToolUse"][0].Hooks[0]
+	wantArgs := []string{"--config", "/tmp/config with spaces.json", "agenthooks", "run", "--provider=claude-code", "--owner=style", "--timeout=30s", "--fail-closed"}
+	if pre.Command != "/opt/STYLE runtime/bin/style" || !reflect.DeepEqual(pre.Args, wantArgs) {
+		t.Errorf("Claude exec argv = %q %q, want %q %q", pre.Command, pre.Args, "/opt/STYLE runtime/bin/style", wantArgs)
+	}
+
+	for _, version := range []string{"2.1.294", "", "unknown", "2.1.295-beta"} {
+		name := version
+		if name == "" {
+			name = "missing"
+		}
+		t.Run("reject-"+strings.ReplaceAll(name, ".", "_"), func(t *testing.T) {
+			badTarget := target
+			badTarget.HarnessVersion = version
+			if _, err := Render(m, badTarget); err == nil {
+				t.Errorf("fail-closed accepted unsupported/unknown Claude version %q", version)
+			}
+		})
+	}
+	for _, version := range []string{"2.1.295", "v2.1.295", "2.1.296", "2.1.296 (Claude Code)"} {
+		if !claudeSupportsOnFailure(version) {
+			t.Errorf("supported Claude version %q rejected", version)
+		}
+	}
+
+	// Fail-open and non-blocking PreToolUse do not need the version-gated
+	// failure mechanism and must not emit its configuration or runtime flag.
+	m.Fail = agenthooks.FailOpen
+	openFS, err := Render(m, Target{Provider: agenthooks.ProviderClaudeCode, Scope: ScopeUser})
+	if err != nil {
+		t.Fatalf("fail-open render needs no version: %v", err)
+	}
+	var openCfg claudeConfig
+	if err := json.Unmarshal(readRendered(t, openFS, "settings.json"), &openCfg); err != nil {
+		t.Fatal(err)
+	}
+	openPre := openCfg.Hooks["PreToolUse"][0].Hooks[0]
+	if openPre.OnFailure != "" || containsArg(openPre.Args, "--fail-closed") {
+		t.Errorf("fail-open PreToolUse emitted fail-closed settings: %+v", openPre)
+	}
+	m.Fail = agenthooks.FailClosed
+	m.Hooks = []HookSpec{{Kind: agenthooks.KindToolPre, Blocking: false}}
+	if _, err := Render(m, Target{Provider: agenthooks.ProviderClaudeCode, Scope: ScopeUser}); err != nil {
+		t.Fatalf("non-blocking PreToolUse should not need onFailure support: %v", err)
+	}
+	m.Command = []string{"", "arg"}
+	if _, err := Render(m, Target{Provider: agenthooks.ProviderClaudeCode, Scope: ScopeUser}); err == nil {
+		t.Fatal("Claude exec renderer accepted an empty executable")
+	}
+}
+
+func TestRenderClaudeTimeoutRoundingAndDefault(t *testing.T) {
+	m := testManifest()
+	m.Fail = agenthooks.FailOpen
+	m.Hooks = []HookSpec{{Kind: agenthooks.KindToolPre, Blocking: false, Timeout: 1500 * time.Millisecond}}
+	fsys, err := Render(m, Target{Provider: agenthooks.ProviderClaudeCode, Scope: ScopeUser})
+	if err != nil {
+		t.Fatal(err)
+	}
+	var cfg claudeConfig
+	if err := json.Unmarshal(readRendered(t, fsys, "settings.json"), &cfg); err != nil {
+		t.Fatal(err)
+	}
+	if got := cfg.Hooks["PreToolUse"][0].Hooks[0].Timeout; got != 2 {
+		t.Fatalf("timeout = %d, want ceil(1.5s) = 2", got)
+	}
+
+	m.Hooks = []HookSpec{{Kind: agenthooks.KindSessionStart, Blocking: false}}
+	fsys, err = Render(m, Target{Provider: agenthooks.ProviderClaudeCode, Scope: ScopeUser})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := json.Unmarshal(readRendered(t, fsys, "settings.json"), &cfg); err != nil {
+		t.Fatal(err)
+	}
+	if got := cfg.Hooks["SessionStart"][0].Hooks[0].Timeout; got != 120 {
+		t.Fatalf("SessionStart default timeout = %d, want 120", got)
+	}
+}
+
+func containsArg(args []string, want string) bool {
+	for _, arg := range args {
+		if arg == want {
+			return true
+		}
+	}
+	return false
 }
 
 func TestRenderCursorFailClosed(t *testing.T) {
@@ -137,7 +248,7 @@ func TestRenderCursorRejectsURLInCommand(t *testing.T) {
 		t.Fatalf("expected quirk #29 rejection, got %v", err)
 	}
 	// Other providers accept URLs in commands.
-	if _, err := Render(m, Target{Provider: agenthooks.ProviderClaudeCode, Scope: ScopePlugin}); err != nil {
+	if _, err := Render(m, Target{Provider: agenthooks.ProviderClaudeCode, Scope: ScopePlugin, HarnessVersion: "2.1.300"}); err != nil {
 		t.Fatalf("claude render should accept URL commands: %v", err)
 	}
 }
@@ -342,12 +453,12 @@ func TestRenderAndInstallCodexPlugin(t *testing.T) {
 func TestMergeManagedJSONReplacesOnlyMatchingOwner(t *testing.T) {
 	m := testManifest()
 	m.Owner = "style"
-	renderedFS, err := Render(m, Target{Provider: agenthooks.ProviderClaudeCode, Scope: ScopeUser})
+	renderedFS, err := Render(m, Target{Provider: agenthooks.ProviderClaudeCode, Scope: ScopeUser, HarnessVersion: "2.1.300"})
 	if err != nil {
 		t.Fatal(err)
 	}
 	rendered := readRendered(t, renderedFS, "settings.json")
-	existing := []byte(`{"env":{"KEEP":"yes"},"hooks":{"PreToolUse":[{"matcher":"Bash","hooks":[{"type":"command","command":"old-style agenthooks run --owner=style"},{"type":"command","command":"other-agenthooks run --owner=agenthooks"},{"type":"command","command":"other-agenthooks check"}]}]}}`)
+	existing := []byte(`{"env":{"KEEP":"yes"},"hooks":{"PreToolUse":[{"matcher":"Bash","hooks":[{"type":"command","command":"/old/style","args":["agenthooks","run","--owner=style"]},{"type":"command","command":"other-agenthooks run --owner=agenthooks"},{"type":"command","command":"other-agenthooks check"}]}]}}`)
 	merged, err := mergeManagedJSON(existing, rendered, "style")
 	if err != nil {
 		t.Fatal(err)
@@ -356,7 +467,8 @@ func TestMergeManagedJSONReplacesOnlyMatchingOwner(t *testing.T) {
 		Env   map[string]string `json:"env"`
 		Hooks map[string][]struct {
 			Hooks []struct {
-				Command string `json:"command"`
+				Command string   `json:"command"`
+				Args    []string `json:"args"`
 			} `json:"hooks"`
 		} `json:"hooks"`
 	}
@@ -370,12 +482,12 @@ func TestMergeManagedJSONReplacesOnlyMatchingOwner(t *testing.T) {
 	for _, group := range got.Hooks["PreToolUse"] {
 		for _, handler := range group.Hooks {
 			switch {
-			case commandHasOwner(handler.Command, "style"):
+			case handlerHasOwner(handler.Command, handler.Args, "style"):
 				style++
-				if strings.Contains(handler.Command, "old-style") {
-					t.Errorf("stale STYLE command survived: %s", handler.Command)
+				if handler.Command == "/old/style" {
+					t.Errorf("stale STYLE command survived: %+v", handler)
 				}
-			case commandHasOwner(handler.Command, "agenthooks"):
+			case handlerHasOwner(handler.Command, handler.Args, "agenthooks"):
 				otherOwner++
 			case strings.Contains(handler.Command, "other-agenthooks check"):
 				unmarked++
@@ -389,7 +501,7 @@ func TestMergeManagedJSONReplacesOnlyMatchingOwner(t *testing.T) {
 
 func TestUninstallRemovesOnlyMatchingOwner(t *testing.T) {
 	dir := t.TempDir()
-	target := Target{Provider: agenthooks.ProviderClaudeCode, Scope: ScopeUser, Dir: dir}
+	target := Target{Provider: agenthooks.ProviderClaudeCode, Scope: ScopeUser, Dir: dir, HarnessVersion: "2.1.300"}
 	settingsPath := filepath.Join(dir, "settings.json")
 	foreign := []byte(`{"env":{"KEEP":"yes"},"hooks":{"PreToolUse":[{"matcher":"Bash","hooks":[{"type":"command","command":"other-agenthooks check"},{"type":"command","command":"agenthooks run --owner=agenthooks"}]}]}}`)
 	if err := os.WriteFile(settingsPath, foreign, 0o600); err != nil {
@@ -400,6 +512,7 @@ func TestUninstallRemovesOnlyMatchingOwner(t *testing.T) {
 	if err := Install(context.Background(), m, target); err != nil {
 		t.Fatal(err)
 	}
+	target.HarnessVersion = ""
 	if err := Uninstall(context.Background(), m, target); err != nil {
 		t.Fatal(err)
 	}
@@ -415,6 +528,27 @@ func TestUninstallRemovesOnlyMatchingOwner(t *testing.T) {
 	}
 	if mode, err := os.Stat(settingsPath); err != nil || mode.Mode().Perm() != 0o600 {
 		t.Errorf("uninstall changed existing config permissions: mode=%v err=%v", mode, err)
+	}
+}
+
+func TestUninstallClaudeAfterVersionDowngrade(t *testing.T) {
+	dir := t.TempDir()
+	target := Target{Provider: agenthooks.ProviderClaudeCode, Scope: ScopeUser, Dir: dir, HarnessVersion: "2.1.300"}
+	m := testManifest()
+	m.Owner = "style"
+	if err := Install(context.Background(), m, target); err != nil {
+		t.Fatal(err)
+	}
+	target.HarnessVersion = "2.1.294"
+	if err := Uninstall(context.Background(), m, target); err != nil {
+		t.Fatalf("uninstall must still work after Claude version downgrade: %v", err)
+	}
+	settings, err := os.ReadFile(filepath.Join(dir, "settings.json"))
+	if err != nil && !os.IsNotExist(err) {
+		t.Fatal(err)
+	}
+	if bytes.Contains(settings, []byte("--owner=style")) {
+		t.Fatalf("STYLE-owned hook remains after downgrade uninstall:\n%s", settings)
 	}
 }
 
@@ -475,7 +609,7 @@ func TestDefinitionHashCodexAlgorithm(t *testing.T) {
 
 func TestInstallIdempotentAndMergePreservesForeignEntries(t *testing.T) {
 	dir := t.TempDir()
-	target := Target{Provider: agenthooks.ProviderClaudeCode, Scope: ScopeProject, Dir: dir}
+	target := Target{Provider: agenthooks.ProviderClaudeCode, Scope: ScopeProject, Dir: dir, HarnessVersion: "2.1.300"}
 	m := testManifest()
 
 	// Pre-existing user config with a foreign hook and an unrelated key.
@@ -498,7 +632,7 @@ func TestInstallIdempotentAndMergePreservesForeignEntries(t *testing.T) {
 	if !strings.Contains(string(merged), "other-tool check") || !strings.Contains(string(merged), `"FOO"`) {
 		t.Errorf("foreign config must survive merge:\n%s", merged)
 	}
-	if !strings.Contains(string(merged), "agenthooks run --provider=claude-code") {
+	if !bytes.Contains(merged, []byte(`"--provider=claude-code"`)) {
 		t.Errorf("managed hooks missing after merge:\n%s", merged)
 	}
 
@@ -516,7 +650,7 @@ func TestInstallIdempotentAndMergePreservesForeignEntries(t *testing.T) {
 
 func TestFingerprint(t *testing.T) {
 	m := testManifest()
-	target := Target{Provider: agenthooks.ProviderClaudeCode, Scope: ScopeProject}
+	target := Target{Provider: agenthooks.ProviderClaudeCode, Scope: ScopeProject, HarnessVersion: "2.1.300"}
 	a, err := Fingerprint(m, target)
 	if err != nil {
 		t.Fatal(err)
