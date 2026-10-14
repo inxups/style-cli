@@ -59,6 +59,38 @@ func TestDecodeClaudeEffortLevelIsRetainedAsRawSessionFact(t *testing.T) {
 	}
 }
 
+func TestDecodeClaudeF9NativeFields(t *testing.T) {
+	fork, err := decodeClaude(VariantUnknown, DetectionConfig, testNow, []byte(`{"session_id":"s","hook_event_name":"SessionStart","source":"fork"}`))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if event, ok := fork.(*SessionStartEvent); !ok || event.Source != "fork" {
+		t.Fatalf("SessionStart fork source = %#v", fork)
+	}
+	tool, err := decodeClaude(VariantUnknown, DetectionConfig, testNow, []byte(`{"session_id":"s","prompt_id":"p-9","hook_event_name":"PreToolUse","effort":{"level":"high"},"mcp_server":{"name":"plugin_calendar","source":"plugin"},"tool_name":"mcp__plugin_calendar__search","tool_input":{}}`))
+	if err != nil {
+		t.Fatal(err)
+	}
+	pre := tool.(*ToolPreEvent)
+	if pre.Session.TurnID != "p-9" || pre.Session.EffortRaw != "high" || pre.Tool.MCP == nil || pre.Tool.MCP.Server != "plugin_calendar" || pre.Tool.MCP.Source != "plugin" {
+		t.Fatalf("Claude native fields = session=%+v tool=%+v", pre.Session, pre.Tool)
+	}
+	expansion, err := decodeClaude(VariantUnknown, DetectionConfig, testNow, []byte(`{"session_id":"s","hook_event_name":"UserPromptExpansion","expansion_type":"slash_command","command_name":"review","prompt":"Review the working tree"}`))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if event, ok := expansion.(*PromptExpansionEvent); !ok || event.Kind != KindPromptExpansion || event.CommandName != "review" {
+		t.Fatalf("UserPromptExpansion projection = %#v", expansion)
+	}
+	switchEvent, err := decodeClaude(VariantUnknown, DetectionConfig, testNow, []byte(`{"session_id":"s","hook_event_name":"PostModelSwitch","from_model":"model-a","to_model":"model-b"}`))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if event, ok := switchEvent.(*ModelSwitchEvent); !ok || event.FromModel != "model-a" || event.ToModel != "model-b" || event.Session.Model != "model-b" {
+		t.Fatalf("PostModelSwitch projection = %#v", switchEvent)
+	}
+}
+
 func TestDecodeClaudeSkillPostToolUseBackfillsModelOutput(t *testing.T) {
 	content := "---\nname: review\n---\n\nInspect the change.\n"
 	cwd := t.TempDir()
@@ -519,6 +551,17 @@ func TestEncodeClaudeGoldens(t *testing.T) {
 	if string(wire.Stdout) != `{"decision":"block","reason":"policy"}` {
 		t.Errorf("prompt block: got %s", wire.Stdout)
 	}
+	wire, _ = encodeClaude(prompt, BlockPrompt("policy").WithSuppressOriginalPrompt().core)
+	want = `{"decision":"block","hookSpecificOutput":{"hookEventName":"UserPromptSubmit","suppressOriginalPrompt":true},"reason":"policy"}`
+	if string(wire.Stdout) != want {
+		t.Errorf("prompt block with suppressOriginalPrompt: got %s want %s", wire.Stdout, want)
+	}
+
+	expansion := &Event{Provider: ProviderClaudeCode, Kind: KindPromptExpansion, NativeName: "UserPromptExpansion"}
+	wire, _ = encodeClaude(expansion, BlockPrompt("skill disabled").core)
+	if got := string(wire.Stdout); got != `{"decision":"block","reason":"skill disabled"}` {
+		t.Errorf("explicit skill block: got %s", got)
+	}
 
 	stop := &Event{Provider: ProviderClaudeCode, Kind: KindStop, NativeName: "Stop"}
 	wire, _ = encodeClaude(stop, ContinueWith("run the tests").core)
@@ -528,6 +571,21 @@ func TestEncodeClaudeGoldens(t *testing.T) {
 	wire, _ = encodeClaude(stop, Finish().core)
 	if string(wire.Stdout) != `{}` {
 		t.Errorf("stop finish: got %s", wire.Stdout)
+	}
+}
+
+func TestEncodeCodexSubagentStartContext(t *testing.T) {
+	event := &SubagentStartEvent{Event: Event{Provider: ProviderCodex, Variant: VariantCLI, Kind: KindSubagentStart, NativeName: "SubagentStart"}}
+	if !event.Can(CapAddContext) {
+		t.Fatal("Codex SubagentStart should support additional context")
+	}
+	wire, err := encodeDecision(event, NoSubagentStartDecision().WithContext("read the local instructions first").core)
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := `{"hookSpecificOutput":{"additionalContext":"read the local instructions first","hookEventName":"SubagentStart"}}`
+	if string(wire.Stdout) != want {
+		t.Fatalf("Codex SubagentStart output = %s, want %s", wire.Stdout, want)
 	}
 }
 

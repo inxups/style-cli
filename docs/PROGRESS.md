@@ -415,3 +415,12 @@
 - 定向验证：`env -u CODEX_HOME -u CODEX_SANDBOX GOPATH=/tmp/style-cli-gopath GOMODCACHE=/tmp/style-cli-gomodcache GOCACHE=/tmp/style-cli-gocache GOPROXY=off GOSUMDB=off go test ./internal/adapter/... ./core/state ./core/engine ./internal/runtime ./agenthooks` 通过。
 - 全量验证：`GOPROXY=off GOSUMDB=off make test-go`、`GOPROXY=off GOSUMDB=off make vet-go`、`git diff --check` 通过。新增 fixture 覆盖 Claude event/env/session 优先级、Codex 配置优先级与不可信项目、未知 effort raw 保留、近似值 tri-state 和一次性解析。
 - 边界：真实 provider hook 的 Enrich 接线和版本检测仍由 T44/T45 完成；因此 A10 维持 `[~]`，M1a/M1b 不提前完成。
+
+### 2026-10-15 — T42/B1.19 `[x]`
+
+- F7：在 `agenthooks/` 增加 `SubagentStartDecision.WithContext` 和兼容性独立的 `OnSubagentStartDecision`，保留原 `OnSubagentStart` 观察回调；仅 Codex `subagent.start` 宣告 `add-context` 并编码为 `hookSpecificOutput.additionalContext`。Runner 回归从 Codex payload 验证 agent id/type 到决策 handler、精确 JSON 输出，且旧 observer 仍运行。
+- F8：`SkillActivationOf` shell recognizer 支持 `head`、`tail`、`bat`、`cd … && cat SKILL.md`，保留 `/bin/cat`、`/usr/bin/head` 等 basename 兼容并覆盖行数参数；新增 Codex `ExplicitSkills`，遵循 `$name` 正则、首次顺序和去重。`skills.read` 等待 U6；skill evaluation point 和 state scope 的运行时接线由 T44 完成。
+- F9：Claude native codec/view 增加 MCP server `name/source`、UserPromptExpansion 和 PostModelSwitch；prompt_id、effort、fork source 与 `to_model` 投影有 fixture；prompt block 的 `suppressOriginalPrompt` golden/runtime 输出更新到 `hookSpecificOutput`。
+- 回归：`agenthooks/runner_test.go` 新增 Codex 子 agent context/旧 observer 和 Claude prompt expansion 的 Runner 级精确输出测试；`agenthooks/codec_test.go`、`agenthooks/provider/claudecode/claudecode_test.go`、`agenthooks/claude_skill_test.go`、`internal/adapter/codex/skill_test.go` 覆盖字段、解析和方言边界。
+- 验证：`GOPROXY=off GOSUMDB=off make test-go` 和 `GOPROXY=off GOSUMDB=off make vet-go` 通过，覆盖根 module 和 `agenthooks` nested module。环境清理 `CODEX_HOME`/`CODEX_SANDBOX`，使用 Makefile 配置的临时 Go 缓存；gofmt、`git diff --check` 通过。
+- 文档：任务清单 T42、测试矩阵 B1.19 和 review 文档 T42 段落均已标记 `[x]`。A11 保持 `[~]`：实际 engine Enrich/scope 投影留 T44，Codex 原生 delivery 留 U7/M1b。M1a/M1b 未完成。

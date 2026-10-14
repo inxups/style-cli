@@ -175,7 +175,7 @@ func TestClaudePromptBlockSuppressesOriginalPrompt(t *testing.T) {
 	if code := runtime.Run(context.Background(), claudeRunArgs(), strings.NewReader(payload), &stdout, &stderr); code != 0 {
 		t.Fatalf("Run exit=%d stderr=%q", code, stderr.String())
 	}
-	want := `{"decision":"block","reason":"prompt needs a safer form","suppressOriginalPrompt":true}`
+	want := `{"decision":"block","hookSpecificOutput":{"hookEventName":"UserPromptSubmit","suppressOriginalPrompt":true},"reason":"prompt needs a safer form"}`
 	if stdout.String() != want {
 		t.Fatalf("prompt block response = %q, want %q", stdout.String(), want)
 	}

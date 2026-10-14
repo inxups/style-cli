@@ -37,6 +37,7 @@ var capMatrix = map[Provider]map[EventKind]CapSet{
 		KindToolPre:         caps(CapDeny, CapAsk, CapAllow, CapUpdateInput, CapAddContext, CapSystemMessage, CapStopAgent),
 		KindPermission:      caps(CapDeny, CapAllow, CapUpdateInput, CapSystemMessage, CapStopAgent),
 		KindPromptSubmitted: caps(CapDeny, CapAddContext, CapSystemMessage, CapStopAgent),
+		KindPromptExpansion: caps(CapDeny, CapAddContext, CapSystemMessage),
 		KindToolPost:        caps(CapAddContext, CapReplaceOutput, CapSystemMessage, CapStopAgent),
 		KindToolError:       caps(CapAddContext, CapSystemMessage, CapStopAgent),
 		KindStop:            caps(CapContinueAgent, CapSystemMessage),
@@ -51,6 +52,7 @@ var capMatrix = map[Provider]map[EventKind]CapSet{
 		KindToolPost:        caps(CapAddContext, CapSystemMessage),
 		KindStop:            caps(CapContinueAgent, CapSystemMessage),
 		KindSubagentStop:    caps(CapContinueAgent, CapSystemMessage),
+		KindSubagentStart:   caps(CapAddContext),
 		KindSessionStart:    caps(CapAddContext),
 	},
 	ProviderCursor: {
@@ -118,9 +120,8 @@ var capMatrix = map[Provider]map[EventKind]CapSet{
 		// permission.request, session.end, tool.error and notification are absent:
 		// VS Code never fires them.
 		//
-		// SubagentStart and CompactPre are observe-only in the public runner,
-		// so their upstream output channels are not capabilities here. Stop and
-		// SubagentStop cannot advertise CapStopAgent because StopDecision has no
+		// CompactPre and SubagentStart remain observe-only. Stop and SubagentStop
+		// cannot advertise CapStopAgent because StopDecision has no
 		// operation that sets it.
 		KindToolPre:         caps(CapDeny, CapAsk, CapAllow, CapUpdateInput, CapAddContext, CapSystemMessage, CapStopAgent),
 		KindToolPost:        caps(CapAddContext, CapSystemMessage, CapStopAgent),

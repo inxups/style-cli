@@ -446,3 +446,23 @@ func (d SessionStartDecision) Blocks() bool { return d.core.blocks() }
 func (d SessionStartDecision) StopsAgent() (string, bool) { return d.core.stopsAgent() }
 
 func (d SessionStartDecision) decCore() decisionCore { return d.core }
+
+// SubagentStartDecision responds to subagent.start. Codex accepts additional
+// context at this boundary; other providers degrade it according to policy.
+type SubagentStartDecision struct{ core decisionCore }
+
+// NoSubagentStartDecision leaves the subagent-start behavior unchanged.
+func NoSubagentStartDecision() SubagentStartDecision { return SubagentStartDecision{} }
+
+func (d SubagentStartDecision) WithContext(s string) SubagentStartDecision {
+	d.core = d.core.withContext(s)
+	return d
+}
+
+func (d SubagentStartDecision) Kind() DecisionKind         { return d.core.kind }
+func (d SubagentStartDecision) Reason() string             { return d.core.reason }
+func (d SubagentStartDecision) SystemMessage() string      { return d.core.systemMessage }
+func (d SubagentStartDecision) Context() []string          { return d.core.contextCopy() }
+func (d SubagentStartDecision) Blocks() bool               { return d.core.blocks() }
+func (d SubagentStartDecision) StopsAgent() (string, bool) { return d.core.stopsAgent() }
+func (d SubagentStartDecision) decCore() decisionCore      { return d.core }

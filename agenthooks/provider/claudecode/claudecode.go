@@ -21,6 +21,8 @@ type PreToolUseInput struct {
 	CWD            string                     `json:"cwd"`
 	HookEventName  string                     `json:"hook_event_name"`
 	PermissionMode string                     `json:"permission_mode"`
+	Effort         Effort                     `json:"effort"`
+	MCPServer      *MCPServerInfo             `json:"mcp_server"`
 	ToolName       string                     `json:"tool_name"`
 	ToolInput      json.RawMessage            `json:"tool_input"`
 	ToolUseID      string                     `json:"tool_use_id"`
@@ -35,6 +37,8 @@ type PostToolUseInput struct {
 	CWD            string                     `json:"cwd"`
 	HookEventName  string                     `json:"hook_event_name"`
 	PermissionMode string                     `json:"permission_mode"`
+	Effort         Effort                     `json:"effort"`
+	MCPServer      *MCPServerInfo             `json:"mcp_server"`
 	ToolName       string                     `json:"tool_name"`
 	ToolInput      json.RawMessage            `json:"tool_input"`
 	ToolUseID      string                     `json:"tool_use_id"`
@@ -50,10 +54,66 @@ type PermissionRequestInput struct {
 	CWD            string                     `json:"cwd"`
 	HookEventName  string                     `json:"hook_event_name"`
 	PermissionMode string                     `json:"permission_mode"`
+	Effort         Effort                     `json:"effort"`
+	MCPServer      *MCPServerInfo             `json:"mcp_server"`
 	ToolName       string                     `json:"tool_name"`
 	ToolInput      json.RawMessage            `json:"tool_input"`
 	ToolUseID      string                     `json:"tool_use_id"`
 	Extra          map[string]json.RawMessage `json:"-"`
+}
+
+// Effort is Claude Code's native effort object. Extra preserves fields added
+// by future provider versions.
+type Effort struct {
+	Level string                     `json:"level"`
+	Extra map[string]json.RawMessage `json:"-"`
+}
+
+// UnmarshalJSON retains unknown nested effort fields as well as Level.
+func (e *Effort) UnmarshalJSON(data []byte) error {
+	type effortAlias Effort
+	var decoded effortAlias
+	if err := json.Unmarshal(data, &decoded); err != nil {
+		return err
+	}
+	var all map[string]json.RawMessage
+	if err := json.Unmarshal(data, &all); err != nil {
+		return err
+	}
+	delete(all, "level")
+	if len(all) > 0 {
+		decoded.Extra = all
+	}
+	*e = Effort(decoded)
+	return nil
+}
+
+// MCPServerInfo describes the MCP server named by a Claude Code hook.
+// Extra retains provider additions to this nested object.
+type MCPServerInfo struct {
+	Name   string                     `json:"name"`
+	Source string                     `json:"source"`
+	Extra  map[string]json.RawMessage `json:"-"`
+}
+
+// UnmarshalJSON retains unknown nested MCP server fields.
+func (m *MCPServerInfo) UnmarshalJSON(data []byte) error {
+	type mcpServerAlias MCPServerInfo
+	var decoded mcpServerAlias
+	if err := json.Unmarshal(data, &decoded); err != nil {
+		return err
+	}
+	var all map[string]json.RawMessage
+	if err := json.Unmarshal(data, &all); err != nil {
+		return err
+	}
+	delete(all, "name")
+	delete(all, "source")
+	if len(all) > 0 {
+		decoded.Extra = all
+	}
+	*m = MCPServerInfo(decoded)
+	return nil
 }
 
 // UserPromptSubmitInput is the native UserPromptSubmit payload.
@@ -65,6 +125,35 @@ type UserPromptSubmitInput struct {
 	PermissionMode string                     `json:"permission_mode"`
 	Prompt         string                     `json:"prompt"`
 	PromptID       string                     `json:"prompt_id"`
+	Extra          map[string]json.RawMessage `json:"-"`
+}
+
+// UserPromptExpansionInput is the native UserPromptExpansion payload.
+type UserPromptExpansionInput struct {
+	SessionID      string                     `json:"session_id"`
+	TranscriptPath string                     `json:"transcript_path"`
+	CWD            string                     `json:"cwd"`
+	HookEventName  string                     `json:"hook_event_name"`
+	PermissionMode string                     `json:"permission_mode"`
+	Model          string                     `json:"model"`
+	Effort         Effort                     `json:"effort"`
+	ExpansionType  string                     `json:"expansion_type"`
+	CommandName    string                     `json:"command_name"`
+	Prompt         string                     `json:"prompt"`
+	Extra          map[string]json.RawMessage `json:"-"`
+}
+
+// PostModelSwitchInput is the native PostModelSwitch payload.
+type PostModelSwitchInput struct {
+	SessionID      string                     `json:"session_id"`
+	TranscriptPath string                     `json:"transcript_path"`
+	CWD            string                     `json:"cwd"`
+	HookEventName  string                     `json:"hook_event_name"`
+	PermissionMode string                     `json:"permission_mode"`
+	Model          string                     `json:"model"`
+	Effort         Effort                     `json:"effort"`
+	FromModel      string                     `json:"from_model"`
+	ToModel        string                     `json:"to_model"`
 	Extra          map[string]json.RawMessage `json:"-"`
 }
 
@@ -161,6 +250,14 @@ func PermissionRequest(e *agenthooks.Event) (*PermissionRequestInput, bool) {
 
 func UserPromptSubmit(e *agenthooks.Event) (*UserPromptSubmitInput, bool) {
 	return view[UserPromptSubmitInput](e, "UserPromptSubmit")
+}
+
+func UserPromptExpansion(e *agenthooks.Event) (*UserPromptExpansionInput, bool) {
+	return view[UserPromptExpansionInput](e, "UserPromptExpansion")
+}
+
+func PostModelSwitch(e *agenthooks.Event) (*PostModelSwitchInput, bool) {
+	return view[PostModelSwitchInput](e, "PostModelSwitch")
 }
 
 func Stop(e *agenthooks.Event) (*StopInput, bool) {

@@ -16,12 +16,12 @@ import (
 	"sort"
 )
 
-// decision constrains the generic combinators to the five decision types.
-// All five share the same underlying struct, which is what lets a single
+// decision constrains the generic combinators to the supported decision types.
+// They share the same underlying struct, which is what lets a single
 // implementation read and rebuild decision cores through decisionShape
 // conversions — call sites never write a type parameter.
 type decision interface {
-	ToolPreDecision | PromptDecision | StopDecision | ToolPostDecision | SessionStartDecision
+	ToolPreDecision | PromptDecision | StopDecision | ToolPostDecision | SessionStartDecision | SubagentStartDecision
 }
 
 // decisionShape is the shared underlying struct of every decision type.
@@ -375,6 +375,9 @@ func (r *Runner) Walk(fn func(StageInfo) error) error {
 	if err := walkStages(fn, KindPromptSubmitted, r.hPrompt); err != nil {
 		return err
 	}
+	if err := walkStages(fn, KindPromptExpansion, r.hPromptExpansion); err != nil {
+		return err
+	}
 	if err := walkStages(fn, KindToolPre, r.hToolPre); err != nil {
 		return err
 	}
@@ -388,6 +391,9 @@ func (r *Runner) Walk(fn func(StageInfo) error) error {
 		return err
 	}
 	if err := walkStages(fn, KindStop, r.hStop); err != nil {
+		return err
+	}
+	if err := walkStages(fn, KindSubagentStart, r.hSubagentStartDecision); err != nil {
 		return err
 	}
 	if err := walkStages(fn, KindSubagentStart, r.hSubagentStart); err != nil {

@@ -56,23 +56,25 @@ type Runner struct {
 	otherByName        map[string][]func(context.Context, *Event) error
 	interceptors       []Interceptor
 
-	hSessionStart  []func(context.Context, *SessionStartEvent) (SessionStartDecision, error)
-	hSessionEnd    []func(context.Context, *SessionEndEvent) error
-	hMCPInventory  []func(context.Context, *MCPInventoryEvent) error
-	hPrompt        []func(context.Context, *PromptEvent) (PromptDecision, error)
-	hToolPre       []func(context.Context, *ToolPreEvent) (ToolPreDecision, error)
-	hToolPost      []func(context.Context, *ToolPostEvent) (ToolPostDecision, error)
-	hToolError     []func(context.Context, *ToolPostEvent) (ToolPostDecision, error)
-	hPermission    []func(context.Context, *PermissionEvent) (ToolPreDecision, error)
-	hStop          []func(context.Context, *StopEvent) (StopDecision, error)
-	hSubagentStart []func(context.Context, *SubagentStartEvent) error
-	hSubagentStop  []func(context.Context, *StopEvent) (StopDecision, error)
-	hCompactPre    []func(context.Context, *CompactEvent) error
-	hCompactPost   []func(context.Context, *CompactEvent) error
-	hNotification  []func(context.Context, *NotificationEvent) error
-	hFileEdited    []func(context.Context, *FileEditedEvent) error
-	hModelRequest  []func(context.Context, *ModelEvent) error
-	hModelResponse []func(context.Context, *ModelEvent) error
+	hSessionStart          []func(context.Context, *SessionStartEvent) (SessionStartDecision, error)
+	hSessionEnd            []func(context.Context, *SessionEndEvent) error
+	hMCPInventory          []func(context.Context, *MCPInventoryEvent) error
+	hPrompt                []func(context.Context, *PromptEvent) (PromptDecision, error)
+	hPromptExpansion       []func(context.Context, *PromptExpansionEvent) (PromptDecision, error)
+	hToolPre               []func(context.Context, *ToolPreEvent) (ToolPreDecision, error)
+	hToolPost              []func(context.Context, *ToolPostEvent) (ToolPostDecision, error)
+	hToolError             []func(context.Context, *ToolPostEvent) (ToolPostDecision, error)
+	hPermission            []func(context.Context, *PermissionEvent) (ToolPreDecision, error)
+	hStop                  []func(context.Context, *StopEvent) (StopDecision, error)
+	hSubagentStartDecision []func(context.Context, *SubagentStartEvent) (SubagentStartDecision, error)
+	hSubagentStart         []func(context.Context, *SubagentStartEvent) error
+	hSubagentStop          []func(context.Context, *StopEvent) (StopDecision, error)
+	hCompactPre            []func(context.Context, *CompactEvent) error
+	hCompactPost           []func(context.Context, *CompactEvent) error
+	hNotification          []func(context.Context, *NotificationEvent) error
+	hFileEdited            []func(context.Context, *FileEditedEvent) error
+	hModelRequest          []func(context.Context, *ModelEvent) error
+	hModelResponse         []func(context.Context, *ModelEvent) error
 }
 
 // Option configures a Runner.
@@ -169,6 +171,9 @@ func (r *Runner) OnMCPInventory(hs ...func(context.Context, *MCPInventoryEvent) 
 func (r *Runner) OnPromptSubmitted(hs ...func(context.Context, *PromptEvent) (PromptDecision, error)) {
 	r.hPrompt = append(r.hPrompt, hs...)
 }
+func (r *Runner) OnPromptExpansion(hs ...func(context.Context, *PromptExpansionEvent) (PromptDecision, error)) {
+	r.hPromptExpansion = append(r.hPromptExpansion, hs...)
+}
 func (r *Runner) OnToolPre(hs ...func(context.Context, *ToolPreEvent) (ToolPreDecision, error)) {
 	r.hToolPre = append(r.hToolPre, hs...)
 }
@@ -186,6 +191,12 @@ func (r *Runner) OnStop(hs ...func(context.Context, *StopEvent) (StopDecision, e
 }
 func (r *Runner) OnSubagentStart(hs ...func(context.Context, *SubagentStartEvent) error) {
 	r.hSubagentStart = append(r.hSubagentStart, hs...)
+}
+
+// OnSubagentStartDecision registers decision handlers for subagent.start.
+// OnSubagentStart retains its observation-only callback for compatibility.
+func (r *Runner) OnSubagentStartDecision(hs ...func(context.Context, *SubagentStartEvent) (SubagentStartDecision, error)) {
+	r.hSubagentStartDecision = append(r.hSubagentStartDecision, hs...)
 }
 func (r *Runner) OnSubagentStop(hs ...func(context.Context, *StopEvent) (StopDecision, error)) {
 	r.hSubagentStop = append(r.hSubagentStop, hs...)
@@ -536,6 +547,8 @@ func (r *Runner) invoke(ctx context.Context, typed any) (Decision, error) {
 		return liftDecision(runStages(ctx, ev, r.hToolPost))
 	case *PromptEvent:
 		return liftDecision(runStages(ctx, ev, r.hPrompt))
+	case *PromptExpansionEvent:
+		return liftDecision(runStages(ctx, ev, r.hPromptExpansion))
 	case *StopEvent:
 		if ev.Kind == KindSubagentStop {
 			return liftDecision(runStages(ctx, ev, r.hSubagentStop))
@@ -550,7 +563,20 @@ func (r *Runner) invoke(ctx context.Context, typed any) (Decision, error) {
 	case *MCPInventoryEvent:
 		return observeStages(ctx, ev, r.hMCPInventory)
 	case *SubagentStartEvent:
-		return observeStages(ctx, ev, r.hSubagentStart)
+		d, err := runStages(ctx, ev, r.hSubagentStartDecision)
+		if err != nil {
+			return liftDecision(d, err)
+		}
+		observed, observeErr := observeStages(ctx, ev, r.hSubagentStart)
+		if observeErr != nil {
+			return nil, observeErr
+		}
+		if observed.core.kind == DecisionObserved && coreOf(d).kind == DecisionNoDecision {
+			core := coreOf(d)
+			core.kind = DecisionObserved
+			d = SubagentStartDecision{core: core}
+		}
+		return liftDecision(d, nil)
 	case *CompactEvent:
 		if ev.Kind == KindCompactPre {
 			return observeStages(ctx, ev, r.hCompactPre)
@@ -596,9 +622,9 @@ func failCore(pol Policy, base *Event) decisionCore {
 		switch base.Kind {
 		case KindToolPre, KindPermission:
 			return decisionCore{kind: DecisionDeny, reason: "agenthooks: hook handler failed (fail-closed policy)"}
-		case KindPromptSubmitted:
+		case KindPromptSubmitted, KindPromptExpansion:
 			decision := decisionCore{kind: DecisionBlockPrompt, reason: "agenthooks: hook handler failed (fail-closed policy)"}
-			if base.Provider == ProviderClaudeCode {
+			if base.Provider == ProviderClaudeCode && base.Kind == KindPromptSubmitted {
 				decision.suppressOriginalPrompt = true
 			}
 			return decision

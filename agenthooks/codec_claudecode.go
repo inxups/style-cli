@@ -11,21 +11,22 @@ import (
 // expressible in the body).
 
 var claudeKinds = map[string]EventKind{
-	"SessionStart":       KindSessionStart,
-	"SessionEnd":         KindSessionEnd,
-	"UserPromptSubmit":   KindPromptSubmitted,
-	"PreToolUse":         KindToolPre,
-	"PostToolUse":        KindToolPost,
-	"PostToolUseFailure": KindToolError,
-	"PermissionRequest":  KindPermission,
-	"Stop":               KindStop,
-	"SubagentStart":      KindSubagentStart,
-	"SubagentStop":       KindSubagentStop,
-	"PreCompact":         KindCompactPre,
-	"PostCompact":        KindCompactPost,
-	"Notification":       KindNotification,
-	"FileChanged":        KindFileEdited,
-	"MessageDisplay":     KindModelResponse, // approximate mapping (§3.4)
+	"SessionStart":        KindSessionStart,
+	"SessionEnd":          KindSessionEnd,
+	"UserPromptSubmit":    KindPromptSubmitted,
+	"UserPromptExpansion": KindPromptExpansion,
+	"PreToolUse":          KindToolPre,
+	"PostToolUse":         KindToolPost,
+	"PostToolUseFailure":  KindToolError,
+	"PermissionRequest":   KindPermission,
+	"Stop":                KindStop,
+	"SubagentStart":       KindSubagentStart,
+	"SubagentStop":        KindSubagentStop,
+	"PreCompact":          KindCompactPre,
+	"PostCompact":         KindCompactPost,
+	"Notification":        KindNotification,
+	"FileChanged":         KindFileEdited,
+	"MessageDisplay":      KindModelResponse, // approximate mapping (§3.4)
 }
 
 type claudeIn struct {
@@ -38,24 +39,34 @@ type claudeIn struct {
 	Effort         struct {
 		Level string `json:"level"`
 	} `json:"effort"`
-	PromptID             string          `json:"prompt_id"`
-	ToolName             string          `json:"tool_name"`
-	ToolInput            json.RawMessage `json:"tool_input"`
-	ToolUseID            string          `json:"tool_use_id"`
-	ToolResponse         json.RawMessage `json:"tool_response"`
-	ToolError            string          `json:"tool_error"`
-	Prompt               string          `json:"prompt"`
-	Message              string          `json:"message"`
-	LastAssistantMessage string          `json:"last_assistant_message"`
-	DurationMS           *float64        `json:"duration_ms"`
-	Source               string          `json:"source"`
-	Reason               string          `json:"reason"`
-	StopHookActive       bool            `json:"stop_hook_active"`
-	Trigger              string          `json:"trigger"`
-	CustomInstructions   string          `json:"custom_instructions"`
-	AgentID              string          `json:"agent_id"`
-	AgentType            string          `json:"agent_type"`
-	FilePath             string          `json:"file_path"`
+	MCPServer            *claudeMCPServer `json:"mcp_server"`
+	PromptID             string           `json:"prompt_id"`
+	ToolName             string           `json:"tool_name"`
+	ToolInput            json.RawMessage  `json:"tool_input"`
+	ToolUseID            string           `json:"tool_use_id"`
+	ToolResponse         json.RawMessage  `json:"tool_response"`
+	ToolError            string           `json:"tool_error"`
+	Prompt               string           `json:"prompt"`
+	Message              string           `json:"message"`
+	LastAssistantMessage string           `json:"last_assistant_message"`
+	DurationMS           *float64         `json:"duration_ms"`
+	Source               string           `json:"source"`
+	Reason               string           `json:"reason"`
+	StopHookActive       bool             `json:"stop_hook_active"`
+	Trigger              string           `json:"trigger"`
+	CustomInstructions   string           `json:"custom_instructions"`
+	ExpansionType        string           `json:"expansion_type"`
+	CommandName          string           `json:"command_name"`
+	FromModel            string           `json:"from_model"`
+	ToModel              string           `json:"to_model"`
+	AgentID              string           `json:"agent_id"`
+	AgentType            string           `json:"agent_type"`
+	FilePath             string           `json:"file_path"`
+}
+
+type claudeMCPServer struct {
+	Name   string `json:"name"`
+	Source string `json:"source"`
 }
 
 func decodeClaude(v Variant, conf DetectionConfidence, now time.Time, payload []byte) (any, error) {
@@ -86,6 +97,9 @@ func decodeClaude(v Variant, conf DetectionConfidence, now time.Time, payload []
 		},
 		Raw: json.RawMessage(payload),
 	}
+	if in.HookEventName == "PostModelSwitch" && in.ToModel != "" {
+		base.Session.Model = in.ToModel
+	}
 	if in.AgentID != "" || in.AgentType != "" {
 		base.Agent = &AgentInfo{ID: in.AgentID, Type: in.AgentType}
 	}
@@ -99,15 +113,31 @@ func decodeClaude(v Variant, conf DetectionConfidence, now time.Time, payload []
 // buildClaudeShaped constructs typed events from the Claude-shaped wire form.
 // Codex deliberately ships the same shapes, so its decoder reuses this.
 func buildClaudeShaped(base Event, in *claudeIn) any {
+	makeTool := func(name, id string, input json.RawMessage) ToolCall {
+		tool := makeToolCall(base.Session, name, id, input, input)
+		if in.MCPServer != nil && (in.MCPServer.Name != "" || in.MCPServer.Source != "") {
+			if tool.MCP == nil {
+				tool.MCP = &MCPCall{Tool: name}
+				tool.Canonical = ToolMCP
+			}
+			if in.MCPServer.Name != "" {
+				tool.MCP.Server = in.MCPServer.Name
+			}
+			if in.MCPServer.Source != "" {
+				tool.MCP.Source = in.MCPServer.Source
+			}
+		}
+		return tool
+	}
 	switch base.Kind {
 	case KindToolPre:
-		return &ToolPreEvent{Event: base, Tool: makeToolCall(base.Session, in.ToolName, in.ToolUseID, in.ToolInput, in.ToolInput)}
+		return &ToolPreEvent{Event: base, Tool: makeTool(in.ToolName, in.ToolUseID, in.ToolInput)}
 	case KindPermission:
-		return &PermissionEvent{Event: base, Tool: makeToolCall(base.Session, in.ToolName, in.ToolUseID, in.ToolInput, in.ToolInput)}
+		return &PermissionEvent{Event: base, Tool: makeTool(in.ToolName, in.ToolUseID, in.ToolInput)}
 	case KindToolPost, KindToolError:
 		return &ToolPostEvent{
 			Event:      base,
-			Tool:       makeToolCall(base.Session, in.ToolName, in.ToolUseID, in.ToolInput, in.ToolInput),
+			Tool:       makeTool(in.ToolName, in.ToolUseID, in.ToolInput),
 			Output:     in.ToolResponse,
 			Failed:     base.Kind == KindToolError,
 			Error:      in.ToolError,
@@ -115,6 +145,8 @@ func buildClaudeShaped(base Event, in *claudeIn) any {
 		}
 	case KindPromptSubmitted:
 		return &PromptEvent{Event: base, Prompt: in.Prompt}
+	case KindPromptExpansion:
+		return &PromptExpansionEvent{Event: base, ExpansionType: in.ExpansionType, CommandName: in.CommandName, Prompt: in.Prompt}
 	case KindStop, KindSubagentStop:
 		lc := 0
 		if in.StopHookActive {
@@ -135,6 +167,17 @@ func buildClaudeShaped(base Event, in *claudeIn) any {
 		return &FileEditedEvent{Event: base, Path: in.FilePath}
 	case KindModelRequest, KindModelResponse:
 		return &ModelEvent{Event: base}
+	}
+	if base.Provider == ProviderClaudeCode && base.NativeName == "UserPromptExpansion" {
+		return &PromptExpansionEvent{
+			Event:         base,
+			ExpansionType: in.ExpansionType,
+			CommandName:   in.CommandName,
+			Prompt:        in.Prompt,
+		}
+	}
+	if base.Provider == ProviderClaudeCode && base.NativeName == "PostModelSwitch" {
+		return &ModelSwitchEvent{Event: base, FromModel: in.FromModel, ToModel: in.ToModel}
 	}
 	ev := base
 	return &ev
@@ -178,14 +221,26 @@ func encodeClaude(base *Event, d decisionCore) (wireResponse, error) {
 			out["decision"] = "block"
 			out["reason"] = d.reason
 			if base.Provider == ProviderClaudeCode && d.suppressOriginalPrompt {
-				out["suppressOriginalPrompt"] = true
+				hso["suppressOriginalPrompt"] = true
 			}
+		}
+		if ctx != "" {
+			hso["additionalContext"] = ctx
+		}
+	case KindPromptExpansion:
+		if d.kind == DecisionBlockPrompt {
+			out["decision"] = "block"
+			out["reason"] = d.reason
 		}
 		if ctx != "" {
 			hso["additionalContext"] = ctx
 		}
 	case KindSessionStart:
 		if ctx != "" {
+			hso["additionalContext"] = ctx
+		}
+	case KindSubagentStart:
+		if base.Provider == ProviderCodex && ctx != "" {
 			hso["additionalContext"] = ctx
 		}
 	case KindStop, KindSubagentStop:

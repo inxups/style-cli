@@ -1,6 +1,6 @@
 # STYLE CLI M1 测试清单
 
-更新时间：2026-10-14
+更新时间：2026-10-15
 
 本文件记录测试矩阵和每项当前状态。测试通过必须有命令输出、fixture/golden 文件或真实环境记录作为证据。
 
@@ -66,6 +66,7 @@ env -u CODEX_HOME -u CODEX_SANDBOX \
 - [x] **B1.16 T34 动态 system**：startup/prompt 双评估、effort/model 更新后重渲染、相同正文去重、正文变化补发和 compact 选择性重注入通过 runtime/engine 集成测试。证据：`internal/runtime/runtime_test.go:TestRuntimeReevaluatesDynamicSystemWhenModelChanges`、`core/engine/engine_test.go:TestDynamicSystemReevaluatesAndDeduplicatesByRenderedBody`。
 - [x] **B1.17 T40 安装层 F1–F4**：Codex canonical shell matcher 编译为 `Bash`；`install.Uninstall` 只删除匹配 `--owner` 的 JSON/TOML 内容并保留同组其他 handler；重复安装保持幂等；Codex 插件生成 `.codex-plugin/plugin.json`、`hooks/hooks.json`、可执行 `bin/style` 和 CODEX_HOME trust 配置，长格式插件 trust key 与 `DefinitionHash` 一致；owner 解析和命令行回读有覆盖。证据：`agenthooks/matcher_test.go`、`agenthooks/install/install_test.go`、`agenthooks/detect_test.go`、`agenthooks/e2e/codex_test.go`（真实运行需 `AGENTHOOKS_E2E=1`）。
 - [x] **B1.18 T41 F5–F6**：`SessionInfo` 保留 effort/raw/approx/harness version，Claude `effort.level` 解码；映射表解析拒绝重复/未知档位，未知值保留 raw 且不伪造近似结果；Codex `-c`、profile、受信项目和用户 TOML 优先级及 `--ignore-user-config` 有 fixture；Claude 事件/环境/状态优先级有 fixture；会话状态原子持久化近似标记和一次性解析位。证据：`agenthooks/codec_test.go`、`agenthooks/detect_test.go`、`internal/adapter/effortmap/*_test.go`、`internal/adapter/codex/effort_test.go`、`internal/adapter/claude/effort_test.go`、`core/state/state_test.go`；真实 provider 的 adapter Enrich/版本检测留在 T44/T45。
+- [x] **B1.19 T42 F7–F9**：Runner golden 验证 Codex `SubagentStart` payload 的 agent id/type 到决策 handler、`additionalContext` 编码和 legacy observer 兼容；Claude `UserPromptExpansion` 的 decode→handler→block/context 编码通过精确 JSON；codec 测试覆盖 fork source、prompt_id、effort、MCP `name/source`、`to_model` 更新及 `suppressOriginalPrompt` nested HSO；Codex skill parser 覆盖规范正则、顺序/去重、shell 读取变体和绝对命令路径。双 module `GOPROXY=off GOSUMDB=off make test-go`、`make vet-go`、gofmt 和 diff 检查通过。`skills.read`/显式 skill runtime Enrich 属于 U6/T44，真实 SubagentStart context 投递属于 U7/M1b。证据：`agenthooks/runner_test.go`、`agenthooks/codec_test.go`、`agenthooks/claude_skill_test.go`、`internal/adapter/codex/skill_test.go`、`agenthooks/provider/claudecode/claudecode_test.go`。
 
 ## M1a：STYLE 离线验收
 
@@ -86,8 +87,8 @@ env -u CODEX_HOME -u CODEX_SANDBOX \
 - [x] **A8** startup/resume/clear/compact 来源和 gen/epoch/prompt_count 行为正确。证据：`core/state/state_test.go:TestUpdateMaintainsSessionAndScopeLifecycle`、`TestStartupResetsScopeAndReservations`。
 - [x] **A9** model/effort 变化触发动态 system 重评估；相同渲染正文去重、变化正文补发。证据：`internal/runtime/runtime_test.go:TestRuntimeReevaluatesDynamicSystemWhenModelChanges`、`core/engine/engine_test.go:TestDynamicSystemReevaluatesAndDeduplicatesByRenderedBody`。
 - [~] **A10** core effort 条件比较、Codex/Claude 映射表、未知值、来源优先级和近似标记已有离线 fixture（T41/B1.18）；实际 provider adapter 的 Enrich 接线、版本检测和真实 hook payload 仍留待 T44/T45。
-- [~] **A11** core 的 main 默认、subagent.start 的 any 默认、显式 any 和该事件不去重均有测试；真实 adapter 事件产生及 payload agent context 留待 T42/T44。
-- [x] **A15** engine 输出字段 whitelist，Claude prompt block 带 `suppressOriginalPrompt`；Codex 不接受该 Claude 专用字段。证据：`core/engine/engine_test.go:TestClaudePromptBlockSetsOnlyAllowedSuppressField`、`internal/runtime/runtime_test.go:TestClaudePromptBlockSuppressesOriginalPrompt`、`agenthooks/runner_test.go`。
+- [~] **A11** core 的 main 默认、subagent.start 的 any 默认、显式 any 和该事件不去重均有测试；T42 已验证 Codex hook payload 的 agent id/type 到 `SubagentStartDecision` 和输出 context 的离线路径；`internal/runtime` scope.agent_id 的 adapter Enrich 留待 T44，真实 Codex context 投递留待 U7/M1b。
+- [x] **A15** engine 输出字段 whitelist，Claude prompt block 带 `suppressOriginalPrompt`，并按 Claude 方言放在 `hookSpecificOutput`；Codex 不接受该 Claude 专用字段。证据：`core/engine/engine_test.go:TestClaudePromptBlockSetsOnlyAllowedSuppressField`、`internal/runtime/runtime_test.go:TestClaudePromptBlockSuppressesOriginalPrompt`、`agenthooks/runner_test.go`。
 - [x] **A17** 缺失/损坏 index 与损坏 state 默认空输出并记录安全错误码；Claude fail-closed 返回失败码。证据：`internal/runtime/runtime_test.go:TestMissingOrInvalidIndexUsesCodecFailPolicy`、`TestStateFailureUsesFailOpenAndLogsOnlySafeCode`。
 - [x] **A19** 超出输入上限时从 order 大的一端裁剪并释放被裁条目的占位。证据：`core/engine/engine_test.go:TestCapDropsHighestOrderAndReleasesItsReservation`。
 - [x] **A20** index-only engine `Process` 的 200 次样本 p95 为 128.083µs，低于 50ms；独立 benchmark 为 33,567 ns/op（300 次），不含 shell 启动。证据：`docs/PROGRESS.md` T30–T34 验证记录。

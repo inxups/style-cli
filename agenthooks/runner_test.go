@@ -358,9 +358,51 @@ func TestClaudeFailClosedPromptBlockSuppressesOriginalPrompt(t *testing.T) {
 		return PromptDecision{}, errors.New("handler failed")
 	})
 	output, code := runWith(t, runner, claudeArgs(), fixture(t, "claude/user_prompt_submit.json"))
-	want := `{"decision":"block","reason":"agenthooks: hook handler failed (fail-closed policy)","suppressOriginalPrompt":true}`
+	want := `{"decision":"block","hookSpecificOutput":{"hookEventName":"UserPromptSubmit","suppressOriginalPrompt":true},"reason":"agenthooks: hook handler failed (fail-closed policy)"}`
 	if code != 0 || output != want {
 		t.Fatalf("fail-closed prompt output = %q (exit %d), want %q", output, code, want)
+	}
+}
+
+func TestRunCodexSubagentStartDecisionPreservesObserver(t *testing.T) {
+	runner := quietRunner()
+	legacyObserved := false
+	runner.OnSubagentStartDecision(func(_ context.Context, event *SubagentStartEvent) (SubagentStartDecision, error) {
+		if event.Agent == nil || event.Agent.ID != "agent-9" || event.Agent.Type != "Explore" {
+			return NoSubagentStartDecision(), fmt.Errorf("unexpected subagent context: %+v", event.Agent)
+		}
+		return NoSubagentStartDecision().WithContext("read the local instructions first"), nil
+	})
+	runner.OnSubagentStart(func(_ context.Context, event *SubagentStartEvent) error {
+		legacyObserved = event.Agent != nil && event.Agent.ID == "agent-9"
+		return nil
+	})
+	payload := []byte(`{"session_id":"codex-subagent","hook_event_name":"SubagentStart","agent_id":"agent-9","agent_type":"Explore"}`)
+	args := []string{"agenthooks", "run", "--provider=codex", "--variant=cli"}
+	output, code := runWith(t, runner, args, payload)
+	want := `{"hookSpecificOutput":{"additionalContext":"read the local instructions first","hookEventName":"SubagentStart"}}`
+	if code != 0 || output != want {
+		t.Fatalf("Codex SubagentStart output = %q (exit %d), want %q", output, code, want)
+	}
+	if !legacyObserved {
+		t.Fatal("legacy observation-only OnSubagentStart handler did not run")
+	}
+}
+
+func TestRunClaudePromptExpansionDecision(t *testing.T) {
+	runner := quietRunner()
+	runner.OnPromptExpansion(func(_ context.Context, event *PromptExpansionEvent) (PromptDecision, error) {
+		if event.CommandName != "review" || event.ExpansionType != "slash_command" {
+			return AcceptPrompt(), fmt.Errorf("unexpected expansion: %+v", event)
+		}
+		return BlockPrompt("skill disabled").WithContext("choose another skill"), nil
+	})
+	payload := []byte(`{"session_id":"claude-expansion","hook_event_name":"UserPromptExpansion","expansion_type":"slash_command","command_name":"review","prompt":"/review"}`)
+	args := []string{"agenthooks", "run", "--provider=claude-code", "--variant=cli"}
+	output, code := runWith(t, runner, args, payload)
+	want := `{"decision":"block","hookSpecificOutput":{"additionalContext":"choose another skill","hookEventName":"UserPromptExpansion"},"reason":"skill disabled"}`
+	if code != 0 || output != want {
+		t.Fatalf("Claude UserPromptExpansion output = %q (exit %d), want %q", output, code, want)
 	}
 }
 

@@ -49,6 +49,7 @@ const (
 	KindSessionEnd      EventKind = "session.end"
 	KindMCPInventory    EventKind = "mcp.inventory"
 	KindPromptSubmitted EventKind = "prompt.submitted"
+	KindPromptExpansion EventKind = "prompt.expansion"
 	KindToolPre         EventKind = "tool.pre" // gate/rewrite before execution
 	KindToolPost        EventKind = "tool.post"
 	KindToolError       EventKind = "tool.error"
@@ -202,6 +203,7 @@ type ToolCall struct {
 type MCPCall struct {
 	Server  string // decoded from mcp__s__t / mcp_s_t / MCP:t + context; "" if undecodable
 	Tool    string // tool name as the MCP server knows it
+	Source  string // provider-reported MCP source/plugin, when present
 	URL     string // remote transport: payload-borne or config-resolved
 	Command string // stdio transport: command plus args, space-joined
 	// FromConfig marks URL/Command as resolved from the provider's config
@@ -409,6 +411,23 @@ type PromptEvent struct {
 	Prompt string
 }
 
+// PromptExpansionEvent is Claude Code's native UserPromptExpansion event,
+// projected separately from the ordinary submitted-prompt event.
+type PromptExpansionEvent struct {
+	Event
+	ExpansionType string
+	CommandName   string
+	Prompt        string
+}
+
+// ModelSwitchEvent is Claude Code's native PostModelSwitch event. The raw
+// payload remains available through Event.Raw for future provider fields.
+type ModelSwitchEvent struct {
+	Event
+	FromModel string
+	ToModel   string
+}
+
 type ToolPreEvent struct {
 	Event
 	Tool ToolCall
@@ -502,6 +521,8 @@ func eventOf(typed any) *Event {
 		return &ev.Event
 	case *PromptEvent:
 		return &ev.Event
+	case *PromptExpansionEvent:
+		return &ev.Event
 	case *ToolPreEvent:
 		return &ev.Event
 	case *PermissionEvent:
@@ -519,6 +540,8 @@ func eventOf(typed any) *Event {
 	case *FileEditedEvent:
 		return &ev.Event
 	case *ModelEvent:
+		return &ev.Event
+	case *ModelSwitchEvent:
 		return &ev.Event
 	}
 	return nil

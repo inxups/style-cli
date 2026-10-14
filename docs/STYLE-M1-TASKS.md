@@ -1,6 +1,6 @@
 # STYLE CLI M1 任务清单
 
-更新时间：2026-10-14
+更新时间：2026-10-15
 
 本文件是 STYLE CLI 的持久化任务清单。每项任务完成后必须同时补充证据（命令、fixture、golden 文件或真实运行记录），不能只根据对话上下文标记完成。
 
@@ -50,7 +50,7 @@
 
 - [x] **T40 F1–F4 安装层改动**：修 Codex shell matcher、补卸载、改 STYLE owner 标记、补 Codex 插件路线和信任键。证据：`agenthooks/matcher_test.go`、`agenthooks/install/install_test.go`、`agenthooks/e2e/codex_test.go`；离线安装/卸载、owner 隔离、插件权限、长 trust key 和 DefinitionHash 定向测试通过，真实 Codex 运行仍留在 M1b。
 - [x] **T41 F5–F6 运行时数据/状态改动**：`SessionInfo`/`core/state` 保存 effort、原始值、近似标记、harness 版本及一次性解析状态；新增 `internal/adapter/effortmap` 和 Codex/Claude 映射表，Codex 按 `-c`→profile→受信项目→用户配置解析 `model_reasoning_effort`，Claude 按事件→`CLAUDE_EFFORT`→会话状态解析。证据：`agenthooks/codec_test.go`、`agenthooks/detect_test.go`、`internal/adapter/effortmap/*_test.go`、`internal/adapter/codex/effort_test.go`、`internal/adapter/claude/effort_test.go`、`core/state/state_test.go`；完整验证见 `docs/PROGRESS.md` T41/B1.18。
-- [ ] **T42 F7–F9 事件/codec 改动**：补 Codex 子 agent context；补 skill 识别和显式 `$name`；核对并补 Claude prompt/effort/MCP/model-switch 字段和输出字段。
+- [x] **T42 F7–F9 事件/codec 改动**：Codex `SubagentStartDecision.WithContext` 走新增决策回调，同时保留旧观察回调；skill shell 识别扩展到 `head`、`tail`、`bat`、`cd … && cat SKILL.md`，显式 `$name` 解析按规范保持顺序并去重；Claude prompt id/effort/MCP、`UserPromptExpansion`、`PostModelSwitch` 和 suppress 输出字段补齐。`skills.read` 及显式 skill 到 engine 的 adapter Enrich 留 T44/U6。证据：`agenthooks/runner_test.go`、`agenthooks/codec_test.go`、`agenthooks/claude_skill_test.go`、`internal/adapter/codex/skill_test.go`、`agenthooks/provider/claudecode/claudecode_test.go`；完整验证见 `docs/PROGRESS.md` T42/B1.19。
 - [ ] **T43 F10 Claude exec 安装**：支持 command/args、timeout 和可选 fail-closed 配置。
 - [ ] **T44 Codex adapter**：实现固定订阅面、插件/用户级路线、`developer_instructions` 静态托管区、配置 effort 读取和 MCP/skill Enrich。
 - [ ] **T45 Claude adapter**：实现动态订阅面、用户级 settings、`CLAUDE.md` 静态托管区、环境 effort 和工作区信任。
@@ -73,6 +73,7 @@
 ## 回顾跟进项（2026-10-13 起）
 
 - [x] **REVIEW-001 已完成项回顾**：复核 T10–T14 的职责边界、测试证据、源码和规范，固化 13 个探针场景及结果；报告见 `docs/STYLE-M1-REVIEW-2026-10-13.md`，证据见 `docs/review/M1-2026-10-13-*`。回顾完成后按用户要求停止功能推进。
+- [x] **REVIEW-002 T42 完成后回顾**：复核 F7–F9 的 API 兼容性、Claude/Codex 能力、codec 输出和待接线边界；报告见 `docs/STYLE-M1-REVIEW-2026-10-13.md` 的“T42 完成后回顾”。
 
 历史条目 T11/T13 的已通过状态保留；以下是回顾中新增的边界问题，现已全部修复并补充回归证据：
 

@@ -302,6 +302,7 @@ providers that omit ids.
 | session.start | SessionStart | SessionStart | sessionStart | SessionStart | plugin init + `session.created` |
 | session.end | SessionEnd | — | sessionEnd | SessionEnd | `server.instance.disposed` (best-effort) |
 | prompt.submitted | UserPromptSubmit | UserPromptSubmit | beforeSubmitPrompt | BeforeAgent | `chat.message` |
+| prompt.expansion | UserPromptExpansion | — | — | — | — |
 | tool.pre | PreToolUse | PreToolUse | preToolUse + beforeShellExecution + beforeMCPExecution + beforeReadFile (deduped, §9) | BeforeTool | `tool.execute.before` |
 | tool.post | PostToolUse | PostToolUse | postToolUse + afterShellExecution + afterMCPExecution + afterFileEdit (deduped) | AfterTool | `tool.execute.after` |
 | tool.error | PostToolUseFailure | — | postToolUseFailure | — (AfterTool w/ error field) | `tool.execute.after` (error state) |
@@ -485,6 +486,7 @@ Selected divergences the matrix encodes (from research):
 
 | Capability | Divergence |
 |---|---|
+| SubagentStart context | Codex honors `hookSpecificOutput.additionalContext`; Claude Code does not. |
 | Ask on tool.pre | Claude ✓; Gemini ✓ (undocumented); Cursor: enforced only on shell/MCP events, ignored on `preToolUse`, treated as *deny* on `subagentStart`; Codex ✗ (fails the hook run) |
 | UpdateInput | Claude: full replace; Codex: replace, allow-only; Cursor: `updated_input` on preToolUse only; Gemini: **shallow merge** (key removal impossible — library surfaces `ErrLossyUpdate` if the rewrite removes keys); OpenCode: mutate args ✓ |
 | Deny on file reads | Cursor `beforeReadFile` is allow/deny only (no ask) |

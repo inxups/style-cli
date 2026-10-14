@@ -105,7 +105,7 @@ when:
 | `tool.pre` | PreToolUse | PreToolUse | ✓ / ✓ | ✓ / ✓（U-C5） | ✓ / ✓ |
 | `tool.post` | PostToolUse | PostToolUse | ✓ / ✓ | ✓ / ✓（U-C5） | — / — |
 | `tool.error` | 无 | PostToolUseFailure | — / ✓ | — / ✓（U-C5） | — / — |
-| `subagent.start` | SubagentStart | SubagentStart | ✓（F7，U7） / ✓ | — / — | — / — |
+| `subagent.start` | SubagentStart | SubagentStart | ✓（Codex F7；真实 context 投递待 U7） / — | — / — | — / — |
 
 Codex 一列以 agenthooks `capability.go` 为准；Claude 一列来自官方文档，其中 `systemMessage` 在各事件上是否真的显示给用户待测（U-C5）。`tool.post` 上 STYLE 不用 `decision: block`（工具已经执行，不是"阻止"）。
 

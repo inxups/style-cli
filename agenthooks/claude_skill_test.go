@@ -191,6 +191,38 @@ func TestSkillActivationOfShellCatRead(t *testing.T) {
 	}
 }
 
+func TestSkillActivationOfShellReadVariants(t *testing.T) {
+	commands := []string{
+		`head /repo/.agents/skills/review/SKILL.md`,
+		`head -20 /repo/.agents/skills/review/SKILL.md`,
+		`head -n5 /repo/.agents/skills/review/SKILL.md`,
+		`head -n 20 /repo/.agents/skills/review/SKILL.md`,
+		`/usr/bin/head -n 20 /repo/.agents/skills/review/SKILL.md`,
+		`tail /repo/.codex/skills/review/SKILL.md`,
+		`tail -n 5 /repo/.codex/skills/review/SKILL.md`,
+		`bat /repo/.cursor/skills/.system/review/SKILL.md`,
+		`/bin/cat /repo/.agents/skills/review/SKILL.md`,
+		`cd /repo/.agents/skills/review && cat SKILL.md`,
+		`cd /repo/.agents/skills/review && /bin/cat SKILL.md`,
+		`cd '/repo/.agents/skills/review' && cat SKILL.md`,
+	}
+	for _, command := range commands {
+		t.Run(command, func(t *testing.T) {
+			input, err := json.Marshal(map[string]string{"command": command})
+			if err != nil {
+				t.Fatal(err)
+			}
+			event := &ToolPreEvent{
+				Event: Event{Provider: ProviderCodex, Kind: KindToolPre},
+				Tool:  ToolCall{Name: "Bash", Canonical: ToolShell, Input: input},
+			}
+			if activation := SkillActivationOf(event); activation == nil || activation.Name != "review" {
+				t.Fatalf("SkillActivationOf(%q) = %+v", command, activation)
+			}
+		})
+	}
+}
+
 func TestSkillActivationOfRejectsNonReadingShellCommands(t *testing.T) {
 	commands := []string{
 		`# cat /repo/.agents/skills/review/SKILL.md`,
@@ -207,6 +239,15 @@ func TestSkillActivationOfRejectsNonReadingShellCommands(t *testing.T) {
 		`cat /not-a-skill\;/repo/.agents/skills/review/SKILL.md`,
 		`cat /not-a-skill\#/repo/.agents/skills/review/SKILL.md`,
 		`sed -n 1,200p /not-a-skill\|/repo/.agents/skills/review/SKILL.md`,
+		`head /repo/.agents/skills/review/SKILL.md /repo/.agents/skills/deploy/SKILL.md`,
+		`tail -n nope /repo/.agents/skills/review/SKILL.md`,
+		`bat /repo/.agents/skills/review/SKILL.md /repo/.agents/skills/deploy/SKILL.md`,
+		`cat /repo/.agents/skills/*/SKILL.md`,
+		`cd /repo/.agents/skills/review && cat SKILL.md && cat /etc/passwd`,
+		`cd /repo/.agents/skills/review || cat SKILL.md`,
+		`cd /repo/.agents/skills/review/extra && cat SKILL.md`,
+		`cd $(printf /repo/.agents/skills/review) && cat SKILL.md`,
+		`cd /repo/.agents/skills/review && cat SKILL.md; echo injected`,
 	}
 
 	for _, command := range commands {

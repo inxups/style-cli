@@ -220,3 +220,19 @@ git diff --check
 ```
 
 以上命令均通过；真实 Claude/Codex effort 来源和版本值仍需 M1b 环境记录，不能由离线 fixture 代替。
+
+## T42 完成后回顾（2026-10-15）
+
+结论：F7–F9 按现有边界落地，无需改变 `agenthooks/` 与 STYLE adapter/core 的分工。hook event、原始 payload 和 provider codec 保留在 `agenthooks/`；Codex 显式 skill 只在 `internal/adapter/codex` 提供轻量解析；具体规则评估、state/scope 投影和 engine Enrich 仍由 T44 adapter 完成。本轮没有发现需要架构调整的 P0/P1。
+
+| 条目 | 状态 | 完成结果与证据 |
+|---|---|---|
+| F7 | [x] | 新增 `SubagentStartDecision.WithContext` 与 `OnSubagentStartDecision`，保留既有观察型 `OnSubagentStart` API；Codex 能力矩阵和 HSO 编码仅开放 `additionalContext`。Runner 测试从 native payload 验证 agent id/type、handler 决策、精确输出及旧观察回调仍运行。Claude Code 不宣称支持该能力。 |
+| F8 | [x] | `SkillActivationOf` shell 解析增加 `head`/`tail`/`bat` 与安全的 `cd … && cat SKILL.md` 形式，并保留绝对路径可执行文件兼容；Codex `ExplicitSkills` 依规范正则按首次出现顺序提取并去重，数字可作为首字符。云端 `skills.read` 仍待 U6，显式 skill 评估接线在 T44。 |
+| F9 | [x] | Claude codec/native views 覆盖 prompt id→turn、effort raw、MCP server name/source 与嵌套未知字段、fork source、UserPromptExpansion、PostModelSwitch/to_model；prompt block 的 `suppressOriginalPrompt` 放入 `hookSpecificOutput`。Codec、typed view、Runner 和 runtime golden 有覆盖。 |
+
+复核中发现并在统一测试前修正了四项实现/验证不一致：旧的 suppress 输出 golden 仍使用顶层字段；F7 注释/spec 将 Claude 错列为支持方；skill 名首字符测试与规范允许数字的正则冲突；F8 解析器改动会漏掉 `/bin/cat` 等绝对命令。以上均已补充回归或同步文档。
+
+验证：`GOPROXY=off GOSUMDB=off make test-go` 与 `GOPROXY=off GOSUMDB=off make vet-go` 通过；Makefile 为两个 module 分别清理 `CODEX_HOME`、`CODEX_SANDBOX`，并使用 `/tmp/style-cli-gopath`、`/tmp/style-cli-gomodcache`、`/tmp/style-cli-gocache`。gofmt 和 `git diff --check` 通过。
+
+边界：离线测试证明 Codex payload 经 Runner 能编码 additionalContext，但不能证明实际 Codex 会把内容投递给子 agent；该结论仍由 U7/M1b 验证。`skills.read` 尚未进入固定订阅面，显式 `$name` 到 runtime evaluation point 的接线与 scope.agent_id projection 留在 T44；因此 A11 保持 `[~]`，M1a/M1b 不提前标记通过。

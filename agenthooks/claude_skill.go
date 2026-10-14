@@ -19,6 +19,7 @@ const (
 var (
 	claudeSkillTokenRE      = regexp.MustCompile(`^[A-Za-z0-9][A-Za-z0-9._-]*$`)
 	sedPrintRangeRE         = regexp.MustCompile(`^[0-9]+(,[0-9]+)?p$`)
+	lineCountRE             = regexp.MustCompile(`^[0-9]+$`)
 	claudeManagedSkillsRoot = platformClaudeManagedSkillsRoot
 )
 
@@ -151,22 +152,136 @@ func skillNameFromManifestPath(path string) string {
 }
 
 func skillNameFromShellCommand(command string) string {
-	tokens, ok := simpleShellTokens(command)
-	if !ok || len(tokens) < 2 {
+	left, right, hasAndAnd, ok := splitSafeAndAnd(command)
+	if !ok {
 		return ""
 	}
+	if hasAndAnd {
+		cdTokens, leftOK := simpleShellTokens(left)
+		readTokens, rightOK := simpleShellTokens(right)
+		if !leftOK || !rightOK || len(cdTokens) != 2 || cdTokens[0] != "cd" || !isSingleSkillRead(readTokens, "SKILL.md") || !safeShellSkillPath(cdTokens[1]) {
+			return ""
+		}
+		return skillNameFromSkillsDirectory(cdTokens[1])
+	}
 
+	tokens, ok := simpleShellTokens(command)
+	if !ok {
+		return ""
+	}
+	return skillNameFromReadCommand(tokens)
+}
+
+func skillNameFromReadCommand(tokens []string) string {
+	if len(tokens) < 2 {
+		return ""
+	}
 	switch filepath.Base(tokens[0]) {
 	case "cat":
-		if len(tokens) == 2 {
+		if len(tokens) == 2 && safeShellSkillPath(tokens[1]) {
 			return skillNameFromManifestPath(tokens[1])
 		}
 	case "sed":
-		if len(tokens) == 4 && tokens[1] == "-n" && sedPrintRangeRE.MatchString(tokens[2]) {
+		if len(tokens) == 4 && tokens[1] == "-n" && sedPrintRangeRE.MatchString(tokens[2]) && safeShellSkillPath(tokens[3]) {
 			return skillNameFromManifestPath(tokens[3])
+		}
+	case "head", "tail":
+		if len(tokens) == 2 && safeShellSkillPath(tokens[1]) {
+			return skillNameFromManifestPath(tokens[1])
+		}
+		if len(tokens) == 3 && strings.HasPrefix(tokens[1], "-n") && lineCountRE.MatchString(strings.TrimPrefix(tokens[1], "-n")) && safeShellSkillPath(tokens[2]) {
+			return skillNameFromManifestPath(tokens[2])
+		}
+		if len(tokens) == 3 && strings.HasPrefix(tokens[1], "-") && lineCountRE.MatchString(strings.TrimPrefix(tokens[1], "-")) && safeShellSkillPath(tokens[2]) {
+			return skillNameFromManifestPath(tokens[2])
+		}
+		if len(tokens) == 4 && tokens[1] == "-n" && lineCountRE.MatchString(tokens[2]) && safeShellSkillPath(tokens[3]) {
+			return skillNameFromManifestPath(tokens[3])
+		}
+	case "bat":
+		if len(tokens) == 2 && safeShellSkillPath(tokens[1]) {
+			return skillNameFromManifestPath(tokens[1])
 		}
 	}
 	return ""
+}
+
+func isSingleSkillRead(tokens []string, relativePath string) bool {
+	if len(tokens) != 2 || filepath.Base(tokens[0]) != "cat" || tokens[1] != relativePath {
+		return false
+	}
+	return true
+}
+
+func skillNameFromSkillsDirectory(path string) string {
+	path = filepath.Clean(path)
+	if filepath.Separator == '\\' {
+		path = strings.ReplaceAll(path, "/", string(filepath.Separator))
+	}
+	parts := strings.Split(path, string(filepath.Separator))
+	if len(parts) < 2 || parts[len(parts)-2] != "skills" || !claudeSkillTokenRE.MatchString(parts[len(parts)-1]) {
+		return ""
+	}
+	return parts[len(parts)-1]
+}
+
+// safeShellSkillPath rejects shell pathname expansion and option-looking file
+// arguments. The tokenizer has already rejected command substitution and
+// shell operators; rejecting glob syntax keeps one recognized command tied to
+// a single manifest path.
+func safeShellSkillPath(path string) bool {
+	if path == "" || strings.HasPrefix(path, "-") {
+		return false
+	}
+	if filepath.Separator == '/' && strings.ContainsRune(path, '\\') {
+		return false
+	}
+	return !strings.ContainsAny(path, "*?[]{}!")
+}
+
+// splitSafeAndAnd recognizes only one unquoted, unescaped shell && separator.
+// Each resulting command is still passed through simpleShellTokens, which
+// rejects every other shell operator and expansion form.
+func splitSafeAndAnd(command string) (left, right string, found, ok bool) {
+	var quote byte
+	escaped := false
+	separator := -1
+	for i := 0; i < len(command); i++ {
+		char := command[i]
+		if escaped {
+			escaped = false
+			continue
+		}
+		if char == '\\' && quote != '\'' && runtime.GOOS != "windows" {
+			escaped = true
+			continue
+		}
+		if quote != 0 {
+			if char == quote {
+				quote = 0
+			}
+			continue
+		}
+		if char == '\'' || char == '"' {
+			quote = char
+			continue
+		}
+		if char != '&' {
+			continue
+		}
+		if i+1 >= len(command) || command[i+1] != '&' || separator >= 0 {
+			return "", "", false, false
+		}
+		separator = i
+		i++
+	}
+	if escaped || quote != 0 {
+		return "", "", false, false
+	}
+	if separator < 0 {
+		return "", "", false, true
+	}
+	return command[:separator], command[separator+2:], true, true
 }
 
 func simpleShellTokens(command string) ([]string, bool) {
