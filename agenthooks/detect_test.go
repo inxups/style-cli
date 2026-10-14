@@ -36,6 +36,17 @@ func TestParseArgsNoSentinel(t *testing.T) {
 	}
 }
 
+func TestParseArgsOwner(t *testing.T) {
+	t.Parallel()
+	inv, err := parseArgs([]string{"agenthooks", "run", "--provider=codex", "--owner=style"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if inv.owner != "style" {
+		t.Errorf("owner = %q, want style", inv.owner)
+	}
+}
+
 func TestDetectClaudeCodeMarker(t *testing.T) {
 	for _, v := range []string{
 		"CURSOR_VERSION", "CURSOR_TRACE_ID", "CURSOR_AGENT", "CODEX_HOME", "CODEX_SANDBOX",

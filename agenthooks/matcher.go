@@ -114,7 +114,7 @@ func canonicalNativeNames(p Provider, c CanonicalTool) []string {
 		{ProviderClaudeCode, ToolFetch}:     {"WebFetch", "WebSearch"},
 		{ProviderClaudeCode, ToolTask}:      {"Task"},
 
-		{ProviderCodex, ToolShell}:    {"shell", "local_shell"},
+		{ProviderCodex, ToolShell}:    {"Bash"},
 		{ProviderCodex, ToolFileEdit}: {"apply_patch"},
 
 		{ProviderGemini, ToolShell}:     {"run_shell_command"},

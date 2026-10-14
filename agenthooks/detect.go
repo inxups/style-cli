@@ -23,6 +23,7 @@ type invocation struct {
 	payload     string
 	timeout     time.Duration
 	filter      *ToolMatcher
+	owner       string
 }
 
 var validProviders = map[Provider]bool{
@@ -84,6 +85,8 @@ func parseArgs(args []string) (*invocation, error) {
 				return nil, fmt.Errorf("agenthooks: bad --timeout: %w", err)
 			}
 			inv.timeout = d
+		case strings.HasPrefix(a, "--owner="):
+			inv.owner = strings.TrimPrefix(a, "--owner=")
 		case strings.HasPrefix(a, "--filter="):
 			m, err := ParseToolMatcher(strings.TrimPrefix(a, "--filter="))
 			if err != nil {

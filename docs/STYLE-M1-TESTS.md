@@ -64,6 +64,7 @@ env -u CODEX_HOME -u CODEX_SANDBOX \
 - [x] **B1.14 T32 runtime engine**：engine/runtime 测试覆盖 schema load、预编译 matcher、target/source/when、模板渲染、block 优先、inject/warn 顺序、cap 裁剪和 reservation release、metadata-only stats/log。证据：`core/engine/engine_test.go`、`internal/runtime/runtime_test.go`。
 - [x] **B1.15 T33 白名单和 fail policy**：Codex/Claude fixture 精确 stdout、Claude prompt suppress whitelist、missing/invalid index 与 invalid state fail-open、Claude fail-closed exit code、敏感内容不进入 stdout/log/stats 均有测试。证据：`internal/runtime/runtime_test.go`、`agenthooks/runner_test.go`。
 - [x] **B1.16 T34 动态 system**：startup/prompt 双评估、effort/model 更新后重渲染、相同正文去重、正文变化补发和 compact 选择性重注入通过 runtime/engine 集成测试。证据：`internal/runtime/runtime_test.go:TestRuntimeReevaluatesDynamicSystemWhenModelChanges`、`core/engine/engine_test.go:TestDynamicSystemReevaluatesAndDeduplicatesByRenderedBody`。
+- [x] **B1.17 T40 安装层 F1–F4**：Codex canonical shell matcher 编译为 `Bash`；`install.Uninstall` 只删除匹配 `--owner` 的 JSON/TOML 内容并保留同组其他 handler；重复安装保持幂等；Codex 插件生成 `.codex-plugin/plugin.json`、`hooks/hooks.json`、可执行 `bin/style` 和 CODEX_HOME trust 配置，长格式插件 trust key 与 `DefinitionHash` 一致；owner 解析和命令行回读有覆盖。证据：`agenthooks/matcher_test.go`、`agenthooks/install/install_test.go`、`agenthooks/detect_test.go`、`agenthooks/e2e/codex_test.go`（真实运行需 `AGENTHOOKS_E2E=1`）。
 
 ## M1a：STYLE 离线验收
 

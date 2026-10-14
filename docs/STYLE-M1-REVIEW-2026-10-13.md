@@ -157,3 +157,41 @@ T30–T34 已完成双 module 全量测试和运行时/状态 race 检查；A4�
 可复现验证：双 module 根测试和 `agenthooks` 测试均以 `-count=1` 通过；state/engine/runtime/schema 的 race 测试通过；双 module vet 通过。index-only 200 样本 p95 为 128.083µs，300 次 benchmark 为 33,567 ns/op。完整命令及运行结果保存在 `docs/PROGRESS.md` 对应条目。
 
 边界：本轮 runtime 集成使用测试 `RuntimeEnricher` 验证 provider-neutral engine；Codex/Claude 原始 effort 映射、native model-switch 事件完整解码、子 agent context 以及实际订阅面仍由 T41/T42/T44/T45 落地。故 A10 与 A11 标为 `[~]`，M1a/M1b 不提前通过。继续现有架构并推进 T40，不需要重写 T30–T34。
+
+## T40 完成后回顾（2026-10-14）
+
+结论：安装层仍保持 `agenthooks/` 负责 provider 配置和协议事实、STYLE 通过 `Manifest.Owner` 声明归属的边界；不需要复制 hook 行为或重写安装架构。F1–F4 已完成离线实现和回归验证，真实 Codex 插件启用、信任和 shell 触发仍属于 M1b 环境验收。
+
+| 条目 | 状态 | 完成结果与证据 |
+|---|---|---|
+| F1 | [x] | Codex canonical shell selector 现在编译为 `Bash`；`agenthooks/matcher_test.go` 固定编译和匹配行为；`agenthooks/e2e/codex_test.go:TestCodexCanonicalShellMatcher` 覆盖真实路线，默认跳过。 |
+| F2 | [x] | 新增 `install.Uninstall`，JSON 按 `--owner` 删除 handler，TOML 按 owner marker 删除区域，独立生成文件只在内容仍匹配时删除；覆盖同组 sibling handler、外部配置、Kimi/Codex TOML 和插件文件清理。 |
+| F3 | [x] | 所有生成命令加入 `--owner=<owner>`；STYLE 使用 `Owner: "style"`，默认消费者保持 `agenthooks`；合并/卸载不再按命令中是否包含 `agenthooks` 粗略识别。 |
+| F4 | [x] | Codex plugin 路线生成 `.codex-plugin/plugin.json`、`hooks/hooks.json`、POSIX `bin/style`（0755）和 `CODEX_HOME/config.toml`；插件 trust key 使用 `<plugin_id>:hooks/hooks.json:<event>:<group>:<handler>`，hash 与渲染命令/timeout 一致。 |
+
+离线验证：
+
+```sh
+env -u CODEX_HOME -u CODEX_SANDBOX \
+  GOPATH=/tmp/style-cli-gopath \
+  GOMODCACHE=/tmp/style-cli-gomodcache \
+  GOCACHE=/tmp/style-cli-gocache \
+  GOPROXY=off GOSUMDB=off \
+  go test -count=1 -C agenthooks ./install .
+
+env -u CODEX_HOME -u CODEX_SANDBOX \
+  GOPATH=/tmp/style-cli-gopath \
+  GOMODCACHE=/tmp/style-cli-gomodcache \
+  GOCACHE=/tmp/style-cli-gocache \
+  GOPROXY=off GOSUMDB=off \
+  go test -race -count=1 -C agenthooks ./install .
+
+GOPROXY=off GOSUMDB=off make test-go
+GOPROXY=off GOSUMDB=off make vet-go
+env -u CODEX_HOME -u CODEX_SANDBOX \
+  GOPATH=/tmp/style-cli-gopath GOMODCACHE=/tmp/style-cli-gomodcache \
+  GOCACHE=/tmp/style-cli-gocache GOPROXY=off GOSUMDB=off \
+  go test -count=1 -C agenthooks -run '^$' -tags e2e ./e2e
+```
+
+已知边界：离线测试不能证明当前机器上的 Codex 版本会实际加载插件、要求一次信任并发送 `Bash` hook；该验证保留在 `M1b/CDEX-01`、`CDEX-10` 和真实 e2e。完整 CLI 生命周期的字节级恢复、路线切换和 trust/sync 仍由后续 T52–T55/A12–A14 完成。

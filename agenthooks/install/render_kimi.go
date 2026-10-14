@@ -33,6 +33,14 @@ const (
 	tomlEndMarker   = "# END agenthooks managed hooks"
 )
 
+func tomlMarkers(owner string) (begin, end string) {
+	if owner == "" || owner == "agenthooks" {
+		return tomlBeginMarker, tomlEndMarker
+	}
+	return "# BEGIN agenthooks managed hooks (owner=" + owner + "; generated; do not edit inside markers)",
+		"# END agenthooks managed hooks (owner=" + owner + ")"
+}
+
 // renderKimi emits [[hooks]] entries for $KIMI_CODE_HOME/config.toml
 // (default ~/.kimi-code/config.toml). Kimi reads hooks from the single
 // user-level config only — .kimi-code/local.toml holds [workspace] settings,
@@ -46,7 +54,8 @@ func renderKimi(m Manifest, t Target) (fs.FS, error) {
 		return nil, errors.New("install: kimi has no project-level hooks config; use ScopeUser with Dir pointed at $KIMI_CODE_HOME")
 	}
 	var b strings.Builder
-	b.WriteString(tomlBeginMarker + "\n")
+	begin, end := tomlMarkers(manifestOwner(m))
+	b.WriteString(begin + "\n")
 	for _, spec := range m.Hooks {
 		event, ok := kindToKimi[spec.Kind]
 		if !ok {
@@ -65,7 +74,7 @@ func renderKimi(m Manifest, t Target) (fs.FS, error) {
 		fmt.Fprintf(&b, "command = %s\n", tomlString(hookCommand(m, agenthooks.ProviderKimi, spec)))
 		fmt.Fprintf(&b, "timeout = %d\n", secs)
 	}
-	b.WriteString("\n" + tomlEndMarker + "\n")
+	b.WriteString("\n" + end + "\n")
 
 	return memFS(map[string][]byte{
 		"config.toml": []byte(b.String()), // Target.Dir is ~/.kimi-code (or $KIMI_CODE_HOME)
@@ -99,7 +108,8 @@ func tomlString(s string) string {
 // else survives byte-for-byte. Absent markers, the region is appended.
 func mergeManagedTOML(existing, rendered []byte) []byte {
 	ex := string(existing)
-	begin := strings.Index(ex, tomlBeginMarker)
+	beginMarker, endMarker := markersInTOML(rendered)
+	begin := strings.Index(ex, beginMarker)
 	if begin < 0 {
 		var sep string
 		switch {
@@ -112,12 +122,42 @@ func mergeManagedTOML(existing, rendered []byte) []byte {
 		}
 		return []byte(ex + sep + string(rendered))
 	}
-	end := strings.Index(ex[begin:], tomlEndMarker)
+	end := strings.Index(ex[begin:], endMarker)
 	if end < 0 {
 		// Broken region (begin without end): replace from begin to EOF.
 		return []byte(ex[:begin] + string(rendered))
 	}
-	tail := ex[begin+end+len(tomlEndMarker):]
+	tail := ex[begin+end+len(endMarker):]
 	tail = strings.TrimPrefix(tail, "\n")
 	return []byte(ex[:begin] + string(rendered) + tail)
+}
+
+func removeManagedTOML(existing []byte, owner string) ([]byte, bool) {
+	beginMarker, endMarker := tomlMarkers(owner)
+	ex := string(existing)
+	begin := strings.Index(ex, beginMarker)
+	if begin < 0 {
+		return existing, false
+	}
+	end := strings.Index(ex[begin+len(beginMarker):], endMarker)
+	if end < 0 {
+		return []byte(ex[:begin]), true
+	}
+	end += begin + len(beginMarker)
+	return []byte(ex[:begin] + ex[end+len(endMarker):]), true
+}
+
+func markersInTOML(rendered []byte) (begin, end string) {
+	for _, line := range strings.Split(string(rendered), "\n") {
+		switch {
+		case strings.HasPrefix(line, "# BEGIN agenthooks managed hooks"):
+			begin = line
+		case strings.HasPrefix(line, "# END agenthooks managed hooks"):
+			end = line
+		}
+	}
+	if begin == "" || end == "" {
+		return tomlBeginMarker, tomlEndMarker
+	}
+	return begin, end
 }

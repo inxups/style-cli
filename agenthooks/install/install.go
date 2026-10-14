@@ -39,6 +39,10 @@ type Target struct {
 	Provider agenthooks.Provider
 	Scope    Scope
 	Dir      string
+	// ConfigDir is the provider's user config root when the rendered files
+	// also include a separately installed plugin bundle. Codex ScopePlugin
+	// writes its plugin under Dir and trust state under ConfigDir.
+	ConfigDir string
 }
 
 // Identity is the plugin name/version/description for plugin-based installs
@@ -47,6 +51,9 @@ type Identity struct {
 	Name        string
 	Version     string
 	Description string
+	// PluginID is Codex's namespaced plugin identifier, such as
+	// "style-runtime@style". It is used in Codex's long-form hook trust keys.
+	PluginID string
 }
 
 // ToolMatcher aliases the unified matcher (compiled to provider dialects
@@ -67,6 +74,10 @@ type Manifest struct {
 	Command  []string // how to invoke the consumer binary (abs path or PATH lookup)
 	Hooks    []HookSpec
 	Identity Identity
+	// Owner distinguishes this consumer's hook entries from other programs
+	// using agenthooks. An empty owner defaults to "agenthooks" for existing
+	// consumers; STYLE should set it to "style".
+	Owner string
 	// Fail drives fail-mode workarounds in generated config (e.g. Cursor's
 	// failClosed flag, quirk #7). Match the Policy your Runner uses.
 	Fail agenthooks.FailMode
@@ -79,6 +90,9 @@ type Manifest struct {
 func Render(m Manifest, t Target) (fs.FS, error) {
 	if len(m.Command) == 0 {
 		return nil, errors.New("install: Manifest.Command is required")
+	}
+	if _, err := ownerName(m); err != nil {
+		return nil, err
 	}
 	switch t.Provider {
 	case agenthooks.ProviderClaudeCode:
@@ -141,6 +155,9 @@ func Install(ctx context.Context, m Manifest, t Target, opts ...InstallOption) e
 	if t.Dir == "" {
 		return errors.New("install: Target.Dir is required")
 	}
+	if t.Provider == agenthooks.ProviderCodex && t.Scope == ScopePlugin && t.ConfigDir == "" {
+		return errors.New("install: Codex plugin scope requires Target.ConfigDir for trust state")
+	}
 	planned, err := plan(m, t)
 	if err != nil {
 		return err
@@ -152,12 +169,17 @@ func Install(ctx context.Context, m Manifest, t Target, opts ...InstallOption) e
 		if p.state == StateUnchanged || cfg.dryRun {
 			continue
 		}
-		dest := filepath.Join(t.Dir, filepath.FromSlash(p.path))
+		dest := filepath.Join(p.root, filepath.FromSlash(p.path))
 		if err := os.MkdirAll(filepath.Dir(dest), 0o755); err != nil {
 			return fmt.Errorf("install: %w", err)
 		}
-		if err := os.WriteFile(dest, p.final, 0o644); err != nil {
+		if err := os.WriteFile(dest, p.final, p.mode); err != nil {
 			return fmt.Errorf("install: %w", err)
+		}
+		if p.mode&0o111 != 0 {
+			if err := os.Chmod(dest, p.mode); err != nil {
+				return fmt.Errorf("install: chmod %s: %w", p.path, err)
+			}
 		}
 	}
 	return nil
@@ -199,7 +221,9 @@ func Fingerprint(m Manifest, t Target) (string, error) {
 
 type plannedFile struct {
 	path  string
+	root  string
 	final []byte
+	mode  fs.FileMode
 	state ChangeState
 }
 
@@ -215,28 +239,176 @@ func plan(m Manifest, t Target) ([]plannedFile, error) {
 	var out []plannedFile
 	for i, p := range paths {
 		content := contents[i]
-		dest := filepath.Join(t.Dir, filepath.FromSlash(p))
+		info, err := fs.Stat(rendered, p)
+		if err != nil {
+			return nil, err
+		}
+		mode := info.Mode().Perm()
+		root := t.Dir
+		if t.Provider == agenthooks.ProviderCodex && t.Scope == ScopePlugin && p == "config.toml" {
+			root = t.ConfigDir
+		}
+		dest := filepath.Join(root, filepath.FromSlash(p))
 		existing, readErr := os.ReadFile(dest)
 		switch {
+		case errors.Is(readErr, os.ErrNotExist):
+			out = append(out, plannedFile{path: p, root: root, final: content, mode: mode, state: StateCreate})
 		case readErr != nil:
-			out = append(out, plannedFile{path: p, final: content, state: StateCreate})
+			return nil, fmt.Errorf("install: read %s: %w", p, readErr)
 		default:
 			final := content
 			if isMergeableJSON(p) {
-				if merged, mergeErr := mergeManagedJSON(existing, content); mergeErr == nil {
-					final = merged
+				merged, mergeErr := mergeManagedJSON(existing, content, manifestOwner(m))
+				if mergeErr != nil {
+					return nil, fmt.Errorf("install: merge %s: %w", p, mergeErr)
 				}
+				final = merged
 			} else if isMergeableTOML(p) {
 				final = mergeManagedTOML(existing, content)
 			}
 			state := StateUpdate
-			if bytes.Equal(existing, final) {
+			fileInfo, statErr := os.Stat(dest)
+			modeMatches := mode&0o111 == 0 || statErr == nil && fileInfo.Mode().Perm() == mode
+			if bytes.Equal(existing, final) && modeMatches {
 				state = StateUnchanged
 			}
-			out = append(out, plannedFile{path: p, final: final, state: state})
+			out = append(out, plannedFile{path: p, root: root, final: final, mode: mode, state: state})
 		}
 	}
 	return out, nil
+}
+
+// Uninstall removes one consumer's hook entries from the provider configs in
+// Target while preserving other owners and unrelated configuration. Generated
+// standalone files are removed only when their bytes still match this manifest.
+func Uninstall(ctx context.Context, m Manifest, t Target) error {
+	if t.Dir == "" {
+		return errors.New("install: Target.Dir is required")
+	}
+	owner, err := ownerName(m)
+	if err != nil {
+		return err
+	}
+	rendered, err := Render(m, t)
+	if err != nil {
+		return err
+	}
+	paths, contents, err := flatten(rendered)
+	if err != nil {
+		return err
+	}
+	for i, path := range paths {
+		if err := ctx.Err(); err != nil {
+			return err
+		}
+		root := renderedRoot(t, path)
+		dest := filepath.Join(root, filepath.FromSlash(path))
+		existing, err := os.ReadFile(dest)
+		if errors.Is(err, os.ErrNotExist) {
+			continue
+		}
+		if err != nil {
+			return fmt.Errorf("install: read %s for uninstall: %w", path, err)
+		}
+		var updated []byte
+		removeFile := false
+		changed := false
+		switch {
+		case isMergeableJSON(path):
+			updated, removeFile, changed, err = removeOwnedJSON(existing, owner)
+		case isMergeableTOML(path):
+			updated, changed = removeManagedTOML(existing, owner)
+			removeFile = changed && len(bytes.TrimSpace(updated)) == 0
+		default:
+			if bytes.Equal(existing, contents[i]) {
+				removeFile, changed = true, true
+			}
+		}
+		if err != nil {
+			return fmt.Errorf("install: remove owner %q from %s: %w", owner, path, err)
+		}
+		if !changed {
+			continue
+		}
+		if removeFile {
+			if err := os.Remove(dest); err != nil && !errors.Is(err, os.ErrNotExist) {
+				return fmt.Errorf("install: remove %s: %w", path, err)
+			}
+		} else if err := os.WriteFile(dest, updated, 0o644); err != nil {
+			return fmt.Errorf("install: update %s: %w", path, err)
+		}
+		pruneEmptyDirs(root, filepath.Dir(dest))
+	}
+	return nil
+}
+
+func removeOwnedJSON(existing []byte, owner string) (updated []byte, removeFile, changed bool, err error) {
+	var root map[string]json.RawMessage
+	if err := json.Unmarshal(existing, &root); err != nil {
+		return nil, false, false, err
+	}
+	rawHooks, ok := root["hooks"]
+	if !ok {
+		return existing, false, false, nil
+	}
+	var hooks map[string][]json.RawMessage
+	if err := json.Unmarshal(rawHooks, &hooks); err != nil {
+		return nil, false, false, err
+	}
+	changed = false
+	for event, groups := range hooks {
+		kept, err := removeOwnedHookGroups(groups, owner)
+		if err != nil {
+			return nil, false, false, err
+		}
+		if !rawGroupsEqual(kept, groups) {
+			changed = true
+		}
+		if len(kept) == 0 {
+			delete(hooks, event)
+		} else {
+			hooks[event] = kept
+		}
+	}
+	if !changed {
+		return existing, false, false, nil
+	}
+	if len(hooks) == 0 {
+		delete(root, "hooks")
+	} else {
+		encoded, err := json.Marshal(hooks)
+		if err != nil {
+			return nil, false, false, err
+		}
+		root["hooks"] = encoded
+	}
+	if len(root) == 0 {
+		return nil, true, true, nil
+	}
+	updated, err = json.MarshalIndent(root, "", "  ")
+	return updated, false, true, err
+}
+
+func rawGroupsEqual(a, b []json.RawMessage) bool {
+	if len(a) != len(b) {
+		return false
+	}
+	for i := range a {
+		if !bytes.Equal(a[i], b[i]) {
+			return false
+		}
+	}
+	return true
+}
+
+func pruneEmptyDirs(root, dir string) {
+	root, dir = filepath.Clean(root), filepath.Clean(dir)
+	for dir != root && dir != "." {
+		if err := os.Remove(dir); err != nil {
+			return
+		}
+		dir = filepath.Dir(dir)
+	}
 }
 
 func flatten(fsys fs.FS) (paths []string, contents [][]byte, err error) {
@@ -271,6 +443,13 @@ func (s *pairSort) Swap(i, j int) {
 	s.contents[i], s.contents[j] = s.contents[j], s.contents[i]
 }
 
+func renderedRoot(t Target, path string) string {
+	if t.Provider == agenthooks.ProviderCodex && t.Scope == ScopePlugin && path == "config.toml" {
+		return t.ConfigDir
+	}
+	return t.Dir
+}
+
 func isMergeableJSON(path string) bool {
 	base := filepath.Base(path)
 	return base == "settings.json" || base == "hooks.json"
@@ -284,11 +463,13 @@ func isMergeableTOML(path string) bool {
 	return base == "config.toml" || base == "local.toml"
 }
 
-// mergeManagedJSON overlays rendered config onto an existing settings file:
-// under "hooks", entries recognizably ours (command mentions "agenthooks")
-// are replaced by the rendered set while foreign entries survive; every other
-// rendered top-level key overwrites.
-func mergeManagedJSON(existing, rendered []byte) ([]byte, error) {
+// mergeManagedJSON overlays rendered config onto an existing settings file.
+// Only command handlers carrying the same --owner value are replaced; foreign
+// handlers, including other agenthooks consumers, survive.
+func mergeManagedJSON(existing, rendered []byte, owner string) ([]byte, error) {
+	if bytes.Equal(existing, rendered) {
+		return existing, nil
+	}
 	var ex, re map[string]json.RawMessage
 	if err := json.Unmarshal(existing, &ex); err != nil {
 		return nil, err
@@ -314,22 +495,89 @@ func mergeManagedJSON(existing, rendered []byte) ([]byte, error) {
 		if exHooks == nil {
 			exHooks = map[string][]json.RawMessage{}
 		}
-		for event, entries := range reHooks {
-			var kept []json.RawMessage
-			for _, e := range exHooks[event] {
-				if !strings.Contains(string(e), "agenthooks") {
-					kept = append(kept, e)
-				}
+		for event, entries := range exHooks {
+			kept, err := removeOwnedHookGroups(entries, owner)
+			if err != nil {
+				return nil, err
 			}
-			exHooks[event] = append(kept, entries...)
+			if len(kept) == 0 {
+				delete(exHooks, event)
+			} else {
+				exHooks[event] = kept
+			}
 		}
-		merged, err := json.Marshal(exHooks)
+		for event, entries := range reHooks {
+			exHooks[event] = append(exHooks[event], entries...)
+		}
+		if len(exHooks) == 0 {
+			delete(ex, k)
+		} else {
+			merged, err := json.Marshal(exHooks)
+			if err != nil {
+				return nil, err
+			}
+			ex[k] = merged
+		}
+	}
+	return json.MarshalIndent(ex, "", "  ")
+}
+
+func removeOwnedHookGroups(groups []json.RawMessage, owner string) ([]json.RawMessage, error) {
+	kept := make([]json.RawMessage, 0, len(groups))
+	for _, rawGroup := range groups {
+		var group map[string]json.RawMessage
+		if err := json.Unmarshal(rawGroup, &group); err != nil {
+			kept = append(kept, rawGroup)
+			continue
+		}
+		var handlers []json.RawMessage
+		if rawHandlers := group["hooks"]; len(rawHandlers) != 0 {
+			if err := json.Unmarshal(rawHandlers, &handlers); err != nil {
+				kept = append(kept, rawGroup)
+				continue
+			}
+		}
+		remaining := make([]json.RawMessage, 0, len(handlers))
+		for _, rawHandler := range handlers {
+			var handler struct {
+				Command string `json:"command"`
+			}
+			if err := json.Unmarshal(rawHandler, &handler); err != nil || !commandHasOwner(handler.Command, owner) {
+				remaining = append(remaining, rawHandler)
+			}
+		}
+		if len(remaining) == len(handlers) {
+			kept = append(kept, rawGroup)
+			continue
+		}
+		if len(remaining) == 0 {
+			continue
+		}
+		updated, err := json.Marshal(remaining)
 		if err != nil {
 			return nil, err
 		}
-		ex[k] = merged
+		group["hooks"] = updated
+		updatedGroup, err := json.Marshal(group)
+		if err != nil {
+			return nil, err
+		}
+		kept = append(kept, updatedGroup)
 	}
-	return json.MarshalIndent(ex, "", "  ")
+	return kept, nil
+}
+
+func commandHasOwner(command, owner string) bool {
+	if command == "" || owner == "" {
+		return false
+	}
+	want := "--owner=" + owner
+	for _, field := range strings.Fields(command) {
+		if strings.Trim(field, `"'`) == want {
+			return true
+		}
+	}
+	return false
 }
 
 // hookCommand renders the shell command a provider config invokes, including
@@ -340,16 +588,48 @@ func hookCommand(m Manifest, p agenthooks.Provider, spec HookSpec) string {
 	for _, c := range m.Command {
 		parts = append(parts, shellQuote(c))
 	}
-	parts = append(parts, "agenthooks", "run", "--provider="+string(p))
+	for _, arg := range hookArgs(m, p, spec) {
+		parts = append(parts, shellQuote(arg))
+	}
+	return strings.Join(parts, " ")
+}
+
+func hookArgs(m Manifest, p agenthooks.Provider, spec HookSpec) []string {
+	parts := []string{"agenthooks", "run", "--provider=" + string(p), "--owner=" + manifestOwner(m)}
 	if spec.Timeout > 0 {
 		parts = append(parts, "--timeout="+spec.Timeout.String())
 	}
 	if !spec.Tools.IsEmpty() {
 		if _, ok := agenthooks.CompileMatcher(p, spec.Tools); !ok {
-			parts = append(parts, "--filter="+shellQuoteBody(spec.Tools.Encode()))
+			parts = append(parts, "--filter="+spec.Tools.Encode())
 		}
 	}
-	return strings.Join(parts, " ")
+	return parts
+}
+
+func ownerName(m Manifest) (string, error) {
+	owner := m.Owner
+	if owner == "" {
+		owner = "agenthooks"
+	}
+	if len(owner) > 64 {
+		return "", errors.New("install: owner must be 1–64 ASCII letters, digits, underscores, or hyphens")
+	}
+	for _, r := range owner {
+		if (r >= 'a' && r <= 'z') || (r >= 'A' && r <= 'Z') || (r >= '0' && r <= '9') || r == '_' || r == '-' {
+			continue
+		}
+		return "", errors.New("install: owner must be 1–64 ASCII letters, digits, underscores, or hyphens")
+	}
+	return owner, nil
+}
+
+func manifestOwner(m Manifest) string {
+	owner, err := ownerName(m)
+	if err != nil {
+		return ""
+	}
+	return owner
 }
 
 // shellQuote quotes a command argument for the shell the provider will run
@@ -413,9 +693,17 @@ func jsonFile(v any) ([]byte, error) {
 }
 
 func memFS(files map[string][]byte) fs.FS {
+	return memFSWithModes(files, nil)
+}
+
+func memFSWithModes(files map[string][]byte, modes map[string]fs.FileMode) fs.FS {
 	out := fstest.MapFS{}
 	for p, b := range files {
-		out[p] = &fstest.MapFile{Data: b, Mode: 0o644}
+		mode := fs.FileMode(0o644)
+		if configured, ok := modes[p]; ok {
+			mode = configured.Perm()
+		}
+		out[p] = &fstest.MapFile{Data: b, Mode: mode}
 	}
 	return out
 }

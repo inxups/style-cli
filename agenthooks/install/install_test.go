@@ -225,6 +225,237 @@ func TestRenderCodexAsyncAndTrust(t *testing.T) {
 	}
 }
 
+func TestRenderAndInstallCodexPlugin(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		t.Skip("Codex plugin launcher is POSIX shell")
+	}
+	m := testManifest()
+	m.Owner = "style"
+	m.Identity = Identity{Name: "style-runtime", Version: "0.3.0", Description: "STYLE runtime", PluginID: "style-runtime@style"}
+	m.Hooks[0].Tools = ToolMatcher{Canonical: []agenthooks.CanonicalTool{agenthooks.ToolShell}}
+	pluginDir, codexHome := t.TempDir(), t.TempDir()
+	target := Target{Provider: agenthooks.ProviderCodex, Scope: ScopePlugin, Dir: pluginDir, ConfigDir: codexHome}
+
+	fsys, err := Render(m, target)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var plugin struct {
+		Name        string `json:"name"`
+		Version     string `json:"version"`
+		Description string `json:"description"`
+	}
+	if err := json.Unmarshal(readRendered(t, fsys, ".codex-plugin/plugin.json"), &plugin); err != nil {
+		t.Fatal(err)
+	}
+	if plugin.Name != m.Identity.Name || plugin.Version != m.Identity.Version || plugin.Description != m.Identity.Description {
+		t.Errorf("plugin metadata = %+v", plugin)
+	}
+	var cfg claudeConfig
+	if err := json.Unmarshal(readRendered(t, fsys, "hooks/hooks.json"), &cfg); err != nil {
+		t.Fatal(err)
+	}
+	pre := cfg.Hooks["PreToolUse"]
+	if len(pre) != 1 || pre[0].Matcher != "Bash" || len(pre[0].Hooks) != 1 {
+		t.Fatalf("plugin PreToolUse = %+v", pre)
+	}
+	command := pre[0].Hooks[0].Command
+	if want := `exec "$PLUGIN_ROOT/bin/style" agenthooks run --provider=codex --owner=style --timeout=30s`; command != want {
+		t.Errorf("plugin hook command = %q, want %q", command, want)
+	}
+	if strings.Contains(string(readRendered(t, fsys, "hooks/hooks.json")), `"async": true`) {
+		t.Error("blocking plugin hook must not be async")
+	}
+	trust := string(readRendered(t, fsys, "config.toml"))
+	trustKey := "style-runtime@style:hooks/hooks.json:pre_tool_use:0:0"
+	if !strings.Contains(trust, `[hooks.state.`+tomlString(trustKey)+`]`) {
+		t.Errorf("plugin trust key missing from CODEX_HOME config.toml:\n%s", trust)
+	}
+	wantHash := DefinitionHash("PreToolUse", pre[0].Matcher, command, pre[0].Hooks[0].Timeout)
+	if !strings.Contains(trust, `trusted_hash = "`+wantHash+`"`) {
+		t.Errorf("plugin trusted hash %q missing:\n%s", wantHash, trust)
+	}
+	launcher := readRendered(t, fsys, "bin/style")
+	if !strings.HasPrefix(string(launcher), "#!/bin/sh\nexec /usr/local/bin/myhooks \"$@\"\n") {
+		t.Errorf("launcher = %q", launcher)
+	}
+	launcherInfo, err := fs.Stat(fsys, "bin/style")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got := launcherInfo.Mode().Perm(); got != 0o755 {
+		t.Errorf("rendered launcher mode = %04o, want 0755", got)
+	}
+
+	configPath := filepath.Join(codexHome, "config.toml")
+	otherConfig := "# keep this setting\n" + tomlBeginMarker + "\n[hooks.state.\"legacy:key\"]\ntrusted_hash = \"legacy\"\n" + tomlEndMarker + "\n"
+	if err := os.WriteFile(configPath, []byte(otherConfig), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if err := Install(context.Background(), m, target); err != nil {
+		t.Fatal(err)
+	}
+	installedLauncher := filepath.Join(pluginDir, "bin", "style")
+	info, err := os.Stat(installedLauncher)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got := info.Mode().Perm(); got != 0o755 {
+		t.Errorf("installed launcher mode = %04o, want 0755", got)
+	}
+	if _, err := os.Stat(filepath.Join(pluginDir, "config.toml")); !os.IsNotExist(err) {
+		t.Errorf("trust config unexpectedly installed under plugin root: %v", err)
+	}
+	if _, err := os.Stat(filepath.Join(codexHome, "config.toml")); err != nil {
+		t.Errorf("trust config not installed under CODEX_HOME: %v", err)
+	}
+	changes, err := Diff(m, target)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, change := range changes {
+		if change.State != StateUnchanged {
+			t.Errorf("repeat plugin install is not idempotent: %+v", change)
+		}
+	}
+	if err := Uninstall(context.Background(), m, target); err != nil {
+		t.Fatal(err)
+	}
+	for _, path := range []string{
+		filepath.Join(pluginDir, ".codex-plugin", "plugin.json"),
+		filepath.Join(pluginDir, "hooks", "hooks.json"),
+		filepath.Join(pluginDir, "bin", "style"),
+	} {
+		if _, err := os.Stat(path); !os.IsNotExist(err) {
+			t.Errorf("plugin artifact remains after uninstall: %s (err=%v)", path, err)
+		}
+	}
+	configAfterUninstall, err := os.ReadFile(configPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !strings.Contains(string(configAfterUninstall), "# keep this setting") || !strings.Contains(string(configAfterUninstall), "legacy:key") || strings.Contains(string(configAfterUninstall), "owner=style") {
+		t.Errorf("plugin uninstall did not preserve the other trust region:\n%s", configAfterUninstall)
+	}
+}
+
+func TestMergeManagedJSONReplacesOnlyMatchingOwner(t *testing.T) {
+	m := testManifest()
+	m.Owner = "style"
+	renderedFS, err := Render(m, Target{Provider: agenthooks.ProviderClaudeCode, Scope: ScopeUser})
+	if err != nil {
+		t.Fatal(err)
+	}
+	rendered := readRendered(t, renderedFS, "settings.json")
+	existing := []byte(`{"env":{"KEEP":"yes"},"hooks":{"PreToolUse":[{"matcher":"Bash","hooks":[{"type":"command","command":"old-style agenthooks run --owner=style"},{"type":"command","command":"other-agenthooks run --owner=agenthooks"},{"type":"command","command":"other-agenthooks check"}]}]}}`)
+	merged, err := mergeManagedJSON(existing, rendered, "style")
+	if err != nil {
+		t.Fatal(err)
+	}
+	var got struct {
+		Env   map[string]string `json:"env"`
+		Hooks map[string][]struct {
+			Hooks []struct {
+				Command string `json:"command"`
+			} `json:"hooks"`
+		} `json:"hooks"`
+	}
+	if err := json.Unmarshal(merged, &got); err != nil {
+		t.Fatal(err)
+	}
+	if got.Env["KEEP"] != "yes" {
+		t.Errorf("unrelated config lost: %+v", got.Env)
+	}
+	var style, otherOwner, unmarked int
+	for _, group := range got.Hooks["PreToolUse"] {
+		for _, handler := range group.Hooks {
+			switch {
+			case commandHasOwner(handler.Command, "style"):
+				style++
+				if strings.Contains(handler.Command, "old-style") {
+					t.Errorf("stale STYLE command survived: %s", handler.Command)
+				}
+			case commandHasOwner(handler.Command, "agenthooks"):
+				otherOwner++
+			case strings.Contains(handler.Command, "other-agenthooks check"):
+				unmarked++
+			}
+		}
+	}
+	if style != 1 || otherOwner != 1 || unmarked != 1 {
+		t.Errorf("owner merge counts style=%d other-owner=%d unmarked=%d; merged=%s", style, otherOwner, unmarked, merged)
+	}
+}
+
+func TestUninstallRemovesOnlyMatchingOwner(t *testing.T) {
+	dir := t.TempDir()
+	target := Target{Provider: agenthooks.ProviderClaudeCode, Scope: ScopeUser, Dir: dir}
+	settingsPath := filepath.Join(dir, "settings.json")
+	foreign := []byte(`{"env":{"KEEP":"yes"},"hooks":{"PreToolUse":[{"matcher":"Bash","hooks":[{"type":"command","command":"other-agenthooks check"},{"type":"command","command":"agenthooks run --owner=agenthooks"}]}]}}`)
+	if err := os.WriteFile(settingsPath, foreign, 0o600); err != nil {
+		t.Fatal(err)
+	}
+	m := testManifest()
+	m.Owner = "style"
+	if err := Install(context.Background(), m, target); err != nil {
+		t.Fatal(err)
+	}
+	if err := Uninstall(context.Background(), m, target); err != nil {
+		t.Fatal(err)
+	}
+	got, err := os.ReadFile(settingsPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !bytes.Contains(got, []byte("other-agenthooks check")) || !bytes.Contains(got, []byte("--owner=agenthooks")) || !bytes.Contains(got, []byte(`"KEEP": "yes"`)) {
+		t.Errorf("uninstall removed unrelated entries:\n%s", got)
+	}
+	if bytes.Contains(got, []byte("--owner=style")) || bytes.Contains(got, []byte("old-style")) {
+		t.Errorf("STYLE-owned commands remain after uninstall:\n%s", got)
+	}
+	if mode, err := os.Stat(settingsPath); err != nil || mode.Mode().Perm() != 0o600 {
+		t.Errorf("uninstall changed existing config permissions: mode=%v err=%v", mode, err)
+	}
+}
+
+func TestRemoveOwnedJSONDetectsChangesInsideExistingGroup(t *testing.T) {
+	existing := []byte(`{"hooks":{"PreToolUse":[{"matcher":"Bash","hooks":[{"command":"style --owner=style"},{"command":"other --owner=other"}]}]}}`)
+	updated, removeFile, changed, err := removeOwnedJSON(existing, "style")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !changed || removeFile {
+		t.Fatalf("remove result changed=%v removeFile=%v", changed, removeFile)
+	}
+	if bytes.Contains(updated, []byte("style --owner=style")) || !bytes.Contains(updated, []byte("other --owner=other")) {
+		t.Errorf("owner removal did not preserve the sibling handler:\n%s", updated)
+	}
+}
+
+func TestTOMLOwnerRegionsCanBeRemovedIndependently(t *testing.T) {
+	styleManifest := testManifest()
+	styleManifest.Owner = "style"
+	styleFS, err := Render(styleManifest, Target{Provider: agenthooks.ProviderKimi, Scope: ScopeUser})
+	if err != nil {
+		t.Fatal(err)
+	}
+	styleRegion := readRendered(t, styleFS, "config.toml")
+	otherRegion := []byte(tomlBeginMarker + "\n[[hooks]]\nevent = \"Notification\"\n" + tomlEndMarker + "\n")
+	existing := append([]byte("# keep this setting\n\n"), otherRegion...)
+	merged := mergeManagedTOML(existing, styleRegion)
+	removed, changed := removeManagedTOML(merged, "style")
+	if !changed {
+		t.Fatal("expected STYLE marker region to be removed")
+	}
+	if !bytes.Contains(removed, []byte("# keep this setting")) || !bytes.Contains(removed, []byte("event = \"Notification\"")) {
+		t.Errorf("removing STYLE region damaged other TOML content:\n%s", removed)
+	}
+	styleBegin, _ := tomlMarkers("style")
+	if bytes.Contains(removed, []byte(styleBegin)) {
+		t.Errorf("STYLE marker remains after removal:\n%s", removed)
+	}
+}
+
 // TestDefinitionHashCodexAlgorithm pins the exact identity serialization
 // Codex hashes (verified against codex-cli 0.142.4 trust state): sha256 over
 // compact, key-sorted JSON with HTML escaping disabled.

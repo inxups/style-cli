@@ -107,6 +107,43 @@ func TestCodexTrustPreseeding(t *testing.T) {
 	})
 }
 
+// TestCodexCanonicalShellMatcher verifies the native matcher installed by a
+// canonical STYLE shell selector reaches the real Bash hook event.
+func TestCodexCanonicalShellMatcher(t *testing.T) {
+	t.Parallel()
+	requireE2E(t, "codex")
+	rec, proj := runToolTurn(t, func() (recorder, string) {
+		home := codexHome(t)
+		rec := newRecorder(t, "")
+		m := manifest(rec.Bin)
+		m.Hooks = []install.HookSpec{{
+			Kind:     agenthooks.KindToolPre,
+			Tools:    install.ToolMatcher{Canonical: []agenthooks.CanonicalTool{agenthooks.ToolShell}},
+			Blocking: true,
+			Timeout:  30 * time.Second,
+		}}
+		if err := install.Install(t.Context(), m, install.Target{
+			Provider: agenthooks.ProviderCodex,
+			Scope:    install.ScopeUser,
+			Dir:      home,
+		}); err != nil {
+			t.Fatal(err)
+		}
+		proj := t.TempDir()
+		runCodex(t, proj, home, shellMarkerPrompt("matcher-marker.txt"))
+		return rec, proj
+	})
+	if !markerExists(proj, "matcher-marker.txt") {
+		t.Log("note: agent did not create the marker (tool may have been blocked or skipped)")
+	}
+	for _, e := range typedToolPres(rec.events(t)) {
+		if e.Canonical == string(agenthooks.ToolShell) {
+			return
+		}
+	}
+	t.Errorf("canonical shell matcher did not receive a Codex Bash event:\n%s", summarize(rec.events(t)))
+}
+
 // TestCodexDeny verifies the encode path: a Deny decision from the handler
 // must block the tool call in the real agent.
 func TestCodexDeny(t *testing.T) {

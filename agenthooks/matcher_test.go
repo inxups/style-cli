@@ -48,6 +48,14 @@ func TestCompileMatcher(t *testing.T) {
 	if !ok || gemini != "Bash|mcp_github_.*" {
 		t.Errorf("gemini matcher = %q ok=%v", gemini, ok)
 	}
+	codexMatcher := ToolMatcher{Canonical: []CanonicalTool{ToolShell}}
+	codex, ok := CompileMatcher(ProviderCodex, codexMatcher)
+	if !ok || codex != "Bash" {
+		t.Errorf("codex shell matcher = %q ok=%v, want Bash", codex, ok)
+	}
+	if !codexMatcher.Matches(ToolCall{Name: "Bash", Canonical: ToolShell}) {
+		t.Error("Codex Bash shell call must match the canonical shell selector")
+	}
 	if _, ok := CompileMatcher(ProviderCursor, m); ok {
 		t.Error("cursor has no matcher dialect; expected ok=false")
 	}

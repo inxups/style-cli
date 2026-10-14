@@ -395,3 +395,16 @@
   - `GOPROXY=off GOSUMDB=off make vet-go` 通过；gofmt 与 `git diff --check` 待本次文档修改后最终复核。
   - `go test -count=1 -v ./core/engine -run '^TestEngineProcessLatencyP95Below50ms$'`：200 样本 p95 `128.083µs`，低于 50ms；`go test ./core/engine -run '^$' -bench '^BenchmarkEngineProcessIndexOnly$' -benchtime=300x -count=1`：`33,567 ns/op`、`81,402 B/op`、`166 allocs/op`。
 - 状态：T30–T34、A4–A9/A15/A17/A19/A20、A16 标记完成；A10/A11 记为部分完成，等待具体 provider adapter；任务清单、测试矩阵和回顾文档同步更新。M1a/M1b 未完成，继续 T40。
+
+### 2026-10-14 — T40/B1.17 `[x]`
+
+- 实现：在 `agenthooks/` 内完成 F1–F4。Codex canonical shell matcher 现在生成原生 `Bash`；`Manifest.Owner` 默认兼容 `agenthooks`，STYLE 可使用 `style`，所有生成命令带 `--owner=<owner>`。JSON 合并/卸载按精确 owner 删除 handler，保留同组 sibling、其他 owner 和无标记外部配置；Kimi/Codex TOML 使用 owner marker，新增 `install.Uninstall` 清理受管内容和未修改的独立生成文件。
+- Codex plugin：新增 `Target.ConfigDir`、`Identity.PluginID` 和插件渲染路线，生成 `.codex-plugin/plugin.json`、`hooks/hooks.json`、POSIX 可执行 `bin/style`，信任预置写入 CODEX_HOME `config.toml`，插件键为 `<plugin_id>:hooks/hooks.json:<event>:<group>:<handler>`，`DefinitionHash` 以实际命令和 timeout 计算。
+- 回归：`agenthooks/install/install_test.go` 覆盖插件布局、0755 启动器、长 trust key/hash、owner 隔离、同组 handler、JSON/TOML 卸载、外部配置和重复安装幂等；`agenthooks/matcher_test.go` 覆盖 Codex `Bash`；`agenthooks/detect_test.go` 覆盖 owner argv；`agenthooks/e2e/codex_test.go:TestCodexCanonicalShellMatcher` 加入真实 Codex opt-in 场景。
+- 验证（清理 `CODEX_HOME`/`CODEX_SANDBOX`，临时 Go 缓存，关闭网络依赖获取）：
+  - `go test -count=1 -C agenthooks ./install .` 通过。
+  - `go test -race -count=1 -C agenthooks ./install .` 通过。
+  - `go test -count=1 -C agenthooks ./e2e` 通过（真实环境测试默认跳过）；`-tags e2e -run '^$'` 编译通过。
+  - `GOPROXY=off GOSUMDB=off make test-go` 与 `make vet-go` 通过。
+  - `git diff --check`、gofmt 通过。
+- 状态：任务清单 T40、测试矩阵 B1.17 和回顾文档 T40 段落已标记 `[x]`。A13、A14 及 M1b 真实 Codex 插件/信任/路线切换仍未提前完成；下一项按依赖顺序为 T41。

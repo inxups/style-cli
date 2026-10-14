@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/fs"
 	"path/filepath"
+	"runtime"
 	"sort"
 	"strings"
 
@@ -25,6 +26,16 @@ var kindToCodex = map[agenthooks.EventKind]string{
 }
 
 func renderCodex(m Manifest, t Target) (fs.FS, error) {
+	plugin := t.Scope == ScopePlugin
+	if plugin && (m.Identity.Name == "" || m.Identity.PluginID == "") {
+		return nil, fmt.Errorf("install: Codex plugin scope requires Identity.Name and Identity.PluginID")
+	}
+	if plugin && strings.ContainsAny(m.Identity.PluginID, ":/\\\r\n\t ") {
+		return nil, fmt.Errorf("install: invalid Codex Identity.PluginID %q", m.Identity.PluginID)
+	}
+	if plugin && runtime.GOOS == "windows" {
+		return nil, fmt.Errorf("install: Codex plugin launcher requires a POSIX host")
+	}
 	hooks := map[string][]claudeMatcherEntry{} // Codex uses the Claude hooks.json shape
 	type trustEntry struct {
 		key  string
@@ -37,10 +48,19 @@ func renderCodex(m Manifest, t Target) (fs.FS, error) {
 	// canonicalizes that path, so symlinks (e.g. /var -> /private/var on
 	// macOS) must be resolved or the state keys never match.
 	dir := t.Dir
+	if plugin {
+		dir = t.ConfigDir
+	}
+	if dir == "" {
+		return nil, fmt.Errorf("install: Codex plugin scope requires Target.ConfigDir")
+	}
 	if resolved, err := filepath.EvalSymlinks(dir); err == nil {
 		dir = resolved
 	}
 	source := filepath.Join(dir, "hooks.json")
+	if plugin {
+		source = filepath.Join("hooks", "hooks.json")
+	}
 	for _, spec := range m.Hooks {
 		event, ok := kindToCodex[spec.Kind]
 		if !ok {
@@ -48,6 +68,9 @@ func renderCodex(m Manifest, t Target) (fs.FS, error) {
 		}
 		matcher, _ := agenthooks.CompileMatcher(agenthooks.ProviderCodex, spec.Tools)
 		command := hookCommand(m, agenthooks.ProviderCodex, spec)
+		if plugin {
+			command = codexPluginHookCommand(m, spec)
+		}
 		// Codex parses-but-skips async:true (quirk #10): telemetry hooks get
 		// --async, which makes the runner re-exec itself as a detached worker
 		// and return immediately — no shell involved.
@@ -58,8 +81,12 @@ func renderCodex(m Manifest, t Target) (fs.FS, error) {
 		if event == "SessionEnd" && secs > 3 {
 			secs = 3
 		}
+		key := fmt.Sprintf("%s:%s:%d:0", source, codexEventLabel[event], len(hooks[event]))
+		if plugin {
+			key = fmt.Sprintf("%s:%s:%d:0", m.Identity.PluginID, filepath.ToSlash(source)+":"+codexEventLabel[event], len(hooks[event]))
+		}
 		trust = append(trust, trustEntry{
-			key:  fmt.Sprintf("%s:%s:%d:0", source, codexEventLabel[event], len(hooks[event])),
+			key:  key,
 			hash: DefinitionHash(event, matcher, command, secs),
 		})
 		hooks[event] = append(hooks[event], claudeMatcherEntry{
@@ -82,15 +109,50 @@ func renderCodex(m Manifest, t Target) (fs.FS, error) {
 	// managed marker region (merged like Kimi's TOML configs).
 	sort.Slice(trust, func(i, j int) bool { return trust[i].key < trust[j].key })
 	var toml strings.Builder
-	toml.WriteString(tomlBeginMarker + "\n")
+	begin, end := tomlMarkers(manifestOwner(m))
+	toml.WriteString(begin + "\n")
 	for _, e := range trust {
 		fmt.Fprintf(&toml, "\n[hooks.state.%s]\n", tomlString(e.key))
 		fmt.Fprintf(&toml, "trusted_hash = %s\n", tomlString(e.hash))
 	}
-	toml.WriteString("\n" + tomlEndMarker + "\n")
+	toml.WriteString("\n" + end + "\n")
 
-	return memFS(map[string][]byte{
-		"hooks.json":  hooksJSON,
-		"config.toml": []byte(toml.String()),
-	}), nil
+	files := map[string][]byte{"config.toml": []byte(toml.String())}
+	if plugin {
+		pluginJSON, err := jsonFile(map[string]string{
+			"name": m.Identity.Name, "version": m.Identity.Version, "description": m.Identity.Description,
+		})
+		if err != nil {
+			return nil, err
+		}
+		files[filepath.ToSlash(filepath.Join(".codex-plugin", "plugin.json"))] = pluginJSON
+		files[filepath.ToSlash(filepath.Join("hooks", "hooks.json"))] = hooksJSON
+		files[filepath.ToSlash(filepath.Join("bin", "style"))] = []byte(codexPluginLauncher(m.Command))
+	} else {
+		files["hooks.json"] = hooksJSON
+	}
+	if plugin {
+		return memFSWithModes(files, map[string]fs.FileMode{
+			filepath.ToSlash(filepath.Join("bin", "style")): 0o755,
+		}), nil
+	}
+	return memFS(files), nil
+}
+
+func codexPluginLauncher(command []string) string {
+	parts := make([]string, len(command))
+	for i, arg := range command {
+		parts[i] = shellQuote(arg)
+	}
+	return "#!/bin/sh\nexec " + strings.Join(parts, " ") + " \"$@\"\n"
+}
+
+func codexPluginHookCommand(m Manifest, spec HookSpec) string {
+	args := hookArgs(m, agenthooks.ProviderCodex, spec)
+	parts := make([]string, len(args))
+	for i, arg := range args {
+		parts[i] = shellQuote(arg)
+	}
+	command := `exec "$PLUGIN_ROOT/bin/style" ` + strings.Join(parts, " ")
+	return command
 }
