@@ -90,7 +90,7 @@ fi
 
 ## 4. Claude Code：用户级配置
 
-2026-10-15 只读预检发现，现有 Claude 用户配置中的 STYLE command 仍指向已不存在的 `go-build…/exe/style`。先按第 1 节重建固定二进制，再执行本节安装；保留已有安装前备份。当前真实 C1–C9 尚未开始，证据见 `review/M1B-CLAUDE-2026-10-15.json`。
+2026-10-15 曾发现 Claude 用户配置的 STYLE command 指向已不存在的 `go-build…/exe/style`；用户按本节重新安装后已解除。C1 真实投递通过：启动时 effort 为 unknown，首次工具调用后的下一条提示补发 high，符合设计的回退分支。各 hook 进程是否都有环境变量仍属 U-C1；C2–C9 待验收。证据见 `review/M1B-CLAUDE-2026-10-15.json`。后续重新安装仍先按第 1 节重建固定二进制，保留原安装前备份。
 
 ```sh
 "$STYLE_BIN" plan "$STYLE_REPO/example/terse-reviewer" --harness claude-code

@@ -436,6 +436,12 @@ M1B-FIX-02 复核：使用临时 Go 缓存、清理 CODEX 环境构建 `go build
 
 ## Claude 安装基线检查（2026-10-15）
 
-- [!] **M1B-CLAUDE-SETUP-01**：用户报告已安装后，只读核对 Claude Code 2.1.300 和默认用户 settings.json。10 条 STYLE hook 的 command 都指向已经不存在的 go-run 临时程序，且缺少当前版本绑定的 STYLE home。固定二进制存在，但不能据此证明配置可执行。尚未启动真实 Claude 模型会话，C1–C9 保持待验收。
+- [x] **M1B-CLAUDE-SETUP-01**：初次预检发现 10 条 STYLE hook 指向已不存在的 go-run 程序。用户重新安装后，当前 command 均为固定且可执行的二进制，args 绑定状态目录，锁文件新增 claude-user；真实 SessionStart 已输出。原阻塞已解除，失败预检作为历史证据保留。
 
-证据及复现：`docs/review/M1B-CLAUDE-2026-10-15.json`。手册已更新版本和安装后核对项；下一步由用户重建固定二进制、按第 4 节重新安装并新开会话。不修改真实配置，不覆盖原始备份。
+证据及复现：`docs/review/M1B-CLAUDE-2026-10-15.json`。手册已更新实际进展；配置由用户修改，未覆盖原始备份。
+
+## Claude C1 完成确认（2026-10-15）
+
+- [x] **CLAUDE-01/C1**：新会话 SessionStart 输出已到达模型，用户回传的 claude-sonnet-5-5/unknown 正文与真实 stats 摘要一致。用户界面选择 high，Bash 读到 CLAUDE_EFFORT=high；首次工具后的下一条提示补发 high，正文摘要再次一致，state 记录 high/raw high/approx false。符合设计 c1 明确允许的延后补发分支，无需为启动阶段的 unknown 修改实现。
+
+证据和复现步骤见 Claude JSON 的 C1。范围为 Claude Code 2.1.300、claude-user、claude-sonnet-5-5/high。没有捕获各 hook 进程环境或原始 effort payload，因此保留 U-C1 的精确可用性问题；不把 Bash 环境读数等同于所有 hook 的环境。本项无 Go/配置变更，C2–C9 仍独立验收。

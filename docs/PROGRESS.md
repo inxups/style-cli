@@ -621,3 +621,12 @@
 - `$HOME/.local/lib/style-m1b/style` 存在；`$HOME/.style-m1b/style.lock.yaml` 当前只记录 Codex。此为安装前置条件阻塞，不代表已运行或通过 Claude C1–C9。
 - 复现：运行 `claude --version`；仅提取 settings.json 中 STYLE command/args，对 command 执行 `test -f`/`test -x`；核对 M1b lock 的 harnesses。证据入库 `docs/review/M1B-CLAUDE-2026-10-15.json`，任务、矩阵、review 同步。未打印无关配置或凭据，未写入真实配置。
 - 下一步：用户按手册第 1 节重建固定二进制、第 4 节重新安装 Claude 路线；保留原始备份并新开 Claude 会话，之后继续投递/effort 等真实验收。手册同步实际检测版本和配置核对点；本项无 Go 实现变化，提交前检查 JSON、真实路径状态、文档命令语法与 diff。
+
+### 2026-10-15 — M1B-CLAUDE-SETUP-01 / CLAUDE-01/C1 `[x]`
+
+- 用户重新安装并提供 hooks UI：5 类事件、10 条 hook。只读核对所有 command 已指向固定二进制且可执行，args 含 STYLE home/harness home/version，lock 新增 claude-user。旧临时路径阻塞解除，初次失败记录保留。
+- 用户回传初始 `Current session: model claude-sonnet-5-5, effort unknown.`，界面选择 high。按要求读取现有 Bash 环境得到 CLAUDE_EFFORT=high 后，下一条提示收到 `effort high`。
+- 最新对应会话 f0796ff3-ecf1-44d1-a653-6ef0f3bc20c2 在 12:21:47.708347Z SessionStart 输出 unknown，前两条 prompt 去重；12:23:52.575871Z prompt 输出 high。两次正文加来源文件末尾 LF 的 SHA256 与真实 stats 精确匹配，state 为 high/raw high/approx false。
+- 对照主设计 c1，允许首次工具后的下一条提示补上强度，故 C1 通过；启动读数不可用是本次已确认的边界。没有采集 hook 进程自身环境或原始 payload，不能据 Bash 的环境推断 U-C1 已在全部事件成立。
+- 原网页工具没有返回可用引用，后直接获取官方 hooks 页面核对工具阶段 effort 说明；验收证据使用用户回传、真实 stats/state 和本仓库 c1，不依赖无法核验的网页引用。
+- 证据入库 `docs/review/M1B-CLAUDE-2026-10-15.json`；任务、测试矩阵、手册和 review 同步确认。真实环境保持用户配置，本项无 Go 变更；提交前验证 JSON、路径/args、原始 stats、正文 hash、状态/文档和 diff。后续继续 compact 等独立验收。

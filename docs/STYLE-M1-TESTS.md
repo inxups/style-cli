@@ -158,8 +158,8 @@ B1.2 和 B1.4 的历史通过状态表示原有测试套件在声明范围内通
 
 ## M1b：Claude Code 真实环境
 
-- [!] **M1B-CLAUDE-SETUP-01** 只读预检确认 Claude Code 2.1.300，但默认 settings.json 的 10 条 STYLE hook 均指向已不存在的 go-run 临时程序；当前 M1b lock 仅记录 Codex。用户需按手册重建固定二进制并重新安装 Claude 路线；尚未执行真实 Claude hook，不将此问题记为 C1–C9 失败或完成。证据和复现命令见 `docs/review/M1B-CLAUDE-2026-10-15.json`。
-- [?] **CLAUDE-01/C1** 新会话 SessionStart、模型和 effort 行为正确。
+- [x] **M1B-CLAUDE-SETUP-01** 用户重新安装后，10 条 STYLE hook 均指向固定且可执行的二进制，args 绑定 M1b 状态目录；锁文件含 claude-user，真实 SessionStart 已运行。原失败预检和解除证据保留在 `docs/review/M1B-CLAUDE-2026-10-15.json`。
+- [x] **CLAUDE-01/C1** Claude Code 2.1.300/claude-user，用户回传新会话的 claude-sonnet-5-5/unknown 上下文；Bash 读到 CLAUDE_EFFORT=high，下一条提示收到 high。两次正文含末尾 LF 的摘要逐一匹配真实 SessionStart/prompt stats，state 保存 high/raw high/approx false。符合设计 c1 的首次工具后补发分支；未直接测量各 hook 进程环境，U-C1 不扩大宣称。证据与复现见 Claude JSON 的 C1。
 - [?] **CLAUDE-02/C2** compact 后可重注入规则只出现一次。
 - [?] **CLAUDE-03/C3** model switch 后下一条 prompt 补发新模型内容。
 - [?] **CLAUDE-04/C4** 隐式 Skill 和显式 `/code-review` 各触发一次并共享去重。

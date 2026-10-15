@@ -2,8 +2,8 @@
   "date": "2026-10-15",
   "provider": "claude-code",
   "harness_version": "2.1.300",
-  "status": "setup-blocked",
-  "scope": "Read-only preflight of the default Claude user configuration after the user reported installation. No real Claude model session or hook invocation has been tested.",
+  "status": "in-progress",
+  "scope": "User operated the real Claude session and configuration. Read-only checks corroborate loaded hooks, SessionStart context delivery and effort refresh. The original failed preflight is retained below.",
   "preflight": {
     "version_command": "claude --version",
     "version_output": "2.1.300 (Claude Code)",
@@ -19,11 +19,59 @@
   },
   "issue": {
     "id": "M1B-CLAUDE-SETUP-01",
-    "status": "open",
+    "status": "resolved",
     "cause": "Existing STYLE hooks reference a temporary go run executable that no longer exists. They also lack the current installation-bound STYLE home argument.",
-    "impact": "The inspected configuration cannot launch STYLE. This is an installation precondition failure, not a failed model-delivery test.",
-    "next_step": "User rebuilds the fixed binary and reruns section 4 of docs/STYLE-M1B-MANUAL.md with STYLE_HOME=$HOME/.style-m1b and CLAUDE_CONFIG_DIR=$HOME/.claude. Then start a fresh Claude session and inspect loaded hooks and session context. Do not overwrite the original pre-install backups."
+    "impact": "The original inspected configuration could not launch STYLE. This was an installation precondition failure, not a failed model-delivery test.",
+    "resolution": "User reinstalled with the fixed binary. All 10 STYLE hooks now point to an executable fixed path and bind the M1b state home. The lock contains claude-code/claude-user and real SessionStart output has been observed.",
+    "next_step": "Continue real C2-C9 checks without changing harness configuration on the user's behalf."
+  },
+  "resolved_preflight": {
+    "config_path": "/Users/inxups/.claude/settings.json",
+    "hook_executable": "/Users/inxups/.local/lib/style-m1b/style",
+    "hook_executable_exists": true,
+    "hook_executable_is_executable": true,
+    "hook_args": ["--style-home=/Users/inxups/.style-m1b", "--harness-home=/Users/inxups/.claude", "--harness-version=2.1.300", "agenthooks", "run", "--provider=claude-code", "--owner=style"],
+    "event_hook_counts": {"PreToolUse": 2, "PostToolUse": 5, "UserPromptSubmit": 1, "UserPromptExpansion": 1, "SessionStart": 1},
+    "lock_route": "claude-user",
+    "lock_config_dir": "/Users/inxups/.claude",
+    "ui_observation": "User screenshots show 33 available event kinds and 5 with hooks, matching the 10 configured STYLE hooks. This establishes loaded subscriptions, not delivery by itself."
+  },
+  "C1": {
+    "status": "passed",
+    "session_id": "f0796ff3-ecf1-44d1-a653-6ef0f3bc20c2",
+    "session_association": "Newest real Claude session matching the reported model, high effort transition and test times; no UI session ID supplied.",
+    "model": "claude-sonnet-5-5",
+    "effort_selected_by_user": "high",
+    "user_reported_startup_context": "Current session: model claude-sonnet-5-5, effort unknown.",
+    "user_reported_bash_output": "CLAUDE_EFFORT=high",
+    "user_reported_context_after_tool_and_next_prompt": "Current session: model claude-sonnet-5-5, effort high.",
+    "startup": {
+      "at": "2026-10-15T12:21:47.708347Z",
+      "provider": "claude-code",
+      "event": "SessionStart",
+      "point": "session.start",
+      "entry": "terse-reviewer/session-info@session.start",
+      "action": "inject",
+      "result": "output",
+      "est_tokens": 18,
+      "body_sha256": "sha256:1ead1f46a7a732fa9f7b37fd592f4f1923f49b390883269f45a1ec7b898c8028"
+    },
+    "refresh_after_tool": {
+      "at": "2026-10-15T12:23:52.575871Z",
+      "provider": "claude-code",
+      "event": "UserPromptSubmit",
+      "point": "prompt.submitted",
+      "entry": "terse-reviewer/session-info@prompt.submitted",
+      "action": "inject",
+      "result": "output",
+      "est_tokens": 17,
+      "body_sha256": "sha256:12dea1a5e098958bb50b9e9cd6f3a11efe58f88f7ecbf17333c2524796fa4e42"
+    },
+    "state_after_refresh": {"model": "claude-sonnet-5-5", "effort": "high", "effort_raw": "high", "effort_approx": false, "effort_resolved": true, "harness_version": "2.1.300"},
+    "acceptance_basis": "STYLE-cli-design.md c1 explicitly accepts effort at SessionStart or on the next prompt after the first tool call. Both reported context strings, including their source file trailing newline, match the actual output hashes.",
+    "limitations": ["Initial effort was unavailable to STYLE and rendered as unknown. This is a verified startup limitation for this run.", "Bash environment output does not directly measure environment variables in every hook process. U-C1 is not resolved for all events.", "Only claude-sonnet-5-5/high was exercised; no raw hook payload was captured to distinguish event effort from environment fallback."],
+    "reproduction": "Start a fresh real Claude session with terse-reviewer installed. Ask it to quote Current session without tools and record the selected effort. If startup reports unknown, run Bash printf to read the existing CLAUDE_EFFORT without setting it, then send a separate prompt to quote the latest context. Compare both strings with session-info output hashes and the persisted state."
   },
   "reproduction": "Run claude --version; read only STYLE hook command/args from $CLAUDE_CONFIG_DIR/settings.json (default $HOME/.claude); check each command with test -f and test -x. Compare the installation-bound home against the harness entries in $STYLE_HOME/style.lock.yaml. Avoid printing unrelated settings or credentials.",
-  "pending": ["C1", "C2", "C3", "C4", "C5", "C6", "C7", "C8", "C9"]
+  "pending": ["C2", "C3", "C4", "C5", "C6", "C7", "C8", "C9"]
 }
