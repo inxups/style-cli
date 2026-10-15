@@ -433,3 +433,9 @@ M1B-FIX-02 复核：使用临时 Go 缓存、清理 CODEX 环境构建 `go build
 - [x] **CDEX-06/B6**：真实 codex-plugin 的 apply_patch 新增 TODO 后，工作模型收到 `Do not leave TODO comments in code.`，stats 记录 no-todo-comments/tool.post/warn/output；第二次 apply_patch 只删除该行，工具完成且没有同规则警告或 stats，临时文件逐字节恢复。观察期间的两条新 prompt dedup 不计为 TODO 输出。
 
 证据和复现步骤：`docs/review/M1B-CODEX-2026-10-15.json` 的 B6。范围是本工作会话 gpt-6.1-sol/low，不替代用户 gpt-6-sol 的其他模型/effort 场景。未改动真实配置或 Go 实现，M1b 整体未完成。
+
+## Claude 安装基线检查（2026-10-15）
+
+- [!] **M1B-CLAUDE-SETUP-01**：用户报告已安装后，只读核对 Claude Code 2.1.300 和默认用户 settings.json。10 条 STYLE hook 的 command 都指向已经不存在的 go-run 临时程序，且缺少当前版本绑定的 STYLE home。固定二进制存在，但不能据此证明配置可执行。尚未启动真实 Claude 模型会话，C1–C9 保持待验收。
+
+证据及复现：`docs/review/M1B-CLAUDE-2026-10-15.json`。手册已更新版本和安装后核对项；下一步由用户重建固定二进制、按第 4 节重新安装并新开会话。不修改真实配置，不覆盖原始备份。

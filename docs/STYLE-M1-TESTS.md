@@ -158,6 +158,7 @@ B1.2 和 B1.4 的历史通过状态表示原有测试套件在声明范围内通
 
 ## M1b：Claude Code 真实环境
 
+- [!] **M1B-CLAUDE-SETUP-01** 只读预检确认 Claude Code 2.1.300，但默认 settings.json 的 10 条 STYLE hook 均指向已不存在的 go-run 临时程序；当前 M1b lock 仅记录 Codex。用户需按手册重建固定二进制并重新安装 Claude 路线；尚未执行真实 Claude hook，不将此问题记为 C1–C9 失败或完成。证据和复现命令见 `docs/review/M1B-CLAUDE-2026-10-15.json`。
 - [?] **CLAUDE-01/C1** 新会话 SessionStart、模型和 effort 行为正确。
 - [?] **CLAUDE-02/C2** compact 后可重注入规则只出现一次。
 - [?] **CLAUDE-03/C3** model switch 后下一条 prompt 补发新模型内容。

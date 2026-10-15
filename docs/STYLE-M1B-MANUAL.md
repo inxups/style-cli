@@ -28,7 +28,7 @@ claude --version
 "$STYLE_BIN" validate "$STYLE_REPO/testdata/manual/m1b-probes"
 ```
 
-确认 `adapters` 中的 `detected`、版本和 `config_dir` 正确。本次本机只确认了 Codex CLI `0.159.3`；当前工具环境的 PATH 找不到 `claude`，Claude 的真实版本需要用户提供。某一家尚未安装时，可以先配置另一家。
+确认 `adapters` 中的 `detected`、版本和 `config_dir` 正确。本机现已确认 Codex CLI `0.159.3`、Claude Code `2.1.300`。检测到命令不代表 hook 安装有效，仍需核对配置中的可执行路径和实际投递。
 
 STYLE_HOME 隔离包和状态，不能隔离两家用户配置中的 `owner=style`。若已有另一套 STYLE 安装，先记录其 STYLE_HOME 并通过原实例卸载，再开始本次验收。
 
@@ -90,6 +90,8 @@ fi
 
 ## 4. Claude Code：用户级配置
 
+2026-10-15 只读预检发现，现有 Claude 用户配置中的 STYLE command 仍指向已不存在的 `go-build…/exe/style`。先按第 1 节重建固定二进制，再执行本节安装；保留已有安装前备份。当前真实 C1–C9 尚未开始，证据见 `review/M1B-CLAUDE-2026-10-15.json`。
+
 ```sh
 "$STYLE_BIN" plan "$STYLE_REPO/example/terse-reviewer" --harness claude-code
 "$STYLE_BIN" install "$STYLE_REPO/example/terse-reviewer" \
@@ -98,7 +100,7 @@ fi
 "$STYLE_BIN" doctor --json
 ```
 
-预期合并 `$CLAUDE_CONFIG_DIR/settings.json` 的 hooks，在 `$CLAUDE_CONFIG_DIR/CLAUDE.md` 添加 STYLE 静态区。生成的 hook 使用 `type: command`、可执行文件绝对路径和独立 `args`；用真实 Claude 确认该版本接受配置。
+预期合并 `$CLAUDE_CONFIG_DIR/settings.json` 的 hooks，在 `$CLAUDE_CONFIG_DIR/CLAUDE.md` 添加 STYLE 静态区。生成的 hook 使用 `type: command`、固定可执行文件绝对路径和独立 `args`，其中应包含绑定安装状态目录的 `--style-home=…`；锁文件应新增 `claude-code: route: claude-user`。用真实 Claude 确认该版本接受配置。
 
 进入验收工作目录运行 `claude`，审阅工作区信任，使用 `/hooks` 检查已加载的 STYLE hook。新开会话后验证实际投递。默认策略为 fail-open。需要单独验收 fail-closed 时，可在上述 install 增加 `--fail-closed claude-code`；本项目要求检测到版本至少 `2.1.295`，并生成 PreToolUse 的 `onFailure: block`。记录真实版本与行为。
 

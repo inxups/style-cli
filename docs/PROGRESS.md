@@ -614,3 +614,10 @@
 - 观察期间用户追加消息产生了两条 UserPromptSubmit dedup，因此核验按规则筛选而非要求日志总行数不变。证据 JSON 保留观察截止点，后续文档编辑造成的警告不混入本次区间。
 - 证据与复现步骤入库 `docs/review/M1B-CODEX-2026-10-15.json`；任务、测试和既有 review 同步完成确认。真实测试保留已安装环境，不运行合成 payload 替代验收；本项无 Go/配置变更，验证 JSON、实际 stats 与警告摘要、文件原始字节、状态一致性和 diff 检查。
 - 用户已安装 Claude，并要求先简要安排 M1 收尾再推进：先核对安装基线，完成 Codex 与 Claude 真实矩阵，再处理发现的问题及统一复验。配置操作仍由用户执行，M1a 已完成、M1b 尚未完成。
+
+### 2026-10-15 — M1B-CLAUDE-SETUP-01 `[!]`
+
+- 用户报告 Claude 已安装。只读执行 `claude --version` 得 2.1.300；默认 `$HOME/.claude/settings.json` 的 10 条 STYLE hook 指向 `/var/folders/m5/gv7_10k149l3j4l02mt548zr0000gp/T/go-build1449963545/b001/exe/style`，文件不存在且不可执行。args 只有 provider/owner，没有当前版本的安装状态目录绑定。
+- `$HOME/.local/lib/style-m1b/style` 存在；`$HOME/.style-m1b/style.lock.yaml` 当前只记录 Codex。此为安装前置条件阻塞，不代表已运行或通过 Claude C1–C9。
+- 复现：运行 `claude --version`；仅提取 settings.json 中 STYLE command/args，对 command 执行 `test -f`/`test -x`；核对 M1b lock 的 harnesses。证据入库 `docs/review/M1B-CLAUDE-2026-10-15.json`，任务、矩阵、review 同步。未打印无关配置或凭据，未写入真实配置。
+- 下一步：用户按手册第 1 节重建固定二进制、第 4 节重新安装 Claude 路线；保留原始备份并新开 Claude 会话，之后继续投递/effort 等真实验收。手册同步实际检测版本和配置核对点；本项无 Go 实现变化，提交前检查 JSON、真实路径状态、文档命令语法与 diff。

@@ -1,0 +1,29 @@
+{
+  "date": "2026-10-15",
+  "provider": "claude-code",
+  "harness_version": "2.1.300",
+  "status": "setup-blocked",
+  "scope": "Read-only preflight of the default Claude user configuration after the user reported installation. No real Claude model session or hook invocation has been tested.",
+  "preflight": {
+    "version_command": "claude --version",
+    "version_output": "2.1.300 (Claude Code)",
+    "config_path": "/Users/inxups/.claude/settings.json",
+    "style_hook_count": 10,
+    "hook_executable": "/var/folders/m5/gv7_10k149l3j4l02mt548zr0000gp/T/go-build1449963545/b001/exe/style",
+    "hook_executable_exists": false,
+    "hook_executable_is_executable": false,
+    "hook_args": ["agenthooks", "run", "--provider=claude-code", "--owner=style"],
+    "m1b_lock_installed_harnesses": ["codex"],
+    "fixed_binary_path": "/Users/inxups/.local/lib/style-m1b/style",
+    "fixed_binary_exists": true
+  },
+  "issue": {
+    "id": "M1B-CLAUDE-SETUP-01",
+    "status": "open",
+    "cause": "Existing STYLE hooks reference a temporary go run executable that no longer exists. They also lack the current installation-bound STYLE home argument.",
+    "impact": "The inspected configuration cannot launch STYLE. This is an installation precondition failure, not a failed model-delivery test.",
+    "next_step": "User rebuilds the fixed binary and reruns section 4 of docs/STYLE-M1B-MANUAL.md with STYLE_HOME=$HOME/.style-m1b and CLAUDE_CONFIG_DIR=$HOME/.claude. Then start a fresh Claude session and inspect loaded hooks and session context. Do not overwrite the original pre-install backups."
+  },
+  "reproduction": "Run claude --version; read only STYLE hook command/args from $CLAUDE_CONFIG_DIR/settings.json (default $HOME/.claude); check each command with test -f and test -x. Compare the installation-bound home against the harness entries in $STYLE_HOME/style.lock.yaml. Avoid printing unrelated settings or credentials.",
+  "pending": ["C1", "C2", "C3", "C4", "C5", "C6", "C7", "C8", "C9"]
+}
