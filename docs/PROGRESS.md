@@ -453,3 +453,10 @@
 - 证据：`internal/adapter/claude/{adapter_test.go,route_test.go,runtime_test.go}`、`internal/runtime/runtime_test.go:TestClaudePromptExpansionRuntimeUsesAdapterAndRunnerHandler`、`agenthooks/install/install_test.go`。
 - 验证：隔离环境下根 module `go test -count=1 ./...`、nested `agenthooks` `go test -count=1 ./...`、`GOPROXY=off GOSUMDB=off make vet-go`、`go test -race -count=1 ./internal/adapter/claude ./internal/runtime ./agenthooks/install`、gofmt 和 `git diff --check` 通过。
 - 状态：任务清单 T45、测试矩阵 B1.22 和 review 文档 T45 段落标记 `[x]`；A10、A14 的离线部分完成，A11 保持 `[~]`，A12/A13/A18/A22、CLI T50–T55、adapter conformance 和真实 Codex/Claude CDEX/CLAUDE 场景仍未完成。
+
+### 2026-10-15 — T50/B1.23 `[x]`
+
+- 实现：新增 `internal/app` 的 `style init` 用例和薄入口，支持目录包、`--single` 单文件包、当前空目录初始化；生成内容直接经过 `spec.Load`、`Validate`、`Merge` 校验。名称限制为小写字母/数字/连字符，未传名称时从目录名归一化，已存在目标、非空当前目录和非法名称拒绝，写入失败回滚已创建内容，不覆盖用户文件；`--help` 成功退出且不改文件。
+- 回归：`internal/app/init_test.go` 覆盖两种骨架、默认名称及目录名归一化、冲突/非空目录、非法名称、字节保留、稳定成功输出和 help 无副作用；`go run ./cmd/style init --help` 可独立执行。
+- 验证：隔离 Go 缓存下 `go test -count=1 ./internal/app -run 'TestInit|TestRunInit'`、`GOPROXY=off GOSUMDB=off make test-go`、`GOPROXY=off GOSUMDB=off make vet-go`、gofmt 和 `git diff --check` 通过。
+- 状态：任务清单 T50、测试矩阵 B1.23 和本回顾文档 T50 段落标记 `[x]`；T51–T55、A1/A2/A12/A13/A18/A22 和 M1a/M1b 仍未完成。

@@ -57,7 +57,7 @@
 
 ### CLI 和安装生命周期
 
-- [ ] **T50 `style init`**：生成目录包和单文件包骨架。
+- [x] **T50 `style init`**：生成目录包和单文件包骨架；名称校验、已存在目标冲突、当前空目录初始化和失败回滚均有覆盖。证据：`internal/app/init_test.go`、`internal/app/entry.go`、`internal/app/init_command.go`；验证见 B1.23 与 `docs/PROGRESS.md`。
 - [ ] **T51 `style validate` / `style plan`**：输出稳定错误、降级、能力和 token 报告。
 - [ ] **T52 `style install`**：收集 settings，检查 requires、冲突、replace、能力披露，原子写包/锁/index/适配器配置。
 - [ ] **T53 `style uninstall`**：只删除 STYLE owner 内容，保留其他条目，卸载后配置字节级恢复。

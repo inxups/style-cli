@@ -280,3 +280,15 @@ fail-closed 的范围收窄为 `Manifest.Fail == FailClosed`、`Blocking` 且 `K
 本轮复核修正了一处输出边界：原先 engine 将所有 prompt 类点位都设置 Claude 的 `suppressOriginalPrompt`，导致 `skill.explicit` 经过 UserPromptExpansion codec 时会产生不支持的字段；现在只对 `prompt.submitted` 设置该字段。共享 renderer 另补充了 direct `NativeEvent`、原生正则 matcher 和 `UserPromptExpansion` 映射。
 
 验证：根 module `go test -count=1 ./...`、nested `agenthooks` `go test -count=1 ./...`、`GOPROXY=off GOSUMDB=off make vet-go`、定向 `go test -race -count=1 ./internal/adapter/claude ./internal/runtime ./agenthooks/install`、gofmt 与 `git diff --check` 均通过。真实 Claude workspace trust、compact、model switch、性能和 CLI lifecycle 仍属于 C1–C9/T50–T55，M1a/M1b 不提前标记完成。
+
+## T50 `style init` 完成后回顾（2026-10-15）
+
+结论：`style init` 保持在 `internal/app` 编排、`cmd/style` 薄入口的边界内，没有把包生成逻辑放入命令解析，也没有复制 `agenthooks` 行为。目录包和单文件包共用名称校验与安全写入路径；当前空目录初始化只接受空目录，已有用户文件不会被覆盖。
+
+| 检查项 | 状态 | 结论与证据 |
+|---|---|---|
+| RV-T50-01 骨架合法性 | [x] | 目录包和单文件包生成后都通过 `spec.Load`、`spec.Validate`、`spec.Merge`；证据：`internal/app/init_test.go`。 |
+| RV-T50-02 冲突和回滚 | [x] | 已存在目标、非空当前目录和非法名称拒绝；写入失败删除本次创建的文件/目录并保留已有字节；证据：`internal/app/init.go`、`init_test.go`。 |
+| RV-T50-03 CLI 边界 | [x] | `cmd/style` 只调用 `internal/app.Run`，`style init` 的 help、成功/失败退出码和成功文本稳定；help 不产生文件副作用。证据：`internal/app/entry.go`、`init_command.go`、`init_test.go`。 |
+
+验证：隔离 Go 缓存下 T50 定向测试、双 module 全量测试、`make vet-go`、gofmt 和 `git diff --check` 均通过。T51 的 validate/plan、安装生命周期和离线验收仍未提前标记完成。
