@@ -689,3 +689,10 @@
 - 13:38:53.386Z 的 Bash force 调用被 13:38:53.430153Z no-force-push/blocked 拒绝，工具结果和模型回传均有明确 hook 理由；13:39:18.879Z 的 lease 调用成功返回 Everything up-to-date。允许 lease 是当前设计的正向对照，不采纳模型自行提出的扩大拦截建议。
 - 临时仓库先完成正常 push，仅连接同目录 bare remote；验收后 local/remote HEAD 与初始值一致、工作树干净。真实记录、摘要、工具 ID/结果和复现入库 Claude JSON；任务、测试、手册及既有 review 同步完成。无 Go/真实配置变更，核对证据与 diff 后提交；C7–C9 继续待验收，M1 未完成。
 - 补充核验既有 wire 回归：清理 CODEX_HOME/CODEX_SANDBOX，使用 `/tmp/style-cli-{gopath,gomodcache,gocache}`、GOPROXY=off/GOSUMDB=off，`go test -count=1 ./internal/runtime -run '^TestClaudePromptBlockSuppressesOriginalPrompt$' -v` 通过。真实 transcript 有不带 timestamp 的快照重复项，证据比对只使用带时间的实际记录。
+
+### 2026-10-15 — CLAUDE-07/C7 `[x]`
+
+- 用户首次在两条消息中分别执行 A/B，两组时间不重叠；会话 cda985ba-95cd-46fe-8fd0-69e66f892ad7 的一次 output、一次 dedup 仅证明串行去重，不用于通过 C7。
+- 用户 /clear 后实际会话为 8abb76e3-44ef-427b-a397-00dcae8d5bf8，gen=1、epoch=0。两次 Bash 同属 msg_011Cg48k5htNHmaHdwXmQiR4，不同 tool id，第二次调用在第一次结果前发起，两个真实命令运行区间均为 [1792072394,1792072397]。
+- parallel-once 在 13:53:13.626212Z output，13:53:14.116324Z dedup；两者正文 SHA256 相同，session seen 标记仅一个。用户回传模型引用 M1B_PARALLEL_ONCE，与实际正文一致。确认实际并行工具的单次投递，不声称 hook 进程精确同时执行或并发压力测试通过。
+- Claude JSON 保留首次串行观察和真实并行复测；任务、测试、手册及既有 review 同步完成。无 Go/真实配置变更，验证实际工具 message/id/时间、输出区间、stats/seen/hash、JSON/文档状态与 diff；C8–C9 待验收，M1 未完成。

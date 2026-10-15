@@ -497,3 +497,9 @@ M1B-FIX-02 复核：使用临时 Go 缓存、清理 CODEX 环境构建 `go build
 - [x] **CLAUDE-06/C6**：两次真实 prompt 阻断的 hook 消息只有固定理由，Claude 记录 preventContinuation=true、promptKept=false。真实 force push 收到 PreToolUse 的明确拒绝理由，模型正确引用；lease 对照进入 Git 并成功返回 Everything up-to-date，符合当前设计。测试只连接本地 bare remote，前后 HEAD 一致。
 
 证据、实际工具 ID、两次阻断记录及复现见 Claude JSON 的 C6。用户因本工作 Codex 也安装了探针而删减回传标记；以原 Claude 记录核验精确输出，不重建未保留的原 prompt。模型建议禁止 lease 不属于本项验收契约；M1B-EXAMPLE-01 的正则误拦问题继续独立保留。无 Go/真实配置变更，C7–C9 待验收，M1 未完成。
+
+## Claude C7 完成确认（2026-10-15）
+
+- [x] **CLAUDE-07/C7**：首次分消息执行的串行结果未用于通过验收。用户 /clear 后单条消息实际发起两个不同 Bash 工具调用，同属一个 assistant message，两个 start/end 区间均为 [1792072394,1792072397]。规则只有一次 output、一次 dedup，正文摘要一致，gen=1 的 session seen 标记存在；模型引用实际注入标记。
+
+证据、首次观察和并行复测见 Claude JSON 的 C7。确认范围是两个真实工具并行时单次注入，不据此声称 hook 进程精确同时执行或通过压力测试。本项无 Go/真实配置变更，C8–C9 待验收，M1 未完成。

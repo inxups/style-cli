@@ -303,5 +303,43 @@
     "real_configuration_modified_by_agent": false,
     "reproduction": "With both packages manually installed, send a prompt containing the block-prompt condition marker plus a distinct suffix; inspect only the hook message and promptSubmitEnding. Separately create a temporary bare Git remote and a main-branch work repository, commit one file with local test identity and complete a normal push. Ask Claude for two separate Bash calls using git -C <work> push --force origin main and git -C <work> push --force-with-lease origin main. Require a hook-specific refusal and quoted reason for the first, a successful Git result for the second, matching stats/tool ids and unchanged local/remote HEAD. When reporting into another probed session, omit the literal prompt trigger and let the actual Claude transcript supply exact evidence."
   },
-  "pending": ["C7", "C8", "C9"]
+  "C7": {
+    "status": "passed",
+    "route": "claude-user",
+    "body": "M1B_PARALLEL_ONCE",
+    "body_sha256": "sha256:451204f88286cabb68eb12e1bbe28501209339c5fbd143c0ba717ee012550a9a",
+    "initial_serial_attempt": {
+      "status": "not-accepted-as-parallel",
+      "session_id": "cda985ba-95cd-46fe-8fd0-69e66f892ad7",
+      "reason": "The two commands were sent as separate user messages. Their execution intervals did not overlap; this only demonstrates serial session dedup.",
+      "execution_intervals_unix_seconds": {"A": [1792072239, 1792072242], "B": [1792072253, 1792072256]},
+      "stats": [{"at": "2026-10-15T13:50:39.054469Z", "result": "output"}, {"at": "2026-10-15T13:50:53.041679Z", "result": "dedup"}]
+    },
+    "real_retest": {
+      "session_id": "8abb76e3-44ef-427b-a397-00dcae8d5bf8",
+      "reset_operation": "User ran /clear, then submitted the parallel request as one message. The actual session id differs from the serial attempt; scope is gen=1, epoch=0.",
+      "cwd": "/Users/inxups/.style-m1b/manual-workspace/claude-c4",
+      "assistant_message_id": "msg_011Cg48k5htNHmaHdwXmQiR4",
+      "calls": [
+        {"at": "2026-10-15T13:53:13.575Z", "name": "Bash", "tool_use_id": "toolu_01JBH3RjqyDJV9rA9cwo56BU", "input": {"command": "printf 'STYLE_M1B_PARALLEL_A start '; date +%s; sleep 3; printf 'STYLE_M1B_PARALLEL_A end '; date +%s", "description": "Run parallel timing test A"}},
+        {"at": "2026-10-15T13:53:14.065Z", "name": "Bash", "tool_use_id": "toolu_01879CkLFN2kjX6hjA4NFMuS", "input": {"command": "printf 'STYLE_M1B_PARALLEL_B start '; date +%s; sleep 3; printf 'STYLE_M1B_PARALLEL_B end '; date +%s", "description": "Run parallel timing test B"}}
+      ],
+      "results": [
+        {"at": "2026-10-15T13:53:17.613Z", "tool_use_id": "toolu_01JBH3RjqyDJV9rA9cwo56BU", "content": "STYLE_M1B_PARALLEL_A start 1792072394\nSTYLE_M1B_PARALLEL_A end 1792072397", "is_error": false},
+        {"at": "2026-10-15T13:53:17.607Z", "tool_use_id": "toolu_01879CkLFN2kjX6hjA4NFMuS", "content": "STYLE_M1B_PARALLEL_B start 1792072394\nSTYLE_M1B_PARALLEL_B end 1792072397", "is_error": false}
+      ],
+      "stats": [
+        {"at": "2026-10-15T13:53:13.626212Z", "provider": "claude-code", "event": "PreToolUse", "point": "tool.pre", "entry": "m1b-probes/parallel-once@tool.pre", "action": "inject", "result": "output", "est_tokens": 5, "body_sha256": "sha256:451204f88286cabb68eb12e1bbe28501209339c5fbd143c0ba717ee012550a9a"},
+        {"at": "2026-10-15T13:53:14.116324Z", "provider": "claude-code", "event": "PreToolUse", "point": "tool.pre", "entry": "m1b-probes/parallel-once@tool.pre", "action": "inject", "result": "dedup", "est_tokens": 5, "body_sha256": "sha256:451204f88286cabb68eb12e1bbe28501209339c5fbd143c0ba717ee012550a9a"}
+      ],
+      "scope": {"gen": 1, "epoch": 0, "prompt_count": 1},
+      "seen_marker": "s.1.0.41e1c68902d991c9.451204f88286cabb",
+      "user_reported_model_quote": "PreToolUse:Bash hook returned M1B_PARALLEL_ONCE.",
+      "acceptance_basis": "Two distinct Bash tool ids belong to the same assistant message and are issued before either result. Both command outputs report the overlapping interval [1792072394,1792072397]. Exactly two rule stats are present: one output and one dedup with the same body hash and a single session seen marker. The model quoted the actual context marker.",
+      "limitations": ["This accepts two overlapping real tool executions; it does not measure exact hook-process overlap or constitute a concurrency stress test."]
+    },
+    "real_configuration_modified_by_agent": false,
+    "reproduction": "Use a fresh session or /clear so this rule has not been seen in the current generation. Send one message requesting two independent parallel Bash calls, each printing STYLE_M1B_PARALLEL_A/B start and end timestamps with a three-second sleep between. Do not split into two user messages or combine both commands into one Bash call. Verify two tool ids in one assistant message, overlapping command intervals, one output plus one dedup with the same body hash and one seen marker; ask the model to quote actual hook context without pre-filling its body."
+  },
+  "pending": ["C8", "C9"]
 }

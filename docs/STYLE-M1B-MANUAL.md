@@ -133,6 +133,8 @@ fi
 
 并行验收必须确认 harness 实际并行派发了工具调用，串行执行不能算 C7 通过。第二包安装、sync、卸载时记录 Codex 是否重复要求信任。Claude 的动态订阅随规则变化，新增订阅后按实际 UI 重新加载或新开会话。
 
+C7 已真实通过：第一次把命令分两条消息发送，区间不重叠，仅作为串行观察保留；用户 `/clear` 后，在一条消息中请求两个独立 Bash 调用，实际运行区间重叠，同 session/gen 的规则仅一次 output、一次 dedup。复现时将并行请求整段作为一条消息发送，先确认当前 session/gen 没有触发过该规则；不要把两条命令分别发给模型。证据见 Claude JSON 的 C7。
+
 C5 已真实通过：用户确认 `PreToolUse:Bash says: M1B_WARN_USER. This is the manual hook warning probe.` 在工具 UI 内容中可见，模型引用 `M1B_WARN_MODEL`，实际日志和正文摘要一致。提示不要求弹窗或特定警告样式；本次模型在工具结果后复述，不能仅凭复述时机推断 hook 执行时间。本次只确认 PreToolUse，其他事件的用户提示仍需各自验证。
 
 以下检查使用 `terse-reviewer`，记录工具原始名称、输入及 hook 结果：
