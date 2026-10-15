@@ -137,13 +137,13 @@ B1.2 和 B1.4 的历史通过状态表示原有测试套件在声明范围内通
 
 用户约定（2026-10-15）：Codex 与 Claude Code 的真实配置由用户手动执行。进入 M1b 时先提供完整配置命令和验证步骤，不代为改动真实配置；运行结果返回后再更新验收状态。
 
-配置命令和逐项观察见 [M1b 手动验收手册](STYLE-M1B-MANUAL.md)，专用第二包见 `testdata/manual/m1b-probes/STYLE.yaml`。M1B-PREP 的隔离准备检查已通过；Codex 0.159.3 只实际验证本地插件管理命令，Claude 仅模拟版本检测。以下所有真实环境条目继续保持 `[?]`。
+配置命令和逐项观察见 [M1b 手动验收手册](STYLE-M1B-MANUAL.md)，专用第二包见 `testdata/manual/m1b-probes/STYLE.yaml`。M1B-PREP 隔离准备检查已通过；Claude 仅模拟版本检测。Codex 首轮真实证据见 `docs/review/M1B-CODEX-2026-10-15.json`，各条按实际范围更新。
 
 - [?] **CDEX-01/B1** 全新安装、信任一次、第二包安装/卸载/sync 后不重复信任。
-- [?] **CDEX-02/B2** 模型、low/minimal/high effort 条件和上下文内容正确。
+- [~] **CDEX-02/B2** 用户选择 gpt-6-sol/low，截图回答与真实 session state 一致；SessionStart 注入及后续 prompt 去重有 stats。minimal/high 等场景待验证，模型自述不能单独证明身份。截图与具体 session 尚无 UI ID，仅以模型/时间交叉核对。
 - [?] **CDEX-03/B3** compact 后 session-info 只补发一次，静态 developer instructions 可见性已记录。
 - [?] **CDEX-04/B4** `cat`、`sed`、`head` 等读取 SKILL.md 和 `$code-review` 显式 skill 去重正确。
-- [?] **CDEX-05/B5** force push 被拦，force-with-lease 放行。
+- [x] **CDEX-05/B5** codex-plugin / 0.159.3 的真实工作会话（gpt-6.1-sol/low，与用户 gpt-6-sol 会话区分）中，临时仓库仅连接本地 bare remote。实际 shell tool 的 `git push --force` 被 PreToolUse 阻断并记录 no-force-push/blocked；`--force-with-lease` 进入 Git，退出 0、Everything up-to-date。命令、输出、session ID、stats 和复现步骤见首轮 Codex JSON。示例正则误拦文档文本另记 M1B-EXAMPLE-01，未修复。
 - [?] **CDEX-06/B6** apply_patch 新增 TODO 触发 warn，删除 TODO 不误报。
 - [?] **CDEX-07/B7** GitHub create_pull_request MCP 调用前注入。
 - [?] **CDEX-08/B8** 静态规则在 config.toml 开头，卸载后其他字节不变。

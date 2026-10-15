@@ -567,3 +567,12 @@
 - 可重复入口：`testdata/manual/README.md` 的隔离 Go build、validate/plan 命令；手册内的安装/插件注册/卸载/cmp 命令可将四个环境根指向临时目录复核。本轮临时执行记录为 `setup-wrg7xz9y`、`probes-y8hhubwq`，不以临时路径作为唯一证据。
 - 验证：Go 构建清理 CODEX_HOME/CODEX_SANDBOX，使用 `/tmp/style-cli-{gopath,gomodcache,gocache}` 和 GOPROXY=off/GOSUMDB=off；两包 CLI validate 与探针的两家 plan 退出 0；10 个 shell 代码块 `zsh -n`、相对链接和 `git diff --check` 通过。本提交只含文档与手动 fixture，无 Go 实现改动。
 - 任务/测试矩阵/review 已确认准备工作完成。B1–B12、C1–C9、真实 conformance e2e 保留 `[?]`；M1 尚未完成，等待用户配置和结果后继续验收。
+
+### 2026-10-15 — CDEX-05/B5 `[x]`；CDEX-02/B2 `[~]`
+
+- 用户提供插件 Hook stats 截图（SessionStart/UserPromptSubmit 均 Completed，Failed=0），并明确待测模型 gpt-6-sol。后续截图回答为 GPT-6 Sol/低推理强度；只读 STYLE state 确认 gpt-6-sol/low，SessionStart 输出和 prompt 去重。模型自述仅作交叉观察，截图到具体 session 无 UI ID，不据此扩展验收范围。
+- 本工作对话为另一 gpt-6.1-sol/low 会话，实际收到 session-info、low-effort-guard；工具测试与用户待测会话分开记录。之前口头混用两个会话的读数，已更正。
+- 临时 Git 仓库仅连接同目录本地 bare remote，先正常初始化并 push main。实际 Codex shell tool 的 force push 被 PreToolUse 返回 Do not force push，有 no-force-push/blocked stats；force-with-lease 正常执行，退出 0，Everything up-to-date。B5 完成，不以 Git 自身报错代替 hook 阻断。
+- 另发现 M1B-EXAMPLE-01：写文档的 Python heredoc 仅引用测试命令也被规则阻断，误拦文本引用；作为示例正则精度问题记录，未修复。
+- 本项专测真实环境，保留其 CODEX_HOME 等安装环境；未运行 Go 测试或更改 provider 配置。命令、结果、元数据和复现方法入库 `docs/review/M1B-CODEX-2026-10-15.json`，任务、测试、review 同步。B2 minimal/high、其余 Codex 项及 Claude 仍待验收。
+- 提交前核验：证据 JSON 可解析；渲染正文摘要、真实 stats、临时 bare remote 路径与分支状态、文档状态一致，`git diff --check` 通过。

@@ -67,7 +67,7 @@
 ## 里程碑验收
 
 - [x] **M1a 离线验收**：STYLE 验收项 A1–A22 与 adapter conformance 解析、往返、安装、报告、输出白名单均有可重复证据；真实二进制 hook 入口与三条生成命令通过，A20 进程 p95 为 Codex 22.852ms / Claude Code 22.97575ms。证据：`docs/STYLE-M1-TESTS.md`、`internal/adapter/conformance/`、`docs/review/M1-A20-2026-10-15.json`。真实环境投递与 harness 耗时属于 M1b。
-- [?] **M1b Codex 真实环境**：待 B1–B12 真实验证，记录 Codex 版本、路线、信任行为、compact/resume、skill 和性能。配置由用户按 `docs/STYLE-M1B-MANUAL.md` 手动执行。
+- [~] **M1b Codex 真实环境**：用户已配置 codex-plugin；B5 真实工具拦截/放行通过，B2 的 gpt-6-sol/low 注入与去重已有部分证据，其余场景待验证。用户与工作对话的模型读数分开记录，证据见 `docs/review/M1B-CODEX-2026-10-15.json`。真实配置仍由用户手动执行。
 - [?] **M1b Claude Code 真实环境**：待 C1–C9 真实验证，记录 Claude Code 版本、工作区信任、compact/model switch、skill、warn 和性能。配置由用户按同一手册手动执行。
 
 ## 回顾跟进项（2026-10-13 起）
@@ -111,3 +111,5 @@ T20–T24 与 T30–T34 回顾结论和剩余范围见 `docs/STYLE-M1-REVIEW-202
 - [x] **RV-A20-01 进程性能补项**：完成每家 200 次真实二进制采样，替换此前不足以覆盖入口/加载/I/O 的 engine-only 验收依据，p95 均低于 50ms。聚合结果和复现命令见测试矩阵 A20。M1a 确认完成，M1b 由用户手动配置后验收。
 
 - [x] **M1B-PREP 手动配置准备**：提供固定二进制构建、备份、Codex user/plugin、Claude user、第二包探针、验收/卸载/证据返回步骤。临时目录内验证真实 Codex 0.159.3 的本地 marketplace 注册/移除、两包 CLI 生命周期和探针输出；Claude 仅模拟版本检测，不代表真实验收。证据：`docs/STYLE-M1B-MANUAL.md`、`testdata/manual/`、进度日志和 review 完成确认。B1–B12、C1–C9 仍待用户结果。
+
+- [!] **M1B-EXAMPLE-01 示例规则误拦截**：no-force-push 正则直接匹配整段 shell 字符串，写文档的 Python heredoc 仅包含示例命令也被真实 hook 阻断。需回顾示例规则精度并补引用文本边界；B5 只确认实际 force/lease 两条命令的行为，不代表 shell 语法识别完备。证据见首轮 Codex JSON。
