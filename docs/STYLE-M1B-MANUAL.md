@@ -146,6 +146,8 @@ C5 已真实通过：用户确认 `PreToolUse:Bash says: M1B_WARN_USER. This is 
 
 模型回答只是观察线索。结合 harness 的 hook/会话记录、模型可见上下文和 `$STYLE_HOME/state` 内 `stats.jsonl` 的规则输出增量判断；统计只证明 STYLE 发出结果，不能单独证明模型收到了结果。回传所需片段即可。
 
+C6 已真实通过：Claude 的两次 prompt 阻断仅记录固定理由，`promptKept=false`；force 命令被 hook 拒绝，lease 命令进入 Git 并成功，临时本地 remote 与工作仓库 HEAD 不变。允许 lease 是当前验收契约，模型建议禁止它不构成规则变更。若回传所在的 Codex/Claude 会话也安装了探针，完整 prompt 触发串会再次拦住回传；回传时省略该串，并由原 Claude transcript 核对精确结果，不能把省略后的文字当成原始输出。
+
 ### 5.1 Claude C4：最小原生 skill
 
 若没有可用的 code-review，使用仓库中的 `testdata/manual/claude-skills/code-review/SKILL.md`。它只回传标记和 hook 附加指令，不执行实际 review，也不包含 STYLE 要注入的 findings 数值。官方 [skills 文档](https://code.claude.com/docs/en/skills) 支持项目级 `.claude/skills/<name>/SKILL.md`、模型调用和 `/name` 显式调用；项目同名 skill 会替代 bundled 命令。原生是否加载仍以当前真实版本为准。

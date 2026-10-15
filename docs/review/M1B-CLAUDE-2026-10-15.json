@@ -259,5 +259,49 @@
     "real_configuration_modified_by_agent": false,
     "reproduction": "Install m1b-probes for claude-code/claude-user manually per manual section 5 and start a fresh Claude session. Ask it to use only Bash to run printf 'STYLE_M1B_WARN\\n', then quote the hook warning. Confirm M1B_WARN_USER in actual tool UI content and M1B_WARN_MODEL in the response; correlate the Bash tool id, PreToolUse output stat and exact model-body hash."
   },
-  "pending": ["C6", "C7", "C8", "C9"]
+  "C6": {
+    "status": "passed",
+    "session_id": "1a0e173f-74cd-4b3d-90c9-040d2cc304c7",
+    "cwd": "/Users/inxups/.style-m1b/manual-workspace/claude-c4",
+    "route": "claude-user",
+    "prompt_block": {
+      "stats": [
+        {"at": "2026-10-15T13:38:24.66853Z", "provider": "claude-code", "event": "UserPromptSubmit", "point": "prompt.submitted", "entry": "m1b-probes/block-prompt@prompt.submitted", "action": "block", "result": "blocked", "est_tokens": 5, "body_sha256": "sha256:e8d77290676bcc39b591cca7d35141357dadad4b1230d8f1559451760b820cf0"},
+        {"at": "2026-10-15T13:38:28.178446Z", "provider": "claude-code", "event": "UserPromptSubmit", "point": "prompt.submitted", "entry": "m1b-probes/block-prompt@prompt.submitted", "action": "block", "result": "blocked", "est_tokens": 5, "body_sha256": "sha256:e8d77290676bcc39b591cca7d35141357dadad4b1230d8f1559451760b820cf0"}
+      ],
+      "harness_records": [
+        {"at": "2026-10-15T13:38:24.671Z", "content": "UserPromptSubmit operation blocked by hook:\nM1B_PROMPT_BLOCKED", "preventContinuation": true, "promptSubmitEnding": {"ending": {"kind": "blocked_by_hook", "reason": "M1B_PROMPT_BLOCKED"}, "promptKept": false}},
+        {"at": "2026-10-15T13:38:28.179Z", "content": "UserPromptSubmit operation blocked by hook:\nM1B_PROMPT_BLOCKED", "preventContinuation": true, "promptSubmitEnding": {"ending": {"kind": "blocked_by_hook", "reason": "M1B_PROMPT_BLOCKED"}, "promptKept": false}}
+      ],
+      "user_report": "User reported the prompt was blocked and shortened marker strings in the returned report because the working Codex session also has the probe installed. The report was not treated as an exact copy of the original hook text.",
+      "original_prompt": "Not retained in the inspected transcript. Do not reconstruct it from the edited report.",
+      "body": "M1B_PROMPT_BLOCKED",
+      "acceptance_basis": "Real Claude records contain only the fixed block reason, prevent continuation and explicitly record promptKept=false; the two matching blocked stats have the expected body hash. No submitted prompt text is echoed in either hook message."
+    },
+    "force": {
+      "tool_call": {"at": "2026-10-15T13:38:53.386Z", "name": "Bash", "tool_use_id": "toolu_01XGiBinzYjbF6JhFbgQt5eQ", "input": {"command": "git -C /tmp/style-m1b-claude-c6-3jxhdk1k/work push --force origin main", "description": "Force push main to origin"}},
+      "stat": {"at": "2026-10-15T13:38:53.430153Z", "provider": "claude-code", "event": "PreToolUse", "point": "tool.pre", "entry": "terse-reviewer/no-force-push@tool.pre", "action": "block", "result": "blocked", "est_tokens": 12, "body_sha256": "sha256:fb48a21df69005425af64782ecf5c15b72716d04490b6474f277147569e37f4f"},
+      "tool_result": {"at": "2026-10-15T13:38:53.433Z", "content": "PreToolUse:Bash hook error: Do not force push; create a new commit.", "is_error": true},
+      "user_reported_model_reply": "Command was blocked by PreToolUse:Bash and did not execute; quoted Do not force push; create a new commit. No retry or bypass."
+    },
+    "lease_control": {
+      "tool_call": {"at": "2026-10-15T13:39:18.879Z", "name": "Bash", "tool_use_id": "toolu_01SQK97h1CQGjwXQtzd1uNwW", "input": {"command": "git -C /tmp/style-m1b-claude-c6-3jxhdk1k/work push --force-with-lease origin main", "description": "Push main with force-with-lease"}},
+      "tool_result": {"at": "2026-10-15T13:39:21.132Z", "content": "Everything up-to-date", "is_error": false},
+      "interpretation": "Lease is intentionally allowed by the current design and example. The model's suggestion to block it is not a change request or evidence of a bug."
+    },
+    "scratch_repository": {
+      "root": "/tmp/style-m1b-claude-c6-3jxhdk1k",
+      "work": "/tmp/style-m1b-claude-c6-3jxhdk1k/work",
+      "origin": "/tmp/style-m1b-claude-c6-3jxhdk1k/remote.git",
+      "baseline_normal_push_succeeded": true,
+      "head_before_and_after": "8487f83943fceb07940341b935f4b8d1599c4a9f",
+      "remote_head_matches": true,
+      "worktree_clean": true
+    },
+    "limitations": ["Original prompt text and raw hook stdout were not captured; prompt suppression is supported by the actual harness records and existing wire regression, not reconstructed payloads.", "This validates the stated force/lease commands on a local remote, not general shell parsing. M1B-EXAMPLE-01 remains open."],
+    "validation": ["Read-only comparison of JSON against timestamped real transcript records, tool calls/results and stats; exact body SHA256; local-only origin and unchanged work/remote HEAD; doc statuses and git diff --check.", "env -u CODEX_HOME -u CODEX_SANDBOX GOPATH=/tmp/style-cli-gopath GOMODCACHE=/tmp/style-cli-gomodcache GOCACHE=/tmp/style-cli-gocache GOPROXY=off GOSUMDB=off go test -count=1 ./internal/runtime -run '^TestClaudePromptBlockSuppressesOriginalPrompt$' -v: PASS"],
+    "real_configuration_modified_by_agent": false,
+    "reproduction": "With both packages manually installed, send a prompt containing the block-prompt condition marker plus a distinct suffix; inspect only the hook message and promptSubmitEnding. Separately create a temporary bare Git remote and a main-branch work repository, commit one file with local test identity and complete a normal push. Ask Claude for two separate Bash calls using git -C <work> push --force origin main and git -C <work> push --force-with-lease origin main. Require a hook-specific refusal and quoted reason for the first, a successful Git result for the second, matching stats/tool ids and unchanged local/remote HEAD. When reporting into another probed session, omit the literal prompt trigger and let the actual Claude transcript supply exact evidence."
+  },
+  "pending": ["C7", "C8", "C9"]
 }

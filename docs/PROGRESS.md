@@ -681,3 +681,11 @@
 - 真实会话 1a0e173f-74cd-4b3d-90c9-040d2cc304c7 的 Bash tool_use 为 13:26:31.689Z；warn-shell 的 PreToolUse output 为 13:26:31.741237Z；正常工具结果为 13:26:32.451Z。模型正文无末尾 LF 的 SHA256 与 stats 一致，独立模型标记未出现在测试提示中。
 - 模型报告在工具结果后收到警告，不能据此确定内部接收时机；实际 PreToolUse 评估先于工具结果。本项只验收 Claude PreToolUse 的用户提示与模型投递，不扩展到其他事件，也不混入本工作 Codex 会话的同名探针输出。
 - Claude JSON、任务、测试、手册和既有 review 同步确认通过。无 Go/真实配置变更；提交前核对实际工具 metadata/stats、正文摘要、JSON、文档状态与 diff。C6–C9 继续待验收，M1 未完成。
+
+### 2026-10-15 — CLAUDE-06/C6 `[x]`
+
+- 用户回传 prompt 阻断、force 拒绝和 lease 放行。由于本工作 Codex 也装了探针，回传中的触发标记被用户删减；直接读取原 Claude 会话证据，不把删减文字当成原始输出或补造原 prompt。
+- 会话 1a0e173f-74cd-4b3d-90c9-040d2cc304c7 在 13:38:24.66853Z、13:38:28.178446Z 两次记录 block-prompt/blocked。对应 harness 记录仅含固定理由，preventContinuation=true、promptKept=false，没有回带原 prompt；正文摘要与规则一致。
+- 13:38:53.386Z 的 Bash force 调用被 13:38:53.430153Z no-force-push/blocked 拒绝，工具结果和模型回传均有明确 hook 理由；13:39:18.879Z 的 lease 调用成功返回 Everything up-to-date。允许 lease 是当前设计的正向对照，不采纳模型自行提出的扩大拦截建议。
+- 临时仓库先完成正常 push，仅连接同目录 bare remote；验收后 local/remote HEAD 与初始值一致、工作树干净。真实记录、摘要、工具 ID/结果和复现入库 Claude JSON；任务、测试、手册及既有 review 同步完成。无 Go/真实配置变更，核对证据与 diff 后提交；C7–C9 继续待验收，M1 未完成。
+- 补充核验既有 wire 回归：清理 CODEX_HOME/CODEX_SANDBOX，使用 `/tmp/style-cli-{gopath,gomodcache,gocache}`、GOPROXY=off/GOSUMDB=off，`go test -count=1 ./internal/runtime -run '^TestClaudePromptBlockSuppressesOriginalPrompt$' -v` 通过。真实 transcript 有不带 timestamp 的快照重复项，证据比对只使用带时间的实际记录。

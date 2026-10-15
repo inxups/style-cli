@@ -491,3 +491,9 @@ M1B-FIX-02 复核：使用临时 Go 缓存、清理 CODEX 环境构建 `go build
 - [x] **CLAUDE-05/C5**：真实 Bash 调用执行成功，用户明确确认 M1B_WARN_USER 在工具 UI 内容中可见，模型引用未出现在测试提示中的 M1B_WARN_MODEL。实际 PreToolUse warn/output 的正文摘要一致，记录时间早于工具结果。
 
 证据、工具 ID、时间和复现见 Claude JSON 的 C5。用户最初称“没有警告”，澄清后确认工具内容中可见，符合 c5 的界面提示要求。模型称在结果后收到上下文，不能据此判定 hook 延后执行或确定模型内部接收时机；U-C5 仅关闭 PreToolUse 显示这一分支。无 Go/真实配置变更，C6–C9 待验收，M1 未完成。
+
+## Claude C6 完成确认（2026-10-15）
+
+- [x] **CLAUDE-06/C6**：两次真实 prompt 阻断的 hook 消息只有固定理由，Claude 记录 preventContinuation=true、promptKept=false。真实 force push 收到 PreToolUse 的明确拒绝理由，模型正确引用；lease 对照进入 Git 并成功返回 Everything up-to-date，符合当前设计。测试只连接本地 bare remote，前后 HEAD 一致。
+
+证据、实际工具 ID、两次阻断记录及复现见 Claude JSON 的 C6。用户因本工作 Codex 也安装了探针而删减回传标记；以原 Claude 记录核验精确输出，不重建未保留的原 prompt。模型建议禁止 lease 不属于本项验收契约；M1B-EXAMPLE-01 的正则误拦问题继续独立保留。无 Go/真实配置变更，C7–C9 待验收，M1 未完成。

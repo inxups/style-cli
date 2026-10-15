@@ -166,7 +166,7 @@ B1.2 和 B1.4 的历史通过状态表示原有测试套件在声明范围内通
 - [x] **CLAUDE-04/C4** M1B-FIX-06 后，用户在验收目录的两个新会话交换 Skill/显式入口顺序；两个入口首次调用均收到 findings 上限原文，第二入口实际运行且 dedup。每个 session 只有一次 review-skill output，共享 rule/body seen 标记。用户复述不用于判定重复注入；原失败保留，fork 投递不扩大宣称。证据见 Claude JSON 的 C4.real_retest，复现见手册 §5.1。
 - [x] **M1B-FIX-06 离线回归** `TestInstallClaudeSkillSharesDedupAcrossEntrypoints` 通过真实安装 argv 验证 before/after × 隐式/显式先后顺序的四组投递/共享去重；trust 删除 skill 规则时清除其订阅并保留 Bash。四组修复前均因漏 Skill matcher 失败。双 module test/vet、app 定向 race、真实二进制隔离安装/两种顺序/卸载、gofmt/diff 通过，不替代真实 C4。
 - [x] **CLAUDE-05/C5** Claude Code 2.1.300/claude-user 的真实 Bash 调用正常完成；用户确认工具 UI 可见 M1B_WARN_USER，模型引用独立的 M1B_WARN_MODEL。PreToolUse warn/output 在工具结果前记录，正文无末尾 LF 的 SHA256 一致。模型在结果后复述不证明 hook 执行延后；只确认 PreToolUse，U-C5 其他事件不扩大宣称。证据与复现见 Claude JSON 的 C5。
-- [?] **CLAUDE-06/C6** force push 被拒；prompt block 不携带原始 prompt。
+- [x] **CLAUDE-06/C6** 真实 UserPromptSubmit 两次阻断，仅固定理由，Claude 记录 preventContinuation=true、promptKept=false；不根据用户删减过的回传重建原 prompt。真实 Bash force push 被 PreToolUse 拒绝，模型引用理由；lease 对照成功返回 Everything up-to-date，符合设计。仓库仅连接本地 bare remote，前后 HEAD 一致。证据与复现见 Claude JSON 的 C6；示例正则泛化问题仍为 M1B-EXAMPLE-01。
 - [?] **CLAUDE-07/C7** 并行工具调用同一 session 规则只输出一次。
 - [?] **CLAUDE-08/C8** 卸载后 settings.json 和 CLAUDE.md 字节级恢复。
 - [?] **CLAUDE-09/C9** exec hook p95 小于 50ms；resume 不重复 session.start。
