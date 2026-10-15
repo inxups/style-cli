@@ -90,7 +90,7 @@ func expandFrom(root, pattern string) ([]string, error) {
 	if err := validateGlob(clean); err != nil {
 		return nil, parseErr("bad-glob", clean, "invalid from glob", err)
 	}
-	var matches []string
+	names := []string{}
 	err = filepath.WalkDir(root, func(full string, entry fs.DirEntry, walkErr error) error {
 		if walkErr != nil {
 			return walkErr
@@ -102,18 +102,38 @@ func expandFrom(root, pattern string) ([]string, error) {
 		if err != nil {
 			return err
 		}
-		rel = filepath.ToSlash(rel)
-		matched, err := matchGlob(clean, rel)
-		if err != nil {
-			return err
-		}
-		if matched {
-			matches = append(matches, rel)
-		}
+		names = append(names, filepath.ToSlash(rel))
 		return nil
 	})
 	if err != nil {
 		return nil, parseErr("file-read", clean, "expand from glob", err)
+	}
+	return expandFromNames(clean, names)
+}
+
+func expandFromNames(pattern string, names []string) ([]string, error) {
+	clean, err := cleanRelativePath(pattern)
+	if err != nil {
+		return nil, err
+	}
+	if !strings.ContainsAny(clean, "*?[") {
+		if !validRuleSource(clean) {
+			return nil, parseErr("invalid-schema", clean, "from must reference Markdown files under rules/", nil)
+		}
+		return []string{clean}, nil
+	}
+	if err := validateGlob(clean); err != nil {
+		return nil, parseErr("bad-glob", clean, "invalid from glob", err)
+	}
+	var matches []string
+	for _, name := range names {
+		matched, err := matchGlob(clean, name)
+		if err != nil {
+			return nil, err
+		}
+		if matched {
+			matches = append(matches, name)
+		}
 	}
 	sort.Strings(matches)
 	if len(matches) == 0 {

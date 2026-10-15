@@ -28,14 +28,16 @@ type lockDocument struct {
 }
 
 type lockPackage struct {
-	Name     string            `yaml:"name"`
-	Version  string            `yaml:"version"`
-	Seq      int               `yaml:"seq"`
-	Source   lockSource        `yaml:"source"`
-	Files    map[string]string `yaml:"files"`
-	Settings []string          `yaml:"settings,omitempty"`
-	Replace  bool              `yaml:"replace,omitempty"`
-	Link     bool              `yaml:"link,omitempty"`
+	Name        string            `yaml:"name"`
+	Version     string            `yaml:"version"`
+	Seq         int               `yaml:"seq"`
+	Source      lockSource        `yaml:"source"`
+	Files       map[string]string `yaml:"files"`
+	Settings    []string          `yaml:"settings,omitempty"`
+	Replace     bool              `yaml:"replace,omitempty"`
+	Link        bool              `yaml:"link,omitempty"`
+	LinkTrusted bool              `yaml:"link_trusted,omitempty"`
+	Approval    string            `yaml:"approval,omitempty"`
 }
 
 type lockSource struct {
@@ -76,6 +78,13 @@ func loadLock(home string) (lockDocument, error) {
 	}
 	if err != nil {
 		return lockDocument{}, fmt.Errorf("read lock: %w", err)
+	}
+	return decodeLock(data)
+}
+
+func decodeLock(data []byte) (lockDocument, error) {
+	if data == nil {
+		return lockDocument{Format: lockFormat, Packages: []lockPackage{}, Harnesses: map[string]lockHarness{}}, nil
 	}
 	var document lockDocument
 	if err := yaml.Unmarshal(data, &document); err != nil {

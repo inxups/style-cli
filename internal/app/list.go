@@ -53,7 +53,7 @@ func listLocked(ctx context.Context, home string, lock lockDocument) (ListResult
 		if pkg.Link {
 			item.Link = "dev"
 		}
-		files, _, _, err := snapshotPackage(lockedPackagePath(home, pkg))
+		files, err := installedSnapshot(home, pkg)
 		if err != nil {
 			item.Error = err.Error()
 		} else {

@@ -508,3 +508,12 @@
 - 证据：TestRunInstallSwitchesRoutesWithoutResidueAndKeepsExternalConfig（双向切换/幂等/最后卸载/外部 owner）、TestInstallNewPackageCanSwitchExistingRoute、TestReinstallRejectsUnknownRouteAndDetectsStoredDrift、TestInstallRetainsExistingFailClosedPolicy；agenthooks TestPlanFilesAfterComposesSharedConfigWithoutWrites（无写入规划、stale 拒绝、原子组合、外部字节）、TestCodexTrustKeysStayStableWhenNewHomeHasSymlinkedAncestor。
 - 验证：清理 CODEX_HOME/CODEX_SANDBOX、临时 Go 缓存与 GOPROXY=off/GOSUMDB=off 下，app 定向和全量、双 module make test-go/make vet-go、app/Codex adapter/agenthooks install race 测试、gofmt 和 git diff --check 通过。
 - 任务/测试矩阵/review 已标记本补项完成，A13 `[x]`；T55、A1/A12/A18、adapter conformance、真实 M1b 未完成。
+
+### 2026-10-15 — T55 / A12 / B1.28 `[x]`
+
+- 新增 sync/trust 文本与 JSON 命令。普通包改动及 link 首次 trust 让 sync 退出 3，保持 index/lock/config；trust 展示源码和编译后差异，无确认只读，--yes 或确认回调后提交同一内存快照。已批准 link 后续同步不阻塞。
+- spec 增加 LoadSnapshot，复用目录/单文件解析和 glob，复制源字节，validate 的未声明规则扫描不再读取磁盘。Install、已安装包和新命令都使用该入口；单文件安装名与原来源名不同的哈希比较一并修复。
+- STYLE_HOME/approved/<name>.json 私有文件保存已批准原文与编译表示，lock 锚定摘要；后续安装/卸载/同步刷新其当前应用表示，卸载删除选中基线。多个普通包同时改动可逐包审批，未选中者继续从上次审批字节编译，避免互相阻塞或隐式信任。
+- 事务继续复用 agenthooks ApplyFiles；保留安装 seq、config_dir 和 fail_closed。schema/requires/settings/replace 新确认与全局唯一性、全部安装包 T003 在写入前检查；stale lock/route、损坏基线和取消保持无部分写入。sync 冷路径清理 7 天旧会话。
+- 证据：core/spec/snapshot_test.go；internal/app/sync_test.go（普通/link/同内存）、sync_command_test.go（exit0/1/3/4、JSON/help、不同文件名/单文件、资产/expiry）、sync_claude_test.go（订阅面/static/外部配置/fail_closed）、trust_policy_test.go（逐包审批、政策/预算/事务）。
+- 验证：清理 CODEX_HOME/CODEX_SANDBOX，使用临时 GOPATH/GOMODCACHE/GOCACHE，GOPROXY=off/GOSUMDB=off 下 `go test -count=1 ./core/spec ./internal/app`、双 module `make test-go`/`make vet-go`、`go test -race -count=1 ./internal/app ./core/spec`、gofmt 和 `git diff --check` 通过。任务、测试矩阵与 review 完成确认已同步；M1a A1/A18/adapter conformance、A11 真实投递与 M1b 尚未完成。

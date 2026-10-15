@@ -97,7 +97,15 @@ func (s *Service) Install(ctx context.Context, request InstallRequest) (InstallR
 	if err != nil {
 		return InstallResult{}, err
 	}
-	original, err := spec.Load(request.Source)
+	files, single, sourcePath, err := snapshotPackage(request.Source)
+	if err != nil {
+		return InstallResult{}, err
+	}
+	singleName := ""
+	if single {
+		singleName = filepath.Base(sourcePath)
+	}
+	original, err := spec.LoadSnapshot(sourcePath, files, singleName)
 	if err != nil {
 		return InstallResult{}, err
 	}
@@ -105,15 +113,6 @@ func (s *Service) Install(ctx context.Context, request InstallRequest) (InstallR
 	version, _ := original.Metadata["version"].(string)
 	if name == "" || version == "" {
 		return InstallResult{}, &UsageError{Message: "package name and version are required"}
-	}
-	files, single, sourcePath, err := snapshotPackage(request.Source)
-	if err != nil {
-		return InstallResult{}, err
-	}
-	for path, data := range original.Files {
-		if snapshot, ok := files[filepath.ToSlash(path)]; !ok || !bytes.Equal(snapshot, data) {
-			return InstallResult{}, fmt.Errorf("package source changed while it was being read: %s", path)
-		}
 	}
 	fileHashes, _ := hashPackageFiles(files)
 	if err := validateRuntimeRequirement(original.Metadata["requires"]); err != nil {
@@ -210,6 +209,22 @@ func (s *Service) Install(ctx context.Context, request InstallRequest) (InstallR
 		return InstallResult{}, err
 	}
 	updatedLock.Harnesses, result.Routes = harnesses, routes
+	for _, item := range packages {
+		approval, err := approvalBytes(compilation, item.lock.Name, item.pkg.Files)
+		if err != nil {
+			return InstallResult{}, err
+		}
+		for i := range updatedLock.Packages {
+			if updatedLock.Packages[i].Name == item.lock.Name {
+				updatedLock.Packages[i].Approval = hashBytes(approval)
+			}
+		}
+		approvalChanges, err := planPrivateFile(approvalPath(home, item.lock.Name), approval)
+		if err != nil {
+			return InstallResult{}, err
+		}
+		plannedChanges = append(plannedChanges, approvalChanges...)
+	}
 	lockBytes, err := yaml.Marshal(updatedLock)
 	if err != nil {
 		return InstallResult{}, err
@@ -538,18 +553,7 @@ func (s *Service) loadInstalledPackages(ctx context.Context, home string, lock l
 		if err := checkContext(ctx); err != nil {
 			return nil, err
 		}
-		path := filepath.Join(home, "packages", item.Name)
-		if item.Source.Kind == "file" {
-			path += ".style.md"
-		}
-		if item.Link {
-			path = item.Source.Path
-		}
-		pkg, err := spec.Load(path)
-		if err != nil {
-			return nil, fmt.Errorf("load installed package %s: %w", item.Name, err)
-		}
-		files, _, _, err := snapshotPackage(path)
+		files, err := installedSnapshot(home, item)
 		if err != nil {
 			return nil, err
 		}
@@ -557,21 +561,11 @@ func (s *Service) loadInstalledPackages(ctx context.Context, home string, lock l
 		if !reflectStringMap(currentHashes, item.Files) {
 			return nil, &ConflictError{Message: fmt.Sprintf("installed package %q changed; run sync/trust before installing another package", item.Name)}
 		}
-		pkg.Files = cloneFileMap(files)
-		settings, err := readSettingValues(home, item.Name)
+		parsed, err := parseInstalledSnapshot(ctx, home, item, files)
 		if err != nil {
 			return nil, err
 		}
-		resolved, err := spec.Merge(pkg)
-		if err != nil {
-			return nil, err
-		}
-		resolved, err = resolvedWithSettings(resolved, settings)
-		if err != nil {
-			return nil, err
-		}
-		result = append(result, installPackage{lock: item, pkg: pkg, resolved: resolved, settings: settings,
-			report: make(map[adapter.ProviderID]plan.Report), tokens: make(map[adapter.ProviderID]tokens.Report)})
+		result = append(result, parsed)
 	}
 	return result, nil
 }

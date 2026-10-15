@@ -344,3 +344,13 @@ fail-closed 的范围收窄为 `Manifest.Fail == FailClosed`、`Blocking` 且 `K
 - [x] **RV-A13-03 路径和信任稳定性**：默认 Codex 插件目录跟随显式/环境 STYLE_HOME；卸载和 doctor 同样绑定该根。安装路线沿用 lock 配置根，新增目录在 symlink 祖先下的 trust key 在目录创建前后相同。未知 route/非法 fail-closed 参数不再因重复安装被忽略。
 
 证据：`internal/app/install_routes_test.go`、`agenthooks/install/plan_after_test.go`。隔离 Go 环境下 app 定向/全量、双 module 全量测试/vet、`go test -race -count=1 ./internal/app ./internal/adapter/codex ./agenthooks/install` 和 diff 检查通过。A13 由 `[~]` 更新为 `[x]`，T55/A1/A12/A18、adapter conformance 与真实 M1b 仍未完成。
+
+## T55 / A12 完成确认（2026-10-15）
+
+- [x] **RV-T55-01 审批与相同字节**：`spec.LoadSnapshot` 复制输入并在 validate 时仅使用内存文件清单。Install/已安装包/sync/trust 共用该入口；确认回调再改源码或修改 preview 不改变待提交字节，后续 sync 仍能检出漂移。证据：`core/spec/snapshot_test.go`、`internal/app/sync_test.go:TestTrustCompilesExactlyTheConfirmedSnapshot`。
+- [x] **RV-T55-02 差异和开发包**：审批基线包含原始文件和已编译静态正文/动态模板表示，以 0600 存于 STYLE_HOME/approved，lock 保存其摘要。trust 展示真实源码差异和编译差异；没有 `--yes` 时只读预览。link 首次 trust 后可自动同步；普通包同时改动时按名字逐一审批，其他包继续使用旧基线。单文件原始名称和安装名不同也能正确比较，seq 保留。证据：`sync_test.go`、`sync_command_test.go`、`trust_policy_test.go`。
+- [x] **RV-T55-03 事务与策略**：审批的哈希/index/基线/settings/route/static 一起交给现有 agenthooks ApplyFiles。T003 全局预算、requires、schema、新 setting、replace 显式确认/唯一性先于写入；stale lock/route、损坏/缺失的已锚定基线、取消均有无部分写入回归。Claude 重建订阅面时保留外部配置和 fail_closed；sync 冷路径清理旧会话，uninstall 清理基线。证据：`trust_policy_test.go`、`sync_claude_test.go`、`sync_command_test.go`。
+
+兼容已有无审批基线的锁文件：内容未变时 sync 可建立基线；已有改动时 trust 明示旧字节不可用，展示完整当前源码和编译表示，不伪造旧内容。已带摘要的基线缺失或被改写则报错。需要保留其他未审批改动时必须有可验证旧基线，否则要求先恢复对应锁定字节。
+
+验证：清理 CODEX_HOME/CODEX_SANDBOX、使用 `/tmp/style-cli-{gopath,gomodcache,gocache}` 与 GOPROXY=off/GOSUMDB=off；app/spec 定向和全量、双 module `make test-go`/`make vet-go`、`go test -race -count=1 ./internal/app ./core/spec`、gofmt 和 `git diff --check` 通过。T55、A12、B1.28 确认 `[x]`；M1a 的 A1/A18/adapter conformance 与真实 M1b 仍待完成。

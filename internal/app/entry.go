@@ -64,6 +64,8 @@ func RunWithService(ctx context.Context, service *Service, workDir string, args 
 		return runInstall(ctx, service, workDir, args[1:], out, errOut)
 	case "uninstall":
 		return runUninstall(ctx, service, args[1:], out, errOut)
+	case "sync", "trust":
+		return runSync(ctx, service, args[0], args[1:], out, errOut)
 	case "list", "doctor", "adapters":
 		return runInspect(ctx, service, workDir, args[0], args[1:], out, errOut)
 	default:
@@ -80,6 +82,8 @@ func printUsage(out io.Writer) {
 	fmt.Fprintln(out, "style install <source> [--harness h] [--route h=r] [--set k=v] [--link] [--allow-replace] [--fail-closed h] [--yes] [--json]")
 	fmt.Fprintln(out, "style uninstall <name|--all> [--yes] [--json]")
 	fmt.Fprintln(out, "style list [--json]")
+	fmt.Fprintln(out, "style sync [--json]")
+	fmt.Fprintln(out, "style trust <name> [--allow-replace] [--yes] [--json]")
 	fmt.Fprintln(out, "style doctor [--reset-state] [--json]")
 	fmt.Fprintln(out, "style adapters [--json]")
 }

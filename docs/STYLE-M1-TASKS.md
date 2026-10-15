@@ -62,7 +62,7 @@
 - [x] **T52 `style install`**：收集 settings，检查 requires、冲突、replace、能力披露，原子写包/锁/index/适配器配置。证据：`internal/app/install.go`、`internal/app/install_test.go`、`agenthooks/install/plan_files.go`；验证见 B1.25 和 `docs/PROGRESS.md`。
 - [x] **T53 `style uninstall`**：支持单包与 `--all` 非交互卸载；从剩余锁定包重新编译并刷新路线，最后一个包卸载时清理 STYLE 路线、index、lock、settings 和本地包；link 源不删除。TOML hook 区和 Codex 静态区卸载后保留外部字节。证据：`internal/app/uninstall_test.go`、`agenthooks/install/install_test.go:TestManagedTOMLRoundTripRestoresExternalBytes`；验证见 B1.26 和 `docs/PROGRESS.md`。
 - [x] **T54 `style list` / `style doctor` / `style adapters`**：文本/JSON 报告安装来源、序号、link 与哈希漂移；逐 adapter/route 检测能力、上限和信任；doctor 验证 lock/package/settings/index 与渲染路线，检查登录 shell/effort、统计最近 7 天成本 top3，并清理过期或重置会话。证据：`internal/app/inspect_test.go`、`doctor_test.go`、`internal/runtime/runtime_test.go`、`core/state/stats_test.go`；验证见 B1.27 与 `docs/PROGRESS.md`。
-- [ ] **T55 `style sync` / `style trust`**：哈希变更检测、差异展示、link 包行为、同一份内存字节编译和原子更新。
+- [x] **T55 `style sync` / `style trust`**：普通包漂移/首次 link 审批返回 sync 退出码 3；trust 展示源码与编译后差异，确认后用同一份内存快照更新哈希、index、静态块和订阅面。已批准 link 后续改动可自动同步；多个普通包可逐个审批，其余包使用已批准基线。证据：`core/spec/snapshot_test.go`、`internal/app/{sync_test.go,sync_command_test.go,sync_claude_test.go,trust_policy_test.go}`；验证见 B1.28/A12 与 `docs/PROGRESS.md`。
 
 ## 里程碑验收
 

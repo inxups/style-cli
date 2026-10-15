@@ -38,9 +38,22 @@ func Load(source string) (*Package, error) {
 	return loadSingleFile(root, filepath.Base(abs))
 }
 
+type packageReader struct {
+	read   func(string) ([]byte, error)
+	expand func(string) ([]string, error)
+}
+
 func loadDirectory(root string) (*Package, error) {
-	pkg := &Package{Root: root, Files: make(map[string][]byte)}
-	manifestBytes, err := readPackageFile(root, "STYLE.yaml", pkg.Files)
+	files := make(map[string][]byte)
+	return loadDirectoryFrom(root, files, packageReader{
+		read:   func(rel string) ([]byte, error) { return readPackageFile(root, rel, files) },
+		expand: func(pattern string) ([]string, error) { return expandFrom(root, pattern) },
+	})
+}
+
+func loadDirectoryFrom(root string, files map[string][]byte, source packageReader) (*Package, error) {
+	pkg := &Package{Root: root, Files: files}
+	manifestBytes, err := source.read("STYLE.yaml")
 	if err != nil {
 		return nil, err
 	}
@@ -68,13 +81,13 @@ func loadDirectory(root string) (*Package, error) {
 			if !ok || strings.TrimSpace(pattern) == "" {
 				return nil, parseErr("invalid-package", "STYLE.yaml", fmt.Sprintf("rules[%d].from must be a non-empty path", index), nil)
 			}
-			matches, err := expandFrom(root, pattern)
+			matches, err := source.expand(pattern)
 			if err != nil {
 				return nil, err
 			}
 			overrides := cloneMapWithout(fields, "from")
 			for _, rel := range matches {
-				data, err := readPackageFile(root, rel, pkg.Files)
+				data, err := source.read(rel)
 				if err != nil {
 					return nil, err
 				}
@@ -119,7 +132,7 @@ func loadDirectory(root string) (*Package, error) {
 			if strings.HasPrefix(cleanFile, "rules/") {
 				return nil, parseErr("file-into-rules", cleanFile, "file references cannot point into rules/", nil)
 			}
-			body, err := readPackageFile(root, cleanFile, pkg.Files)
+			body, err := source.read(cleanFile)
 			if err != nil {
 				return nil, err
 			}
@@ -140,6 +153,10 @@ func loadSingleFile(root, name string) (*Package, error) {
 	if err != nil {
 		return nil, err
 	}
+	return loadSingleBytes(root, name, files, data)
+}
+
+func loadSingleBytes(root, name string, files map[string][]byte, data []byte) (*Package, error) {
 	frontmatter, body, err := splitFrontmatter(data, name)
 	if err != nil {
 		return nil, err

@@ -134,6 +134,18 @@ func (s *Service) Uninstall(ctx context.Context, request UninstallRequest) (Unin
 				Surface: hashSurface(target.hooks), Rendered: hashChangeset(planned), Trust: trustState(target.route.Trust()), FailClosed: harness.FailClosed}
 			result.Routes = append(result.Routes, string(target.provider)+"="+target.route.Name())
 		}
+		for i, item := range packages {
+			approval, err := approvalBytes(compilation, item.lock.Name, item.pkg.Files)
+			if err != nil {
+				return UninstallResult{}, err
+			}
+			remainingLock.Packages[i].Approval = hashBytes(approval)
+			approvalChanges, err := planPrivateFile(approvalPath(home, item.lock.Name), approval)
+			if err != nil {
+				return UninstallResult{}, err
+			}
+			changes = append(changes, approvalChanges...)
+		}
 		lockBytes, err := yaml.Marshal(remainingLock)
 		if err != nil {
 			return UninstallResult{}, err
@@ -142,6 +154,11 @@ func (s *Service) Uninstall(ctx context.Context, request UninstallRequest) (Unin
 		changes = append(changes, plannedFile(filepath.Join(home, "build"), "index.json", compilation.indexBytes, 0o600)...)
 	}
 	for _, item := range removedPackages {
+		approvalRemovals, err := plannedRemoval(approvalPath(home, item.Name))
+		if err != nil {
+			return UninstallResult{}, err
+		}
+		changes = append(changes, approvalRemovals...)
 		removals, err := plannedRemoval(filepath.Join(home, "settings", item.Name+".yaml"))
 		if err != nil {
 			return UninstallResult{}, err

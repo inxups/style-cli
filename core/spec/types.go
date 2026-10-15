@@ -15,6 +15,7 @@ type Package struct {
 	Rules      []Rule
 	Files      map[string][]byte
 	SingleFile bool
+	inventory  []string // Non-nil for a complete in-memory snapshot.
 }
 
 // Rule is one entry in rules[], or the sole rule in a single-file package.

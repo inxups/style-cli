@@ -74,6 +74,8 @@ env -u CODEX_HOME -u CODEX_SANDBOX \
 - [x] **B1.23 T50 `style init`**：`go test -count=1 ./internal/app -run 'TestInit|TestRunInit'` 覆盖目录包/单文件包骨架可被 `spec.Load`、`Validate`、`Merge` 接受，当前空目录初始化，名称归一化，`--help` 成功且不写文件，已存在/非空目标拒绝并保留原字节，非法名称拒绝，命令成功输出稳定；`go run ./cmd/style init --help` 可执行且退出 0。双 module `make test-go`、`make vet-go`、gofmt 和 `git diff --check` 通过。证据：`internal/app/init_test.go`、`internal/app/init.go`、`docs/PROGRESS.md` T50/B1.23。
 
 - [x] **B1.24 T51 `style validate` / `style plan`**：隔离缓存下 `go test -count=1 ./internal/app` 覆盖有效/无效包稳定文本诊断、JSON 诊断码与退出码、参数错误、显式/多 harness 选择、默认/显式 session 假设、Codex/Claude 原生 token bucket 聚合；`TestExamplePlanMatchesProviderGoldens` 对示例包 Codex/Claude stdout 逐字节比较，`TestProviderLayoutUsesNativeAggregateBuckets` 固定 MCP 聚合及 canonical/native tool 映射。`go run ./cmd/style validate example/terse-reviewer` 返回 `valid`，两个 `style plan` 命令返回 0。双 module `make test-go`、`make vet-go`、gofmt 和 `git diff --check` 通过。证据：`internal/app/command_test.go`、`plan_golden_test.go`、`plan_layout_test.go`、`testdata/golden/plan-{codex,claude-code}.txt`、`docs/PROGRESS.md` T51/B1.24。
+- [x] **B1.28 T55 sync/trust**：新增稳定文本/JSON/help/退出码；私有 `approved/<name>.json` 保存已审批源码和编译表示，其摘要写入 lock，供源码/静态/动态模板差异展示。编译复用 spec 内存加载器，审批后不重新读取源文件；保留 package seq、安装根与 fail_closed。新 replace 仍需显式允许、全局 replace 唯一，requires/settings/schema 与全部安装包 T003 在写入前检查；stale lock/route、基线损坏和取消不部分写入。sync 清理 7 天旧会话；卸载清除审批基线。Claude surface/static、Codex static、二进制/空资产、不同源文件名的单文件包均有回归。双 module 全量测试/vet、app/spec race、gofmt 与 diff 检查通过；证据见 A12 与 `internal/app/sync_claude_test.go`。
+
 ## M1a：STYLE 离线验收
 
 - [x] **B1.25 T52 `style install`**：`go test -count=1 ./internal/app -run 'TestInstall|TestRunInstall'` 覆盖 `--yes` 确认、settings 必填值和 0600 持久化、requires.runtime、replace/`--allow-replace` 边界、重复安装幂等、包/锁/index/适配器路线写入；`go test -count=1 -C agenthooks ./install` 覆盖多文件 changeset 的 stale 检查、原子写入和取消时回滚。示例包隔离 `STYLE_HOME` 的 `go run ./cmd/style install ... --yes --json` 返回 0。双 module `make test-go`、`make vet-go`、gofmt 和 `git diff --check` 通过。证据：`internal/app/install_test.go`、`agenthooks/install/install_test.go`、`docs/PROGRESS.md` T52/B1.25。
@@ -105,7 +107,7 @@ env -u CODEX_HOME -u CODEX_SANDBOX \
 
 ### 安装、信任和 token
 
-- [ ] **A12** 普通包改动由 sync 阻塞并由 trust 确认；link 包行为符合设计；trust 基于同一份内存字节。
+- [x] **A12** 命令级 sync 检测普通包 md 改动后退出 3，index/lock/provider 配置不变；trust 无确认只展示源码和编译差异，`--yes` 后更新。确认回调中再次修改源码，哈希、index、基线仍使用已确认字节；下次 sync 检出后续改动。link 首次 trust 后改动不阻塞，目录/单文件均覆盖；多个普通包逐一审批且未批准包的正文不生效。证据：`internal/app/{sync_test.go,sync_command_test.go,trust_policy_test.go}`、`core/spec/snapshot_test.go`。
 - [x] **A13** install 重复幂等、Codex plugin/user 双向切换无旧 hooks/trust/插件文件残留、安装新包时切换且安装序号保留；uninstall 后外部 TOML 逐字节恢复、其他 hook owner 和 JSON 外部键保留。默认插件目录绑定所选 STYLE_HOME；已有 fail_closed 策略在后续安装保留。证据：`internal/app/install_routes_test.go`、`uninstall_test.go`、`agenthooks/install/plan_after_test.go`；组合 changeset 保留原 Before，stale 时不部分写入；新建 symlink 祖先下 Codex home 前后 trust key 相同。双 module 全量测试/vet、app/Codex adapter/install race 测试通过。
 - [x] **A14** Codex 静态托管区位置正确；用户自定义 developer instructions 时降为动态；Claude `CLAUDE.md` 标记块正确增删，并保留外部 settings/用户字节。证据：`internal/adapter/codex/route_test.go`、`internal/adapter/claude/route_test.go`。
 - [x] **A16** core 不直接 import `adapter/codex` 或 `adapter/claude`。证据：`internal/adapter/boundary_test.go`。
