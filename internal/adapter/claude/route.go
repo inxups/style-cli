@@ -184,7 +184,7 @@ func (r *route) staticChange(transform func([]byte) ([]byte, error)) (adapter.Fi
 	if bytes.Equal(before, updated) {
 		return adapter.FileChange{}, false, nil
 	}
-	if len(bytes.TrimSpace(updated)) == 0 {
+	if len(updated) == 0 {
 		return adapter.FileChange{Path: path, Root: r.dir, Mode: mode, Before: before, Remove: true}, true, nil
 	}
 	return adapter.FileChange{Path: path, Root: r.dir, Mode: mode, Before: before, After: updated}, true, nil
@@ -216,6 +216,8 @@ type claudeRegion struct {
 	owner      string
 	start, end int
 }
+
+const claudeSeparator = "<!-- style-managed-separator -->"
 
 func parseClaudeRegions(text string) ([]claudeRegion, error) {
 	var regions []claudeRegion
@@ -343,11 +345,11 @@ func mergeClaudeMD(existing []byte, blocks []adapter.StaticBlock) ([]byte, error
 	if len(blockText) == 0 {
 		return []byte(base), nil
 	}
-	if strings.TrimSpace(base) != "" {
+	if len(base) != 0 {
 		switch {
 		case strings.HasSuffix(base, "\n"):
 		default:
-			base += "\n"
+			base += "\n" + claudeSeparator + "\n"
 		}
 	}
 	return []byte(base + blockText + "\n"), nil
@@ -389,7 +391,12 @@ func removeClaudeRegions(text string, regions []claudeRegion, owners map[string]
 		last = end
 	}
 	b.WriteString(text[last:])
-	return b.String()
+	result := b.String()
+	separator := "\n" + claudeSeparator + "\n"
+	if start := strings.LastIndex(result, separator); start >= 0 && strings.TrimSpace(result[start+len(separator):]) == "" {
+		result = result[:start]
+	}
+	return result
 }
 
 func claudeStaticAvailable(data []byte) bool {

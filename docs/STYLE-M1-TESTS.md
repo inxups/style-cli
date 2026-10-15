@@ -108,7 +108,7 @@ env -u CODEX_HOME -u CODEX_SANDBOX \
 ### 安装、信任和 token
 
 - [x] **A12** 命令级 sync 检测普通包 md 改动后退出 3，index/lock/provider 配置不变；trust 无确认只展示源码和编译差异，`--yes` 后更新。确认回调中再次修改源码，哈希、index、基线仍使用已确认字节；下次 sync 检出后续改动。link 首次 trust 后改动不阻塞，目录/单文件均覆盖；多个普通包逐一审批且未批准包的正文不生效。证据：`internal/app/{sync_test.go,sync_command_test.go,trust_policy_test.go}`、`core/spec/snapshot_test.go`。
-- [x] **A13** install 重复幂等、Codex plugin/user 双向切换无旧 hooks/trust/插件文件残留、安装新包时切换且安装序号保留；uninstall 后外部 TOML 逐字节恢复、其他 hook owner 和 JSON 外部键保留。默认插件目录绑定所选 STYLE_HOME；已有 fail_closed 策略在后续安装保留。证据：`internal/app/install_routes_test.go`、`uninstall_test.go`、`agenthooks/install/plan_after_test.go`；组合 changeset 保留原 Before，stale 时不部分写入；新建 symlink 祖先下 Codex home 前后 trust key 相同。双 module 全量测试/vet、app/Codex adapter/install race 测试通过。
+- [x] **A13** install 重复幂等、Codex plugin/user 双向切换无旧 hooks/trust/插件文件残留、安装新包时切换且安装序号保留；uninstall 后外部 TOML、Codex hooks.json、Claude settings.json/CLAUDE.md 在无外部改动的安装/卸载往返后逐字节恢复，其他 hook owner 保留。默认插件目录绑定所选 STYLE_HOME；已有 fail_closed 策略在后续安装保留。证据：`internal/app/install_routes_test.go`、`uninstall_test.go`、`agenthooks/install/plan_after_test.go`；组合 changeset 保留原 Before，stale 时不部分写入；JSON 恢复记录为 0600、参与同一事务，外部编辑优先，卸载删除记录；新建 symlink 祖先下 Codex home 前后 trust key 相同。双 module 全量测试/vet、app/Codex adapter/install race 测试通过。
 - [x] **A14** Codex 静态托管区位置正确；用户自定义 developer instructions 时降为动态；Claude `CLAUDE.md` 标记块正确增删，并保留外部 settings/用户字节。证据：`internal/adapter/codex/route_test.go`、`internal/adapter/claude/route_test.go`。
 - [x] **A16** core 不直接 import `adapter/codex` 或 `adapter/claude`。证据：`internal/adapter/boundary_test.go`。
 - [x] **A18** estimator 对 `internal/tokenestimate/testdata/counts.json` 的 9 个固定数字逐项匹配；`testdata/tokens/T001`–`T007` 各有真实包 fixture。T003 的两包各估 1002 token，单包可装，合计 2005 超过 Codex 2500 上限的 80%，第二次 CLI install 退出 4，packages/lock/index/approval/provider 全部字节和序号不变。证据：`internal/tokenestimate/golden_test.go`、`internal/app/token_acceptance_test.go`；相关 core/tokens 全量测试通过。
@@ -166,7 +166,7 @@ B1.2 和 B1.4 的历史通过状态表示原有测试套件在声明范围内通
 - [x] 解析：46 个 payload 覆盖两家全部已映射原生事件、PostModelSwitch 与未知事件；固定统一 event、model、cwd、turn、agent、tool.added、MCP、skill 及评估点 golden。发现并修复 Codex PermissionRequest 没有投影为 tool.pre；deny_permission fixture 证明规则实际生效。证据：`internal/adapter/conformance/conformance_test.go`、`testdata/payloads/`。
 - [x] effort：25 组独立 fixture 经真实 runtime 验证档位、raw、approx、持久 session 与模板值；检查嵌入 effort.yaml 每个 exact/alias 均有 fixture，未知/空值不伪造档位。证据：`internal/adapter/conformance/effort_test.go`、`testdata/payloads/*-effort.json`。
 - [x] 往返：46 个 stdout golden 覆盖 inject/warn/deny、prompt suppression、MCP/skill/subagent 与观察事件；每个 payload 的 no-op 方言单独验证。证据：`internal/adapter/conformance/conformance_test.go`。
-- [ ] 安装：Plan → Apply → Status → Remove 保留外部内容、无 STYLE 残留、幂等、换路线清理。
+- [x] 安装：共用 `TestRouteLifecycleRestoresForeignBytes` 对 Codex plugin/user 与 Claude user 三条路线，在无/单/双末尾换行的配置上验证 Plan 无写入、Apply/Status、幂等和 Remove 后全文件字节/权限还原，无新增文件残留。命令级双向换路线验证见 `internal/app/install_routes_test.go`，最终 hooks.json 也逐字节比较。
 - [x] 报告：同一示例包的 Codex/Claude plan/token CLI stdout golden，见 A2 与 `internal/app/plan_golden_test.go`。
 - [x] 输出白名单：46 个存储 stdout golden 与实际 wire 输出均检查规范允许的顶层/嵌套字段、deny 值和 Claude prompt-only suppression。证据：`internal/adapter/conformance/whitelist_test.go`。
 - [?] e2e：真实 CLI 注入到达模型，block 真正生效。

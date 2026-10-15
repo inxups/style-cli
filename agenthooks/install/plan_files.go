@@ -51,7 +51,7 @@ func planFilesWithReader(m Manifest, t Target, readFile func(string) ([]byte, er
 			continue
 		}
 		mode := p.mode
-		if p.before != nil && mode&0o111 == 0 {
+		if p.before != nil && mode&0o111 == 0 && !strings.HasPrefix(p.path, ".agenthooks/") {
 			// os.WriteFile preserves permissions on an existing non-executable
 			// file, so expose that resulting mode rather than the renderer mode.
 			if info, statErr := os.Stat(filepath.Join(p.root, filepath.FromSlash(p.path))); statErr == nil {
@@ -99,6 +99,15 @@ func PlanUninstallFiles(m Manifest, t Target) ([]PlannedFile, error) {
 		dest := filepath.Join(root, filepath.FromSlash(path))
 		existing, readErr := os.ReadFile(dest)
 		if errors.Is(readErr, os.ErrNotExist) {
+			if isMergeableJSON(path) {
+				_, removal, err := removalJSONRestore(root, path, owner)
+				if err != nil {
+					return nil, err
+				}
+				if removal != nil {
+					out = append(out, *removal)
+				}
+			}
 			continue
 		}
 		if readErr != nil {
@@ -110,6 +119,19 @@ func PlanUninstallFiles(m Manifest, t Target) ([]PlannedFile, error) {
 		switch {
 		case isMergeableJSON(path):
 			updated, removeFile, changed, err = removeOwnedJSON(existing, owner)
+			if err == nil {
+				var record jsonRestore
+				var removal *PlannedFile
+				record, removal, err = removalJSONRestore(root, path, owner)
+				if err == nil && removal != nil {
+					out = append(out, *removal)
+					if record.AppliedSHA256 == jsonDigest(existing) {
+						updated = record.Original
+						removeFile = updated == nil
+						changed = removeFile || !bytes.Equal(existing, updated)
+					}
+				}
+			}
 		case isMergeableTOML(path):
 			updated, changed = removeManagedTOML(existing, owner)
 			removeFile = changed && len(bytes.TrimSpace(updated)) == 0

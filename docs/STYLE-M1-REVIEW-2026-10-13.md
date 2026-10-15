@@ -374,3 +374,11 @@ fail-closed 的范围收窄为 `Manifest.Fail == FailClosed`、`Blocking` 且 `K
 - [x] **RV-CONFORMANCE-03 PermissionRequest 评估点**：统一 suite 复现 Codex 把 PermissionRequest 投影为 permission.request，导致 tool.pre 条目无法匹配。修正为 tool.pre，并以两家的 deny_permission payload/golden 验证阻断。固定订阅面未改变，原生 codec 和 owner 生命周期仍由 agenthooks 负责。
 
 证据：`internal/adapter/conformance/`、`testdata/payloads/README.md`。清理 CODEX 环境变量，临时 Go 缓存、GOPROXY=off/GOSUMDB=off 下，双 module `make test-go`/`make vet-go`、`go test -race -count=1 ./internal/adapter/conformance ./internal/adapter/codex`、gofmt 和 diff 检查通过。A4/A11 和 conformance 的解析/effort/往返/报告/白名单确认 `[x]`；安装一致性、进程性能和真实 M1b 未完成。
+
+## 安装 conformance / A13 完成确认补项（2026-10-15）
+
+- [x] **RV-CONFORMANCE-04 配置逐字节往返**：此前 A13 仅验证 JSON 键/其他 owner 保留，证据不足以证明规范要求的逐字节还原。新增统一 suite 真实复现 Codex user hooks.json 和 Claude settings.json 重排版、Claude 无末尾换行的 CLAUDE.md 多换行。现三条路线 × 三种末尾换行的 Plan→Apply→Status→Remove 证明原始文件字节与权限完整恢复、重复安装/卸载幂等、没有新增文件残留；CLI 双向换路线也增加最终 JSON 字节断言。
+- [x] **RV-CONFORMANCE-05 恢复边界**：在现有 agenthooks/install 内保存 `.agenthooks/<owner>/<config-path>.restore.json`，原始字节加已应用 SHA256，0600 并与配置一起原子计划/提交/验证 Before。摘要相符才还原旧字节；外部编辑时保留当前修改，重装后也不回滚它；旧安装无记录沿用语义 owner 清理。覆盖空对象、空 hooks、CRLF、Unicode 转义、更新、stale/损坏记录、文件已删除和多 owner 隔离。卸载删除记录。
+- [x] **RV-CONFORMANCE-06 Claude 静态分隔符**：无末尾换行时插入可识别生成注释；最后一个 block 移除时连同生成换行清理，多 owner 任意卸载顺序及重复合并均恢复原文。保留原有空白文件字节。
+
+证据：`agenthooks/install/json_restore_test.go`、`internal/adapter/conformance/routes_test.go`、`internal/adapter/claude/static_roundtrip_test.go`、`internal/app/install_routes_test.go`。清理 CODEX 环境变量、临时 Go 缓存、GOPROXY=off/GOSUMDB=off；agenthooks install 与 app/adapter 定向全量、双 module `make test-go`/`make vet-go`、`go test -race -count=1 ./internal/adapter/conformance ./internal/adapter/claude ./internal/app ./agenthooks/install`、gofmt 和 diff 检查通过。安装 conformance 与 A13 确认 `[x]`；进程级性能和真实 M1b 仍待完成。

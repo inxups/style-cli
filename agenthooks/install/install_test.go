@@ -253,10 +253,16 @@ func TestPlanFilesReturnsMergedChangesWithoutWriting(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(changes) != 2 {
-		t.Fatalf("PlanFiles returned %d changes, want 2: %#v", len(changes), changes)
+	if len(changes) != 3 {
+		t.Fatalf("PlanFiles returned %d changes, want config, hooks and restoration record", len(changes))
 	}
 	for _, change := range changes {
+		if change.Path == filepath.Join(dir, restorePath("hooks.json", "style")) {
+			if change.Before != nil || len(change.After) == 0 || change.Mode != 0o600 {
+				t.Error("invalid private restoration plan")
+			}
+			continue
+		}
 		if change.Path != filepath.Join(dir, "hooks.json") && change.Path != filepath.Join(dir, "config.toml") {
 			t.Errorf("unexpected planned path %q", change.Path)
 		}
@@ -717,7 +723,7 @@ func TestUninstallRemovesOnlyMatchingOwner(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !bytes.Contains(got, []byte("other-agenthooks check")) || !bytes.Contains(got, []byte("--owner=agenthooks")) || !bytes.Contains(got, []byte(`"KEEP": "yes"`)) {
+	if !bytes.Equal(got, foreign) {
 		t.Errorf("uninstall removed unrelated entries:\n%s", got)
 	}
 	if bytes.Contains(got, []byte("--owner=style")) || bytes.Contains(got, []byte("old-style")) {

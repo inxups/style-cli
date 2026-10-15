@@ -536,3 +536,9 @@
 - 新增共用真实适配器 conformance suite；46 个 payload 的统一 event/fields 和 stdout 分别固定 golden，每个输入用空 index 再验证 no-op。覆盖全原生事件、未知事件、PostModelSwitch、patch/Edit 新增行、MCP、skill、子 agent。25 个独立 effort fixture 覆盖嵌入表每行和未知/空值，验证 runtime 持久状态与模板值。两家 agent 默认范围/any、Codex subagent.start 不去重补齐 A11 离线证据。
 - suite 实际发现 Codex PermissionRequest 使用 permission.request 评估点，现投影为 tool.pre；两家 deny_permission 真实 payload 确认 block 输出。固定订阅面没有变化。
 - 验证：清理 CODEX_HOME/CODEX_SANDBOX，使用 `/tmp/style-cli-{gopath,gomodcache,gocache}`，GOPROXY=off/GOSUMDB=off；双 module `make test-go`/`make vet-go`、`go test -race -count=1 ./internal/adapter/conformance ./internal/adapter/codex`、gofmt 与 diff 检查通过。任务/测试/review 已同步完成确认；conformance 安装生命周期、进程性能和真实 M1b 待验收。
+
+### 2026-10-15 — RV-CONFORMANCE-04–06 / A13 配置往返补项 `[x]`
+
+- 共用路线生命周期测试复现了旧 A13 证据遗漏的 JSON 字节排版变化和 Claude 无换行文档多换行。现在三条路线 × 无/单/双末尾换行均验证只读 Plan、Apply/Status、重复安装/卸载、原始字节和 0640 权限恢复及无新增文件残留；app 换路线回归新增最终 hooks.json 字节相等断言。
+- 现有 agenthooks/install 增加 JSON 原文恢复记录（0600、owner 隔离、Applied SHA256），与 config 一起进入原子 changeset 和 stale 检查。外部编辑优先，重装更新基线，旧安装无记录保留语义清理；删除配置不会被旧记录复活。Claude 静态区使用可清理的生成分隔符保留无末尾换行及多 owner 顺序。
+- 验证：清理 CODEX_HOME/CODEX_SANDBOX、临时 GOPATH/GOMODCACHE/GOCACHE、GOPROXY=off/GOSUMDB=off 下，agenthooks install / app / adapter 定向与全量、双 module make test-go/make vet-go、conformance/Claude/app/agenthooks install race 测试、gofmt 和 diff 检查通过。任务、测试、review 与 agenthooks DESIGN 同步。M1a 仍需进程级性能核验，M1b 由用户手动配置。

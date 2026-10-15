@@ -597,6 +597,20 @@ func Install(ctx context.Context, m Manifest, target Target, opts ...InstallOpti
 func Diff(...) // idempotent re-install support, fingerprint-based
 ```
 
+JSON merge preserves foreign handlers and keys. To make install/uninstall a
+byte-exact round trip, the installer stores original configuration bytes and
+the applied SHA256 in a private `0600` record under
+`.agenthooks/<owner>/<config-path>.restore.json`. The record participates in
+the same planned atomic transaction and stale checks as configuration files.
+Reinstall retains the baseline while the applied bytes match. If another actor
+edits the config, the installer removes only this owner's entries from the
+current bytes and uses that result as its next baseline; uninstall never
+restores an old snapshot over later edits. Missing legacy records use the
+existing semantic owner removal. Uninstall removes restoration records,
+including when the corresponding config has already been deleted. Records
+contain configuration data and are not part of the provider hook protocol or
+trust fingerprint.
+
 Per-target rendering encodes the workaround knowledge:
 
 - **Claude Code**: plugin layout (`.claude-plugin/plugin.json` +

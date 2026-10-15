@@ -252,6 +252,15 @@ func planWithReader(m Manifest, t Target, readFile func(string) ([]byte, error))
 		switch {
 		case errors.Is(readErr, os.ErrNotExist):
 			out = append(out, plannedFile{path: p, root: root, final: content, mode: mode, state: StateCreate})
+			if isMergeableJSON(p) {
+				restore, err := planJSONRestore(root, p, manifestOwner(m), nil, content, readFile)
+				if err != nil {
+					return nil, err
+				}
+				if restore != nil {
+					out = append(out, *restore)
+				}
+			}
 		case readErr != nil:
 			return nil, fmt.Errorf("install: read %s: %w", p, readErr)
 		default:
@@ -272,6 +281,15 @@ func planWithReader(m Manifest, t Target, readFile func(string) ([]byte, error))
 				state = StateUnchanged
 			}
 			out = append(out, plannedFile{path: p, root: root, before: cloneBytes(existing), final: final, mode: mode, state: state})
+			if isMergeableJSON(p) {
+				restore, err := planJSONRestore(root, p, manifestOwner(m), existing, final, readFile)
+				if err != nil {
+					return nil, err
+				}
+				if restore != nil {
+					out = append(out, *restore)
+				}
+			}
 		}
 	}
 	return out, nil

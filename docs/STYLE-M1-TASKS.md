@@ -103,3 +103,5 @@ T20–T24 与 T30–T34 回顾结论和剩余范围见 `docs/STYLE-M1-REVIEW-202
 - [x] **A13/T52 生命周期补项**：重复安装应用 route/harness 选择，不提前忽略；Codex plugin/user 通过 agenthooks 内存组合 changeset 原子切换并保留外部配置；默认插件根使用所选 STYLE_HOME，后续安装保留 fail_closed。证据：`internal/app/install_routes_test.go`、`agenthooks/install/plan_after_test.go`，详情见测试矩阵 A13 与进度日志。
 
 - [x] **RV-CONFORMANCE-01 解析和输出验收**：46 个原生 payload、25 个 effort fixture、统一事件/输出 golden、no-op 方言、输出白名单和 A11 agent scope 已通过；修正 Codex PermissionRequest 评估点为 tool.pre。证据：`internal/adapter/conformance/`、`testdata/payloads/`。安装生命周期一致性、进程级性能与真实 M1b 继续单独验收。
+
+- [x] **RV-CONFORMANCE-04 / A13 配置往返补项**：统一生命周期测试发现 JSON 重排版及 Claude 无末尾换行多一个换行。agenthooks/install 增加带已应用摘要的私有恢复记录，Claude static block 增加可移除的生成分隔符；三条路线的 9 组往返字节/权限、记录事务/外部改动/隔离和命令级切换均通过。证据：`internal/adapter/conformance/routes_test.go`、`agenthooks/install/json_restore_test.go`、`internal/adapter/claude/static_roundtrip_test.go`。M1a 仍待进程级性能核验；真实 M1b 由用户手动配置。

@@ -80,6 +80,9 @@ func TestRunInstallSwitchesRoutesWithoutResidueAndKeepsExternalConfig(t *testing
 		t.Fatalf("external bytes not restored: %q want %q", config, external)
 	}
 	hooks, _ := os.ReadFile(hooksPath)
+	if !bytes.Equal(hooks, otherHooks) {
+		t.Fatalf("external JSON bytes not restored: %q want %q", hooks, otherHooks)
+	}
 	var outside map[string]any
 	if json.Unmarshal(hooks, &outside) != nil || outside["outside"] != "keep" || bytes.Contains(hooks, []byte("--owner=style")) || !bytes.Contains(hooks, []byte("--owner=other")) {
 		t.Fatalf("external hook configuration=%s", hooks)
