@@ -636,3 +636,13 @@
 - 同一会话 f0796ff3-ecf1-44d1-a653-6ef0f3bc20c2 在 compact 后 epoch=1，SessionStart 于 12:26:22.31056Z 重新输出 session-info/high；对应 epoch=1 seen 标记存在。
 - 按要求分两条提示只引用上下文、不调用工具；用户回传两次 high 正文。真实 12:26:41.883803Z、12:27:42.744059Z prompt 均为 dedup，整个观察区间只有一次 output，正文摘要与两次回答一致。
 - 证据区间、stats、scope/seen 和复现步骤入库 Claude JSON 的 C2；任务、矩阵、手册和 review 确认完成。本项无 Go/配置变更；提交前核对真实状态/日志、JSON、正文 hash 和 diff。下一项由用户在同一会话执行 model switch，继续 C3。
+
+### 2026-10-15 — C3 `[!]`；M1B-FIX-05 `[x]`
+
+- 用户截图显示 `/model` 已设置 Haiku 5.5，两次提示仍引用 Sonnet/high。对应 12:30:44.431366Z、12:31:02.377394Z 的真实 stats 都去重旧正文，state 仍为 Sonnet，配置缺少 PostModelSwitch。
+- 原因是 app 的 hooksForProvider 只遍历编译后的注入点，没把 model 数据依赖转成观察订阅；现有 codec/runtime 本来能处理切换事件，安装测试却仅手动指定过观察事件，未覆盖完整链路。
+- 补真实安装回归，修复前观察事件缺失以及 system 模板/tool 模板/模型条件三类依赖用例失败，静态与无关工具对照通过。现仅在条目 needs 含 model 时加入 PostModelSwitch；通过 renderer 现有 blocking 元数据等待状态写入，避免异步观察与下一提示竞态，输出仍为中性 JSON。trust 移除最后一个依赖时清理订阅。
+- 新测试直接使用安装生成的 argv 走 CLI 入口，覆盖启动模型→观察更新→不带 model 的下一提示补发新值→再去重和订阅清理。代码只改 CLI 安装推导，保留 agenthooks 安装/codec 职责，无真实配置修改。
+- 最终代码验证：隔离 Go 缓存、清理 CODEX_HOME/CODEX_SANDBOX、GOPROXY=off/GOSUMDB=off；定向 `go test -count=1 ./internal/app -run '^TestInstallClaudeModel' -v`、双 module `make test-go`/`make vet-go`、`go test -race -count=1 ./internal/app -run 'TestInstallClaudeModel|TestTrustRebuildsClaudeSurface'`、gofmt 和 diff 检查通过。
+- 另构建 `/tmp/style-cli-m1b-fix05`，在全临时 HOME/STYLE_HOME/CODEX_HOME/CLAUDE_CONFIG_DIR 安装真实示例包，确认 6 类事件/11 条 hook 和同步观察；实际二进制逐次处理合成 startup/switch/两条 prompt，补发新模型后去重，最终卸载无配置残留。此为隔离进程 smoke，不替代真实模型验收；结果记入 Claude JSON。
+- 任务、矩阵、设计/手册和 review 已确认实现修复完成；Claude JSON 保留 C3 失败证据。用户需重建固定二进制并重新安装，开新会话确认 PostModelSwitch 后复测；真实 C3 继续 `[!]`，M1 未完成。

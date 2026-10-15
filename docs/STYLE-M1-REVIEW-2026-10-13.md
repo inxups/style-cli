@@ -451,3 +451,11 @@ M1B-FIX-02 复核：使用临时 Go 缓存、清理 CODEX 环境构建 `go build
 - [x] **CLAUDE-02/C2**：同一会话 compact 后，scope epoch=1 且对应 seen 标记存在；真实 SessionStart 对 session-info 补发一次。用户随后分两条消息引用的 high 正文均与输出摘要一致，实际两条 UserPromptSubmit 均为 dedup；观察区间没有额外 output。
 
 证据、观察区间及复现步骤见 Claude JSON 的 C2。判定依赖真实 stats、epoch/seen 和模型可见回传，未把模型重复引用当成 hook 重复注入。本项无 Go/配置变更，C3–C9 继续独立验收。
+
+## Claude C3 问题与修复完成确认（2026-10-15）
+
+- [!] **CLAUDE-03/C3 真实验收**：用户 UI 从 Sonnet 切到 Haiku 5.5，随后两次回答仍引用 Sonnet。真实 state 未更新、两条 prompt 去重旧 hash；实际安装中没有 PostModelSwitch。C3 未通过，待用户重装复测。
+- [x] **M1B-FIX-05 实现修复**：安装订阅只遍历 index 注入点，遗漏模型依赖的观察事件。现按条目 needs 添加 PostModelSwitch，并同步等待状态更新以免下一提示竞态；观察事件返回中性 JSON，不增加规则注入。没有 model 依赖时不安装，最后一个依赖移除后随 trust/recompile 清理。
+- [x] **M1B-FIX-05 验证**：新回归在修复前明确失败（观察事件缺失、三类模型依赖均缺订阅）；修复后真实安装 argv→CLI 入口→状态更新→下一提示新模型→后续去重通过，静态/无关工具及移除依赖的对照通过。双 module 全量 test/vet、app 定向 race、gofmt 和 diff 检查通过。
+
+证据、失败时间和复现步骤见 Claude JSON 的 C3；测试位于 `internal/app/claude_model_switch_test.go`。修复属于 CLI 的安装订阅推导，继续复用现有 agenthooks renderer/codec 与 Claude runtime，不重复实现 hook。真实配置未由 agent 修改，C3 不因离线测试通过而改为完成。

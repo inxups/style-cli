@@ -90,7 +90,9 @@ fi
 
 ## 4. Claude Code：用户级配置
 
-2026-10-15 曾发现 Claude 用户配置的 STYLE command 指向已不存在的 `go-build…/exe/style`；用户按本节重新安装后已解除。C1 真实投递通过：启动时 effort 为 unknown，首次工具调用后的下一条提示补发 high，符合设计的回退分支。C2 compact 后只补发一次、后两条提示去重通过。各 hook 进程是否都有环境变量仍属 U-C1；C3–C9 待验收。证据见 `review/M1B-CLAUDE-2026-10-15.json`。后续重新安装仍先按第 1 节重建固定二进制，保留原安装前备份。
+2026-10-15 的旧临时程序路径问题已由用户重新安装解除。C1 真实投递/首次工具后 high 补发、C2 compact 单次补发与去重通过；启动时 effort unknown 的边界保留 U-C1。C3 model switch 发现漏订阅，代码已修复，待重装复测；C4–C9 待验收。证据见 `review/M1B-CLAUDE-2026-10-15.json`。
+
+复测 C3：先按第 1 节重建固定二进制，再执行下面安装命令，保留原安装前备份。重新打开 Claude 会话，确认 `/hooks` 新增 PostModelSwitch（本示例现为 6 类事件、11 条 hook）。用 `/model` 切到另一个当前可用的模型，随后分两条提示引用最新 `Current session:`。第一条应收到新模型正文，第二条应去重；同时核对 state/stats。运行中自动加载订阅变更仍未验证，故采用新会话。
 
 ```sh
 "$STYLE_BIN" plan "$STYLE_REPO/example/terse-reviewer" --harness claude-code

@@ -161,7 +161,8 @@ B1.2 和 B1.4 的历史通过状态表示原有测试套件在声明范围内通
 - [x] **M1B-CLAUDE-SETUP-01** 用户重新安装后，10 条 STYLE hook 均指向固定且可执行的二进制，args 绑定 M1b 状态目录；锁文件含 claude-user，真实 SessionStart 已运行。原失败预检和解除证据保留在 `docs/review/M1B-CLAUDE-2026-10-15.json`。
 - [x] **CLAUDE-01/C1** Claude Code 2.1.300/claude-user，用户回传新会话的 claude-sonnet-5-5/unknown 上下文；Bash 读到 CLAUDE_EFFORT=high，下一条提示收到 high。两次正文含末尾 LF 的摘要逐一匹配真实 SessionStart/prompt stats，state 保存 high/raw high/approx false。符合设计 c1 的首次工具后补发分支；未直接测量各 hook 进程环境，U-C1 不扩大宣称。证据与复现见 Claude JSON 的 C1。
 - [x] **CLAUDE-02/C2** 同一真实 Claude 会话 compact 后 epoch=1，SessionStart 在 12:26:22.31056Z 对 session-info 补发一次；后两条独立 prompt 均为 dedup，没有额外 output。用户两次引用 high 正文与输出 hash 一致，epoch=1 的 seen 标记存在。证据区间、真实 stats 和复现步骤见 Claude JSON 的 C2。
-- [?] **CLAUDE-03/C3** model switch 后下一条 prompt 补发新模型内容。
+- [!] **CLAUDE-03/C3** 真实 UI 切到 Haiku 5.5 后两次回答仍引用 Sonnet；state 未更新，两条 prompt 都去重旧正文。原因是安装漏订阅 PostModelSwitch；M1B-FIX-05 已离线修复，待用户重装、新会话确认订阅后复测，不提前标记通过。证据见 Claude JSON 的 C3。
+- [x] **M1B-FIX-05 离线回归** `TestInstallClaudeModelSwitchRefreshesNextPrompt` 使用真实安装生成的 argv 运行 CLI 入口，验证观察事件同步完成且返回中性 `{}`、下一提示用新模型补发、后续去重、trust 移除最后一个依赖后删除观察订阅。`TestInstallClaudeModelObserverFollowsRuleRequirements` 覆盖 system/tool 模板、模型条件及无依赖对照。修复前缺订阅用例失败；修复后双 module test/vet、app 定向 race、gofmt/diff 通过。此项不替代真实 C3。
 - [?] **CLAUDE-04/C4** 隐式 Skill 和显式 `/code-review` 各触发一次并共享去重。
 - [?] **CLAUDE-05/C5** PreToolUse warn 的用户提示和模型上下文均符合实际能力。
 - [?] **CLAUDE-06/C6** force push 被拒；prompt block 不携带原始 prompt。

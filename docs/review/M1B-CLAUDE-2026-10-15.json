@@ -98,6 +98,33 @@
     "session_info_outputs_in_interval": 1,
     "reproduction": "In the same real Claude session, run /compact. Send two separate prompts asking only to quote the latest Current session context without tools. Confirm a single SessionStart output after compact, matching both reported strings, followed by two prompt dedup entries. Verify the compact epoch and its seen marker; quoting twice alone is not proof of reinjection."
   },
+  "C3": {
+    "status": "failed-awaiting-real-retest",
+    "session_id": "f0796ff3-ecf1-44d1-a653-6ef0f3bc20c2",
+    "selected_model_ui_label": "Haiku 5.5",
+    "reported_context_after_switch_twice": "Current session: model claude-sonnet-5-5, effort high.",
+    "user_screenshot_observation": "The UI reports Set model to Haiku 5.5. Both subsequent answers still quote Sonnet; the first explicitly reports no new Current session injection.",
+    "state_after_failed_run": {"model": "claude-sonnet-5-5", "effort": "high", "harness_version": "2.1.300"},
+    "following_prompt_stats": [
+      {"at": "2026-10-15T12:30:44.431366Z", "event": "UserPromptSubmit", "entry": "terse-reviewer/session-info@prompt.submitted", "result": "dedup"},
+      {"at": "2026-10-15T12:31:02.377394Z", "event": "UserPromptSubmit", "entry": "terse-reviewer/session-info@prompt.submitted", "result": "dedup"}
+    ],
+    "stale_body_sha256": "sha256:12dea1a5e098958bb50b9e9cd6f3a11efe58f88f7ecbf17333c2524796fa4e42",
+    "cause": "hooksForProvider generated only injection-point subscriptions. It omitted the PostModelSwitch observer required whenever compiled entries need model, so the runtime never received the event that updates the persisted model.",
+    "implementation_fix": {
+      "id": "M1B-FIX-05",
+      "status": "completed-offline",
+      "change": "Subscribe to PostModelSwitch only when a Claude entry needs model. Await its state write, preserving neutral observer output. Removing the final model dependency removes the subscription during normal trust/recompile.",
+      "source": "internal/app/install.go hooksForProvider",
+      "tests": "internal/app/claude_model_switch_test.go",
+      "before_fix": "The installed observer regression and the system-template, tool-template and model-condition cases failed; static-only and unrelated-tool cases passed.",
+      "validation": ["Isolated go test -count=1 ./internal/app -run '^TestInstallClaudeModel' -v", "GOPROXY=off GOSUMDB=off make test-go", "GOPROXY=off GOSUMDB=off make vet-go", "Isolated go test -race -count=1 ./internal/app -run 'TestInstallClaudeModel|TestTrustRebuildsClaudeSurface'", "gofmt and git diff --check"],
+      "coverage": "Install-generated argv through the actual CLI entry, startup model, neutral switch output, next-prompt refresh, subsequent dedup, synchronous observer, conditional subscription and removal after trust.",
+      "built_cli_smoke": {"root": "/var/folders/m5/gv7_10k149l3j4l02mt548zr0000gp/T/style-fix05-cli-piidsus7", "binary": "/tmp/style-cli-m1b-fix05", "isolation": "Temporary HOME, STYLE_HOME, CODEX_HOME and CLAUDE_CONFIG_DIR; synthetic event payloads; no real model session.", "example_event_kinds": 6, "example_hook_count": 11, "observer_synchronous": true, "switch_refresh_and_dedup": "passed", "uninstall_no_config_residue": "passed"},
+      "real_configuration_modified_by_agent": false
+    },
+    "next_step": "User rebuilds the fixed binary and reinstalls the Claude route, starts a fresh session, confirms PostModelSwitch under /hooks, then switches to another available model and quotes context on two separate prompts. C3 remains failed until actual output and state match the new UI selection."
+  },
   "reproduction": "Run claude --version; read only STYLE hook command/args from $CLAUDE_CONFIG_DIR/settings.json (default $HOME/.claude); check each command with test -f and test -x. Compare the installation-bound home against the harness entries in $STYLE_HOME/style.lock.yaml. Avoid printing unrelated settings or credentials.",
   "pending": ["C3", "C4", "C5", "C6", "C7", "C8", "C9"]
 }

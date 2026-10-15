@@ -11,6 +11,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"slices"
 	"sort"
 	"strings"
 
@@ -794,7 +795,11 @@ func hooksForProvider(provider adapter.ProviderID, index compile.Index) []adapte
 		return nil
 	}
 	var hooks []adapter.HookSpec
+	observeModel := false
 	for event, entries := range index.Harnesses[string(provider)] {
+		for _, entry := range entries {
+			observeModel = observeModel || slices.Contains(entry.Needs, "model")
+		}
 		native := ""
 		switch event {
 		case plan.SessionStart:
@@ -860,6 +865,12 @@ func hooksForProvider(provider adapter.ProviderID, index compile.Index) []adapte
 			}
 			hooks = append(hooks, adapter.HookSpec{NativeEvent: native, Matcher: matcher, Points: []string{event}})
 		}
+	}
+	if observeModel {
+		// The switch itself only updates session state. Model-dependent rules
+		// use that state when their next evaluation point runs, so wait for the
+		// write instead of racing the next prompt with an async observer.
+		hooks = append(hooks, adapter.HookSpec{NativeEvent: "PostModelSwitch", Points: []string{"model.changed"}, Extra: map[string]any{"blocking": true}})
 	}
 	return claude.Surface(hooks)
 }

@@ -476,7 +476,7 @@ Codex 用 `shell -lc` 跑 hook 命令，登录 shell 会读用户的 profile：�
 | PostToolUse | 有 `tool.post` 条目 | 同上 | `tool.post` |
 | PostToolUseFailure | 有 `tool.error` 条目 | 同上 | `tool.error` |
 | SubagentStart | 有 `subagent.start` 条目 | 不写 | `subagent.start` |
-| PostModelSwitch | 有条目的 `needs` 含 `model`（v2.1.251 起【文档】） | 不写 | 无，只更新状态 |
+| PostModelSwitch | 有条目的 `needs` 含 `model`（v2.1.251 起【文档】） | 不写 | 无，只同步更新状态；等写入完成再处理下一条提示 |
 
 订阅面变了就重写 `settings.json` 里 STYLE 的条目。运行中的会话会不会马上生效没核实（U-C2），报告先写"新会话生效"。
 

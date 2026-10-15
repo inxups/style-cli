@@ -68,7 +68,7 @@
 
 - [x] **M1a 离线验收**：STYLE 验收项 A1–A22 与 adapter conformance 解析、往返、安装、报告、输出白名单均有可重复证据；真实二进制 hook 入口与三条生成命令通过，A20 进程 p95 为 Codex 22.852ms / Claude Code 22.97575ms。证据：`docs/STYLE-M1-TESTS.md`、`internal/adapter/conformance/`、`docs/review/M1-A20-2026-10-15.json`。真实环境投递与 harness 耗时属于 M1b。
 - [~] **M1b Codex 真实环境**：用户已配置 codex-plugin；B5 真实工具拦截/放行、B6 新增 TODO 警告与删除不误报通过，B2 的 gpt-6-sol/low 注入与去重已有部分证据，其余场景待验证。用户与工作对话的模型读数分开记录，证据见 `docs/review/M1B-CODEX-2026-10-15.json`。真实配置仍由用户手动执行。
-- [~] **M1b Claude Code 真实环境**：Claude Code 2.1.300/claude-user 的旧临时路径阻塞已由用户重新安装解除。C1 真实 SessionStart 上下文投递、claude-sonnet-5-5/high 在首次工具后下一条提示补发通过；C2 compact 后补发一次、后续两条提示去重通过。启动时 effort unknown 的边界已记录。C3–C9 待验收，配置仍由用户执行。证据见 `docs/review/M1B-CLAUDE-2026-10-15.json`。
+- [~] **M1b Claude Code 真实环境**：Claude Code 2.1.300/claude-user 的旧临时路径阻塞已解除。C1 新会话投递/工具后 high 补发、C2 compact 后单次补发/去重通过。C3 真实 model switch 发现漏订阅 PostModelSwitch，M1B-FIX-05 已完成代码修复和离线验证，待用户重装后复测；C4–C9 待验收。启动 effort unknown 的边界已记录，配置仍由用户执行。证据见 `docs/review/M1B-CLAUDE-2026-10-15.json`。
 
 ## 回顾跟进项（2026-10-13 起）
 
@@ -121,3 +121,5 @@ T20–T24 与 T30–T34 回顾结论和剩余范围见 `docs/STYLE-M1-REVIEW-202
 - [x] **M1B-FIX-03 未知 effort 残留旧档位**：回顾发现 harness 先报已知档位、后报映射表外的原值时，`core/state` 只更新 raw，旧档位继续满足 `when.thinking_effort` 并渲染进模板，违反规范 §4.2 第 6 条。现在带 raw 的更新视为一次完整读数，同时写入档位（可为空）和近似标记；没有 effort 读数的事件仍不覆盖状态。证据：`core/state/state_test.go:TestReportedUnknownEffortClearsPreviousTier`、`internal/adapter/claude/runtime_test.go:TestUnknownEventEffortClearsPersistedTier`，两者修复前均失败；双 module 全量测试/vet 与 state/Claude/runtime race 通过。
 
 - [x] **M1B-FIX-04 Claude 已解析后不再读 CLAUDE_EFFORT**：回顾发现 Claude adapter 在会话标记 `effort_resolved` 后，事件不带 `effort.level` 时直接跳过环境变量，与规范 §6 的“事件 → `$CLAUDE_EFFORT` → 状态”不符；中途改强度要等下一次带 `effort.level` 的工具事件才生效，§3.7 的动态 system 补发延后。现在 Claude 每个事件按该顺序解析，Codex 每会话一次的配置解析不变。证据：`internal/adapter/claude/runtime_test.go:TestResolvedSessionStillReadsClaudeEffortEnvironment`（修复前失败）；PostModelSwitch 用例改为固定空环境并断言 effort 保持原值。双 module 全量测试/vet 与 Claude/runtime/conformance race 通过。真实 hook 进程是否都有 `CLAUDE_EFFORT` 仍属 U-C1/C1。
+
+- [x] **M1B-FIX-05 Claude model switch 漏订阅**：C3 真机切到 Haiku 后仍注入 Sonnet，定位安装订阅遗漏。`hooksForProvider` 现按编译条目的 model 依赖添加 PostModelSwitch，等待状态写入且不注入，最后一个依赖移除时正常清理。回归通过真实安装产生的 argv 验证 CLI 入口、切换后下一提示补发与再去重，另覆盖模板/条件依赖及无关规则。双 module 全量测试/vet、定向 race、gofmt/diff 通过；真实 C3 待用户重装后复测。
