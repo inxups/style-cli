@@ -46,7 +46,7 @@ func Load(reader io.Reader, store *state.Store) (*Engine, error) {
 	if err := decoder.Decode(new(any)); err != io.EOF {
 		return nil, fmt.Errorf("engine: trailing index data")
 	}
-	return New(index, store)
+	return newValidated(index, store)
 }
 
 // New validates an in-memory index through its canonical JSON representation
@@ -61,6 +61,15 @@ func New(index compile.Index, store *state.Store) (*Engine, error) {
 	}
 	if err := schema.ValidateIndex(data); err != nil {
 		return nil, err
+	}
+	return newValidated(index, store)
+}
+
+// Both public constructors validate their input before building matchers. Load
+// already checked the original JSON, so it need not encode and validate it again.
+func newValidated(index compile.Index, store *state.Store) (*Engine, error) {
+	if store == nil {
+		return nil, fmt.Errorf("engine: state store is required")
 	}
 	engine := &Engine{index: index, store: store, entries: make(map[string]map[string][]compiledEntry)}
 	for harness, events := range index.Harnesses {

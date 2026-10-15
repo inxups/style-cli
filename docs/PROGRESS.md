@@ -720,3 +720,12 @@
 - 原样 103 条 completion 入库 `docs/review/M1B-CLAUDE-C9-HOOKS-2026-10-15.txt`；样本、完整 50 次调用/结果、源摘要、重叠和诊断摘要入库 `docs/review/M1B-CLAUDE-C9-TIMING-2026-10-15.json`。未提交完整 debug/会话内容。新增只读 `testdata/manual/measure_claude_hooks.py`，退出 0 仅表示生成 JSON，`status` 才表达采样判定。
 - 验证：`PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s testdata/manual -p 'test_measure_claude_hooks.py' -v` 六项通过；语法编译输出在 `/tmp`；对留存 excerpt 精确复算 103 条及 p95、JSON/status/摘要/引用检查、与真实 transcript 的 50 组调用结果逐项比较及 `git diff --check` 通过。任务、矩阵、手册和既有 review 已确认 resume 完成、性能未通过。本项无 Go/真实配置修改。
 - 下一步先查明真实 command-hook 计时边界与 PreToolUse 开销，再选择优化；不直接删除持久化安全语义、不放宽阈值，不将 Codex U5 的 matcher 设计回退套用到 Claude。若需设计变更，按设计 §14.3/§15.1 评审；Claude M1b 和 M1 仍未完成。
+
+### 2026-10-15 — M1B-PERF-01A `[x]`；真实 C9 仍待复测
+
+- 只读检查已安装 Claude 2.1.300 的 command-hook runner，确认计时包含输入准备和命令执行等待、在响应 JSON 校验前结束，当前 args 配置直接 spawn executable/argv。产物摘要和字节定位留在证据 JSON；没有保存完整第三方代码或无关会话数据。原 103 次没有独立进程起止计时，Pre/Post 额外差值仍不能归因。
+- 在临时归档源码副本加阶段计时，使用复制的真实两包 index 和合成输入。主路径中状态更新中位数约 11.9ms、engine.Load 约 5.25ms，其中 New 约 1.56ms；阶段数据受插桩影响，仅供定位。未移除 fsync 或改变生命周期/去重。
+- 确认 `engine.Load` 原始 JSON 校验后调用 New，再重编码并校验一次；现直接调用私有已校验构建器。New 仍独立校验，两个入口均保留 matcher 编译和 reevaluation 约束。`TestIndexConstructorsKeepValidation` 在基线及修复后均通过，保护 schema、非法正则、reevaluation 和 nil store；既有 wire 错误测试继续通过。
+- `BenchmarkLoadIndex` 使用相同入库 golden，三轮中位数约 1.584→0.843ms，分配次数约 26256→13333。前后独立构建，用相同两包 index、各自临时状态、Pre/Post 各 100 次，交错并轮换先后次序，完整进程 p95 从 24.445667/24.338291→22.8505/22.924167ms；400 次全部返回中性 JSON，首次慢启动仍保留。此为离线诊断，不替代真实 C9。
+- 验证：清理 CODEX_HOME/CODEX_SANDBOX，临时 Go 缓存和 GOPROXY=off/GOSUMDB=off；双 module `make test-go`、`make vet-go`，`go test -race -count=1 ./core/engine ./internal/runtime` 通过。完整进程样本、基准、摘要、阶段数据和复现入口入库 `docs/review/M1B-PERF-01A-2026-10-15.json`；任务、测试、手册、Claude JSON 与既有 review 同步确认离线优化完成。
+- 真实二进制和配置均未代改。用户重建固定程序后，用独立 debug 日志重新采集；M1B-PERF-01 仍为 `[!]`，CLAUDE-09/C9 仍为 `[~]`，不以小幅离线改善宣称 53ms 问题已解决。

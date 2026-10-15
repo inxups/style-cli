@@ -70,6 +70,7 @@
 - [~] **M1b Codex 真实环境**：用户已配置 codex-plugin；B5 真实工具拦截/放行、B6 新增 TODO 警告与删除不误报通过，B2 的 gpt-6-sol/low 注入与去重已有部分证据，其余场景待验证。用户与工作对话的模型读数分开记录，证据见 `docs/review/M1B-CODEX-2026-10-15.json`。真实配置仍由用户手动执行。
 - [~] **M1b Claude Code 真实环境**：Claude Code 2.1.300/claude-user 的 C1–C8 和 C9 resume 去重分支已真实通过；启动 model/effort unknown 的边界保留。C9 性能未通过：103 条实际 command-hook 计时整体 p95=53ms，PreToolUse=53ms、PostToolUse=29ms，目标严格小于 50ms；记为 M1B-PERF-01。实际 50 次 Bash 均成功，其中一组两次调用重叠，未宣称全串行。配置仍由用户执行。证据见 `docs/review/M1B-CLAUDE-2026-10-15.json` 及 C9 timing/excerpt。
 - [!] **M1B-PERF-01 Claude C9 性能**：完整样本超预算，不能用删除慢样本或 A20/隔离进程结果关闭。先定位真实 command-hook 计时边界与 PreToolUse 开销，再选择优化；若涉及设计变更，按设计 §14.3/§15.1 评审。U5 的固定订阅 matcher 回退针对 Codex，不能直接套用到已按规则生成 matcher 的 Claude。证据：`docs/review/M1B-CLAUDE-C9-TIMING-2026-10-15.json`；M1 未完成。
+- [x] **M1B-PERF-01A index 加载优化**：`engine.Load` 对原始 JSON 校验后直接构建 matcher，省去原先经 `New` 重编码和再次校验；两个公开入口仍校验 schema、条件与 reevaluation。固定 golden 加载基准三轮中位数约 1.584→0.843ms；同一两包 index 的交错进程诊断，Pre/Post p95 从 24.446/24.338→22.851/22.924ms，全部 400 次成功且保留所有样本。双 module test/vet、engine/runtime race 通过。证据：`core/engine/load_test.go`、`docs/review/M1B-PERF-01A-2026-10-15.json`。这是已完成的离线优化，真实 C9 未复测，M1B-PERF-01 仍未关闭。
 
 ## 回顾跟进项（2026-10-13 起）
 

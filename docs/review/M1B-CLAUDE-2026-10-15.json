@@ -564,7 +564,17 @@
       "next_step": "Keep C9 incomplete. Determine what the real command-hook timer includes and locate the PreToolUse overhead before choosing an optimization or requesting a design change. Do not relax the 50ms limit or apply the Codex U5 matcher fallback to Claude without evidence."
     },
     "real_configuration_modified_by_agent": false,
-    "reproduction": "Follow manual section 5.2: retain pre-resume state/stats/seen; user launches the same session with --resume and --debug hooks --debug-file; quote current context without tools and correlate neutral resume output with dedup-only stats. Then request 50 separate sequential Bash marker calls, verify actual call/result IDs and overlap from timestamped transcript rows, and run measure_claude_hooks.py on the full debug log or retained completion excerpt. Require p95 <50ms and inspect JSON status; parser exit 0 is not acceptance."
+    "reproduction": "Follow manual section 5.2: retain pre-resume state/stats/seen; user launches the same session with --resume and --debug hooks --debug-file; quote current context without tools and correlate neutral resume output with dedup-only stats. Then request 50 separate sequential Bash marker calls, verify actual call/result IDs and overlap from timestamped transcript rows, and run measure_claude_hooks.py on the full debug log or retained completion excerpt. Require p95 <50ms and inspect JSON status; parser exit 0 is not acceptance.",
+    "offline_optimization": {
+      "id": "M1B-PERF-01A",
+      "status": "completed-offline-real-retest-pending",
+      "evidence": "docs/review/M1B-PERF-01A-2026-10-15.json",
+      "change": "Load validates raw index once before building matchers; New retains independent validation; persistence and subscriptions unchanged",
+      "real_harness_retested": false,
+      "real_configuration_modified_by_agent": false,
+      "installed_binary_modified_by_agent": false,
+      "next": "User rebuilds fixed binary, resumes with a fresh debug log and repeats the real 50-call sampling protocol; preserve original failed samples."
+    }
   },
   "pending": ["C9"]
 }

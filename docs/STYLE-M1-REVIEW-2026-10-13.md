@@ -524,3 +524,11 @@ M1B-FIX-02 复核：使用临时 Go 缓存、清理 CODEX 环境构建 `go build
 原样 completion 片段、103 条样本和全部 50 次调用/结果已入库；`measure_claude_hooks.py` 可独立复算，六项回归检查分位数、阈值相等、慢样本保留、外部记录过滤、hook 错误、格式变化及空日志。脚本生成成功不等于性能通过。临时副本的合成输入进程诊断两组各 100 次，Pre/Post p95 均约 24.1ms；环境、输入和计时边界与真实 harness 不同，不能相减得出原因，也不能替代 C9。
 
 下一步先定位 Claude command-hook 计时边界和 PreToolUse 额外开销，再决定优化；没有证据时不直接删状态持久化、降低安全语义，或套用 Codex U5 的 matcher 回退。C9 整体、Claude M1b 和 M1 均未完成。本项无 Go/真实配置修改，证据和复现见 Claude JSON 的 C9、C9 timing/excerpt 及手册 §5.2。
+
+## C9 加载优化完成确认（2026-10-15）
+
+- [x] **M1B-PERF-01A**：移除 `engine.Load` 经 `New` 重编码、再次 schema 校验的重复路径。原始 JSON 仍完整校验、严格解码，两个公开构造入口共用条件/reevaluation 检查和 matcher 构建；状态写入、fsync、事件订阅和规则语义保持原有保障。
+- 固定 golden 的三轮加载基准中位数 1.584→0.843ms，分配次数约 26256→13333；同一两包 index、各自临时状态、100 轮交错进程诊断的 Pre/Post p95 为 24.446/24.338→22.851/22.924ms。没有剔除首次启动的慢样本。双 module test/vet、engine/runtime race 及两构造入口负向回归通过。
+- 只读核对当前 Claude 2.1.300 安装产物：command-hook 计时从准备输入前开始，到命令 runner 返回结束，后续才校验响应；当前带 args 的配置走直接 executable/argv 分支。原 103 次没有独立的进程入口/出口时间，仍无法把 Pre/Post 差值归因于某一阶段。临时源码副本的阶段计时显示状态写入是主要内部成本，未据此削减持久化。
+
+证据和重现方式见 `review/M1B-PERF-01A-2026-10-15.json`，固定基准入口为 `core/engine/load_test.go`。本次只确认离线优化完成；用户重建固定程序并采集新的真实日志后，才能重新判断 **M1B-PERF-01 / C9**。原失败结果保留，M1 未完成；没有代改用户真实配置或程序。

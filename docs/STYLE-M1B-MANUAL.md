@@ -196,6 +196,8 @@ python3 testdata/manual/measure_claude_hooks.py /path/to/hooks.log \
 
 2026-10-15 首轮结果：50 次 Bash 全成功、0 hook 错误，实际 49 个 assistant message，其中一个含两次重叠调用，故不宣称全串行。103 条完整样本整体 p95=53ms，PreToolUse=53ms、PostToolUse=29ms；C9 性能未通过。排除重叠区间的单独敏感性分析仍超预算，不能据此替换完整结果。原样 completion 片段与全部调用元数据见 `review/M1B-CLAUDE-C9-HOOKS-2026-10-15.txt`、`review/M1B-CLAUDE-C9-TIMING-2026-10-15.json`；对前者运行相同脚本可复算。不放宽阈值，先定位计时边界和 PreToolUse 开销；本次没有修改真实配置或 Go 实现。
 
+随后 M1B-PERF-01A 已去掉 index 加载的重复编码/校验，保留完整 schema/语义校验及状态持久化。离线进程诊断改善约 1.5ms，不能证明真实 PreToolUse 的额外开销已消除。用户需按第 1 节重建固定二进制；订阅和规则没变，无需重新安装。恢复原会话时给 `--debug-file` 一个新的文件路径，再重复本节 50 次调用并检查实际重叠情况；新日志单独统计、保留全部匹配样本，目标仍为 p95 <50ms。原 103 条失败证据保留，不能混入新采样后计算一个通过结果。
+
 ## 6. Codex 插件路线与手动注册
 
 在用户级路线的投递、卸载往返检查完成后进行 B10。先关闭 Codex 会话，再让 STYLE 切换配置：
