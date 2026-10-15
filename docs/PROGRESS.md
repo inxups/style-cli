@@ -674,3 +674,10 @@
 - 会话 96e825f7-1e9b-47c8-8a78-8df723880184：13:17:33.310757Z 隐式 Skill 的 tool.post 输出 review-skill；13:17:43.664941Z 显式入口 dedup。会话 89525649-b059-42dd-982e-9e41dd4930dc：13:20:38.846619Z 显式入口输出；13:20:47.965266Z 隐式 Skill 的 tool.post dedup。各 session 一次 output、一次 dedup，共用 rule/body seen 标记。
 - 两个入口首次投递时用户均回传 findings 上限原文，含来源 LF 的 SHA256 与实际 stats 一致。第二个会话后续再次复述该文字属于已有上下文，实际日志没有重复注入。验收限默认 after、前台项目 skill；before 仅离线覆盖，fork 不扩大宣称。
 - Claude JSON 保留原失败并新增两种顺序的真实复测；任务、矩阵、手册和 review 同步完成。无 Go/配置变更，核验实际 stats/seen、工具 metadata/cwd、正文摘要、JSON、文档 shell 语法和 diff；C5–C9 待验收，M1 未完成。
+
+### 2026-10-15 — CLAUDE-05/C5 `[x]`
+
+- 用户回传 Bash 的 STYLE_M1B_WARN 输出、工具提示 M1B_WARN_USER 和模型引用 M1B_WARN_MODEL，最初称“没有警告”。进一步确认提示实际在 Claude 工具 UI 内容中可见，满足 c5 的用户可见要求，不要求特定警告样式。
+- 真实会话 1a0e173f-74cd-4b3d-90c9-040d2cc304c7 的 Bash tool_use 为 13:26:31.689Z；warn-shell 的 PreToolUse output 为 13:26:31.741237Z；正常工具结果为 13:26:32.451Z。模型正文无末尾 LF 的 SHA256 与 stats 一致，独立模型标记未出现在测试提示中。
+- 模型报告在工具结果后收到警告，不能据此确定内部接收时机；实际 PreToolUse 评估先于工具结果。本项只验收 Claude PreToolUse 的用户提示与模型投递，不扩展到其他事件，也不混入本工作 Codex 会话的同名探针输出。
+- Claude JSON、任务、测试、手册和既有 review 同步确认通过。无 Go/真实配置变更；提交前核对实际工具 metadata/stats、正文摘要、JSON、文档状态与 diff。C6–C9 继续待验收，M1 未完成。

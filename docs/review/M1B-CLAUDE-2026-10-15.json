@@ -222,5 +222,42 @@
     "next_step": "Continue independent C5-C9 acceptance; the initial failed attempt remains as regression history."
   },
   "reproduction": "Run claude --version; read only STYLE hook command/args from $CLAUDE_CONFIG_DIR/settings.json (default $HOME/.claude); check each command with test -f and test -x. Compare the installation-bound home against the harness entries in $STYLE_HOME/style.lock.yaml. Avoid printing unrelated settings or credentials.",
-  "pending": ["C5", "C6", "C7", "C8", "C9"]
+  "C5": {
+    "status": "passed",
+    "session_id": "1a0e173f-74cd-4b3d-90c9-040d2cc304c7",
+    "cwd": "/Users/inxups/.style-m1b/manual-workspace/claude-c4",
+    "route": "claude-user",
+    "fixture": "testdata/manual/m1b-probes/STYLE.yaml:warn-shell",
+    "tool_call": {
+      "at": "2026-10-15T13:26:31.689Z",
+      "name": "Bash",
+      "tool_use_id": "toolu_014RMo35Wf46qAFTTmTp5y9U",
+      "input": {"command": "printf 'STYLE_M1B_WARN\\n'", "description": "Print marker string"}
+    },
+    "stat": {
+      "at": "2026-10-15T13:26:31.741237Z",
+      "provider": "claude-code",
+      "event": "PreToolUse",
+      "point": "tool.pre",
+      "entry": "m1b-probes/warn-shell@tool.pre",
+      "action": "warn",
+      "result": "output",
+      "est_tokens": 4,
+      "body_sha256": "sha256:d2d5ee8d01950ff23e4ae7a69879dcf0b1d254fe505da6aeeed8606335bc57be"
+    },
+    "tool_result": {"at": "2026-10-15T13:26:32.451Z", "content": "STYLE_M1B_WARN", "is_error": false},
+    "user_visible_line": "PreToolUse:Bash says: M1B_WARN_USER. This is the manual hook warning probe.",
+    "user_confirmation": "User clarified that this line is visible in the Claude UI tool content, after initially describing the run as having no warning.",
+    "model_quoted_body": "M1B_WARN_MODEL",
+    "body_has_trailing_lf": false,
+    "acceptance_basis": "The user confirmed the warning is visible in the tool UI, the model quoted the distinct model-only body absent from the test prompt, and the actual PreToolUse output stat matches its SHA256. The tool completed successfully.",
+    "limitations": [
+      "UI visibility is user-confirmed; no raw hook stdout or UI screenshot was captured for this run. No particular popup or warning style is required by c5.",
+      "The model reported receiving the context with the tool result. This does not establish when it became internally available. The recorded PreToolUse evaluation precedes the tool result, so this report is not evidence that the hook ran after the tool.",
+      "Only PreToolUse systemMessage visibility is accepted. Other events in U-C5 remain unverified. This real Claude session is separate from the working Codex session."
+    ],
+    "real_configuration_modified_by_agent": false,
+    "reproduction": "Install m1b-probes for claude-code/claude-user manually per manual section 5 and start a fresh Claude session. Ask it to use only Bash to run printf 'STYLE_M1B_WARN\\n', then quote the hook warning. Confirm M1B_WARN_USER in actual tool UI content and M1B_WARN_MODEL in the response; correlate the Bash tool id, PreToolUse output stat and exact model-body hash."
+  },
+  "pending": ["C6", "C7", "C8", "C9"]
 }

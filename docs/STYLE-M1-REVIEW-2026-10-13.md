@@ -485,3 +485,9 @@ M1B-FIX-02 复核：使用临时 Go 缓存、清理 CODEX 环境构建 `go build
 - [x] **CLAUDE-04/C4**：两个真实新会话均在验收目录、加载最小 fixture。隐式 Skill 首先调用时输出 findings 上限原文，随后显式入口 dedup；交换顺序后显式入口输出同一原文，随后实际 Skill 调用 dedup。每个 session 仅一次输出，使用同一 rule/body seen 标记；用户首次引用与正文摘要一致。
 
 证据、实际工具调用、时间及复现见 Claude JSON 的 `C4.real_retest`。反向顺序的第二次回答再次复述旧文字，但实际 hook 为 dedup，不构成重复注入。本项确认默认 after、前台项目 skill 和 session 去重，不扩展为 fork 或 before 的真实投递。无 Go/真实配置变更，C5–C9 待验收。
+
+## Claude C5 完成确认（2026-10-15）
+
+- [x] **CLAUDE-05/C5**：真实 Bash 调用执行成功，用户明确确认 M1B_WARN_USER 在工具 UI 内容中可见，模型引用未出现在测试提示中的 M1B_WARN_MODEL。实际 PreToolUse warn/output 的正文摘要一致，记录时间早于工具结果。
+
+证据、工具 ID、时间和复现见 Claude JSON 的 C5。用户最初称“没有警告”，澄清后确认工具内容中可见，符合 c5 的界面提示要求。模型称在结果后收到上下文，不能据此判定 hook 延后执行或确定模型内部接收时机；U-C5 仅关闭 PreToolUse 显示这一分支。无 Go/真实配置变更，C6–C9 待验收，M1 未完成。

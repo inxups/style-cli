@@ -133,6 +133,8 @@ fi
 
 并行验收必须确认 harness 实际并行派发了工具调用，串行执行不能算 C7 通过。第二包安装、sync、卸载时记录 Codex 是否重复要求信任。Claude 的动态订阅随规则变化，新增订阅后按实际 UI 重新加载或新开会话。
 
+C5 已真实通过：用户确认 `PreToolUse:Bash says: M1B_WARN_USER. This is the manual hook warning probe.` 在工具 UI 内容中可见，模型引用 `M1B_WARN_MODEL`，实际日志和正文摘要一致。提示不要求弹窗或特定警告样式；本次模型在工具结果后复述，不能仅凭复述时机推断 hook 执行时间。本次只确认 PreToolUse，其他事件的用户提示仍需各自验证。
+
 以下检查使用 `terse-reviewer`，记录工具原始名称、输入及 hook 结果：
 
 - **B4/C4**：先确保两家原生环境已识别 `code-review` skill，再分别测试显式 `$code-review` / `/code-review` 与隐式读取；Codex 另测 cat/sed/head 读取真实 SKILL.md。比较同一会话的去重记录。STYLE 的 `target: skill` 只附加规则，不安装 skill。
