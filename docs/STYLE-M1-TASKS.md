@@ -68,7 +68,7 @@
 
 - [x] **M1a 离线验收**：STYLE 验收项 A1–A22 与 adapter conformance 解析、往返、安装、报告、输出白名单均有可重复证据；真实二进制 hook 入口与三条生成命令通过，A20 进程 p95 为 Codex 22.852ms / Claude Code 22.97575ms。证据：`docs/STYLE-M1-TESTS.md`、`internal/adapter/conformance/`、`docs/review/M1-A20-2026-10-15.json`。真实环境投递与 harness 耗时属于 M1b。
 - [~] **M1b Codex 真实环境**：用户已配置 codex-plugin；B5 真实工具拦截/放行、B6 新增 TODO 警告与删除不误报通过，B2 的 gpt-6-sol/low 注入与去重已有部分证据，其余场景待验证。用户与工作对话的模型读数分开记录，证据见 `docs/review/M1B-CODEX-2026-10-15.json`。真实配置仍由用户手动执行。
-- [~] **M1b Claude Code 真实环境**：Claude Code 2.1.300/claude-user 的旧临时路径阻塞已解除。C1 新会话投递/工具后 high 补发、C2 compact 后单次补发/去重通过。C3 真实 model switch 发现漏订阅 PostModelSwitch，M1B-FIX-05 已完成代码修复和离线验证，待用户重装后复测；C4–C9 待验收。启动 effort unknown 的边界已记录，配置仍由用户执行。证据见 `docs/review/M1B-CLAUDE-2026-10-15.json`。
+- [~] **M1b Claude Code 真实环境**：Claude Code 2.1.300/claude-user 的旧临时路径阻塞已解除。C1 新会话投递/工具后 high 补发、C2 compact 后单次补发/去重通过。C3 漏订阅经 M1B-FIX-05 修复，用户重装后 Opus、Sonnet 两次切换均补发新模型一次并持续去重，真实复测通过；C4–C9 待验收。启动 model/effort unknown 的边界已记录，配置仍由用户执行。证据见 `docs/review/M1B-CLAUDE-2026-10-15.json`。
 
 ## 回顾跟进项（2026-10-13 起）
 
@@ -122,4 +122,4 @@ T20–T24 与 T30–T34 回顾结论和剩余范围见 `docs/STYLE-M1-REVIEW-202
 
 - [x] **M1B-FIX-04 Claude 已解析后不再读 CLAUDE_EFFORT**：回顾发现 Claude adapter 在会话标记 `effort_resolved` 后，事件不带 `effort.level` 时直接跳过环境变量，与规范 §6 的“事件 → `$CLAUDE_EFFORT` → 状态”不符；中途改强度要等下一次带 `effort.level` 的工具事件才生效，§3.7 的动态 system 补发延后。现在 Claude 每个事件按该顺序解析，Codex 每会话一次的配置解析不变。证据：`internal/adapter/claude/runtime_test.go:TestResolvedSessionStillReadsClaudeEffortEnvironment`（修复前失败）；PostModelSwitch 用例改为固定空环境并断言 effort 保持原值。双 module 全量测试/vet 与 Claude/runtime/conformance race 通过。真实 hook 进程是否都有 `CLAUDE_EFFORT` 仍属 U-C1/C1。
 
-- [x] **M1B-FIX-05 Claude model switch 漏订阅**：C3 真机切到 Haiku 后仍注入 Sonnet，定位安装订阅遗漏。`hooksForProvider` 现按编译条目的 model 依赖添加 PostModelSwitch，等待状态写入且不注入，最后一个依赖移除时正常清理。回归通过真实安装产生的 argv 验证 CLI 入口、切换后下一提示补发与再去重，另覆盖模板/条件依赖及无关规则。双 module 全量测试/vet、定向 race、gofmt/diff 通过；真实 C3 待用户重装后复测。
+- [x] **M1B-FIX-05 Claude model switch 漏订阅**：C3 真机切到 Haiku 后仍注入 Sonnet，定位安装订阅遗漏。`hooksForProvider` 现按编译条目的 model 依赖添加 PostModelSwitch，等待状态写入且不注入，最后一个依赖移除时正常清理。回归通过真实安装产生的 argv 验证 CLI 入口、切换后下一提示补发与再去重，另覆盖模板/条件依赖及无关规则。双 module 全量测试/vet、定向 race、gofmt/diff 通过；用户重装后真实 C3 的 Opus、Sonnet 切换与去重复测通过。

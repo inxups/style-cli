@@ -646,3 +646,10 @@
 - 最终代码验证：隔离 Go 缓存、清理 CODEX_HOME/CODEX_SANDBOX、GOPROXY=off/GOSUMDB=off；定向 `go test -count=1 ./internal/app -run '^TestInstallClaudeModel' -v`、双 module `make test-go`/`make vet-go`、`go test -race -count=1 ./internal/app -run 'TestInstallClaudeModel|TestTrustRebuildsClaudeSurface'`、gofmt 和 diff 检查通过。
 - 另构建 `/tmp/style-cli-m1b-fix05`，在全临时 HOME/STYLE_HOME/CODEX_HOME/CLAUDE_CONFIG_DIR 安装真实示例包，确认 6 类事件/11 条 hook 和同步观察；实际二进制逐次处理合成 startup/switch/两条 prompt，补发新模型后去重，最终卸载无配置残留。此为隔离进程 smoke，不替代真实模型验收；结果记入 Claude JSON。
 - 任务、矩阵、设计/手册和 review 已确认实现修复完成；Claude JSON 保留 C3 失败证据。用户需重建固定二进制并重新安装，开新会话确认 PostModelSwitch 后复测；真实 C3 继续 `[!]`，M1 未完成。
+
+### 2026-10-15 — CLAUDE-03/C3 `[x]` 真实复测
+
+- 用户重装 M1B-FIX-05 后，实际 Claude 配置有 6 类事件/11 条 STYLE hook，PostModelSwitch 指向固定二进制且没有 async 标记，args 绑定 M1b 状态目录。未由 agent 修改真实配置。
+- 对应会话 fbc11e78-3715-4e9d-88bd-2c8699e0f07b 中，用户 Haiku→Opus 后 12:51:10.45976Z prompt 输出 Opus/unknown，12:51:57.128501Z prompt 去重；再切 Sonnet 后 12:52:06.55888Z prompt 输出 Sonnet/unknown，12:52:52.538231Z prompt 去重。每次新正文只输出一次，用户原样引用分别匹配含末尾 LF 的 SHA256，持久状态与 seen 标记一致。
+- 本次 SessionStart 模型和强度均不可用，初始正文为 unknown/unknown；切换后模型正确，强度仍不可用。C3 仅验收新模型单次补发，不增加强度或所有启动场景的通过声明。未采集原始 PostModelSwitch payload，实际配置、状态、输出摘要及模型回传共同构成证据。
+- Claude JSON 保留原失败并新增 real_retest；任务、矩阵、手册和 review 同步确认完成。无 Go 变更；验证真实 stats/state/seen、正文摘要、JSON、文档状态和 diff 检查。C4–C9 待验收，M1 未完成。

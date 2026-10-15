@@ -458,4 +458,10 @@ M1B-FIX-02 复核：使用临时 Go 缓存、清理 CODEX 环境构建 `go build
 - [x] **M1B-FIX-05 实现修复**：安装订阅只遍历 index 注入点，遗漏模型依赖的观察事件。现按条目 needs 添加 PostModelSwitch，并同步等待状态更新以免下一提示竞态；观察事件返回中性 JSON，不增加规则注入。没有 model 依赖时不安装，最后一个依赖移除后随 trust/recompile 清理。
 - [x] **M1B-FIX-05 验证**：新回归在修复前明确失败（观察事件缺失、三类模型依赖均缺订阅）；修复后真实安装 argv→CLI 入口→状态更新→下一提示新模型→后续去重通过，静态/无关工具及移除依赖的对照通过。双 module 全量 test/vet、app 定向 race、gofmt 和 diff 检查通过。
 
-证据、失败时间和复现步骤见 Claude JSON 的 C3；测试位于 `internal/app/claude_model_switch_test.go`。修复属于 CLI 的安装订阅推导，继续复用现有 agenthooks renderer/codec 与 Claude runtime，不重复实现 hook。真实配置未由 agent 修改，C3 不因离线测试通过而改为完成。
+证据、失败时间和复现步骤见 Claude JSON 的 C3；测试位于 `internal/app/claude_model_switch_test.go`。修复属于 CLI 的安装订阅推导，继续复用现有 agenthooks renderer/codec 与 Claude runtime，不重复实现 hook。真实配置未由 agent 修改；以上为修复时的失败记录，后续真实复测见下。
+
+## Claude C3 真实复测完成确认（2026-10-15）
+
+- [x] **CLAUDE-03/C3**：用户重装后实际配置含 6 类事件、11 条 STYLE hook，PostModelSwitch 为同步观察。Haiku→Opus、Opus→Sonnet 后，下一条提示分别输出新模型正文一次，后续提示各为 dedup；用户原样引用与真实 stats 摘要及 state 一致，两个正文的 seen 标记存在。
+
+证据及复现见 Claude JSON 的 `C3.real_retest`，原失败记录保留。本次初始 SessionStart 的 model/effort 均不可用，后续模型由切换刷新，effort 仍为 unknown；只确认 c3 的新模型单次补发，不扩大为所有启动或强度读数场景。本项无 Go/真实配置变更，C4–C9 继续独立验收。

@@ -99,7 +99,8 @@
     "reproduction": "In the same real Claude session, run /compact. Send two separate prompts asking only to quote the latest Current session context without tools. Confirm a single SessionStart output after compact, matching both reported strings, followed by two prompt dedup entries. Verify the compact epoch and its seen marker; quoting twice alone is not proof of reinjection."
   },
   "C3": {
-    "status": "failed-awaiting-real-retest",
+    "status": "passed",
+    "initial_run_status": "failed-before-M1B-FIX-05; original observations retained below",
     "session_id": "f0796ff3-ecf1-44d1-a653-6ef0f3bc20c2",
     "selected_model_ui_label": "Haiku 5.5",
     "reported_context_after_switch_twice": "Current session: model claude-sonnet-5-5, effort high.",
@@ -123,8 +124,40 @@
       "built_cli_smoke": {"root": "/var/folders/m5/gv7_10k149l3j4l02mt548zr0000gp/T/style-fix05-cli-piidsus7", "binary": "/tmp/style-cli-m1b-fix05", "isolation": "Temporary HOME, STYLE_HOME, CODEX_HOME and CLAUDE_CONFIG_DIR; synthetic event payloads; no real model session.", "example_event_kinds": 6, "example_hook_count": 11, "observer_synchronous": true, "switch_refresh_and_dedup": "passed", "uninstall_no_config_residue": "passed"},
       "real_configuration_modified_by_agent": false
     },
-    "next_step": "User rebuilds the fixed binary and reinstalls the Claude route, starts a fresh session, confirms PostModelSwitch under /hooks, then switches to another available model and quotes context on two separate prompts. C3 remains failed until actual output and state match the new UI selection."
+    "real_retest": {
+      "status": "passed",
+      "implementation_commit": "0247ef8",
+      "session_id": "fbc11e78-3715-4e9d-88bd-2c8699e0f07b",
+      "session_association": "Real Claude session matching the user's Haiku-to-Opus-to-Sonnet sequence and test times; no UI session ID supplied.",
+      "installed_event_hook_counts": {"PostModelSwitch": 1, "PostToolUse": 5, "PreToolUse": 2, "SessionStart": 1, "UserPromptExpansion": 1, "UserPromptSubmit": 1},
+      "observer": {"command": "/Users/inxups/.local/lib/style-m1b/style", "async_field_present": false, "style_home_arg": "--style-home=/Users/inxups/.style-m1b", "harness_home_arg": "--harness-home=/Users/inxups/.claude", "harness_version_arg": "--harness-version=2.1.300"},
+      "ui_sequence": ["Haiku 5.5", "Opus 5.5", "Sonnet 5.5"],
+      "opus": {
+        "reported_context": "Current session: model claude-opus-5-5, effort unknown.",
+        "body_sha256": "sha256:95c962ab8e237849677943fbec092364ae748d548ce34f291ee0a3881f8dc547",
+        "refresh": {"at": "2026-10-15T12:51:10.45976Z", "event": "UserPromptSubmit", "result": "output"},
+        "following_prompt": {"at": "2026-10-15T12:51:57.128501Z", "event": "UserPromptSubmit", "result": "dedup"},
+        "state_observed_before_sonnet_switch": {"model": "claude-opus-5-5", "effort_resolved": true, "harness_version": "2.1.300", "updated_at": "2026-10-15T12:51:10.446756Z"}
+      },
+      "sonnet": {
+        "reported_context_twice": ["Current session: model claude-sonnet-5-5, effort unknown.", "Current session: model claude-sonnet-5-5, effort unknown."],
+        "body_sha256": "sha256:1ead1f46a7a732fa9f7b37fd592f4f1923f49b390883269f45a1ec7b898c8028",
+        "refresh": {"at": "2026-10-15T12:52:06.55888Z", "event": "UserPromptSubmit", "result": "output"},
+        "following_prompt": {"at": "2026-10-15T12:52:52.538231Z", "event": "UserPromptSubmit", "result": "dedup"},
+        "final_state": {"model": "claude-sonnet-5-5", "effort_resolved": true, "harness_version": "2.1.300", "updated_at": "2026-10-15T12:52:52.52424Z"}
+      },
+      "entry": "terse-reviewer/session-info@prompt.submitted",
+      "scope": {"gen": 1, "epoch": 0, "prompt_count": 5},
+      "seen_markers": ["s.1.0.a052e97955b98cdd.95c962ab8e237849", "s.1.0.a052e97955b98cdd.1ead1f46a7a732fa"],
+      "observation_interval": ["2026-10-15T12:51:10.45976Z", "2026-10-15T12:52:52.538231Z"],
+      "session_info_outputs_in_interval": 2,
+      "acceptance_basis": "For each model switch, the next prompt outputs the new model body once and the following prompt deduplicates it. User quotations match both actual output hashes including the source trailing LF; persisted state agrees with each new selection.",
+      "limitations": ["The initial SessionStart body was model unknown/effort unknown. This run proves subsequent model refresh, not model availability at every startup.", "Effort remained unavailable and rendered unknown; this is not an additional effort-accuracy acceptance.", "No raw PostModelSwitch payload was captured. The installed observer, persisted model, actual prompt output hashes and user quotations corroborate end-to-end behavior."],
+      "real_configuration_modified_by_agent": false,
+      "reproduction": "After installing commit 0247ef8, restart Claude and verify one synchronous STYLE PostModelSwitch hook. Select a different available model with /model, ask for the latest Current session context, then repeat without switching. Compare the selected model and quoted text with persisted state, one prompt output and a subsequent dedup. Repeat with another model."
+    },
+    "next_step": "Continue independent C4-C9 acceptance; keep the original failed C3 observations as regression history."
   },
   "reproduction": "Run claude --version; read only STYLE hook command/args from $CLAUDE_CONFIG_DIR/settings.json (default $HOME/.claude); check each command with test -f and test -x. Compare the installation-bound home against the harness entries in $STYLE_HOME/style.lock.yaml. Avoid printing unrelated settings or credentials.",
-  "pending": ["C3", "C4", "C5", "C6", "C7", "C8", "C9"]
+  "pending": ["C4", "C5", "C6", "C7", "C8", "C9"]
 }
