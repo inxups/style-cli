@@ -471,3 +471,11 @@ M1B-FIX-02 复核：使用临时 Go 缓存、清理 CODEX 环境构建 `go build
 - [x] **CLAUDE-04-PREP**：用户没有或不确定是否有 code-review；新增最小原生 fixture 及独立工作目录的手动配置步骤。fixture 仅回传加载标记和 hook 指令，不预填 STYLE findings 数值，避免把 skill 自带文字误认为 hook 投递。手册规定两次新会话交换 Skill/显式入口顺序，分别确认首次输出和共享去重。
 
 验证限于 fixture 内容、临时目录复制/字节比较和手册 shell 语法；没有修改真实 Claude 配置或安装用户 skill。C4 真实加载、两个入口及共享去重仍为 `[?]`，不据准备完成标记验收通过。
+
+## Claude C4 问题与修复完成确认（2026-10-15）
+
+- [!] **CLAUDE-04/C4 真实验收**：用户确实调用 Skill(code-review)，但会话 cwd 是 home，fixture 在另一验收目录，实际执行 fork review。真实配置也漏了 Skill matcher：隐式调用没有 review-skill stats，显式 UserPromptExpansion 输出一次，尚不能证明模型可见或共享去重。
+- [x] **M1B-FIX-06 实现修复**：CLI 安装推导原来只处理原生名、canonical 和 MCP selector，忽略 Match.Skill；现按编译条目的实际工具评估点添加 Skill。继续复用 agenthooks matcher 渲染、skill 识别和 runtime 过滤。
+- [x] **M1B-FIX-06 验证**：真实安装 argv 回归的 before/after × 两种入口顺序四组在修复前均缺订阅而失败；修复后首次投递、跨入口去重及移除 skill 后保留 Bash 通过。双 module test/vet、app 定向 race 与真实二进制隔离安装/两种顺序/卸载通过。手册补启动目录校验和 fixture 标记检查。
+
+证据与复现见 Claude JSON 的 C4，回归位于 `internal/app/claude_skill_install_test.go`。本轮未改真实配置，C4 等待用户重装并在正确目录的新会话复测；不把 fork skill 的实际审查结果当成验收通过。

@@ -659,3 +659,11 @@
 - 用户表示没有或不确定原生 code-review 是否可用。新增 `testdata/manual/claude-skills/code-review/SKILL.md`，只报告 M1B_SKILL_LOADED 和实际 hook 附加指令，不包含规则的 findings 数值或实际 review 操作。
 - 手册新增独立验收工作目录的用户手动配置命令，不覆盖已有同名文件；规定新会话 A 先 Skill 工具再显式 /code-review，新会话 B 反向，分别验证首次投递和跨入口共享去重。已核对官方 skills 的项目位置、调用默认值和同名优先级；实际支持与加载由用户真实版本确认。
 - 验证 fixture 结构/无预填规则正文、临时目录复制与逐字节比较、手册 shell 语法和 diff；未修改真实配置或启动真实模型。review 已确认准备完成，C4 继续待真实验收。
+
+### 2026-10-15 — C4 `[!]`；M1B-FIX-06 `[x]`
+
+- 用户回传 Skill(code-review) 后运行 fork/background review，显式调用也审查 home 而没有 fixture 标记。只读核对 fixture 已正确复制；对应真实 transcript 的 cwd 全部为 `/Users/inxups`，不在验收目录。提取范围仅 cwd、相关 Skill 调用/结果，未使用无关 transcript 指令。
+- 另确认真实 PreToolUse/PostToolUse matcher 都没有 Skill。13:01:41.467Z 存在 Skill 工具调用，但观察区间没有隐式 review-skill 记录；13:01:51.794999Z 只有显式 UserPromptExpansion output，正文摘要匹配规则。故 C4 未通过，不以实际 review 的空 findings 作为证据。
+- 原因是 hooksForProvider 忽略 Match.Skill。补安装 argv 级回归：before/after × 隐式/显式先后顺序四组在修复前全失败；现按工具评估点添加 Skill，四组共享 session 去重通过，trust 移除 skill 后保留无关 Bash。复用现有 agenthooks codec/renderer/runtime，无真实配置写入。
+- 验证：清理 CODEX_HOME/CODEX_SANDBOX，临时 Go 缓存、GOPROXY=off/GOSUMDB=off；定向测试、双 module make test-go/make vet-go、定向 app race、gofmt/diff 通过。构建 `/tmp/style-cli-m1b-fix06` 在全临时配置根安装真实示例，确认 6 类事件/12 条 hook、Skill 的 PostToolUse matcher，两种入口顺序均首次 output 后 dedup，卸载无 settings.json/CLAUDE.md 残留。此为合成 payload 的进程验证，不替代真实 C4。
+- 任务、矩阵、手册、既有 review 与 Claude JSON 已记录实现修复和真实失败；手册增加启动目录校验、fixture 描述与标记检查。下一步由用户重建/重装，在正确目录的新会话先确认最小 skill 加载，再继续真实入口去重。M1 未完成。

@@ -158,6 +158,35 @@
     },
     "next_step": "Continue independent C4-C9 acceptance; keep the original failed C3 observations as regression history."
   },
+  "C4": {
+    "status": "failed-awaiting-real-retest",
+    "session_id": "8359eaae-f1ee-454f-bcf4-c363053d1330",
+    "session_association": "Actual transcript contains the reported Skill(code-review) invocation and matches the test time; only cwd and relevant tool metadata were extracted.",
+    "actual_cwd": "/Users/inxups",
+    "expected_cwd": "/Users/inxups/.style-m1b/manual-workspace/claude-c4",
+    "fixture_exists_and_matches_repository": true,
+    "fixture_path": "/Users/inxups/.style-m1b/manual-workspace/claude-c4/.claude/skills/code-review/SKILL.md",
+    "actual_skill_source": "Not established. The real Skill result reported forked background execution; it did not run the minimal acceptance fixture, and the user reported a real review of the home directory.",
+    "implicit_tool_call": {"at": "2026-10-15T13:01:41.467Z", "name": "Skill", "input": {"skill": "code-review"}, "tool_use_id": "toolu_011zSwzKrHpeRo3ey6E81Pri"},
+    "installed_matchers_before_fix": {"PreToolUse": ["^(Bash)$", "^(mcp__.*)$"], "PostToolUse": ["^(Bash)$", "^(Edit)$", "^(MultiEdit)$", "^(NotebookEdit)$", "^(Write)$"]},
+    "implicit_review_skill_stats_in_observation_interval": 0,
+    "explicit_stat": {"at": "2026-10-15T13:01:51.794999Z", "provider": "claude-code", "event": "UserPromptExpansion", "point": "skill.explicit", "entry": "terse-reviewer/review-skill@skill.explicit", "action": "inject", "result": "output", "body_sha256": "sha256:c4003a5174f1efe9f768680b170b78ae627450ea8c77e1eaacc7261df014769f"},
+    "observation_interval": ["2026-10-15T13:01:32.776276Z", "2026-10-15T13:02:01.066839Z"],
+    "acceptance_limitation": "The explicit output stat does not prove model-visible delivery or shared dedup. The implicit matcher was absent, and the minimal native skill was outside this session's cwd. C4 is not accepted.",
+    "implementation_fix": {
+      "id": "M1B-FIX-06",
+      "status": "completed-offline",
+      "cause": "hooksForProvider translated native, canonical and MCP selectors into tool matchers but ignored Match.Skill. A skill-only rule therefore installed the explicit hook while silently omitting its planned implicit tool hook.",
+      "change": "Add the native Skill matcher at the compiled tool evaluation point when Match.Skill is nonempty. Existing renderer/codec/runtime and runtime skill-name filtering remain responsible for execution.",
+      "test": "internal/app/claude_skill_install_test.go:TestInstallClaudeSkillSharesDedupAcrossEntrypoints",
+      "before_fix": "All four before/after x implicit/explicit-first installed-argv regressions failed with a missing matching Skill subscription.",
+      "coverage": "Real install-generated argv, before/after placements, both invocation orders, shared session dedup, and trust removing the skill subscription while retaining an unrelated Bash rule.",
+      "validation": ["Isolated go test -count=1 ./internal/app -run '^TestInstallClaude(Skill|Model)' -v", "GOPROXY=off GOSUMDB=off make test-go", "GOPROXY=off GOSUMDB=off make vet-go", "Isolated go test -race -count=1 ./internal/app -run '^TestInstallClaude(Skill|Model)'", "gofmt and git diff --check"],
+      "built_cli_smoke": {"binary": "/tmp/style-cli-m1b-fix06", "isolation": "Temporary HOME/STYLE_HOME/CODEX_HOME/CLAUDE_CONFIG_DIR; synthetic payloads, no real model session", "event_hook_counts": {"PostModelSwitch": 1, "PostToolUse": 6, "PreToolUse": 2, "SessionStart": 1, "UserPromptExpansion": 1, "UserPromptSubmit": 1}, "implicit_then_explicit": "output then dedup", "explicit_then_implicit": "output then dedup", "uninstall": "no settings.json or CLAUDE.md residue"},
+      "real_configuration_modified_by_agent": false
+    },
+    "next_step": "User rebuilds and reinstalls the fixed binary, then starts a new Claude session from the printed acceptance cwd. Confirm the STYLE M1b fixture description and M1B_SKILL_LOADED before testing the second entrypoint. Repeat with the reverse order in a fresh session."
+  },
   "reproduction": "Run claude --version; read only STYLE hook command/args from $CLAUDE_CONFIG_DIR/settings.json (default $HOME/.claude); check each command with test -f and test -x. Compare the installation-bound home against the harness entries in $STYLE_HOME/style.lock.yaml. Avoid printing unrelated settings or credentials.",
   "pending": ["C4", "C5", "C6", "C7", "C8", "C9"]
 }

@@ -26,14 +26,15 @@ rules:
 
 type claudeHookSettings struct {
 	Hooks map[string][]struct {
-		Hooks []struct {
+		Matcher string `json:"matcher"`
+		Hooks   []struct {
 			Args  []string `json:"args"`
 			Async bool     `json:"async"`
 		} `json:"hooks"`
 	} `json:"hooks"`
 }
 
-func installClaudeModelFixture(t *testing.T, manifest string) (*Service, string, string) {
+func installClaudeFixture(t *testing.T, manifest string) (*Service, string, string) {
 	t.Helper()
 	root := t.TempDir()
 	home, config := filepath.Join(root, "style"), filepath.Join(root, "claude")
@@ -69,7 +70,7 @@ func readClaudeHookSettings(t *testing.T, config string) claudeHookSettings {
 
 func TestInstallClaudeModelSwitchRefreshesNextPrompt(t *testing.T) {
 	t.Setenv("CLAUDE_EFFORT", "")
-	service, home, config := installClaudeModelFixture(t, modelObserverManifest)
+	service, home, config := installClaudeFixture(t, modelObserverManifest)
 	settings := readClaudeHookSettings(t, config)
 	invoke := func(event, payload string) string {
 		t.Helper()
@@ -128,7 +129,7 @@ func TestInstallClaudeModelObserverFollowsRuleRequirements(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			header, _, _ := strings.Cut(modelObserverManifest, "rules:\n")
 			manifest := header + "rules:\n" + test.rules
-			_, _, config := installClaudeModelFixture(t, manifest)
+			_, _, config := installClaudeFixture(t, manifest)
 			got := len(readClaudeHookSettings(t, config).Hooks["PostModelSwitch"]) != 0
 			if got != test.want {
 				t.Fatalf("model switch subscription = %v, want %v", got, test.want)

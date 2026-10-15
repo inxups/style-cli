@@ -849,6 +849,9 @@ func hooksForProvider(provider adapter.ProviderID, index compile.Index) []adapte
 				if len(entry.Match.MCP) > 0 {
 					matchers["mcp__.*"] = true
 				}
+				if len(entry.Match.Skill) > 0 {
+					matchers["Skill"] = true
+				}
 			}
 		} else {
 			matchers[""] = true
