@@ -104,6 +104,9 @@ func TestInstallWritesPackageLockIndexAndProviderRoute(t *testing.T) {
 	if err != nil || !strings.Contains(string(lock), "name: terse-reviewer") || !strings.Contains(string(lock), "route: codex-plugin") {
 		t.Fatalf("lock = %q, err=%v", lock, err)
 	}
+	if !strings.Contains(string(lock), "config_dir: "+configDir) {
+		t.Fatalf("lock does not retain the route configuration root %q: %s", configDir, lock)
+	}
 	second, err := service.Install(context.Background(), InstallRequest{
 		Source: filepath.Join(repositoryRoot(t), "example", "terse-reviewer"), Home: styleHome,
 		Harnesses: []string{"codex"}, Yes: true,

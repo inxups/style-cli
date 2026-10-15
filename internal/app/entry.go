@@ -62,6 +62,8 @@ func RunWithService(ctx context.Context, service *Service, workDir string, args 
 		return runPlan(ctx, service, workDir, args[1:], out, errOut)
 	case "install":
 		return runInstall(ctx, service, workDir, args[1:], out, errOut)
+	case "uninstall":
+		return runUninstall(ctx, service, args[1:], out, errOut)
 	default:
 		fmt.Fprintf(errOut, "style: unknown command %q\n", args[0])
 		printUsage(errOut)
@@ -74,4 +76,5 @@ func printUsage(out io.Writer) {
 	fmt.Fprintln(out, "style validate [path] [--json]")
 	fmt.Fprintln(out, "style plan <source> [--harness auto|codex,claude-code] [--assume-requests N] [--assume-triggers N] [--json]")
 	fmt.Fprintln(out, "style install <source> [--harness h] [--route h=r] [--set k=v] [--link] [--allow-replace] [--fail-closed h] [--yes] [--json]")
+	fmt.Fprintln(out, "style uninstall <name|--all> [--yes] [--json]")
 }

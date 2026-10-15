@@ -1,6 +1,6 @@
 # STYLE CLI 工作进度
 
-更新时间：2026-10-13
+更新时间：2026-10-15
 
 本文件采用追加式记录。每条记录包含日期、任务/测试编号、命令或依据、结果和下一步。
 
@@ -480,3 +480,12 @@
   - 示例 `STYLE_HOME=$(mktemp -d) ... go run ./cmd/style install example/terse-reviewer --yes --json` 返回 0，并写入 package、lock、index 和 Codex/Claude route 文件。
   - `GOPROXY=off GOSUMDB=off make test-go`、`make vet-go`、gofmt 和 `git diff --check` 通过。
 - 文档：任务清单 T52、测试矩阵 B1.25/A22 和 review 文档 T52 段落均已标记 `[x]`。T53–T55、A1/A12/A13/A18、adapter conformance 和 M1a/M1b 仍未完成。
+
+### 2026-10-15 — T53/B1.26 `[x]`
+
+- 实现：新增 `style uninstall <name|--all> --yes [--json]`。卸载从 lock 选择包，剩余包重新读取、plan/token/compile 并刷新 index、lock 和 provider route；卸载最后一个包时调用 route owner removal，并删除 STYLE lock/index/settings/本地包。link 包只移除 lock 和 STYLE 配置，不触碰源包。
+- 持久路线：lock 的 harness 项保存安装时 `config_dir`；卸载从该路径重绑路线。install 换路线时也对旧路线使用已检测到的 installation facts，避免走另一个配置根目录。
+- 配置往返：TOML managed region 不再把它自己的终止换行混入用户 suffix；无末尾换行的现有 TOML 会加一条生成的 separator 注释，卸载时一起移除。测试逐字节验证无换行、单换行、双换行外部内容。
+- 回归：`internal/app/uninstall_test.go` 覆盖单包卸载、确认、保留剩余包、`--all --json`、link 源保留、最后一包的外部 config 精确恢复和状态文件清理；`agenthooks/install/install_test.go` 覆盖 TOML 字节往返和其他 owner 区保留。
+- 验证（清理 `CODEX_HOME`/`CODEX_SANDBOX`，Go 缓存位于 `/tmp/style-cli-{gopath,gomodcache,gocache}`）：`go test -count=1 ./internal/app -run 'TestUninstall|TestRunUninstall'`、`go -C agenthooks test -count=1 ./install`、双 module `make test-go`/`make vet-go`、gofmt 和 `git diff --check` 通过。
+- 文档：任务清单 T53、测试矩阵 B1.26 和 review 文档 T53 段落标记 `[x]`；A13 仍 `[~]`，缺 install route switch 无残留的独立命令级回归。T54/T55、A1/A12/A13 补项/A18、adapter conformance 与 M1a/M1b 未完成。

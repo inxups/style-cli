@@ -778,12 +778,39 @@ func TestTOMLOwnerRegionsCanBeRemovedIndependently(t *testing.T) {
 	if !changed {
 		t.Fatal("expected STYLE marker region to be removed")
 	}
+	if !bytes.Equal(removed, existing) {
+		t.Fatalf("removing appended region changed external bytes:\n got %q\nwant %q", removed, existing)
+	}
 	if !bytes.Contains(removed, []byte("# keep this setting")) || !bytes.Contains(removed, []byte("event = \"Notification\"")) {
 		t.Errorf("removing STYLE region damaged other TOML content:\n%s", removed)
 	}
 	styleBegin, _ := tomlMarkers("style")
 	if bytes.Contains(removed, []byte(styleBegin)) {
 		t.Errorf("STYLE marker remains after removal:\n%s", removed)
+	}
+}
+
+func TestManagedTOMLRoundTripRestoresExternalBytes(t *testing.T) {
+	styleManifest := testManifest()
+	styleManifest.Owner = "style"
+	styleFS, err := Render(styleManifest, Target{Provider: agenthooks.ProviderCodex, Scope: ScopeUser, Dir: t.TempDir()})
+	if err != nil {
+		t.Fatal(err)
+	}
+	rendered := readRendered(t, styleFS, "config.toml")
+	for _, external := range [][]byte{
+		[]byte("# external"),
+		[]byte("# external\n"),
+		[]byte("# external\n\n"),
+	} {
+		merged := mergeManagedTOML(external, rendered)
+		removed, changed := removeManagedTOML(merged, "style")
+		if !changed {
+			t.Fatalf("expected owner region to be removed for %q", external)
+		}
+		if !bytes.Equal(removed, external) {
+			t.Errorf("round-trip changed external TOML:\n got %q\nwant %q", removed, external)
+		}
 	}
 }
 

@@ -143,6 +143,13 @@ type Route interface {
 	Status(context.Context, Installation) (RouteStatus, error)
 }
 
+// InstallationBinder returns a route bound to version/configuration facts
+// discovered at invocation time. Routes that do not need those facts can be
+// used directly from Definition.Routes.
+type InstallationBinder interface {
+	BindInstallation(Installation) Route
+}
+
 // TrustKind describes the confirmation mechanism a route requires.
 type TrustKind string
 

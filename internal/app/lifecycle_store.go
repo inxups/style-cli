@@ -47,6 +47,7 @@ type lockSource struct {
 type lockHarness struct {
 	Route      string `yaml:"route"`
 	Version    string `yaml:"version,omitempty"`
+	ConfigDir  string `yaml:"config_dir,omitempty"`
 	Surface    string `yaml:"surface,omitempty"`
 	Rendered   string `yaml:"rendered,omitempty"`
 	Trust      string `yaml:"trust,omitempty"`
@@ -226,6 +227,7 @@ type packageSwap struct {
 	backup     string
 	backupRoot string
 	staged     string
+	remove     bool
 	committed  bool
 	applied    bool
 }
@@ -289,6 +291,20 @@ func swapPackage(destination, staged string) *packageSwap {
 	return &packageSwap{target: destination, staged: staged}
 }
 
+func stagePackageRemoval(destination string) (*packageSwap, error) {
+	info, err := os.Lstat(destination)
+	if errors.Is(err, os.ErrNotExist) {
+		return nil, nil
+	}
+	if err != nil {
+		return nil, err
+	}
+	if info.Mode()&os.ModeSymlink != 0 || !info.IsDir() && !info.Mode().IsRegular() {
+		return nil, fmt.Errorf("refusing to remove non-package storage %s", destination)
+	}
+	return &packageSwap{target: destination, remove: true}, nil
+}
+
 func (swap *packageSwap) apply() error {
 	if swap == nil {
 		return nil
@@ -307,15 +323,17 @@ func (swap *packageSwap) apply() error {
 	}
 	swap.backupRoot = backupRoot
 	swap.backup = backup
-	if err := os.Rename(swap.staged, swap.target); err != nil {
-		if swap.backup != "" {
-			_ = os.Rename(swap.backup, swap.target)
+	if !swap.remove {
+		if err := os.Rename(swap.staged, swap.target); err != nil {
+			if swap.backup != "" {
+				_ = os.Rename(swap.backup, swap.target)
+			}
+			if swap.backupRoot != "" {
+				_ = os.RemoveAll(swap.backupRoot)
+			}
+			swap.backup, swap.backupRoot = "", ""
+			return err
 		}
-		if swap.backupRoot != "" {
-			_ = os.RemoveAll(swap.backupRoot)
-		}
-		swap.backup, swap.backupRoot = "", ""
-		return err
 	}
 	swap.applied = true
 	return nil
@@ -326,7 +344,9 @@ func (swap *packageSwap) commit() {
 		return
 	}
 	swap.committed = true
-	_ = os.RemoveAll(swap.backup)
+	if swap.backupRoot != "" {
+		_ = os.RemoveAll(swap.backupRoot)
+	}
 }
 
 func (swap *packageSwap) rollback() {

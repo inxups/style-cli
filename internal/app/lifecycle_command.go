@@ -163,3 +163,71 @@ func parseSetting(settings map[string]string, value string) error {
 	settings[strings.TrimSpace(name)] = setting
 	return nil
 }
+
+func runUninstall(ctx context.Context, service *Service, args []string, out, errOut io.Writer) int {
+	if isHelp(args) {
+		fmt.Fprintln(out, "style uninstall <name|--all> [--yes] [--json]")
+		return ExitOK
+	}
+	request, jsonOutput, err := parseUninstallArgs(args)
+	if err != nil {
+		fmt.Fprintf(errOut, "style uninstall: %v\n", err)
+		return ExitUsage
+	}
+	result, err := service.Uninstall(ctx, request)
+	if err != nil {
+		var usageErr *UsageError
+		if errors.As(err, &usageErr) {
+			fmt.Fprintf(errOut, "style uninstall: %v\n", err)
+			return ExitInvalid
+		}
+		fmt.Fprintf(errOut, "style uninstall: %v\n", err)
+		return ExitInvalid
+	}
+	if jsonOutput {
+		if err := encodeJSON(out, result); err != nil {
+			fmt.Fprintf(errOut, "style uninstall: encode report: %v\n", err)
+			return ExitInvalid
+		}
+		return ExitOK
+	}
+	for _, name := range result.Removed {
+		fmt.Fprintf(out, "uninstalled %s\n", name)
+	}
+	for _, route := range result.Routes {
+		fmt.Fprintf(out, "route updated: %s\n", route)
+	}
+	return ExitOK
+}
+
+func parseUninstallArgs(args []string) (UninstallRequest, bool, error) {
+	request := UninstallRequest{}
+	jsonOutput := false
+	for _, arg := range args {
+		switch arg {
+		case "--yes":
+			request.Yes = true
+		case "--all":
+			request.All = true
+		case "--json":
+			jsonOutput = true
+		case "--help", "-h":
+			return UninstallRequest{}, false, errors.New("usage: style uninstall <name|--all> [--yes] [--json]")
+		default:
+			if strings.HasPrefix(arg, "-") {
+				return UninstallRequest{}, false, fmt.Errorf("unknown option %q", arg)
+			}
+			if request.Name != "" {
+				return UninstallRequest{}, false, errors.New("only one package name is allowed")
+			}
+			request.Name = arg
+		}
+	}
+	if request.Name == "" && !request.All {
+		return UninstallRequest{}, false, errors.New("package name or --all is required")
+	}
+	if request.Name != "" && request.All {
+		return UninstallRequest{}, false, errors.New("package name cannot be combined with --all")
+	}
+	return request, jsonOutput, nil
+}

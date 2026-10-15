@@ -77,6 +77,7 @@ env -u CODEX_HOME -u CODEX_SANDBOX \
 ## M1a：STYLE 离线验收
 
 - [x] **B1.25 T52 `style install`**：`go test -count=1 ./internal/app -run 'TestInstall|TestRunInstall'` 覆盖 `--yes` 确认、settings 必填值和 0600 持久化、requires.runtime、replace/`--allow-replace` 边界、重复安装幂等、包/锁/index/适配器路线写入；`go test -count=1 -C agenthooks ./install` 覆盖多文件 changeset 的 stale 检查、原子写入和取消时回滚。示例包隔离 `STYLE_HOME` 的 `go run ./cmd/style install ... --yes --json` 返回 0。双 module `make test-go`、`make vet-go`、gofmt 和 `git diff --check` 通过。证据：`internal/app/install_test.go`、`agenthooks/install/install_test.go`、`docs/PROGRESS.md` T52/B1.25。
+- [x] **B1.26 T53 `style uninstall`**：`go test -count=1 ./internal/app -run 'TestUninstall|TestRunUninstall'` 覆盖确认门槛、单包卸载、部分卸载后保留剩余包并重编译 index/route、`--all --json`、link 源保留、最后一包移除和外部 Codex TOML 字节恢复；`go test -count=1 -C agenthooks ./install` 的 `TestManagedTOMLRoundTripRestoresExternalBytes` 覆盖已有文本以无换行、单换行和双换行结束时逐字节往返，且保留外部内容和其他 owner。双 module `make test-go`、`make vet-go`、gofmt 和 `git diff --check` 通过。证据：`internal/app/uninstall_test.go`、`agenthooks/install/install_test.go`、`docs/PROGRESS.md` T53/B1.26。
 
 ### 包格式和 validate
 
@@ -104,7 +105,7 @@ env -u CODEX_HOME -u CODEX_SANDBOX \
 ### 安装、信任和 token
 
 - [ ] **A12** 普通包改动由 sync 阻塞并由 trust 确认；link 包行为符合设计；trust 基于同一份内存字节。
-- [ ] **A13** install/uninstall 保留外部配置、重复安装幂等、换路线无残留。
+- [~] **A13** install 重复幂等、install/uninstall 外部配置保留和最后路由清理已有证据；install 换路线无残留仍需命令级回归，完成 T54/A13 补项后再标记 `[x]`。
 - [x] **A14** Codex 静态托管区位置正确；用户自定义 developer instructions 时降为动态；Claude `CLAUDE.md` 标记块正确增删，并保留外部 settings/用户字节。证据：`internal/adapter/codex/route_test.go`、`internal/adapter/claude/route_test.go`。
 - [x] **A16** core 不直接 import `adapter/codex` 或 `adapter/claude`。证据：`internal/adapter/boundary_test.go`。
 - [ ] **A18** token estimator 与 golden 一致；T001–T007 各有触发 fixture；T003 超限安装不产生变更。

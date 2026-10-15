@@ -69,6 +69,14 @@ type installAdapter struct {
 	status       adapter.RouteStatus
 }
 
+type installCompilation struct {
+	index        compile.Index
+	indexBytes   []byte
+	staticBodies []compile.StaticBody
+	reports      []PlanReport
+	diagnostics  []Diagnostic
+}
+
 // Install validates, plans, compiles, and applies one package as a single
 // recoverable transaction across package storage, state files, and provider
 // configuration changesets.
@@ -179,62 +187,13 @@ func (s *Service) Install(ctx context.Context, request InstallRequest) (InstallR
 	packages = append(packages, installPackage{lock: newLock, pkg: parsed, resolved: resolved, settings: settings,
 		report: make(map[adapter.ProviderID]plan.Report), tokens: make(map[adapter.ProviderID]tokens.Report)})
 
-	result := InstallResult{Package: name, Version: version, Link: request.Link, Replace: replace, Diagnostics: make([]Diagnostic, 0)}
-	compileInputs := make([]compile.PackageInput, 0, len(packages))
-	for _, item := range packages {
-		compileInputs = append(compileInputs, compile.PackageInput{Package: item.resolved, Sequence: item.lock.Seq,
-			Lock: packageLockHash(item.lock.Files), Link: item.lock.Link, Settings: item.settings})
-	}
-	allTokenReports := make(map[adapter.ProviderID][]tokens.Report)
-	for _, target := range adapters {
-		planner, err := adapter.BuildPlanAdapter(target.provider, target.definition.Facts)
-		if err != nil {
-			return InstallResult{}, err
-		}
-		for index := range packages {
-			planned, err := plan.Build(packages[index].resolved, planner)
-			if err != nil {
-				return InstallResult{}, fmt.Errorf("plan %s/%s: %w", packages[index].lock.Name, target.provider, err)
-			}
-			if planned.Blocked {
-				return InstallResult{}, &BlockedError{Message: fmt.Sprintf("plan for %s is blocked on %s", packages[index].lock.Name, target.provider)}
-			}
-			budget, err := tokens.AnalyzeWithLayout(packages[index].resolved, planned, layoutFor(target.provider), spec.Validate(packages[index].pkg)...)
-			if err != nil {
-				return InstallResult{}, fmt.Errorf("token analysis %s/%s: %w", packages[index].lock.Name, target.provider, err)
-			}
-			for _, finding := range budget.Diagnostics {
-				if finding.Severity == spec.SeverityError {
-					return InstallResult{}, &BlockedError{Message: fmt.Sprintf("%s %s blocks install: %s", finding.Code, finding.Event, finding.Message)}
-				}
-				result.Diagnostics = append(result.Diagnostics, Diagnostic{Code: finding.Code, Rule: finding.RuleID, Provider: string(target.provider), Severity: finding.Severity, Message: finding.Message})
-			}
-			packages[index].report[target.provider] = planned
-			packages[index].tokens[target.provider] = budget
-			allTokenReports[target.provider] = append(allTokenReports[target.provider], budget)
-			compileInputs = appendCompileInput(compileInputs, packages[index], target.provider)
-			if packages[index].lock.Name == name {
-				result.Reports = append(result.Reports, installPlanReport(target, planned, budget, packages[index].resolved))
-			}
-		}
-	}
-	for _, target := range adapters {
-		findings, err := tokens.AnalyzeInstalled(allTokenReports[target.provider], target.definition.Limits.Input)
-		if err != nil {
-			return InstallResult{}, err
-		}
-		for _, finding := range findings {
-			return InstallResult{}, &BlockedError{Message: fmt.Sprintf("%s %s blocks install: %s", finding.Code, finding.Event, finding.Message)}
-		}
-	}
-	compiled, err := compile.Build(compile.Request{StyleVersion: styleRuntimeVersion, Packages: compileInputs})
+	result := InstallResult{Package: name, Version: version, Link: request.Link, Replace: replace}
+	compilation, err := s.compileInstalled(ctx, packages, adapters, name)
 	if err != nil {
 		return InstallResult{}, err
 	}
-	indexBytes, err := compile.Encode(compiled.Index)
-	if err != nil {
-		return InstallResult{}, err
-	}
+	result.Reports, result.Diagnostics = compilation.reports, compilation.diagnostics
+	indexBytes := compilation.indexBytes
 	updatedLock := lockDocument{Format: lockFormat, Packages: append(append([]lockPackage(nil), lock.Packages...), newLock), Harnesses: lock.Harnesses}
 	if updatedLock.Harnesses == nil {
 		updatedLock.Harnesses = map[string]lockHarness{}
@@ -243,7 +202,7 @@ func (s *Service) Install(ctx context.Context, request InstallRequest) (InstallR
 	for index := range adapters {
 		target := &adapters[index]
 		failClosed := containsProvider(request.FailClosed, target.provider)
-		target.hooks = hooksForProvider(target.provider, compiled.Index)
+		target.hooks = hooksForProvider(target.provider, compilation.index)
 		if failClosed {
 			if target.provider != adapter.ProviderID("claude-code") {
 				return InstallResult{}, &UsageError{Message: "--fail-closed is supported only by claude-code"}
@@ -257,13 +216,13 @@ func (s *Service) Install(ctx context.Context, request InstallRequest) (InstallR
 				target.hooks[hookIndex].Extra = extra
 			}
 		}
-		blocks := staticBlocksForProvider(compiled.StaticBodies, target.provider)
+		blocks := staticBlocksForProvider(compilation.staticBodies, target.provider)
 		changes, err := target.route.Plan(ctx, target.hooks, blocks)
 		if err != nil {
 			return InstallResult{}, fmt.Errorf("plan route %s: %w", target.route.Name(), err)
 		}
 		plannedChanges = append(plannedChanges, routePlannedFiles(changes)...)
-		harnessLock := lockHarness{Route: target.route.Name(), Version: target.installation.Version, Surface: hashSurface(target.hooks),
+		harnessLock := lockHarness{Route: target.route.Name(), Version: target.installation.Version, ConfigDir: target.installation.ConfigDir, Surface: hashSurface(target.hooks),
 			Rendered: hashChangeset(changes), Trust: trustState(target.route.Trust()), FailClosed: failClosed}
 		target.status, err = target.route.Status(ctx, target.installation)
 		if err != nil {
@@ -273,6 +232,9 @@ func (s *Service) Install(ctx context.Context, request InstallRequest) (InstallR
 			oldRoute := routeByName(target.definition, prior.Route)
 			if oldRoute == nil {
 				return InstallResult{}, &ConflictError{Message: fmt.Sprintf("previous route %q is unavailable", prior.Route)}
+			}
+			if binder, ok := oldRoute.(adapter.InstallationBinder); ok {
+				oldRoute = binder.BindInstallation(target.installation)
 			}
 			remove, err := oldRoute.Remove(ctx, adapter.Owner("style"))
 			if err != nil {
@@ -338,6 +300,73 @@ func (err *ValidationError) Error() string { return "package validation failed" 
 type BlockedError struct{ Message string }
 
 func (err *BlockedError) Error() string { return err.Message }
+
+func (s *Service) compileInstalled(ctx context.Context, packages []installPackage, adapters []installAdapter, reportPackage string) (installCompilation, error) {
+	result := installCompilation{diagnostics: make([]Diagnostic, 0)}
+	compileInputs := make([]compile.PackageInput, 0, len(packages))
+	for _, item := range packages {
+		compileInputs = append(compileInputs, compile.PackageInput{Package: item.resolved, Sequence: item.lock.Seq,
+			Lock: packageLockHash(item.lock.Files), Link: item.lock.Link, Settings: item.settings})
+	}
+	allTokenReports := make(map[adapter.ProviderID][]tokens.Report)
+	for _, target := range adapters {
+		if err := checkContext(ctx); err != nil {
+			return installCompilation{}, err
+		}
+		planner, err := adapter.BuildPlanAdapter(target.provider, target.definition.Facts)
+		if err != nil {
+			return installCompilation{}, err
+		}
+		for index := range packages {
+			planned, err := plan.Build(packages[index].resolved, planner)
+			if err != nil {
+				return installCompilation{}, fmt.Errorf("plan %s/%s: %w", packages[index].lock.Name, target.provider, err)
+			}
+			if planned.Blocked {
+				return installCompilation{}, &BlockedError{Message: fmt.Sprintf("plan for %s is blocked on %s", packages[index].lock.Name, target.provider)}
+			}
+			budget, err := tokens.AnalyzeWithLayout(packages[index].resolved, planned, layoutFor(target.provider), spec.Validate(packages[index].pkg)...)
+			if err != nil {
+				return installCompilation{}, fmt.Errorf("token analysis %s/%s: %w", packages[index].lock.Name, target.provider, err)
+			}
+			for _, finding := range budget.Diagnostics {
+				if finding.Severity == spec.SeverityError {
+					return installCompilation{}, &BlockedError{Message: fmt.Sprintf("%s %s blocks install: %s", finding.Code, finding.Event, finding.Message)}
+				}
+				result.diagnostics = append(result.diagnostics, Diagnostic{Code: finding.Code, Rule: finding.RuleID, Provider: string(target.provider), Severity: finding.Severity, Message: finding.Message})
+			}
+			packages[index].report[target.provider] = planned
+			packages[index].tokens[target.provider] = budget
+			allTokenReports[target.provider] = append(allTokenReports[target.provider], budget)
+			compileInputs = appendCompileInput(compileInputs, packages[index], target.provider)
+			if packages[index].lock.Name == reportPackage {
+				result.reports = append(result.reports, installPlanReport(target, planned, budget, packages[index].resolved))
+			}
+		}
+	}
+	for _, target := range adapters {
+		findings, err := tokens.AnalyzeInstalled(allTokenReports[target.provider], target.definition.Limits.Input)
+		if err != nil {
+			return installCompilation{}, err
+		}
+		if len(findings) > 0 {
+			finding := findings[0]
+			return installCompilation{}, &BlockedError{Message: fmt.Sprintf("%s %s blocks install: %s", finding.Code, finding.Event, finding.Message)}
+		}
+	}
+	compiled, err := compile.Build(compile.Request{StyleVersion: styleRuntimeVersion, Packages: compileInputs})
+	if err != nil {
+		return installCompilation{}, err
+	}
+	result.index = compiled.Index
+	result.staticBodies = compiled.StaticBodies
+	result.indexBytes, err = compile.Encode(compiled.Index)
+	if err != nil {
+		return installCompilation{}, err
+	}
+	sortDiagnostics(result.diagnostics)
+	return result, nil
+}
 
 func hasSpecErrors(values []spec.Diagnostic) bool {
 	for _, value := range values {
@@ -673,6 +702,9 @@ func (s *Service) installAdapters(ctx context.Context, request InstallRequest, l
 		}
 		if chosen == nil {
 			return nil, &UsageError{Message: fmt.Sprintf("no available route for %s", provider)}
+		}
+		if binder, ok := chosen.(adapter.InstallationBinder); ok {
+			chosen = binder.BindInstallation(installation)
 		}
 		result = append(result, installAdapter{provider: provider, definition: definition, installation: installation, route: chosen})
 	}

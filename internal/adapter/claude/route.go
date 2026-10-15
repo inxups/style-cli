@@ -25,6 +25,15 @@ type route struct {
 
 func (r *route) Name() string { return r.name }
 
+func (r *route) BindInstallation(installation adapter.Installation) adapter.Route {
+	bound := *r
+	if installation.ConfigDir != "" {
+		bound.dir = installation.ConfigDir
+	}
+	bound.harnessVersion = installation.Version
+	return &bound
+}
+
 func (r *route) Available(_ context.Context, installation adapter.Installation) (bool, string, error) {
 	if installation.Provider != "" && installation.Provider != ProviderName {
 		return false, "wrong provider", nil

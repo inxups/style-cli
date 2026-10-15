@@ -316,3 +316,15 @@ fail-closed 的范围收窄为 `Manifest.Fail == FailClosed`、`Blocking` 且 `K
 | RV-T52-03 事务和 owner 边界 | [x] | package swap 与 provider changeset 均先校验 Before 快照；agenthooks 多文件写入在取消/后续失败时逆序恢复，已有文件权限保留，provider 路线通过现有 owner-aware renderer。证据：`agenthooks/install/plan_files.go`、`install_test.go`。 |
 
 验证：隔离环境下 `go test -count=1 ./internal/app`、`go test -count=1 -C agenthooks ./install`、根/嵌套 module `make test-go`、`make vet-go`、gofmt 和 `git diff --check` 通过；示例包的隔离 `style install --yes --json` 返回 0。T53–T55 仍未完成，A1/A12/A13/A18 和 adapter conformance 继续保持未完成，M1a/M1b 不提前标记通过。
+
+## T53 `style uninstall` 完成后回顾（2026-10-15）
+
+结论：卸载逻辑由 `internal/app` 根据 lock 重建剩余包的编译结果，再委托 `adapter.Route` 生成路线变化，hook owner 合并/删除仍走 `agenthooks/install`。最后一个包卸载时一并清掉 STYLE lock、index、本地包和设置；link 包源文件保留。lock 新增保存 provider `config_dir`，使卸载与路线切换使用安装时配置根路径，避免依赖当前进程环境。
+
+| 检查项 | 状态 | 结果与证据 |
+|---|---|---|
+| RV-T53-01 单包/全部与确认 | [x] | `uninstall <name> --yes` 与 `uninstall --all --yes --json` 有命令级覆盖；未确认时不执行。证据：`internal/app/uninstall_test.go`。 |
+| RV-T53-02 部分卸载和最后卸载 | [x] | 删除选中包后从剩余 lock 读取包，重新 plan/token/compile、更新 route/index/lock；移除最后一个包时清理 route/index/lock/settings 与本地存储。link 源不删除。证据：`TestUninstallRequiresConfirmationAndKeepsRemainingPackage`、`TestRunUninstallAllPreservesLinkedSource`。 |
+| RV-T53-03 配置字节和事务 | [x] | TOML managed region 不再吞入分隔换行；无末尾换行的外部文件通过生成边界标记隔离，移除 owner 后恢复原始字节。package removal 先 rename 到可回滚备份，再应用 provider/state changeset。证据：`TestManagedTOMLRoundTripRestoresExternalBytes`、`TestUninstallRemovesOnlyStyleOwnerAndRestoresLastRoute`。 |
+
+验证：`env -u CODEX_HOME -u CODEX_SANDBOX GOPATH=/tmp/style-cli-gopath GOMODCACHE=/tmp/style-cli-gomodcache GOCACHE=/tmp/style-cli-gocache GOPROXY=off GOSUMDB=off go test -count=1 ./internal/app -run 'TestUninstall|TestRunUninstall'`、同环境 `go -C agenthooks test -count=1 ./install`、双 module `make test-go`/`make vet-go`、gofmt 与 `git diff --check` 均通过。A13 的 install idempotence、uninstall 外部配置保留和最后路线清理现有离线证据；安装时切换 route 后无残留仍需独立回归，故保留 `[~]`。T54/T55、A1/A12/A13 补项/A18 和 adapter conformance 仍未完成，M1a/M1b 不提前标记通过。

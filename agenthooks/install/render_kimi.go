@@ -29,8 +29,9 @@ var kindToKimi = map[agenthooks.EventKind]string{
 // configs can't use the JSON settings-merge, so installs own the region
 // between these markers and leave everything outside it untouched.
 const (
-	tomlBeginMarker = "# BEGIN agenthooks managed hooks (generated; do not edit inside markers)"
-	tomlEndMarker   = "# END agenthooks managed hooks"
+	tomlBeginMarker    = "# BEGIN agenthooks managed hooks (generated; do not edit inside markers)"
+	tomlEndMarker      = "# END agenthooks managed hooks"
+	tomlBoundaryMarker = "# agenthooks managed hooks separator (generated)"
 )
 
 func tomlMarkers(owner string) (begin, end string) {
@@ -109,27 +110,20 @@ func tomlString(s string) string {
 func mergeManagedTOML(existing, rendered []byte) []byte {
 	ex := string(existing)
 	beginMarker, endMarker := markersInTOML(rendered)
+	region := strings.TrimSuffix(string(rendered), "\n")
 	begin := strings.Index(ex, beginMarker)
 	if begin < 0 {
-		var sep string
-		switch {
-		case len(ex) == 0 || strings.HasSuffix(ex, "\n\n"):
-			sep = ""
-		case strings.HasSuffix(ex, "\n"):
-			sep = "\n"
-		default:
-			sep = "\n\n"
+		if len(ex) > 0 && !strings.HasSuffix(ex, "\n") {
+			ex += "\n" + tomlBoundaryMarker + "\n"
 		}
-		return []byte(ex + sep + string(rendered))
+		return []byte(ex + region)
 	}
 	end := strings.Index(ex[begin:], endMarker)
 	if end < 0 {
 		// Broken region (begin without end): replace from begin to EOF.
-		return []byte(ex[:begin] + string(rendered))
+		return []byte(ex[:begin] + region)
 	}
-	tail := ex[begin+end+len(endMarker):]
-	tail = strings.TrimPrefix(tail, "\n")
-	return []byte(ex[:begin] + string(rendered) + tail)
+	return []byte(ex[:begin] + region + ex[begin+end+len(endMarker):])
 }
 
 func removeManagedTOML(existing []byte, owner string) ([]byte, bool) {
@@ -144,7 +138,12 @@ func removeManagedTOML(existing []byte, owner string) ([]byte, bool) {
 		return []byte(ex[:begin]), true
 	}
 	end += begin + len(beginMarker)
-	return []byte(ex[:begin] + ex[end+len(endMarker):]), true
+	prefix := ex[:begin]
+	boundary := "\n" + tomlBoundaryMarker + "\n"
+	if strings.HasSuffix(prefix, boundary) {
+		prefix = strings.TrimSuffix(prefix, boundary)
+	}
+	return []byte(prefix + ex[end+len(endMarker):]), true
 }
 
 func markersInTOML(rendered []byte) (begin, end string) {
