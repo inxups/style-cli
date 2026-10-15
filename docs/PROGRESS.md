@@ -460,3 +460,11 @@
 - 回归：`internal/app/init_test.go` 覆盖两种骨架、默认名称及目录名归一化、冲突/非空目录、非法名称、字节保留、稳定成功输出和 help 无副作用；`go run ./cmd/style init --help` 可独立执行。
 - 验证：隔离 Go 缓存下 `go test -count=1 ./internal/app -run 'TestInit|TestRunInit'`、`GOPROXY=off GOSUMDB=off make test-go`、`GOPROXY=off GOSUMDB=off make vet-go`、gofmt 和 `git diff --check` 通过。
 - 状态：任务清单 T50、测试矩阵 B1.23 和本回顾文档 T50 段落标记 `[x]`；T51–T55、A1/A2/A12/A13/A18/A22 和 M1a/M1b 仍未完成。
+
+### 2026-10-15 — T51/B1.24/A2 `[x]`
+
+- 实现：新增 `style validate` 与 `style plan` application/command 流程。validate 返回稳定诊断码、路径/规则/provider、severity 和消息；plan 支持显式/auto harness、多 provider 固定顺序、session 请求/触发假设，并汇总 provider route、native input limit、package budget、plan 降级/能力、逐规则和逐 native event token 估算及 cache-aware session cost。Codex/Claude bucket layout 映射 canonical 与 native tool selector，MCP 使用共享 native bucket。
+- 回归：命令测试固定稳定文本、JSON 诊断、退出码、help 和参数错误；plan layout 测试固定 MCP 聚合、canonical/native selector 展开与 trigger 位置舍入；示例包对 Codex/Claude Code plan stdout 使用显式 harness 与逐字节 golden。
+- 验证：隔离环境下 `go test -count=1 ./internal/app ./cmd/style`、根 module 与 nested `agenthooks` 的 `make test-go`、`make vet-go`、示例 `style validate` 及两个显式 harness `style plan` 命令、gofmt、`git diff --check` 通过。Go 缓存位于 `/tmp/style-cli-{gopath,gomodcache,gocache}`，`CODEX_HOME`/`CODEX_SANDBOX` 未设置。
+- 文档：任务清单 T51、测试矩阵 B1.24/A2 与 review 的 T51 检查项已标记 `[x]`；修正 B1.7 对 A2 未完成的过时描述。证据：`internal/app/{validate.go,plan.go,command.go,command_test.go,plan_golden_test.go,plan_layout_test.go}`、`testdata/golden/plan-{codex,claude-code}.txt`、`docs/STYLE-M1-REVIEW-2026-10-13.md` T51。
+- 状态：T52–T55、A1/A12/A13/A18/A22、adapter conformance 和 M1a/M1b 仍未完成，不提前标记。

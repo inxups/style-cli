@@ -1,0 +1,61 @@
+terse-reviewer 0.3.0
+
+Harness: codex
+Preferred route: codex-plugin (availability checked during install)
+Package: terse-reviewer
+Adapter: codex
+- no-todo-comments: native (warn tool)
+  needs: agent, tool.added
+  -> tool.post warn (native); capabilities: add-context, system-message
+- style: native (inject system)
+  needs: agent
+  -> static:developer_instructions inject (native)
+- session-info: native (inject system)
+  needs: agent, model, thinking_effort
+  -> session.start inject (native); capabilities: add-context
+  -> prompt.submitted inject (native); capabilities: add-context
+- low-effort-guard: native (inject system)
+  needs: agent, thinking_effort
+  -> session.start inject (native); capabilities: add-context
+  -> prompt.submitted inject (native); capabilities: add-context
+- review-skill: native (inject skill)
+  needs: agent
+  -> tool.post inject (native); capabilities: add-context
+  -> skill.explicit inject (native); capabilities: add-context
+- after-git-diff: native (inject tool)
+  needs: agent, tool.input.command
+  -> tool.post inject (native); capabilities: add-context
+- before-create-pr: native (inject mcp)
+  needs: agent
+  -> tool.pre inject (native); capabilities: add-context
+- no-force-push: native (block tool)
+  needs: agent, tool.input.command
+  -> tool.pre block (native); capabilities: deny
+- on-review-prompt: native (warn event)
+  needs: agent, harness.name, model, prompt
+  -> prompt.submitted warn (native); capabilities: add-context, system-message
+- codex-only-notify: skipped-m2 (inject native)
+  needs: agent
+  ! native rules are implemented in M2
+Token (estimated ≈ ±25%):
+  native input limit: 2500 tokens (approximate); overflow=file-preview; source=Codex additionalContext default
+  budget: per_rule 400; per_event 1200; always_on 600 tokens
+  always-on: 70 tokens / 252 chars
+  per-rule:
+    no-todo-comments: 11 tokens / 35 chars (native)
+    style: 27 tokens / 90 chars (native)
+    session-info: 43 tokens / 162 chars (native)
+    low-effort-guard: 15 tokens / 49 chars (native)
+    review-skill: 19 tokens / 62 chars (native)
+    after-git-diff: 23 tokens / 78 chars (native)
+    before-create-pr: 21 tokens / 68 chars (native)
+    no-force-push: 12 tokens / 39 chars (native)
+    on-review-prompt: 7 tokens / 24 chars (native)
+    codex-only-notify: 0 tokens / 0 chars (skipped-m2)
+  PostToolUse Bash: 43 tokens / 142 chars
+  PostToolUse apply_patch: 11 tokens / 35 chars
+  PreToolUse Bash: 12 tokens / 39 chars
+  PreToolUse mcp: 21 tokens / 68 chars
+  SessionStart: 59 tokens / 213 chars
+  UserPromptSubmit: 87 tokens / 303 chars
+  session cost (requests=60 triggers=3): 500.5 always-on + 939.2 triggered = 1439.8 units

@@ -10,6 +10,9 @@ import (
 
 func limitsFromPackage(pkg *spec.ResolvedPackage) Limits {
 	limits := Limits{PerRule: DefaultPerRule, PerEvent: DefaultPerEvent, AlwaysOn: DefaultAlwaysOn}
+	if pkg == nil || pkg.Package == nil {
+		return limits
+	}
 	if budget := stringMap(pkg.Package.Metadata["budget"]); budget != nil {
 		limits.PerRule = positiveLimit(budget["per_rule"], limits.PerRule)
 		limits.PerEvent = positiveLimit(budget["per_event"], limits.PerEvent)
@@ -17,6 +20,10 @@ func limitsFromPackage(pkg *spec.ResolvedPackage) Limits {
 	}
 	return limits
 }
+
+// PackageLimits returns the effective per-rule, per-event, and always-on
+// limits for a resolved package, including STYLE defaults.
+func PackageLimits(pkg *spec.ResolvedPackage) Limits { return limitsFromPackage(pkg) }
 
 func effectiveAction(rule spec.Rule, pkg *spec.ResolvedPackage) string {
 	if value, ok := effectiveValue(rule, pkg, "action"); ok {

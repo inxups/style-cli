@@ -292,3 +292,15 @@ fail-closed 的范围收窄为 `Manifest.Fail == FailClosed`、`Blocking` 且 `K
 | RV-T50-03 CLI 边界 | [x] | `cmd/style` 只调用 `internal/app.Run`，`style init` 的 help、成功/失败退出码和成功文本稳定；help 不产生文件副作用。证据：`internal/app/entry.go`、`init_command.go`、`init_test.go`。 |
 
 验证：隔离 Go 缓存下 T50 定向测试、双 module 全量测试、`make vet-go`、gofmt 和 `git diff --check` 均通过。T51 的 validate/plan、安装生命周期和离线验收仍未提前标记完成。
+
+## T51 `style validate` / `style plan` 完成后回顾（2026-10-15）
+
+结论：CLI 入口继续保持薄层，validate/plan 的编排集中在 `internal/app`，复用 `core/spec`、`core/plan`、`core/tokens` 和 provider adapter facts。Codex/Claude token bucket 由 provider layout 映射；没有把 hook codec 或安装行为复制到 CLI。T51 完成离线 validate/plan 与 A2 golden，不代表 M1 lifecycle 已完成。
+
+| 检查项 | 状态 | 结论与证据 |
+|---|---|---|
+| RV-T51-01 稳定诊断与命令契约 | [x] | 文本/JSON 诊断、参数错误、help 和 exit code 有命令级测试；包级错误码独立于人类消息。证据：`internal/app/command_test.go`。 |
+| RV-T51-02 多 provider 规划与成本 | [x] | 显式或 auto harness 选择顺序确定；报告含 route、输入上限、package budget、逐规则/原生事件估算与 session 假设；token bucket 测试覆盖 MCP 聚合及 canonical/native tool 对应。证据：`internal/app/plan.go`、`plan_layout_test.go`。 |
+| RV-T51-03 示例 golden | [x] | Codex 与 Claude Code 显式 harness 的完整 plan stdout 与版本控制内 golden 逐字节比较；golden 每次由当前 CLI 生成并由测试固定。证据：`internal/app/plan_golden_test.go`、`testdata/golden/plan-{codex,claude-code}.txt`。 |
+
+验证：隔离 Go 缓存下 `go test -count=1 ./internal/app ./cmd/style`、根 module 与 nested `agenthooks` 全量测试、`make vet-go`、gofmt 和 `git diff --check` 通过；CLI 示例 validate 与两个显式 harness plan 命令可执行。T52–T55 的 install/uninstall/list/doctor/sync/trust 尚未开始，A1/A12/A13/A18/A22 与 adapter conformance 未完成，M1a/M1b 不标记通过。

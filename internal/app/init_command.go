@@ -10,7 +10,7 @@ import (
 )
 
 func runInit(ctx context.Context, service *Service, workDir string, args []string, out, errOut io.Writer) int {
-	if len(args) == 1 && (args[0] == "--help" || args[0] == "-h") {
+	if isHelp(args) {
 		fmt.Fprintln(out, "style init [name] [--single]")
 		return ExitOK
 	}
