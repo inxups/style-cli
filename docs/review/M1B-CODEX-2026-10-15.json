@@ -71,6 +71,45 @@
     },
     "reproduction": "With the Codex plugin enabled, prepare another temporary repository and local bare remote as above. Ask Codex to execute force and lease as two separate shell tool calls. Inspect actual hook errors and session stats; synthetic hook payloads do not substitute for this check."
   },
+  "B6": {
+    "status": "passed",
+    "session_id": "01a1309a-9203-71c0-a9dd-469a16b6a760",
+    "model": "gpt-6.1-sol",
+    "effort": "low",
+    "scope": "Real Codex apply_patch calls in the working conversation; separate from the user-operated gpt-6-sol conversation.",
+    "scratch_root": "/var/folders/m5/gv7_10k149l3j4l02mt548zr0000gp/T/style-m1b-b6-a4y8e_d2",
+    "initial_and_final_file": "package probe\n\n// Review probe.\n",
+    "added_line": "// TODO: manual Codex hook probe.",
+    "add": {
+      "tool": "apply_patch",
+      "completed": true,
+      "model_visible_warning": "Do not leave TODO comments in code.",
+      "stats": {
+        "at": "2026-10-15T12:12:31.929317Z",
+        "provider": "codex",
+        "event": "PostToolUse",
+        "point": "tool.post",
+        "entry": "terse-reviewer/no-todo-comments@tool.post",
+        "action": "warn",
+        "result": "output",
+        "est_tokens": 11,
+        "body_sha256": "sha256:2e622164e3e1f0f08e88cb6ed9377bb11bba0989d7f4eef347141eb24b16b5b8"
+      }
+    },
+    "remove": {
+      "tool": "apply_patch",
+      "completed": true,
+      "model_visible_warning": null,
+      "file_restored_byte_for_byte": true,
+      "new_no_todo_stats": 0,
+      "stats_lines_before_probe": 28,
+      "stats_lines_after_add": 29,
+      "stats_lines_at_verification": 31,
+      "other_new_stats": "Two UserPromptSubmit dedup entries from a new user message; neither is a TODO warning.",
+      "observation_ends_at": "2026-10-15T12:12:55.508404Z"
+    },
+    "reproduction": "With terse-reviewer active in the real Codex plugin, create a temporary probe.go with initial_and_final_file. Use apply_patch to append added_line, then a separate apply_patch to remove that line. Confirm the first call delivers the warning, the second does not, and compare no-todo-comments stats only within this probe interval. Both tool calls must complete and the file must return to its initial bytes."
+  },
   "known_issue": {
     "id": "M1B-EXAMPLE-01",
     "status": "open",
@@ -80,5 +119,5 @@
     "impact": "False positives when documenting commands. B5 confirms the stated force/lease behavior, not shell parser accuracy.",
     "follow_up": "Review example rule precision and add an explicit quoted-text boundary case before claiming broader protection. No implementation fix in this evidence commit."
   },
-  "pending": ["B1", "B2 remaining variants", "B3", "B4", "B6", "B7", "B8", "B9", "B10", "B11", "B12", "all Claude M1b checks"]
+  "pending": ["B1", "B2 remaining variants", "B3", "B4", "B7", "B8", "B9", "B10", "B11", "B12", "all Claude M1b checks"]
 }

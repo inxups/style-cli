@@ -67,7 +67,7 @@
 ## 里程碑验收
 
 - [x] **M1a 离线验收**：STYLE 验收项 A1–A22 与 adapter conformance 解析、往返、安装、报告、输出白名单均有可重复证据；真实二进制 hook 入口与三条生成命令通过，A20 进程 p95 为 Codex 22.852ms / Claude Code 22.97575ms。证据：`docs/STYLE-M1-TESTS.md`、`internal/adapter/conformance/`、`docs/review/M1-A20-2026-10-15.json`。真实环境投递与 harness 耗时属于 M1b。
-- [~] **M1b Codex 真实环境**：用户已配置 codex-plugin；B5 真实工具拦截/放行通过，B2 的 gpt-6-sol/low 注入与去重已有部分证据，其余场景待验证。用户与工作对话的模型读数分开记录，证据见 `docs/review/M1B-CODEX-2026-10-15.json`。真实配置仍由用户手动执行。
+- [~] **M1b Codex 真实环境**：用户已配置 codex-plugin；B5 真实工具拦截/放行、B6 新增 TODO 警告与删除不误报通过，B2 的 gpt-6-sol/low 注入与去重已有部分证据，其余场景待验证。用户与工作对话的模型读数分开记录，证据见 `docs/review/M1B-CODEX-2026-10-15.json`。真实配置仍由用户手动执行。
 - [?] **M1b Claude Code 真实环境**：待 C1–C9 真实验证，记录 Claude Code 版本、工作区信任、compact/model switch、skill、warn 和性能。配置由用户按同一手册手动执行。
 
 ## 回顾跟进项（2026-10-13 起）

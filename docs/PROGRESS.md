@@ -606,3 +606,11 @@
 - 修复：删除 Claude 路径的提前返回，每个事件按规范顺序解析；Codex 不变。PostModelSwitch 单测原先依赖短路断言 effort 字段为空，现注入空环境并断言 effort 保持原值（等值写入，无状态变化）。
 - 回归：`internal/adapter/claude/runtime_test.go:TestResolvedSessionStillReadsClaudeEffortEnvironment`，修复前失败、修复后通过。
 - 验证：清理 CODEX_HOME/CODEX_SANDBOX，使用 `/tmp/style-cli-{gopath,gomodcache,gocache}`、GOPROXY=off/GOSUMDB=off；双 module `make test-go`、`make vet-go`，`go test -race -count=1 ./internal/adapter/claude ./internal/runtime ./internal/adapter/conformance`，gofmt 与 `git diff --check` 通过。新增开销仅一次 `os.Getenv`，未重跑 A20 进程采样。env 与事件生效值不一致时的切换风险留待 U-C1/C1。
+
+### 2026-10-15 — CDEX-06/B6 `[x]`
+
+- 用户要求继续真实验收。本工作会话的用户级插件配置会触发工具 hook，继续与用户 gpt-6-sol 会话分开记账。
+- 在独立临时 probe.go 上先新增 TODO，再通过另一 apply_patch 删除。新增时实际收到首句模型警告，12:12:31.929317Z 的 PostToolUse stats 为 no-todo-comments/warn/output；删除时工具完成且没有模型警告、没有新增该规则 stats，原文件字节恢复。
+- 观察期间用户追加消息产生了两条 UserPromptSubmit dedup，因此核验按规则筛选而非要求日志总行数不变。证据 JSON 保留观察截止点，后续文档编辑造成的警告不混入本次区间。
+- 证据与复现步骤入库 `docs/review/M1B-CODEX-2026-10-15.json`；任务、测试和既有 review 同步完成确认。真实测试保留已安装环境，不运行合成 payload 替代验收；本项无 Go/配置变更，验证 JSON、实际 stats 与警告摘要、文件原始字节、状态一致性和 diff 检查。
+- 用户已安装 Claude，并要求先简要安排 M1 收尾再推进：先核对安装基线，完成 Codex 与 Claude 真实矩阵，再处理发现的问题及统一复验。配置操作仍由用户执行，M1a 已完成、M1b 尚未完成。
