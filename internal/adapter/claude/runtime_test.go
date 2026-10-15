@@ -8,6 +8,7 @@ import (
 
 	"github.com/inxups/style-cli/core/plan"
 	"github.com/inxups/style-cli/core/state"
+	"github.com/inxups/style-cli/core/when"
 	"github.com/speakeasy-api/agenthooks"
 )
 
@@ -44,6 +45,36 @@ func TestEnricherStateUpdateKeepsUnknownEventRaw(t *testing.T) {
 	update := (&Enricher{Environment: func() string { return "high" }}).StateUpdate(event, event, state.Session{})
 	if !update.EffortResolved || update.ThinkingEffort != "" || update.EffortRaw != "future-tier" || update.EffortApprox != nil {
 		t.Fatalf("unknown event effort = %#v", update)
+	}
+}
+
+func TestUnknownEventEffortClearsPersistedTier(t *testing.T) {
+	store, err := state.New(t.TempDir())
+	if err != nil {
+		t.Fatal(err)
+	}
+	enricher := &Enricher{Environment: func() string { return "" }}
+	for _, level := range []string{"high", "future-tier"} {
+		event := claudeRuntimeEvent(agenthooks.KindToolPre, "PreToolUse", `{"session_id":"s-stale","effort":{"level":"`+level+`"}}`)
+		event.Session.EffortRaw = level
+		previous, err := store.ReadSession("s-stale")
+		if err != nil {
+			t.Fatal(err)
+		}
+		if _, _, err := store.Update("s-stale", "", enricher.StateUpdate(event, &agenthooks.ToolPreEvent{Event: *event}, previous)); err != nil {
+			t.Fatal(err)
+		}
+	}
+	session, err := store.ReadSession("s-stale")
+	if err != nil {
+		t.Fatal(err)
+	}
+	matcher, err := when.Compile(when.Rule{ThinkingEffort: []string{"high"}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if session.ThinkingEffort != "" || session.EffortRaw != "future-tier" || matcher.Match(when.Input{ThinkingEffort: session.ThinkingEffort}) {
+		t.Fatalf("unknown effort left stale tier: %#v", session)
 	}
 }
 

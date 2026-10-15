@@ -131,15 +131,25 @@ func (s *Store) Update(sessionID, agentID string, update EventUpdate) (Session, 
 	if update.Model != "" {
 		session.Model = update.Model
 	}
-	if update.ThinkingEffort != "" {
-		session.ThinkingEffort = update.ThinkingEffort
-	}
 	if update.EffortRaw != "" {
+		// A reported raw value is one complete effort reading. An unmapped
+		// value has no tier, so it must clear the previous tier rather than
+		// leave a stale one matching when.thinking_effort.
 		session.EffortRaw = update.EffortRaw
-	}
-	if update.EffortApprox != nil {
-		value := *update.EffortApprox
-		session.EffortApprox = &value
+		session.ThinkingEffort = update.ThinkingEffort
+		session.EffortApprox = nil
+		if update.EffortApprox != nil {
+			value := *update.EffortApprox
+			session.EffortApprox = &value
+		}
+	} else {
+		if update.ThinkingEffort != "" {
+			session.ThinkingEffort = update.ThinkingEffort
+		}
+		if update.EffortApprox != nil {
+			value := *update.EffortApprox
+			session.EffortApprox = &value
+		}
 	}
 	if update.EffortResolved {
 		session.EffortResolved = true

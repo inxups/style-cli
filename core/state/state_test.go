@@ -77,6 +77,40 @@ func TestSessionEffortApproximationRemainsUnknownUntilProvided(t *testing.T) {
 	}
 }
 
+func TestReportedUnknownEffortClearsPreviousTier(t *testing.T) {
+	store, err := New(filepath.Join(t.TempDir(), "state"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	approx := false
+	if _, _, err := store.Update("session", "main", EventUpdate{ThinkingEffort: "high", EffortRaw: "high", EffortApprox: &approx, EffortResolved: true}); err != nil {
+		t.Fatal(err)
+	}
+	unknown, _, err := store.Update("session", "main", EventUpdate{EffortRaw: "future-tier", EffortResolved: true})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if unknown.ThinkingEffort != "" || unknown.EffortRaw != "future-tier" || unknown.EffortApprox != nil || !unknown.EffortResolved {
+		t.Fatalf("unknown raw kept stale tier: %#v", unknown)
+	}
+
+	// An update without any effort reading never clears the stored value.
+	kept, _, err := store.Update("session", "main", EventUpdate{Model: "model-b"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if kept.EffortRaw != "future-tier" || kept.ThinkingEffort != "" {
+		t.Fatalf("empty update overwrote effort: %#v", kept)
+	}
+	known, _, err := store.Update("session", "main", EventUpdate{ThinkingEffort: "max", EffortRaw: "ultra", EffortApprox: &approx})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if known.ThinkingEffort != "max" || known.EffortRaw != "ultra" || known.EffortApprox == nil || *known.EffortApprox {
+		t.Fatalf("known raw after unknown = %#v", known)
+	}
+}
+
 func TestStartupResetsScopeAndReservations(t *testing.T) {
 	root := filepath.Join(t.TempDir(), "state")
 	store, err := New(root)

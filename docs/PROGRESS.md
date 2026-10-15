@@ -592,3 +592,10 @@
 - `STYLE_DOCS/STYLE-cli-design.md` 原被 .gitignore 忽略，本项仅将该设计文件纳入版本控制，未添加其它资料；补当前 M1a/M1b 状态及实现源文件链接，手册同步。
 - 验证：清理 CODEX_HOME/CODEX_SANDBOX、临时 Go 缓存、离线构建 `/tmp/style-cli-m1b-doc-check`。临时 HOME/STYLE_HOME/CODEX_HOME/CLAUDE_CONFIG_DIR 内，help、adapters、未知选项拒绝且无写入、两条路线的真实 CLI install/uninstall、报告/锁/摘要与文档一致；卸载后 config.toml 不存在。复现入口已写入 review；新增源链接、文档契约与 diff 检查通过。
 - 主设计开头原有 6 个指向未收录外部资料的相对链接，改为保留文件名/版本的外部来源说明，避免新克隆出现断链；本仓库内的规范和实现使用有效相对链接。
+
+### 2026-10-15 — M1B-FIX-03 `[x]` 未知 effort 残留旧档位
+
+- 对照规范审查发现：harness 报告映射表外的 effort 原值时，`core/state` 只更新 `effort_raw`，旧 `effort` 档位保留，`when.thinking_effort` 继续命中、`{{thinking_effort}}` 渲染过期值。修复前临时探针得到 `tier="high" raw="future-tier"` 且 `thinking_effort: high` 匹配。
+- 修复位于 `core/state/state.go`：非空 raw 视为完整读数，档位与近似标记随之替换（可为空）；不带 effort 的事件仍不覆盖状态，满足 §6“从不用空值覆盖”。adapter 与 engine 不变。
+- 回归：`core/state/state_test.go:TestReportedUnknownEffortClearsPreviousTier`、`internal/adapter/claude/runtime_test.go:TestUnknownEventEffortClearsPersistedTier`，修复前均失败、修复后通过。
+- 验证：清理 CODEX_HOME/CODEX_SANDBOX，使用 `/tmp/style-cli-{gopath,gomodcache,gocache}`、GOPROXY=off/GOSUMDB=off；双 module `make test-go`、`make vet-go`，`go test -race -count=1 ./core/state ./internal/adapter/claude ./internal/runtime`，gofmt 与 `git diff --check` 通过。真实 Claude effort 行为仍属 C1/U-C1。

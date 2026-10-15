@@ -424,3 +424,5 @@ fail-closed 的范围收窄为 `Manifest.Fail == FailClosed`、`Blocking` 且 `K
 - [x] **M1B-FIX-02 设计文档完成确认**：路线示意统一为 `codex-plugin`、`codex-user`、`claude-user`；从安装命令表删除未实现的信任选项，明确 CLI 不接受 `--preseed-trust`。记录当前两条 Codex 路线均生成摘要、plugin 仍需手动登记且不据生成文件声称真实信任。锁文件中的 `user`/`preseeded` 与报告的 `user-confirmation`/`preseed` 区别已写清，移除不存在的锁字段；添加实现源文件链接和当前里程碑状态。更新主设计文件及手册，主设计文件单独纳入版本控制。
 
 M1B-FIX-02 复核：使用临时 Go 缓存、清理 CODEX 环境构建 `go build -o /tmp/style-cli-m1b-doc-check ./cmd/style`；把 HOME、STYLE_HOME、CODEX_HOME、CLAUDE_CONFIG_DIR 指向临时目录。运行该二进制的 `install --help`、`adapters --json`、`install <example> --harness codex --preseed-trust codex --yes`（预期退出 1/unknown option 且无写入）；随后按手册分别安装 codex-plugin/codex-user，核对安装报告、锁文件、trusted_hash，并各自卸载。全部符合文档，最终 config.toml 不存在；新增源链接和 diff 检查通过。未更改 CLI 选项或真实配置，M1b 其余验收仍未完成。
+
+- [x] **M1B-FIX-03 未知 effort 残留旧档位**：`state.Update` 对 effort 三个字段各自“非空才覆盖”，所以 raw 从 `high` 变成表外值时档位仍是 `high`，规则误触发、模板显示过期值。规范 §6 的“从不用空值覆盖”指事件没带值，不适用于“带了值但映射不到档位”。修复把非空 raw 当作完整读数，档位/近似一起替换；只带档位不带 raw 的更新保持原语义。Codex 每会话只解析一次，实际受影响的是 Claude 的逐事件 `effort.level`。

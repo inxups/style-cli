@@ -117,3 +117,5 @@ T20–T24 与 T30–T34 回顾结论和剩余范围见 `docs/STYLE-M1-REVIEW-202
 - [x] **M1B-FIX-01 Codex 卸载换行残留**：修复两条路线在全新配置根卸载后遗留 1 字节 config.toml。原因与修复位于现有 agenthooks Codex TOML 渲染层；8 组回归覆盖不存在、原有换行、空白和用户配置，包含重复安装与双向路线切换，保留原文字节/权限。证据：`internal/app/uninstall_test.go:TestUninstallCodexConfigWithoutGeneratedNewlineResidue`；双 module 全量测试/vet 通过。真实 B8 仍待用户往返验收。
 
 - [x] **M1B-FIX-02 设计与 CLI 路线/信任契约**：修正 `STYLE_DOCS/STYLE-cli-design.md` 的路线 ID、命令表、锁文件示例、信任及插件手动注册说明；明确没有 `--preseed-trust`，区分报告的信任种类和锁文件存储值。真实构建 CLI 后，以临时配置根核对 help、拒绝未知选项且无写入、两条路线安装/卸载、生成摘要与锁文件；新引用链接及 diff 检查通过。设计文件原被忽略，本项将该文件单独纳入版本控制。
+
+- [x] **M1B-FIX-03 未知 effort 残留旧档位**：回顾发现 harness 先报已知档位、后报映射表外的原值时，`core/state` 只更新 raw，旧档位继续满足 `when.thinking_effort` 并渲染进模板，违反规范 §4.2 第 6 条。现在带 raw 的更新视为一次完整读数，同时写入档位（可为空）和近似标记；没有 effort 读数的事件仍不覆盖状态。证据：`core/state/state_test.go:TestReportedUnknownEffortClearsPreviousTier`、`internal/adapter/claude/runtime_test.go:TestUnknownEventEffortClearsPersistedTier`，两者修复前均失败；双 module 全量测试/vet 与 state/Claude/runtime race 通过。
