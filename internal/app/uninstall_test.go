@@ -52,6 +52,58 @@ func TestUninstallRemovesOnlyStyleOwnerAndRestoresLastRoute(t *testing.T) {
 	}
 }
 
+func TestUninstallCodexConfigWithoutGeneratedNewlineResidue(t *testing.T) {
+	for _, route := range []string{"codex-plugin", "codex-user"} {
+		for _, original := range []struct {
+			name string
+			data []byte
+		}{
+			{name: "absent"},
+			{name: "user-newline", data: []byte("\n")},
+			{name: "user-whitespace", data: []byte(" \r\n\t")},
+			{name: "user-config", data: []byte("# Keep user bytes\nmodel = 'keep'")},
+		} {
+			t.Run(route+"/"+original.name, func(t *testing.T) {
+				root := t.TempDir()
+				home, config := filepath.Join(root, "style"), filepath.Join(root, "codex")
+				service := testCodexInstallService(t, config, filepath.Join(home, "plugin"))
+				path := filepath.Join(config, "config.toml")
+				if original.data != nil {
+					if err := os.MkdirAll(config, 0o700); err != nil {
+						t.Fatal(err)
+					}
+					if err := os.WriteFile(path, original.data, 0o640); err != nil {
+						t.Fatal(err)
+					}
+				}
+				source := writeInstallPackage(t, filepath.Join(root, "source"), "spec: style/v0.3\nname: residue-probe\nversion: 0.1.0\ndescription: Codex uninstall residue probe\nrules:\n  - id: context\n    target: system\n    text: Keep responses concise.\n")
+				otherRoute := "codex-user"
+				if route == otherRoute {
+					otherRoute = "codex-plugin"
+				}
+				for _, selected := range []string{route, route, otherRoute, route} {
+					if _, err := service.Install(context.Background(), InstallRequest{Source: source, Home: home, Harnesses: []string{"codex"}, Routes: map[string]string{"codex": selected}, Yes: true}); err != nil {
+						t.Fatal(err)
+					}
+				}
+				if _, err := service.Uninstall(context.Background(), UninstallRequest{Home: home, All: true, Yes: true}); err != nil {
+					t.Fatal(err)
+				}
+				got, err := os.ReadFile(path)
+				if original.data == nil {
+					if !errors.Is(err, os.ErrNotExist) {
+						t.Fatalf("created config survived uninstall: bytes=%q error=%v", got, err)
+					}
+				} else if err != nil || !bytes.Equal(got, original.data) {
+					t.Fatalf("original config changed: got=%q want=%q error=%v", got, original.data, err)
+				} else if info, err := os.Stat(path); err != nil || info.Mode().Perm() != 0o640 {
+					t.Fatalf("original config mode changed: %v %v", info, err)
+				}
+			})
+		}
+	}
+}
+
 func TestUninstallRequiresConfirmationAndKeepsRemainingPackage(t *testing.T) {
 	root := t.TempDir()
 	styleHome := filepath.Join(root, "style")

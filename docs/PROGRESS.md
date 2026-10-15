@@ -576,3 +576,11 @@
 - 另发现 M1B-EXAMPLE-01：写文档的 Python heredoc 仅引用测试命令也被规则阻断，误拦文本引用；作为示例正则精度问题记录，未修复。
 - 本项专测真实环境，保留其 CODEX_HOME 等安装环境；未运行 Go 测试或更改 provider 配置。命令、结果、元数据和复现方法入库 `docs/review/M1B-CODEX-2026-10-15.json`，任务、测试、review 同步。B2 minimal/high、其余 Codex 项及 Claude 仍待验收。
 - 提交前核验：证据 JSON 可解析；渲染正文摘要、真实 stats、临时 bare remote 路径与分支状态、文档状态一致，`git diff --check` 通过。
+
+### 2026-10-15 — M1B-FIX-01 `[x]` Codex 卸载 1 字节残留
+
+- 按用户反馈补回归，修复前两条 Codex 路线的 absent 用例均明确失败：卸载后 config.toml 为 `"\n"`。原有换行、空白和正常用户配置往返用例通过，排除粗暴清理空白的修法。
+- 原因：agenthooks 新文件直接采用渲染结果，信任托管区末尾额外 LF 不属于删除区域；STYLE 静态块移除后它独自留下。修复现有 `agenthooks/install/render_codex.go` 的生成尾部，使其与 mergeManagedTOML 一致，未重复实现 hook 安装职责。
+- 最终回归为两条路线 × 4 种原始状态，共 8 组，均经过重复安装、双向路线切换和最终卸载；新增文件不再残留，原有字节与 0640 权限保持。测试位于 `internal/app/uninstall_test.go`。
+- 验证：清理 CODEX_HOME/CODEX_SANDBOX，使用 `/tmp/style-cli-{gopath,gomodcache,gocache}`，`GOPROXY=off GOSUMDB=off make test-go` 与 `make vet-go` 双 module 全量通过；gofmt 和 diff 检查通过。任务、测试、review 已确认完成；真实 B8 仍待用户验证。
+- 适用边界：防止新的安装往返遗留换行；历史残留不能与用户原有空白文件自动区分，应按安装前备份判断，不代为清理真实配置。

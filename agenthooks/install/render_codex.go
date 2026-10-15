@@ -117,7 +117,10 @@ func renderCodex(m Manifest, t Target) (fs.FS, error) {
 		fmt.Fprintf(&toml, "\n[hooks.state.%s]\n", tomlString(e.key))
 		fmt.Fprintf(&toml, "trusted_hash = %s\n", tomlString(e.hash))
 	}
-	toml.WriteString("\n" + end + "\n")
+	// Keep the generated region self-contained, just like mergeManagedTOML.
+	// A newline after the end marker would survive owner removal and leave a
+	// formerly absent config.toml behind after STYLE removes its static block.
+	toml.WriteString("\n" + end)
 
 	files := map[string][]byte{"config.toml": []byte(toml.String())}
 	if plugin {

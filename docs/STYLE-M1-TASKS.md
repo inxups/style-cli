@@ -113,3 +113,5 @@ T20–T24 与 T30–T34 回顾结论和剩余范围见 `docs/STYLE-M1-REVIEW-202
 - [x] **M1B-PREP 手动配置准备**：提供固定二进制构建、备份、Codex user/plugin、Claude user、第二包探针、验收/卸载/证据返回步骤。临时目录内验证真实 Codex 0.159.3 的本地 marketplace 注册/移除、两包 CLI 生命周期和探针输出；Claude 仅模拟版本检测，不代表真实验收。证据：`docs/STYLE-M1B-MANUAL.md`、`testdata/manual/`、进度日志和 review 完成确认。B1–B12、C1–C9 仍待用户结果。
 
 - [!] **M1B-EXAMPLE-01 示例规则误拦截**：no-force-push 正则直接匹配整段 shell 字符串，写文档的 Python heredoc 仅包含示例命令也被真实 hook 阻断。需回顾示例规则精度并补引用文本边界；B5 只确认实际 force/lease 两条命令的行为，不代表 shell 语法识别完备。证据见首轮 Codex JSON。
+
+- [x] **M1B-FIX-01 Codex 卸载换行残留**：修复两条路线在全新配置根卸载后遗留 1 字节 config.toml。原因与修复位于现有 agenthooks Codex TOML 渲染层；8 组回归覆盖不存在、原有换行、空白和用户配置，包含重复安装与双向路线切换，保留原文字节/权限。证据：`internal/app/uninstall_test.go:TestUninstallCodexConfigWithoutGeneratedNewlineResidue`；双 module 全量测试/vet 通过。真实 B8 仍待用户往返验收。

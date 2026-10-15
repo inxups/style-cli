@@ -413,3 +413,10 @@ fail-closed 的范围收窄为 `Manifest.Fail == FailClosed`、`Blocking` 且 `K
 - [!] **M1B-EXAMPLE-01**：写测试文档的 Python heredoc 被误拦，因 no-force-push 正则匹配了被引用的示例命令。属于示例规则精度问题，需补引用文本边界；本轮记录证据，未修复。
 
 证据：`docs/review/M1B-CODEX-2026-10-15.json`，包含命令、结果、状态行、会话范围和复现方法。没有更改真实配置或 Go 实现。M1b 尚未完成，Claude 暂不验收。
+
+## M1b 问题修复确认（2026-10-15）
+
+- [x] **M1B-FIX-01 Codex 卸载残留**：两条路线在原配置不存在时均复现卸载后仅剩 `"\n"`。新文件直接使用 agenthooks 的 render 输出，其 end marker 后的生成换行在删除托管区时留下；现令 Codex 渲染与已有合并逻辑一致，不在 end marker 后生成额外字节。未用 TrimSpace 删除用户原文。
+- [x] **M1B-FIX-01 验证**：新增 `internal/app/uninstall_test.go:TestUninstallCodexConfigWithoutGeneratedNewlineResidue`，两条路线 × absent/原有换行/混合空白/用户内容共 8 组，包含重复安装和双向路线切换；不存在的文件恢复不存在，原有字节及权限保留。隔离 Go 缓存、清理 CODEX 环境后的双 module 全量测试/vet、gofmt、diff 检查通过。
+
+此修复防止新安装往返生成残留。历史上已产生的单换行文件与用户原有单换行文件无法仅凭当前字节区分，清理应依据安装前备份；本轮不修改用户真实配置，真实 B8 仍待验收。
