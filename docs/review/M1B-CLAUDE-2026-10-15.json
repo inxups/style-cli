@@ -395,5 +395,176 @@
     "next_step": "C9 requires user-operated reinstallation before resuming a previously tested Claude session; both acceptance packages are currently uninstalled.",
     "real_configuration_modified_by_agent": false
   },
+  "C9": {
+    "status": "partial; timing-blocked",
+    "session_id": "1a0e173f-74cd-4b3d-90c9-040d2cc304c7",
+    "cwd": "/Users/inxups/.style-m1b/manual-workspace/claude-c4",
+    "route": "claude-user",
+    "fixed_binary_sha256": "ea47e355070e7b139c7d2567a05ac642705b2bbba3747379deed3515fb9c69b2",
+    "resume": {
+      "status": "passed",
+      "baseline": {
+        "session_id": "1a0e173f-74cd-4b3d-90c9-040d2cc304c7",
+        "workspace": "/Users/inxups/.style-m1b/manual-workspace/claude-c4",
+        "debug_log": "/tmp/style-m1b-claude-c9-2veayifa/hooks.log",
+        "scope_before": {
+          "gen": 0,
+          "epoch": 0,
+          "prompt_count": 5,
+          "updated_at": "2026-10-15T13:39:21.120233Z"
+        },
+        "stats_before_lines": 12,
+        "seen_before": [
+          "s.0.0.79ce178f13c627f3.165cf6c78b39ceb6",
+          "s.0.0.79ce178f13c627f3.690c98e498364d03",
+          "s.0.0.a052e97955b98cdd.12dea1a5e098958b",
+          "s.0.0.a052e97955b98cdd.1ead1f46a7a732fa"
+        ],
+        "state_before": {
+          "model": "claude-sonnet-5-5",
+          "effort": "high",
+          "effort_raw": "high",
+          "effort_approx": false,
+          "effort_resolved": true,
+          "harness_version": "2.1.300",
+          "updated_at": "2026-10-15T13:39:21.120233Z"
+        }
+      },
+      "SessionStart_resume_completed_at": "2026-10-15T14:16:19.985Z",
+      "SessionStart_resume_exit_code": 0,
+      "SessionStart_resume_stdout": "{}",
+      "user_report": "Original session resumed successfully; Current session: model claude-sonnet-5-5, effort high.",
+      "scope_after_first_prompt": {
+        "gen": 0,
+        "epoch": 0,
+        "prompt_count": 6
+      },
+      "stats_before_count": 12,
+      "stats_after_first_prompt_count": 14,
+      "stats_after_first_prompt_delta": [
+        {
+          "at": "2026-10-15T14:16:34.599725Z",
+          "provider": "claude-code",
+          "event": "UserPromptSubmit",
+          "point": "prompt.submitted",
+          "entry": "terse-reviewer/session-info@prompt.submitted",
+          "action": "inject",
+          "result": "dedup",
+          "est_tokens": 17,
+          "body_sha256": "sha256:12dea1a5e098958bb50b9e9cd6f3a11efe58f88f7ecbf17333c2524796fa4e42"
+        },
+        {
+          "at": "2026-10-15T14:16:34.600163Z",
+          "provider": "claude-code",
+          "event": "UserPromptSubmit",
+          "point": "prompt.submitted",
+          "entry": "m1b-probes/session-info@prompt.submitted",
+          "action": "inject",
+          "result": "dedup",
+          "est_tokens": 15,
+          "body_sha256": "sha256:690c98e498364d032280ba837fa651e3615ac71c89393c2ffc7b725d9aa609a1"
+        }
+      ],
+      "seen_after_first_prompt": [
+        "s.0.0.79ce178f13c627f3.165cf6c78b39ceb6",
+        "s.0.0.79ce178f13c627f3.690c98e498364d03",
+        "s.0.0.a052e97955b98cdd.12dea1a5e098958b",
+        "s.0.0.a052e97955b98cdd.1ead1f46a7a732fa"
+      ],
+      "scope_after_timing_run": {
+        "gen": 0,
+        "epoch": 0,
+        "prompt_count": 7,
+        "updated_at": "2026-10-15T14:22:04.700343Z"
+      },
+      "session_after_timing_run": {
+        "model": "claude-sonnet-5-5",
+        "effort": "high",
+        "effort_raw": "high",
+        "effort_approx": false,
+        "effort_resolved": true,
+        "harness_version": "2.1.300",
+        "updated_at": "2026-10-15T14:22:04.700343Z"
+      },
+      "seen_after_timing_run": [
+        "s.0.0.79ce178f13c627f3.165cf6c78b39ceb6",
+        "s.0.0.79ce178f13c627f3.690c98e498364d03",
+        "s.0.0.a052e97955b98cdd.12dea1a5e098958b",
+        "s.0.0.a052e97955b98cdd.1ead1f46a7a732fa"
+      ],
+      "stats_after_timing_run_count": 16,
+      "stats_after_timing_run_delta": [
+        {
+          "at": "2026-10-15T14:20:05.801014Z",
+          "provider": "claude-code",
+          "event": "UserPromptSubmit",
+          "point": "prompt.submitted",
+          "entry": "terse-reviewer/session-info@prompt.submitted",
+          "action": "inject",
+          "result": "dedup",
+          "est_tokens": 17,
+          "body_sha256": "sha256:12dea1a5e098958bb50b9e9cd6f3a11efe58f88f7ecbf17333c2524796fa4e42"
+        },
+        {
+          "at": "2026-10-15T14:20:05.801587Z",
+          "provider": "claude-code",
+          "event": "UserPromptSubmit",
+          "point": "prompt.submitted",
+          "entry": "m1b-probes/session-info@prompt.submitted",
+          "action": "inject",
+          "result": "dedup",
+          "est_tokens": 15,
+          "body_sha256": "sha256:690c98e498364d032280ba837fa651e3615ac71c89393c2ffc7b725d9aa609a1"
+        }
+      ],
+      "acceptance_basis": "SessionStart:resume actually ran and returned neutral {}. The following no-tools prompt added only two dedup records, with unchanged generation/epoch and the same four seen markers; no new session.start output occurred. The user quote corroborates historical context, but is not used alone as proof of dedup."
+    },
+    "timing": {
+      "status": "blocked",
+      "issue": "M1B-PERF-01",
+      "evidence": "docs/review/M1B-CLAUDE-C9-TIMING-2026-10-15.json",
+      "completion_excerpt": "docs/review/M1B-CLAUDE-C9-HOOKS-2026-10-15.txt",
+      "actual_Bash_calls": 50,
+      "failed_Bash_calls": 0,
+      "hook_errors": 0,
+      "overall": {
+        "count": 103,
+        "median_ms": 33.0,
+        "p95_ms": 53.0,
+        "max_ms": 209.0
+      },
+      "by_event": {
+        "PostToolUse:Bash": {
+          "count": 50,
+          "median_ms": 23.0,
+          "p95_ms": 29.0,
+          "max_ms": 40.0
+        },
+        "PreToolUse:Bash": {
+          "count": 50,
+          "median_ms": 41.0,
+          "p95_ms": 53.0,
+          "max_ms": 60.0
+        },
+        "SessionStart:resume": {
+          "count": 1,
+          "median_ms": 209.0,
+          "p95_ms": 209.0,
+          "max_ms": 209.0
+        },
+        "UserPromptSubmit": {
+          "count": 2,
+          "median_ms": 60.5,
+          "p95_ms": 66.0,
+          "max_ms": 66.0
+        }
+      },
+      "observation": "103 command-hook samples, no slow or warmup samples discarded. One assistant message contains two overlapping calls, so the requested fully serial protocol was not fully followed. This does not explain away the slow earlier samples; the separate exclusion sensitivity result is also over budget.",
+      "measurement_boundary": "Claude-reported command-hook completion duration, not instrumented Go process time. Isolated copied-index/synthetic-payload process probes have ~24.1ms p95 and do not replace these real samples.",
+      "next_step": "Keep C9 incomplete. Determine what the real command-hook timer includes and locate the PreToolUse overhead before choosing an optimization or requesting a design change. Do not relax the 50ms limit or apply the Codex U5 matcher fallback to Claude without evidence."
+    },
+    "real_configuration_modified_by_agent": false,
+    "reproduction": "Follow manual section 5.2: retain pre-resume state/stats/seen; user launches the same session with --resume and --debug hooks --debug-file; quote current context without tools and correlate neutral resume output with dedup-only stats. Then request 50 separate sequential Bash marker calls, verify actual call/result IDs and overlap from timestamped transcript rows, and run measure_claude_hooks.py on the full debug log or retained completion excerpt. Require p95 <50ms and inspect JSON status; parser exit 0 is not acceptance."
+  },
   "pending": ["C9"]
 }

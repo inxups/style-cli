@@ -710,3 +710,13 @@
 - 14:10:58.625139Z 只读复核 settings 与预先校验的本次安装基线完全相同，197 字节、SHA256 fe71f251612b6b782d440703416ab9712cc7dde0cf5ce21c09c41c391f1c2cd0。settings 没有 hooks，CLAUDE.md、owner 恢复记录、M1b lock/index 均不存在，显式 STYLE_HOME 下 list 为空。
 - 基线保留用户在最初 absent 备份之后新增的模型/界面偏好。当前安装有 applied 摘要相符的恢复记录和一致的 non-hook 值作为来源，不通过覆盖旧备份伪造恢复；首轮未实际卸载的记录保留。
 - Claude JSON、任务、测试、手册及既有 review 同步完成确认。无 Go/真实配置代操作；验证基线来源/字节/hash、卸载残留与文档状态、手册 shell 语法和 diff。C9 待用户重装后继续；不据此完成 Codex B8 或本次没有的外部 hook 真实场景，M1 未完成。
+
+### 2026-10-15 — CLAUDE-09/C9 `[~]`；resume `[x]`；M1B-PERF-01 `[!]`
+
+- 用户重装两包到 claude-user 并恢复旧 session 1a0e173f-74cd-4b3d-90c9-040d2cc304c7，回传 Sonnet/high 上下文。实际 14:16:19.985Z SessionStart:resume 退出 0、stdout `{}`，第一条无工具提示只新增两条 prompt dedup，原四个 seen 标记和 gen=0/epoch=0 不变，prompt_count 5→6；没有重新输出 session.start，resume 分支通过。
+- 用户完成采样请求，timestamped transcript 验证 50 个 Bash tool id 均有成功结果，0 失败；49 个 assistant message 中一个含两次重叠调用（第 48/49 次）。无 timestamp 的历史快照不重复计数，未把模型的“顺序”描述当成全串行证据。最终 prompt_count=7、seen 仍相同，仅再新增两条 prompt dedup。
+- Claude 2.1.300 debug 原样记录 103 次 STYLE command-hook 完成、0 错误：整体 median=33ms/p95=53ms/max=209ms，PreToolUse 50 条 median=41ms/p95=53ms/max=60ms，PostToolUse 50 条 median=23ms/p95=29ms/max=40ms，resume 1 条 209ms、prompt 2 条 55/66ms。nearest-rank，无预热/慢样本剔除；完整结果未达到 p95<50ms，记录 M1B-PERF-01，C9 不能标记完成。
+- 单独排除重叠区间四条 completion 的敏感性分析为 99 条/p95=54ms，也超预算；不替代完整结果。固定二进制、只复制 index、临时新状态和合成输入的进程诊断各 100 次，清理 CODEX_HOME/CODEX_SANDBOX、保留其余环境并指定 CLAUDE_EFFORT=high，Pre/Post p95=24.080709/24.08275ms；临时输出 `/tmp/style-m1b-c9-process-jp90qpc8/report.json`。不同输入/环境/计时边界不能相减得出原因或作为真实 C9 通过依据。
+- 原样 103 条 completion 入库 `docs/review/M1B-CLAUDE-C9-HOOKS-2026-10-15.txt`；样本、完整 50 次调用/结果、源摘要、重叠和诊断摘要入库 `docs/review/M1B-CLAUDE-C9-TIMING-2026-10-15.json`。未提交完整 debug/会话内容。新增只读 `testdata/manual/measure_claude_hooks.py`，退出 0 仅表示生成 JSON，`status` 才表达采样判定。
+- 验证：`PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s testdata/manual -p 'test_measure_claude_hooks.py' -v` 六项通过；语法编译输出在 `/tmp`；对留存 excerpt 精确复算 103 条及 p95、JSON/status/摘要/引用检查、与真实 transcript 的 50 组调用结果逐项比较及 `git diff --check` 通过。任务、矩阵、手册和既有 review 已确认 resume 完成、性能未通过。本项无 Go/真实配置修改。
+- 下一步先查明真实 command-hook 计时边界与 PreToolUse 开销，再选择优化；不直接删除持久化安全语义、不放宽阈值，不将 Codex U5 的 matcher 设计回退套用到 Claude。若需设计变更，按设计 §14.3/§15.1 评审；Claude M1b 和 M1 仍未完成。

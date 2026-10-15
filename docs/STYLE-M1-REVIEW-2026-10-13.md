@@ -515,3 +515,12 @@ M1B-FIX-02 复核：使用临时 Go 缓存、清理 CODEX 环境构建 `go build
 - [x] **CLAUDE-08/C8**：用户以单行 env 命令成功卸载两包，cmp 通过；只读确认 settings.json 与核验过的本次安装原始字节完全一致（197 字节及 SHA256 一致），CLAUDE.md 和 owner 恢复记录均不存在，包列表为空且 lock/index 已移除。模型/界面偏好保留，未用过时的 absent 备份删除它们。
 
 首轮记录仅为历史状态，最终通过依据和复现见 Claude JSON 的 C8.real_retest。本次没有外部 hook 条目，不扩大为该场景的真实验收或 Codex B8；外部条目保留仍有离线回归。无 Go/真实配置代操作，C9 待用户重装后继续，M1 未完成。
+
+## Claude C9 分支确认与性能问题（2026-10-15）
+
+- [x] **CLAUDE-09/C9 resume 分支**：用户重装两包并恢复原 session，实际 SessionStart:resume 返回 `{}`。第一条无工具提示只新增两条 dedup，gen/epoch 和原四个 seen 标记不变，无新的 session.start output；用户引用的 Sonnet/high 是历史上下文的辅助证据。
+- [!] **M1B-PERF-01 / C9 性能分支**：实际 50 次 Bash 全成功、0 hook 错误；103 条完整 command-hook 样本整体 p95=53ms，PreToolUse=53ms、PostToolUse=29ms，未达到严格小于 50ms。一个 assistant message 含两次重叠调用，不能称全串行；慢样本出现在此前，单独排除对应四条记录后的 p95=54ms，也不能用于关闭问题。没有剔除慢样本或放宽阈值。
+
+原样 completion 片段、103 条样本和全部 50 次调用/结果已入库；`measure_claude_hooks.py` 可独立复算，六项回归检查分位数、阈值相等、慢样本保留、外部记录过滤、hook 错误、格式变化及空日志。脚本生成成功不等于性能通过。临时副本的合成输入进程诊断两组各 100 次，Pre/Post p95 均约 24.1ms；环境、输入和计时边界与真实 harness 不同，不能相减得出原因，也不能替代 C9。
+
+下一步先定位 Claude command-hook 计时边界和 PreToolUse 额外开销，再决定优化；没有证据时不直接删状态持久化、降低安全语义，或套用 Codex U5 的 matcher 回退。C9 整体、Claude M1b 和 M1 均未完成。本项无 Go/真实配置修改，证据和复现见 Claude JSON 的 C9、C9 timing/excerpt 及手册 §5.2。

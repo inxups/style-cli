@@ -90,7 +90,7 @@ fi
 
 ## 4. Claude Code：用户级配置
 
-2026-10-15 的旧临时程序路径问题已由用户重新安装解除。C1 真实投递/首次工具后 high 补发、C2 compact 单次补发与去重通过。C3 漏订阅修复后，用户重装并真实验证 Opus、Sonnet 两次切换均只补发一次新模型。C4 经 M1B-FIX-06 修复后，正确目录中两个新会话的隐式/显式首次投递和共享去重均通过；C5–C9 待验收。保留启动 model/effort unknown 的可用性边界，不把 C3 扩展为强度验收。证据见 `review/M1B-CLAUDE-2026-10-15.json`。
+2026-10-15 的旧临时程序路径问题已由用户重新安装解除。C1–C8 和 C9 resume 去重分支已真实通过；C9 性能整体 p95=53ms，超过严格小于 50ms 的目标，保持未完成并记录 M1B-PERF-01。保留启动 model/effort unknown 的可用性边界，不把 C3 扩展为强度验收。证据见 `review/M1B-CLAUDE-2026-10-15.json`。
 
 复现 C3：先按第 1 节重建固定二进制，再执行下面安装命令，保留原安装前备份。重新打开 Claude 会话，确认 `/hooks` 新增 PostModelSwitch（M1B-FIX-06 后本示例为 6 类事件、12 条 hook，其中 PostToolUse 增加 Skill）。用 `/model` 切到另一个当前可用的模型，随后分两条提示引用最新 `Current session:`。第一条应收到新模型正文，第二条应去重；同时核对 state/stats。运行中自动加载订阅变更仍未验证，故采用新会话。
 
@@ -178,6 +178,23 @@ cmp /Users/inxups/project/style-cli/testdata/manual/claude-skills/code-review/SK
 2. 单独发送 `/code-review`，回传结果。实际 UserPromptExpansion 必须发生；同 session 的 review-skill 应去重，模型仍能引用旧上下文不表示重复注入。
 
 另开新会话，按显式 `/code-review` → 普通提示要求 Skill 调用的顺序复测。两个入口各作为首次调用时应输出 `review-skill` 一次，另一个入口复用同 session 去重。若 harness 避免重复调用 Skill，则记录实际行为，不用模型复述代替缺失的调用。结合 state/stats 检查 `terse-reviewer/review-skill` 的 output/dedup；本轮两种顺序已真实通过，证据见 Claude JSON 的 C4.real_retest。第二次回答可以复述旧上下文，也可以说明本次没有新增指令，是否重复投递以实际日志核对。
+
+### 5.2 Claude C9：resume 与真实耗时
+
+先保存待恢复 session 的 `session.json`、`scope.json`、`stats.jsonl` 行数和 `seen` 文件名。用户在同一工作目录用 `claude --resume <session-id> --debug hooks --debug-file <临时目录>/hooks.log` 恢复，不用新会话代替。发送一条无工具提示，引用最新 `Current session:`。核对实际 `SessionStart:resume` 中性输出、gen/epoch 和 seen 不变、prompt_count 随提示递增、后续仅 dedup；模型复述历史文字不能单独证明没有重新注入。
+
+继续在带 debug 的会话中，以一条消息要求依次调用 Bash 50 次，每次只执行 `printf 'STYLE_M1B_C9\n'`，等返回后再调用下一次，不并行、不合并、不使用 shell 循环。用 timestamped transcript 的实际 tool id/result id、assistant message 和时间检查次数、错误、重叠；无 timestamp 的历史快照行不重复计数。最低采样量 100 是本收集流程的检查门槛，不表示设计 U5 的 1000 次 Codex 基准已完成。
+
+从仓库根复算真实 debug 文件：
+
+```sh
+python3 testdata/manual/measure_claude_hooks.py /path/to/hooks.log \
+  --binary "$HOME/.local/lib/style-m1b/style"
+```
+
+收集器只读，退出 0 表示 JSON 生成成功；`status=within-budget` 才表示该样本达到默认门槛。完整保留匹配的 STYLE command-hook 完成计时，不剔除预热/慢样本，不混入 Claude 内部 `hooks module` 计时；整体和各事件均按 `sorted[ceil(0.95*n)-1]` 计算。这里是 harness 报告的 command-hook 耗时，未独立测到 Go 进程起止，不能混用 A20 或合成输入进程测量。
+
+2026-10-15 首轮结果：50 次 Bash 全成功、0 hook 错误，实际 49 个 assistant message，其中一个含两次重叠调用，故不宣称全串行。103 条完整样本整体 p95=53ms，PreToolUse=53ms、PostToolUse=29ms；C9 性能未通过。排除重叠区间的单独敏感性分析仍超预算，不能据此替换完整结果。原样 completion 片段与全部调用元数据见 `review/M1B-CLAUDE-C9-HOOKS-2026-10-15.txt`、`review/M1B-CLAUDE-C9-TIMING-2026-10-15.json`；对前者运行相同脚本可复算。不放宽阈值，先定位计时边界和 PreToolUse 开销；本次没有修改真实配置或 Go 实现。
 
 ## 6. Codex 插件路线与手动注册
 

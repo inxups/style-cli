@@ -1,0 +1,1426 @@
+{
+  "source_sha256": "cb8ba834a1fce5d7dc2545b5ded4918161c2ee99df11d38dc9e4d39919f0c821",
+  "measurement": "Claude-reported command-hook duration; includes harness timing boundaries; no matched samples discarded",
+  "percentile": "nearest rank: sorted[ceil(0.95 * n) - 1]",
+  "minimum_samples": 100,
+  "threshold_ms": 50,
+  "status": "over-budget",
+  "hook_errors": 0,
+  "unparsed_STYLE_completions": 0,
+  "overall": {
+    "count": 103,
+    "median_ms": 33.0,
+    "p95_ms": 53.0,
+    "max_ms": 209.0
+  },
+  "by_event": {
+    "PostToolUse:Bash": {
+      "count": 50,
+      "median_ms": 23.0,
+      "p95_ms": 29.0,
+      "max_ms": 40.0
+    },
+    "PreToolUse:Bash": {
+      "count": 50,
+      "median_ms": 41.0,
+      "p95_ms": 53.0,
+      "max_ms": 60.0
+    },
+    "SessionStart:resume": {
+      "count": 1,
+      "median_ms": 209.0,
+      "p95_ms": 209.0,
+      "max_ms": 209.0
+    },
+    "UserPromptSubmit": {
+      "count": 2,
+      "median_ms": 60.5,
+      "p95_ms": 66.0,
+      "max_ms": 66.0
+    }
+  },
+  "samples": [
+    {
+      "at": "2026-10-15T14:16:19.985Z",
+      "event": "SessionStart:resume",
+      "exit_code": 0,
+      "duration_ms": 209.0
+    },
+    {
+      "at": "2026-10-15T14:16:34.601Z",
+      "event": "UserPromptSubmit",
+      "exit_code": 0,
+      "duration_ms": 55.0
+    },
+    {
+      "at": "2026-10-15T14:20:05.809Z",
+      "event": "UserPromptSubmit",
+      "exit_code": 0,
+      "duration_ms": 66.0
+    },
+    {
+      "at": "2026-10-15T14:20:07.705Z",
+      "event": "PreToolUse:Bash",
+      "exit_code": 0,
+      "duration_ms": 27.0
+    },
+    {
+      "at": "2026-10-15T14:20:08.876Z",
+      "event": "PostToolUse:Bash",
+      "exit_code": 0,
+      "duration_ms": 21.0
+    },
+    {
+      "at": "2026-10-15T14:20:10.501Z",
+      "event": "PreToolUse:Bash",
+      "exit_code": 0,
+      "duration_ms": 31.0
+    },
+    {
+      "at": "2026-10-15T14:20:11.122Z",
+      "event": "PostToolUse:Bash",
+      "exit_code": 0,
+      "duration_ms": 25.0
+    },
+    {
+      "at": "2026-10-15T14:20:12.742Z",
+      "event": "PreToolUse:Bash",
+      "exit_code": 0,
+      "duration_ms": 44.0
+    },
+    {
+      "at": "2026-10-15T14:20:13.261Z",
+      "event": "PostToolUse:Bash",
+      "exit_code": 0,
+      "duration_ms": 24.0
+    },
+    {
+      "at": "2026-10-15T14:20:14.932Z",
+      "event": "PreToolUse:Bash",
+      "exit_code": 0,
+      "duration_ms": 39.0
+    },
+    {
+      "at": "2026-10-15T14:20:15.572Z",
+      "event": "PostToolUse:Bash",
+      "exit_code": 0,
+      "duration_ms": 24.0
+    },
+    {
+      "at": "2026-10-15T14:20:17.284Z",
+      "event": "PreToolUse:Bash",
+      "exit_code": 0,
+      "duration_ms": 44.0
+    },
+    {
+      "at": "2026-10-15T14:20:17.787Z",
+      "event": "PostToolUse:Bash",
+      "exit_code": 0,
+      "duration_ms": 22.0
+    },
+    {
+      "at": "2026-10-15T14:20:19.578Z",
+      "event": "PreToolUse:Bash",
+      "exit_code": 0,
+      "duration_ms": 40.0
+    },
+    {
+      "at": "2026-10-15T14:20:20.598Z",
+      "event": "PostToolUse:Bash",
+      "exit_code": 0,
+      "duration_ms": 21.0
+    },
+    {
+      "at": "2026-10-15T14:20:22.157Z",
+      "event": "PreToolUse:Bash",
+      "exit_code": 0,
+      "duration_ms": 40.0
+    },
+    {
+      "at": "2026-10-15T14:20:22.871Z",
+      "event": "PostToolUse:Bash",
+      "exit_code": 0,
+      "duration_ms": 27.0
+    },
+    {
+      "at": "2026-10-15T14:20:24.494Z",
+      "event": "PreToolUse:Bash",
+      "exit_code": 0,
+      "duration_ms": 39.0
+    },
+    {
+      "at": "2026-10-15T14:20:25.203Z",
+      "event": "PostToolUse:Bash",
+      "exit_code": 0,
+      "duration_ms": 23.0
+    },
+    {
+      "at": "2026-10-15T14:20:27.179Z",
+      "event": "PreToolUse:Bash",
+      "exit_code": 0,
+      "duration_ms": 44.0
+    },
+    {
+      "at": "2026-10-15T14:20:27.876Z",
+      "event": "PostToolUse:Bash",
+      "exit_code": 0,
+      "duration_ms": 25.0
+    },
+    {
+      "at": "2026-10-15T14:20:29.483Z",
+      "event": "PreToolUse:Bash",
+      "exit_code": 0,
+      "duration_ms": 39.0
+    },
+    {
+      "at": "2026-10-15T14:20:30.127Z",
+      "event": "PostToolUse:Bash",
+      "exit_code": 0,
+      "duration_ms": 25.0
+    },
+    {
+      "at": "2026-10-15T14:20:32.110Z",
+      "event": "PreToolUse:Bash",
+      "exit_code": 0,
+      "duration_ms": 54.0
+    },
+    {
+      "at": "2026-10-15T14:20:32.678Z",
+      "event": "PostToolUse:Bash",
+      "exit_code": 0,
+      "duration_ms": 27.0
+    },
+    {
+      "at": "2026-10-15T14:20:34.354Z",
+      "event": "PreToolUse:Bash",
+      "exit_code": 0,
+      "duration_ms": 36.0
+    },
+    {
+      "at": "2026-10-15T14:20:34.762Z",
+      "event": "PostToolUse:Bash",
+      "exit_code": 0,
+      "duration_ms": 21.0
+    },
+    {
+      "at": "2026-10-15T14:20:36.728Z",
+      "event": "PreToolUse:Bash",
+      "exit_code": 0,
+      "duration_ms": 44.0
+    },
+    {
+      "at": "2026-10-15T14:20:37.390Z",
+      "event": "PostToolUse:Bash",
+      "exit_code": 0,
+      "duration_ms": 22.0
+    },
+    {
+      "at": "2026-10-15T14:20:39.022Z",
+      "event": "PreToolUse:Bash",
+      "exit_code": 0,
+      "duration_ms": 43.0
+    },
+    {
+      "at": "2026-10-15T14:20:39.489Z",
+      "event": "PostToolUse:Bash",
+      "exit_code": 0,
+      "duration_ms": 22.0
+    },
+    {
+      "at": "2026-10-15T14:20:42.186Z",
+      "event": "PreToolUse:Bash",
+      "exit_code": 0,
+      "duration_ms": 52.0
+    },
+    {
+      "at": "2026-10-15T14:20:42.507Z",
+      "event": "PostToolUse:Bash",
+      "exit_code": 0,
+      "duration_ms": 22.0
+    },
+    {
+      "at": "2026-10-15T14:20:44.643Z",
+      "event": "PreToolUse:Bash",
+      "exit_code": 0,
+      "duration_ms": 32.0
+    },
+    {
+      "at": "2026-10-15T14:20:45.078Z",
+      "event": "PostToolUse:Bash",
+      "exit_code": 0,
+      "duration_ms": 24.0
+    },
+    {
+      "at": "2026-10-15T14:20:46.753Z",
+      "event": "PreToolUse:Bash",
+      "exit_code": 0,
+      "duration_ms": 43.0
+    },
+    {
+      "at": "2026-10-15T14:20:47.223Z",
+      "event": "PostToolUse:Bash",
+      "exit_code": 0,
+      "duration_ms": 26.0
+    },
+    {
+      "at": "2026-10-15T14:20:48.949Z",
+      "event": "PreToolUse:Bash",
+      "exit_code": 0,
+      "duration_ms": 36.0
+    },
+    {
+      "at": "2026-10-15T14:20:49.591Z",
+      "event": "PostToolUse:Bash",
+      "exit_code": 0,
+      "duration_ms": 21.0
+    },
+    {
+      "at": "2026-10-15T14:20:51.173Z",
+      "event": "PreToolUse:Bash",
+      "exit_code": 0,
+      "duration_ms": 50.0
+    },
+    {
+      "at": "2026-10-15T14:20:51.620Z",
+      "event": "PostToolUse:Bash",
+      "exit_code": 0,
+      "duration_ms": 25.0
+    },
+    {
+      "at": "2026-10-15T14:20:53.230Z",
+      "event": "PreToolUse:Bash",
+      "exit_code": 0,
+      "duration_ms": 38.0
+    },
+    {
+      "at": "2026-10-15T14:20:53.822Z",
+      "event": "PostToolUse:Bash",
+      "exit_code": 0,
+      "duration_ms": 24.0
+    },
+    {
+      "at": "2026-10-15T14:20:55.583Z",
+      "event": "PreToolUse:Bash",
+      "exit_code": 0,
+      "duration_ms": 41.0
+    },
+    {
+      "at": "2026-10-15T14:20:56.328Z",
+      "event": "PostToolUse:Bash",
+      "exit_code": 0,
+      "duration_ms": 26.0
+    },
+    {
+      "at": "2026-10-15T14:20:58.100Z",
+      "event": "PreToolUse:Bash",
+      "exit_code": 0,
+      "duration_ms": 41.0
+    },
+    {
+      "at": "2026-10-15T14:20:58.834Z",
+      "event": "PostToolUse:Bash",
+      "exit_code": 0,
+      "duration_ms": 22.0
+    },
+    {
+      "at": "2026-10-15T14:21:00.408Z",
+      "event": "PreToolUse:Bash",
+      "exit_code": 0,
+      "duration_ms": 44.0
+    },
+    {
+      "at": "2026-10-15T14:21:01.008Z",
+      "event": "PostToolUse:Bash",
+      "exit_code": 0,
+      "duration_ms": 24.0
+    },
+    {
+      "at": "2026-10-15T14:21:02.871Z",
+      "event": "PreToolUse:Bash",
+      "exit_code": 0,
+      "duration_ms": 37.0
+    },
+    {
+      "at": "2026-10-15T14:21:03.355Z",
+      "event": "PostToolUse:Bash",
+      "exit_code": 0,
+      "duration_ms": 24.0
+    },
+    {
+      "at": "2026-10-15T14:21:05.223Z",
+      "event": "PreToolUse:Bash",
+      "exit_code": 0,
+      "duration_ms": 39.0
+    },
+    {
+      "at": "2026-10-15T14:21:05.958Z",
+      "event": "PostToolUse:Bash",
+      "exit_code": 0,
+      "duration_ms": 24.0
+    },
+    {
+      "at": "2026-10-15T14:21:07.829Z",
+      "event": "PreToolUse:Bash",
+      "exit_code": 0,
+      "duration_ms": 41.0
+    },
+    {
+      "at": "2026-10-15T14:21:08.310Z",
+      "event": "PostToolUse:Bash",
+      "exit_code": 0,
+      "duration_ms": 23.0
+    },
+    {
+      "at": "2026-10-15T14:21:10.234Z",
+      "event": "PreToolUse:Bash",
+      "exit_code": 0,
+      "duration_ms": 39.0
+    },
+    {
+      "at": "2026-10-15T14:21:10.566Z",
+      "event": "PostToolUse:Bash",
+      "exit_code": 0,
+      "duration_ms": 22.0
+    },
+    {
+      "at": "2026-10-15T14:21:12.550Z",
+      "event": "PreToolUse:Bash",
+      "exit_code": 0,
+      "duration_ms": 43.0
+    },
+    {
+      "at": "2026-10-15T14:21:12.826Z",
+      "event": "PostToolUse:Bash",
+      "exit_code": 0,
+      "duration_ms": 25.0
+    },
+    {
+      "at": "2026-10-15T14:21:14.624Z",
+      "event": "PreToolUse:Bash",
+      "exit_code": 0,
+      "duration_ms": 38.0
+    },
+    {
+      "at": "2026-10-15T14:21:15.198Z",
+      "event": "PostToolUse:Bash",
+      "exit_code": 0,
+      "duration_ms": 22.0
+    },
+    {
+      "at": "2026-10-15T14:21:17.259Z",
+      "event": "PreToolUse:Bash",
+      "exit_code": 0,
+      "duration_ms": 41.0
+    },
+    {
+      "at": "2026-10-15T14:21:17.760Z",
+      "event": "PostToolUse:Bash",
+      "exit_code": 0,
+      "duration_ms": 19.0
+    },
+    {
+      "at": "2026-10-15T14:21:19.680Z",
+      "event": "PreToolUse:Bash",
+      "exit_code": 0,
+      "duration_ms": 41.0
+    },
+    {
+      "at": "2026-10-15T14:21:20.171Z",
+      "event": "PostToolUse:Bash",
+      "exit_code": 0,
+      "duration_ms": 23.0
+    },
+    {
+      "at": "2026-10-15T14:21:21.752Z",
+      "event": "PreToolUse:Bash",
+      "exit_code": 0,
+      "duration_ms": 43.0
+    },
+    {
+      "at": "2026-10-15T14:21:22.259Z",
+      "event": "PostToolUse:Bash",
+      "exit_code": 0,
+      "duration_ms": 22.0
+    },
+    {
+      "at": "2026-10-15T14:21:23.953Z",
+      "event": "PreToolUse:Bash",
+      "exit_code": 0,
+      "duration_ms": 36.0
+    },
+    {
+      "at": "2026-10-15T14:21:24.392Z",
+      "event": "PostToolUse:Bash",
+      "exit_code": 0,
+      "duration_ms": 23.0
+    },
+    {
+      "at": "2026-10-15T14:21:26.220Z",
+      "event": "PreToolUse:Bash",
+      "exit_code": 0,
+      "duration_ms": 43.0
+    },
+    {
+      "at": "2026-10-15T14:21:26.962Z",
+      "event": "PostToolUse:Bash",
+      "exit_code": 0,
+      "duration_ms": 20.0
+    },
+    {
+      "at": "2026-10-15T14:21:28.524Z",
+      "event": "PreToolUse:Bash",
+      "exit_code": 0,
+      "duration_ms": 42.0
+    },
+    {
+      "at": "2026-10-15T14:21:29.152Z",
+      "event": "PostToolUse:Bash",
+      "exit_code": 0,
+      "duration_ms": 24.0
+    },
+    {
+      "at": "2026-10-15T14:21:30.914Z",
+      "event": "PreToolUse:Bash",
+      "exit_code": 0,
+      "duration_ms": 43.0
+    },
+    {
+      "at": "2026-10-15T14:21:31.452Z",
+      "event": "PostToolUse:Bash",
+      "exit_code": 0,
+      "duration_ms": 22.0
+    },
+    {
+      "at": "2026-10-15T14:21:33.717Z",
+      "event": "PreToolUse:Bash",
+      "exit_code": 0,
+      "duration_ms": 38.0
+    },
+    {
+      "at": "2026-10-15T14:21:33.776Z",
+      "event": "PostToolUse:Bash",
+      "exit_code": 0,
+      "duration_ms": 20.0
+    },
+    {
+      "at": "2026-10-15T14:21:35.391Z",
+      "event": "PreToolUse:Bash",
+      "exit_code": 0,
+      "duration_ms": 43.0
+    },
+    {
+      "at": "2026-10-15T14:21:35.982Z",
+      "event": "PostToolUse:Bash",
+      "exit_code": 0,
+      "duration_ms": 24.0
+    },
+    {
+      "at": "2026-10-15T14:21:37.797Z",
+      "event": "PreToolUse:Bash",
+      "exit_code": 0,
+      "duration_ms": 42.0
+    },
+    {
+      "at": "2026-10-15T14:21:38.179Z",
+      "event": "PostToolUse:Bash",
+      "exit_code": 0,
+      "duration_ms": 21.0
+    },
+    {
+      "at": "2026-10-15T14:21:40.049Z",
+      "event": "PreToolUse:Bash",
+      "exit_code": 0,
+      "duration_ms": 44.0
+    },
+    {
+      "at": "2026-10-15T14:21:40.477Z",
+      "event": "PostToolUse:Bash",
+      "exit_code": 0,
+      "duration_ms": 22.0
+    },
+    {
+      "at": "2026-10-15T14:21:42.767Z",
+      "event": "PreToolUse:Bash",
+      "exit_code": 0,
+      "duration_ms": 39.0
+    },
+    {
+      "at": "2026-10-15T14:21:43.334Z",
+      "event": "PostToolUse:Bash",
+      "exit_code": 0,
+      "duration_ms": 22.0
+    },
+    {
+      "at": "2026-10-15T14:21:45.119Z",
+      "event": "PreToolUse:Bash",
+      "exit_code": 0,
+      "duration_ms": 53.0
+    },
+    {
+      "at": "2026-10-15T14:21:45.521Z",
+      "event": "PostToolUse:Bash",
+      "exit_code": 0,
+      "duration_ms": 21.0
+    },
+    {
+      "at": "2026-10-15T14:21:47.580Z",
+      "event": "PreToolUse:Bash",
+      "exit_code": 0,
+      "duration_ms": 49.0
+    },
+    {
+      "at": "2026-10-15T14:21:47.637Z",
+      "event": "PostToolUse:Bash",
+      "exit_code": 0,
+      "duration_ms": 20.0
+    },
+    {
+      "at": "2026-10-15T14:21:49.830Z",
+      "event": "PreToolUse:Bash",
+      "exit_code": 0,
+      "duration_ms": 38.0
+    },
+    {
+      "at": "2026-10-15T14:21:50.165Z",
+      "event": "PostToolUse:Bash",
+      "exit_code": 0,
+      "duration_ms": 22.0
+    },
+    {
+      "at": "2026-10-15T14:21:51.723Z",
+      "event": "PreToolUse:Bash",
+      "exit_code": 0,
+      "duration_ms": 38.0
+    },
+    {
+      "at": "2026-10-15T14:21:52.144Z",
+      "event": "PostToolUse:Bash",
+      "exit_code": 0,
+      "duration_ms": 25.0
+    },
+    {
+      "at": "2026-10-15T14:21:53.717Z",
+      "event": "PreToolUse:Bash",
+      "exit_code": 0,
+      "duration_ms": 42.0
+    },
+    {
+      "at": "2026-10-15T14:21:54.402Z",
+      "event": "PostToolUse:Bash",
+      "exit_code": 0,
+      "duration_ms": 26.0
+    },
+    {
+      "at": "2026-10-15T14:21:56.022Z",
+      "event": "PreToolUse:Bash",
+      "exit_code": 0,
+      "duration_ms": 60.0
+    },
+    {
+      "at": "2026-10-15T14:21:56.495Z",
+      "event": "PostToolUse:Bash",
+      "exit_code": 0,
+      "duration_ms": 23.0
+    },
+    {
+      "at": "2026-10-15T14:21:58.334Z",
+      "event": "PreToolUse:Bash",
+      "exit_code": 0,
+      "duration_ms": 41.0
+    },
+    {
+      "at": "2026-10-15T14:21:58.571Z",
+      "event": "PreToolUse:Bash",
+      "exit_code": 0,
+      "duration_ms": 33.0
+    },
+    {
+      "at": "2026-10-15T14:21:59.165Z",
+      "event": "PostToolUse:Bash",
+      "exit_code": 0,
+      "duration_ms": 38.0
+    },
+    {
+      "at": "2026-10-15T14:21:59.172Z",
+      "event": "PostToolUse:Bash",
+      "exit_code": 0,
+      "duration_ms": 40.0
+    },
+    {
+      "at": "2026-10-15T14:22:04.235Z",
+      "event": "PreToolUse:Bash",
+      "exit_code": 0,
+      "duration_ms": 36.0
+    },
+    {
+      "at": "2026-10-15T14:22:04.713Z",
+      "event": "PostToolUse:Bash",
+      "exit_code": 0,
+      "duration_ms": 29.0
+    }
+  ],
+  "source": "docs/review/M1B-CLAUDE-C9-HOOKS-2026-10-15.txt",
+  "original_log": {
+    "path": "/tmp/style-m1b-claude-c9-2veayifa/hooks.log",
+    "sha256_at_first_complete_capture": "c6b1a27f50cdf307342dede50d980bda66a7501b8cf01154e97ac878764cb1a0",
+    "sha256_at_extraction": "f5aaf2d007daa56dbc1940c2160152dd1fd106a9568d5041115cf97b54fe039a",
+    "selection": "All 103 matching STYLE command-hook completion lines, verbatim and in source order. No matching completions or warmup samples removed. Unrelated debug entries are omitted. The live log can continue growing."
+  },
+  "tool_execution": {
+    "transcript": "/Users/inxups/.claude/projects/-Users-inxups--style-m1b-manual-workspace-claude-c4/1a0e173f-74cd-4b3d-90c9-040d2cc304c7.jsonl",
+    "transcript_sha256_at_inspection": "eaaf17b1bc28b94bbe78814772e57c1aa0dccaf0add730798d27972d4df9d5b2",
+    "snapshot_rows_without_timestamp_ignored": true,
+    "actual_Bash_calls": 50,
+    "failed_calls": 0,
+    "missing_results": 0,
+    "assistant_messages": 49,
+    "message_call_count_distribution": {
+      "1": 48,
+      "2": 1
+    },
+    "requested_fully_serial": true,
+    "observed_fully_serial": false,
+    "overlaps": [
+      {
+        "previous_tool_use_id": "toolu_01Tv2aHBsvxNvSeYWU9FpDPi",
+        "previous_result_at": "2026-10-15T14:21:59.166Z",
+        "next_tool_use_id": "toolu_0189Jw4wrDkLDyMRmTe4QzdV",
+        "next_call_at": "2026-10-15T14:21:58.531Z",
+        "same_assistant_message": true
+      }
+    ],
+    "calls": [
+      {
+        "tool_use_id": "toolu_014Nq8prjhbHsN46Ayvhdmha",
+        "at": "2026-10-15T14:20:07.654Z",
+        "message_id": "msg_011Cg4Ao4bizUYADDPcBkYei",
+        "input": {
+          "command": "printf 'STYLE_M1B_C9\\n'",
+          "description": "Print marker string (1/50)"
+        },
+        "result": {
+          "at": "2026-10-15T14:20:08.877Z",
+          "content": "STYLE_M1B_C9",
+          "is_error": false
+        }
+      },
+      {
+        "tool_use_id": "toolu_01STeZ8zX9N2Y8cEN7z2nyLz",
+        "at": "2026-10-15T14:20:10.459Z",
+        "message_id": "msg_011Cg4AoHCknMnmXheTi1MMK",
+        "input": {
+          "command": "printf 'STYLE_M1B_C9\\n'",
+          "description": "Print marker string (2/50)"
+        },
+        "result": {
+          "at": "2026-10-15T14:20:11.122Z",
+          "content": "STYLE_M1B_C9",
+          "is_error": false
+        }
+      },
+      {
+        "tool_use_id": "toolu_01Ke5VREQ6jeaHm1ZyMNLcv6",
+        "at": "2026-10-15T14:20:12.685Z",
+        "message_id": "msg_011Cg4AoSgXK8YP1xPrzXyrn",
+        "input": {
+          "command": "printf 'STYLE_M1B_C9\\n'",
+          "description": "Print marker string (3/50)"
+        },
+        "result": {
+          "at": "2026-10-15T14:20:13.262Z",
+          "content": "STYLE_M1B_C9",
+          "is_error": false
+        }
+      },
+      {
+        "tool_use_id": "toolu_01MWrVPArGaERjQk1VbkB48S",
+        "at": "2026-10-15T14:20:14.877Z",
+        "message_id": "msg_011Cg4Aobmi63g2nSXyRbexA",
+        "input": {
+          "command": "printf 'STYLE_M1B_C9\\n'",
+          "description": "Print marker string (4/50)"
+        },
+        "result": {
+          "at": "2026-10-15T14:20:15.572Z",
+          "content": "STYLE_M1B_C9",
+          "is_error": false
+        }
+      },
+      {
+        "tool_use_id": "toolu_01V1Vrzr889n5fAth6dLR5yM",
+        "at": "2026-10-15T14:20:17.227Z",
+        "message_id": "msg_011Cg4Aome3apf1ZeJESaxgb",
+        "input": {
+          "command": "printf 'STYLE_M1B_C9\\n'",
+          "description": "Print marker string (5/50)"
+        },
+        "result": {
+          "at": "2026-10-15T14:20:17.788Z",
+          "content": "STYLE_M1B_C9",
+          "is_error": false
+        }
+      },
+      {
+        "tool_use_id": "toolu_01VMeii72nLiEppds29YTgnf",
+        "at": "2026-10-15T14:20:19.521Z",
+        "message_id": "msg_011Cg4Aow9YcWJKAJXhQrD6t",
+        "input": {
+          "command": "printf 'STYLE_M1B_C9\\n'",
+          "description": "Print marker string (6/50)"
+        },
+        "result": {
+          "at": "2026-10-15T14:20:20.598Z",
+          "content": "STYLE_M1B_C9",
+          "is_error": false
+        }
+      },
+      {
+        "tool_use_id": "toolu_01828EKf1konzy3E6KpwgCu6",
+        "at": "2026-10-15T14:20:22.103Z",
+        "message_id": "msg_011Cg4Ap977xBshBzzBGqT42",
+        "input": {
+          "command": "printf 'STYLE_M1B_C9\\n'",
+          "description": "Print marker string (7/50)"
+        },
+        "result": {
+          "at": "2026-10-15T14:20:22.872Z",
+          "content": "STYLE_M1B_C9",
+          "is_error": false
+        }
+      },
+      {
+        "tool_use_id": "toolu_01BeMovZreJkFcX5TeS3xCjf",
+        "at": "2026-10-15T14:20:24.445Z",
+        "message_id": "msg_011Cg4ApJxD8QMTz7knyaasA",
+        "input": {
+          "command": "printf 'STYLE_M1B_C9\\n'",
+          "description": "Print marker string (8/50)"
+        },
+        "result": {
+          "at": "2026-10-15T14:20:25.204Z",
+          "content": "STYLE_M1B_C9",
+          "is_error": false
+        }
+      },
+      {
+        "tool_use_id": "toolu_011mDDSUaDGSb4RJYVPwPxaS",
+        "at": "2026-10-15T14:20:27.121Z",
+        "message_id": "msg_011Cg4ApUonkgAa3gZDMMniX",
+        "input": {
+          "command": "printf 'STYLE_M1B_C9\\n'",
+          "description": "Print marker string (9/50)"
+        },
+        "result": {
+          "at": "2026-10-15T14:20:27.877Z",
+          "content": "STYLE_M1B_C9",
+          "is_error": false
+        }
+      },
+      {
+        "tool_use_id": "toolu_0113oFP37dzmabQbAKgSAGcc",
+        "at": "2026-10-15T14:20:29.430Z",
+        "message_id": "msg_011Cg4ApgF847biNxWY7z9vM",
+        "input": {
+          "command": "printf 'STYLE_M1B_C9\\n'",
+          "description": "Print marker string (10/50)"
+        },
+        "result": {
+          "at": "2026-10-15T14:20:30.127Z",
+          "content": "STYLE_M1B_C9",
+          "is_error": false
+        }
+      },
+      {
+        "tool_use_id": "toolu_016QnynP1FHMibk5UaBpdZuT",
+        "at": "2026-10-15T14:20:32.042Z",
+        "message_id": "msg_011Cg4Apsazofvpnyio3W1Z1",
+        "input": {
+          "command": "printf 'STYLE_M1B_C9\\n'",
+          "description": "Print marker string (11/50)"
+        },
+        "result": {
+          "at": "2026-10-15T14:20:32.678Z",
+          "content": "STYLE_M1B_C9",
+          "is_error": false
+        }
+      },
+      {
+        "tool_use_id": "toolu_01TXHBLBwNqURaXyP3w8Z5iD",
+        "at": "2026-10-15T14:20:34.308Z",
+        "message_id": "msg_011Cg4Aq2iBpuurNqmoZ4Gzc",
+        "input": {
+          "command": "printf 'STYLE_M1B_C9\\n'",
+          "description": "Print marker string (12/50)"
+        },
+        "result": {
+          "at": "2026-10-15T14:20:34.763Z",
+          "content": "STYLE_M1B_C9",
+          "is_error": false
+        }
+      },
+      {
+        "tool_use_id": "toolu_0134ESRPoAdm9HSUMYz4ys5i",
+        "at": "2026-10-15T14:20:36.673Z",
+        "message_id": "msg_011Cg4AqBkuJt8Zc9eCrwKU1",
+        "input": {
+          "command": "printf 'STYLE_M1B_C9\\n'",
+          "description": "Print marker string (13/50)"
+        },
+        "result": {
+          "at": "2026-10-15T14:20:37.391Z",
+          "content": "STYLE_M1B_C9",
+          "is_error": false
+        }
+      },
+      {
+        "tool_use_id": "toolu_0179RZnxQiwe4Q6HqypYS5nV",
+        "at": "2026-10-15T14:20:38.966Z",
+        "message_id": "msg_011Cg4AqP6mhEWsdJ4AeWp5K",
+        "input": {
+          "command": "printf 'STYLE_M1B_C9\\n'",
+          "description": "Print marker string (14/50)"
+        },
+        "result": {
+          "at": "2026-10-15T14:20:39.489Z",
+          "content": "STYLE_M1B_C9",
+          "is_error": false
+        }
+      },
+      {
+        "tool_use_id": "toolu_0195j6SkVohtC7kCYx9tkMsb",
+        "at": "2026-10-15T14:20:42.122Z",
+        "message_id": "msg_011Cg4Aqa8nyyx8NiSDnzDeu",
+        "input": {
+          "command": "printf 'STYLE_M1B_C9\\n'",
+          "description": "Print marker string (15/50)"
+        },
+        "result": {
+          "at": "2026-10-15T14:20:42.507Z",
+          "content": "STYLE_M1B_C9",
+          "is_error": false
+        }
+      },
+      {
+        "tool_use_id": "toolu_01LGTv57BkE4M3nxBY2XaH83",
+        "at": "2026-10-15T14:20:44.606Z",
+        "message_id": "msg_011Cg4Aqkmki6dkoGySTkHHB",
+        "input": {
+          "command": "printf 'STYLE_M1B_C9\\n'",
+          "description": "Print marker string (16/50)"
+        },
+        "result": {
+          "at": "2026-10-15T14:20:45.079Z",
+          "content": "STYLE_M1B_C9",
+          "is_error": false
+        }
+      },
+      {
+        "tool_use_id": "toolu_01FfyXRk1UwoaV7bDRZLVLN4",
+        "at": "2026-10-15T14:20:46.695Z",
+        "message_id": "msg_011Cg4AqwqGjPiVzKYfMVzWg",
+        "input": {
+          "command": "printf 'STYLE_M1B_C9\\n'",
+          "description": "Print marker string (17/50)"
+        },
+        "result": {
+          "at": "2026-10-15T14:20:47.224Z",
+          "content": "STYLE_M1B_C9",
+          "is_error": false
+        }
+      },
+      {
+        "tool_use_id": "toolu_01ABEkqwH5ZqfUEt3anfVjfY",
+        "at": "2026-10-15T14:20:48.904Z",
+        "message_id": "msg_011Cg4Ar6zRtNHCqXSx5HXam",
+        "input": {
+          "command": "printf 'STYLE_M1B_C9\\n'",
+          "description": "Print marker string (18/50)"
+        },
+        "result": {
+          "at": "2026-10-15T14:20:49.591Z",
+          "content": "STYLE_M1B_C9",
+          "is_error": false
+        }
+      },
+      {
+        "tool_use_id": "toolu_01B9q9ZF52rM64DboXQ1MxX4",
+        "at": "2026-10-15T14:20:51.110Z",
+        "message_id": "msg_011Cg4ArH4ueGayhujb6NhET",
+        "input": {
+          "command": "printf 'STYLE_M1B_C9\\n'",
+          "description": "Print marker string (19/50)"
+        },
+        "result": {
+          "at": "2026-10-15T14:20:51.620Z",
+          "content": "STYLE_M1B_C9",
+          "is_error": false
+        }
+      },
+      {
+        "tool_use_id": "toolu_01Nw27gtPExmBvgHprPKUWj2",
+        "at": "2026-10-15T14:20:53.187Z",
+        "message_id": "msg_011Cg4ArRtE7mXt8Cpra33DN",
+        "input": {
+          "command": "printf 'STYLE_M1B_C9\\n'",
+          "description": "Print marker string (20/50)"
+        },
+        "result": {
+          "at": "2026-10-15T14:20:53.823Z",
+          "content": "STYLE_M1B_C9",
+          "is_error": false
+        }
+      },
+      {
+        "tool_use_id": "toolu_01Cd6YUyAQQ1D4qqZTAosfKa",
+        "at": "2026-10-15T14:20:55.528Z",
+        "message_id": "msg_011Cg4ArbGHoMoBVnACJpWyk",
+        "input": {
+          "command": "printf 'STYLE_M1B_C9\\n'",
+          "description": "Print marker string (21/50)"
+        },
+        "result": {
+          "at": "2026-10-15T14:20:56.328Z",
+          "content": "STYLE_M1B_C9",
+          "is_error": false
+        }
+      },
+      {
+        "tool_use_id": "toolu_01GnF7fBugTNqaccdugb6DUT",
+        "at": "2026-10-15T14:20:58.044Z",
+        "message_id": "msg_011Cg4ArmxUpcYPhHJgb4UQ8",
+        "input": {
+          "command": "printf 'STYLE_M1B_C9\\n'",
+          "description": "Print marker string (22/50)"
+        },
+        "result": {
+          "at": "2026-10-15T14:20:58.835Z",
+          "content": "STYLE_M1B_C9",
+          "is_error": false
+        }
+      },
+      {
+        "tool_use_id": "toolu_0173ivfHgVoy6NGSwf3QRh7Y",
+        "at": "2026-10-15T14:21:00.354Z",
+        "message_id": "msg_011Cg4Arxit9gCGfHRRVKg6W",
+        "input": {
+          "command": "printf 'STYLE_M1B_C9\\n'",
+          "description": "Print marker string (23/50)"
+        },
+        "result": {
+          "at": "2026-10-15T14:21:01.009Z",
+          "content": "STYLE_M1B_C9",
+          "is_error": false
+        }
+      },
+      {
+        "tool_use_id": "toolu_01YEfvT9Qu8em3xH1EjySSzB",
+        "at": "2026-10-15T14:21:02.823Z",
+        "message_id": "msg_011Cg4As7v276QzYjCt5JALu",
+        "input": {
+          "command": "printf 'STYLE_M1B_C9\\n'",
+          "description": "Print marker string (24/50)"
+        },
+        "result": {
+          "at": "2026-10-15T14:21:03.356Z",
+          "content": "STYLE_M1B_C9",
+          "is_error": false
+        }
+      },
+      {
+        "tool_use_id": "toolu_01HwKUXRrJ7NPE1cho4FiuPb",
+        "at": "2026-10-15T14:21:05.172Z",
+        "message_id": "msg_011Cg4AsJ1zfEPCfT9wtvXNN",
+        "input": {
+          "command": "printf 'STYLE_M1B_C9\\n'",
+          "description": "Print marker string (25/50)"
+        },
+        "result": {
+          "at": "2026-10-15T14:21:05.958Z",
+          "content": "STYLE_M1B_C9",
+          "is_error": false
+        }
+      },
+      {
+        "tool_use_id": "toolu_01HUKXskaHTNXDHQLzdx8Wu2",
+        "at": "2026-10-15T14:21:07.773Z",
+        "message_id": "msg_011Cg4AsVKt3kSenZ8fUhBy5",
+        "input": {
+          "command": "printf 'STYLE_M1B_C9\\n'",
+          "description": "Print marker string (26/50)"
+        },
+        "result": {
+          "at": "2026-10-15T14:21:08.311Z",
+          "content": "STYLE_M1B_C9",
+          "is_error": false
+        }
+      },
+      {
+        "tool_use_id": "toolu_01BJU4kZtW8hfNgFonzbrusA",
+        "at": "2026-10-15T14:21:10.182Z",
+        "message_id": "msg_011Cg4AsfGfRryU9zyBGvGsR",
+        "input": {
+          "command": "printf 'STYLE_M1B_C9\\n'",
+          "description": "Print marker string (27/50)"
+        },
+        "result": {
+          "at": "2026-10-15T14:21:10.567Z",
+          "content": "STYLE_M1B_C9",
+          "is_error": false
+        }
+      },
+      {
+        "tool_use_id": "toolu_018pEMyhv3DnwLhxVedynUX2",
+        "at": "2026-10-15T14:21:12.495Z",
+        "message_id": "msg_011Cg4Aspqdrcj43BAFahhwu",
+        "input": {
+          "command": "printf 'STYLE_M1B_C9\\n'",
+          "description": "Print marker string (28/50)"
+        },
+        "result": {
+          "at": "2026-10-15T14:21:12.827Z",
+          "content": "STYLE_M1B_C9",
+          "is_error": false
+        }
+      },
+      {
+        "tool_use_id": "toolu_01DgVjxwc1siTLN8iH6hJmkW",
+        "at": "2026-10-15T14:21:14.572Z",
+        "message_id": "msg_011Cg4At17GWqQCzpNHbu6Lf",
+        "input": {
+          "command": "printf 'STYLE_M1B_C9\\n'",
+          "description": "Print marker string (29/50)"
+        },
+        "result": {
+          "at": "2026-10-15T14:21:15.199Z",
+          "content": "STYLE_M1B_C9",
+          "is_error": false
+        }
+      },
+      {
+        "tool_use_id": "toolu_01QYFsQZ7U3oRYbFHrkqoBbb",
+        "at": "2026-10-15T14:21:17.208Z",
+        "message_id": "msg_011Cg4AtAfzHXj7w8DwcTtuh",
+        "input": {
+          "command": "printf 'STYLE_M1B_C9\\n'",
+          "description": "Print marker string (30/50)"
+        },
+        "result": {
+          "at": "2026-10-15T14:21:17.761Z",
+          "content": "STYLE_M1B_C9",
+          "is_error": false
+        }
+      },
+      {
+        "tool_use_id": "toolu_01RQ9dwAKR9T4yXmqHoUPLMo",
+        "at": "2026-10-15T14:21:19.626Z",
+        "message_id": "msg_011Cg4AtMWrNENBPDPxxX21h",
+        "input": {
+          "command": "printf 'STYLE_M1B_C9\\n'",
+          "description": "Print marker string (31/50)"
+        },
+        "result": {
+          "at": "2026-10-15T14:21:20.171Z",
+          "content": "STYLE_M1B_C9",
+          "is_error": false
+        }
+      },
+      {
+        "tool_use_id": "toolu_011RdKbYXMaDa49tRS7sewBi",
+        "at": "2026-10-15T14:21:21.697Z",
+        "message_id": "msg_011Cg4AtXsD1JsU33WfobjK6",
+        "input": {
+          "command": "printf 'STYLE_M1B_C9\\n'",
+          "description": "Print marker string (32/50)"
+        },
+        "result": {
+          "at": "2026-10-15T14:21:22.260Z",
+          "content": "STYLE_M1B_C9",
+          "is_error": false
+        }
+      },
+      {
+        "tool_use_id": "toolu_01CQQWQu8GsA68Weor1S1w4x",
+        "at": "2026-10-15T14:21:23.904Z",
+        "message_id": "msg_011Cg4AtgvRKmBEkvPEAymdV",
+        "input": {
+          "command": "printf 'STYLE_M1B_C9\\n'",
+          "description": "Print marker string (33/50)"
+        },
+        "result": {
+          "at": "2026-10-15T14:21:24.393Z",
+          "content": "STYLE_M1B_C9",
+          "is_error": false
+        }
+      },
+      {
+        "tool_use_id": "toolu_01QJHyeNmZ7gskKQMdZNEPNg",
+        "at": "2026-10-15T14:21:26.166Z",
+        "message_id": "msg_011Cg4AtqvAHxnfw7TGMXGf8",
+        "input": {
+          "command": "printf 'STYLE_M1B_C9\\n'",
+          "description": "Print marker string (34/50)"
+        },
+        "result": {
+          "at": "2026-10-15T14:21:26.963Z",
+          "content": "STYLE_M1B_C9",
+          "is_error": false
+        }
+      },
+      {
+        "tool_use_id": "toolu_01X8BZJ12JytLdJqKeGJjoNJ",
+        "at": "2026-10-15T14:21:28.471Z",
+        "message_id": "msg_011Cg4Au2yR6cymB4m15E5GP",
+        "input": {
+          "command": "printf 'STYLE_M1B_C9\\n'",
+          "description": "Print marker string (35/50)"
+        },
+        "result": {
+          "at": "2026-10-15T14:21:29.152Z",
+          "content": "STYLE_M1B_C9",
+          "is_error": false
+        }
+      },
+      {
+        "tool_use_id": "toolu_012kJo984YFwhf2nfss2Rkig",
+        "at": "2026-10-15T14:21:30.858Z",
+        "message_id": "msg_011Cg4AuCD3meGfeZiYjXCFS",
+        "input": {
+          "command": "printf 'STYLE_M1B_C9\\n'",
+          "description": "Print marker string (36/50)"
+        },
+        "result": {
+          "at": "2026-10-15T14:21:31.452Z",
+          "content": "STYLE_M1B_C9",
+          "is_error": false
+        }
+      },
+      {
+        "tool_use_id": "toolu_01JF45uRL84dzk2cXKuWsvSb",
+        "at": "2026-10-15T14:21:33.669Z",
+        "message_id": "msg_011Cg4AuPPk58XKZYWrSb6Mq",
+        "input": {
+          "command": "printf 'STYLE_M1B_C9\\n'",
+          "description": "Print marker string (37/50)"
+        },
+        "result": {
+          "at": "2026-10-15T14:21:33.776Z",
+          "content": "STYLE_M1B_C9",
+          "is_error": false
+        }
+      },
+      {
+        "tool_use_id": "toolu_016ACJWgRLBJF1wTezGEhEFh",
+        "at": "2026-10-15T14:21:35.333Z",
+        "message_id": "msg_011Cg4AuY2u8BoAF5vMjGBtq",
+        "input": {
+          "command": "printf 'STYLE_M1B_C9\\n'",
+          "description": "Print marker string (38/50)"
+        },
+        "result": {
+          "at": "2026-10-15T14:21:35.982Z",
+          "content": "STYLE_M1B_C9",
+          "is_error": false
+        }
+      },
+      {
+        "tool_use_id": "toolu_01RFJYxu1cUdM85Fmn63rWrH",
+        "at": "2026-10-15T14:21:37.739Z",
+        "message_id": "msg_011Cg4AuhSSxAnkq1yxXsSgG",
+        "input": {
+          "command": "printf 'STYLE_M1B_C9\\n'",
+          "description": "Print marker string (39/50)"
+        },
+        "result": {
+          "at": "2026-10-15T14:21:38.179Z",
+          "content": "STYLE_M1B_C9",
+          "is_error": false
+        }
+      },
+      {
+        "tool_use_id": "toolu_01Bvfp7XR7JqG5zmWtDt2irG",
+        "at": "2026-10-15T14:21:39.993Z",
+        "message_id": "msg_011Cg4AurpkHaJR6NLK8nSMZ",
+        "input": {
+          "command": "printf 'STYLE_M1B_C9\\n'",
+          "description": "Print marker string (40/50)"
+        },
+        "result": {
+          "at": "2026-10-15T14:21:40.477Z",
+          "content": "STYLE_M1B_C9",
+          "is_error": false
+        }
+      },
+      {
+        "tool_use_id": "toolu_01WQL5uMjLzR1pYFUhPESEeq",
+        "at": "2026-10-15T14:21:42.713Z",
+        "message_id": "msg_011Cg4Av2k3rTkWC5GcdGRdJ",
+        "input": {
+          "command": "printf 'STYLE_M1B_C9\\n'",
+          "description": "Print marker string (41/50)"
+        },
+        "result": {
+          "at": "2026-10-15T14:21:43.335Z",
+          "content": "STYLE_M1B_C9",
+          "is_error": false
+        }
+      },
+      {
+        "tool_use_id": "toolu_01WqzTMJExuLM5F8hmQnLG2U",
+        "at": "2026-10-15T14:21:45.054Z",
+        "message_id": "msg_011Cg4AvEsofU7siWx6ndBUW",
+        "input": {
+          "command": "printf 'STYLE_M1B_C9\\n'",
+          "description": "Print marker string (42/50)"
+        },
+        "result": {
+          "at": "2026-10-15T14:21:45.521Z",
+          "content": "STYLE_M1B_C9",
+          "is_error": false
+        }
+      },
+      {
+        "tool_use_id": "toolu_01MyAv7mQhSc38bjsXXTJxJc",
+        "at": "2026-10-15T14:21:47.521Z",
+        "message_id": "msg_011Cg4AvQHbqNZRKEumWkTEF",
+        "input": {
+          "command": "printf 'STYLE_M1B_C9\\n'",
+          "description": "Print marker string (43/50)"
+        },
+        "result": {
+          "at": "2026-10-15T14:21:47.638Z",
+          "content": "STYLE_M1B_C9",
+          "is_error": false
+        }
+      },
+      {
+        "tool_use_id": "toolu_0172sXhQZNF1whecG4BBAVxg",
+        "at": "2026-10-15T14:21:49.781Z",
+        "message_id": "msg_011Cg4AvZRHFBZYntHhWxmEM",
+        "input": {
+          "command": "printf 'STYLE_M1B_C9\\n'",
+          "description": "Print marker string (44/50)"
+        },
+        "result": {
+          "at": "2026-10-15T14:21:50.166Z",
+          "content": "STYLE_M1B_C9",
+          "is_error": false
+        }
+      },
+      {
+        "tool_use_id": "toolu_0128NTzq1HjfkVPv73YcUHbN",
+        "at": "2026-10-15T14:21:51.674Z",
+        "message_id": "msg_011Cg4Avk5yHoZdACY5nEbAL",
+        "input": {
+          "command": "printf 'STYLE_M1B_C9\\n'",
+          "description": "Print marker string (45/50)"
+        },
+        "result": {
+          "at": "2026-10-15T14:21:52.145Z",
+          "content": "STYLE_M1B_C9",
+          "is_error": false
+        }
+      },
+      {
+        "tool_use_id": "toolu_01MGzhKbEQuvQLiv67keGP4W",
+        "at": "2026-10-15T14:21:53.661Z",
+        "message_id": "msg_011Cg4AvtXEcmSSXXNPV5gJS",
+        "input": {
+          "command": "printf 'STYLE_M1B_C9\\n'",
+          "description": "Print marker string (46/50)"
+        },
+        "result": {
+          "at": "2026-10-15T14:21:54.402Z",
+          "content": "STYLE_M1B_C9",
+          "is_error": false
+        }
+      },
+      {
+        "tool_use_id": "toolu_01AsjiiovTEAAicRKYvXkzbD",
+        "at": "2026-10-15T14:21:55.957Z",
+        "message_id": "msg_011Cg4Aw49Aiz62AcwxDkGn4",
+        "input": {
+          "command": "printf 'STYLE_M1B_C9\\n'",
+          "description": "Print marker string (47/50)"
+        },
+        "result": {
+          "at": "2026-10-15T14:21:56.496Z",
+          "content": "STYLE_M1B_C9",
+          "is_error": false
+        }
+      },
+      {
+        "tool_use_id": "toolu_01Tv2aHBsvxNvSeYWU9FpDPi",
+        "at": "2026-10-15T14:21:58.285Z",
+        "message_id": "msg_011Cg4AwDAtdyeRixUfeFTZh",
+        "input": {
+          "command": "printf 'STYLE_M1B_C9\\n'",
+          "description": "Print marker string (48/50)"
+        },
+        "result": {
+          "at": "2026-10-15T14:21:59.166Z",
+          "content": "STYLE_M1B_C9",
+          "is_error": false
+        }
+      },
+      {
+        "tool_use_id": "toolu_0189Jw4wrDkLDyMRmTe4QzdV",
+        "at": "2026-10-15T14:21:58.531Z",
+        "message_id": "msg_011Cg4AwDAtdyeRixUfeFTZh",
+        "input": {
+          "command": "printf 'STYLE_M1B_C9\\n'",
+          "description": "Print marker string (49/50)"
+        },
+        "result": {
+          "at": "2026-10-15T14:21:59.172Z",
+          "content": "STYLE_M1B_C9",
+          "is_error": false
+        }
+      },
+      {
+        "tool_use_id": "toolu_018zWVK6JFiYCH8M21wP7bnZ",
+        "at": "2026-10-15T14:22:04.194Z",
+        "message_id": "msg_011Cg4AwRtNmA4NEpgY4rfBq",
+        "input": {
+          "command": "printf 'STYLE_M1B_C9\\n'",
+          "description": "Print marker string (50/50)"
+        },
+        "result": {
+          "at": "2026-10-15T14:22:04.714Z",
+          "content": "STYLE_M1B_C9",
+          "is_error": false
+        }
+      }
+    ]
+  },
+  "sensitivity_analysis": {
+    "not_acceptance_result": true,
+    "exclusion": "Four hook completions in UTC interval [2026-10-15T14:21:58,2026-10-15T14:21:59.999Z], covering the two overlapping calls. This analysis does not replace the complete 103-sample result.",
+    "overall": {
+      "count": 99,
+      "median_ms": 31.0,
+      "p95_ms": 54.0,
+      "max_ms": 209.0
+    }
+  },
+  "isolated_diagnostic": {
+    "measurement": "Diagnostic only: subprocess start to exit using installed binary and copied index; synthetic payload and fresh temporary state, no real harness; no warmup discarded",
+    "index_sha256": "7b7105acd2df95b14e694202fc3daf27eaa941269f87279d7ec32ba41892f084",
+    "environment": "Inherited environment except CODEX_HOME/CODEX_SANDBOX removed; CLAUDE_EFFORT=high",
+    "root": "/tmp/style-m1b-c9-process-jp90qpc8",
+    "by_event": {
+      "PreToolUse": {
+        "count": 100,
+        "median_ms": 22.904167,
+        "p95_ms": 24.080709,
+        "max_ms": 42.776
+      },
+      "PostToolUse": {
+        "count": 100,
+        "median_ms": 22.835395499999997,
+        "p95_ms": 24.08275,
+        "max_ms": 28.886333
+      }
+    },
+    "limitation": "Synthetic payloads, separate state, different invocation environment and measurement boundary. This does not establish the cause of the harness/process difference or pass real C9. No production code or installed configuration was changed."
+  }
+}
