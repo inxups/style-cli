@@ -352,10 +352,10 @@ func (r *Runtime) record(event *agenthooks.Event, output engine.Output) {
 			r.Logger.Info("STYLE rule evaluated", "provider", r.Provider, "event", event.NativeName,
 				"point", string(event.Kind), "entry", item.Entry, "action", item.Action, "result", item.Result)
 		}
-		payload, err := json.Marshal(map[string]any{
-			"at": r.now().UTC().Format(time.RFC3339Nano), "provider": string(r.Provider),
-			"event": event.NativeName, "point": string(event.Kind), "entry": item.Entry,
-			"action": item.Action, "result": item.Result,
+		payload, err := json.Marshal(state.StatsRecord{
+			At: r.now().UTC().Format(time.RFC3339Nano), Provider: string(r.Provider),
+			Event: event.NativeName, Point: item.Point, Entry: item.Entry,
+			Action: item.Action, Result: item.Result, Tokens: &item.EstimatedTokens, BodySHA256: item.BodySHA256,
 		})
 		if err != nil || r.State.AppendStats(event.Session.ID, runtimeAgentID(event), payload) != nil {
 			if r.Logger != nil {

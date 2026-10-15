@@ -2,11 +2,27 @@ package state
 
 import (
 	"bytes"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 )
+
+// StatsRecord contains only safe runtime metadata. Optional cost fields keep
+// logs written by earlier runtimes readable without guessing their cost.
+type StatsRecord struct {
+	At         string `json:"at"`
+	Provider   string `json:"provider"`
+	Event      string `json:"event"`
+	Point      string `json:"point"`
+	Entry      string `json:"entry"`
+	Action     string `json:"action"`
+	Result     string `json:"result"`
+	Tokens     *int   `json:"est_tokens,omitempty"`
+	BodySHA256 string `json:"body_sha256,omitempty"`
+}
 
 // AppendStats appends one small JSON record using a single O_APPEND write.
 // Records are intentionally bounded and should contain metadata only.
@@ -21,15 +37,7 @@ func (s *Store) AppendStats(sessionID, agentID string, record []byte) error {
 	if len(trimmed) == 0 || len(trimmed) >= 512 || !json.Valid(trimmed) || bytes.ContainsAny(trimmed, "\r\n") {
 		return fmt.Errorf("state: stats record must be valid single-line JSON under 512 bytes")
 	}
-	var fields struct {
-		At       string `json:"at"`
-		Provider string `json:"provider"`
-		Event    string `json:"event"`
-		Point    string `json:"point"`
-		Entry    string `json:"entry"`
-		Action   string `json:"action"`
-		Result   string `json:"result"`
-	}
+	var fields StatsRecord
 	decoder := json.NewDecoder(bytes.NewReader(trimmed))
 	decoder.DisallowUnknownFields()
 	if err := decoder.Decode(&fields); err != nil {
@@ -37,6 +45,15 @@ func (s *Store) AppendStats(sessionID, agentID string, record []byte) error {
 	}
 	if fields.At == "" || fields.Provider == "" || fields.Event == "" || fields.Point == "" || fields.Entry == "" || fields.Action == "" || fields.Result == "" {
 		return fmt.Errorf("state: stats record is missing required metadata")
+	}
+	if fields.Tokens != nil && *fields.Tokens < 0 {
+		return fmt.Errorf("state: negative token estimate")
+	}
+	if fields.BodySHA256 != "" {
+		digest, err := hex.DecodeString(strings.TrimPrefix(fields.BodySHA256, "sha256:"))
+		if err != nil || !strings.HasPrefix(fields.BodySHA256, "sha256:") || len(digest) != 32 {
+			return fmt.Errorf("state: invalid stats body hash")
+		}
 	}
 	agentDir := filepath.Join(s.root, component(sessionID), component(agentID))
 	if err := ensurePrivatePath(s.root, component(sessionID), component(agentID)); err != nil {

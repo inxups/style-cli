@@ -78,7 +78,7 @@ func (e *Engine) Process(input Input, limit tokens.InputLimit) (Output, error) {
 				return Output{}, fmt.Errorf("engine: block entry %q rendered an empty reason", item.entry.Entry)
 			}
 			reasons = append(reasons, item.modelText)
-			output.Records = append(output.Records, Record{Entry: item.entry.Entry, Action: item.entry.Action, Result: "blocked"})
+			output.Records = append(output.Records, recordCandidate(item, "blocked"))
 			// Claude's suppressOriginalPrompt field is valid only for the
 			// ordinary UserPromptSubmit hook. UserPromptExpansion already
 			// represents the expanded slash-command prompt and its codec does
@@ -130,7 +130,7 @@ func (e *Engine) Process(input Input, limit tokens.InputLimit) (Output, error) {
 			return Output{}, err
 		}
 		if !allowed {
-			output.Records = append(output.Records, Record{Entry: item.entry.Entry, Action: item.entry.Action, Result: "dedup"})
+			output.Records = append(output.Records, recordCandidate(item, "dedup"))
 			continue
 		}
 		item.modelText, item.userText, item.reservation = modelText, userText, reservation
@@ -164,10 +164,10 @@ func (e *Engine) Process(input Input, limit tokens.InputLimit) (Output, error) {
 		if item.reservation != nil {
 			output.Reservations = append(output.Reservations, item.reservation)
 		}
-		output.Records = append(output.Records, Record{Entry: item.entry.Entry, Action: item.entry.Action, Result: "output"})
+		output.Records = append(output.Records, recordCandidate(item, "output"))
 	}
 	for _, item := range dropped {
-		output.Records = append(output.Records, Record{Entry: item.entry.Entry, Action: item.entry.Action, Result: "cap-drop"})
+		output.Records = append(output.Records, recordCandidate(item, "cap-drop"))
 	}
 	output.AdditionalContext = strings.Join(contexts, "\n\n")
 	output.SystemMessage = strings.Join(messages, "\n\n")

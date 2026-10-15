@@ -186,7 +186,10 @@ func (f Facts) StaticLocation(mode string) (adapter.StaticLocation, bool) {
 	return adapter.StaticLocation{Name: StaticSlotAppend, Mode: mode, Supported: true}, true
 }
 
-func (f Facts) StaticPositions(_ adapter.Installation) []adapter.StaticLocation {
+func (f Facts) StaticPositions(installation adapter.Installation) []adapter.StaticLocation {
+	if installation.ConfigDir != "" {
+		f = NewFacts(installation)
+	}
 	location, ok := f.StaticLocation("append")
 	if !ok {
 		return nil

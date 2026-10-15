@@ -3,7 +3,9 @@ package runtime
 import (
 	"bytes"
 	"context"
+	"crypto/sha256"
 	"encoding/json"
+	"fmt"
 	"io"
 	"log/slog"
 	"os"
@@ -66,6 +68,13 @@ func TestRunDecodesClaudeHookAndEmitsOnlyWhitelistedBlock(t *testing.T) {
 	}
 	if !bytes.Contains(stats, []byte(`"entry":"pkg/guard@tool.pre"`)) || bytes.Contains(stats, []byte("rm -rf build")) {
 		t.Fatalf("stats should contain metadata only: %s", stats)
+	}
+	var record state.StatsRecord
+	if err := json.Unmarshal(bytes.TrimSpace(stats), &record); err != nil {
+		t.Fatal(err)
+	}
+	if record.Tokens == nil || *record.Tokens != tokens.EstimateText(reason).Tokens || record.BodySHA256 != fmt.Sprintf("sha256:%x", sha256.Sum256([]byte(reason))) || record.Point != "tool.pre" {
+		t.Fatalf("cost metadata does not describe emitted body: %+v", record)
 	}
 }
 

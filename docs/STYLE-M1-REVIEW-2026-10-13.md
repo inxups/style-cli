@@ -328,3 +328,11 @@ fail-closed 的范围收窄为 `Manifest.Fail == FailClosed`、`Blocking` 且 `K
 | RV-T53-03 配置字节和事务 | [x] | TOML managed region 不再吞入分隔换行；无末尾换行的外部文件通过生成边界标记隔离，移除 owner 后恢复原始字节。package removal 先 rename 到可回滚备份，再应用 provider/state changeset。证据：`TestManagedTOMLRoundTripRestoresExternalBytes`、`TestUninstallRemovesOnlyStyleOwnerAndRestoresLastRoute`。 |
 
 验证：`env -u CODEX_HOME -u CODEX_SANDBOX GOPATH=/tmp/style-cli-gopath GOMODCACHE=/tmp/style-cli-gomodcache GOCACHE=/tmp/style-cli-gocache GOPROXY=off GOSUMDB=off go test -count=1 ./internal/app -run 'TestUninstall|TestRunUninstall'`、同环境 `go -C agenthooks test -count=1 ./install`、双 module `make test-go`/`make vet-go`、gofmt 与 `git diff --check` 均通过。A13 的 install idempotence、uninstall 外部配置保留和最后路线清理现有离线证据；安装时切换 route 后无残留仍需独立回归，故保留 `[~]`。T54/T55、A1/A12/A13 补项/A18 和 adapter conformance 仍未完成，M1a/M1b 不提前标记通过。
+
+## T54 检查命令完成确认（2026-10-15）
+
+- [x] **RV-T54-01 list/adapters**：list 从 lock 枚举安装序号、原始来源、单文件与 link=dev，并比较实际存储字节；adapters 对全部注册 provider 和全部 route 调用 Detect/Available/Status，展示能力、数据源、静态槽位、上限、信任方式及未知外部信任。证据：`internal/app/inspect_test.go`。
+- [x] **RV-T54-02 doctor 完整性与维护**：通过 engine/schema 校验 index，再从锁定包/settings 重编译比较内容，并检查生成路线和静态指令；检测登录 shell stdout、显示 effort 来源和可判断范围、提示 link/replace/fail_closed；清理 7 天未更新会话或 `--reset-state`，拒绝 symlink 状态根。证据：`internal/app/doctor_test.go`。
+- [x] **RV-T54-03 历史成本与隐私**：runtime 只追加估算 token、正文 SHA256 和规范 point 等元数据；doctor 按最近 7 天实际记录聚合 top3，提示同正文多次输出。旧日志缺少成本时单独计数，不借当前 index 伪造历史；不保存正文或 shell 输出。证据：`core/state/stats_test.go`、`internal/runtime/runtime_test.go`、`TestDoctorCostsUseHistoricalMetadataAndSevenDayWindow`。
+
+验证：隔离缓存且清理 CODEX 环境变量后，app 定向/全量测试、双 module `make test-go`/`make vet-go`、`go test -race -count=1 ./internal/app ./internal/runtime ./core/state ./core/engine`、CLI list/adapters JSON smoke、gofmt 与 `git diff --check` 通过。T55、A1/A12/A13 补项/A18、adapter conformance 与真实 M1b 继续未完成。

@@ -489,3 +489,13 @@
 - 回归：`internal/app/uninstall_test.go` 覆盖单包卸载、确认、保留剩余包、`--all --json`、link 源保留、最后一包的外部 config 精确恢复和状态文件清理；`agenthooks/install/install_test.go` 覆盖 TOML 字节往返和其他 owner 区保留。
 - 验证（清理 `CODEX_HOME`/`CODEX_SANDBOX`，Go 缓存位于 `/tmp/style-cli-{gopath,gomodcache,gocache}`）：`go test -count=1 ./internal/app -run 'TestUninstall|TestRunUninstall'`、`go -C agenthooks test -count=1 ./install`、双 module `make test-go`/`make vet-go`、gofmt 和 `git diff --check` 通过。
 - 文档：任务清单 T53、测试矩阵 B1.26 和 review 文档 T53 段落标记 `[x]`；A13 仍 `[~]`，缺 install route switch 无残留的独立命令级回归。T54/T55、A1/A12/A13 补项/A18、adapter conformance 与 M1a/M1b 未完成。
+
+### 2026-10-15 — T54/B1.27 `[x]`
+
+- 新增 list/doctor/adapters 文本和稳定 JSON 命令：安装来源/序号/link/hash、全部 provider/route 的检测/安装/信任状态、能力/数据源/静态位置/原生上限。
+- doctor 冷路径校验 engine/schema 和锁定包/settings 重编译结果，比较渲染 route/static；损坏、过期或源变化均报错。使用 lock 的配置根检查实际安装，同时保留当前检测根；外部插件/workspace trust 明确未验证。
+- doctor 使用 provider 的已有 effort resolver，披露当前诊断无法取得 launch/event 值和项目信任的边界；登录 shell 运行 `true`，只报告 stdout 字节数。显示 replace/fail_closed/link 风险；复用 state.Cleanup 的 7 日期限，并支持 reset，拒绝 symlink 状态根。
+- 统计增加有界 metadata（实际规范 point、估算 token、渲染模型正文 SHA256），不记录正文；最近 7 日 top3 按历史数据计算，忽略 dedup/过期/未来记录，旧日志单独计数，同 hash 至少 3 次输出时提示 repeat。
+- 证据：`internal/app/{inspect_test.go,doctor_test.go}`、`core/state/stats_test.go`、`internal/runtime/runtime_test.go`。Go 统一清理 CODEX_HOME/CODEX_SANDBOX，使用 `/tmp/style-cli-{gopath,gomodcache,gocache}`，设置 GOPROXY=off/GOSUMDB=off。
+- 验证：`go test -count=1 ./internal/app ./core/state ./internal/runtime`、双 module `make test-go`/`make vet-go`、`go test -race -count=1 ./internal/app ./internal/runtime ./core/state ./core/engine`、CLI `list --json`/`adapters --json` smoke、gofmt 与 `git diff --check` 通过。
+- 文档：T54、B1.27 与 review 的 RV-T54-01–03 标记 `[x]`。T55、A1/A12/A13 补项/A18、adapter conformance 和真实 M1b 尚未完成。

@@ -49,9 +49,12 @@ type Output struct {
 
 // Record contains safe telemetry without rendered rule or event content.
 type Record struct {
-	Entry  string
-	Action string
-	Result string
+	Entry           string
+	Action          string
+	Result          string
+	Point           string
+	EstimatedTokens int
+	BodySHA256      string
 }
 
 type candidate struct {

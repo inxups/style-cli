@@ -1,0 +1,133 @@
+package app
+
+import (
+	"context"
+	"fmt"
+	"io"
+	"strings"
+)
+
+func runInspect(ctx context.Context, service *Service, workDir, command string, args []string, out, errOut io.Writer) int {
+	usage := "style " + command + " [--json]"
+	if command == "doctor" {
+		usage = "style doctor [--reset-state] [--json]"
+	}
+	if isHelp(args) {
+		fmt.Fprintln(out, usage)
+		return ExitOK
+	}
+	jsonOutput, reset := false, false
+	for _, arg := range args {
+		switch {
+		case arg == "--json":
+			jsonOutput = true
+		case arg == "--reset-state" && command == "doctor":
+			reset = true
+		default:
+			fmt.Fprintf(errOut, "style %s: unknown argument %q\n", command, arg)
+			return ExitUsage
+		}
+	}
+	var value any
+	var err error
+	exit := ExitOK
+	switch command {
+	case "list":
+		value, err = service.List(ctx, ListRequest{})
+	case "adapters":
+		var result AdaptersResult
+		result, err = service.Adapters(ctx)
+		for _, report := range result.Adapters {
+			if report.Error != "" {
+				exit = ExitInvalid
+			}
+			for _, route := range report.Routes {
+				if route.Error != "" {
+					exit = ExitInvalid
+				}
+			}
+		}
+		value = result
+	case "doctor":
+		var result DoctorResult
+		result, err = service.Doctor(ctx, DoctorRequest{WorkDir: workDir, ResetState: reset})
+		value = result
+		if !result.Healthy {
+			exit = ExitInvalid
+		}
+	}
+	if err != nil {
+		fmt.Fprintf(errOut, "style %s: %v\n", command, err)
+		return ExitInvalid
+	}
+	if jsonOutput {
+		if err := encodeJSON(out, value); err != nil {
+			fmt.Fprintf(errOut, "style %s: encode report: %v\n", command, err)
+			return ExitInvalid
+		}
+		return exit
+	}
+	switch result := value.(type) {
+	case ListResult:
+		writeListText(out, result.Packages)
+	case AdaptersResult:
+		writeAdaptersText(out, result.Adapters, true)
+	case DoctorResult:
+		fmt.Fprintf(out, "healthy=%t\n", result.Healthy)
+		writeListText(out, result.Packages)
+		writeAdaptersText(out, result.Adapters, false)
+		for _, effort := range result.Effort {
+			fmt.Fprintf(out, "effort %s: source=%s raw=%q tier=%q; %s\n", effort.Provider, effort.Source, effort.Raw, effort.Tier, effort.Detail)
+		}
+		fmt.Fprintln(out, "Top rules (last 7 days; estimated tokens ≈ ±25%):")
+		for _, cost := range result.TopRules {
+			fmt.Fprintf(out, "  %s %s: %d tokens, %d emits, %d body hashes\n", cost.Provider, cost.Rule, cost.EstimatedTokens, cost.Emits, cost.DistinctBodyHashes)
+		}
+		fmt.Fprintf(out, "state: expired=%d reset=%t; legacy stats without estimate=%d\n", result.ExpiredSessions, result.StateReset, result.LegacyStats)
+		writeDiagnostics(out, result.Diagnostics)
+	}
+	return exit
+}
+
+func writeListText(out io.Writer, packages []InstalledPackage) {
+	if len(packages) == 0 {
+		fmt.Fprintln(out, "No packages installed.")
+	}
+	for _, pkg := range packages {
+		fmt.Fprintf(out, "%s %s seq=%d source=%s:%s link=%s hash_matches=%t\n", pkg.Name, pkg.Version, pkg.Sequence, pkg.SourceKind, pkg.Source, pkg.Link, pkg.HashMatches)
+		if len(pkg.ChangedFiles) > 0 {
+			fmt.Fprintf(out, "  changed: %s\n", strings.Join(pkg.ChangedFiles, ", "))
+		}
+		if pkg.Error != "" {
+			fmt.Fprintf(out, "  error: %s\n", pkg.Error)
+		}
+	}
+}
+
+func writeAdaptersText(out io.Writer, reports []AdapterReport, verbose bool) {
+	for _, report := range reports {
+		fmt.Fprintf(out, "%s: detected=%t version=%s config=%s\n", report.Provider, report.Detected, report.Version, report.ConfigDir)
+		if report.Error != "" {
+			fmt.Fprintf(out, "  error: %s\n", report.Error)
+		}
+		for _, route := range report.Routes {
+			fmt.Fprintf(out, "  %s: available=%t installed=%t trusted=%t trust=%s stable_key=%t; %s\n", route.Name, route.Available, route.Installed, route.Trusted, route.Trust, route.StableKey, route.Detail)
+			if route.Error != "" {
+				fmt.Fprintf(out, "    error: %s\n", route.Error)
+			}
+		}
+		if !verbose {
+			continue
+		}
+		fmt.Fprintf(out, "  limit: %d %s approximate=%t overflow=%s; %s\n", report.Limit.Value, report.Limit.Unit, report.Limit.Approximate, report.Limit.Overflow, report.Limit.Source)
+		for _, slot := range report.Static {
+			fmt.Fprintf(out, "  static %s %s: supported=%t; %s\n", slot.Name, slot.Mode, slot.Supported, slot.Reason)
+		}
+		for _, capability := range report.Capabilities {
+			fmt.Fprintf(out, "  %s %s: available=%t; %s\n", capability.Point, capability.Name, capability.Available, capability.Reason)
+		}
+		for _, field := range report.Fields {
+			fmt.Fprintf(out, "  %s %s: available=%t approximate=%t source=%s; %s\n", field.Point, field.Name, field.Available, field.Approximate, field.Source, field.Reason)
+		}
+	}
+}
