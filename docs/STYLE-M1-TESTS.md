@@ -168,7 +168,7 @@ B1.2 和 B1.4 的历史通过状态表示原有测试套件在声明范围内通
 - [x] **CLAUDE-05/C5** Claude Code 2.1.300/claude-user 的真实 Bash 调用正常完成；用户确认工具 UI 可见 M1B_WARN_USER，模型引用独立的 M1B_WARN_MODEL。PreToolUse warn/output 在工具结果前记录，正文无末尾 LF 的 SHA256 一致。模型在结果后复述不证明 hook 执行延后；只确认 PreToolUse，U-C5 其他事件不扩大宣称。证据与复现见 Claude JSON 的 C5。
 - [x] **CLAUDE-06/C6** 真实 UserPromptSubmit 两次阻断，仅固定理由，Claude 记录 preventContinuation=true、promptKept=false；不根据用户删减过的回传重建原 prompt。真实 Bash force push 被 PreToolUse 拒绝，模型引用理由；lease 对照成功返回 Everything up-to-date，符合设计。仓库仅连接本地 bare remote，前后 HEAD 一致。证据与复现见 Claude JSON 的 C6；示例正则泛化问题仍为 M1B-EXAMPLE-01。
 - [x] **CLAUDE-07/C7** 首次分两条消息串行执行，不用于并行验收；用户 /clear 后单条消息发起两个真实 Bash 调用，同 assistant message、不同 tool id，运行区间均为 [1792072394,1792072397]。parallel-once 仅一次 output、一次 dedup，共用正文 hash 与 gen=1 seen 标记，模型引用实际上下文。证据与复现见 Claude JSON 的 C7；不扩展为 hook 进程同时执行或压力测试。
-- [?] **CLAUDE-08/C8** 卸载后 settings.json 和 CLAUDE.md 字节级恢复。
+- [x] **CLAUDE-08/C8** 用户用完整单行 env 命令卸载两包，cmp 通过；只读确认 settings.json 与本次安装的有效基线逐字节一致（197 字节、摘要一致，保留后增模型/界面设置），CLAUDE.md、owner 恢复记录、lock/index 均不存在，剩余包为空。首轮拆行未实际卸载的记录保留；不扩大为 Codex B8 或本次没有的外部 hook 场景。证据与复现见 Claude JSON 的 C8.real_retest。
 - [?] **CLAUDE-09/C9** exec hook p95 小于 50ms；resume 不重复 session.start。
 
 ## Adapter conformance

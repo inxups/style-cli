@@ -232,9 +232,9 @@ codex plugin marketplace remove style
 在第一次用户级验收结束、开始插件注册之前执行一次；最后结束时再执行一次。先关闭两家会话。若当前是已注册的插件路线，先执行上一节的插件移除命令。
 
 ```sh
-"$STYLE_BIN" uninstall m1b-probes --yes
-"$STYLE_BIN" uninstall terse-reviewer --yes
-"$STYLE_BIN" list
+env STYLE_HOME="${STYLE_HOME:-$HOME/.style-m1b}" CLAUDE_CONFIG_DIR="${CLAUDE_CONFIG_DIR:-$HOME/.claude}" "${STYLE_BIN:-$HOME/.local/lib/style-m1b/style}" uninstall m1b-probes --yes
+env STYLE_HOME="${STYLE_HOME:-$HOME/.style-m1b}" CLAUDE_CONFIG_DIR="${CLAUDE_CONFIG_DIR:-$HOME/.claude}" "${STYLE_BIN:-$HOME/.local/lib/style-m1b/style}" uninstall terse-reviewer --yes
+env STYLE_HOME="${STYLE_HOME:-$HOME/.style-m1b}" "${STYLE_BIN:-$HOME/.local/lib/style-m1b/style}" list
 
 for name in config.toml hooks.json; do
   if [ -f "$M1B_BACKUP/codex/$name.absent" ]; then
@@ -253,6 +253,8 @@ done
 ```
 
 两包都卸载后才检查最后一包清理。原文不同则记录差异，检查期间是否有用户或 harness 外部修改；不要直接用备份覆盖，避免丢失新变更。继续插件路线前，重新执行第 3、4、5 节需要的安装命令。
+
+卸载命令每条整行执行，保留开头的 `env` 和完整命令。单独输入未 export 的 `STYLE_HOME=…`，不能保证后续进程收到该值；未传入时 CLI 默认读取 `~/.style`，不等于本次验收的 `~/.style-m1b`。真实 C8 首轮在命令拆行后报无匹配包，包和 Claude hook 仍存在；单行 env 复测已成功卸载，settings 字节比较通过，CLAUDE.md 不存在。有效恢复基线来自最近一次安装的 owner 恢复记录，保存了后来新增的模型/界面偏好；初始 absent 备份不能覆盖这些后增设置。详细证据见 Claude JSON 的 C8。
 
 ## 8. 返回结果
 

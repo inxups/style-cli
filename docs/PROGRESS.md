@@ -696,3 +696,17 @@
 - 用户 /clear 后实际会话为 8abb76e3-44ef-427b-a397-00dcae8d5bf8，gen=1、epoch=0。两次 Bash 同属 msg_011Cg48k5htNHmaHdwXmQiR4，不同 tool id，第二次调用在第一次结果前发起，两个真实命令运行区间均为 [1792072394,1792072397]。
 - parallel-once 在 13:53:13.626212Z output，13:53:14.116324Z dedup；两者正文 SHA256 相同，session seen 标记仅一个。用户回传模型引用 M1B_PARALLEL_ONCE，与实际正文一致。确认实际并行工具的单次投递，不声称 hook 进程精确同时执行或并发压力测试通过。
 - Claude JSON 保留首次串行观察和真实并行复测；任务、测试、手册及既有 review 同步完成。无 Go/真实配置变更，验证实际工具 message/id/时间、输出区间、stats/seen/hash、JSON/文档状态与 diff；C8–C9 待验收，M1 未完成。
+
+### 2026-10-15 — CLAUDE-08/C8 `[~]` 首轮命令拆行
+
+- 用户成功取消 style-runtime 插件和 marketplace 登记，但环境赋值与卸载命令分开输入，两次 uninstall 均报 no matching installed package。没有采集原进程环境，不将推断写成原始运行事实。
+- 只读复核：默认 `~/.style` 无包，`~/.style-m1b` 仍有 terse-reviewer/m1b-probes；Claude 12 条 STYLE hook 和 CLAUDE.md 仍存在，settings 与 applied 摘要一致，说明真实卸载尚未完成。插件列表已无 STYLE 条目，无需重复取消登记。
+- 复测前已将 owner 恢复记录的原始 settings 保存到临时目录并核对 SHA256，197 字节；CLAUDE.md 原文基线为不存在。初始 manual-backup 早于后来新增的模型/界面设置，不用于删除这些新偏好。具体摘要和来源记入 Claude JSON 的 C8。
+- 手册卸载步骤改为每条完整单行 env 命令，用户手动重试后再检查 cmp 与 CLAUDE.md 消失；任务、测试和既有 review 暂记部分完成。无 Go/真实配置变更，C8 不标记通过，C9 未开始。
+
+### 2026-10-15 — CLAUDE-08/C8 `[x]` 真实复测
+
+- 用户依次使用完整单行 env 命令卸载 m1b-probes、terse-reviewer，两次均更新 claude-user/codex-plugin；随后 cmp 和 CLAUDE.md 不存在检查成功，打印 C8_CLAUDE_RESTORED。
+- 14:10:58.625139Z 只读复核 settings 与预先校验的本次安装基线完全相同，197 字节、SHA256 fe71f251612b6b782d440703416ab9712cc7dde0cf5ce21c09c41c391f1c2cd0。settings 没有 hooks，CLAUDE.md、owner 恢复记录、M1b lock/index 均不存在，显式 STYLE_HOME 下 list 为空。
+- 基线保留用户在最初 absent 备份之后新增的模型/界面偏好。当前安装有 applied 摘要相符的恢复记录和一致的 non-hook 值作为来源，不通过覆盖旧备份伪造恢复；首轮未实际卸载的记录保留。
+- Claude JSON、任务、测试、手册及既有 review 同步完成确认。无 Go/真实配置代操作；验证基线来源/字节/hash、卸载残留与文档状态、手册 shell 语法和 diff。C9 待用户重装后继续；不据此完成 Codex B8 或本次没有的外部 hook 真实场景，M1 未完成。

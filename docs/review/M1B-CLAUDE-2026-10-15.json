@@ -341,5 +341,59 @@
     "real_configuration_modified_by_agent": false,
     "reproduction": "Use a fresh session or /clear so this rule has not been seen in the current generation. Send one message requesting two independent parallel Bash calls, each printing STYLE_M1B_PARALLEL_A/B start and end timestamps with a three-second sleep between. Do not split into two user messages or combine both commands into one Bash call. Verify two tool ids in one assistant message, overlapping command intervals, one output plus one dedup with the same body hash and one seen marker; ask the model to quote actual hook context without pre-filling its body."
   },
-  "pending": ["C8", "C9"]
+  "C8": {
+    "status": "passed",
+    "route": "claude-user",
+    "baseline": {
+      "settings_path": "/Users/inxups/.claude/settings.json",
+      "settings_expected_exists": true,
+      "settings_bytes": 197,
+      "settings_sha256": "fe71f251612b6b782d440703416ab9712cc7dde0cf5ce21c09c41c391f1c2cd0",
+      "comparison_copy": "/tmp/style-m1b-claude-c8-4744ewks/settings.json",
+      "CLAUDE_md_expected_exists": false,
+      "source": "Original bytes in the current owner restoration record. At preflight the live file matched the applied digest, the snapshot contained no hooks, and its non-hook values matched the live file. CLAUDE.md contained only the STYLE block.",
+      "initial_manual_backup": "Recorded settings.json as absent before subsequent user preference changes. It must not be used to delete the later model/UI settings retained by the current installation baseline."
+    },
+    "initial_attempt": {
+      "status": "setup-command-split; uninstall-not-accepted",
+      "user_report": "Codex plugin remove and marketplace remove succeeded. Environment assignments were entered separately from the two uninstall commands, and both uninstall calls reported no matching installed package.",
+      "readonly_followup": {
+        "default_home": "/Users/inxups/.style",
+        "default_home_packages": [],
+        "acceptance_home": "/Users/inxups/.style-m1b",
+        "acceptance_home_packages": ["terse-reviewer", "m1b-probes"],
+        "claude_STYLE_hook_count": 12,
+        "CLAUDE_md_exists": true,
+        "live_settings_match_applied_digest": true,
+        "baseline_hash_unchanged": true,
+        "registered_STYLE_plugin_entries": []
+      },
+      "interpretation": "The reported shell command split is consistent with missing STYLE_HOME in the uninstall process and fallback to the empty default home. The original process environment was not captured. Actual acceptance packages and Claude hooks remain, so this is not a completed uninstall or evidence of a restoration failure."
+    },
+    "real_retest": {
+      "status": "passed",
+      "user_commands": [
+        "env STYLE_HOME=\"$HOME/.style-m1b\" CLAUDE_CONFIG_DIR=\"$HOME/.claude\" \"$HOME/.local/lib/style-m1b/style\" uninstall m1b-probes --yes",
+        "env STYLE_HOME=\"$HOME/.style-m1b\" CLAUDE_CONFIG_DIR=\"$HOME/.claude\" \"$HOME/.local/lib/style-m1b/style\" uninstall terse-reviewer --yes",
+        "cmp /tmp/style-m1b-claude-c8-4744ewks/settings.json \"$HOME/.claude/settings.json\" && test ! -e \"$HOME/.claude/CLAUDE.md\" && printf 'C8_CLAUDE_RESTORED\\n'"
+      ],
+      "user_reported_outputs": ["uninstalled m1b-probes; route updated: claude-code=claude-user; route updated: codex=codex-plugin", "uninstalled terse-reviewer; route updated: claude-code=claude-user; route updated: codex=codex-plugin", "C8_CLAUDE_RESTORED"],
+      "readonly_verified_at": "2026-10-15T14:10:58.625139+00:00",
+      "settings_byte_equal_to_verified_baseline": true,
+      "settings_bytes": 197,
+      "settings_sha256": "fe71f251612b6b782d440703416ab9712cc7dde0cf5ce21c09c41c391f1c2cd0",
+      "CLAUDE_md_exists": false,
+      "STYLE_restore_record_exists": false,
+      "settings_has_hooks": false,
+      "M1B_lock_exists": false,
+      "M1B_index_exists": false,
+      "remaining_packages": [],
+      "acceptance_basis": "User executed both actual uninstall commands successfully and cmp returned success. Independent read-only checks confirm exact equality to the verified current-installation baseline, no CLAUDE.md or owner restore record, no hooks in settings, and no remaining packages/lock/index.",
+      "limitations": ["The accepted baseline is the most recent installation snapshot that preserves intervening user preferences, not the obsolete initial absent backup.", "This run had no foreign hook handlers. Their preservation remains covered by offline lifecycle tests; Codex B8 is not marked complete from this Claude acceptance."]
+    },
+    "reproduction": "Keep a valid pre-install config snapshot, or verify the current owner restore record against the applied live-file digest before extracting its Original bytes. Quit the test Claude and remove the registered STYLE Codex plugin/marketplace before removing packages shared by both harnesses. Run each uninstall as a complete single line using env STYLE_HOME=<acceptance home> CLAUDE_CONFIG_DIR=<real Claude root> <fixed style binary> uninstall <package> --yes. Compare settings byte-for-byte with the verified baseline and check original absence of CLAUDE.md. Preserve any later user changes instead of overwriting with an obsolete backup.",
+    "next_step": "C9 requires user-operated reinstallation before resuming a previously tested Claude session; both acceptance packages are currently uninstalled.",
+    "real_configuration_modified_by_agent": false
+  },
+  "pending": ["C9"]
 }
