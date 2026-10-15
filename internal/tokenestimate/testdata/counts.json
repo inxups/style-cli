@@ -1,0 +1,11 @@
+[
+  {"name":"empty", "text":"", "tokens":0, "chars":0},
+  {"name":"ascii-four", "text":"abcd", "tokens":1, "chars":4},
+  {"name":"ascii-round-up", "text":"abcde", "tokens":2, "chars":5},
+  {"name":"digits", "text":"0123456789", "tokens":3, "chars":10},
+  {"name":"chinese", "text":"你好世界", "tokens":4, "chars":4},
+  {"name":"kana-hangul", "text":"あア한", "tokens":3, "chars":3},
+  {"name":"mixed-punctuation", "text":"abc 中文!", "tokens":4, "chars":7},
+  {"name":"emoji-combining", "text":"😀é", "tokens":2, "chars":3},
+  {"name":"whitespace", "text":" \t\r\n", "tokens":2, "chars":4}
+]

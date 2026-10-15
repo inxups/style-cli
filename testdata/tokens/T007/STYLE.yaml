@@ -1,0 +1,10 @@
+spec: style/v0.3
+name: tokens-t007
+version: 0.1.0
+description: Token diagnostic fixture
+rules:
+  - id: base
+    target: event
+    event: prompt.submitted
+    repeat: every
+    text: A repeated instruction.

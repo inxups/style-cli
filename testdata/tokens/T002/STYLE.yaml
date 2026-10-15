@@ -1,0 +1,14 @@
+spec: style/v0.3
+name: tokens-t002
+version: 0.1.0
+description: Token diagnostic fixture
+budget: {per_event: 1}
+rules:
+  - id: one
+    target: event
+    event: prompt.submitted
+    text: abcd
+  - id: two
+    target: event
+    event: prompt.submitted
+    text: abcd

@@ -523,3 +523,10 @@
 - 新增 27 个版本控制内 invalid recipe，按 A1 全部错误码命名；测试显式比对文件清单，分别以文本和 JSON 模式调用 validate，要求退出 1、error severity 和预期 code。示例包命令要求退出 0。特殊文件在临时目录真实生成，避免提交大文件/平台相关 symlink。
 - 证据：`testdata/invalid/README.md`、`testdata/invalid/*.yaml`、`internal/app/validate_acceptance_test.go`。
 - 验证：清理 CODEX_HOME/CODEX_SANDBOX，临时 Go 缓存，GOPROXY=off/GOSUMDB=off；`go test -count=1 ./internal/app -run TestA1ValidateExampleAndEveryInvalidFixture -v`（27/27）、`go test -count=1 ./internal/app`、gofmt 和 `git diff --check` 通过。测试矩阵和 review 已同步 `[x]`。
+
+### 2026-10-15 — A18 `[x]`；M1b 手动配置约定
+
+- 增加 estimator 的 9 组独立 golden 数字与 `testdata/tokens/T001`–`T007` 包 fixture。实际 Plan 验证六种包内诊断；T003 两包各 1002 token，第一包可安装，合计 2005 超过真实 Codex 2500 上限的 80%，第二包 CLI install 退出 4，所有既有 packages/lock/index/approval/provider 字节和 package seq 不变。
+- 证据：`internal/tokenestimate/{golden_test.go,testdata/counts.json}`、`internal/app/token_acceptance_test.go`、`testdata/tokens/README.md`。
+- 验证：清理 CODEX_HOME/CODEX_SANDBOX、临时 Go 缓存、GOPROXY=off/GOSUMDB=off 下 `go test -count=1 ./internal/app ./internal/tokenestimate ./core/tokens` 通过，gofmt 和 diff 检查通过。A18 测试矩阵与 review 完成确认同步 `[x]`。
+- 用户要求 M1b 时直接提供 Codex/Claude Code 配置过程，由用户手动配置；后续不得自动写入真实配置。当前所有安装测试仅操作临时目录。

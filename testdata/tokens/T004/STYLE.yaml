@@ -1,0 +1,9 @@
+spec: style/v0.3
+name: tokens-t004
+version: 0.1.0
+description: Token diagnostic fixture
+budget: {always_on: 1}
+rules:
+  - id: base
+    target: system
+    text: abcde

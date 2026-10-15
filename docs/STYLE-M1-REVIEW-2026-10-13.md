@@ -360,3 +360,9 @@ fail-closed 的范围收窄为 `Manifest.Fail == FailClosed`、`Blocking` 且 `K
 - [x] **RV-A1-01 validate 负向矩阵**：新增 `testdata/invalid/` 中 27 个按错误码命名的 YAML recipe 和运行说明；测试核对完整清单，将 recipe 物化为真实包后调用 CLI，文本/JSON 均要求退出 1 和相应错误码。示例包要求退出 0；symlink、256 KiB + 1 和非法编码真实生成，不跳过。证据：`internal/app/validate_acceptance_test.go:TestA1ValidateExampleAndEveryInvalidFixture`。
 
 验证：隔离 Go 缓存、清理 CODEX 环境变量后，A1 定向及 `go test -count=1 ./internal/app` 通过，gofmt / `git diff --check` 通过。A1 标记 `[x]`；A18、adapter conformance 和真实 M1b 仍未完成。
+
+## A18 完成确认（2026-10-15）
+
+- [x] **RV-A18-01 golden 与诊断**：9 组固定字符串覆盖空文本、ASCII、取整、数字、CJK、kana/Hangul、混合标点、emoji/组合字符与空白，匹配独立 golden 数字；T001–T007 各有版本控制内包 fixture。T001/T002/T004–T007 由实际 plan 流程触发；T003 使用真实 Codex 默认上限，两个 1002-token 包合计 2005 大于 2000 阈值。第二包安装必须退出 4，完整存储/provider 字节和 lock 序号保持原样。证据：`internal/tokenestimate/golden_test.go`、`internal/app/token_acceptance_test.go`、`testdata/tokens/`。
+
+验证：清理 CODEX 环境、隔离 Go 缓存的 `go test -count=1 ./internal/app ./internal/tokenestimate ./core/tokens`、gofmt 与 diff 检查通过，A18 `[x]`。adapter conformance 与 M1b 仍未完成；M1b 配置按用户最新约定由用户手动执行。

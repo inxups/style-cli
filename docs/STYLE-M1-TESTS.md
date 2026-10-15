@@ -111,7 +111,7 @@ env -u CODEX_HOME -u CODEX_SANDBOX \
 - [x] **A13** install 重复幂等、Codex plugin/user 双向切换无旧 hooks/trust/插件文件残留、安装新包时切换且安装序号保留；uninstall 后外部 TOML 逐字节恢复、其他 hook owner 和 JSON 外部键保留。默认插件目录绑定所选 STYLE_HOME；已有 fail_closed 策略在后续安装保留。证据：`internal/app/install_routes_test.go`、`uninstall_test.go`、`agenthooks/install/plan_after_test.go`；组合 changeset 保留原 Before，stale 时不部分写入；新建 symlink 祖先下 Codex home 前后 trust key 相同。双 module 全量测试/vet、app/Codex adapter/install race 测试通过。
 - [x] **A14** Codex 静态托管区位置正确；用户自定义 developer instructions 时降为动态；Claude `CLAUDE.md` 标记块正确增删，并保留外部 settings/用户字节。证据：`internal/adapter/codex/route_test.go`、`internal/adapter/claude/route_test.go`。
 - [x] **A16** core 不直接 import `adapter/codex` 或 `adapter/claude`。证据：`internal/adapter/boundary_test.go`。
-- [ ] **A18** token estimator 与 golden 一致；T001–T007 各有触发 fixture；T003 超限安装不产生变更。
+- [x] **A18** estimator 对 `internal/tokenestimate/testdata/counts.json` 的 9 个固定数字逐项匹配；`testdata/tokens/T001`–`T007` 各有真实包 fixture。T003 的两包各估 1002 token，单包可装，合计 2005 超过 Codex 2500 上限的 80%，第二次 CLI install 退出 4，packages/lock/index/approval/provider 全部字节和序号不变。证据：`internal/tokenestimate/golden_test.go`、`internal/app/token_acceptance_test.go`；相关 core/tokens 全量测试通过。
 
 ## 完成后回顾发现
 
@@ -133,6 +133,8 @@ B1.2 和 B1.4 的历史通过状态表示原有测试套件在声明范围内通
 复现源文件和结果见 `docs/review/M1-2026-10-13-probe.go.txt`、`docs/review/M1-2026-10-13-results.json`；修复后的探针结果见 `docs/review/M1-2026-10-13-fixed-results.json`。R01–R08 已完成，M1a 仍需其余离线验收条目。
 
 ## M1b：Codex 真实环境
+
+用户约定（2026-10-15）：Codex 与 Claude Code 的真实配置由用户手动执行。进入 M1b 时先提供完整配置命令和验证步骤，不代为改动真实配置；运行结果返回后再更新验收状态。
 
 - [?] **CDEX-01/B1** 全新安装、信任一次、第二包安装/卸载/sync 后不重复信任。
 - [?] **CDEX-02/B2** 模型、low/minimal/high effort 条件和上下文内容正确。

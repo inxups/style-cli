@@ -1,0 +1,9 @@
+spec: style/v0.3
+name: tokens-t006
+version: 0.1.0
+description: Token diagnostic fixture
+reads: {harness: [session_id]}
+rules:
+  - id: base
+    target: system
+    text: '{{harness.session_id}}'

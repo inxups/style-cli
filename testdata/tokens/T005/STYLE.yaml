@@ -1,0 +1,10 @@
+spec: style/v0.3
+name: tokens-t005
+version: 0.1.0
+description: Token diagnostic fixture
+rules:
+  - id: guard
+    target: tool
+    tool: shell
+    action: block
+    text: 界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界
