@@ -2,7 +2,7 @@
   "date": "2026-10-15",
   "provider": "claude-code",
   "harness_version": "2.1.300",
-  "status": "in-progress",
+  "status": "passed-in-recorded-scope",
   "scope": "User operated the real Claude session and configuration. Read-only checks corroborate loaded hooks, SessionStart context delivery and effort refresh. The original failed preflight is retained below.",
   "preflight": {
     "version_command": "claude --version",
@@ -396,7 +396,7 @@
     "real_configuration_modified_by_agent": false
   },
   "C9": {
-    "status": "partial; timing-blocked",
+    "status": "passed; aggregate timing gate",
     "session_id": "1a0e173f-74cd-4b3d-90c9-040d2cc304c7",
     "cwd": "/Users/inxups/.style-m1b/manual-workspace/claude-c4",
     "route": "claude-user",
@@ -519,7 +519,7 @@
       ],
       "acceptance_basis": "SessionStart:resume actually ran and returned neutral {}. The following no-tools prompt added only two dedup records, with unchanged generation/epoch and the same four seen markers; no new session.start output occurred. The user quote corroborates historical context, but is not used alone as proof of dedup."
     },
-    "timing": {
+    "initial_timing_failure": {
       "status": "blocked",
       "issue": "M1B-PERF-01",
       "evidence": "docs/review/M1B-CLAUDE-C9-TIMING-2026-10-15.json",
@@ -567,14 +567,70 @@
     "reproduction": "Follow manual section 5.2: retain pre-resume state/stats/seen; user launches the same session with --resume and --debug hooks --debug-file; quote current context without tools and correlate neutral resume output with dedup-only stats. Then request 50 separate sequential Bash marker calls, verify actual call/result IDs and overlap from timestamped transcript rows, and run measure_claude_hooks.py on the full debug log or retained completion excerpt. Require p95 <50ms and inspect JSON status; parser exit 0 is not acceptance.",
     "offline_optimization": {
       "id": "M1B-PERF-01A",
-      "status": "completed-offline-real-retest-pending",
+      "status": "completed; real retest recorded below",
       "evidence": "docs/review/M1B-PERF-01A-2026-10-15.json",
       "change": "Load validates raw index once before building matchers; New retains independent validation; persistence and subscriptions unchanged",
-      "real_harness_retested": false,
+      "real_harness_retested": true,
       "real_configuration_modified_by_agent": false,
       "installed_binary_modified_by_agent": false,
-      "next": "User rebuilds fixed binary, resumes with a fresh debug log and repeats the real 50-call sampling protocol; preserve original failed samples."
+      "next": "Real retest completed under timing_real_retest. Stop after recording this performance issue as requested by the user."
+    },
+    "timing_real_retest": {
+      "status": "passed; existing aggregate sampling gate",
+      "evidence": "docs/review/M1B-CLAUDE-C9-RETEST-TIMING-2026-10-15.json",
+      "completion_excerpt": "docs/review/M1B-CLAUDE-C9-RETEST-HOOKS-2026-10-15.txt",
+      "implementation_commit": "a4426a3a081b814695c16e046bdc71561beb1774",
+      "installed_binary_sha256": "9c137245d5f240d5c67af020464704e5fe92f09855ced7b1320432e86411975f",
+      "actual_Bash_calls": 50,
+      "failed_Bash_calls": 0,
+      "assistant_messages": 50,
+      "overlaps": 0,
+      "hook_errors": 0,
+      "overall": {
+        "count": 102,
+        "median_ms": 27.0,
+        "p95_ms": 46.0,
+        "max_ms": 798.0
+      },
+      "by_event": {
+        "PostToolUse:Bash": {
+          "count": 50,
+          "median_ms": 23.0,
+          "p95_ms": 27.0,
+          "max_ms": 30.0
+        },
+        "PreToolUse:Bash": {
+          "count": 50,
+          "median_ms": 37.0,
+          "p95_ms": 53.0,
+          "max_ms": 94.0
+        },
+        "SessionStart:resume": {
+          "count": 1,
+          "median_ms": 798.0,
+          "p95_ms": 798.0,
+          "max_ms": 798.0
+        },
+        "UserPromptSubmit": {
+          "count": 1,
+          "median_ms": 25.0,
+          "p95_ms": 25.0,
+          "max_ms": 25.0
+        }
+      },
+      "acceptance_basis": "Existing manual §5.2 and collector status use p95 of all matched STYLE command-hook completions in one fresh log, threshold strictly below 50ms. No warmup or slow samples discarded, no pooling with old failed samples, no threshold change. Per-event values are retained and are not claimed individually under budget.",
+      "limitations": [
+        "PreToolUse:Bash p95 remains 53ms; this is an aggregate C9 pass, not a per-event latency guarantee.",
+        "SessionStart:resume took 798ms and remains in the complete sample population.",
+        "No direct per-invocation Go process entry/exit timestamps: total harness duration includes its preparation and scheduling.",
+        "The observed 53→46ms aggregate improvement is not attributed solely to the code change; workload and harness variability remain.",
+        "This is 50 real tool calls/102 hook completions; not the separate Codex U5 1000-PreToolUse baseline."
+      ],
+      "resume_recheck": "neutral {}; same gen/epoch/seen; prompt_count 7 to 8; only two new prompt dedup records",
+      "real_configuration_modified_by_agent": false,
+      "installed_binary_modified_by_agent": false,
+      "followup": "Performance issue closed under the recorded aggregate C9 gate. Stop here at user request; Codex M1b and M1 remain incomplete."
     }
   },
-  "pending": ["C9"]
+  "pending": []
 }

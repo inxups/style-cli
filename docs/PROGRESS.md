@@ -729,3 +729,14 @@
 - `BenchmarkLoadIndex` 使用相同入库 golden，三轮中位数约 1.584→0.843ms，分配次数约 26256→13333。前后独立构建，用相同两包 index、各自临时状态、Pre/Post 各 100 次，交错并轮换先后次序，完整进程 p95 从 24.445667/24.338291→22.8505/22.924167ms；400 次全部返回中性 JSON，首次慢启动仍保留。此为离线诊断，不替代真实 C9。
 - 验证：清理 CODEX_HOME/CODEX_SANDBOX，临时 Go 缓存和 GOPROXY=off/GOSUMDB=off；双 module `make test-go`、`make vet-go`，`go test -race -count=1 ./core/engine ./internal/runtime` 通过。完整进程样本、基准、摘要、阶段数据和复现入口入库 `docs/review/M1B-PERF-01A-2026-10-15.json`；任务、测试、手册、Claude JSON 与既有 review 同步确认离线优化完成。
 - 真实二进制和配置均未代改。用户重建固定程序后，用独立 debug 日志重新采集；M1B-PERF-01 仍为 `[!]`，CLAUDE-09/C9 仍为 `[~]`，不以小幅离线改善宣称 53ms 问题已解决。
+
+### 2026-10-15 — M1B-PERF-01 / CLAUDE-09/C9 `[x]` 真实复测
+
+- 用户回传“采样完成”。只读核对固定二进制：go1.27.0、vcs.revision=a4426a3a081b814695c16e046bdc71561beb1774、vcs.modified=false，SHA256 9c137245d5f240d5c67af020464704e5fe92f09855ced7b1320432e86411975f。由用户更新程序，agent 没有代改真实配置或安装程序。
+- 新 debug 文件 `/tmp/style-m1b-c9-perf01a-w1zfttuf.log` 中，15:09:39.216Z–15:12:00.005Z 共 102 条 STYLE command-hook 完成记录，0 错误、0 未解析行。整体 median=27ms/p95=46ms/max=798ms；PreToolUse 50 条 median=37ms/p95=53ms/max=94ms，PostToolUse 50 条 median=23ms/p95=27ms/max=30ms，resume 1 条 798ms、prompt 1 条 25ms。所有匹配样本保留，无预热剔除，原 103 条失败样本未混算。
+- 时间戳 transcript 验证新一轮恰有 50 个 Bash tool id、50 个独立 assistant message、50 个成功结果，无重叠；所有命令返回 STYLE_M1B_C9、空 stderr。无 timestamp 的历史快照不重复计数。只留验收调用元数据，不提交完整会话或 debug 文件。
+- 同一 session 的 SessionStart:resume 返回 `{}`；gen/epoch 仍 0/0，四个 seen 不变，prompt_count 7→8，stats 16→18，仅两条 UserPromptSubmit dedup。resume 分支继续通过。
+- 完成依据沿用手册 §5.2 和既有收集器的整批样本 p95<50ms，没有修改阈值或判定逻辑。整体 46ms 达标；PreToolUse 单类仍 53ms、resume 798ms 如实披露，不扩展为各事件单独保证，不把前后观测差全部归因于优化。
+- 原样 102 条 completion 入库 `docs/review/M1B-CLAUDE-C9-RETEST-HOOKS-2026-10-15.txt`；全部样本、50 组调用/结果、程序 build info/摘要、状态变化和限制入库对应 RETEST-TIMING JSON。复算：`python3 testdata/manual/measure_claude_hooks.py docs/review/M1B-CLAUDE-C9-RETEST-HOOKS-2026-10-15.txt --binary /Users/inxups/.local/lib/style-m1b/style`，status=within-budget、102 条、p95=46ms。
+- 验证：`PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s testdata/manual -p 'test_measure_claude_hooks.py' -v` 六项通过；留存 excerpt 与 JSON 样本逐项精确复算、程序 revision/hash、50 组实际调用/结果和 resume 状态核对通过。本次只有验收记录变化，不重复无关 Go 测试；优化提交的双 module test/vet 和定向 race 证据保留。
+- 任务、测试、手册、Claude JSON 与既有 review 已确认 M1B-PERF-01 和 C9 在上述口径完成，原失败作为历史保留。按用户要求到此停止，等待新指令；Codex M1b 和 M1 尚未完成。

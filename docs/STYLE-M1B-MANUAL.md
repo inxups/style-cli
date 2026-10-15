@@ -90,7 +90,7 @@ fi
 
 ## 4. Claude Code：用户级配置
 
-2026-10-15 的旧临时程序路径问题已由用户重新安装解除。C1–C8 和 C9 resume 去重分支已真实通过；C9 性能整体 p95=53ms，超过严格小于 50ms 的目标，保持未完成并记录 M1B-PERF-01。保留启动 model/effort unknown 的可用性边界，不把 C3 扩展为强度验收。证据见 `review/M1B-CLAUDE-2026-10-15.json`。
+2026-10-15 的旧临时程序路径问题已由用户重新安装解除。C1–C9 已按记录范围真实通过；C9 首轮整体 p95=53ms 失败，a4426a3 优化后独立复测整体 p95=46ms，102 条样本完整保留。PreToolUse 单类 p95 仍为 53ms、resume=798ms；通过口径为本手册 §5.2 既定的整批样本 p95，不宣称各事件单独均达标。保留启动 model/effort unknown 的边界。证据见 `review/M1B-CLAUDE-2026-10-15.json` 的 C9.timing_real_retest。
 
 复现 C3：先按第 1 节重建固定二进制，再执行下面安装命令，保留原安装前备份。重新打开 Claude 会话，确认 `/hooks` 新增 PostModelSwitch（M1B-FIX-06 后本示例为 6 类事件、12 条 hook，其中 PostToolUse 增加 Skill）。用 `/model` 切到另一个当前可用的模型，随后分两条提示引用最新 `Current session:`。第一条应收到新模型正文，第二条应去重；同时核对 state/stats。运行中自动加载订阅变更仍未验证，故采用新会话。
 
@@ -197,6 +197,8 @@ python3 testdata/manual/measure_claude_hooks.py /path/to/hooks.log \
 2026-10-15 首轮结果：50 次 Bash 全成功、0 hook 错误，实际 49 个 assistant message，其中一个含两次重叠调用，故不宣称全串行。103 条完整样本整体 p95=53ms，PreToolUse=53ms、PostToolUse=29ms；C9 性能未通过。排除重叠区间的单独敏感性分析仍超预算，不能据此替换完整结果。原样 completion 片段与全部调用元数据见 `review/M1B-CLAUDE-C9-HOOKS-2026-10-15.txt`、`review/M1B-CLAUDE-C9-TIMING-2026-10-15.json`；对前者运行相同脚本可复算。不放宽阈值，先定位计时边界和 PreToolUse 开销；本次没有修改真实配置或 Go 实现。
 
 随后 M1B-PERF-01A 已去掉 index 加载的重复编码/校验，保留完整 schema/语义校验及状态持久化。离线进程诊断改善约 1.5ms，不能证明真实 PreToolUse 的额外开销已消除。用户需按第 1 节重建固定二进制；订阅和规则没变，无需重新安装。恢复原会话时给 `--debug-file` 一个新的文件路径，再重复本节 50 次调用并检查实际重叠情况；新日志单独统计、保留全部匹配样本，目标仍为 p95 <50ms。原 103 条失败证据保留，不能混入新采样后计算一个通过结果。
+
+用户已完成上述复测：新日志 102 条 completion（50 PreToolUse、50 PostToolUse、1 resume、1 prompt），50 个 Bash 调用/结果全部成功且无重叠。整体 median=27ms/p95=46ms/max=798ms，按现有收集器和整批样本门槛通过 C9；PreToolUse 单类 p95=53ms、PostToolUse=27ms，均保留原值，不把整体通过扩展为单类保证。原样日志片段 `review/M1B-CLAUDE-C9-RETEST-HOOKS-2026-10-15.txt` 可用同一命令复算；完整证据见对应 RETEST-TIMING JSON。此前失败仍为历史记录。
 
 ## 6. Codex 插件路线与手动注册
 

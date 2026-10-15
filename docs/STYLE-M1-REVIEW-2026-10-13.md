@@ -532,3 +532,11 @@ M1B-FIX-02 复核：使用临时 Go 缓存、清理 CODEX 环境构建 `go build
 - 只读核对当前 Claude 2.1.300 安装产物：command-hook 计时从准备输入前开始，到命令 runner 返回结束，后续才校验响应；当前带 args 的配置走直接 executable/argv 分支。原 103 次没有独立的进程入口/出口时间，仍无法把 Pre/Post 差值归因于某一阶段。临时源码副本的阶段计时显示状态写入是主要内部成本，未据此削减持久化。
 
 证据和重现方式见 `review/M1B-PERF-01A-2026-10-15.json`，固定基准入口为 `core/engine/load_test.go`。本次只确认离线优化完成；用户重建固定程序并采集新的真实日志后，才能重新判断 **M1B-PERF-01 / C9**。原失败结果保留，M1 未完成；没有代改用户真实配置或程序。
+
+## C9 真实复测完成确认（2026-10-15）
+
+- [x] **M1B-PERF-01 / CLAUDE-09/C9**：用户重建固定程序，build info 为 a4426a3、工作树未修改；恢复同一 Claude 2.1.300 会话，独立新日志含 102 条 STYLE command-hook 完成记录、0 错误。50 个 Bash 调用均成功，50 个独立 assistant message，调用/结果时间确认无重叠。
+- 按手册 §5.2 和既有收集器的整批样本口径，整体 median=27ms、p95=46ms，达到严格小于 50ms 的既定门槛；全部匹配样本保留，没有与原 103 条失败样本混算。**PreToolUse 单独 p95 仍为 53ms**，PostToolUse 为 27ms，SessionStart:resume 为 798ms；本项不宣称各事件单独达标，也不把观测改善全部归因于代码变化。
+- resume 仍返回 `{}`；gen=0、epoch=0 和四个 seen 标记不变，prompt_count 7→8，stats 只增加两条 prompt dedup，没有新的 session.start output。收集器六项回归、102 条样本精确复算、50 组调用/结果、程序版本/摘要及状态核对通过。
+
+原样计时见 `review/M1B-CLAUDE-C9-RETEST-HOOKS-2026-10-15.txt`，全部样本与调用元数据见对应 RETEST-TIMING JSON；原失败和离线优化证据继续保留。任务、矩阵、手册和 Claude JSON 已确认上述范围完成。按用户要求，本性能问题收尾后停止，等待新指令；Codex M1b 和 M1 尚未完成。
