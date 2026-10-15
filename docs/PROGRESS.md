@@ -468,3 +468,15 @@
 - 验证：隔离环境下 `go test -count=1 ./internal/app ./cmd/style`、根 module 与 nested `agenthooks` 的 `make test-go`、`make vet-go`、示例 `style validate` 及两个显式 harness `style plan` 命令、gofmt、`git diff --check` 通过。Go 缓存位于 `/tmp/style-cli-{gopath,gomodcache,gocache}`，`CODEX_HOME`/`CODEX_SANDBOX` 未设置。
 - 文档：任务清单 T51、测试矩阵 B1.24/A2 与 review 的 T51 检查项已标记 `[x]`；修正 B1.7 对 A2 未完成的过时描述。证据：`internal/app/{validate.go,plan.go,command.go,command_test.go,plan_golden_test.go,plan_layout_test.go}`、`testdata/golden/plan-{codex,claude-code}.txt`、`docs/STYLE-M1-REVIEW-2026-10-13.md` T51。
 - 状态：T52–T55、A1/A12/A13/A18/A22、adapter conformance 和 M1a/M1b 仍未完成，不提前标记。
+
+### 2026-10-15 — T52/B1.25/A22 `[x]`
+
+- 实现：新增 `style install` 生命周期编排。安装先读取并快照包字节，校验 `requires.runtime`、settings、replace 和已安装包冲突，再对所有已安装包按 provider 重新 plan/token/compile；生成锁文件、index、settings 和 adapter route changeset 后统一应用。`--yes` 是非交互确认门槛，`--link` 保留源路径和哈希，锁文件记录 route、surface、rendered、trust 和 fail-closed 状态。
+- 事务：包存储使用 staging directory/file + backup rename；agenthooks `ApplyFiles` 在所有 Before 快照通过后逐文件原子替换，后续错误或 context cancellation 逆序回滚，保留已有文件权限。安装路线继续调用 adapter `Route.Plan`，不复制 agenthooks owner merge/uninstall 行为。
+- 回归：`internal/app/install_test.go` 覆盖示例包安装、重复幂等、`--yes`、settings 必填及 0600、runtime 版本要求、replace 确认；`agenthooks/install/install_test.go` 覆盖多文件取消回滚。`TestInstallRequiresReplaceConfirmationAndCommandYes` 提供 A22 的命令级退出证据。
+- 验证（清理 `CODEX_HOME`/`CODEX_SANDBOX`，使用临时 Go 缓存，关闭网络依赖获取）：
+  - `env -u CODEX_HOME -u CODEX_SANDBOX GOPATH=/tmp/style-cli-gopath GOMODCACHE=/tmp/style-cli-gomodcache GOCACHE=/tmp/style-cli-gocache GOPROXY=off GOSUMDB=off go test -count=1 ./internal/app` 通过。
+  - 同环境 `go test -count=1 -C agenthooks ./install` 通过。
+  - 示例 `STYLE_HOME=$(mktemp -d) ... go run ./cmd/style install example/terse-reviewer --yes --json` 返回 0，并写入 package、lock、index 和 Codex/Claude route 文件。
+  - `GOPROXY=off GOSUMDB=off make test-go`、`make vet-go`、gofmt 和 `git diff --check` 通过。
+- 文档：任务清单 T52、测试矩阵 B1.25/A22 和 review 文档 T52 段落均已标记 `[x]`。T53–T55、A1/A12/A13/A18、adapter conformance 和 M1a/M1b 仍未完成。

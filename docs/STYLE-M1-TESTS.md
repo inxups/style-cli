@@ -76,13 +76,15 @@ env -u CODEX_HOME -u CODEX_SANDBOX \
 - [x] **B1.24 T51 `style validate` / `style plan`**：隔离缓存下 `go test -count=1 ./internal/app` 覆盖有效/无效包稳定文本诊断、JSON 诊断码与退出码、参数错误、显式/多 harness 选择、默认/显式 session 假设、Codex/Claude 原生 token bucket 聚合；`TestExamplePlanMatchesProviderGoldens` 对示例包 Codex/Claude stdout 逐字节比较，`TestProviderLayoutUsesNativeAggregateBuckets` 固定 MCP 聚合及 canonical/native tool 映射。`go run ./cmd/style validate example/terse-reviewer` 返回 `valid`，两个 `style plan` 命令返回 0。双 module `make test-go`、`make vet-go`、gofmt 和 `git diff --check` 通过。证据：`internal/app/command_test.go`、`plan_golden_test.go`、`plan_layout_test.go`、`testdata/golden/plan-{codex,claude-code}.txt`、`docs/PROGRESS.md` T51/B1.24。
 ## M1a：STYLE 离线验收
 
+- [x] **B1.25 T52 `style install`**：`go test -count=1 ./internal/app -run 'TestInstall|TestRunInstall'` 覆盖 `--yes` 确认、settings 必填值和 0600 持久化、requires.runtime、replace/`--allow-replace` 边界、重复安装幂等、包/锁/index/适配器路线写入；`go test -count=1 -C agenthooks ./install` 覆盖多文件 changeset 的 stale 检查、原子写入和取消时回滚。示例包隔离 `STYLE_HOME` 的 `go run ./cmd/style install ... --yes --json` 返回 0。双 module `make test-go`、`make vet-go`、gofmt 和 `git diff --check` 通过。证据：`internal/app/install_test.go`、`agenthooks/install/install_test.go`、`docs/PROGRESS.md` T52/B1.25。
+
 ### 包格式和 validate
 
 - [ ] **A1** 示例包 validate 退出 0；所有 invalid fixture 对应错误码退出 1：`dup-id`、`from-and-inline`、`inline-missing-id`、`file-and-text`、`file-into-rules`、`body-has-frontmatter`、`rule-file-pkg-field`、`empty-body`、`override-target`、`defaults-field`、`undeclared-var`、`reads-missing`、`event-var-in-template`、`sensitive-reserved`、`condition-field-wrong-event`、`bad-regex`、`bad-effort-expr`、`action-target`、`block-after`、`replace-non-system`、`bad-name`、`bad-id`、`path-escape`、`symlink`、`file-too-large`、`bad-encoding`、`marker-in-body`。
 - [x] **A2** 示例包 `style plan` 对 Codex/Claude Code 使用显式 harness 生成的 stdout 与 `testdata/golden/plan-codex.txt`、`plan-claude-code.txt` 逐字一致；golden 包含每条规则状态、降级/能力、路线、原生输入上限、包预算、逐规则/逐事件 token 和会话成本。证据：`internal/app/plan_golden_test.go`、`internal/app/plan_layout_test.go`、`testdata/golden/plan-{codex,claude-code}.txt`。
 - [x] **A3** 示例包生成的 `index.json` 与 golden 逐字一致，并通过 Draft 2020-12 schema。证据：B1.11。
 - [x] **A21** `warn` 首句提取覆盖中英文、无标点、多行和开头空行；新增 ASCII 句末条件、CRLF 和动态模板值用例。证据：`core/warn/sentence_test.go`、B1.6。
-- [ ] **A22** 非交互安装没有 `--yes` 退出 1；replace 没有 `--allow-replace` 被拒绝。
+- [x] **A22** 非交互安装没有 `--yes` 退出 1；replace 没有 `--allow-replace` 被拒绝。证据：`internal/app/install_test.go:TestInstallRequiresReplaceConfirmationAndCommandYes`。
 
 ### engine、state、codec 和输出
 

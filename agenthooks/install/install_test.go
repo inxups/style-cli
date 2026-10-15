@@ -6,6 +6,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
+	"errors"
 	"io/fs"
 	"os"
 	"path/filepath"
@@ -293,6 +294,46 @@ func TestApplyFilesRejectsStalePlanAndAppliesFreshPlan(t *testing.T) {
 	stale := PlannedFile{Path: path, Root: dir, Before: []byte("old\n"), After: []byte("newer\n"), Mode: 0o644}
 	if err := ApplyFiles(context.Background(), []PlannedFile{stale}); err == nil {
 		t.Fatal("ApplyFiles accepted a stale plan")
+	}
+}
+
+type cancelAfterChecks struct {
+	context.Context
+	checks int
+	cancel int
+}
+
+func (ctx *cancelAfterChecks) Err() error {
+	ctx.checks++
+	if ctx.checks >= ctx.cancel {
+		return context.Canceled
+	}
+	return nil
+}
+
+func TestApplyFilesRollsBackEarlierChangesWhenContextCancels(t *testing.T) {
+	dir := t.TempDir()
+	first := filepath.Join(dir, "first.json")
+	second := filepath.Join(dir, "second.json")
+	if err := os.WriteFile(first, []byte("before"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	ctx := &cancelAfterChecks{Context: context.Background(), cancel: 6}
+	changes := []PlannedFile{
+		{Path: first, Root: dir, Before: []byte("before"), After: []byte("after"), Mode: 0o600},
+		{Path: second, Root: dir, After: []byte("created"), Mode: 0o600},
+	}
+	if err := ApplyFiles(ctx, changes); err == nil || !errors.Is(err, context.Canceled) {
+		t.Fatalf("ApplyFiles error = %v, want context cancellation", err)
+	}
+	if got, err := os.ReadFile(first); err != nil || string(got) != "before" {
+		t.Fatalf("first file after rollback = %q, err=%v", got, err)
+	}
+	if _, err := os.Stat(second); !os.IsNotExist(err) {
+		t.Fatalf("second file exists after rollback, err=%v", err)
+	}
+	if mode, err := os.Stat(first); err != nil || mode.Mode().Perm() != 0o600 {
+		t.Fatalf("rollback changed original mode: mode=%v err=%v", mode, err)
 	}
 }
 

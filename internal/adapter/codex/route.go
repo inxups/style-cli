@@ -159,6 +159,7 @@ func (r *route) Remove(_ context.Context, owner adapter.Owner) (adapter.Changese
 func fileChange(file install.PlannedFile) adapter.FileChange {
 	return adapter.FileChange{
 		Path:       file.Path,
+		Root:       file.Root,
 		Mode:       file.Mode,
 		Before:     file.Before,
 		After:      file.After,
@@ -205,6 +206,7 @@ func (r *route) configChange(planned []install.PlannedFile, transform func([]byt
 	}
 	return adapter.FileChange{
 		Path:       path,
+		Root:       r.configRoot(),
 		Mode:       mode,
 		Before:     before,
 		After:      updated,
@@ -221,11 +223,15 @@ func cloneNullable(data []byte) []byte {
 }
 
 func (r *route) configPath() string {
+	return filepath.Join(r.configRoot(), "config.toml")
+}
+
+func (r *route) configRoot() string {
 	root := r.dir
 	if r.scope == install.ScopePlugin {
 		root = r.configDir
 	}
-	return filepath.Join(root, "config.toml")
+	return root
 }
 
 func NewPluginRouteForCommand(dir, configDir, command string, facts *Facts) adapter.Route {

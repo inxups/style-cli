@@ -120,12 +120,16 @@ func PlanUninstallFiles(m Manifest, t Target) ([]PlannedFile, error) {
 		if !changed {
 			continue
 		}
+		mode := fs.FileMode(0o644)
+		if info, statErr := os.Stat(dest); statErr == nil {
+			mode = info.Mode().Perm()
+		}
 		out = append(out, PlannedFile{
 			Path:   dest,
 			Root:   root,
 			Before: cloneBytes(existing),
 			After:  cloneBytes(updated),
-			Mode:   0o644,
+			Mode:   mode,
 			Remove: removeFile,
 		})
 	}
@@ -137,6 +141,65 @@ func PlanUninstallFiles(m Manifest, t Target) ([]PlannedFile, error) {
 // not overwrite intervening edits. A file already removed after planning is
 // treated as complete for remove operations.
 func ApplyFiles(ctx context.Context, changes []PlannedFile) error {
+	if ctx == nil {
+		return errors.New("install: context is required")
+	}
+	type stagedChange struct {
+		change  PlannedFile
+		temp    string
+		backup  string
+		applied bool
+	}
+	staged := make([]stagedChange, 0, len(changes))
+	cleanup := func() {
+		for _, item := range staged {
+			if item.temp != "" {
+				_ = os.Remove(item.temp)
+			}
+			if item.backup != "" {
+				_ = os.Remove(item.backup)
+			}
+		}
+	}
+	rollback := func() error {
+		var failures []string
+		for index := len(staged) - 1; index >= 0; index-- {
+			item := &staged[index]
+			if !item.applied {
+				continue
+			}
+			if item.change.Before == nil {
+				if err := os.Remove(item.change.Path); err != nil && !errors.Is(err, os.ErrNotExist) {
+					failures = append(failures, err.Error())
+				}
+			} else {
+				if err := os.MkdirAll(filepath.Dir(item.change.Path), 0o755); err != nil {
+					failures = append(failures, err.Error())
+					continue
+				}
+				if err := os.Remove(item.change.Path); err != nil && !errors.Is(err, os.ErrNotExist) {
+					failures = append(failures, err.Error())
+					continue
+				}
+				if err := os.Rename(item.backup, item.change.Path); err != nil {
+					failures = append(failures, err.Error())
+				}
+				item.backup = ""
+			}
+		}
+		cleanup()
+		if len(failures) > 0 {
+			return fmt.Errorf("rollback failed: %s", strings.Join(failures, "; "))
+		}
+		return nil
+	}
+	fail := func(cause error) error {
+		if rollbackErr := rollback(); rollbackErr != nil {
+			return fmt.Errorf("%w; %v", cause, rollbackErr)
+		}
+		return cause
+	}
+	// Validate the full set before staging or mutating any destination.
 	for _, change := range changes {
 		if err := ctx.Err(); err != nil {
 			return err
@@ -162,31 +225,125 @@ func ApplyFiles(ctx context.Context, changes []PlannedFile) error {
 			return fmt.Errorf("install: planned file mode is required: %s", change.Path)
 		}
 	}
+	// Stage new content and rollback bytes beside each destination. The final
+	// rename is atomic for each file; any later failure restores prior files.
 	for _, change := range changes {
 		if err := ctx.Err(); err != nil {
+			cleanup()
 			return err
+		}
+		if change.Remove && change.Before == nil {
+			continue
+		}
+		if err := os.MkdirAll(filepath.Dir(change.Path), 0o755); err != nil {
+			cleanup()
+			return fmt.Errorf("install: prepare %s: %w", change.Path, err)
+		}
+		item := stagedChange{change: change}
+		if change.Before != nil {
+			backup, err := os.CreateTemp(filepath.Dir(change.Path), ".agenthooks-backup-*")
+			if err != nil {
+				staged = append(staged, item)
+				cleanup()
+				return fmt.Errorf("install: stage rollback for %s: %w", change.Path, err)
+			}
+			item.backup = backup.Name()
+			backupMode := change.Mode
+			if info, statErr := os.Stat(change.Path); statErr == nil {
+				backupMode = info.Mode().Perm()
+			}
+			if err := backup.Chmod(backupMode); err != nil {
+				backup.Close()
+				staged = append(staged, item)
+				cleanup()
+				return err
+			}
+			if _, err := backup.Write(change.Before); err != nil {
+				backup.Close()
+				staged = append(staged, item)
+				cleanup()
+				return err
+			}
+			if err := backup.Sync(); err != nil {
+				backup.Close()
+				staged = append(staged, item)
+				cleanup()
+				return err
+			}
+			if err := backup.Close(); err != nil {
+				staged = append(staged, item)
+				cleanup()
+				return err
+			}
+		}
+		if !change.Remove {
+			temp, err := os.CreateTemp(filepath.Dir(change.Path), ".agenthooks-stage-*")
+			if err != nil {
+				staged = append(staged, item)
+				cleanup()
+				return fmt.Errorf("install: stage %s: %w", change.Path, err)
+			}
+			item.temp = temp.Name()
+			if err := temp.Chmod(change.Mode); err != nil {
+				temp.Close()
+				staged = append(staged, item)
+				cleanup()
+				return err
+			}
+			if _, err := temp.Write(change.After); err != nil {
+				temp.Close()
+				staged = append(staged, item)
+				cleanup()
+				return err
+			}
+			if err := temp.Sync(); err != nil {
+				temp.Close()
+				staged = append(staged, item)
+				cleanup()
+				return err
+			}
+			if err := temp.Close(); err != nil {
+				staged = append(staged, item)
+				cleanup()
+				return err
+			}
+		}
+		staged = append(staged, item)
+	}
+	for index := range staged {
+		item := &staged[index]
+		if err := ctx.Err(); err != nil {
+			return fail(err)
+		}
+		change := item.change
+		current, err := os.ReadFile(change.Path)
+		exists := err == nil
+		if err != nil && !errors.Is(err, os.ErrNotExist) {
+			return fail(fmt.Errorf("install: recheck %s: %w", change.Path, err))
+		}
+		if change.Remove && !exists {
+			continue
+		}
+		if exists != (change.Before != nil) || exists && !bytes.Equal(current, change.Before) {
+			return fail(fmt.Errorf("install: planned file changed during apply: %s", change.Path))
 		}
 		if change.Remove {
 			if err := os.Remove(change.Path); err != nil && !errors.Is(err, os.ErrNotExist) {
-				return fmt.Errorf("install: remove %s: %w", change.Path, err)
+				return fail(fmt.Errorf("install: remove %s: %w", change.Path, err))
 			}
 			if change.Root != "" {
 				pruneEmptyDirs(change.Root, filepath.Dir(change.Path))
 			}
+			item.applied = true
 			continue
 		}
-		if err := os.MkdirAll(filepath.Dir(change.Path), 0o755); err != nil {
-			return fmt.Errorf("install: %w", err)
+		if err := os.Rename(item.temp, change.Path); err != nil {
+			return fail(fmt.Errorf("install: replace %s: %w", change.Path, err))
 		}
-		if err := os.WriteFile(change.Path, change.After, change.Mode); err != nil {
-			return fmt.Errorf("install: %w", err)
-		}
-		if change.Mode&0o111 != 0 {
-			if err := os.Chmod(change.Path, change.Mode); err != nil {
-				return fmt.Errorf("install: chmod %s: %w", change.Path, err)
-			}
-		}
+		item.temp = ""
+		item.applied = true
 	}
+	cleanup()
 	return nil
 }
 

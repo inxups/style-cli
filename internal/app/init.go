@@ -14,9 +14,15 @@ import (
 var initNamePattern = regexp.MustCompile(`^[a-z0-9][a-z0-9-]{0,63}$`)
 
 // ConflictError reports an existing destination that would be overwritten.
-type ConflictError struct{ Path string }
+type ConflictError struct {
+	Path    string
+	Message string
+}
 
 func (err *ConflictError) Error() string {
+	if err.Message != "" {
+		return err.Message
+	}
 	return fmt.Sprintf("app: init destination already exists: %s", err.Path)
 }
 

@@ -183,6 +183,7 @@ type Owner string
 // explicit redaction policy.
 type FileChange struct {
 	Path       string
+	Root       string
 	Mode       fs.FileMode
 	Before     []byte
 	After      []byte

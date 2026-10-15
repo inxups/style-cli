@@ -59,7 +59,7 @@
 
 - [x] **T50 `style init`**：生成目录包和单文件包骨架；名称校验、已存在目标冲突、当前空目录初始化和失败回滚均有覆盖。证据：`internal/app/init_test.go`、`internal/app/entry.go`、`internal/app/init_command.go`；验证见 B1.23 与 `docs/PROGRESS.md`。
 - [x] **T51 `style validate` / `style plan`**：输出稳定诊断、降级状态、能力/路线信息、原生输入上限、包预算、逐规则与逐原生事件 token 报告，并支持 Codex/Claude golden 与会话成本假设。证据：`internal/app/{validate.go,plan.go,command.go,plan_golden_test.go}`、`testdata/golden/plan-{codex,claude-code}.txt`；验证见 B1.24 和 `docs/PROGRESS.md`。
-- [ ] **T52 `style install`**：收集 settings，检查 requires、冲突、replace、能力披露，原子写包/锁/index/适配器配置。
+- [x] **T52 `style install`**：收集 settings，检查 requires、冲突、replace、能力披露，原子写包/锁/index/适配器配置。证据：`internal/app/install.go`、`internal/app/install_test.go`、`agenthooks/install/plan_files.go`；验证见 B1.25 和 `docs/PROGRESS.md`。
 - [ ] **T53 `style uninstall`**：只删除 STYLE owner 内容，保留其他条目，卸载后配置字节级恢复。
 - [ ] **T54 `style list` / `style doctor` / `style adapters`**：报告安装、路线、信任、index、状态和适配器能力。
 - [ ] **T55 `style sync` / `style trust`**：哈希变更检测、差异展示、link 包行为、同一份内存字节编译和原子更新。

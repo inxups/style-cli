@@ -304,3 +304,15 @@ fail-closed 的范围收窄为 `Manifest.Fail == FailClosed`、`Blocking` 且 `K
 | RV-T51-03 示例 golden | [x] | Codex 与 Claude Code 显式 harness 的完整 plan stdout 与版本控制内 golden 逐字节比较；golden 每次由当前 CLI 生成并由测试固定。证据：`internal/app/plan_golden_test.go`、`testdata/golden/plan-{codex,claude-code}.txt`。 |
 
 验证：隔离 Go 缓存下 `go test -count=1 ./internal/app ./cmd/style`、根 module 与 nested `agenthooks` 全量测试、`make vet-go`、gofmt 和 `git diff --check` 通过；CLI 示例 validate 与两个显式 harness plan 命令可执行。T52–T55 的 install/uninstall/list/doctor/sync/trust 尚未开始，A1/A12/A13/A18/A22 与 adapter conformance 未完成，M1a/M1b 不标记通过。
+
+## T52 `style install` 完成后回顾（2026-10-15）
+
+结论：安装继续由 `internal/app` 编排，provider 路线只通过 `internal/adapter.Route` 生成 changeset；实际 hook 合并、owner 隔离和文件写入仍复用 `agenthooks/install`。包、锁文件、编译 index、settings 和 provider 配置在同一组可回滚变更中更新，确认和能力检查先于任何写入。
+
+| 检查项 | 状态 | 结论与证据 |
+|---|---|---|
+| RV-T52-01 安装前确认和输入 | [x] | 非交互安装必须带 `--yes`；settings 无默认值时要求 `--set`，未知 setting 和不满足 `requires.runtime` 均在写入前拒绝。证据：`internal/app/install_test.go`。 |
+| RV-T52-02 冲突和 replace | [x] | 同版本同内容重复安装幂等；已锁定包、外部存储和 replace 未获 `--allow-replace` 均拒绝。证据：`internal/app/install.go`、`install_test.go`。 |
+| RV-T52-03 事务和 owner 边界 | [x] | package swap 与 provider changeset 均先校验 Before 快照；agenthooks 多文件写入在取消/后续失败时逆序恢复，已有文件权限保留，provider 路线通过现有 owner-aware renderer。证据：`agenthooks/install/plan_files.go`、`install_test.go`。 |
+
+验证：隔离环境下 `go test -count=1 ./internal/app`、`go test -count=1 -C agenthooks ./install`、根/嵌套 module `make test-go`、`make vet-go`、gofmt 和 `git diff --check` 通过；示例包的隔离 `style install --yes --json` 返回 0。T53–T55 仍未完成，A1/A12/A13/A18 和 adapter conformance 继续保持未完成，M1a/M1b 不提前标记通过。

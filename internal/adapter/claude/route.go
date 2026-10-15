@@ -150,7 +150,7 @@ func (r *route) Remove(_ context.Context, owner adapter.Owner) (adapter.Changese
 }
 
 func fileChange(file install.PlannedFile) adapter.FileChange {
-	return adapter.FileChange{Path: file.Path, Mode: file.Mode, Before: file.Before, After: file.After, CreateOnly: file.Before == nil, Remove: file.Remove}
+	return adapter.FileChange{Path: file.Path, Root: file.Root, Mode: file.Mode, Before: file.Before, After: file.After, CreateOnly: file.Before == nil, Remove: file.Remove}
 }
 
 func (r *route) staticChange(transform func([]byte) ([]byte, error)) (adapter.FileChange, bool, error) {
@@ -170,15 +170,15 @@ func (r *route) staticChange(transform func([]byte) ([]byte, error)) (adapter.Fi
 		if mode == 0 {
 			mode = 0o644
 		}
-		return adapter.FileChange{Path: path, Mode: mode, After: updated, CreateOnly: true}, true, nil
+		return adapter.FileChange{Path: path, Root: r.dir, Mode: mode, After: updated, CreateOnly: true}, true, nil
 	}
 	if bytes.Equal(before, updated) {
 		return adapter.FileChange{}, false, nil
 	}
 	if len(bytes.TrimSpace(updated)) == 0 {
-		return adapter.FileChange{Path: path, Mode: mode, Before: before, Remove: true}, true, nil
+		return adapter.FileChange{Path: path, Root: r.dir, Mode: mode, Before: before, Remove: true}, true, nil
 	}
-	return adapter.FileChange{Path: path, Mode: mode, Before: before, After: updated}, true, nil
+	return adapter.FileChange{Path: path, Root: r.dir, Mode: mode, Before: before, After: updated}, true, nil
 }
 
 func readOptional(path string) ([]byte, os.FileMode, error) {
