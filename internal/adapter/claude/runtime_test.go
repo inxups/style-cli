@@ -29,13 +29,30 @@ func TestEnricherStateUpdateUsesEventEnvironmentSessionPrecedence(t *testing.T) 
 		t.Fatalf("later event effort update = %#v", later)
 	}
 
-	// Once no event value is available, the persisted session wins over the
-	// environment fallback and no environment read is needed by callers.
+	// With neither an event value nor CLAUDE_EFFORT, the persisted session
+	// value is kept.
 	enricher.Environment = func() string { return "" }
 	sessionEvent := claudeRuntimeEvent(agenthooks.KindToolPre, "PreToolUse", `{"session_id":"s1"}`)
 	sessionOnly := enricher.StateUpdate(sessionEvent, &agenthooks.ToolPreEvent{Event: *sessionEvent}, state.Session{EffortResolved: false, ThinkingEffort: "medium", EffortRaw: "medium"})
 	if sessionOnly.ThinkingEffort != "medium" || sessionOnly.EffortRaw != "medium" || !sessionOnly.EffortResolved {
 		t.Fatalf("session effort update = %#v", sessionOnly)
+	}
+}
+
+func TestResolvedSessionStillReadsClaudeEffortEnvironment(t *testing.T) {
+	enricher := &Enricher{Environment: func() string { return "low" }}
+	event := claudeRuntimeEvent(agenthooks.KindPromptSubmitted, "UserPromptSubmit", `{"session_id":"s-env","prompt_id":"p2","prompt":"next"}`)
+	previous := state.Session{EffortResolved: true, ThinkingEffort: "high", EffortRaw: "high"}
+	update := enricher.StateUpdate(event, &agenthooks.PromptEvent{Event: *event, Prompt: "next"}, previous)
+	if update.ThinkingEffort != "low" || update.EffortRaw != "low" || !update.EffortResolved {
+		t.Fatalf("resolved session ignored CLAUDE_EFFORT: %#v", update)
+	}
+
+	// The event value still wins over the environment.
+	tool := claudeRuntimeEvent(agenthooks.KindToolPre, "PreToolUse", `{"session_id":"s-env","effort":{"level":"max"}}`)
+	tool.Session.EffortRaw = "max"
+	if update := enricher.StateUpdate(tool, &agenthooks.ToolPreEvent{Event: *tool}, previous); update.ThinkingEffort != "max" || update.EffortRaw != "max" {
+		t.Fatalf("event effort lost to environment: %#v", update)
 	}
 }
 
@@ -81,8 +98,11 @@ func TestUnknownEventEffortClearsPersistedTier(t *testing.T) {
 func TestEnricherStateUpdateProjectsPostModelSwitch(t *testing.T) {
 	event := claudeRuntimeEvent(agenthooks.KindOther, "PostModelSwitch", `{"session_id":"s-model","to_model":"opus"}`)
 	event.Session.Model = "opus"
-	update := (&Enricher{HarnessVersion: "2.1.315"}).StateUpdate(event, &agenthooks.ModelSwitchEvent{Event: *event, ToModel: "opus"}, state.Session{EffortResolved: true, ThinkingEffort: "high", EffortRaw: "high"})
-	if update.Model != "opus" || update.HarnessVersion != "2.1.315" || update.EffortResolved || update.EffortRaw != "" {
+	enricher := &Enricher{HarnessVersion: "2.1.315", Environment: func() string { return "" }}
+	update := enricher.StateUpdate(event, &agenthooks.ModelSwitchEvent{Event: *event, ToModel: "opus"}, state.Session{EffortResolved: true, ThinkingEffort: "high", EffortRaw: "high"})
+	// The switch updates the model; effort falls back to the persisted value
+	// unchanged because neither the event nor CLAUDE_EFFORT reports one.
+	if update.Model != "opus" || update.HarnessVersion != "2.1.315" || update.ThinkingEffort != "high" || update.EffortRaw != "high" {
 		t.Fatalf("model switch update = %#v", update)
 	}
 }

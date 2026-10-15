@@ -63,9 +63,9 @@ func (enricher *Enricher) StateUpdate(event *agenthooks.Event, typed any, previo
 	if eventEffort == "" {
 		eventEffort = rawString(event.RawField("effort.level"))
 	}
-	if eventEffort == "" && previous.EffortResolved {
-		return update
-	}
+	// Unlike Codex's once-per-session config lookup, Claude resolves on every
+	// event: CLAUDE_EFFORT is consulted whenever the event lacks effort.level,
+	// so a mid-session change reaches dynamic system rules (spec §6, §3.7).
 	environment := ""
 	if enricher != nil && enricher.Environment != nil {
 		environment = enricher.Environment()
@@ -79,8 +79,6 @@ func (enricher *Enricher) StateUpdate(event *agenthooks.Event, typed any, previo
 	update.ThinkingEffort = resolution.Effort
 	update.EffortRaw = resolution.EffortRaw
 	update.EffortApprox = cloneBool(resolution.EffortApprox)
-	// Mark the lookup complete even when neither the event nor environment
-	// reports a value, so tool hooks do not repeatedly inspect process state.
 	update.EffortResolved = true
 	return update
 }

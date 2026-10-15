@@ -599,3 +599,10 @@
 - 修复位于 `core/state/state.go`：非空 raw 视为完整读数，档位与近似标记随之替换（可为空）；不带 effort 的事件仍不覆盖状态，满足 §6“从不用空值覆盖”。adapter 与 engine 不变。
 - 回归：`core/state/state_test.go:TestReportedUnknownEffortClearsPreviousTier`、`internal/adapter/claude/runtime_test.go:TestUnknownEventEffortClearsPersistedTier`，修复前均失败、修复后通过。
 - 验证：清理 CODEX_HOME/CODEX_SANDBOX，使用 `/tmp/style-cli-{gopath,gomodcache,gocache}`、GOPROXY=off/GOSUMDB=off；双 module `make test-go`、`make vet-go`，`go test -race -count=1 ./core/state ./internal/adapter/claude ./internal/runtime`，gofmt 与 `git diff --check` 通过。真实 Claude effort 行为仍属 C1/U-C1。
+
+### 2026-10-15 — M1B-FIX-04 `[x]` Claude 已解析后不再读 CLAUDE_EFFORT
+
+- 对照规范审查发现：`internal/adapter/claude/runtime.go` 在会话已解析且事件不带 `effort.level` 时直接返回，不读 `CLAUDE_EFFORT`。修复前探针中 env=low、state=high 时结果保持 high。规范 §6 要求 Claude 按事件 → `$CLAUDE_EFFORT` → 状态解析，一次性解析只适用于 Codex 配置。
+- 修复：删除 Claude 路径的提前返回，每个事件按规范顺序解析；Codex 不变。PostModelSwitch 单测原先依赖短路断言 effort 字段为空，现注入空环境并断言 effort 保持原值（等值写入，无状态变化）。
+- 回归：`internal/adapter/claude/runtime_test.go:TestResolvedSessionStillReadsClaudeEffortEnvironment`，修复前失败、修复后通过。
+- 验证：清理 CODEX_HOME/CODEX_SANDBOX，使用 `/tmp/style-cli-{gopath,gomodcache,gocache}`、GOPROXY=off/GOSUMDB=off；双 module `make test-go`、`make vet-go`，`go test -race -count=1 ./internal/adapter/claude ./internal/runtime ./internal/adapter/conformance`，gofmt 与 `git diff --check` 通过。新增开销仅一次 `os.Getenv`，未重跑 A20 进程采样。env 与事件生效值不一致时的切换风险留待 U-C1/C1。
