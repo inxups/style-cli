@@ -76,6 +76,8 @@ fi
 
 `--yes` 确认 STYLE 的能力/降级报告；先阅读 plan。plan 展示首选路线，实际安装路线以 install 输出和 lock 为准。
 
+当前路线 ID 为 `codex-plugin`、`codex-user`、`claude-user`，以 `style adapters --json` 为准。CLI 不接受 `--preseed-trust`；Codex 两条路线随正常安装生成信任摘要，插件仍需手动注册并记录真实信任结果。`adapters` 信任种类 `user-confirmation`/`preseed` 在锁文件中分别保存为 `user`/`preseeded`，不是已接受 UI 信任的证据。
+
 预期配置文件：
 
 - `$CODEX_HOME/hooks.json`：合并 STYLE 固定事件订阅。

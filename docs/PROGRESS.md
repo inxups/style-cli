@@ -584,3 +584,11 @@
 - 最终回归为两条路线 × 4 种原始状态，共 8 组，均经过重复安装、双向路线切换和最终卸载；新增文件不再残留，原有字节与 0640 权限保持。测试位于 `internal/app/uninstall_test.go`。
 - 验证：清理 CODEX_HOME/CODEX_SANDBOX，使用 `/tmp/style-cli-{gopath,gomodcache,gocache}`，`GOPROXY=off GOSUMDB=off make test-go` 与 `make vet-go` 双 module 全量通过；gofmt 和 diff 检查通过。任务、测试、review 已确认完成；真实 B8 仍待用户验证。
 - 适用边界：防止新的安装往返遗留换行；历史残留不能与用户原有空白文件自动区分，应按安装前备份判断，不代为清理真实配置。
+
+### 2026-10-15 — M1B-FIX-02 `[x]` 设计路线与信任选项
+
+- 确认旧设计仍用 plugin/user/user-settings，安装命令表声称支持 --preseed-trust，实际 CLI 没有该参数。按已实现契约修正全部相关示意、命令、锁文件、信任和未决项，不增加未经验收的 CLI 功能。
+- 路线统一为 codex-plugin/codex-user/claude-user。明确现有 agenthooks 自动生成两种 Codex 摘要；plugin 注册由用户执行，Status 不据生成文件证明信任。另对照 trustState 确认报告信任种类与锁文件 user/preseeded 的映射，避免再次混写。
+- `STYLE_DOCS/STYLE-cli-design.md` 原被 .gitignore 忽略，本项仅将该设计文件纳入版本控制，未添加其它资料；补当前 M1a/M1b 状态及实现源文件链接，手册同步。
+- 验证：清理 CODEX_HOME/CODEX_SANDBOX、临时 Go 缓存、离线构建 `/tmp/style-cli-m1b-doc-check`。临时 HOME/STYLE_HOME/CODEX_HOME/CLAUDE_CONFIG_DIR 内，help、adapters、未知选项拒绝且无写入、两条路线的真实 CLI install/uninstall、报告/锁/摘要与文档一致；卸载后 config.toml 不存在。复现入口已写入 review；新增源链接、文档契约与 diff 检查通过。
+- 主设计开头原有 6 个指向未收录外部资料的相对链接，改为保留文件名/版本的外部来源说明，避免新克隆出现断链；本仓库内的规范和实现使用有效相对链接。

@@ -420,3 +420,7 @@ fail-closed 的范围收窄为 `Manifest.Fail == FailClosed`、`Blocking` 且 `K
 - [x] **M1B-FIX-01 验证**：新增 `internal/app/uninstall_test.go:TestUninstallCodexConfigWithoutGeneratedNewlineResidue`，两条路线 × absent/原有换行/混合空白/用户内容共 8 组，包含重复安装和双向路线切换；不存在的文件恢复不存在，原有字节及权限保留。隔离 Go 缓存、清理 CODEX 环境后的双 module 全量测试/vet、gofmt、diff 检查通过。
 
 此修复防止新安装往返生成残留。历史上已产生的单换行文件与用户原有单换行文件无法仅凭当前字节区分，清理应依据安装前备份；本轮不修改用户真实配置，真实 B8 仍待验收。
+
+- [x] **M1B-FIX-02 设计文档完成确认**：路线示意统一为 `codex-plugin`、`codex-user`、`claude-user`；从安装命令表删除未实现的信任选项，明确 CLI 不接受 `--preseed-trust`。记录当前两条 Codex 路线均生成摘要、plugin 仍需手动登记且不据生成文件声称真实信任。锁文件中的 `user`/`preseeded` 与报告的 `user-confirmation`/`preseed` 区别已写清，移除不存在的锁字段；添加实现源文件链接和当前里程碑状态。更新主设计文件及手册，主设计文件单独纳入版本控制。
+
+M1B-FIX-02 复核：使用临时 Go 缓存、清理 CODEX 环境构建 `go build -o /tmp/style-cli-m1b-doc-check ./cmd/style`；把 HOME、STYLE_HOME、CODEX_HOME、CLAUDE_CONFIG_DIR 指向临时目录。运行该二进制的 `install --help`、`adapters --json`、`install <example> --harness codex --preseed-trust codex --yes`（预期退出 1/unknown option 且无写入）；随后按手册分别安装 codex-plugin/codex-user，核对安装报告、锁文件、trusted_hash，并各自卸载。全部符合文档，最终 config.toml 不存在；新增源链接和 diff 检查通过。未更改 CLI 选项或真实配置，M1b 其余验收仍未完成。
