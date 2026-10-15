@@ -123,3 +123,5 @@ T20–T24 与 T30–T34 回顾结论和剩余范围见 `docs/STYLE-M1-REVIEW-202
 - [x] **M1B-FIX-04 Claude 已解析后不再读 CLAUDE_EFFORT**：回顾发现 Claude adapter 在会话标记 `effort_resolved` 后，事件不带 `effort.level` 时直接跳过环境变量，与规范 §6 的“事件 → `$CLAUDE_EFFORT` → 状态”不符；中途改强度要等下一次带 `effort.level` 的工具事件才生效，§3.7 的动态 system 补发延后。现在 Claude 每个事件按该顺序解析，Codex 每会话一次的配置解析不变。证据：`internal/adapter/claude/runtime_test.go:TestResolvedSessionStillReadsClaudeEffortEnvironment`（修复前失败）；PostModelSwitch 用例改为固定空环境并断言 effort 保持原值。双 module 全量测试/vet 与 Claude/runtime/conformance race 通过。真实 hook 进程是否都有 `CLAUDE_EFFORT` 仍属 U-C1/C1。
 
 - [x] **M1B-FIX-05 Claude model switch 漏订阅**：C3 真机切到 Haiku 后仍注入 Sonnet，定位安装订阅遗漏。`hooksForProvider` 现按编译条目的 model 依赖添加 PostModelSwitch，等待状态写入且不注入，最后一个依赖移除时正常清理。回归通过真实安装产生的 argv 验证 CLI 入口、切换后下一提示补发与再去重，另覆盖模板/条件依赖及无关规则。双 module 全量测试/vet、定向 race、gofmt/diff 通过；用户重装后真实 C3 的 Opus、Sonnet 切换与去重复测通过。
+
+- [x] **CLAUDE-04-PREP 原生 skill 验收准备**：最小 code-review fixture 及独立工作目录的用户手动配置步骤完成，fixture 不预填 STYLE findings 数值；复制/字节比较、文档 shell 语法与 diff 检查通过。手册 §5.1 覆盖两种入口顺序，真实 C4 保持待验收。

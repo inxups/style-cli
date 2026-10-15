@@ -163,7 +163,7 @@ B1.2 和 B1.4 的历史通过状态表示原有测试套件在声明范围内通
 - [x] **CLAUDE-02/C2** 同一真实 Claude 会话 compact 后 epoch=1，SessionStart 在 12:26:22.31056Z 对 session-info 补发一次；后两条独立 prompt 均为 dedup，没有额外 output。用户两次引用 high 正文与输出 hash 一致，epoch=1 的 seen 标记存在。证据区间、真实 stats 和复现步骤见 Claude JSON 的 C2。
 - [x] **CLAUDE-03/C3** M1B-FIX-05 后真实安装包含同步 PostModelSwitch。用户从 Haiku 切到 Opus、再切 Sonnet，两次切换后的下一提示各补发一次新模型，随后提示均去重；用户引用与实际正文 hash、持久状态一致。原失败保留，effort unknown 不扩展为强度验收。证据、时间区间和复现见 Claude JSON 的 C3.real_retest。
 - [x] **M1B-FIX-05 离线回归** `TestInstallClaudeModelSwitchRefreshesNextPrompt` 使用真实安装生成的 argv 运行 CLI 入口，验证观察事件同步完成且返回中性 `{}`、下一提示用新模型补发、后续去重、trust 移除最后一个依赖后删除观察订阅。`TestInstallClaudeModelObserverFollowsRuleRequirements` 覆盖 system/tool 模板、模型条件及无依赖对照。修复前缺订阅用例失败；修复后双 module test/vet、app 定向 race、gofmt/diff 通过。此项不替代真实 C3。
-- [?] **CLAUDE-04/C4** 隐式 Skill 和显式 `/code-review` 各触发一次并共享去重。
+- [?] **CLAUDE-04/C4** 隐式 Skill 和显式 `/code-review` 各触发一次并共享去重。最小原生 fixture 已备于 `testdata/manual/claude-skills/code-review/SKILL.md`；手动配置与两种入口顺序见手册 §5.1，准备完成不代表真实验收通过。
 - [?] **CLAUDE-05/C5** PreToolUse warn 的用户提示和模型上下文均符合实际能力。
 - [?] **CLAUDE-06/C6** force push 被拒；prompt block 不携带原始 prompt。
 - [?] **CLAUDE-07/C7** 并行工具调用同一 session 规则只输出一次。

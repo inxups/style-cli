@@ -465,3 +465,9 @@ M1B-FIX-02 复核：使用临时 Go 缓存、清理 CODEX 环境构建 `go build
 - [x] **CLAUDE-03/C3**：用户重装后实际配置含 6 类事件、11 条 STYLE hook，PostModelSwitch 为同步观察。Haiku→Opus、Opus→Sonnet 后，下一条提示分别输出新模型正文一次，后续提示各为 dedup；用户原样引用与真实 stats 摘要及 state 一致，两个正文的 seen 标记存在。
 
 证据及复现见 Claude JSON 的 `C3.real_retest`，原失败记录保留。本次初始 SessionStart 的 model/effort 均不可用，后续模型由切换刷新，effort 仍为 unknown；只确认 c3 的新模型单次补发，不扩大为所有启动或强度读数场景。本项无 Go/真实配置变更，C4–C9 继续独立验收。
+
+## Claude C4 验收准备（2026-10-15）
+
+- [x] **CLAUDE-04-PREP**：用户没有或不确定是否有 code-review；新增最小原生 fixture 及独立工作目录的手动配置步骤。fixture 仅回传加载标记和 hook 指令，不预填 STYLE findings 数值，避免把 skill 自带文字误认为 hook 投递。手册规定两次新会话交换 Skill/显式入口顺序，分别确认首次输出和共享去重。
+
+验证限于 fixture 内容、临时目录复制/字节比较和手册 shell 语法；没有修改真实 Claude 配置或安装用户 skill。C4 真实加载、两个入口及共享去重仍为 `[?]`，不据准备完成标记验收通过。

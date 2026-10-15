@@ -144,6 +144,29 @@ fi
 
 模型回答只是观察线索。结合 harness 的 hook/会话记录、模型可见上下文和 `$STYLE_HOME/state` 内 `stats.jsonl` 的规则输出增量判断；统计只证明 STYLE 发出结果，不能单独证明模型收到了结果。回传所需片段即可。
 
+### 5.1 Claude C4：最小原生 skill
+
+若没有可用的 code-review，使用仓库中的 `testdata/manual/claude-skills/code-review/SKILL.md`。它只回传标记和 hook 附加指令，不执行实际 review，也不包含 STYLE 要注入的 findings 数值。官方 [skills 文档](https://code.claude.com/docs/en/skills) 支持项目级 `.claude/skills/<name>/SKILL.md`、模型调用和 `/name` 显式调用；项目同名 skill 会替代 bundled 命令。原生是否加载仍以当前真实版本为准。
+
+下面命令由用户执行，在独立验收工作目录放置 fixture；保留现有用户级配置。`cp -n` 避免覆盖已有文件，`cmp` 不通过时先核对现存内容。若个人或企业级另有同名 skill，其优先级可能更高，必须确认实际加载的是此 fixture。
+
+```sh
+export M1B_C4_WORKSPACE="$HOME/.style-m1b/manual-workspace/claude-c4"
+mkdir -p "$M1B_C4_WORKSPACE/.claude/skills/code-review"
+cp -n /Users/inxups/project/style-cli/testdata/manual/claude-skills/code-review/SKILL.md \
+  "$M1B_C4_WORKSPACE/.claude/skills/code-review/SKILL.md"
+cmp /Users/inxups/project/style-cli/testdata/manual/claude-skills/code-review/SKILL.md \
+  "$M1B_C4_WORKSPACE/.claude/skills/code-review/SKILL.md" && \
+  cd "$M1B_C4_WORKSPACE" && CLAUDE_CONFIG_DIR="$HOME/.claude" claude
+```
+
+接受此独立工作目录的正常信任提示，先确认 `/skills` 可见 code-review。在第一个新会话依次发送：
+
+1. 普通提示：`请用 Skill 工具调用一次 code-review，仅完成这个验收 skill 的要求。` 确认界面实际有 Skill 调用，回传标记及原样引用的 hook 上下文。
+2. 单独发送 `/code-review`，回传结果。实际 UserPromptExpansion 必须发生；同 session 的 review-skill 应去重，模型仍能引用旧上下文不表示重复注入。
+
+另开新会话，按显式 `/code-review` → 普通提示要求 Skill 调用的顺序复测。两个入口各作为首次调用时应输出 `review-skill` 一次，另一个入口复用同 session 去重。若 harness 避免重复调用 Skill，则记录实际行为，不用模型复述代替缺失的调用。结合 state/stats 检查 `terse-reviewer/review-skill` 的 output/dedup；C4 在真实结果回传前仍为 `[?]`。
+
 ## 6. Codex 插件路线与手动注册
 
 在用户级路线的投递、卸载往返检查完成后进行 B10。先关闭 Codex 会话，再让 STYLE 切换配置：

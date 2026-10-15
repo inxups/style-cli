@@ -653,3 +653,9 @@
 - 对应会话 fbc11e78-3715-4e9d-88bd-2c8699e0f07b 中，用户 Haiku→Opus 后 12:51:10.45976Z prompt 输出 Opus/unknown，12:51:57.128501Z prompt 去重；再切 Sonnet 后 12:52:06.55888Z prompt 输出 Sonnet/unknown，12:52:52.538231Z prompt 去重。每次新正文只输出一次，用户原样引用分别匹配含末尾 LF 的 SHA256，持久状态与 seen 标记一致。
 - 本次 SessionStart 模型和强度均不可用，初始正文为 unknown/unknown；切换后模型正确，强度仍不可用。C3 仅验收新模型单次补发，不增加强度或所有启动场景的通过声明。未采集原始 PostModelSwitch payload，实际配置、状态、输出摘要及模型回传共同构成证据。
 - Claude JSON 保留原失败并新增 real_retest；任务、矩阵、手册和 review 同步确认完成。无 Go 变更；验证真实 stats/state/seen、正文摘要、JSON、文档状态和 diff 检查。C4–C9 待验收，M1 未完成。
+
+### 2026-10-15 — CLAUDE-04-PREP `[x]`；C4 `[?]`
+
+- 用户表示没有或不确定原生 code-review 是否可用。新增 `testdata/manual/claude-skills/code-review/SKILL.md`，只报告 M1B_SKILL_LOADED 和实际 hook 附加指令，不包含规则的 findings 数值或实际 review 操作。
+- 手册新增独立验收工作目录的用户手动配置命令，不覆盖已有同名文件；规定新会话 A 先 Skill 工具再显式 /code-review，新会话 B 反向，分别验证首次投递和跨入口共享去重。已核对官方 skills 的项目位置、调用默认值和同名优先级；实际支持与加载由用户真实版本确认。
+- 验证 fixture 结构/无预填规则正文、临时目录复制与逐字节比较、手册 shell 语法和 diff；未修改真实配置或启动真实模型。review 已确认准备完成，C4 继续待真实验收。
