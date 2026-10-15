@@ -18,11 +18,19 @@ const (
 
 // Run creates the default provider catalog and executes a CLI command.
 func Run(ctx context.Context, args []string, out, errOut io.Writer) int {
+	return RunWithInput(ctx, args, os.Stdin, out, errOut)
+}
+
+// RunWithInput is the stream-oriented process entry point, including hooks.
+func RunWithInput(ctx context.Context, args []string, in io.Reader, out, errOut io.Writer) int {
 	if out == nil {
 		out = io.Discard
 	}
 	if errOut == nil {
 		errOut = io.Discard
+	}
+	if isHookInvocation(args) {
+		return runHook(ctx, args, in, out, errOut)
 	}
 	service, err := DefaultService()
 	if err != nil {

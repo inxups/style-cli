@@ -542,3 +542,11 @@
 - 共用路线生命周期测试复现了旧 A13 证据遗漏的 JSON 字节排版变化和 Claude 无换行文档多换行。现在三条路线 × 无/单/双末尾换行均验证只读 Plan、Apply/Status、重复安装/卸载、原始字节和 0640 权限恢复及无新增文件残留；app 换路线回归新增最终 hooks.json 字节相等断言。
 - 现有 agenthooks/install 增加 JSON 原文恢复记录（0600、owner 隔离、Applied SHA256），与 config 一起进入原子 changeset 和 stale 检查。外部编辑优先，重装更新基线，旧安装无记录保留语义清理；删除配置不会被旧记录复活。Claude 静态区使用可清理的生成分隔符保留无末尾换行及多 owner 顺序。
 - 验证：清理 CODEX_HOME/CODEX_SANDBOX、临时 GOPATH/GOMODCACHE/GOCACHE、GOPROXY=off/GOSUMDB=off 下，agenthooks install / app / adapter 定向与全量、双 module make test-go/make vet-go、conformance/Claude/app/agenthooks install race 测试、gofmt 和 diff 检查通过。任务、测试、review 与 agenthooks DESIGN 同步。M1a 仍需进程级性能核验，M1b 由用户手动配置。
+
+### 2026-10-15 — RV-CLI-HOOK-01–03 / T52 进程入口补项 `[x]`
+
+- 实际编译二进制发现 `style agenthooks run` 入口遗漏，前序测试只调用 runtime。新增管理流程之前的分派，解析 provider/安装事实并加载 index/state，仍使用 agenthooks Runner；不读取包、lock 或 settings。
+- 三条路线持久携带 STYLE_HOME、harness 根和版本；runtime 关闭合成 backfill、隔离 codec 辅助状态，日志 point 与实际评估点一致。生成命令在含空格路径和错误父进程 STYLE_HOME 下通过。
+- 全部 46 个 wire golden 由真实二进制通过，另测损坏 index 的 fail-open 与 Claude fail-closed。suite 捕获 runtime/Runner ERROR，修正原 PermissionRequest 解析 fixture 意外要求不支持 inject 的问题；独立 deny fixture 仍验证 block，未改变订阅面或放宽能力校验。
+- 验证：`env -u CODEX_HOME -u CODEX_SANDBOX GOPATH=/tmp/style-cli-gopath GOMODCACHE=/tmp/style-cli-gomodcache GOCACHE=/tmp/style-cli-gocache GOPROXY=off GOSUMDB=off go test -count=1 ./internal/adapter/conformance -run 'TestBuiltCLI|TestGeneratedRoutes'` 通过；相同隔离环境的双 module `make test-go`、`make vet-go`、`go test -race -count=1 ./internal/app ./internal/runtime ./internal/adapter/conformance`、gofmt 和 `git diff --check` 通过。
+- 任务/测试矩阵/review 已确认完成。进程级性能继续单独验收，真实 Codex/Claude 配置按用户要求由用户手动执行，M1b 不提前标记。

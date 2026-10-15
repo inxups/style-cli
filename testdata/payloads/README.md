@@ -13,6 +13,18 @@ and observe-only events have no STYLE evaluation point. Claude SubagentStart
 cannot emit context; Codex supports it. Codex apply_patch uses the documented
 `tool_input.command` patch shape.
 
+PermissionRequest is a deny-only capability probe outside the current M1
+subscription surface. Its generic parse fixture uses an unknown tool so no
+unsupported context injection is requested; `deny_permission.json` separately
+checks that both codecs encode a matching shell block correctly. Runtime and
+Runner ERROR logs fail conformance even when stdout is otherwise neutral.
+
+`process_test.go` also builds the CLI and checks all 46 output goldens, index
+failure policy and all three generated route commands. Package/lock/settings
+files are deliberately malformed to detect accidental management-path reads.
+Generated commands persist the installation's STYLE home and harness facts;
+an incorrect parent STYLE_HOME must not change the loaded index.
+
 `*-effort.json` contains 25 independent expectations covering every embedded
 exact/alias mapping, uppercase spelling, missing values and unknown tiers.
 Coverage checks reject an embedded mapping without a fixture. Runtime tests

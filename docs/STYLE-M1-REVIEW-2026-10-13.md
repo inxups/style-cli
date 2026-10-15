@@ -382,3 +382,11 @@ fail-closed 的范围收窄为 `Manifest.Fail == FailClosed`、`Blocking` 且 `K
 - [x] **RV-CONFORMANCE-06 Claude 静态分隔符**：无末尾换行时插入可识别生成注释；最后一个 block 移除时连同生成换行清理，多 owner 任意卸载顺序及重复合并均恢复原文。保留原有空白文件字节。
 
 证据：`agenthooks/install/json_restore_test.go`、`internal/adapter/conformance/routes_test.go`、`internal/adapter/claude/static_roundtrip_test.go`、`internal/app/install_routes_test.go`。清理 CODEX 环境变量、临时 Go 缓存、GOPROXY=off/GOSUMDB=off；agenthooks install 与 app/adapter 定向全量、双 module `make test-go`/`make vet-go`、`go test -race -count=1 ./internal/adapter/conformance ./internal/adapter/claude ./internal/app ./agenthooks/install`、gofmt 和 diff 检查通过。安装 conformance 与 A13 确认 `[x]`；进程级性能和真实 M1b 仍待完成。
+
+## CLI hook 进程入口完成确认（2026-10-15）
+
+- [x] **RV-CLI-HOOK-01 入口遗漏**：实际二进制验收发现此前生成的 `style agenthooks run` 没有 CLI 分派；已有套件直接调用 runtime，无法证明安装后可执行。现分派先于 DefaultService，复用真实 Runner/codec，只读取 index/state；provider、子命令与 fail-closed 参数错误不污染 stdout。
+- [x] **RV-CLI-HOOK-02 安装归属和生命周期**：Codex plugin/user 与 Claude user 命令持久携带 STYLE_HOME、配置根和 harness 版本，含空格路径和父进程错误 STYLE_HOME 均通过。Runtime 关闭 agenthooks 合成 backfill，由 STYLE 维护实际事件计数；codec 辅助状态放在 STYLE_HOME/cache/agenthooks，metadata 日志使用真实评估 point。
+- [x] **RV-CLI-HOOK-03 验收可观察性**：真实编译二进制通过 46 个 stdout golden、损坏 index 的两家 fail-open 和 Claude fail-closed；源码/lock/settings 故意损坏仍能处理 hook。in-process suite 捕获 Runner 和 runtime 日志并拒绝 ERROR。原 PermissionRequest Bash 解析 fixture 意外请求了该事件不支持的 inject，现改用未知工具做解析/no-op 检查；独立 deny_permission fixture 保留 Bash block 断言，未放宽 engine 能力检查。PermissionRequest 不属于当前 M1 固定订阅面，不能据离线探针宣称真实订阅支持。
+
+证据：`internal/app/hook_command_test.go`、`internal/adapter/conformance/process_test.go`。清理 CODEX_HOME/CODEX_SANDBOX、临时 Go 缓存、GOPROXY=off/GOSUMDB=off；定向进程测试、双 module `make test-go`/`make vet-go`、`go test -race -count=1 ./internal/app ./internal/runtime ./internal/adapter/conformance`、gofmt 和 diff 检查通过。A20 进程性能尚未核验；真实 M1b 仍待用户手动配置后验证。

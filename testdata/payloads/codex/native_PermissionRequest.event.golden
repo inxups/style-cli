@@ -29,8 +29,8 @@
   "points": [
     {
       "name": "tool.pre",
-      "canonical": "shell",
-      "tool": "Bash",
+      "canonical": "other",
+      "tool": "UnobservedTool",
       "fields": {
         "cwd": "/work/repo",
         "tool.input": "{\"command\":\"true\"}",

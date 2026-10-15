@@ -19,14 +19,15 @@ import (
 // Runtime connects the provider codec, adapter enrichment, state, and core
 // engine. The codec remains responsible for reading stdin and encoding output.
 type Runtime struct {
-	Engine     *engine.Engine
-	State      *state.Store
-	Adapter    adapter.RuntimeEnricher
-	Provider   agenthooks.Provider
-	FailClosed bool
-	Logger     *slog.Logger
-	Now        func() time.Time
-	loadErr    error
+	Engine        *engine.Engine
+	State         *state.Store
+	Adapter       adapter.RuntimeEnricher
+	Provider      agenthooks.Provider
+	FailClosed    bool
+	Logger        *slog.Logger
+	Now           func() time.Time
+	CodecStateDir string
+	loadErr       error
 }
 
 // New assembles an invocation-scoped hook runtime.
@@ -178,7 +179,7 @@ func (r *Runtime) Run(ctx context.Context, args []string, stdin io.Reader, stdou
 	if logger == nil {
 		logger = slog.New(slog.NewTextHandler(stderr, &slog.HandlerOptions{Level: slog.LevelInfo}))
 	}
-	runner := agenthooks.New(agenthooks.WithPolicyFunc(func(event *agenthooks.Event) agenthooks.Policy {
+	options := []agenthooks.Option{agenthooks.WithoutBackfill(), agenthooks.WithPolicyFunc(func(event *agenthooks.Event) agenthooks.Policy {
 		policy := agenthooks.Policy{Fail: agenthooks.FailOpen}
 		if r.FailClosed {
 			policy.Fail = agenthooks.FailClosed
@@ -187,7 +188,11 @@ func (r *Runtime) Run(ctx context.Context, args []string, stdin io.Reader, stdou
 			}
 		}
 		return policy
-	}), agenthooks.WithLogger(logger))
+	}), agenthooks.WithLogger(logger)}
+	if r.CodecStateDir != "" {
+		options = append(options, agenthooks.WithDedupDir(r.CodecStateDir))
+	}
+	runner := agenthooks.New(options...)
 	runtime := *r
 	runtime.Logger = logger
 	if err := runtime.Register(runner); err != nil {
@@ -350,7 +355,7 @@ func (r *Runtime) record(event *agenthooks.Event, output engine.Output) {
 	for _, item := range output.Records {
 		if r.Logger != nil {
 			r.Logger.Info("STYLE rule evaluated", "provider", r.Provider, "event", event.NativeName,
-				"point", string(event.Kind), "entry", item.Entry, "action", item.Action, "result", item.Result)
+				"point", item.Point, "entry", item.Entry, "action", item.Action, "result", item.Result)
 		}
 		payload, err := json.Marshal(state.StatsRecord{
 			At: r.now().UTC().Format(time.RFC3339Nano), Provider: string(r.Provider),

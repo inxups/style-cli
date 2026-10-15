@@ -19,19 +19,22 @@ const staticBegin = "# >>> style (managed; edit with `style`) >>>"
 const staticEnd = "# <<< style <<<"
 
 type route struct {
-	name       string
-	scope      install.Scope
-	dir        string
-	configDir  string
-	command    string
-	facts      Facts
-	defaultDir bool
+	name           string
+	scope          install.Scope
+	dir            string
+	configDir      string
+	command        string
+	facts          Facts
+	defaultDir     bool
+	storageHome    string
+	harnessVersion string
 }
 
 func (r *route) Name() string { return r.name }
 
 func (r *route) BindStorage(home string) adapter.Route {
 	bound := *r
+	bound.storageHome = home
 	if bound.defaultDir && bound.scope == install.ScopePlugin {
 		bound.dir = filepath.Join(home, "adapters", "codex", "plugin")
 	}
@@ -40,6 +43,7 @@ func (r *route) BindStorage(home string) adapter.Route {
 
 func (r *route) BindInstallation(installation adapter.Installation) adapter.Route {
 	bound := *r
+	bound.harnessVersion = installation.Version
 	if installation.ConfigDir != "" {
 		bound.configDir = installation.ConfigDir
 		if bound.scope == install.ScopeUser {
@@ -101,7 +105,11 @@ func (r *route) manifest() install.Manifest {
 	if command == "" {
 		command = os.Args[0]
 	}
-	return HookManifest([]string{command})
+	argv := []string{command}
+	if r.storageHome != "" {
+		argv = append(argv, "--style-home="+r.storageHome, "--harness-home="+r.configRoot(), "--harness-version="+r.harnessVersion)
+	}
+	return HookManifest(argv)
 }
 
 func (r *route) Plan(_ context.Context, _ []adapter.HookSpec, blocks []adapter.StaticBlock) (adapter.Changeset, error) {

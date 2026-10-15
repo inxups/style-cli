@@ -6,6 +6,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"log/slog"
 	"os"
 	"path/filepath"
 	"strings"
@@ -136,7 +137,10 @@ func invoke(t *testing.T, suite providerSuite, index compile.Index, payload []by
 	if err != nil {
 		t.Fatal(err)
 	}
-	runner := agenthooks.New(agenthooks.WithoutBackfill(), agenthooks.WithoutDedup())
+	var logs bytes.Buffer
+	logger := slog.New(slog.NewTextHandler(&logs, nil))
+	runtime.Logger = logger
+	runner := agenthooks.New(agenthooks.WithoutBackfill(), agenthooks.WithoutDedup(), agenthooks.WithLogger(logger))
 	runner.OnAny(func(_ context.Context, event *agenthooks.Event) error {
 		projection.Native, projection.Kind, projection.Session, projection.Agent = event.NativeName, event.Kind, event.Session, event.Agent
 		return nil
@@ -145,8 +149,8 @@ func invoke(t *testing.T, suite providerSuite, index compile.Index, payload []by
 		t.Fatal(err)
 	}
 	result := agenthookstest.Invoke(t, runner, suite.id, payload)
-	if result.ExitCode != 0 || result.Stderr != "" {
-		t.Fatalf("hook failed: %#v", result)
+	if result.ExitCode != 0 || result.Stderr != "" || strings.Contains(logs.String(), "level=ERROR") {
+		t.Fatalf("hook failed: %#v logs=%s", result, logs.String())
 	}
 	session, err := store.ReadSession(projection.Session.ID)
 	if err != nil {

@@ -21,9 +21,16 @@ type route struct {
 	command        string
 	harnessVersion string
 	facts          Facts
+	storageHome    string
 }
 
 func (r *route) Name() string { return r.name }
+
+func (r *route) BindStorage(home string) adapter.Route {
+	bound := *r
+	bound.storageHome = home
+	return &bound
+}
 
 func (r *route) BindInstallation(installation adapter.Installation) adapter.Route {
 	bound := *r
@@ -57,7 +64,11 @@ func (r *route) commandLine() []string {
 	if command == "" {
 		command = os.Args[0]
 	}
-	return []string{command}
+	argv := []string{command}
+	if r.storageHome != "" {
+		argv = append(argv, "--style-home="+r.storageHome, "--harness-home="+r.dir, "--harness-version="+r.harnessVersion)
+	}
+	return argv
 }
 
 func (r *route) manifest(hooks []adapter.HookSpec) install.Manifest {
