@@ -1,0 +1,12 @@
+manifest: |
+  spec: style/v0.3
+  name: invalid-fixture
+  version: 0.1.0
+  description: invalid fixture
+  rules:
+    - id: base
+      target: tool
+      tool: shell
+      action: block
+      at: after
+      text: reason

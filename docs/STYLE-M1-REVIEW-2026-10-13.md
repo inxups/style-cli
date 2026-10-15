@@ -354,3 +354,9 @@ fail-closed 的范围收窄为 `Manifest.Fail == FailClosed`、`Blocking` 且 `K
 兼容已有无审批基线的锁文件：内容未变时 sync 可建立基线；已有改动时 trust 明示旧字节不可用，展示完整当前源码和编译表示，不伪造旧内容。已带摘要的基线缺失或被改写则报错。需要保留其他未审批改动时必须有可验证旧基线，否则要求先恢复对应锁定字节。
 
 验证：清理 CODEX_HOME/CODEX_SANDBOX、使用 `/tmp/style-cli-{gopath,gomodcache,gocache}` 与 GOPROXY=off/GOSUMDB=off；app/spec 定向和全量、双 module `make test-go`/`make vet-go`、`go test -race -count=1 ./internal/app ./core/spec`、gofmt 和 `git diff --check` 通过。T55、A12、B1.28 确认 `[x]`；M1a 的 A1/A18/adapter conformance 与真实 M1b 仍待完成。
+
+## A1 完成确认（2026-10-15）
+
+- [x] **RV-A1-01 validate 负向矩阵**：新增 `testdata/invalid/` 中 27 个按错误码命名的 YAML recipe 和运行说明；测试核对完整清单，将 recipe 物化为真实包后调用 CLI，文本/JSON 均要求退出 1 和相应错误码。示例包要求退出 0；symlink、256 KiB + 1 和非法编码真实生成，不跳过。证据：`internal/app/validate_acceptance_test.go:TestA1ValidateExampleAndEveryInvalidFixture`。
+
+验证：隔离 Go 缓存、清理 CODEX 环境变量后，A1 定向及 `go test -count=1 ./internal/app` 通过，gofmt / `git diff --check` 通过。A1 标记 `[x]`；A18、adapter conformance 和真实 M1b 仍未完成。

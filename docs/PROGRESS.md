@@ -517,3 +517,9 @@
 - 事务继续复用 agenthooks ApplyFiles；保留安装 seq、config_dir 和 fail_closed。schema/requires/settings/replace 新确认与全局唯一性、全部安装包 T003 在写入前检查；stale lock/route、损坏基线和取消保持无部分写入。sync 冷路径清理 7 天旧会话。
 - 证据：core/spec/snapshot_test.go；internal/app/sync_test.go（普通/link/同内存）、sync_command_test.go（exit0/1/3/4、JSON/help、不同文件名/单文件、资产/expiry）、sync_claude_test.go（订阅面/static/外部配置/fail_closed）、trust_policy_test.go（逐包审批、政策/预算/事务）。
 - 验证：清理 CODEX_HOME/CODEX_SANDBOX，使用临时 GOPATH/GOMODCACHE/GOCACHE，GOPROXY=off/GOSUMDB=off 下 `go test -count=1 ./core/spec ./internal/app`、双 module `make test-go`/`make vet-go`、`go test -race -count=1 ./internal/app ./core/spec`、gofmt 和 `git diff --check` 通过。任务、测试矩阵与 review 完成确认已同步；M1a A1/A18/adapter conformance、A11 真实投递与 M1b 尚未完成。
+
+### 2026-10-15 — A1 `[x]`
+
+- 新增 27 个版本控制内 invalid recipe，按 A1 全部错误码命名；测试显式比对文件清单，分别以文本和 JSON 模式调用 validate，要求退出 1、error severity 和预期 code。示例包命令要求退出 0。特殊文件在临时目录真实生成，避免提交大文件/平台相关 symlink。
+- 证据：`testdata/invalid/README.md`、`testdata/invalid/*.yaml`、`internal/app/validate_acceptance_test.go`。
+- 验证：清理 CODEX_HOME/CODEX_SANDBOX，临时 Go 缓存，GOPROXY=off/GOSUMDB=off；`go test -count=1 ./internal/app -run TestA1ValidateExampleAndEveryInvalidFixture -v`（27/27）、`go test -count=1 ./internal/app`、gofmt 和 `git diff --check` 通过。测试矩阵和 review 已同步 `[x]`。

@@ -84,7 +84,7 @@ env -u CODEX_HOME -u CODEX_SANDBOX \
 
 ### 包格式和 validate
 
-- [ ] **A1** 示例包 validate 退出 0；所有 invalid fixture 对应错误码退出 1：`dup-id`、`from-and-inline`、`inline-missing-id`、`file-and-text`、`file-into-rules`、`body-has-frontmatter`、`rule-file-pkg-field`、`empty-body`、`override-target`、`defaults-field`、`undeclared-var`、`reads-missing`、`event-var-in-template`、`sensitive-reserved`、`condition-field-wrong-event`、`bad-regex`、`bad-effort-expr`、`action-target`、`block-after`、`replace-non-system`、`bad-name`、`bad-id`、`path-escape`、`symlink`、`file-too-large`、`bad-encoding`、`marker-in-body`。
+- [x] **A1** `TestA1ValidateExampleAndEveryInvalidFixture` 验证示例包 validate 退出 0，`testdata/invalid/*.yaml` 的 27 个 recipe 在临时目录生成真实文件后，文本/JSON 两种模式均退出 1 并含预期 error code。fixture 清单被显式核对，删除用例不能缩小验收范围；symlink、超 256 KiB 和非法 UTF-8 现场生成。覆盖：`dup-id`、`from-and-inline`、`inline-missing-id`、`file-and-text`、`file-into-rules`、`body-has-frontmatter`、`rule-file-pkg-field`、`empty-body`、`override-target`、`defaults-field`、`undeclared-var`、`reads-missing`、`event-var-in-template`、`sensitive-reserved`、`condition-field-wrong-event`、`bad-regex`、`bad-effort-expr`、`action-target`、`block-after`、`replace-non-system`、`bad-name`、`bad-id`、`path-escape`、`symlink`、`file-too-large`、`bad-encoding`、`marker-in-body`。
 - [x] **A2** 示例包 `style plan` 对 Codex/Claude Code 使用显式 harness 生成的 stdout 与 `testdata/golden/plan-codex.txt`、`plan-claude-code.txt` 逐字一致；golden 包含每条规则状态、降级/能力、路线、原生输入上限、包预算、逐规则/逐事件 token 和会话成本。证据：`internal/app/plan_golden_test.go`、`internal/app/plan_layout_test.go`、`testdata/golden/plan-{codex,claude-code}.txt`。
 - [x] **A3** 示例包生成的 `index.json` 与 golden 逐字一致，并通过 Draft 2020-12 schema。证据：B1.11。
 - [x] **A21** `warn` 首句提取覆盖中英文、无标点、多行和开头空行；新增 ASCII 句末条件、CRLF 和动态模板值用例。证据：`core/warn/sentence_test.go`、B1.6。

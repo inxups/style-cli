@@ -1,0 +1,14 @@
+manifest: |
+  spec: style/v0.3
+  name: invalid-fixture
+  version: 0.1.0
+  description: invalid fixture
+  rules:
+    - from: rules/base.md
+      text: override
+files:
+  "rules/base.md": |
+    ---
+    target: system
+    ---
+    body

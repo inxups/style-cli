@@ -1,0 +1,13 @@
+manifest: |
+  spec: style/v0.3
+  name: invalid-fixture
+  version: 0.1.0
+  description: invalid fixture
+  rules:
+    - id: base
+      target: system
+      file: linked.md
+files:
+  "body.md": |
+    body
+generate: {kind: symlink, path: linked.md, target: body.md}

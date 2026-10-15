@@ -1,0 +1,10 @@
+manifest: |
+  spec: style/v0.3
+  name: invalid-fixture
+  version: 0.1.0
+  description: invalid fixture
+  rules:
+    - id: base
+      target: system
+      text: body
+      when: {thinking_effort: extreme}
