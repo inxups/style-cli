@@ -72,6 +72,32 @@
     "limitations": ["Initial effort was unavailable to STYLE and rendered as unknown. This is a verified startup limitation for this run.", "Bash environment output does not directly measure environment variables in every hook process. U-C1 is not resolved for all events.", "Only claude-sonnet-5-5/high was exercised; no raw hook payload was captured to distinguish event effort from environment fallback."],
     "reproduction": "Start a fresh real Claude session with terse-reviewer installed. Ask it to quote Current session without tools and record the selected effort. If startup reports unknown, run Bash printf to read the existing CLAUDE_EFFORT without setting it, then send a separate prompt to quote the latest context. Compare both strings with session-info output hashes and the persisted state."
   },
+  "C2": {
+    "status": "passed",
+    "session_id": "f0796ff3-ecf1-44d1-a653-6ef0f3bc20c2",
+    "scope_after_compact": {"gen": 0, "epoch": 1, "prompt_count": 5},
+    "body_sha256": "sha256:12dea1a5e098958bb50b9e9cd6f3a11efe58f88f7ecbf17333c2524796fa4e42",
+    "compact_reinjection": {
+      "at": "2026-10-15T12:26:22.31056Z",
+      "provider": "claude-code",
+      "event": "SessionStart",
+      "point": "session.start",
+      "entry": "terse-reviewer/session-info@session.start",
+      "action": "inject",
+      "result": "output",
+      "est_tokens": 17,
+      "body_sha256": "sha256:12dea1a5e098958bb50b9e9cd6f3a11efe58f88f7ecbf17333c2524796fa4e42"
+    },
+    "following_prompts": [
+      {"at": "2026-10-15T12:26:41.883803Z", "event": "UserPromptSubmit", "entry": "terse-reviewer/session-info@prompt.submitted", "result": "dedup"},
+      {"at": "2026-10-15T12:27:42.744059Z", "event": "UserPromptSubmit", "entry": "terse-reviewer/session-info@prompt.submitted", "result": "dedup"}
+    ],
+    "user_reported_answers": ["Current session: model claude-sonnet-5-5, effort high.", "Current session: model claude-sonnet-5-5, effort high."],
+    "seen_marker": "s.0.1.a052e97955b98cdd.12dea1a5e098958b",
+    "observation_interval": ["2026-10-15T12:26:22.31056Z", "2026-10-15T12:27:42.744059Z"],
+    "session_info_outputs_in_interval": 1,
+    "reproduction": "In the same real Claude session, run /compact. Send two separate prompts asking only to quote the latest Current session context without tools. Confirm a single SessionStart output after compact, matching both reported strings, followed by two prompt dedup entries. Verify the compact epoch and its seen marker; quoting twice alone is not proof of reinjection."
+  },
   "reproduction": "Run claude --version; read only STYLE hook command/args from $CLAUDE_CONFIG_DIR/settings.json (default $HOME/.claude); check each command with test -f and test -x. Compare the installation-bound home against the harness entries in $STYLE_HOME/style.lock.yaml. Avoid printing unrelated settings or credentials.",
-  "pending": ["C2", "C3", "C4", "C5", "C6", "C7", "C8", "C9"]
+  "pending": ["C3", "C4", "C5", "C6", "C7", "C8", "C9"]
 }

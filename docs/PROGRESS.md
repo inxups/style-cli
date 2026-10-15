@@ -630,3 +630,9 @@
 - 对照主设计 c1，允许首次工具后的下一条提示补上强度，故 C1 通过；启动读数不可用是本次已确认的边界。没有采集 hook 进程自身环境或原始 payload，不能据 Bash 的环境推断 U-C1 已在全部事件成立。
 - 原网页工具没有返回可用引用，后直接获取官方 hooks 页面核对工具阶段 effort 说明；验收证据使用用户回传、真实 stats/state 和本仓库 c1，不依赖无法核验的网页引用。
 - 证据入库 `docs/review/M1B-CLAUDE-2026-10-15.json`；任务、测试矩阵、手册和 review 同步确认。真实环境保持用户配置，本项无 Go 变更；提交前验证 JSON、路径/args、原始 stats、正文 hash、状态/文档和 diff。后续继续 compact 等独立验收。
+
+### 2026-10-15 — CLAUDE-02/C2 `[x]`
+
+- 同一会话 f0796ff3-ecf1-44d1-a653-6ef0f3bc20c2 在 compact 后 epoch=1，SessionStart 于 12:26:22.31056Z 重新输出 session-info/high；对应 epoch=1 seen 标记存在。
+- 按要求分两条提示只引用上下文、不调用工具；用户回传两次 high 正文。真实 12:26:41.883803Z、12:27:42.744059Z prompt 均为 dedup，整个观察区间只有一次 output，正文摘要与两次回答一致。
+- 证据区间、stats、scope/seen 和复现步骤入库 Claude JSON 的 C2；任务、矩阵、手册和 review 确认完成。本项无 Go/配置变更；提交前核对真实状态/日志、JSON、正文 hash 和 diff。下一项由用户在同一会话执行 model switch，继续 C3。

@@ -445,3 +445,9 @@ M1B-FIX-02 复核：使用临时 Go 缓存、清理 CODEX 环境构建 `go build
 - [x] **CLAUDE-01/C1**：新会话 SessionStart 输出已到达模型，用户回传的 claude-sonnet-5-5/unknown 正文与真实 stats 摘要一致。用户界面选择 high，Bash 读到 CLAUDE_EFFORT=high；首次工具后的下一条提示补发 high，正文摘要再次一致，state 记录 high/raw high/approx false。符合设计 c1 明确允许的延后补发分支，无需为启动阶段的 unknown 修改实现。
 
 证据和复现步骤见 Claude JSON 的 C1。范围为 Claude Code 2.1.300、claude-user、claude-sonnet-5-5/high。没有捕获各 hook 进程环境或原始 effort payload，因此保留 U-C1 的精确可用性问题；不把 Bash 环境读数等同于所有 hook 的环境。本项无 Go/配置变更，C2–C9 仍独立验收。
+
+## Claude C2 完成确认（2026-10-15）
+
+- [x] **CLAUDE-02/C2**：同一会话 compact 后，scope epoch=1 且对应 seen 标记存在；真实 SessionStart 对 session-info 补发一次。用户随后分两条消息引用的 high 正文均与输出摘要一致，实际两条 UserPromptSubmit 均为 dedup；观察区间没有额外 output。
+
+证据、观察区间及复现步骤见 Claude JSON 的 C2。判定依赖真实 stats、epoch/seen 和模型可见回传，未把模型重复引用当成 hook 重复注入。本项无 Go/配置变更，C3–C9 继续独立验收。
