@@ -90,7 +90,7 @@ fi
 
 ## 4. Claude Code：用户级配置
 
-2026-10-15 的旧临时程序路径问题已由用户重新安装解除。C1 真实投递/首次工具后 high 补发、C2 compact 单次补发与去重通过。C3 漏订阅修复后，用户重装并真实验证 Opus、Sonnet 两次切换均只补发一次新模型，复测通过。C4 首轮发现工作目录不符及漏 Skill matcher，M1B-FIX-06 已离线修复、待重装复测；C5–C9 待验收。保留启动 model/effort unknown 的可用性边界，不把 C3 扩展为强度验收。证据见 `review/M1B-CLAUDE-2026-10-15.json`。
+2026-10-15 的旧临时程序路径问题已由用户重新安装解除。C1 真实投递/首次工具后 high 补发、C2 compact 单次补发与去重通过。C3 漏订阅修复后，用户重装并真实验证 Opus、Sonnet 两次切换均只补发一次新模型。C4 经 M1B-FIX-06 修复后，正确目录中两个新会话的隐式/显式首次投递和共享去重均通过；C5–C9 待验收。保留启动 model/effort unknown 的可用性边界，不把 C3 扩展为强度验收。证据见 `review/M1B-CLAUDE-2026-10-15.json`。
 
 复现 C3：先按第 1 节重建固定二进制，再执行下面安装命令，保留原安装前备份。重新打开 Claude 会话，确认 `/hooks` 新增 PostModelSwitch（M1B-FIX-06 后本示例为 6 类事件、12 条 hook，其中 PostToolUse 增加 Skill）。用 `/model` 切到另一个当前可用的模型，随后分两条提示引用最新 `Current session:`。第一条应收到新模型正文，第二条应去重；同时核对 state/stats。运行中自动加载订阅变更仍未验证，故采用新会话。
 
@@ -171,7 +171,7 @@ cmp /Users/inxups/project/style-cli/testdata/manual/claude-skills/code-review/SK
 1. 普通提示：`请用 Skill 工具调用一次 code-review，仅完成这个验收 skill 的要求。` 确认界面实际有 Skill 调用，回传 M1B_SKILL_LOADED 及原样引用的 hook 上下文。如果仍运行实际审查或 fork/background，先停止后续步骤并回传，不将该次当成 fixture 验收。
 2. 单独发送 `/code-review`，回传结果。实际 UserPromptExpansion 必须发生；同 session 的 review-skill 应去重，模型仍能引用旧上下文不表示重复注入。
 
-另开新会话，按显式 `/code-review` → 普通提示要求 Skill 调用的顺序复测。两个入口各作为首次调用时应输出 `review-skill` 一次，另一个入口复用同 session 去重。若 harness 避免重复调用 Skill，则记录实际行为，不用模型复述代替缺失的调用。结合 state/stats 检查 `terse-reviewer/review-skill` 的 output/dedup；C4 在真实结果回传前仍为 `[?]`。
+另开新会话，按显式 `/code-review` → 普通提示要求 Skill 调用的顺序复测。两个入口各作为首次调用时应输出 `review-skill` 一次，另一个入口复用同 session 去重。若 harness 避免重复调用 Skill，则记录实际行为，不用模型复述代替缺失的调用。结合 state/stats 检查 `terse-reviewer/review-skill` 的 output/dedup；本轮两种顺序已真实通过，证据见 Claude JSON 的 C4.real_retest。第二次回答可以复述旧上下文，也可以说明本次没有新增指令，是否重复投递以实际日志核对。
 
 ## 6. Codex 插件路线与手动注册
 

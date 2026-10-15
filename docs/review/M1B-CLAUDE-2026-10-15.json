@@ -159,7 +159,8 @@
     "next_step": "Continue independent C4-C9 acceptance; keep the original failed C3 observations as regression history."
   },
   "C4": {
-    "status": "failed-awaiting-real-retest",
+    "status": "passed",
+    "initial_run_status": "failed-before-M1B-FIX-06; original observations retained below",
     "session_id": "8359eaae-f1ee-454f-bcf4-c363053d1330",
     "session_association": "Actual transcript contains the reported Skill(code-review) invocation and matches the test time; only cwd and relevant tool metadata were extracted.",
     "actual_cwd": "/Users/inxups",
@@ -185,8 +186,41 @@
       "built_cli_smoke": {"binary": "/tmp/style-cli-m1b-fix06", "isolation": "Temporary HOME/STYLE_HOME/CODEX_HOME/CLAUDE_CONFIG_DIR; synthetic payloads, no real model session", "event_hook_counts": {"PostModelSwitch": 1, "PostToolUse": 6, "PreToolUse": 2, "SessionStart": 1, "UserPromptExpansion": 1, "UserPromptSubmit": 1}, "implicit_then_explicit": "output then dedup", "explicit_then_implicit": "output then dedup", "uninstall": "no settings.json or CLAUDE.md residue"},
       "real_configuration_modified_by_agent": false
     },
-    "next_step": "User rebuilds and reinstalls the fixed binary, then starts a new Claude session from the printed acceptance cwd. Confirm the STYLE M1b fixture description and M1B_SKILL_LOADED before testing the second entrypoint. Repeat with the reverse order in a fresh session."
+    "real_retest": {
+      "status": "passed",
+      "implementation_commit": "6843cc3",
+      "cwd": "/Users/inxups/.style-m1b/manual-workspace/claude-c4",
+      "installed_event_hook_counts": {"PostModelSwitch": 1, "PostToolUse": 6, "PreToolUse": 2, "SessionStart": 1, "UserPromptExpansion": 1, "UserPromptSubmit": 1},
+      "implicit_matcher": {"event": "PostToolUse", "matcher": "^(Skill)$"},
+      "body": "When using the code-review skill, report at most 10 findings.\n",
+      "body_sha256": "sha256:c4003a5174f1efe9f768680b170b78ae627450ea8c77e1eaacc7261df014769f",
+      "implicit_first": {
+        "session_id": "96e825f7-1e9b-47c8-8a78-8df723880184",
+        "actual_skill_call": {"at": "2026-10-15T13:17:33.255Z", "name": "Skill", "input": {"skill": "code-review"}, "tool_use_id": "toolu_01UEzFUwAMPuMuUeZpjowpWJ"},
+        "first_stat": {"at": "2026-10-15T13:17:33.310757Z", "event": "PostToolUse", "point": "tool.post", "entry": "terse-reviewer/review-skill@tool.post", "result": "output"},
+        "second_stat": {"at": "2026-10-15T13:17:43.664941Z", "event": "UserPromptExpansion", "point": "skill.explicit", "entry": "terse-reviewer/review-skill@skill.explicit", "result": "dedup"},
+        "reported_first_reply": "M1B_SKILL_LOADED; quoted the exact findings-limit body",
+        "reported_second_reply": "M1B_SKILL_LOADED; M1B_SKILL_CONTEXT_ABSENT because no additional hook instruction arrived for this invocation",
+        "scope": {"gen": 0, "epoch": 0, "prompt_count": 2},
+        "seen_marker": "s.0.0.94c034c017da6432.c4003a5174f1efe9"
+      },
+      "explicit_first": {
+        "session_id": "89525649-b059-42dd-982e-9e41dd4930dc",
+        "actual_skill_call": {"at": "2026-10-15T13:20:47.891Z", "name": "Skill", "input": {"skill": "code-review"}, "tool_use_id": "toolu_01HVLYbtbZi1XYT7isQTxywH"},
+        "first_stat": {"at": "2026-10-15T13:20:38.846619Z", "event": "UserPromptExpansion", "point": "skill.explicit", "entry": "terse-reviewer/review-skill@skill.explicit", "result": "output"},
+        "second_stat": {"at": "2026-10-15T13:20:47.965266Z", "event": "PostToolUse", "point": "tool.post", "entry": "terse-reviewer/review-skill@tool.post", "result": "dedup"},
+        "reported_first_reply": "M1B_SKILL_LOADED; quoted the exact findings-limit body",
+        "reported_second_reply": "M1B_SKILL_LOADED; repeated the already-visible findings-limit body",
+        "scope": {"gen": 0, "epoch": 0, "prompt_count": 2},
+        "seen_marker": "s.0.0.94c034c017da6432.c4003a5174f1efe9"
+      },
+      "acceptance_basis": "Both native entrypoints deliver the exact hook body when invoked first in a fresh real session. The other entrypoint actually runs and shares the same seen marker, producing dedup rather than another output. Transcript cwd/tool metadata, user-visible fixture markers and quotations corroborate actual invocation and delivery.",
+      "limitations": ["Coverage is the default after placement, foreground project skill and session repetition. Before placement has offline coverage; fork skill delivery is not claimed.", "A repeated model quotation is not evidence of repeated injection; the reverse-order second invocation quoted old context while its hook stat was dedup."],
+      "real_configuration_modified_by_agent": false,
+      "reproduction": "Follow manual section 5.1 with the minimal project skill. In a fresh session invoke Skill then /code-review; in another fresh session reverse that order. Require M1B_SKILL_LOADED, the exact findings-limit quote on the first invocation, actual Skill tool metadata, one output plus one dedup per session and a common rule/body seen marker."
+    },
+    "next_step": "Continue independent C5-C9 acceptance; the initial failed attempt remains as regression history."
   },
   "reproduction": "Run claude --version; read only STYLE hook command/args from $CLAUDE_CONFIG_DIR/settings.json (default $HOME/.claude); check each command with test -f and test -x. Compare the installation-bound home against the harness entries in $STYLE_HOME/style.lock.yaml. Avoid printing unrelated settings or credentials.",
-  "pending": ["C4", "C5", "C6", "C7", "C8", "C9"]
+  "pending": ["C5", "C6", "C7", "C8", "C9"]
 }

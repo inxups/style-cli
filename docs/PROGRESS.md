@@ -667,3 +667,10 @@
 - 原因是 hooksForProvider 忽略 Match.Skill。补安装 argv 级回归：before/after × 隐式/显式先后顺序四组在修复前全失败；现按工具评估点添加 Skill，四组共享 session 去重通过，trust 移除 skill 后保留无关 Bash。复用现有 agenthooks codec/renderer/runtime，无真实配置写入。
 - 验证：清理 CODEX_HOME/CODEX_SANDBOX，临时 Go 缓存、GOPROXY=off/GOSUMDB=off；定向测试、双 module make test-go/make vet-go、定向 app race、gofmt/diff 通过。构建 `/tmp/style-cli-m1b-fix06` 在全临时配置根安装真实示例，确认 6 类事件/12 条 hook、Skill 的 PostToolUse matcher，两种入口顺序均首次 output 后 dedup，卸载无 settings.json/CLAUDE.md 残留。此为合成 payload 的进程验证，不替代真实 C4。
 - 任务、矩阵、手册、既有 review 与 Claude JSON 已记录实现修复和真实失败；手册增加启动目录校验、fixture 描述与标记检查。下一步由用户重建/重装，在正确目录的新会话先确认最小 skill 加载，再继续真实入口去重。M1 未完成。
+
+### 2026-10-15 — CLAUDE-04/C4 `[x]` 真实复测
+
+- 用户重装后实际配置含 PostToolUse 的 `^(Skill)$`，共 6 类事件/12 条 STYLE hook；两个真实新会话的 transcript cwd 均为验收目录，实际 Skill 工具调用与用户回传相符，最小 fixture 标记可见。
+- 会话 96e825f7-1e9b-47c8-8a78-8df723880184：13:17:33.310757Z 隐式 Skill 的 tool.post 输出 review-skill；13:17:43.664941Z 显式入口 dedup。会话 89525649-b059-42dd-982e-9e41dd4930dc：13:20:38.846619Z 显式入口输出；13:20:47.965266Z 隐式 Skill 的 tool.post dedup。各 session 一次 output、一次 dedup，共用 rule/body seen 标记。
+- 两个入口首次投递时用户均回传 findings 上限原文，含来源 LF 的 SHA256 与实际 stats 一致。第二个会话后续再次复述该文字属于已有上下文，实际日志没有重复注入。验收限默认 after、前台项目 skill；before 仅离线覆盖，fork 不扩大宣称。
+- Claude JSON 保留原失败并新增两种顺序的真实复测；任务、矩阵、手册和 review 同步完成。无 Go/配置变更，核验实际 stats/seen、工具 metadata/cwd、正文摘要、JSON、文档 shell 语法和 diff；C5–C9 待验收，M1 未完成。

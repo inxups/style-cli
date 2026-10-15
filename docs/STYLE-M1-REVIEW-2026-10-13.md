@@ -478,4 +478,10 @@ M1B-FIX-02 复核：使用临时 Go 缓存、清理 CODEX 环境构建 `go build
 - [x] **M1B-FIX-06 实现修复**：CLI 安装推导原来只处理原生名、canonical 和 MCP selector，忽略 Match.Skill；现按编译条目的实际工具评估点添加 Skill。继续复用 agenthooks matcher 渲染、skill 识别和 runtime 过滤。
 - [x] **M1B-FIX-06 验证**：真实安装 argv 回归的 before/after × 两种入口顺序四组在修复前均缺订阅而失败；修复后首次投递、跨入口去重及移除 skill 后保留 Bash 通过。双 module test/vet、app 定向 race 与真实二进制隔离安装/两种顺序/卸载通过。手册补启动目录校验和 fixture 标记检查。
 
-证据与复现见 Claude JSON 的 C4，回归位于 `internal/app/claude_skill_install_test.go`。本轮未改真实配置，C4 等待用户重装并在正确目录的新会话复测；不把 fork skill 的实际审查结果当成验收通过。
+证据与复现见 Claude JSON 的 C4，回归位于 `internal/app/claude_skill_install_test.go`。以上保留首轮失败和修复时的记录，真实复测结论见下；不把 fork skill 的实际审查结果当成验收通过。
+
+## Claude C4 真实复测完成确认（2026-10-15）
+
+- [x] **CLAUDE-04/C4**：两个真实新会话均在验收目录、加载最小 fixture。隐式 Skill 首先调用时输出 findings 上限原文，随后显式入口 dedup；交换顺序后显式入口输出同一原文，随后实际 Skill 调用 dedup。每个 session 仅一次输出，使用同一 rule/body seen 标记；用户首次引用与正文摘要一致。
+
+证据、实际工具调用、时间及复现见 Claude JSON 的 `C4.real_retest`。反向顺序的第二次回答再次复述旧文字，但实际 hook 为 dedup，不构成重复注入。本项确认默认 after、前台项目 skill 和 session 去重，不扩展为 fork 或 before 的真实投递。无 Go/真实配置变更，C5–C9 待验收。

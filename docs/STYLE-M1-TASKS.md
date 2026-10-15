@@ -68,7 +68,7 @@
 
 - [x] **M1a 离线验收**：STYLE 验收项 A1–A22 与 adapter conformance 解析、往返、安装、报告、输出白名单均有可重复证据；真实二进制 hook 入口与三条生成命令通过，A20 进程 p95 为 Codex 22.852ms / Claude Code 22.97575ms。证据：`docs/STYLE-M1-TESTS.md`、`internal/adapter/conformance/`、`docs/review/M1-A20-2026-10-15.json`。真实环境投递与 harness 耗时属于 M1b。
 - [~] **M1b Codex 真实环境**：用户已配置 codex-plugin；B5 真实工具拦截/放行、B6 新增 TODO 警告与删除不误报通过，B2 的 gpt-6-sol/low 注入与去重已有部分证据，其余场景待验证。用户与工作对话的模型读数分开记录，证据见 `docs/review/M1B-CODEX-2026-10-15.json`。真实配置仍由用户手动执行。
-- [~] **M1b Claude Code 真实环境**：Claude Code 2.1.300/claude-user 的旧临时路径阻塞已解除。C1 新会话投递/工具后 high 补发、C2 compact 后单次补发/去重通过。C3 漏订阅经 M1B-FIX-05 修复，用户重装后 Opus、Sonnet 两次切换均补发新模型一次并持续去重，真实复测通过。C4 首轮发现工作目录不符和漏 Skill matcher；M1B-FIX-06 已离线修复，真实复测及 C5–C9 待完成。启动 model/effort unknown 的边界已记录，配置仍由用户执行。证据见 `docs/review/M1B-CLAUDE-2026-10-15.json`。
+- [~] **M1b Claude Code 真实环境**：Claude Code 2.1.300/claude-user 的旧临时路径阻塞已解除。C1 新会话投递/工具后 high 补发、C2 compact 后单次补发/去重、C3 修复后的模型切换均通过。C4 首轮工作目录不符和漏 Skill matcher 经 M1B-FIX-06 处理后，两个新会话的隐式/显式入口首次投递与共享去重均真实通过；C5–C9 待完成。启动 model/effort unknown 的边界已记录，配置仍由用户执行。证据见 `docs/review/M1B-CLAUDE-2026-10-15.json`。
 
 ## 回顾跟进项（2026-10-13 起）
 
@@ -126,4 +126,4 @@ T20–T24 与 T30–T34 回顾结论和剩余范围见 `docs/STYLE-M1-REVIEW-202
 
 - [x] **CLAUDE-04-PREP 原生 skill 验收准备**：最小 code-review fixture 及独立工作目录的用户手动配置步骤完成，fixture 不预填 STYLE findings 数值；复制/字节比较、文档 shell 语法与 diff 检查通过。手册 §5.1 覆盖两种入口顺序，真实 C4 保持待验收。
 
-- [x] **M1B-FIX-06 Claude 隐式 skill 漏 matcher**：安装推导遗漏 Match.Skill，隐式 Skill 工具未订阅。现按实际编译出的工具评估点添加 Skill matcher；before/after、两种入口顺序共享去重和 trust 清理回归在修复前失败、修复后通过。双 module 全量测试/vet、定向 race 与二进制隔离 smoke 通过；C4 仍待用户重装并在验收目录真实复测。
+- [x] **M1B-FIX-06 Claude 隐式 skill 漏 matcher**：安装推导遗漏 Match.Skill，隐式 Skill 工具未订阅。现按实际编译出的工具评估点添加 Skill matcher；before/after、两种入口顺序共享去重和 trust 清理回归在修复前失败、修复后通过。双 module 全量测试/vet、定向 race 与二进制隔离 smoke 通过；用户重装后 C4 两种入口顺序的真实首次投递与共享去重通过。
