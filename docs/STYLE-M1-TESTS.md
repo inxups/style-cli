@@ -106,7 +106,7 @@ env -u CODEX_HOME -u CODEX_SANDBOX \
 ### 安装、信任和 token
 
 - [ ] **A12** 普通包改动由 sync 阻塞并由 trust 确认；link 包行为符合设计；trust 基于同一份内存字节。
-- [~] **A13** install 重复幂等、install/uninstall 外部配置保留和最后路由清理已有证据；install 换路线无残留仍需命令级回归，完成 T54/A13 补项后再标记 `[x]`。
+- [x] **A13** install 重复幂等、Codex plugin/user 双向切换无旧 hooks/trust/插件文件残留、安装新包时切换且安装序号保留；uninstall 后外部 TOML 逐字节恢复、其他 hook owner 和 JSON 外部键保留。默认插件目录绑定所选 STYLE_HOME；已有 fail_closed 策略在后续安装保留。证据：`internal/app/install_routes_test.go`、`uninstall_test.go`、`agenthooks/install/plan_after_test.go`；组合 changeset 保留原 Before，stale 时不部分写入；新建 symlink 祖先下 Codex home 前后 trust key 相同。双 module 全量测试/vet、app/Codex adapter/install race 测试通过。
 - [x] **A14** Codex 静态托管区位置正确；用户自定义 developer instructions 时降为动态；Claude `CLAUDE.md` 标记块正确增删，并保留外部 settings/用户字节。证据：`internal/adapter/codex/route_test.go`、`internal/adapter/claude/route_test.go`。
 - [x] **A16** core 不直接 import `adapter/codex` 或 `adapter/claude`。证据：`internal/adapter/boundary_test.go`。
 - [ ] **A18** token estimator 与 golden 一致；T001–T007 各有触发 fixture；T003 超限安装不产生变更。

@@ -499,3 +499,12 @@
 - 证据：`internal/app/{inspect_test.go,doctor_test.go}`、`core/state/stats_test.go`、`internal/runtime/runtime_test.go`。Go 统一清理 CODEX_HOME/CODEX_SANDBOX，使用 `/tmp/style-cli-{gopath,gomodcache,gocache}`，设置 GOPROXY=off/GOSUMDB=off。
 - 验证：`go test -count=1 ./internal/app ./core/state ./internal/runtime`、双 module `make test-go`/`make vet-go`、`go test -race -count=1 ./internal/app ./internal/runtime ./core/state ./core/engine`、CLI `list --json`/`adapters --json` smoke、gofmt 与 `git diff --check` 通过。
 - 文档：T54、B1.27 与 review 的 RV-T54-01–03 标记 `[x]`。T55、A1/A12/A13 补项/A18、adapter conformance 和真实 M1b 尚未完成。
+
+### 2026-10-15 — A13/T52 路线生命周期补项 `[x]`
+
+- 复现并修复：Install 对同包相同内容直接返回，导致 --route 被忽略；新旧路线独立计划同一个 config.toml 时产生冲突。现在重复安装继续处理 provider/route 选择，保留包 seq，先校验实际安装内容。
+- hook 配置变化实现于现有 agenthooks：新增 PlanFilesAfter，以前一步变化作为内存读视图，得到最终合并结果，保留原 Before 供事务校验；Codex adapter 组合静态区与 hook 区，app 只调用 TransitionPlanner，不复制 hook merge。
+- 默认插件目录绑定请求选择的 STYLE_HOME，检查/卸载沿用该根；安装沿用 lock 保存的配置目录。新增 Codex home 在 symlink 祖先下的 trust key 提前规范化，避免初次安装后 fingerprint 漂移。后续安装保留 fail_closed，非法 flag/未知路线不静默接受。
+- 证据：TestRunInstallSwitchesRoutesWithoutResidueAndKeepsExternalConfig（双向切换/幂等/最后卸载/外部 owner）、TestInstallNewPackageCanSwitchExistingRoute、TestReinstallRejectsUnknownRouteAndDetectsStoredDrift、TestInstallRetainsExistingFailClosedPolicy；agenthooks TestPlanFilesAfterComposesSharedConfigWithoutWrites（无写入规划、stale 拒绝、原子组合、外部字节）、TestCodexTrustKeysStayStableWhenNewHomeHasSymlinkedAncestor。
+- 验证：清理 CODEX_HOME/CODEX_SANDBOX、临时 Go 缓存与 GOPROXY=off/GOSUMDB=off 下，app 定向和全量、双 module make test-go/make vet-go、app/Codex adapter/agenthooks install race 测试、gofmt 和 git diff --check 通过。
+- 任务/测试矩阵/review 已标记本补项完成，A13 `[x]`；T55、A1/A12/A18、adapter conformance、真实 M1b 未完成。

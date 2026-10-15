@@ -150,6 +150,18 @@ type InstallationBinder interface {
 	BindInstallation(Installation) Route
 }
 
+// StorageBinder binds a default STYLE-owned route location to the selected
+// STYLE_HOME. Explicitly configured route locations remain authoritative.
+type StorageBinder interface {
+	BindStorage(home string) Route
+}
+
+// TransitionPlanner composes removal and installation when routes share
+// files. Implementations retain ownership-aware merging in agenthooks.
+type TransitionPlanner interface {
+	PlanTransition(context.Context, Route, []HookSpec, []StaticBlock) (Changeset, error)
+}
+
 // TrustKind describes the confirmation mechanism a route requires.
 type TrustKind string
 

@@ -336,3 +336,11 @@ fail-closed 的范围收窄为 `Manifest.Fail == FailClosed`、`Blocking` 且 `K
 - [x] **RV-T54-03 历史成本与隐私**：runtime 只追加估算 token、正文 SHA256 和规范 point 等元数据；doctor 按最近 7 天实际记录聚合 top3，提示同正文多次输出。旧日志缺少成本时单独计数，不借当前 index 伪造历史；不保存正文或 shell 输出。证据：`core/state/stats_test.go`、`internal/runtime/runtime_test.go`、`TestDoctorCostsUseHistoricalMetadataAndSevenDayWindow`。
 
 验证：隔离缓存且清理 CODEX 环境变量后，app 定向/全量测试、双 module `make test-go`/`make vet-go`、`go test -race -count=1 ./internal/app ./internal/runtime ./core/state ./core/engine`、CLI list/adapters JSON smoke、gofmt 与 `git diff --check` 通过。T55、A1/A12/A13 补项/A18、adapter conformance 与真实 M1b 继续未完成。
+
+## A13/T52 路线生命周期补项完成确认（2026-10-15）
+
+- [x] **RV-A13-01 重复安装和切换**：同包重复安装仍检查指定 route/harness、已有包哈希与 settings；同路线无变化时幂等，换路线不增加 package seq。新增包也可同时切换路线。Codex plugin/user 双向命令回归后，旧插件文件、hook owner 和 trust key 无残留。
+- [x] **RV-A13-02 配置和策略边界**：hook 配置组合仍实现于 `agenthooks/install.PlanFilesAfter`，在内存中按先移除再安装生成一份 changeset，保留原 Before 快照并由 ApplyFiles 原子验证。外部 TOML 最后卸载后逐字节恢复，外部 JSON 键与其他 owner 保留；已有 fail_closed 不被后续安装关闭。
+- [x] **RV-A13-03 路径和信任稳定性**：默认 Codex 插件目录跟随显式/环境 STYLE_HOME；卸载和 doctor 同样绑定该根。安装路线沿用 lock 配置根，新增目录在 symlink 祖先下的 trust key 在目录创建前后相同。未知 route/非法 fail-closed 参数不再因重复安装被忽略。
+
+证据：`internal/app/install_routes_test.go`、`agenthooks/install/plan_after_test.go`。隔离 Go 环境下 app 定向/全量、双 module 全量测试/vet、`go test -race -count=1 ./internal/app ./internal/adapter/codex ./agenthooks/install` 和 diff 检查通过。A13 由 `[~]` 更新为 `[x]`，T55/A1/A12/A18、adapter conformance 与真实 M1b 仍未完成。

@@ -19,15 +19,24 @@ const staticBegin = "# >>> style (managed; edit with `style`) >>>"
 const staticEnd = "# <<< style <<<"
 
 type route struct {
-	name      string
-	scope     install.Scope
-	dir       string
-	configDir string
-	command   string
-	facts     Facts
+	name       string
+	scope      install.Scope
+	dir        string
+	configDir  string
+	command    string
+	facts      Facts
+	defaultDir bool
 }
 
 func (r *route) Name() string { return r.name }
+
+func (r *route) BindStorage(home string) adapter.Route {
+	bound := *r
+	if bound.defaultDir && bound.scope == install.ScopePlugin {
+		bound.dir = filepath.Join(home, "adapters", "codex", "plugin")
+	}
+	return &bound
+}
 
 func (r *route) BindInstallation(installation adapter.Installation) adapter.Route {
 	bound := *r
@@ -96,17 +105,21 @@ func (r *route) manifest() install.Manifest {
 }
 
 func (r *route) Plan(_ context.Context, _ []adapter.HookSpec, blocks []adapter.StaticBlock) (adapter.Changeset, error) {
-	if len(blocks) > 0 && !r.facts.StaticAppendAvailable {
-		return adapter.Changeset{}, errors.New("codex route: developer_instructions is already user-owned")
-	}
 	manifest := r.manifest()
 	planned, err := install.PlanFiles(manifest, r.target())
 	if err != nil {
 		return adapter.Changeset{}, err
 	}
+	return r.planStatic(planned, blocks)
+}
+
+func (r *route) planStatic(planned []install.PlannedFile, blocks []adapter.StaticBlock) (adapter.Changeset, error) {
+	if len(blocks) > 0 && !r.facts.StaticAppendAvailable {
+		return adapter.Changeset{}, errors.New("codex route: developer_instructions is already user-owned")
+	}
 	changes := make([]adapter.FileChange, 0, len(planned)+1)
 	for _, file := range planned {
-		if filepath.Base(file.Path) == "config.toml" {
+		if filepath.Clean(file.Path) == filepath.Clean(r.configPath()) {
 			continue
 		}
 		changes = append(changes, fileChange(file))
@@ -122,6 +135,25 @@ func (r *route) Plan(_ context.Context, _ []adapter.HookSpec, blocks []adapter.S
 	}
 	sort.Slice(changes, func(i, j int) bool { return changes[i].Path < changes[j].Path })
 	return adapter.Changeset{Files: changes}, nil
+}
+
+func (r *route) PlanTransition(ctx context.Context, previous adapter.Route, _ []adapter.HookSpec, blocks []adapter.StaticBlock) (adapter.Changeset, error) {
+	if _, ok := previous.(*route); !ok {
+		return adapter.Changeset{}, errors.New("codex route: incompatible previous route")
+	}
+	removed, err := previous.Remove(ctx, adapter.Owner(Owner))
+	if err != nil {
+		return adapter.Changeset{}, err
+	}
+	files := make([]install.PlannedFile, 0, len(removed.Files))
+	for _, file := range removed.Files {
+		files = append(files, install.PlannedFile{Path: file.Path, Root: file.Root, Before: file.Before, After: file.After, Mode: file.Mode, Remove: file.Remove})
+	}
+	planned, err := install.PlanFilesAfter(r.manifest(), r.target(), files)
+	if err != nil {
+		return adapter.Changeset{}, err
+	}
+	return r.planStatic(planned, blocks)
 }
 
 func (r *route) Apply(ctx context.Context, changes adapter.Changeset) error {
@@ -250,13 +282,14 @@ func NewPluginRouteForCommand(dir, configDir, command string, facts *Facts) adap
 	if facts != nil {
 		f = *facts
 	}
-	if dir == "" {
+	defaultDir := dir == ""
+	if defaultDir {
 		dir = defaultPluginDir()
 	}
 	if configDir == "" {
 		configDir = defaultCodexHome()
 	}
-	return &route{name: PluginRouteName, scope: install.ScopePlugin, dir: dir, configDir: configDir, command: command, facts: f}
+	return &route{name: PluginRouteName, scope: install.ScopePlugin, dir: dir, configDir: configDir, command: command, facts: f, defaultDir: defaultDir}
 }
 
 func NewUserRouteForCommand(dir, command string, facts *Facts) adapter.Route {

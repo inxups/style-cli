@@ -79,7 +79,7 @@ func (s *Service) Uninstall(ctx context.Context, request UninstallRequest) (Unin
 		return result.Remaining[i] < result.Remaining[j]
 	})
 
-	adapters, err := s.lockedAdapters(ctx, lock)
+	adapters, err := s.lockedAdapters(ctx, home, lock)
 	if err != nil {
 		return UninstallResult{}, err
 	}
@@ -194,7 +194,7 @@ func (s *Service) Uninstall(ctx context.Context, request UninstallRequest) (Unin
 	return result, nil
 }
 
-func (s *Service) lockedAdapters(ctx context.Context, lock lockDocument) ([]installAdapter, error) {
+func (s *Service) lockedAdapters(ctx context.Context, home string, lock lockDocument) ([]installAdapter, error) {
 	providers := make([]string, 0, len(lock.Harnesses))
 	for provider := range lock.Harnesses {
 		providers = append(providers, provider)
@@ -219,9 +219,7 @@ func (s *Service) lockedAdapters(ctx context.Context, lock lockDocument) ([]inst
 			return nil, &ConflictError{Message: fmt.Sprintf("installed route %q for %s is unavailable", name, provider)}
 		}
 		installation := adapter.Installation{Provider: provider, Version: lock.Harnesses[raw].Version, ConfigDir: lock.Harnesses[raw].ConfigDir}
-		if binder, ok := route.(adapter.InstallationBinder); ok {
-			route = binder.BindInstallation(installation)
-		}
+		route = bindRoute(route, installation, home)
 		result = append(result, installAdapter{provider: provider, definition: definition, installation: installation, route: route})
 	}
 	return result, nil

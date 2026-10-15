@@ -77,7 +77,7 @@ func (s *Service) Doctor(ctx context.Context, request DoctorRequest) (DoctorResu
 			result.add(code, "error", err.Error())
 		}
 	}
-	inventory, err := s.inspectAdapters(ctx, lock)
+	inventory, err := s.inspectAdapters(ctx, home, lock)
 	if err != nil {
 		return DoctorResult{}, err
 	}
@@ -199,7 +199,7 @@ func (s *Service) checkIndex(ctx context.Context, home string, lock lockDocument
 	if err != nil {
 		return err
 	}
-	adapters, err := s.lockedAdapters(ctx, lock)
+	adapters, err := s.lockedAdapters(ctx, home, lock)
 	if err != nil {
 		return err
 	}

@@ -55,9 +55,7 @@ func renderCodex(m Manifest, t Target) (fs.FS, error) {
 	if dir == "" {
 		return nil, fmt.Errorf("install: Codex plugin scope requires Target.ConfigDir")
 	}
-	if resolved, err := filepath.EvalSymlinks(dir); err == nil {
-		dir = resolved
-	}
+	dir = canonicalCodexDir(dir)
 	source := filepath.Join(dir, "hooks.json")
 	if plugin {
 		source = filepath.Join("hooks", "hooks.json")

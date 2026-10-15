@@ -66,7 +66,6 @@ type installAdapter struct {
 	installation adapter.Installation
 	route        adapter.Route
 	hooks        []adapter.HookSpec
-	status       adapter.RouteStatus
 }
 
 type installCompilation struct {
@@ -124,33 +123,37 @@ func (s *Service) Install(ctx context.Context, request InstallRequest) (InstallR
 	if err != nil {
 		return InstallResult{}, err
 	}
+	var existingLock *lockPackage
 	if existing, found := findLockedPackage(lock, name); found {
 		stored, settingErr := readSettingValues(home, name)
 		if existing.Version == version && existing.Link == request.Link && (!request.Link || existing.Source.Path == sourcePath) && reflectStringMap(existing.Files, fileHashes) && settingErr == nil && reflectStringMap(stored, settings) {
-			return InstallResult{Package: name, Version: version, Changed: false, Link: existing.Link, Replace: existing.Replace}, nil
+			existingLock = &existing
+		} else {
+			return InstallResult{}, &ConflictError{Message: fmt.Sprintf("package %q is already installed; use sync/trust or uninstall before replacing it", name)}
 		}
-		return InstallResult{}, &ConflictError{Message: fmt.Sprintf("package %q is already installed; use sync/trust or uninstall before replacing it", name)}
 	}
 	storagePath := filepath.Join(home, "packages", name)
 	if single {
 		storagePath += ".style.md"
 	}
-	if _, err := os.Lstat(storagePath); err == nil {
-		return InstallResult{}, &ConflictError{Message: fmt.Sprintf("package storage already exists outside the lock: %s", storagePath)}
-	} else if !errors.Is(err, os.ErrNotExist) {
-		return InstallResult{}, err
+	if existingLock == nil {
+		if _, err := os.Lstat(storagePath); err == nil {
+			return InstallResult{}, &ConflictError{Message: fmt.Sprintf("package storage already exists outside the lock: %s", storagePath)}
+		} else if !errors.Is(err, os.ErrNotExist) {
+			return InstallResult{}, err
+		}
 	}
 	preview, err := spec.Merge(original)
 	if err != nil {
 		return InstallResult{}, err
 	}
 	replace := packageUsesReplace(preview)
-	if replace && !request.AllowReplace {
+	if replace && existingLock == nil && !request.AllowReplace {
 		return InstallResult{}, &UsageError{Message: "package uses mode: replace; pass --allow-replace to confirm"}
 	}
 	if replace {
 		for _, installed := range lock.Packages {
-			if installed.Replace {
+			if installed.Replace && installed.Name != name {
 				return InstallResult{}, &ConflictError{Message: fmt.Sprintf("package %q already uses replace mode", installed.Name)}
 			}
 		}
@@ -184,8 +187,12 @@ func (s *Service) Install(ctx context.Context, request InstallRequest) (InstallR
 	if err != nil {
 		return InstallResult{}, err
 	}
-	packages = append(packages, installPackage{lock: newLock, pkg: parsed, resolved: resolved, settings: settings,
-		report: make(map[adapter.ProviderID]plan.Report), tokens: make(map[adapter.ProviderID]tokens.Report)})
+	if existingLock == nil {
+		packages = append(packages, installPackage{lock: newLock, pkg: parsed, resolved: resolved, settings: settings,
+			report: make(map[adapter.ProviderID]plan.Report), tokens: make(map[adapter.ProviderID]tokens.Report)})
+	} else {
+		newLock = *existingLock
+	}
 
 	result := InstallResult{Package: name, Version: version, Link: request.Link, Replace: replace}
 	compilation, err := s.compileInstalled(ctx, packages, adapters, name)
@@ -194,57 +201,15 @@ func (s *Service) Install(ctx context.Context, request InstallRequest) (InstallR
 	}
 	result.Reports, result.Diagnostics = compilation.reports, compilation.diagnostics
 	indexBytes := compilation.indexBytes
-	updatedLock := lockDocument{Format: lockFormat, Packages: append(append([]lockPackage(nil), lock.Packages...), newLock), Harnesses: lock.Harnesses}
-	if updatedLock.Harnesses == nil {
-		updatedLock.Harnesses = map[string]lockHarness{}
+	updatedLock := lockDocument{Format: lockFormat, Packages: append([]lockPackage(nil), lock.Packages...)}
+	if existingLock == nil {
+		updatedLock.Packages = append(updatedLock.Packages, newLock)
 	}
-	plannedChanges := make([]install.PlannedFile, 0)
-	for index := range adapters {
-		target := &adapters[index]
-		failClosed := containsProvider(request.FailClosed, target.provider)
-		target.hooks = hooksForProvider(target.provider, compilation.index)
-		if failClosed {
-			if target.provider != adapter.ProviderID("claude-code") {
-				return InstallResult{}, &UsageError{Message: "--fail-closed is supported only by claude-code"}
-			}
-			for hookIndex := range target.hooks {
-				extra := cloneExtra(target.hooks[hookIndex].Extra)
-				if extra == nil {
-					extra = make(map[string]any)
-				}
-				extra["fail_closed"] = true
-				target.hooks[hookIndex].Extra = extra
-			}
-		}
-		blocks := staticBlocksForProvider(compilation.staticBodies, target.provider)
-		changes, err := target.route.Plan(ctx, target.hooks, blocks)
-		if err != nil {
-			return InstallResult{}, fmt.Errorf("plan route %s: %w", target.route.Name(), err)
-		}
-		plannedChanges = append(plannedChanges, routePlannedFiles(changes)...)
-		harnessLock := lockHarness{Route: target.route.Name(), Version: target.installation.Version, ConfigDir: target.installation.ConfigDir, Surface: hashSurface(target.hooks),
-			Rendered: hashChangeset(changes), Trust: trustState(target.route.Trust()), FailClosed: failClosed}
-		target.status, err = target.route.Status(ctx, target.installation)
-		if err != nil {
-			return InstallResult{}, fmt.Errorf("check route %s: %w", target.route.Name(), err)
-		}
-		if prior, ok := lock.Harnesses[string(target.provider)]; ok && prior.Route != "" && prior.Route != target.route.Name() {
-			oldRoute := routeByName(target.definition, prior.Route)
-			if oldRoute == nil {
-				return InstallResult{}, &ConflictError{Message: fmt.Sprintf("previous route %q is unavailable", prior.Route)}
-			}
-			if binder, ok := oldRoute.(adapter.InstallationBinder); ok {
-				oldRoute = binder.BindInstallation(target.installation)
-			}
-			remove, err := oldRoute.Remove(ctx, adapter.Owner("style"))
-			if err != nil {
-				return InstallResult{}, fmt.Errorf("plan old route removal %s: %w", prior.Route, err)
-			}
-			plannedChanges = append(plannedChanges, routePlannedFiles(remove)...)
-		}
-		updatedLock.Harnesses[string(target.provider)] = harnessLock
-		result.Routes = append(result.Routes, string(target.provider)+"="+target.route.Name())
+	plannedChanges, harnesses, routes, err := planInstallRoutes(ctx, home, adapters, compilation, lock, request.FailClosed)
+	if err != nil {
+		return InstallResult{}, err
 	}
+	updatedLock.Harnesses, result.Routes = harnesses, routes
 	lockBytes, err := yaml.Marshal(updatedLock)
 	if err != nil {
 		return InstallResult{}, err
@@ -262,6 +227,9 @@ func (s *Service) Install(ctx context.Context, request InstallRequest) (InstallR
 	if err != nil {
 		return InstallResult{}, err
 	}
+	if len(plannedChanges) == 0 {
+		return result, nil
+	}
 	var staged *packageSwap
 	stagedCommitted := false
 	defer func() {
@@ -269,7 +237,7 @@ func (s *Service) Install(ctx context.Context, request InstallRequest) (InstallR
 			staged.rollback()
 		}
 	}()
-	if !request.Link {
+	if !request.Link && existingLock == nil {
 		staged, err = stagePackageFiles(home, name, single, files)
 		if err != nil {
 			return InstallResult{}, fmt.Errorf("stage package: %w", err)
@@ -627,6 +595,33 @@ func (s *Service) installAdapters(ctx context.Context, request InstallRequest, l
 			requested[provider] = true
 		}
 	}
+	for raw := range request.Routes {
+		name := strings.ToLower(strings.TrimSpace(raw))
+		if name == "claude" {
+			name = "claude-code"
+		}
+		provider := adapter.ProviderID(name)
+		if _, ok := s.definitions[provider]; !ok {
+			return nil, &UsageError{Message: fmt.Sprintf("unknown harness %q in --route", raw)}
+		}
+		requested[provider] = true
+	}
+	for _, raw := range request.FailClosed {
+		for _, value := range strings.Split(raw, ",") {
+			value = strings.ToLower(strings.TrimSpace(value))
+			if value == "claude" {
+				value = "claude-code"
+			}
+			if value != "claude-code" {
+				return nil, &UsageError{Message: "--fail-closed is supported only by claude-code"}
+			}
+			provider := adapter.ProviderID(value)
+			if _, ok := s.definitions[provider]; !ok {
+				return nil, &UsageError{Message: "--fail-closed requires the claude-code adapter"}
+			}
+			requested[provider] = true
+		}
+	}
 	for provider := range requested {
 		selected[provider] = true
 	}
@@ -669,6 +664,9 @@ func (s *Service) installAdapters(ctx context.Context, request InstallRequest, l
 			}
 			continue
 		}
+		if previous := lock.Harnesses[string(provider)]; previous.ConfigDir != "" {
+			installation.ConfigDir = previous.ConfigDir
+		}
 		var chosen adapter.Route
 		previous := lock.Harnesses[string(provider)].Route
 		requestedRoute := routeRequest(request.Routes, provider)
@@ -703,9 +701,11 @@ func (s *Service) installAdapters(ctx context.Context, request InstallRequest, l
 		if chosen == nil {
 			return nil, &UsageError{Message: fmt.Sprintf("no available route for %s", provider)}
 		}
-		if binder, ok := chosen.(adapter.InstallationBinder); ok {
-			chosen = binder.BindInstallation(installation)
+		home, err := resolveStyleHome(request.Home)
+		if err != nil {
+			return nil, err
 		}
+		chosen = bindRoute(chosen, installation, home)
 		result = append(result, installAdapter{provider: provider, definition: definition, installation: installation, route: chosen})
 	}
 	return result, nil
@@ -897,9 +897,12 @@ func staticBlocksForProvider(bodies []compile.StaticBody, provider adapter.Provi
 }
 
 func containsProvider(values []string, provider adapter.ProviderID) bool {
-	for _, value := range values {
-		if strings.EqualFold(value, string(provider)) || provider == adapter.ProviderID("claude-code") && strings.EqualFold(value, "claude") {
-			return true
+	for _, raw := range values {
+		for _, value := range strings.Split(raw, ",") {
+			value = strings.ToLower(strings.TrimSpace(value))
+			if value == string(provider) || provider == adapter.ProviderID("claude-code") && value == "claude" {
+				return true
+			}
 		}
 	}
 	return false

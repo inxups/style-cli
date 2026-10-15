@@ -66,10 +66,17 @@ type AdaptersResult struct {
 // Adapters inventories every registered adapter and every route. Detection or
 // route failures are report data, so one broken provider cannot hide another.
 func (s *Service) Adapters(ctx context.Context) (AdaptersResult, error) {
-	return s.inspectAdapters(ctx, lockDocument{})
+	if err := checkContext(ctx); err != nil {
+		return AdaptersResult{}, err
+	}
+	home, err := resolveStyleHome("")
+	if err != nil {
+		return AdaptersResult{}, err
+	}
+	return s.inspectAdapters(ctx, home, lockDocument{})
 }
 
-func (s *Service) inspectAdapters(ctx context.Context, lock lockDocument) (AdaptersResult, error) {
+func (s *Service) inspectAdapters(ctx context.Context, home string, lock lockDocument) (AdaptersResult, error) {
 	if err := checkContext(ctx); err != nil {
 		return AdaptersResult{}, err
 	}
@@ -104,7 +111,7 @@ func (s *Service) inspectAdapters(ctx context.Context, lock lockDocument) (Adapt
 		}
 		report.Version, report.ConfigDir = installation.Version, installation.ConfigDir
 		for _, route := range definition.Routes {
-			report.Routes = append(report.Routes, inspectRoute(ctx, route, installation, detected))
+			report.Routes = append(report.Routes, inspectRoute(ctx, bindRoute(route, installation, home), installation, detected))
 		}
 		fillAdapterFacts(&report, definition, installation)
 		result.Adapters = append(result.Adapters, report)
@@ -113,9 +120,6 @@ func (s *Service) inspectAdapters(ctx context.Context, lock lockDocument) (Adapt
 }
 
 func inspectRoute(ctx context.Context, route adapter.Route, installation adapter.Installation, detected bool) RouteReport {
-	if binder, ok := route.(adapter.InstallationBinder); ok {
-		route = binder.BindInstallation(installation)
-	}
 	trust := route.Trust()
 	report := RouteReport{Name: route.Name(), Trust: trust.Kind, StableKey: trust.StableKey, TrustSummary: trust.Summary}
 	available, reason, availableErr := route.Available(ctx, installation)

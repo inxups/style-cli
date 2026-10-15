@@ -223,6 +223,10 @@ type plannedFile struct {
 }
 
 func plan(m Manifest, t Target) ([]plannedFile, error) {
+	return planWithReader(m, t, os.ReadFile)
+}
+
+func planWithReader(m Manifest, t Target, readFile func(string) ([]byte, error)) ([]plannedFile, error) {
 	rendered, err := Render(m, t)
 	if err != nil {
 		return nil, err
@@ -244,7 +248,7 @@ func plan(m Manifest, t Target) ([]plannedFile, error) {
 			root = t.ConfigDir
 		}
 		dest := filepath.Join(root, filepath.FromSlash(p))
-		existing, readErr := os.ReadFile(dest)
+		existing, readErr := readFile(dest)
 		switch {
 		case errors.Is(readErr, os.ErrNotExist):
 			out = append(out, plannedFile{path: p, root: root, final: content, mode: mode, state: StateCreate})

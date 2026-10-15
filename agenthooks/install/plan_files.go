@@ -31,13 +31,17 @@ type PlannedFile struct {
 // owner-aware merge with existing user data that Install applies. Unchanged
 // files are omitted.
 func PlanFiles(m Manifest, t Target) ([]PlannedFile, error) {
+	return planFilesWithReader(m, t, os.ReadFile)
+}
+
+func planFilesWithReader(m Manifest, t Target, readFile func(string) ([]byte, error)) ([]PlannedFile, error) {
 	if t.Dir == "" {
 		return nil, errors.New("install: Target.Dir is required")
 	}
 	if t.Provider == agenthooks.ProviderCodex && t.Scope == ScopePlugin && t.ConfigDir == "" {
 		return nil, errors.New("install: Codex plugin scope requires Target.ConfigDir for trust state")
 	}
-	planned, err := plan(m, t)
+	planned, err := planWithReader(m, t, readFile)
 	if err != nil {
 		return nil, err
 	}
