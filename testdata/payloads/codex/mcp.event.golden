@@ -1,0 +1,45 @@
+{
+  "native": "PreToolUse",
+  "kind": "tool.pre",
+  "session": {
+    "ID": "conformance",
+    "TurnID": "turn-1",
+    "CWD": "/work/repo",
+    "WorkspaceRoots": [
+      "/work/repo"
+    ],
+    "TranscriptPath": "",
+    "Model": "test-model",
+    "Effort": "",
+    "EffortRaw": "",
+    "EffortApprox": null,
+    "HarnessVersion": "",
+    "PermissionMode": "",
+    "UserEmail": ""
+  },
+  "variables": {
+    "harness.agent": "main",
+    "harness.cwd": "/work/repo",
+    "harness.name": "codex",
+    "harness.session_id": "conformance",
+    "harness.turn_id": "turn-1",
+    "harness.version": "0.159.3",
+    "model": "test-model"
+  },
+  "points": [
+    {
+      "name": "tool.pre",
+      "canonical": "mcp",
+      "tool": "mcp__github__create_pull_request",
+      "mcp_server": "github",
+      "mcp_tool": "create_pull_request",
+      "fields": {
+        "cwd": "/work/repo",
+        "mcp.server": "github",
+        "mcp.tool": "create_pull_request",
+        "tool.input": "{\"title\":\"Review\"}"
+      }
+    }
+  ],
+  "persisted_model": "test-model"
+}

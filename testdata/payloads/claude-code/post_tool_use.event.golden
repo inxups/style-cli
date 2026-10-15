@@ -1,0 +1,42 @@
+{
+  "native": "PostToolUse",
+  "kind": "tool.post",
+  "session": {
+    "ID": "sess-claude-1",
+    "TurnID": "",
+    "CWD": "/work/repo",
+    "WorkspaceRoots": [
+      "/work/repo"
+    ],
+    "TranscriptPath": "/tmp/claude/transcript.jsonl",
+    "Model": "",
+    "Effort": "",
+    "EffortRaw": "",
+    "EffortApprox": null,
+    "HarnessVersion": "",
+    "PermissionMode": "default",
+    "UserEmail": ""
+  },
+  "variables": {
+    "harness.agent": "main",
+    "harness.cwd": "/work/repo",
+    "harness.name": "claude-code",
+    "harness.permission_mode": "default",
+    "harness.session_id": "sess-claude-1",
+    "harness.turn_id": "0",
+    "harness.version": "2.1.315"
+  },
+  "points": [
+    {
+      "name": "tool.post",
+      "canonical": "shell",
+      "tool": "Bash",
+      "fields": {
+        "cwd": "/work/repo",
+        "tool.input": "{\"command\":\"go test ./...\"}",
+        "tool.input.command": "go test ./...",
+        "tool.output": "{\"stdout\":\"ok\\tall tests pass\",\"stderr\":\"\",\"interrupted\":false}"
+      }
+    }
+  ]
+}

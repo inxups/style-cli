@@ -1,0 +1,25 @@
+{
+  "native": "SubagentStop",
+  "kind": "subagent.stop",
+  "session": {
+    "ID": "sess-claude-1",
+    "TurnID": "",
+    "CWD": "/work/repo",
+    "WorkspaceRoots": [
+      "/work/repo"
+    ],
+    "TranscriptPath": "/tmp/claude/transcript.jsonl",
+    "Model": "",
+    "Effort": "",
+    "EffortRaw": "",
+    "EffortApprox": null,
+    "HarnessVersion": "",
+    "PermissionMode": "",
+    "UserEmail": ""
+  },
+  "agent": {
+    "ID": "agent-9",
+    "Type": "Explore"
+  },
+  "points": []
+}

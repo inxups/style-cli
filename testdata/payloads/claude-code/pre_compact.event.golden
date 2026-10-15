@@ -1,0 +1,21 @@
+{
+  "native": "PreCompact",
+  "kind": "compact.pre",
+  "session": {
+    "ID": "sess-claude-1",
+    "TurnID": "",
+    "CWD": "/work/repo",
+    "WorkspaceRoots": [
+      "/work/repo"
+    ],
+    "TranscriptPath": "/tmp/claude/transcript.jsonl",
+    "Model": "",
+    "Effort": "",
+    "EffortRaw": "",
+    "EffortApprox": null,
+    "HarnessVersion": "",
+    "PermissionMode": "",
+    "UserEmail": ""
+  },
+  "points": []
+}

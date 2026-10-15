@@ -1,0 +1,38 @@
+{
+  "native": "UserPromptSubmit",
+  "kind": "prompt.submitted",
+  "session": {
+    "ID": "sess-claude-1",
+    "TurnID": "prompt-77",
+    "CWD": "/work/repo",
+    "WorkspaceRoots": [
+      "/work/repo"
+    ],
+    "TranscriptPath": "/tmp/claude/transcript.jsonl",
+    "Model": "",
+    "Effort": "",
+    "EffortRaw": "",
+    "EffortApprox": null,
+    "HarnessVersion": "",
+    "PermissionMode": "default",
+    "UserEmail": ""
+  },
+  "variables": {
+    "harness.agent": "main",
+    "harness.cwd": "/work/repo",
+    "harness.name": "claude-code",
+    "harness.permission_mode": "default",
+    "harness.session_id": "sess-claude-1",
+    "harness.turn_id": "prompt-77",
+    "harness.version": "2.1.315"
+  },
+  "points": [
+    {
+      "name": "prompt.submitted",
+      "fields": {
+        "cwd": "/work/repo",
+        "prompt": "refactor the auth middleware"
+      }
+    }
+  ]
+}

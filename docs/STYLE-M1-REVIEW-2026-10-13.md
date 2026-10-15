@@ -366,3 +366,11 @@ fail-closed 的范围收窄为 `Manifest.Fail == FailClosed`、`Blocking` 且 `K
 - [x] **RV-A18-01 golden 与诊断**：9 组固定字符串覆盖空文本、ASCII、取整、数字、CJK、kana/Hangul、混合标点、emoji/组合字符与空白，匹配独立 golden 数字；T001–T007 各有版本控制内包 fixture。T001/T002/T004–T007 由实际 plan 流程触发；T003 使用真实 Codex 默认上限，两个 1002-token 包合计 2005 大于 2000 阈值。第二包安装必须退出 4，完整存储/provider 字节和 lock 序号保持原样。证据：`internal/tokenestimate/golden_test.go`、`internal/app/token_acceptance_test.go`、`testdata/tokens/`。
 
 验证：清理 CODEX 环境、隔离 Go 缓存的 `go test -count=1 ./internal/app ./internal/tokenestimate ./core/tokens`、gofmt 与 diff 检查通过，A18 `[x]`。adapter conformance 与 M1b 仍未完成；M1b 配置按用户最新约定由用户手动执行。
+
+## Adapter conformance / A4 / A11 完成确认（2026-10-15）
+
+- [x] **RV-CONFORMANCE-01 原生输入和输出**：新增共用 suite，46 个 payload 覆盖两家已映射事件、未知事件、PostModelSwitch、patch/Edit、MCP、隐式/显式 skill 和子 agent。真实 agenthooks codec → adapter → state → engine → codec 的统一字段和 stdout 分别匹配 golden，每个输入另验证空 index 的原生 no-op 方言。白名单检查实际输出及存储 golden。
+- [x] **RV-CONFORMANCE-02 effort 和 agent scope**：25 组独立 fixture 覆盖全部嵌入 effort exact/alias 及规范未知值，验证 raw/approx、持久状态和模板值；新增表行未补 fixture 会失败。两家默认 main、仅 agent_type 的主 agent、显式 any 和 session 去重均经真实输入验证；Codex subagent.start 连续两次输出。Claude observe-only 边界保留。
+- [x] **RV-CONFORMANCE-03 PermissionRequest 评估点**：统一 suite 复现 Codex 把 PermissionRequest 投影为 permission.request，导致 tool.pre 条目无法匹配。修正为 tool.pre，并以两家的 deny_permission payload/golden 验证阻断。固定订阅面未改变，原生 codec 和 owner 生命周期仍由 agenthooks 负责。
+
+证据：`internal/adapter/conformance/`、`testdata/payloads/README.md`。清理 CODEX 环境变量，临时 Go 缓存、GOPROXY=off/GOSUMDB=off 下，双 module `make test-go`/`make vet-go`、`go test -race -count=1 ./internal/adapter/conformance ./internal/adapter/codex`、gofmt 和 diff 检查通过。A4/A11 和 conformance 的解析/effort/往返/报告/白名单确认 `[x]`；安装一致性、进程性能和真实 M1b 未完成。

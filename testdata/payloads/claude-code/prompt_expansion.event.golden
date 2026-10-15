@@ -1,0 +1,44 @@
+{
+  "native": "UserPromptExpansion",
+  "kind": "prompt.expansion",
+  "session": {
+    "ID": "conformance",
+    "TurnID": "prompt-1",
+    "CWD": "/work/repo",
+    "WorkspaceRoots": [
+      "/work/repo"
+    ],
+    "TranscriptPath": "",
+    "Model": "test-model",
+    "Effort": "",
+    "EffortRaw": "xhigh",
+    "EffortApprox": null,
+    "HarnessVersion": "",
+    "PermissionMode": "",
+    "UserEmail": ""
+  },
+  "variables": {
+    "harness.agent": "main",
+    "harness.cwd": "/work/repo",
+    "harness.name": "claude-code",
+    "harness.session_id": "conformance",
+    "harness.turn_id": "prompt-1",
+    "harness.version": "2.1.315",
+    "model": "test-model",
+    "thinking_effort": "xhigh",
+    "thinking_effort_approx": "false",
+    "thinking_effort_raw": "xhigh"
+  },
+  "points": [
+    {
+      "name": "skill.explicit",
+      "skill": "review",
+      "fields": {
+        "cwd": "/work/repo",
+        "prompt": "/review",
+        "skill.name": "review"
+      }
+    }
+  ],
+  "persisted_model": "test-model"
+}

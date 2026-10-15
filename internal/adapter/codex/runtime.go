@@ -316,7 +316,11 @@ func toolPoint(event *agenthooks.Event, tool *agenthooks.ToolCall, post *agentho
 			}
 		}
 	}
-	point := newPoint(event, string(event.Kind), variables, fields, tool, name)
+	pointName := string(event.Kind)
+	if event.Kind == agenthooks.KindPermission {
+		pointName = "tool.pre"
+	}
+	point := newPoint(event, pointName, variables, fields, tool, name)
 	if point.Name == "" {
 		point.Name = "tool.pre"
 		if event.Kind == agenthooks.KindToolPost {

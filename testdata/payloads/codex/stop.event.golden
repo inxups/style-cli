@@ -1,0 +1,21 @@
+{
+  "native": "Stop",
+  "kind": "agent.stop",
+  "session": {
+    "ID": "sess-codex-1",
+    "TurnID": "turn-43",
+    "CWD": "/work/repo",
+    "WorkspaceRoots": [
+      "/work/repo"
+    ],
+    "TranscriptPath": "",
+    "Model": "",
+    "Effort": "",
+    "EffortRaw": "",
+    "EffortApprox": null,
+    "HarnessVersion": "",
+    "PermissionMode": "",
+    "UserEmail": ""
+  },
+  "points": []
+}

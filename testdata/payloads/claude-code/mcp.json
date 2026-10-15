@@ -1,0 +1,1 @@
+{"session_id":"conformance","cwd":"/work/repo","model":"test-model","turn_id":"turn-1","prompt_id":"prompt-1","hook_event_name":"PreToolUse","tool_name":"mcp__github__create_pull_request","tool_input":{"title":"Review"},"mcp_server":{"name":"github","source":"user"}}

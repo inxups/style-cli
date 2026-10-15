@@ -1,0 +1,21 @@
+{
+  "native": "SessionEnd",
+  "kind": "session.end",
+  "session": {
+    "ID": "conformance",
+    "TurnID": "prompt-1",
+    "CWD": "/work/repo",
+    "WorkspaceRoots": [
+      "/work/repo"
+    ],
+    "TranscriptPath": "",
+    "Model": "test-model",
+    "Effort": "",
+    "EffortRaw": "",
+    "EffortApprox": null,
+    "HarnessVersion": "",
+    "PermissionMode": "",
+    "UserEmail": ""
+  },
+  "points": []
+}

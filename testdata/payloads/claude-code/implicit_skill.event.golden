@@ -1,0 +1,43 @@
+{
+  "native": "PreToolUse",
+  "kind": "tool.pre",
+  "session": {
+    "ID": "conformance",
+    "TurnID": "prompt-1",
+    "CWD": "/work/repo",
+    "WorkspaceRoots": [
+      "/work/repo"
+    ],
+    "TranscriptPath": "",
+    "Model": "test-model",
+    "Effort": "",
+    "EffortRaw": "",
+    "EffortApprox": null,
+    "HarnessVersion": "",
+    "PermissionMode": "",
+    "UserEmail": ""
+  },
+  "variables": {
+    "harness.agent": "main",
+    "harness.cwd": "/work/repo",
+    "harness.name": "claude-code",
+    "harness.session_id": "conformance",
+    "harness.turn_id": "prompt-1",
+    "harness.version": "2.1.315",
+    "model": "test-model"
+  },
+  "points": [
+    {
+      "name": "tool.pre",
+      "canonical": "other",
+      "tool": "Skill",
+      "skill": "review",
+      "fields": {
+        "cwd": "/work/repo",
+        "skill.name": "review",
+        "tool.input": "{\"skill\":\"review\"}"
+      }
+    }
+  ],
+  "persisted_model": "test-model"
+}

@@ -1,0 +1,41 @@
+{
+  "native": "PreToolUse",
+  "kind": "tool.pre",
+  "session": {
+    "ID": "sess-codex-1",
+    "TurnID": "turn-42",
+    "CWD": "/work/repo",
+    "WorkspaceRoots": [
+      "/work/repo"
+    ],
+    "TranscriptPath": "",
+    "Model": "",
+    "Effort": "",
+    "EffortRaw": "",
+    "EffortApprox": null,
+    "HarnessVersion": "",
+    "PermissionMode": "on-request",
+    "UserEmail": ""
+  },
+  "variables": {
+    "harness.agent": "main",
+    "harness.cwd": "/work/repo",
+    "harness.name": "codex",
+    "harness.permission_mode": "on-request",
+    "harness.session_id": "sess-codex-1",
+    "harness.turn_id": "turn-42",
+    "harness.version": "0.159.3"
+  },
+  "points": [
+    {
+      "name": "tool.pre",
+      "canonical": "shell",
+      "tool": "shell",
+      "fields": {
+        "cwd": "/work/repo",
+        "tool.input": "{\"command\":[\"bash\",\"-lc\",\"ls -la\"],\"timeout_ms\":5000}",
+        "tool.input.command": "[\"bash\",\"-lc\",\"ls -la\"]"
+      }
+    }
+  ]
+}

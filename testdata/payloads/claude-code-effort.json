@@ -1,0 +1,67 @@
+[
+  {
+    "raw": "low",
+    "tier": "low",
+    "approx": false
+  },
+  {
+    "raw": "medium",
+    "tier": "medium",
+    "approx": false
+  },
+  {
+    "raw": "high",
+    "tier": "high",
+    "approx": false
+  },
+  {
+    "raw": "xhigh",
+    "tier": "xhigh",
+    "approx": false
+  },
+  {
+    "raw": "max",
+    "tier": "max",
+    "approx": false
+  },
+  {
+    "raw": "HIGH",
+    "tier": "high",
+    "approx": false
+  },
+  {
+    "raw": "persistent",
+    "tier": "",
+    "approx": null
+  },
+  {
+    "raw": "future-tier",
+    "tier": "",
+    "approx": null
+  },
+  {
+    "raw": "",
+    "tier": "",
+    "approx": null
+  },
+  {
+    "raw": "none",
+    "tier": "",
+    "approx": null
+  },
+  {
+    "raw": "minimal",
+    "tier": "",
+    "approx": null
+  },
+  {
+    "raw": "ultra",
+    "tier": "",
+    "approx": null
+  },
+  {
+    "raw": "open",
+    "tier": "",
+    "approx": null
+  }
+]

@@ -1,0 +1,1 @@
+{"session_id":"conformance","cwd":"/work/repo","model":"test-model","turn_id":"turn-1","prompt_id":"prompt-1","hook_event_name":"SessionEnd","tool_name":"Bash","tool_input":{"command":"true"},"agent_id":"","agent_type":""}

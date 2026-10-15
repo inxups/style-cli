@@ -1,0 +1,37 @@
+{
+  "native": "UserPromptSubmit",
+  "kind": "prompt.submitted",
+  "session": {
+    "ID": "sess-codex-1",
+    "TurnID": "turn-43",
+    "CWD": "/work/repo",
+    "WorkspaceRoots": [
+      "/work/repo"
+    ],
+    "TranscriptPath": "",
+    "Model": "",
+    "Effort": "",
+    "EffortRaw": "",
+    "EffortApprox": null,
+    "HarnessVersion": "",
+    "PermissionMode": "",
+    "UserEmail": ""
+  },
+  "variables": {
+    "harness.agent": "main",
+    "harness.cwd": "/work/repo",
+    "harness.name": "codex",
+    "harness.session_id": "sess-codex-1",
+    "harness.turn_id": "turn-43",
+    "harness.version": "0.159.3"
+  },
+  "points": [
+    {
+      "name": "prompt.submitted",
+      "fields": {
+        "cwd": "/work/repo",
+        "prompt": "add pagination to the API"
+      }
+    }
+  ]
+}

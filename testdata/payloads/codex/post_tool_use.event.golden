@@ -1,0 +1,41 @@
+{
+  "native": "PostToolUse",
+  "kind": "tool.post",
+  "session": {
+    "ID": "sess-codex-1",
+    "TurnID": "turn-42",
+    "CWD": "/work/repo",
+    "WorkspaceRoots": [
+      "/work/repo"
+    ],
+    "TranscriptPath": "",
+    "Model": "",
+    "Effort": "",
+    "EffortRaw": "",
+    "EffortApprox": null,
+    "HarnessVersion": "",
+    "PermissionMode": "",
+    "UserEmail": ""
+  },
+  "variables": {
+    "harness.agent": "main",
+    "harness.cwd": "/work/repo",
+    "harness.name": "codex",
+    "harness.session_id": "sess-codex-1",
+    "harness.turn_id": "turn-42",
+    "harness.version": "0.159.3"
+  },
+  "points": [
+    {
+      "name": "tool.post",
+      "canonical": "shell",
+      "tool": "shell",
+      "fields": {
+        "cwd": "/work/repo",
+        "tool.input": "{\"command\":[\"bash\",\"-lc\",\"ls -la\"]}",
+        "tool.input.command": "[\"bash\",\"-lc\",\"ls -la\"]",
+        "tool.output": "{\"exit_code\":0,\"stdout\":\"total 8\\n\"}"
+      }
+    }
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "native": "UserPromptSubmit",
+  "kind": "prompt.submitted",
+  "session": {
+    "ID": "conformance",
+    "TurnID": "turn-1",
+    "CWD": "/work/repo",
+    "WorkspaceRoots": [
+      "/work/repo"
+    ],
+    "TranscriptPath": "",
+    "Model": "test-model",
+    "Effort": "",
+    "EffortRaw": "",
+    "EffortApprox": null,
+    "HarnessVersion": "",
+    "PermissionMode": "",
+    "UserEmail": ""
+  },
+  "variables": {
+    "harness.agent": "main",
+    "harness.cwd": "/work/repo",
+    "harness.name": "codex",
+    "harness.session_id": "conformance",
+    "harness.turn_id": "turn-1",
+    "harness.version": "0.159.3",
+    "model": "test-model"
+  },
+  "points": [
+    {
+      "name": "prompt.submitted",
+      "fields": {
+        "cwd": "/work/repo",
+        "prompt": "$review $review"
+      }
+    },
+    {
+      "name": "skill.explicit",
+      "skill": "review",
+      "fields": {
+        "cwd": "/work/repo",
+        "prompt": "$review $review",
+        "skill.name": "review"
+      }
+    }
+  ],
+  "persisted_model": "test-model"
+}

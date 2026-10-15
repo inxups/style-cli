@@ -1,0 +1,44 @@
+{
+  "native": "PostToolUse",
+  "kind": "tool.post",
+  "session": {
+    "ID": "conformance",
+    "TurnID": "turn-1",
+    "CWD": "/work/repo",
+    "WorkspaceRoots": [
+      "/work/repo"
+    ],
+    "TranscriptPath": "",
+    "Model": "test-model",
+    "Effort": "",
+    "EffortRaw": "",
+    "EffortApprox": null,
+    "HarnessVersion": "",
+    "PermissionMode": "",
+    "UserEmail": ""
+  },
+  "variables": {
+    "harness.agent": "main",
+    "harness.cwd": "/work/repo",
+    "harness.name": "codex",
+    "harness.session_id": "conformance",
+    "harness.turn_id": "turn-1",
+    "harness.version": "0.159.3",
+    "model": "test-model"
+  },
+  "points": [
+    {
+      "name": "tool.post",
+      "canonical": "file.edit",
+      "tool": "apply_patch",
+      "fields": {
+        "cwd": "/work/repo",
+        "tool.added": "new TODO",
+        "tool.input": "{\"command\":\"*** Begin Patch\\n*** Update File: a.go\\n-old TODO\\n+new TODO\\n*** End Patch\"}",
+        "tool.input.command": "*** Begin Patch\n*** Update File: a.go\n-old TODO\n+new TODO\n*** End Patch",
+        "tool.output": "ok"
+      }
+    }
+  ],
+  "persisted_model": "test-model"
+}

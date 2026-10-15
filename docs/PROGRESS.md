@@ -530,3 +530,9 @@
 - 证据：`internal/tokenestimate/{golden_test.go,testdata/counts.json}`、`internal/app/token_acceptance_test.go`、`testdata/tokens/README.md`。
 - 验证：清理 CODEX_HOME/CODEX_SANDBOX、临时 Go 缓存、GOPROXY=off/GOSUMDB=off 下 `go test -count=1 ./internal/app ./internal/tokenestimate ./core/tokens` 通过，gofmt 和 diff 检查通过。A18 测试矩阵与 review 完成确认同步 `[x]`。
 - 用户要求 M1b 时直接提供 Codex/Claude Code 配置过程，由用户手动配置；后续不得自动写入真实配置。当前所有安装测试仅操作临时目录。
+
+### 2026-10-15 — RV-CONFORMANCE-01–03 / A4 / A11 `[x]`
+
+- 新增共用真实适配器 conformance suite；46 个 payload 的统一 event/fields 和 stdout 分别固定 golden，每个输入用空 index 再验证 no-op。覆盖全原生事件、未知事件、PostModelSwitch、patch/Edit 新增行、MCP、skill、子 agent。25 个独立 effort fixture 覆盖嵌入表每行和未知/空值，验证 runtime 持久状态与模板值。两家 agent 默认范围/any、Codex subagent.start 不去重补齐 A11 离线证据。
+- suite 实际发现 Codex PermissionRequest 使用 permission.request 评估点，现投影为 tool.pre；两家 deny_permission 真实 payload 确认 block 输出。固定订阅面没有变化。
+- 验证：清理 CODEX_HOME/CODEX_SANDBOX，使用 `/tmp/style-cli-{gopath,gomodcache,gocache}`，GOPROXY=off/GOSUMDB=off；双 module `make test-go`/`make vet-go`、`go test -race -count=1 ./internal/adapter/conformance ./internal/adapter/codex`、gofmt 与 diff 检查通过。任务/测试/review 已同步完成确认；conformance 安装生命周期、进程性能和真实 M1b 待验收。

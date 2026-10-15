@@ -1,0 +1,44 @@
+{
+  "native": "PreToolUse",
+  "kind": "tool.pre",
+  "session": {
+    "ID": "conformance",
+    "TurnID": "turn-1",
+    "CWD": "/work/repo",
+    "WorkspaceRoots": [
+      "/work/repo"
+    ],
+    "TranscriptPath": "",
+    "Model": "test-model",
+    "Effort": "",
+    "EffortRaw": "",
+    "EffortApprox": null,
+    "HarnessVersion": "",
+    "PermissionMode": "",
+    "UserEmail": ""
+  },
+  "variables": {
+    "harness.agent": "main",
+    "harness.cwd": "/work/repo",
+    "harness.name": "codex",
+    "harness.session_id": "conformance",
+    "harness.turn_id": "turn-1",
+    "harness.version": "0.159.3",
+    "model": "test-model"
+  },
+  "points": [
+    {
+      "name": "tool.pre",
+      "canonical": "shell",
+      "tool": "Bash",
+      "skill": "review",
+      "fields": {
+        "cwd": "/work/repo",
+        "skill.name": "review",
+        "tool.input": "{\"command\":\"head -40 /work/repo/.agents/skills/review/SKILL.md\"}",
+        "tool.input.command": "head -40 /work/repo/.agents/skills/review/SKILL.md"
+      }
+    }
+  ],
+  "persisted_model": "test-model"
+}

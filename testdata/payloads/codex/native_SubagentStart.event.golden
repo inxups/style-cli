@@ -1,0 +1,45 @@
+{
+  "native": "SubagentStart",
+  "kind": "subagent.start",
+  "session": {
+    "ID": "conformance",
+    "TurnID": "turn-1",
+    "CWD": "/work/repo",
+    "WorkspaceRoots": [
+      "/work/repo"
+    ],
+    "TranscriptPath": "",
+    "Model": "test-model",
+    "Effort": "",
+    "EffortRaw": "",
+    "EffortApprox": null,
+    "HarnessVersion": "",
+    "PermissionMode": "",
+    "UserEmail": ""
+  },
+  "agent": {
+    "ID": "child-1",
+    "Type": "reviewer"
+  },
+  "variables": {
+    "harness.agent": "reviewer",
+    "harness.cwd": "/work/repo",
+    "harness.name": "codex",
+    "harness.session_id": "conformance",
+    "harness.turn_id": "turn-1",
+    "harness.version": "0.159.3",
+    "model": "test-model"
+  },
+  "points": [
+    {
+      "name": "subagent.start",
+      "agent_id": "child-1",
+      "agent_type": "reviewer",
+      "fields": {
+        "cwd": "/work/repo",
+        "tool.input.command": "true"
+      }
+    }
+  ],
+  "persisted_model": "test-model"
+}

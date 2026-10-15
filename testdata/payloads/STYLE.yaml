@@ -1,0 +1,66 @@
+spec: style/v0.3
+name: conformance
+version: 1.0.0
+description: Real codec and adapter acceptance rules
+rules:
+  - id: session
+    target: event
+    event: session.start
+    repeat: every
+    text: Session context.
+  - id: prompt
+    target: event
+    event: prompt.submitted
+    repeat: every
+    text: Prompt context.
+  - id: shell
+    target: tool
+    tool: shell
+    at: before
+    repeat: every
+    text: Shell context.
+  - id: shell-post
+    target: tool
+    tool: shell
+    at: after
+    repeat: every
+    text: Shell result context.
+  - id: guard
+    target: tool
+    tool: shell
+    action: block
+    text: Blocked by STYLE.
+    when:
+      conditions:
+        - {field: tool.input.command, op: contains, pattern: DENY}
+  - id: prompt-guard
+    target: event
+    event: prompt.submitted
+    action: block
+    text: Blocked prompt.
+    when:
+      conditions:
+        - {field: prompt, op: contains, pattern: DENY}
+  - id: warn
+    target: tool
+    tool: file.edit
+    at: after
+    action: warn
+    text: Review TODO. More detail for the user.
+    when:
+      conditions:
+        - {field: tool.added, op: contains, pattern: TODO}
+  - id: skill
+    target: skill
+    skill: review
+    at: before
+    text: Skill context.
+  - id: mcp
+    target: mcp
+    mcp: github/create_pull_request
+    at: before
+    text: MCP context.
+  - id: subagent
+    target: event
+    event: subagent.start
+    text: Subagent context.

@@ -92,14 +92,14 @@ env -u CODEX_HOME -u CODEX_SANDBOX \
 
 ### engine、state、codec 和输出
 
-- [x] **A4** Codex/Claude `pre_tool_use.json` fixture 的 hook stdout 与精确 golden 一致。证据：`internal/runtime/runtime_test.go:TestRunMatchesCodexAndClaudeFixturesToExactBlockResponses`。
+- [x] **A4** `testdata/payloads/{codex,claude-code}` 的 46 个原生 payload 使用真实 codec → adapter → state → engine → codec，统一事件/评估点与 stdout 逐字节匹配各自 golden；每个 payload 另用空 index 验证 Codex 空 stdout / Claude `{}`。证据：`internal/adapter/conformance/conformance_test.go`。
 - [x] **A5** inject/warn 依 order 合并，block 优先且只输出拒绝。证据：`core/engine/engine_test.go:TestInjectAndWarnEntriesMergeInOrder`、`TestBlockTakesPrecedenceAndDoesNotClaimOtherEntries`。
 - [x] **A6** session/turn/every、正文哈希变化、block 不去重、warn 每次发送均有覆盖。证据：`core/state/state_test.go`、`core/engine/engine_test.go:TestWarnRepeatEverySendsEveryMatchingInvocation`。
 - [x] **A7** 20 个并发独立进程对同一去重键恰好一个输出。证据：`core/engine/engine_test.go:TestTwentyProcessesEmitOneRepeatSessionEntry`。
 - [x] **A8** startup/resume/clear/compact 来源和 gen/epoch/prompt_count 行为正确。证据：`core/state/state_test.go:TestUpdateMaintainsSessionAndScopeLifecycle`、`TestStartupResetsScopeAndReservations`。
 - [x] **A9** model/effort 变化触发动态 system 重评估；相同渲染正文去重、变化正文补发。证据：`internal/runtime/runtime_test.go:TestRuntimeReevaluatesDynamicSystemWhenModelChanges`、`core/engine/engine_test.go:TestDynamicSystemReevaluatesAndDeduplicatesByRenderedBody`。
 - [x] **A10** core effort 条件比较、Codex/Claude 映射表、未知值、来源优先级和近似标记均有离线 fixture；T44/T45 已接通 Codex/Claude event/session 的状态解析，真实 hook 行为仍由 M1b C1–C3 验收。证据：`internal/adapter/codex/runtime_test.go`、`internal/adapter/claude/runtime_test.go`、`internal/adapter/{codex,claude}/effort_test.go`。
-- [~] **A11** core main/subagent 默认、显式 any 和 subagent 不去重有测试；T44 已将 Codex agent id/type 投影到 scope/condition 并经 runtime 编码 `additionalContext`。真实 Codex context 投递仍待 U7/M1b。
+- [x] **A11** 两家真实 codec/adapter 验证默认规则不在子 agent 触发、仅 agent_type 的主 agent 仍触发、显式 any 在子 agent 触发且按 session 去重；Codex subagent.start 默认触发并连续两次输出。Claude SubagentStart 按规范为 observe-only。证据：`internal/adapter/conformance/agent_scope_test.go`；真实 context 到达模型仍独立留 U7/M1b。
 - [x] **A15** engine 输出字段 whitelist，Claude prompt block 带 `suppressOriginalPrompt`，并按 Claude 方言放在 `hookSpecificOutput`；Codex 不接受该 Claude 专用字段。证据：`core/engine/engine_test.go:TestClaudePromptBlockSetsOnlyAllowedSuppressField`、`internal/runtime/runtime_test.go:TestClaudePromptBlockSuppressesOriginalPrompt`、`agenthooks/runner_test.go`。
 - [x] **A17** 缺失/损坏 index 与损坏 state 默认空输出并记录安全错误码；Claude fail-closed 返回失败码。证据：`internal/runtime/runtime_test.go:TestMissingOrInvalidIndexUsesCodecFailPolicy`、`TestStateFailureUsesFailOpenAndLogsOnlySafeCode`。
 - [x] **A19** 超出输入上限时从 order 大的一端裁剪并释放被裁条目的占位。证据：`core/engine/engine_test.go:TestCapDropsHighestOrderAndReleasesItsReservation`。
@@ -163,10 +163,10 @@ B1.2 和 B1.4 的历史通过状态表示原有测试套件在声明范围内通
 
 ## Adapter conformance
 
-- [ ] 解析：每个事件的统一 event、model、cwd、turn、agent、tool.added、MCP 和 skill 正确。
-- [ ] effort：每个 `effort.yaml` 映射值、原始值、未知值 fixture 正确。
-- [ ] 往返：规则 engine 输出各 provider golden；no-op 使用正确方言。
+- [x] 解析：46 个 payload 覆盖两家全部已映射原生事件、PostModelSwitch 与未知事件；固定统一 event、model、cwd、turn、agent、tool.added、MCP、skill 及评估点 golden。发现并修复 Codex PermissionRequest 没有投影为 tool.pre；deny_permission fixture 证明规则实际生效。证据：`internal/adapter/conformance/conformance_test.go`、`testdata/payloads/`。
+- [x] effort：25 组独立 fixture 经真实 runtime 验证档位、raw、approx、持久 session 与模板值；检查嵌入 effort.yaml 每个 exact/alias 均有 fixture，未知/空值不伪造档位。证据：`internal/adapter/conformance/effort_test.go`、`testdata/payloads/*-effort.json`。
+- [x] 往返：46 个 stdout golden 覆盖 inject/warn/deny、prompt suppression、MCP/skill/subagent 与观察事件；每个 payload 的 no-op 方言单独验证。证据：`internal/adapter/conformance/conformance_test.go`。
 - [ ] 安装：Plan → Apply → Status → Remove 保留外部内容、无 STYLE 残留、幂等、换路线清理。
-- [ ] 报告：同一包在每个适配器上的 plan/token golden 稳定。
-- [ ] 输出白名单：所有 golden 不含禁止字段。
+- [x] 报告：同一示例包的 Codex/Claude plan/token CLI stdout golden，见 A2 与 `internal/app/plan_golden_test.go`。
+- [x] 输出白名单：46 个存储 stdout golden 与实际 wire 输出均检查规范允许的顶层/嵌套字段、deny 值和 Claude prompt-only suppression。证据：`internal/adapter/conformance/whitelist_test.go`。
 - [?] e2e：真实 CLI 注入到达模型，block 真正生效。

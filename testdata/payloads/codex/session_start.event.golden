@@ -1,0 +1,36 @@
+{
+  "native": "SessionStart",
+  "kind": "session.start",
+  "session": {
+    "ID": "sess-codex-1",
+    "TurnID": "",
+    "CWD": "/work/repo",
+    "WorkspaceRoots": [
+      "/work/repo"
+    ],
+    "TranscriptPath": "",
+    "Model": "",
+    "Effort": "",
+    "EffortRaw": "",
+    "EffortApprox": null,
+    "HarnessVersion": "",
+    "PermissionMode": "",
+    "UserEmail": ""
+  },
+  "variables": {
+    "harness.agent": "main",
+    "harness.cwd": "/work/repo",
+    "harness.name": "codex",
+    "harness.session_id": "sess-codex-1",
+    "harness.turn_id": "0",
+    "harness.version": "0.159.3"
+  },
+  "points": [
+    {
+      "name": "session.start",
+      "fields": {
+        "cwd": "/work/repo"
+      }
+    }
+  ]
+}

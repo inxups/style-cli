@@ -1,0 +1,1 @@
+{"session_id":"conformance","cwd":"/work/repo","model":"test-model","turn_id":"turn-1","prompt_id":"prompt-1","hook_event_name":"UserPromptExpansion","expansion_type":"slash_command","command_name":"review","prompt":"/review","effort":{"level":"xhigh"}}

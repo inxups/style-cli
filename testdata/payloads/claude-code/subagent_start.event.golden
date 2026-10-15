@@ -1,0 +1,42 @@
+{
+  "native": "SubagentStart",
+  "kind": "subagent.start",
+  "session": {
+    "ID": "sess-claude-1",
+    "TurnID": "",
+    "CWD": "/work/repo",
+    "WorkspaceRoots": [
+      "/work/repo"
+    ],
+    "TranscriptPath": "/tmp/claude/transcript.jsonl",
+    "Model": "",
+    "Effort": "",
+    "EffortRaw": "",
+    "EffortApprox": null,
+    "HarnessVersion": "",
+    "PermissionMode": "",
+    "UserEmail": ""
+  },
+  "agent": {
+    "ID": "agent-9",
+    "Type": "Explore"
+  },
+  "variables": {
+    "harness.agent": "Explore",
+    "harness.cwd": "/work/repo",
+    "harness.name": "claude-code",
+    "harness.session_id": "sess-claude-1",
+    "harness.turn_id": "0",
+    "harness.version": "2.1.315"
+  },
+  "points": [
+    {
+      "name": "subagent.start",
+      "agent_id": "agent-9",
+      "agent_type": "Explore",
+      "fields": {
+        "cwd": "/work/repo"
+      }
+    }
+  ]
+}
