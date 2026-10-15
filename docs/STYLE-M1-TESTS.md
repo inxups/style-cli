@@ -137,6 +137,8 @@ B1.2 和 B1.4 的历史通过状态表示原有测试套件在声明范围内通
 
 用户约定（2026-10-15）：Codex 与 Claude Code 的真实配置由用户手动执行。进入 M1b 时先提供完整配置命令和验证步骤，不代为改动真实配置；运行结果返回后再更新验收状态。
 
+配置命令和逐项观察见 [M1b 手动验收手册](STYLE-M1B-MANUAL.md)，专用第二包见 `testdata/manual/m1b-probes/STYLE.yaml`。M1B-PREP 的隔离准备检查已通过；Codex 0.159.3 只实际验证本地插件管理命令，Claude 仅模拟版本检测。以下所有真实环境条目继续保持 `[?]`。
+
 - [?] **CDEX-01/B1** 全新安装、信任一次、第二包安装/卸载/sync 后不重复信任。
 - [?] **CDEX-02/B2** 模型、low/minimal/high effort 条件和上下文内容正确。
 - [?] **CDEX-03/B3** compact 后 session-info 只补发一次，静态 developer instructions 可见性已记录。

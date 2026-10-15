@@ -397,3 +397,11 @@ fail-closed 的范围收窄为 `Manifest.Fail == FailClosed`、`Blocking` 且 `K
 - [x] **M1a 离线验收**：A1–A22 与 adapter conformance 离线部分均有可重复证据，且 CLI 进程入口已独立验证。真实 harness 接受配置、信任、模型实际收到上下文及 harness 端耗时，仍保留 M1b `[?]`，不以本机进程数据代替。
 
 验证：`env -u CODEX_HOME -u CODEX_SANDBOX GOPATH=/tmp/style-cli-gopath GOMODCACHE=/tmp/style-cli-gomodcache GOCACHE=/tmp/style-cli-gocache GOPROXY=off GOSUMDB=off STYLE_PERF=1 STYLE_PERF_OUTPUT=/tmp/style-cli-a20-2026-10-15.json go test -count=1 ./internal/adapter/conformance -run '^TestHookProcessLatency$' -v` 独立运行通过。聚合证据：`docs/review/M1-A20-2026-10-15.json`。此前同实现的双 module 全量测试/vet 和 app/runtime/conformance race 已通过，本提交仅新增 opt-in 性能测试与证据文档。
+
+## M1b 手动配置准备完成确认（2026-10-15）
+
+- [x] **M1B-PREP**：已提供 `docs/STYLE-M1B-MANUAL.md` 和第二包 `testdata/manual/m1b-probes/STYLE.yaml`。配置、备份、三条路线、Codex 插件手动注册/取消、warn/prompt block/compact/model switch/去重观察、字节比较与结果返回均有具体步骤。
+- [x] **准备验证**：真实构建 STYLE CLI；临时 HOME 与三家配置/状态根内完成两包 validate/plan/install/sync/uninstall，原有四个配置文件逐字节恢复。两家 STYLE 进程输出 session/warn/block 与串行去重标记通过。Codex CLI 0.159.3 实际接受本地 marketplace JSON，插件 add/remove、marketplace remove 及切回 user 路线通过。
+- [?] **真实 M1b**：Claude 只用固定版本输出模拟检测，没有运行真实 Claude；Codex 未启动模型会话。串行去重不等于实际并行工具验证，插件命令成功不等于上下文投递。真实配置由用户执行，B1–B12、C1–C9 均未提前完成，M1 整体仍未完成。
+
+复现入口：`testdata/manual/README.md` 的构建/validate/plan 命令，以及手册内的安装、插件注册/取消、卸载和 cmp 命令；将所有配置根指向临时目录即可复核准备流程。shell 代码块语法、相对链接与 `git diff --check` 在提交前检查。

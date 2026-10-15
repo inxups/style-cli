@@ -557,3 +557,13 @@
 - 包含 exec 开始到退出及 index/decode/state/engine/encode/I/O；文件和已解析 session 预热，排除构建、shell/harness 启动和首次 effort 解析。并非真实 harness 性能。旧 engine-only 数字保留为历史证据，测试矩阵更正验收范围。
 - 复现：`env -u CODEX_HOME -u CODEX_SANDBOX GOPATH=/tmp/style-cli-gopath GOMODCACHE=/tmp/style-cli-gomodcache GOCACHE=/tmp/style-cli-gocache GOPROXY=off GOSUMDB=off STYLE_PERF=1 STYLE_PERF_OUTPUT=/tmp/style-cli-a20-2026-10-15.json go test -count=1 ./internal/adapter/conformance -run '^TestHookProcessLatency$' -v`；通过。结果入库 `docs/review/M1-A20-2026-10-15.json`，gofmt 与 diff 检查通过。
 - 任务/测试矩阵/review 确认 A20、M1a 完成；真实 Codex B1–B12 与 Claude C1–C9 保留 `[?]`，配置由用户手动执行。M1 整体未完成，暂不进入下一阶段规划。
+
+### 2026-10-15 — M1B-PREP `[x]`；等待用户手动配置与真实结果
+
+- 新增 `docs/STYLE-M1B-MANUAL.md`：固定二进制构建、用户配置备份、Codex user/plugin 与 Claude user 路线、第二包探针、全部 M1b 项的观察要求、卸载字节比较和结果返回。配置由用户执行，本轮未修改真实 Codex/Claude 配置，也未启动模型会话。
+- 新增 `testdata/manual/m1b-probes/STYLE.yaml`，用 session/model/effort、warn 的用户/模型双标记、prompt block 和定向 session 去重标记补齐示例包不易辨认的观察点。探针不安装原生 skill 或 MCP；实际并行与真实上下文投递仍需 harness 证据。
+- 核对官方 Codex hooks/插件本地 marketplace、Claude hooks 文档及本机 Codex CLI 0.159.3 help。该 CLI 使用 `plugin add`、`plugin remove`，无 `--plugin-dir`。STYLE 仅生成插件文件，手册明确补充 marketplace 注册、缓存副本和切回 user 前取消插件注册的顺序，避免误认为生成目录即可启用。
+- 使用隔离的 HOME/CODEX_HOME/CLAUDE_CONFIG_DIR/STYLE_HOME，在 `/tmp/style-cli-m1b-manual/` 构建并运行真实 STYLE CLI。两包 validate、两家 plan/install、sync、选定卸载和外部四个配置文件原文字节恢复通过；两家 wire session/warn/block 与串行重复调用去重通过。Codex CLI 实际本地 marketplace add、plugin add/remove、marketplace remove、切回用户级和卸载均退出 0。Claude 只使用 `2.1.315` 固定版本检测脚本，未验证真实 Claude 接受配置。
+- 可重复入口：`testdata/manual/README.md` 的隔离 Go build、validate/plan 命令；手册内的安装/插件注册/卸载/cmp 命令可将四个环境根指向临时目录复核。本轮临时执行记录为 `setup-wrg7xz9y`、`probes-y8hhubwq`，不以临时路径作为唯一证据。
+- 验证：Go 构建清理 CODEX_HOME/CODEX_SANDBOX，使用 `/tmp/style-cli-{gopath,gomodcache,gocache}` 和 GOPROXY=off/GOSUMDB=off；两包 CLI validate 与探针的两家 plan 退出 0；10 个 shell 代码块 `zsh -n`、相对链接和 `git diff --check` 通过。本提交只含文档与手动 fixture，无 Go 实现改动。
+- 任务/测试矩阵/review 已确认准备工作完成。B1–B12、C1–C9、真实 conformance e2e 保留 `[?]`；M1 尚未完成，等待用户配置和结果后继续验收。

@@ -67,8 +67,8 @@
 ## 里程碑验收
 
 - [x] **M1a 离线验收**：STYLE 验收项 A1–A22 与 adapter conformance 解析、往返、安装、报告、输出白名单均有可重复证据；真实二进制 hook 入口与三条生成命令通过，A20 进程 p95 为 Codex 22.852ms / Claude Code 22.97575ms。证据：`docs/STYLE-M1-TESTS.md`、`internal/adapter/conformance/`、`docs/review/M1-A20-2026-10-15.json`。真实环境投递与 harness 耗时属于 M1b。
-- [?] **M1b Codex 真实环境**：B1–B12 全部完成，记录 Codex 版本、路线、信任行为、compact/resume、skill 和性能。
-- [?] **M1b Claude Code 真实环境**：C1–C9 全部完成，记录 Claude Code 版本、工作区信任、compact/model switch、skill、warn 和性能。
+- [?] **M1b Codex 真实环境**：待 B1–B12 真实验证，记录 Codex 版本、路线、信任行为、compact/resume、skill 和性能。配置由用户按 `docs/STYLE-M1B-MANUAL.md` 手动执行。
+- [?] **M1b Claude Code 真实环境**：待 C1–C9 真实验证，记录 Claude Code 版本、工作区信任、compact/model switch、skill、warn 和性能。配置由用户按同一手册手动执行。
 
 ## 回顾跟进项（2026-10-13 起）
 
@@ -109,3 +109,5 @@ T20–T24 与 T30–T34 回顾结论和剩余范围见 `docs/STYLE-M1-REVIEW-202
 - [x] **RV-CLI-HOOK-01 / T52 进程入口补项**：进程验收发现生成命令调用的 `style agenthooks run` 尚未接入 CLI；现已在管理命令初始化前分派，只加载 index/state，并复用 agenthooks Runner。三条路线持久携带 STYLE_HOME、harness 配置根和版本，避免父进程环境改变安装归属；关闭合成 backfill，codec 辅助状态写入所选 STYLE_HOME。真实编译二进制通过全部 46 个输出 golden、生成命令路径含空格/错误环境回归及损坏 index 的 fail-open/Claude fail-closed 检查。证据：`internal/adapter/conformance/process_test.go`、`internal/app/hook_command_test.go`；双 module 全量测试/vet 与 app/runtime/conformance race 通过。性能与真实 M1b 仍独立验收。
 
 - [x] **RV-A20-01 进程性能补项**：完成每家 200 次真实二进制采样，替换此前不足以覆盖入口/加载/I/O 的 engine-only 验收依据，p95 均低于 50ms。聚合结果和复现命令见测试矩阵 A20。M1a 确认完成，M1b 由用户手动配置后验收。
+
+- [x] **M1B-PREP 手动配置准备**：提供固定二进制构建、备份、Codex user/plugin、Claude user、第二包探针、验收/卸载/证据返回步骤。临时目录内验证真实 Codex 0.159.3 的本地 marketplace 注册/移除、两包 CLI 生命周期和探针输出；Claude 仅模拟版本检测，不代表真实验收。证据：`docs/STYLE-M1B-MANUAL.md`、`testdata/manual/`、进度日志和 review 完成确认。B1–B12、C1–C9 仍待用户结果。

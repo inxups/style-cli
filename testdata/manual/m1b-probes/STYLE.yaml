@@ -1,0 +1,41 @@
+spec: style/v0.3
+name: m1b-probes
+version: 0.1.0
+description: Explicit markers for user-operated M1b harness checks
+reads:
+  model: true
+  thinking_effort: true
+rules:
+  - id: session-info
+    target: system
+    repeat: session
+    reinject_on_compact: true
+    text: 'M1B_SESSION model={{model | default: "unknown"}} effort={{thinking_effort | default: "unknown"}}.'
+  - id: warn-shell
+    target: tool
+    tool: shell
+    at: before
+    action: warn
+    repeat: every
+    text: 'M1B_WARN_USER. This is the manual hook warning probe.'
+    model_text: M1B_WARN_MODEL
+    when:
+      conditions:
+        - {field: tool.input.command, op: contains, pattern: STYLE_M1B_WARN}
+  - id: block-prompt
+    target: event
+    event: prompt.submitted
+    action: block
+    text: M1B_PROMPT_BLOCKED
+    when:
+      conditions:
+        - {field: prompt, op: contains, pattern: STYLE_M1B_BLOCK_PROMPT}
+  - id: parallel-once
+    target: tool
+    tool: shell
+    at: before
+    repeat: session
+    text: M1B_PARALLEL_ONCE
+    when:
+      conditions:
+        - {field: tool.input.command, op: contains, pattern: STYLE_M1B_PARALLEL}
