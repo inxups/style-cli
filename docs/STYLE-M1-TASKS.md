@@ -66,7 +66,7 @@
 
 ## 里程碑验收
 
-- [ ] **M1a 离线验收**：STYLE 验收项 A1–A22 全部通过；adapter conformance 解析、往返、安装、报告和输出白名单通过。
+- [x] **M1a 离线验收**：STYLE 验收项 A1–A22 与 adapter conformance 解析、往返、安装、报告、输出白名单均有可重复证据；真实二进制 hook 入口与三条生成命令通过，A20 进程 p95 为 Codex 22.852ms / Claude Code 22.97575ms。证据：`docs/STYLE-M1-TESTS.md`、`internal/adapter/conformance/`、`docs/review/M1-A20-2026-10-15.json`。真实环境投递与 harness 耗时属于 M1b。
 - [?] **M1b Codex 真实环境**：B1–B12 全部完成，记录 Codex 版本、路线、信任行为、compact/resume、skill 和性能。
 - [?] **M1b Claude Code 真实环境**：C1–C9 全部完成，记录 Claude Code 版本、工作区信任、compact/model switch、skill、warn 和性能。
 
@@ -90,7 +90,7 @@
 - [x] **RV-T3X-01**：回顾 T30–T34 的 state、repeat、engine/runtime、输出策略和动态 system 集成；未发现需要改变分层的缺陷。20 个独立进程竞争同一 session key 仅一个输出，state 错误 fail-open 和 safe logging 另有回归用例。真实 Codex/Claude 字段映射及 native model-switch 事件仍留在 T41/T42/T44/T45，相关 A10/A11 保持部分状态。结论与验证见 `docs/STYLE-M1-REVIEW-2026-10-13.md` 的“T30–T34 完成后回顾”和 `docs/PROGRESS.md`。
 - [x] **RV-T41-01**：回顾发现 T41 的根 module 直接导入 `github.com/pelletier/go-toml/v2`，但 `go.mod` 仍标为 indirect，导致 `go mod tidy -diff` 报告差异。已将其移入直接依赖并通过双 module tidy diff；证据见 `docs/STYLE-M1-REVIEW-2026-10-13.md` 和 `docs/PROGRESS.md`。
 
-T20–T24 与 T30–T34 回顾结论和剩余范围见 `docs/STYLE-M1-REVIEW-2026-10-13.md`；各项处理和验证结果见 `docs/PROGRESS.md`。M1a/M1b 仍未完成。
+T20–T24 与 T30–T34 回顾结论和剩余范围见 `docs/STYLE-M1-REVIEW-2026-10-13.md`；各项处理和验证结果见 `docs/PROGRESS.md`。当前 M1a/M1b 状态以验收段为准。
 
 详细复现、影响和修正方向见 `docs/STYLE-M1-REVIEW-2026-10-13.md`。
 
@@ -107,3 +107,5 @@ T20–T24 与 T30–T34 回顾结论和剩余范围见 `docs/STYLE-M1-REVIEW-202
 - [x] **RV-CONFORMANCE-04 / A13 配置往返补项**：统一生命周期测试发现 JSON 重排版及 Claude 无末尾换行多一个换行。agenthooks/install 增加带已应用摘要的私有恢复记录，Claude static block 增加可移除的生成分隔符；三条路线的 9 组往返字节/权限、记录事务/外部改动/隔离和命令级切换均通过。证据：`internal/adapter/conformance/routes_test.go`、`agenthooks/install/json_restore_test.go`、`internal/adapter/claude/static_roundtrip_test.go`。M1a 仍待进程级性能核验；真实 M1b 由用户手动配置。
 
 - [x] **RV-CLI-HOOK-01 / T52 进程入口补项**：进程验收发现生成命令调用的 `style agenthooks run` 尚未接入 CLI；现已在管理命令初始化前分派，只加载 index/state，并复用 agenthooks Runner。三条路线持久携带 STYLE_HOME、harness 配置根和版本，避免父进程环境改变安装归属；关闭合成 backfill，codec 辅助状态写入所选 STYLE_HOME。真实编译二进制通过全部 46 个输出 golden、生成命令路径含空格/错误环境回归及损坏 index 的 fail-open/Claude fail-closed 检查。证据：`internal/adapter/conformance/process_test.go`、`internal/app/hook_command_test.go`；双 module 全量测试/vet 与 app/runtime/conformance race 通过。性能与真实 M1b 仍独立验收。
+
+- [x] **RV-A20-01 进程性能补项**：完成每家 200 次真实二进制采样，替换此前不足以覆盖入口/加载/I/O 的 engine-only 验收依据，p95 均低于 50ms。聚合结果和复现命令见测试矩阵 A20。M1a 确认完成，M1b 由用户手动配置后验收。

@@ -104,7 +104,7 @@ env -u CODEX_HOME -u CODEX_SANDBOX \
 - [x] **A17** 缺失/损坏 index 与损坏 state 默认空输出并记录安全错误码；Claude fail-closed 返回失败码。证据：`internal/runtime/runtime_test.go:TestMissingOrInvalidIndexUsesCodecFailPolicy`、`TestStateFailureUsesFailOpenAndLogsOnlySafeCode`。
 - [x] **RV-CLI-HOOK-01–03 / A4/A17 进程补项**：`go test -count=1 ./internal/adapter/conformance -run 'TestBuiltCLI|TestGeneratedRoutes'` 真实编译并启动 CLI，46 个 payload 逐字节匹配 stdout golden，损坏 index 通过两家 fail-open 和 Claude fail-closed。源码/lock/settings 故意损坏仍可运行，确认 hook 不走管理流程；三条实际生成命令使用含空格路径，父进程 STYLE_HOME 故意错误，仍加载安装时的 index。conformance 同时捕获 runtime/Runner logger 并拒绝 ERROR，避免 stdout 中性时漏报错误。`internal/app/hook_command_test.go` 覆盖无/冲突/未知 provider、非法子命令及 fail-closed 参数。双 module 全量测试/vet 与 app/runtime/conformance race 通过。
 - [x] **A19** 超出输入上限时从 order 大的一端裁剪并释放被裁条目的占位。证据：`core/engine/engine_test.go:TestCapDropsHighestOrderAndReleasesItsReservation`。
-- [x] **A20** index-only engine `Process` 的 200 次样本 p95 为 128.083µs，低于 50ms；独立 benchmark 为 33,567 ns/op（300 次），不含 shell 启动。证据：`docs/PROGRESS.md` T30–T34 验证记录。
+- [x] **A20** 真实编译 CLI 的 exec 开始到退出，每家预热 10 次、采样 200 次；Codex p95=22.852ms，Claude Code p95=22.97575ms，均低于 50ms。包含 index 加载、原生输入解析、state、engine、编码及 I/O，文件缓存和已解析 session 预热，不含编译、shell 或 harness 启动。源码/lock/settings 故意损坏以约束 index-only 路径。旧 engine-only 微基准仅作历史参考，不作为本项进程性能证据。复现：隔离 Go 环境下 `STYLE_PERF=1 go test -count=1 ./internal/adapter/conformance -run '^TestHookProcessLatency$' -v`，单独运行以免其他构建争用；聚合结果见 `docs/review/M1-A20-2026-10-15.json`，测试见 `internal/adapter/conformance/performance_test.go`。
 
 ### 安装、信任和 token
 

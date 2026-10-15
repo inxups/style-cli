@@ -390,3 +390,10 @@ fail-closed 的范围收窄为 `Manifest.Fail == FailClosed`、`Blocking` 且 `K
 - [x] **RV-CLI-HOOK-03 验收可观察性**：真实编译二进制通过 46 个 stdout golden、损坏 index 的两家 fail-open 和 Claude fail-closed；源码/lock/settings 故意损坏仍能处理 hook。in-process suite 捕获 Runner 和 runtime 日志并拒绝 ERROR。原 PermissionRequest Bash 解析 fixture 意外请求了该事件不支持的 inject，现改用未知工具做解析/no-op 检查；独立 deny_permission fixture 保留 Bash block 断言，未放宽 engine 能力检查。PermissionRequest 不属于当前 M1 固定订阅面，不能据离线探针宣称真实订阅支持。
 
 证据：`internal/app/hook_command_test.go`、`internal/adapter/conformance/process_test.go`。清理 CODEX_HOME/CODEX_SANDBOX、临时 Go 缓存、GOPROXY=off/GOSUMDB=off；定向进程测试、双 module `make test-go`/`make vet-go`、`go test -race -count=1 ./internal/app ./internal/runtime ./internal/adapter/conformance`、gofmt 和 diff 检查通过。A20 进程性能尚未核验；真实 M1b 仍待用户手动配置后验证。
+
+## A20 / M1a 完成确认（2026-10-15）
+
+- [x] **RV-A20-01 进程级性能**：旧 A20 仅测 engine.Process，不能证明 CLI 加载和进程成本。新增 opt-in 进程测试，真实编译 CLI，每家预热 10 次后采样 200 次并逐次核对 stdout；Codex median=21.031958ms、p95=22.852ms、max=28.647875ms，Claude Code median=21.424125ms、p95=22.97575ms、max=27.726041ms。index 加载/解析/state/engine/编码/I/O 计入；文件和已解析 session 预热，不包含构建、shell、harness 启动或首次 effort 配置解析。宿主负载影响结果，测试须独立执行，普通测试不强制计时。
+- [x] **M1a 离线验收**：A1–A22 与 adapter conformance 离线部分均有可重复证据，且 CLI 进程入口已独立验证。真实 harness 接受配置、信任、模型实际收到上下文及 harness 端耗时，仍保留 M1b `[?]`，不以本机进程数据代替。
+
+验证：`env -u CODEX_HOME -u CODEX_SANDBOX GOPATH=/tmp/style-cli-gopath GOMODCACHE=/tmp/style-cli-gomodcache GOCACHE=/tmp/style-cli-gocache GOPROXY=off GOSUMDB=off STYLE_PERF=1 STYLE_PERF_OUTPUT=/tmp/style-cli-a20-2026-10-15.json go test -count=1 ./internal/adapter/conformance -run '^TestHookProcessLatency$' -v` 独立运行通过。聚合证据：`docs/review/M1-A20-2026-10-15.json`。此前同实现的双 module 全量测试/vet 和 app/runtime/conformance race 已通过，本提交仅新增 opt-in 性能测试与证据文档。

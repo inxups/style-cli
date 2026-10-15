@@ -550,3 +550,10 @@
 - 全部 46 个 wire golden 由真实二进制通过，另测损坏 index 的 fail-open 与 Claude fail-closed。suite 捕获 runtime/Runner ERROR，修正原 PermissionRequest 解析 fixture 意外要求不支持 inject 的问题；独立 deny fixture 仍验证 block，未改变订阅面或放宽能力校验。
 - 验证：`env -u CODEX_HOME -u CODEX_SANDBOX GOPATH=/tmp/style-cli-gopath GOMODCACHE=/tmp/style-cli-gomodcache GOCACHE=/tmp/style-cli-gocache GOPROXY=off GOSUMDB=off go test -count=1 ./internal/adapter/conformance -run 'TestBuiltCLI|TestGeneratedRoutes'` 通过；相同隔离环境的双 module `make test-go`、`make vet-go`、`go test -race -count=1 ./internal/app ./internal/runtime ./internal/adapter/conformance`、gofmt 和 `git diff --check` 通过。
 - 任务/测试矩阵/review 已确认完成。进程级性能继续单独验收，真实 Codex/Claude 配置按用户要求由用户手动执行，M1b 不提前标记。
+
+### 2026-10-15 — A20 / M1a `[x]`
+
+- 进程测试独立构建并运行 CLI，预热 10 次、每家采样 200 次，全部输出匹配真实 golden。Codex median 21.031958ms / p95 22.852ms / max 28.647875ms；Claude Code median 21.424125ms / p95 22.97575ms / max 27.726041ms，均通过 p95 <50ms。
+- 包含 exec 开始到退出及 index/decode/state/engine/encode/I/O；文件和已解析 session 预热，排除构建、shell/harness 启动和首次 effort 解析。并非真实 harness 性能。旧 engine-only 数字保留为历史证据，测试矩阵更正验收范围。
+- 复现：`env -u CODEX_HOME -u CODEX_SANDBOX GOPATH=/tmp/style-cli-gopath GOMODCACHE=/tmp/style-cli-gomodcache GOCACHE=/tmp/style-cli-gocache GOPROXY=off GOSUMDB=off STYLE_PERF=1 STYLE_PERF_OUTPUT=/tmp/style-cli-a20-2026-10-15.json go test -count=1 ./internal/adapter/conformance -run '^TestHookProcessLatency$' -v`；通过。结果入库 `docs/review/M1-A20-2026-10-15.json`，gofmt 与 diff 检查通过。
+- 任务/测试矩阵/review 确认 A20、M1a 完成；真实 Codex B1–B12 与 Claude C1–C9 保留 `[?]`，配置由用户手动执行。M1 整体未完成，暂不进入下一阶段规划。
