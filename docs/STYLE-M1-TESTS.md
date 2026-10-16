@@ -155,7 +155,7 @@ B1.2 和 B1.4 的历史通过状态表示原有测试套件在声明范围内通
 - [~] **CDEX-08/B8** 静态规则在 config.toml 开头，卸载后其他字节不变。2026-10-16：安装后 STYLE developer_instructions 区位于第 1–3 行，信任区在文件末尾；卸载往返待两包测试结束后对照 `manual-backup-2026-10-16` 执行。
 - [~] **CDEX-09/B9** md 改动在 sync/trust 前不生效，trust 后生效。2026-10-16：已安装副本的 STYLE.yaml 改动后 sync 退出 3、trust 预览退出 1，两者 index 均不变；trust --yes 才加载新 index，两家配置字节不变。生效在共享 index 的 Claude 会话 hook 中真实观察到；Codex 会话内观察受模型服务阻塞，md 文字改动尚未单独测。
 - [?] **CDEX-10/B10** 插件和用户级路线都通过，切换路线无残留和重复。
-- [~] **CDEX-11/B11** 固定订阅面 PreToolUse p95 小于 150ms，doctor 登录 shell 检查通过。2026-10-16：真实配置下 `doctor --json` healthy=true，无 codex-login-shell 诊断（登录 shell `true` 无 stdout）；PreToolUse 真实耗时样本需模型发起工具调用，受阻塞。
+- [x] **CDEX-11/B11** 固定订阅面 PreToolUse p95 小于 150ms，doctor 登录 shell 检查通过。2026-10-16：真实配置下 `doctor --json` healthy=true，无 codex-login-shell 诊断（登录 shell `true` 无 stdout）。两个真实 `codex exec` 会话各要求串行 50 次 shell（实际 52+50 次），用 Codex 自带 OTel 的 `codex.hooks.command` span（harness 计时，含进程启动/I/O）采样：PreToolUse 102 条 median=40.3ms、p95=47.0ms、max=64.2ms，0 错误、0 重叠；全部 208 条 p95=44.3ms。复算：`python3 testdata/manual/measure_codex_hooks.py docs/review/M1B-CODEX-B11-SPANS-2026-10-16.jsonl` → within-budget。不等于设计 U5 的 1000 次基准；第二轮期间另有 B4/B12 Codex 会话并发（未导出到该 sink）。
 - [?] **CDEX-12/B12** resume 的 session.start 注入和历史保留行为已记录。
 
 ## M1b：Claude Code 真实环境

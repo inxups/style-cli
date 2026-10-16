@@ -765,3 +765,11 @@
 - 用户修复模型服务后，在同一 codex-user 安装上运行 `codex exec --json -m gpt-6-sol -c model_reasoning_effort="minimal"` 与 `"high"` 两个新会话。
 - 证据来自 Codex 自己的 rollout：两次都有 `content_item_kinds=["hooks.additional_context"]` 的 developer 消息，文字与 state 一致；minimal 含 low-effort 规则，high 正确不含。两次 rollout 同时包含 STYLE 静态 developer_instructions。
 - 模型两次拒绝复述注入内容，不以自述为证；以 harness rollout 证明投递，并与 10-15 的 low 证据合并完成 B2。证据 `docs/review/M1B-CODEX-2026-10-16-R2.json` 的 B2。仅文档/证据变化，验证 JSON 语法与 `git diff --check`。
+
+### 2026-10-16 — CODEX-11/B11 `[x]` PreToolUse 真实耗时
+
+- 计时来源：Codex 0.159.3 内置 OTel。仅给单次运行加 `-c otel.trace_exporter={ otlp-http = { endpoint = "http://127.0.0.1:4318/v1/traces", protocol = "json" } }`（metrics 同理），不写入 config.toml；本地只读 sink 每行记录一个导出请求。`codex.hooks.command` span 带 `hook.event_name`、`hook.source=user`、`hook.command_outcome`，由 harness 计时，含 hook 进程启动与 I/O。
+- 新增只读收集器 `testdata/manual/measure_codex_hooks.py`（复用 Claude 收集器的 nearest-rank summarize），按 source/handler 过滤，门槛事件默认 PreToolUse、≥100 条、p95 严格 <150ms，报告重叠数；`test_measure_codex_hooks.py` 6 项覆盖慢样本保留、来源/handler/span 过滤、时间窗与重叠、失败 hook、坏导出、空导出。
+- 采样：两个新会话各要求串行 50 次 `printf`，模型实际 52、50 次，全部成功。PreToolUse 102 条 median=40.34ms、p95=46.96ms、max=64.2ms；PostToolUse 102 条 p95=30.1ms；SessionStart/UserPromptSubmit 各 2 条约 24–26ms。0 hook 错误、0 重叠，未剔除样本。第二轮期间另有 B4/B12 Codex 会话并发运行（未导出到该 sink），如实记录。
+- 入库 `docs/review/M1B-CODEX-B11-SPANS-2026-10-16.jsonl`（只保留 208 个 hook span 与必要属性，已确认无主机/账号字段），同一命令复算 within-budget。不宣称完成设计 U5 的 1000 次基准。
+- 验证：`PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s testdata/manual -p 'test_measure_*.py'` 12 项通过；摘录复算与原始 sink 结果一致；`git diff --check` 通过。
