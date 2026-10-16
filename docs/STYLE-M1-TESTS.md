@@ -215,7 +215,7 @@ B1.2 和 B1.4 的历史通过状态表示原有测试套件在声明范围内通
 - [x] **FINAL-01 版本门槛**：旧版/未知版本跳过且不写入，混合版本只安装兼容目标，已有旧包及路线保留，sync 不重新引入不兼容条目；示例 compile golden 仅来源摘要更新。证据：`internal/app/harness_requirement_test.go`，app/compile/spec 测试和 app/compile vet 通过。
 - [x] **FINAL-02 effort**：Codex 0.159.3 的 11 组真实配置加载/本地请求 sink 对照通过；profile 文件、受信项目覆盖、未受信忽略、启动覆盖、未知 raw、无配置、legacy 拒绝、缺失文件回退均有证据。Go v2/legacy、错误/路径与 runtime 安装版本接线测试通过。证据见 `docs/review/M1-FINAL-02-CODEX-CONFIG-2026-10-16.json`；命令为 `PYTHONDONTWRITEBYTECODE=1 python3 testdata/manual/probe_codex_config.py`。不宣称远端模型接收。
 - [x] **FINAL-03 link**：首次未改源码的 link 需要授权但 diff 为空；真实改动的 list/hash、sync/trust 差异正确，批准快照和随后自动同步、卸载字节还原均通过。证据：app link 回归、真实 CLI 11 步 `review/M1-FINAL-03-LINK-2026-10-16.json`；DOCS-04 疑似缺陷未复现，修正教程。
-- [~] **FINAL-04 B2/B10**：用户路线 B2、B4/B5/B6/B7/B9 已补测，compact 首轮流程无效未勾选；待最终程序两条路线完整独立验收与双向切换。
+- [x] **FINAL-04 B2/B10**：最终程序两条路线各 B1–B9 独立通过，各 19 次真实调用；九种 effort 配置、rollout/请求/state/stats 与正文 SHA256 核对。minimal 用 gpt-6-sol，未知 raw 可被服务拒绝但 STYLE 保持 unknown、条件不命中；不宣称远端支持未知档位。两轮双向切换的四类原生 hook 各一次、来源单一，无重复注入；STYLE 外部字节保留，临时 native 项目信任独立清理后最终字节还原。证据 `review/M1-FINAL-04-CODEX-{USER,PLUGIN}-2026-10-16.json`、SWITCHES 及 BASELINE-OBSERVATION；15 项 Python 测试通过。
 - [x] **FINAL-04-FIX 登记保留**：修复前 user/plugin 两个生命周期回归均失败，修复后 install 全量、app/Codex adapter 测试及 install vet 通过；解析器覆盖 quoted/array table、multiline string 内伪表头与损坏区域。真实 native plugin 管理后四步配置字节不变，取消登记及最后卸载字节还原，见 `review/M1-FINAL-04-PLUGIN-REGISTRATION-2026-10-16.json`。
 - [?] **FINAL-05 U2/U6**：真实插件登记往返、云端能力边界。
 - [?] **FINAL-06 Claude**：U9、U-C1/C2/C3/C5 和最终程序 C9；界面不能由模拟 payload 验收。

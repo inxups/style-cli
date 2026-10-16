@@ -1,0 +1,1116 @@
+{
+  "date": "2026-10-16",
+  "route": "codex-user",
+  "harness_version": "codex-cli 0.159.3",
+  "style_binary_sha256": "48ae3f39b392b87c829cf8341e1f57d273d5ceabb995995e1309ac7ca6efa33d",
+  "passed": true,
+  "switches": [
+    {
+      "route": "codex-plugin",
+      "session_id": "01a1440c-44fb-7f22-8096-97f028d74f44",
+      "native_hook_spans": [
+        {
+          "start_ns": "1792143017237536000",
+          "end_ns": "1792143017920568000",
+          "hook.event_name": "SessionStart",
+          "hook.handler_type": "command",
+          "hook.source": "plugin",
+          "hook.command_outcome": "completed"
+        },
+        {
+          "start_ns": "1792143017923416000",
+          "end_ns": "1792143017943956000",
+          "hook.event_name": "UserPromptSubmit",
+          "hook.handler_type": "command",
+          "hook.source": "plugin",
+          "hook.command_outcome": "completed"
+        },
+        {
+          "start_ns": "1792143036223093000",
+          "end_ns": "1792143036249705000",
+          "hook.event_name": "PreToolUse",
+          "hook.handler_type": "command",
+          "hook.source": "plugin",
+          "hook.command_outcome": "completed"
+        },
+        {
+          "start_ns": "1792143036309223000",
+          "end_ns": "1792143036322116000",
+          "hook.event_name": "PostToolUse",
+          "hook.handler_type": "command",
+          "hook.source": "plugin",
+          "hook.command_outcome": "completed"
+        }
+      ],
+      "no_duplicate_injection": true
+    },
+    {
+      "route": "codex-user",
+      "session_id": "01a1440c-9ea9-7813-be2b-63ce9cd3ed5c",
+      "native_hook_spans": [
+        {
+          "start_ns": "1792143040214574000",
+          "end_ns": "1792143040225964000",
+          "hook.event_name": "SessionStart",
+          "hook.handler_type": "command",
+          "hook.source": "user",
+          "hook.command_outcome": "completed"
+        },
+        {
+          "start_ns": "1792143040227221000",
+          "end_ns": "1792143040237575000",
+          "hook.event_name": "UserPromptSubmit",
+          "hook.handler_type": "command",
+          "hook.source": "user",
+          "hook.command_outcome": "completed"
+        },
+        {
+          "start_ns": "1792143044478348000",
+          "end_ns": "1792143044490792000",
+          "hook.event_name": "PreToolUse",
+          "hook.handler_type": "command",
+          "hook.source": "user",
+          "hook.command_outcome": "completed"
+        },
+        {
+          "start_ns": "1792143044542304000",
+          "end_ns": "1792143044553208000",
+          "hook.event_name": "PostToolUse",
+          "hook.handler_type": "command",
+          "hook.source": "user",
+          "hook.command_outcome": "completed"
+        }
+      ],
+      "no_duplicate_injection": true
+    },
+    {
+      "route": "codex-plugin",
+      "session_id": "01a1440c-bf3a-7ec2-ae03-07fec5016b6a",
+      "native_hook_spans": [
+        {
+          "start_ns": "1792143048553102000",
+          "end_ns": "1792143049166553000",
+          "hook.event_name": "SessionStart",
+          "hook.handler_type": "command",
+          "hook.source": "plugin",
+          "hook.command_outcome": "completed"
+        },
+        {
+          "start_ns": "1792143049169193000",
+          "end_ns": "1792143049189784000",
+          "hook.event_name": "UserPromptSubmit",
+          "hook.handler_type": "command",
+          "hook.source": "plugin",
+          "hook.command_outcome": "completed"
+        },
+        {
+          "start_ns": "1792143052927555000",
+          "end_ns": "1792143052943435000",
+          "hook.event_name": "PreToolUse",
+          "hook.handler_type": "command",
+          "hook.source": "plugin",
+          "hook.command_outcome": "completed"
+        },
+        {
+          "start_ns": "1792143052994457000",
+          "end_ns": "1792143053008415000",
+          "hook.event_name": "PostToolUse",
+          "hook.handler_type": "command",
+          "hook.source": "plugin",
+          "hook.command_outcome": "completed"
+        }
+      ],
+      "no_duplicate_injection": true
+    },
+    {
+      "route": "codex-user",
+      "session_id": "01a1440c-e3a1-7170-a639-a90f7dbcd217",
+      "native_hook_spans": [
+        {
+          "start_ns": "1792143057870831000",
+          "end_ns": "1792143057882345000",
+          "hook.event_name": "SessionStart",
+          "hook.handler_type": "command",
+          "hook.source": "user",
+          "hook.command_outcome": "completed"
+        },
+        {
+          "start_ns": "1792143057883732000",
+          "end_ns": "1792143057894068000",
+          "hook.event_name": "UserPromptSubmit",
+          "hook.handler_type": "command",
+          "hook.source": "user",
+          "hook.command_outcome": "completed"
+        },
+        {
+          "start_ns": "1792143087926527000",
+          "end_ns": "1792143087939188000",
+          "hook.event_name": "PreToolUse",
+          "hook.handler_type": "command",
+          "hook.source": "user",
+          "hook.command_outcome": "completed"
+        },
+        {
+          "start_ns": "1792143087989968000",
+          "end_ns": "1792143088000783000",
+          "hook.event_name": "PostToolUse",
+          "hook.handler_type": "command",
+          "hook.source": "user",
+          "hook.command_outcome": "completed"
+        }
+      ],
+      "no_duplicate_injection": true
+    }
+  ],
+  "configuration_byte_roundtrip": true,
+  "calls": [
+    {
+      "name": "switch-0",
+      "exit": 0,
+      "session_id": "01a1440c-44fb-7f22-8096-97f028d74f44",
+      "state": {
+        "model": "gpt-6.1-sol",
+        "effort": "low",
+        "effort_raw": "low",
+        "effort_approx": false,
+        "effort_resolved": true,
+        "harness_version": "0.159.3",
+        "updated_at": "2026-10-16T09:30:17.917002Z"
+      },
+      "stats": [
+        {
+          "at": "2026-10-16T09:30:17.919223Z",
+          "provider": "codex",
+          "event": "SessionStart",
+          "point": "session.start",
+          "entry": "terse-reviewer/session-info@session.start",
+          "action": "inject",
+          "result": "output",
+          "est_tokens": 15,
+          "body_sha256": "sha256:cb0117a5ec31e8d193ce7ccfecd42ac3ffa4b079bcb27dae1c84568225ae00ff"
+        },
+        {
+          "at": "2026-10-16T09:30:17.919523Z",
+          "provider": "codex",
+          "event": "SessionStart",
+          "point": "session.start",
+          "entry": "terse-reviewer/low-effort-guard@session.start",
+          "action": "inject",
+          "result": "output",
+          "est_tokens": 15,
+          "body_sha256": "sha256:8fc6166eb3c6b4e27f0ad3a00c4584e3760cf1f1ff2d3dc23682c9a0d1f1c988"
+        },
+        {
+          "at": "2026-10-16T09:30:17.943172Z",
+          "provider": "codex",
+          "event": "UserPromptSubmit",
+          "point": "prompt.submitted",
+          "entry": "terse-reviewer/session-info@prompt.submitted",
+          "action": "inject",
+          "result": "dedup",
+          "est_tokens": 15,
+          "body_sha256": "sha256:cb0117a5ec31e8d193ce7ccfecd42ac3ffa4b079bcb27dae1c84568225ae00ff"
+        },
+        {
+          "at": "2026-10-16T09:30:17.94331Z",
+          "provider": "codex",
+          "event": "UserPromptSubmit",
+          "point": "prompt.submitted",
+          "entry": "terse-reviewer/low-effort-guard@prompt.submitted",
+          "action": "inject",
+          "result": "dedup",
+          "est_tokens": 15,
+          "body_sha256": "sha256:8fc6166eb3c6b4e27f0ad3a00c4584e3760cf1f1ff2d3dc23682c9a0d1f1c988"
+        }
+      ],
+      "requests": [
+        {
+          "model": "gpt-6.1-sol",
+          "reasoning": {
+            "effort": "low",
+            "context": "all_turns"
+          },
+          "body_sha256": "a2328a28ae3bb6debc498e78ed543d898ed1e1ff98775ff52ea1a3369c51d1a7",
+          "style_context": [
+            {
+              "type": "message",
+              "id": "msg_01a1440c-47c0-7f32-826f-e2447f6b75dd",
+              "role": "developer",
+              "content": [
+                {
+                  "type": "input_text",
+                  "text": "Current session: model gpt-6.1-sol, effort low.\n\n\nUse a concise review format for low-effort runs.\n"
+                }
+              ],
+              "internal_chat_message_metadata_passthrough": {
+                "turn_id": "01a1440c-4505-7090-99c1-3eb1923aa0f4",
+                "create_time": 1792143017.920842,
+                "content_item_kinds": [
+                  "hooks.additional_context"
+                ]
+              }
+            }
+          ],
+          "static_rule_present": true
+        },
+        {
+          "model": "gpt-6.1-sol",
+          "reasoning": {
+            "effort": "low",
+            "context": "all_turns"
+          },
+          "body_sha256": "c5baf1e503b13f62dd15e48bd42f8bdd0bcf0aca3c67097387864fa036294531",
+          "style_context": [
+            {
+              "type": "message",
+              "id": "msg_01a1440c-47c0-7f32-826f-e2447f6b75dd",
+              "role": "developer",
+              "content": [
+                {
+                  "type": "input_text",
+                  "text": "Current session: model gpt-6.1-sol, effort low.\n\n\nUse a concise review format for low-effort runs.\n"
+                }
+              ],
+              "internal_chat_message_metadata_passthrough": {
+                "turn_id": "01a1440c-4505-7090-99c1-3eb1923aa0f4",
+                "create_time": 1792143017.920842,
+                "content_item_kinds": [
+                  "hooks.additional_context"
+                ]
+              }
+            }
+          ],
+          "static_rule_present": true
+        }
+      ],
+      "hook_context": [
+        {
+          "timestamp": "2026-10-16T09:30:17.920Z",
+          "ordinal": 8,
+          "type": "response_item",
+          "payload": {
+            "type": "message",
+            "id": "msg_01a1440c-47c0-7f32-826f-e2447f6b75dd",
+            "role": "developer",
+            "content": [
+              {
+                "type": "input_text",
+                "text": "Current session: model gpt-6.1-sol, effort low.\n\n\nUse a concise review format for low-effort runs.\n"
+              }
+            ],
+            "internal_chat_message_metadata_passthrough": {
+              "turn_id": "01a1440c-4505-7090-99c1-3eb1923aa0f4",
+              "create_time": 1792143017.920842,
+              "content_item_kinds": [
+                "hooks.additional_context"
+              ]
+            }
+          }
+        }
+      ],
+      "events": [
+        {
+          "type": "thread.started",
+          "thread_id": "01a1440c-44fb-7f22-8096-97f028d74f44"
+        },
+        {
+          "type": "turn.started"
+        },
+        {
+          "type": "item.completed",
+          "item": {
+            "id": "item_0",
+            "type": "agent_message",
+            "text": "我会执行一次指定命令。"
+          }
+        },
+        {
+          "type": "item.started",
+          "item": {
+            "id": "item_1",
+            "type": "command_execution",
+            "command": "/bin/zsh -lc 'printf STYLE_ROUTE_SWITCH'",
+            "aggregated_output": "",
+            "exit_code": null,
+            "status": "in_progress"
+          }
+        },
+        {
+          "type": "item.completed",
+          "item": {
+            "id": "item_1",
+            "type": "command_execution",
+            "command": "/bin/zsh -lc 'printf STYLE_ROUTE_SWITCH'",
+            "aggregated_output": "STYLE_ROUTE_SWITCH",
+            "exit_code": 0,
+            "status": "completed"
+          }
+        },
+        {
+          "type": "item.completed",
+          "item": {
+            "id": "item_2",
+            "type": "agent_message",
+            "text": "DONE"
+          }
+        },
+        {
+          "type": "turn.completed",
+          "usage": {
+            "input_tokens": 25122,
+            "cached_input_tokens": 12507,
+            "cache_write_input_tokens": 12609,
+            "output_tokens": 49,
+            "reasoning_output_tokens": 0
+          }
+        }
+      ],
+      "rollout_sha256": "5335c50a888772343699ef637df3f2f1200dc9abfd6b42f833664f24ff32d49b",
+      "hook_spans": [
+        {
+          "start_ns": "1792143017237536000",
+          "end_ns": "1792143017920568000",
+          "hook.event_name": "SessionStart",
+          "hook.handler_type": "command",
+          "hook.source": "plugin",
+          "hook.command_outcome": "completed"
+        },
+        {
+          "start_ns": "1792143017923416000",
+          "end_ns": "1792143017943956000",
+          "hook.event_name": "UserPromptSubmit",
+          "hook.handler_type": "command",
+          "hook.source": "plugin",
+          "hook.command_outcome": "completed"
+        },
+        {
+          "start_ns": "1792143036223093000",
+          "end_ns": "1792143036249705000",
+          "hook.event_name": "PreToolUse",
+          "hook.handler_type": "command",
+          "hook.source": "plugin",
+          "hook.command_outcome": "completed"
+        },
+        {
+          "start_ns": "1792143036309223000",
+          "end_ns": "1792143036322116000",
+          "hook.event_name": "PostToolUse",
+          "hook.handler_type": "command",
+          "hook.source": "plugin",
+          "hook.command_outcome": "completed"
+        }
+      ]
+    },
+    {
+      "name": "switch-1",
+      "exit": 0,
+      "session_id": "01a1440c-9ea9-7813-be2b-63ce9cd3ed5c",
+      "state": {
+        "model": "gpt-6.1-sol",
+        "effort": "low",
+        "effort_raw": "low",
+        "effort_approx": false,
+        "effort_resolved": true,
+        "harness_version": "0.159.3",
+        "updated_at": "2026-10-16T09:30:40.223895Z"
+      },
+      "stats": [
+        {
+          "at": "2026-10-16T09:30:40.225253Z",
+          "provider": "codex",
+          "event": "SessionStart",
+          "point": "session.start",
+          "entry": "terse-reviewer/session-info@session.start",
+          "action": "inject",
+          "result": "output",
+          "est_tokens": 15,
+          "body_sha256": "sha256:cb0117a5ec31e8d193ce7ccfecd42ac3ffa4b079bcb27dae1c84568225ae00ff"
+        },
+        {
+          "at": "2026-10-16T09:30:40.225412Z",
+          "provider": "codex",
+          "event": "SessionStart",
+          "point": "session.start",
+          "entry": "terse-reviewer/low-effort-guard@session.start",
+          "action": "inject",
+          "result": "output",
+          "est_tokens": 15,
+          "body_sha256": "sha256:8fc6166eb3c6b4e27f0ad3a00c4584e3760cf1f1ff2d3dc23682c9a0d1f1c988"
+        },
+        {
+          "at": "2026-10-16T09:30:40.236939Z",
+          "provider": "codex",
+          "event": "UserPromptSubmit",
+          "point": "prompt.submitted",
+          "entry": "terse-reviewer/session-info@prompt.submitted",
+          "action": "inject",
+          "result": "dedup",
+          "est_tokens": 15,
+          "body_sha256": "sha256:cb0117a5ec31e8d193ce7ccfecd42ac3ffa4b079bcb27dae1c84568225ae00ff"
+        },
+        {
+          "at": "2026-10-16T09:30:40.23705Z",
+          "provider": "codex",
+          "event": "UserPromptSubmit",
+          "point": "prompt.submitted",
+          "entry": "terse-reviewer/low-effort-guard@prompt.submitted",
+          "action": "inject",
+          "result": "dedup",
+          "est_tokens": 15,
+          "body_sha256": "sha256:8fc6166eb3c6b4e27f0ad3a00c4584e3760cf1f1ff2d3dc23682c9a0d1f1c988"
+        }
+      ],
+      "requests": [
+        {
+          "model": "gpt-6.1-sol",
+          "reasoning": {
+            "effort": "low",
+            "context": "all_turns"
+          },
+          "body_sha256": "3e79f9daa6ff3e396dd2084390ce575a34bb2f7ae44e92f4cca84757df5fba82",
+          "style_context": [
+            {
+              "type": "message",
+              "id": "msg_01a1440c-9ee2-74c0-bb0f-f1ed0606319d",
+              "role": "developer",
+              "content": [
+                {
+                  "type": "input_text",
+                  "text": "Current session: model gpt-6.1-sol, effort low.\n\n\nUse a concise review format for low-effort runs.\n"
+                }
+              ],
+              "internal_chat_message_metadata_passthrough": {
+                "turn_id": "01a1440c-9eca-7b81-b62d-aa55db9e7759",
+                "create_time": 1792143040.226039,
+                "content_item_kinds": [
+                  "hooks.additional_context"
+                ]
+              }
+            }
+          ],
+          "static_rule_present": true
+        },
+        {
+          "model": "gpt-6.1-sol",
+          "reasoning": {
+            "effort": "low",
+            "context": "all_turns"
+          },
+          "body_sha256": "c8e1c6c9613b1d0b16e7ce29322d59af1aae58845c64f770f1a5aef1a306246c",
+          "style_context": [
+            {
+              "type": "message",
+              "id": "msg_01a1440c-9ee2-74c0-bb0f-f1ed0606319d",
+              "role": "developer",
+              "content": [
+                {
+                  "type": "input_text",
+                  "text": "Current session: model gpt-6.1-sol, effort low.\n\n\nUse a concise review format for low-effort runs.\n"
+                }
+              ],
+              "internal_chat_message_metadata_passthrough": {
+                "turn_id": "01a1440c-9eca-7b81-b62d-aa55db9e7759",
+                "create_time": 1792143040.226039,
+                "content_item_kinds": [
+                  "hooks.additional_context"
+                ]
+              }
+            }
+          ],
+          "static_rule_present": true
+        }
+      ],
+      "hook_context": [
+        {
+          "timestamp": "2026-10-16T09:30:40.226Z",
+          "ordinal": 8,
+          "type": "response_item",
+          "payload": {
+            "type": "message",
+            "id": "msg_01a1440c-9ee2-74c0-bb0f-f1ed0606319d",
+            "role": "developer",
+            "content": [
+              {
+                "type": "input_text",
+                "text": "Current session: model gpt-6.1-sol, effort low.\n\n\nUse a concise review format for low-effort runs.\n"
+              }
+            ],
+            "internal_chat_message_metadata_passthrough": {
+              "turn_id": "01a1440c-9eca-7b81-b62d-aa55db9e7759",
+              "create_time": 1792143040.226039,
+              "content_item_kinds": [
+                "hooks.additional_context"
+              ]
+            }
+          }
+        }
+      ],
+      "events": [
+        {
+          "type": "thread.started",
+          "thread_id": "01a1440c-9ea9-7813-be2b-63ce9cd3ed5c"
+        },
+        {
+          "type": "turn.started"
+        },
+        {
+          "type": "item.completed",
+          "item": {
+            "id": "item_0",
+            "type": "agent_message",
+            "text": "我会执行指定命令一次。"
+          }
+        },
+        {
+          "type": "item.started",
+          "item": {
+            "id": "item_1",
+            "type": "command_execution",
+            "command": "/bin/zsh -lc 'printf STYLE_ROUTE_SWITCH'",
+            "aggregated_output": "",
+            "exit_code": null,
+            "status": "in_progress"
+          }
+        },
+        {
+          "type": "item.completed",
+          "item": {
+            "id": "item_1",
+            "type": "command_execution",
+            "command": "/bin/zsh -lc 'printf STYLE_ROUTE_SWITCH'",
+            "aggregated_output": "STYLE_ROUTE_SWITCH",
+            "exit_code": 0,
+            "status": "completed"
+          }
+        },
+        {
+          "type": "item.completed",
+          "item": {
+            "id": "item_2",
+            "type": "agent_message",
+            "text": "DONE"
+          }
+        },
+        {
+          "type": "turn.completed",
+          "usage": {
+            "input_tokens": 25123,
+            "cached_input_tokens": 12507,
+            "cache_write_input_tokens": 12610,
+            "output_tokens": 49,
+            "reasoning_output_tokens": 0
+          }
+        }
+      ],
+      "rollout_sha256": "7e582e6acaf1faea8c86417e6b013d5d77ec1c110960c3f14bfba52ad4636fea",
+      "hook_spans": [
+        {
+          "start_ns": "1792143040214574000",
+          "end_ns": "1792143040225964000",
+          "hook.event_name": "SessionStart",
+          "hook.handler_type": "command",
+          "hook.source": "user",
+          "hook.command_outcome": "completed"
+        },
+        {
+          "start_ns": "1792143040227221000",
+          "end_ns": "1792143040237575000",
+          "hook.event_name": "UserPromptSubmit",
+          "hook.handler_type": "command",
+          "hook.source": "user",
+          "hook.command_outcome": "completed"
+        },
+        {
+          "start_ns": "1792143044478348000",
+          "end_ns": "1792143044490792000",
+          "hook.event_name": "PreToolUse",
+          "hook.handler_type": "command",
+          "hook.source": "user",
+          "hook.command_outcome": "completed"
+        },
+        {
+          "start_ns": "1792143044542304000",
+          "end_ns": "1792143044553208000",
+          "hook.event_name": "PostToolUse",
+          "hook.handler_type": "command",
+          "hook.source": "user",
+          "hook.command_outcome": "completed"
+        }
+      ]
+    },
+    {
+      "name": "switch-2",
+      "exit": 0,
+      "session_id": "01a1440c-bf3a-7ec2-ae03-07fec5016b6a",
+      "state": {
+        "model": "gpt-6.1-sol",
+        "effort": "low",
+        "effort_raw": "low",
+        "effort_approx": false,
+        "effort_resolved": true,
+        "harness_version": "0.159.3",
+        "updated_at": "2026-10-16T09:30:49.163308Z"
+      },
+      "stats": [
+        {
+          "at": "2026-10-16T09:30:49.16539Z",
+          "provider": "codex",
+          "event": "SessionStart",
+          "point": "session.start",
+          "entry": "terse-reviewer/session-info@session.start",
+          "action": "inject",
+          "result": "output",
+          "est_tokens": 15,
+          "body_sha256": "sha256:cb0117a5ec31e8d193ce7ccfecd42ac3ffa4b079bcb27dae1c84568225ae00ff"
+        },
+        {
+          "at": "2026-10-16T09:30:49.165659Z",
+          "provider": "codex",
+          "event": "SessionStart",
+          "point": "session.start",
+          "entry": "terse-reviewer/low-effort-guard@session.start",
+          "action": "inject",
+          "result": "output",
+          "est_tokens": 15,
+          "body_sha256": "sha256:8fc6166eb3c6b4e27f0ad3a00c4584e3760cf1f1ff2d3dc23682c9a0d1f1c988"
+        },
+        {
+          "at": "2026-10-16T09:30:49.188941Z",
+          "provider": "codex",
+          "event": "UserPromptSubmit",
+          "point": "prompt.submitted",
+          "entry": "terse-reviewer/session-info@prompt.submitted",
+          "action": "inject",
+          "result": "dedup",
+          "est_tokens": 15,
+          "body_sha256": "sha256:cb0117a5ec31e8d193ce7ccfecd42ac3ffa4b079bcb27dae1c84568225ae00ff"
+        },
+        {
+          "at": "2026-10-16T09:30:49.189099Z",
+          "provider": "codex",
+          "event": "UserPromptSubmit",
+          "point": "prompt.submitted",
+          "entry": "terse-reviewer/low-effort-guard@prompt.submitted",
+          "action": "inject",
+          "result": "dedup",
+          "est_tokens": 15,
+          "body_sha256": "sha256:8fc6166eb3c6b4e27f0ad3a00c4584e3760cf1f1ff2d3dc23682c9a0d1f1c988"
+        }
+      ],
+      "requests": [
+        {
+          "model": "gpt-6.1-sol",
+          "reasoning": {
+            "effort": "low",
+            "context": "all_turns"
+          },
+          "body_sha256": "af04221da10ad2ca72713d4e8ab3adea80b45b1685fd2bc31651f2aa63aa08ce",
+          "style_context": [
+            {
+              "type": "message",
+              "id": "msg_01a1440c-c1ce-7783-9be0-6983e05a37b7",
+              "role": "developer",
+              "content": [
+                {
+                  "type": "input_text",
+                  "text": "Current session: model gpt-6.1-sol, effort low.\n\n\nUse a concise review format for low-effort runs.\n"
+                }
+              ],
+              "internal_chat_message_metadata_passthrough": {
+                "turn_id": "01a1440c-bf5d-7de1-bd62-77e2ba658766",
+                "create_time": 1792143049.166788,
+                "content_item_kinds": [
+                  "hooks.additional_context"
+                ]
+              }
+            }
+          ],
+          "static_rule_present": true
+        },
+        {
+          "model": "gpt-6.1-sol",
+          "reasoning": {
+            "effort": "low",
+            "context": "all_turns"
+          },
+          "body_sha256": "851df65037cbd49a68859526e1d1212d0e5993751eab1dc9ca39e9d07ba12602",
+          "style_context": [
+            {
+              "type": "message",
+              "id": "msg_01a1440c-c1ce-7783-9be0-6983e05a37b7",
+              "role": "developer",
+              "content": [
+                {
+                  "type": "input_text",
+                  "text": "Current session: model gpt-6.1-sol, effort low.\n\n\nUse a concise review format for low-effort runs.\n"
+                }
+              ],
+              "internal_chat_message_metadata_passthrough": {
+                "turn_id": "01a1440c-bf5d-7de1-bd62-77e2ba658766",
+                "create_time": 1792143049.166788,
+                "content_item_kinds": [
+                  "hooks.additional_context"
+                ]
+              }
+            }
+          ],
+          "static_rule_present": true
+        }
+      ],
+      "hook_context": [
+        {
+          "timestamp": "2026-10-16T09:30:49.166Z",
+          "ordinal": 8,
+          "type": "response_item",
+          "payload": {
+            "type": "message",
+            "id": "msg_01a1440c-c1ce-7783-9be0-6983e05a37b7",
+            "role": "developer",
+            "content": [
+              {
+                "type": "input_text",
+                "text": "Current session: model gpt-6.1-sol, effort low.\n\n\nUse a concise review format for low-effort runs.\n"
+              }
+            ],
+            "internal_chat_message_metadata_passthrough": {
+              "turn_id": "01a1440c-bf5d-7de1-bd62-77e2ba658766",
+              "create_time": 1792143049.166788,
+              "content_item_kinds": [
+                "hooks.additional_context"
+              ]
+            }
+          }
+        }
+      ],
+      "events": [
+        {
+          "type": "thread.started",
+          "thread_id": "01a1440c-bf3a-7ec2-ae03-07fec5016b6a"
+        },
+        {
+          "type": "turn.started"
+        },
+        {
+          "type": "item.completed",
+          "item": {
+            "id": "item_0",
+            "type": "agent_message",
+            "text": "我会执行一次指定命令。"
+          }
+        },
+        {
+          "type": "item.started",
+          "item": {
+            "id": "item_1",
+            "type": "command_execution",
+            "command": "/bin/zsh -lc 'printf STYLE_ROUTE_SWITCH'",
+            "aggregated_output": "",
+            "exit_code": null,
+            "status": "in_progress"
+          }
+        },
+        {
+          "type": "item.completed",
+          "item": {
+            "id": "item_1",
+            "type": "command_execution",
+            "command": "/bin/zsh -lc 'printf STYLE_ROUTE_SWITCH'",
+            "aggregated_output": "STYLE_ROUTE_SWITCH",
+            "exit_code": 0,
+            "status": "completed"
+          }
+        },
+        {
+          "type": "item.completed",
+          "item": {
+            "id": "item_2",
+            "type": "agent_message",
+            "text": "DONE"
+          }
+        },
+        {
+          "type": "turn.completed",
+          "usage": {
+            "input_tokens": 25123,
+            "cached_input_tokens": 12507,
+            "cache_write_input_tokens": 12610,
+            "output_tokens": 49,
+            "reasoning_output_tokens": 0
+          }
+        }
+      ],
+      "rollout_sha256": "67e8487c55ec88ef319ca49a6906baece5de54292fb2f552823d90d5ce9605de",
+      "hook_spans": [
+        {
+          "start_ns": "1792143048553102000",
+          "end_ns": "1792143049166553000",
+          "hook.event_name": "SessionStart",
+          "hook.handler_type": "command",
+          "hook.source": "plugin",
+          "hook.command_outcome": "completed"
+        },
+        {
+          "start_ns": "1792143049169193000",
+          "end_ns": "1792143049189784000",
+          "hook.event_name": "UserPromptSubmit",
+          "hook.handler_type": "command",
+          "hook.source": "plugin",
+          "hook.command_outcome": "completed"
+        },
+        {
+          "start_ns": "1792143052927555000",
+          "end_ns": "1792143052943435000",
+          "hook.event_name": "PreToolUse",
+          "hook.handler_type": "command",
+          "hook.source": "plugin",
+          "hook.command_outcome": "completed"
+        },
+        {
+          "start_ns": "1792143052994457000",
+          "end_ns": "1792143053008415000",
+          "hook.event_name": "PostToolUse",
+          "hook.handler_type": "command",
+          "hook.source": "plugin",
+          "hook.command_outcome": "completed"
+        }
+      ]
+    },
+    {
+      "name": "switch-3",
+      "exit": 0,
+      "session_id": "01a1440c-e3a1-7170-a639-a90f7dbcd217",
+      "state": {
+        "model": "gpt-6.1-sol",
+        "effort": "low",
+        "effort_raw": "low",
+        "effort_approx": false,
+        "effort_resolved": true,
+        "harness_version": "0.159.3",
+        "updated_at": "2026-10-16T09:30:57.880652Z"
+      },
+      "stats": [
+        {
+          "at": "2026-10-16T09:30:57.881679Z",
+          "provider": "codex",
+          "event": "SessionStart",
+          "point": "session.start",
+          "entry": "terse-reviewer/session-info@session.start",
+          "action": "inject",
+          "result": "output",
+          "est_tokens": 15,
+          "body_sha256": "sha256:cb0117a5ec31e8d193ce7ccfecd42ac3ffa4b079bcb27dae1c84568225ae00ff"
+        },
+        {
+          "at": "2026-10-16T09:30:57.881829Z",
+          "provider": "codex",
+          "event": "SessionStart",
+          "point": "session.start",
+          "entry": "terse-reviewer/low-effort-guard@session.start",
+          "action": "inject",
+          "result": "output",
+          "est_tokens": 15,
+          "body_sha256": "sha256:8fc6166eb3c6b4e27f0ad3a00c4584e3760cf1f1ff2d3dc23682c9a0d1f1c988"
+        },
+        {
+          "at": "2026-10-16T09:30:57.893419Z",
+          "provider": "codex",
+          "event": "UserPromptSubmit",
+          "point": "prompt.submitted",
+          "entry": "terse-reviewer/session-info@prompt.submitted",
+          "action": "inject",
+          "result": "dedup",
+          "est_tokens": 15,
+          "body_sha256": "sha256:cb0117a5ec31e8d193ce7ccfecd42ac3ffa4b079bcb27dae1c84568225ae00ff"
+        },
+        {
+          "at": "2026-10-16T09:30:57.893518Z",
+          "provider": "codex",
+          "event": "UserPromptSubmit",
+          "point": "prompt.submitted",
+          "entry": "terse-reviewer/low-effort-guard@prompt.submitted",
+          "action": "inject",
+          "result": "dedup",
+          "est_tokens": 15,
+          "body_sha256": "sha256:8fc6166eb3c6b4e27f0ad3a00c4584e3760cf1f1ff2d3dc23682c9a0d1f1c988"
+        }
+      ],
+      "requests": [
+        {
+          "model": "gpt-6.1-sol",
+          "reasoning": {
+            "effort": "low",
+            "context": "all_turns"
+          },
+          "body_sha256": "81980ebe5174dd08c7bade9551a701bc7cc612d25c02ab6aca88b22f12f71224",
+          "style_context": [
+            {
+              "type": "message",
+              "id": "msg_01a1440c-e3da-7213-bf9e-10460bcdbee6",
+              "role": "developer",
+              "content": [
+                {
+                  "type": "input_text",
+                  "text": "Current session: model gpt-6.1-sol, effort low.\n\n\nUse a concise review format for low-effort runs.\n"
+                }
+              ],
+              "internal_chat_message_metadata_passthrough": {
+                "turn_id": "01a1440c-e3c3-70b0-b00b-8b563733fd1e",
+                "create_time": 1792143057.88242,
+                "content_item_kinds": [
+                  "hooks.additional_context"
+                ]
+              }
+            }
+          ],
+          "static_rule_present": true
+        },
+        {
+          "model": "gpt-6.1-sol",
+          "reasoning": {
+            "effort": "low",
+            "context": "all_turns"
+          },
+          "body_sha256": "52d2a67eafc208080063b5f1c94d4fcc196d751e6408d54f3d6e5b0e88082c19",
+          "style_context": [
+            {
+              "type": "message",
+              "id": "msg_01a1440c-e3da-7213-bf9e-10460bcdbee6",
+              "role": "developer",
+              "content": [
+                {
+                  "type": "input_text",
+                  "text": "Current session: model gpt-6.1-sol, effort low.\n\n\nUse a concise review format for low-effort runs.\n"
+                }
+              ],
+              "internal_chat_message_metadata_passthrough": {
+                "turn_id": "01a1440c-e3c3-70b0-b00b-8b563733fd1e",
+                "create_time": 1792143057.88242,
+                "content_item_kinds": [
+                  "hooks.additional_context"
+                ]
+              }
+            }
+          ],
+          "static_rule_present": true
+        }
+      ],
+      "hook_context": [
+        {
+          "timestamp": "2026-10-16T09:30:57.882Z",
+          "ordinal": 8,
+          "type": "response_item",
+          "payload": {
+            "type": "message",
+            "id": "msg_01a1440c-e3da-7213-bf9e-10460bcdbee6",
+            "role": "developer",
+            "content": [
+              {
+                "type": "input_text",
+                "text": "Current session: model gpt-6.1-sol, effort low.\n\n\nUse a concise review format for low-effort runs.\n"
+              }
+            ],
+            "internal_chat_message_metadata_passthrough": {
+              "turn_id": "01a1440c-e3c3-70b0-b00b-8b563733fd1e",
+              "create_time": 1792143057.88242,
+              "content_item_kinds": [
+                "hooks.additional_context"
+              ]
+            }
+          }
+        }
+      ],
+      "events": [
+        {
+          "type": "thread.started",
+          "thread_id": "01a1440c-e3a1-7170-a639-a90f7dbcd217"
+        },
+        {
+          "type": "turn.started"
+        },
+        {
+          "type": "item.completed",
+          "item": {
+            "id": "item_0",
+            "type": "agent_message",
+            "text": "我会执行指定命令一次。"
+          }
+        },
+        {
+          "type": "item.started",
+          "item": {
+            "id": "item_1",
+            "type": "command_execution",
+            "command": "/bin/zsh -lc 'printf STYLE_ROUTE_SWITCH'",
+            "aggregated_output": "",
+            "exit_code": null,
+            "status": "in_progress"
+          }
+        },
+        {
+          "type": "item.completed",
+          "item": {
+            "id": "item_1",
+            "type": "command_execution",
+            "command": "/bin/zsh -lc 'printf STYLE_ROUTE_SWITCH'",
+            "aggregated_output": "STYLE_ROUTE_SWITCH",
+            "exit_code": 0,
+            "status": "completed"
+          }
+        },
+        {
+          "type": "item.completed",
+          "item": {
+            "id": "item_2",
+            "type": "agent_message",
+            "text": "DONE"
+          }
+        },
+        {
+          "type": "turn.completed",
+          "usage": {
+            "input_tokens": 25122,
+            "cached_input_tokens": 12507,
+            "cache_write_input_tokens": 12609,
+            "output_tokens": 49,
+            "reasoning_output_tokens": 0
+          }
+        }
+      ],
+      "rollout_sha256": "0269317cf53a7b1d8145afce8f9073f0347263ac66b306c2234d80ae42e86591",
+      "hook_spans": [
+        {
+          "start_ns": "1792143057870831000",
+          "end_ns": "1792143057882345000",
+          "hook.event_name": "SessionStart",
+          "hook.handler_type": "command",
+          "hook.source": "user",
+          "hook.command_outcome": "completed"
+        },
+        {
+          "start_ns": "1792143057883732000",
+          "end_ns": "1792143057894068000",
+          "hook.event_name": "UserPromptSubmit",
+          "hook.handler_type": "command",
+          "hook.source": "user",
+          "hook.command_outcome": "completed"
+        },
+        {
+          "start_ns": "1792143087926527000",
+          "end_ns": "1792143087939188000",
+          "hook.event_name": "PreToolUse",
+          "hook.handler_type": "command",
+          "hook.source": "user",
+          "hook.command_outcome": "completed"
+        },
+        {
+          "start_ns": "1792143087989968000",
+          "end_ns": "1792143088000783000",
+          "hook.event_name": "PostToolUse",
+          "hook.handler_type": "command",
+          "hook.source": "user",
+          "hook.command_outcome": "completed"
+        }
+      ]
+    }
+  ]
+}

@@ -49,3 +49,15 @@ python3 testdata/manual/measure_codex_hooks.py /path/to/otlp.jsonl --source user
 ```sh
 PYTHONDONTWRITEBYTECODE=1 python3 testdata/manual/probe_codex_config.py
 ```
+
+`probe_codex_routes.py` 在空 scratch 目录内建立独立 CODEX_HOME、STYLE_HOME、Git 仓库与本地 bare remote，用真实 Codex 和现有自定义 Responses 服务逐条执行 B1–B9。它只读取日常 Codex 的模型/provider 配置，把所需连接配置保留在私有 scratch 中；日常安装不变。插件登记使用真实本地 marketplace 管理命令。请求经仅监听 loopback 的转发器，报告只保留模型、effort、STYLE 上下文/摘要、rollout、stats/state、原生 hook span 与 usage，凭据不写入报告。模型服务失败与准备流程失败均保留在结果中，脚本非零不能标记验收通过。
+
+```sh
+PYTHONDONTWRITEBYTECODE=1 python3 testdata/manual/probe_codex_routes.py \
+  --style /absolute/path/to/style --route codex-user \
+  --scratch "$(mktemp -d)" --output /tmp/codex-user-result.json
+# 在另一个空目录对 codex-plugin 独立运行同一整套检查。
+# 双向切换另加 --switches-only，以原生 span 检查四类事件各一次及来源。
+```
+
+minimal/启动覆盖用历史实测支持 minimal 的 `gpt-6-sol`，其他分支沿用配置模型。未知原值要求 native request、STYLE unknown 与条件不命中相符；模型服务可能拒绝该值，结果单列 `model_turn_completed=false`，不宣称远端模型支持未知档位。项目层无法可靠确定信任时，STYLE 按既定边界跳过并由 doctor 解释；报告同时列出原生值与 STYLE 值。首次工作区 TUI 信任不由 exec 探针验收。

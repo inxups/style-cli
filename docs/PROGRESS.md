@@ -1095,3 +1095,14 @@ PY
 - 构建隔离程序后，真实 Codex 0.159.3 插件登记→第二包 install→sync→uninstall→sync 四步配置字节不变，取消登记恢复登记前字节，STYLE 最后卸载恢复安装前字节。证据 `review/M1-FINAL-04-PLUGIN-REGISTRATION-2026-10-16.json`；该生命周期检查不代替 hook 模型投递。
 - 验证（临时 GOPATH/GOMODCACHE/GOCACHE，清除 CODEX_HOME/CODEX_SANDBOX）：`go test -C agenthooks -count=1 ./install`、`go vet -C agenthooks ./install`、`go test -count=1 ./internal/app ./internal/adapter/codex`、`go build -o /tmp/style-m1-final.rxdYyj/style ./cmd/style`；gofmt、`git diff --check`。
 - 同轮真实用户路线已观测 B2 的 low/minimal/high/unset/unknown/profile/override/trusted/untrusted，以及 B4/B5/B6/B7/B9；gpt-6.1-sol/minimal 请求返回服务端 502，换历史成功的 gpt-6-sol/minimal 后成功，未将失败算通过。B3 首轮在 compact 的 item/completed 后过早发 turn/start，原生返回 ActiveTurnNotSteerable，属于采集流程无效；将等待完整 turn/completed 后重跑。FINAL-04 保持部分完成，最终程序两条完整路线各自留证。
+
+### 2026-10-16 — M1-FINAL-04 / FINAL-04 两条 Codex 路线独立验收
+
+- 使用 a978bb1 实现构建的隔离程序 SHA256 48ae3f39b392b87c829cf8341e1f57d273d5ceabb995995e1309ac7ca6efa33d。codex-user 与 codex-plugin 各 19 次真实调用，分别完整执行 B1–B9，证据独立保存为 `review/M1-FINAL-04-CODEX-USER-2026-10-16.json`、`review/M1-FINAL-04-CODEX-PLUGIN-2026-10-16.json`，不拼接通过结果。日常安装及凭据不写入报告。
+- B2 每条路线均覆盖 low、minimal、high、unset、unknown raw、file profile、启动覆盖、trusted/untrusted 项目。minimal/启动覆盖使用 gpt-6-sol；其他沿用 gpt-6.1-sol。通过 loopback 转发器记录真实请求的 model/effort/STYLE context，与 rollout 和 state/stats 的正文 SHA256 逐项核对。服务可以拒绝未知 raw（model_turn_completed=false），STYLE 仍保留 raw、tier 空、无 low guard；不能将此表述为模型支持未知档位。项目生产信任不可判定时仍跳过，真实请求 high 与 STYLE 用户 low 的差异和 doctor 原因明确保留。
+- B4 两种入口先后顺序共用 session 去重；B5 仅本地 bare remote，force 被 hook 阻断、lease 实际成功；B6 apply_patch 新增触发一次警告、删除不触发，最终无未完成注释；B7 既有 MCP stdio stub 实际调用并收到前置上下文；B9 未 trust 的旧 index/正文继续投递，批准后新正文进入请求。
+- B3 改为等待 compact 完整 turn/completed，同进程继续两回合；每条动态 system 总计两次 output（首次+压缩后一次），epoch=1，后一回合 dedup，压缩后两次请求仍含静态规则。首轮过早 turn/start 的无效采集未用于通过结果。
+- B8 原始比较发现 app-server 自行增加临时 workspace 的 project trust 表；两份 BASELINE-OBSERVATION 保留。验证 STYLE 卸载后的唯一外部差异正是该原生表，随后探针单独清理自己的 native fixture 登记，最终配置与 fixture 基线逐字节相同。没有让 STYLE 删除用户信任表，也没有先覆盖整份配置再宣称通过。新增回归保证未知残留报错且不改写、原有 trust 保留。
+- B10 另外在独立根执行 user→plugin→user→plugin→user：4 个真实会话，每次原生 codex.hooks.command span 的 SessionStart/UserPromptSubmit/PreToolUse/PostToolUse 各一条且 source 全为当前路线，动态正文仅一次 output；用户路线配置/hooks 与初始安装字节相同，最后卸载字节还原。证据 `review/M1-FINAL-04-SWITCHES-2026-10-16.json`。
+- 重复命令：`PYTHONDONTWRITEBYTECODE=1 python3 testdata/manual/probe_codex_routes.py --style /absolute/path/style --route codex-user --scratch "$(mktemp -d)" --output /tmp/codex-user.json`；plugin 在另一个空根独立运行；切换另加 `--switches-only`。真实服务失败会非零并留证。临时项目 trust 清理现已在重复脚本中明确分开。
+- 验证：`PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s testdata/manual -p 'test_*.py'`（15 项）、Python AST、两条路线 B2 全部正文摘要复核、证据凭据/服务 URL 扫描、`git diff --check`。Go 实现验证沿用同一构建的 FINAL-04-FIX 记录；最终双 module 总回归仍在 FINAL-12。

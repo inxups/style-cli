@@ -1,0 +1,18 @@
+{
+  "date": "2026-10-16",
+  "route": "codex-plugin",
+  "observation": "Unadjusted B8 comparison found only the native project-trust table added by app-server. STYLE-owned bytes were removed and the native table preserved. Continued with separate native fixture cleanup.",
+  "original_passed": false,
+  "completed_checks": [
+    "B1",
+    "B2-U10",
+    "B4",
+    "B5",
+    "B6",
+    "B7",
+    "B9",
+    "B3"
+  ],
+  "before_cleanup_sha256": "593f55bbcbc7d34556ebde599049baa116ae45dcb6553414f7ea7ba46b505754",
+  "expected_fixture_baseline_sha256": "560f433bea32de34f04be58da8630b1b4546a3b162199d3ea5299603a8b5edef"
+}
