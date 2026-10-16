@@ -136,3 +136,27 @@ func TestClaudeRouteRejectsMalformedStaticMarkers(t *testing.T) {
 		t.Fatal("malformed static marker was accepted")
 	}
 }
+
+func TestClaudeRouteWritesAbsoluteHookCommandForRelativeProgram(t *testing.T) {
+	saved := os.Args[0]
+	defer func() { os.Args[0] = saved }()
+	os.Args[0] = "./style"
+	cwd, err := os.Getwd()
+	if err != nil {
+		t.Fatal(err)
+	}
+	dir := t.TempDir()
+	hooks := []adapter.HookSpec{{NativeEvent: "PreToolUse", Matcher: `^Bash$`, Points: []string{plan.ToolPre}}}
+	changes, err := NewUserRouteForInstallation(dir, "2.1.315", "", nil).(*route).BindStorage(filepath.Join(dir, "style-home")).Plan(context.Background(), hooks, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	settings := findChange(changes, filepath.Join(dir, "settings.json"))
+	if settings == nil {
+		t.Fatalf("settings.json not planned: %#v", changes.Files)
+	}
+	want := `"` + filepath.Join(cwd, "style") + `"`
+	if !strings.Contains(string(settings.After), want) || strings.Contains(string(settings.After), `"./style`) {
+		t.Fatalf("settings.json command must use %q, got:\n%s", want, settings.After)
+	}
+}

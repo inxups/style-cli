@@ -954,3 +954,11 @@
 - 影响：对 `tool.input` 或 `tool.input.<对象>` 写含 `&`、`<`、`>` 的条件匹配不到，模板不受影响（validate 禁止事件变量进模板）。
 - 修复：新增 `encodeJSONText`（`json.Encoder` + `SetEscapeHTML(false)`，去掉末尾换行），替换三处 `json.Marshal`。键排序与数字、布尔的表示不变，所以现有 golden 不变。未改 agenthooks。
 - 测试：两家新增 `TestEnrichKeepsShellCharactersInToolInput`，暂存修复后单独运行确认失败，恢复后 `go test ./internal/...`、gofmt 通过（隔离缓存，去掉 CODEX_HOME/CODEX_SANDBOX）。真实安装未更新。
+
+### 2026-10-16 — M1B-CR-03 hook 命令不写相对路径
+
+- 来源：只看代码的审查。`internal/adapter/codex/route.go` 与 `internal/adapter/claude/route.go` 在 `command` 为空时用 `os.Args[0]`，生产代码从不传 command。隔离 HOME 复现：在程序目录执行 `./style install <pkg> --harness codex --route codex=codex-user --yes`，hooks.json 的命令以 `./style --style-home=…` 开头。
+- 影响：harness 从别的工作目录启动 hook 时找不到程序，hook 进程启动失败，harness 按非阻断错误继续，规则不生效且没有提示（程序没能运行，STYLE 自己的 fail-closed 也无从生效）。
+- 修复：新增 `internal/adapter/command.go:HookCommand`。空命令取 `os.Args[0]`；绝对路径和不含分隔符的名字原样返回（名字交给 PATH 查找，避免把包管理器的版本目录写死）；其余相对路径用 `filepath.Abs` 转换。两条路线改为调用它。插件路线 hooks.json 用 `$PLUGIN_ROOT/bin/style`，不受影响。
+- 测试：`command_test.go`（5 种写法与空命令），两家 route 测试在 `os.Args[0]=./style` 时检查配置中的绝对路径；暂存路线修复后两条路线测试失败。`go test ./internal/...`、vet、gofmt 通过（隔离缓存，去掉 CODEX_HOME/CODEX_SANDBOX）。重建临时程序后隔离 HOME 端到端安装，hooks.json 命令为绝对路径。
+- 真实安装由绝对路径 `~/.local/lib/style-m1b/style` 安装，不受影响，未更新。未改 agenthooks。

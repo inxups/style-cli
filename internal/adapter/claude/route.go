@@ -60,11 +60,7 @@ func (r *route) target() install.Target {
 }
 
 func (r *route) commandLine() []string {
-	command := r.command
-	if command == "" {
-		command = os.Args[0]
-	}
-	argv := []string{command}
+	argv := []string{adapter.HookCommand(r.command)}
 	if r.storageHome != "" {
 		argv = append(argv, "--style-home="+r.storageHome, "--harness-home="+r.dir, "--harness-version="+r.harnessVersion)
 	}

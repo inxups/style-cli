@@ -278,3 +278,28 @@ func findChange(changes adapter.Changeset, path string) *adapter.FileChange {
 	}
 	return nil
 }
+
+func TestCodexUserRouteWritesAbsoluteHookCommandForRelativeProgram(t *testing.T) {
+	saved := os.Args[0]
+	defer func() { os.Args[0] = saved }()
+	os.Args[0] = "./style"
+	cwd, err := os.Getwd()
+	if err != nil {
+		t.Fatal(err)
+	}
+	dir := t.TempDir()
+	changes, err := NewUserRouteForCommand(dir, "", nil).(*route).BindStorage(filepath.Join(dir, "style-home")).Plan(context.Background(), nil, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	hooks := ""
+	for _, change := range changes.Files {
+		if filepath.Base(change.Path) == "hooks.json" {
+			hooks = string(change.After)
+		}
+	}
+	want := filepath.Join(cwd, "style") + " --style-home="
+	if !strings.Contains(hooks, want) || strings.Contains(hooks, `"./style`) {
+		t.Fatalf("hooks.json command must use %q, got:\n%s", want, hooks)
+	}
+}
