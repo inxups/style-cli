@@ -750,3 +750,12 @@
 - 验证：清理 CODEX_HOME/CODEX_SANDBOX，临时 Go 缓存、GOPROXY=off/GOSUMDB=off；新测试 18 例通过，双 module `make test-go`、`make vet-go`、gofmt、`git diff --check` 通过。
 - 真实环境：已安装副本替换为新 STYLE.yaml 后，`style sync` 退出 3 且 index 不变；`style trust terse-reviewer` 只展示源/渲染 diff、退出 1、index 不变；`trust --yes` 退出 0 并加载新 pattern，两家用户配置字节 hash 不变。随后本 Claude 会话中：同类 heredoc 放行；scratch 仓库接本地 bare remote，真实 force push 于 03:05:42Z 被 hook 拒绝、remote 保持 e7109f3；force-with-lease 放行并推送到 3967cbd。
 - 观察：trust 的 rendered diff 按首尾差异整段替换输出，未变行也显示为 -/+，内容正确但冗长；记录，不在本项修改。
+
+### 2026-10-16 — CODEX M1b 第二轮 `[~]`（模型服务阻塞）
+
+- 基线：Codex 无 STYLE 配置（10-15 C8 卸载已清除），hooks.json 不存在，无 style 插件/marketplace。10-15 的 manual-backup/codex/config.toml 含 STYLE 区，不是原始基线；本轮改用 `manual-backup-2026-10-16`。
+- 安装：agent 执行 `install example/terse-reviewer --harness codex --route codex=codex-user --set max_findings=10 --yes`，再装 m1b-probes 并 sync。STYLE 静态区在 config.toml 第 1–3 行，信任区含 5 个 trusted_hash；第二包与 sync 后两家 Codex 文件字节不变。doctor healthy=true，无 codex-login-shell 诊断。
+- 真实会话：在 `~/.style-m1b/manual-workspace/codex-b` 运行 4 次 `codex exec --json`（清理 CODEX_HOME/CODEX_SANDBOX）。每次 hook 都未弹信任即执行：SessionStart 输出三条规则、首个 prompt 去重；state 与启动参数一致（gpt-6-sol/minimal、gpt-6-sol/low、gpt-6.1-sol/low）。模型请求全部 502 `Upstream access forbidden`；用户修复后第 5 次为 `Upstream rate limit exceeded`。未完成模型回合，不能证明模型收到注入。用户要求“不行就停”，测试暂停。
+- TUI：Terminal 面板启动 codex，先出现 0.159.3→0.163.0 升级提示（跳过，未升级），再出现工作区“Trust this folder?”；agent 未代为信任，其后的 hook 信任行为未观察，配置字节不变。expect 无终端能力应答，TUI 无输出，不作证据。
+- 状态：B1/B2/B8/B9/B11 记 `[~]` 部分证据，B3/B4/B7/B10/B12 仍 `[?]`。证据 `docs/review/M1B-CODEX-2026-10-16.json`（不含凭据）。本项无 Go 改动，仅验证 JSON 语法、凭据未入库与 `git diff --check`。
+- 下一步：服务恢复后在同一 codex-user 安装上依次补模型投递、compact（需 TUI 和用户确认工作区信任）、skill、MCP、resume、PreToolUse 采样，再切插件路线（B10），最后卸载对照 2026-10-16 备份（B8）。

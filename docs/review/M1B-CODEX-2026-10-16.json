@@ -1,0 +1,59 @@
+{
+  "date": "2026-10-16",
+  "provider": "codex",
+  "harness_version": "0.159.3",
+  "route": "codex-user",
+  "configuration": "User instructed the agent to perform Codex configuration (2026-10-16). Agent backed up ~/.codex/config.toml to ~/.style-m1b/manual-backup-2026-10-16/ (0700, contains credentials, not committed) before installing. Claude configuration was not changed by the agent; its file hashes were compared around each STYLE command.",
+  "binary": "/Users/inxups/.local/lib/style-m1b/style (built 2026-10-15 23:09 after a4426a3; not rebuilt)",
+  "baseline": {
+    "codex_config_style_blocks_before": "none (removed by the 2026-10-15 C8 uninstall)",
+    "codex_hooks_json_before": "absent",
+    "codex_plugins": "no style-runtime plugin or style marketplace registered",
+    "note": "manual-backup/codex/config.toml from 2026-10-15 already contained STYLE blocks, so it is not a pristine baseline; the 2026-10-16 backup is used for B8."
+  },
+  "install": {
+    "commands": [
+      "style install example/terse-reviewer --harness codex --route codex=codex-user --set max_findings=10 --yes",
+      "style install testdata/manual/m1b-probes --harness codex --yes",
+      "style sync"
+    ],
+    "results": ["installed terse-reviewer, routes codex=codex-user and claude-code=claude-user", "installed m1b-probes", "sync complete (changed=false)"],
+    "config_diff_package1": "config.toml gained the STYLE developer_instructions block at lines 1-3 and an agenthooks hooks.state block with five trusted_hash entries keyed by /Users/inxups/.codex/hooks.json; hooks.json created with SessionStart, UserPromptSubmit, PreToolUse, PostToolUse, SubagentStart",
+    "config_diff_package2": "config.toml and hooks.json byte-identical to the post-package-1 copies",
+    "doctor": "healthy=true; codex-user installed=true trusted=true trust=preseed; no codex-login-shell diagnostic"
+  },
+  "real_sessions": {
+    "method": "codex exec --json in ~/.style-m1b/manual-workspace/codex-b (fresh git repo), CODEX_HOME/CODEX_SANDBOX unset, -s read-only",
+    "model_service": "every request returned 502 Bad Gateway 'Upstream access forbidden, please contact administrator' from the configured custom provider after 5 reconnects; turn.failed. Unauthenticated GET /v1/models through the user's local proxy returns 401, so the endpoint is reachable and the failure is upstream/account side. After the user reported fixing the API, thread 01a142b3-bcc9-7982-b124-75eeaf22d8fb (gpt-6-sol/minimal) failed with 'rate limit exceeded: Upstream rate limit exceeded, please retry later' after 5 reconnects; testing stopped at the user's request.",
+    "sessions": [
+      {"thread": "01a1429d-b5d1-7d50-b886-e2bfae4a72d9", "args": "-m gpt-6-sol -c model_reasoning_effort=\"minimal\"", "state": {"model": "gpt-6-sol", "effort": "minimal"}, "stats": "SessionStart output: terse-reviewer/session-info, terse-reviewer/low-effort-guard, m1b-probes/session-info; UserPromptSubmit dedup for the same three", "scope": "gen=0 epoch=0 prompt_count=1"},
+      {"thread": "01a142a1-36d5-7971-8f37-8e6510f158d7", "args": "(config default)", "state": {"model": "gpt-6-sol", "effort": "low"}, "stats": "same three outputs then three dedups"},
+      {"thread": "01a142a4-b1eb-7740-832f-c1350f3c2921", "args": "-m gpt-6.1-sol", "state": {"model": "gpt-6.1-sol", "effort": "low"}, "stats": "same three outputs then three dedups"},
+      {"thread": "01a142ad-45cd-70b0-adf8-bd096d039710", "args": "(config default, retry 03:06:54Z)", "state": {"model": "gpt-6-sol", "effort": "low"}, "stats": "same three outputs then three dedups"}
+    ],
+    "proves": "Real Codex 0.159.3 executed the preseeded codex-user hooks without a hook trust prompt in exec mode, and STYLE resolved model/effort from launch overrides.",
+    "does_not_prove": "That the model received the injected context; no model turn completed."
+  },
+  "tui": {
+    "method": "codex launched in the Terminal panel in the same workspace",
+    "observed": ["update prompt 0.159.3 -> 0.163.0 (skipped, Codex not upgraded)", "Folder access 'Trust this folder?' workspace trust prompt"],
+    "not_observed": "whether a hook trust prompt follows workspace trust; agent did not grant folder trust",
+    "config_effect": "config.toml and hooks.json unchanged"
+  },
+  "B9_cli": {
+    "change": "copied the fixed example STYLE.yaml (M1B-EXAMPLE-01) into ~/.style-m1b/packages/terse-reviewer/",
+    "sync": "exit 3, 'approval required: style trust terse-reviewer', build/index.json unchanged",
+    "trust_preview": "exit 1, source diff and rendered diff shown, index unchanged",
+    "trust_apply": "trust --yes exit 0, changed=true, index contains the new pattern; Codex and Claude config file hashes unchanged",
+    "effect_observed_in": "Claude Code session hooks (same index): quoted heredoc allowed, real force push blocked at 03:05:42Z. Not yet observed in a Codex session because of the model service failure."
+  },
+  "status": {
+    "B1": "partial",
+    "B2": "partial (minimal and gpt-6.1-sol state only)",
+    "B8": "partial (static block is at the top of config.toml; uninstall round trip pending)",
+    "B9": "partial (CLI flow real; Codex-session effect pending)",
+    "B11": "partial (doctor login shell check passed; PreToolUse p95 pending)",
+    "B3": "blocked", "B4": "blocked", "B7": "blocked", "B10": "blocked", "B12": "blocked"
+  },
+  "next": "Restore the custom provider (or switch to a working provider/login) and rerun: first-message injection, /compact (TUI), skill reads, force/lease, apply_patch, resume, plugin route switch, 100+ PreToolUse timing samples, then uninstall and cmp against manual-backup-2026-10-16."
+}

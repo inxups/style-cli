@@ -141,19 +141,21 @@ B1.2 和 B1.4 的历史通过状态表示原有测试套件在声明范围内通
 
 用户约定（2026-10-15）：Codex 与 Claude Code 的真实配置由用户手动执行。进入 M1b 时先提供完整配置命令和验证步骤，不代为改动真实配置；运行结果返回后再更新验收状态。
 
+约定变更（2026-10-16）：用户指示 Codex 真实配置由 agent 执行；Claude 真实配置仍由用户执行。第二轮 Codex 证据见 `docs/review/M1B-CODEX-2026-10-16.json`。当前环境阻塞：配置的自定义模型服务对所有请求返回 `502 Upstream access forbidden`；用户修复后又返回 `Upstream rate limit exceeded`。hook 能真实触发，但模型回合无法完成，按用户要求暂停，等用户修复服务后继续。
+
 配置命令和逐项观察见 [M1b 手动验收手册](STYLE-M1B-MANUAL.md)，专用第二包见 `testdata/manual/m1b-probes/STYLE.yaml`。M1B-PREP 隔离准备检查已通过；Claude 仅模拟版本检测。Codex 首轮真实证据见 `docs/review/M1B-CODEX-2026-10-15.json`，各条按实际范围更新。
 
-- [?] **CDEX-01/B1** 全新安装、信任一次、第二包安装/卸载/sync 后不重复信任。
-- [~] **CDEX-02/B2** 用户选择 gpt-6-sol/low，截图回答与真实 session state 一致；SessionStart 注入及后续 prompt 去重有 stats。minimal/high 等场景待验证，模型自述不能单独证明身份。截图与具体 session 尚无 UI ID，仅以模型/时间交叉核对。
+- [~] **CDEX-01/B1** 全新安装、信任一次、第二包安装/卸载/sync 后不重复信任。2026-10-16：从无 STYLE 配置开始安装 codex-user，4 个真实 `codex exec` 会话未弹 hook 信任即执行预置摘要的 hook；第二包安装与 sync 后 config.toml/hooks.json 字节不变。TUI 先出现工作区“Trust this folder?”，agent 未代为信任，其后是否有 hook 信任提示未观察；卸载后再装未测。
+- [~] **CDEX-02/B2** 用户选择 gpt-6-sol/low，截图回答与真实 session state 一致；SessionStart 注入及后续 prompt 去重有 stats。minimal/high 等场景待验证，模型自述不能单独证明身份。截图与具体 session 尚无 UI ID，仅以模型/时间交叉核对。2026-10-16：`-c model_reasoning_effort="minimal"` 与 `-m gpt-6.1-sol` 的真实会话 state 分别记为 gpt-6-sol/minimal、gpt-6.1-sol/low，SessionStart 输出后 prompt 去重；模型请求 502 失败，未证明模型收到。high 未测。
 - [?] **CDEX-03/B3** compact 后 session-info 只补发一次，静态 developer instructions 可见性已记录。
 - [?] **CDEX-04/B4** `cat`、`sed`、`head` 等读取 SKILL.md 和 `$code-review` 显式 skill 去重正确。
 - [x] **CDEX-05/B5** codex-plugin / 0.159.3 的真实工作会话（gpt-6.1-sol/low，与用户 gpt-6-sol 会话区分）中，临时仓库仅连接本地 bare remote。实际 shell tool 的 `git push --force` 被 PreToolUse 阻断并记录 no-force-push/blocked；`--force-with-lease` 进入 Git，退出 0、Everything up-to-date。命令、输出、session ID、stats 和复现步骤见首轮 Codex JSON。示例正则误拦文档文本另记 M1B-EXAMPLE-01，未修复。
 - [x] **CDEX-06/B6** codex-plugin / 0.159.3 的真实工作会话（gpt-6.1-sol/low）用两次 apply_patch 向临时文件新增、删除 TODO。新增时收到模型可见的首句警告和 no-todo-comments/tool.post/output；删除时未收到警告、没有新增该规则 stats，文件逐字节恢复。期间新用户消息的两条 prompt dedup 单独排除；原始结果、观察区间和复现步骤见 `docs/review/M1B-CODEX-2026-10-15.json` 的 B6。
 - [?] **CDEX-07/B7** GitHub create_pull_request MCP 调用前注入。
-- [?] **CDEX-08/B8** 静态规则在 config.toml 开头，卸载后其他字节不变。
-- [?] **CDEX-09/B9** md 改动在 sync/trust 前不生效，trust 后生效。
+- [~] **CDEX-08/B8** 静态规则在 config.toml 开头，卸载后其他字节不变。2026-10-16：安装后 STYLE developer_instructions 区位于第 1–3 行，信任区在文件末尾；卸载往返待两包测试结束后对照 `manual-backup-2026-10-16` 执行。
+- [~] **CDEX-09/B9** md 改动在 sync/trust 前不生效，trust 后生效。2026-10-16：已安装副本的 STYLE.yaml 改动后 sync 退出 3、trust 预览退出 1，两者 index 均不变；trust --yes 才加载新 index，两家配置字节不变。生效在共享 index 的 Claude 会话 hook 中真实观察到；Codex 会话内观察受模型服务阻塞，md 文字改动尚未单独测。
 - [?] **CDEX-10/B10** 插件和用户级路线都通过，切换路线无残留和重复。
-- [?] **CDEX-11/B11** 固定订阅面 PreToolUse p95 小于 150ms，doctor 登录 shell 检查通过。
+- [~] **CDEX-11/B11** 固定订阅面 PreToolUse p95 小于 150ms，doctor 登录 shell 检查通过。2026-10-16：真实配置下 `doctor --json` healthy=true，无 codex-login-shell 诊断（登录 shell `true` 无 stdout）；PreToolUse 真实耗时样本需模型发起工具调用，受阻塞。
 - [?] **CDEX-12/B12** resume 的 session.start 注入和历史保留行为已记录。
 
 ## M1b：Claude Code 真实环境
