@@ -962,3 +962,13 @@
 - 修复：新增 `internal/adapter/command.go:HookCommand`。空命令取 `os.Args[0]`；绝对路径和不含分隔符的名字原样返回（名字交给 PATH 查找，避免把包管理器的版本目录写死）；其余相对路径用 `filepath.Abs` 转换。两条路线改为调用它。插件路线 hooks.json 用 `$PLUGIN_ROOT/bin/style`，不受影响。
 - 测试：`command_test.go`（5 种写法与空命令），两家 route 测试在 `os.Args[0]=./style` 时检查配置中的绝对路径；暂存路线修复后两条路线测试失败。`go test ./internal/...`、vet、gofmt 通过（隔离缓存，去掉 CODEX_HOME/CODEX_SANDBOX）。重建临时程序后隔离 HOME 端到端安装，hooks.json 命令为绝对路径。
 - 真实安装由绝对路径 `~/.local/lib/style-m1b/style` 安装，不受影响，未更新。未改 agenthooks。
+
+### 2026-10-16 — M1B-CR-04 包快照不收录 .git 与 .DS_Store
+
+- 来源：只看代码的审查。`internal/app/lifecycle_store.go:snapshotPackage` 用 `filepath.WalkDir` 收录包目录下所有普通文件。在隔离 HOME 中复现：
+  - 包目录 `.git` 里有 300 KB 文件时，安装失败：`.git/objects/pack.bin: package file exceeds size limit`。
+  - 换成小 `.git` 后安装成功，但 `packages/m1b-probes/` 中有 `.git/HEAD` 与 `.DS_Store`，lock 的 files 也记了这两项。
+  - `--link` 包在源目录出现 `.DS_Store` 后，sync 报 `1 changed files: .DS_Store`。
+- 修复：遍历时跳过名为 `.git`、`.hg`、`.svn`（目录用 SkipDir，文件和链接直接略过，包括 worktree 的 `.git` 文件）和 `.DS_Store` 的条目，它们不复制、不哈希。安装、sync、list、trust 共用这个快照，所以行为一致。规范层读取的 STYLE.yaml 和规则路径不受影响。
+- 兼容：如果已有安装的 lock 记录了这类路径，升级后 sync 会报告这些路径已删除，需要 trust 一次。真实安装 `~/.style-m1b` 的 lock 中没有这类路径。
+- 测试：新增 `package_snapshot_test.go` 两例，暂存修复后都因 `file-too-large` 失败。根 module 与 agenthooks 全量测试、vet、gofmt 通过（隔离缓存，去掉 CODEX_HOME/CODEX_SANDBOX）。未改 agenthooks。

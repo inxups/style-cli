@@ -182,6 +182,12 @@ func snapshotPackage(source string) (map[string][]byte, bool, string, error) {
 		if walkErr != nil {
 			return walkErr
 		}
+		if path != root && ignoredPackageEntry(entry.Name()) {
+			if entry.IsDir() {
+				return filepath.SkipDir
+			}
+			return nil
+		}
 		if path == root || entry.IsDir() {
 			return nil
 		}
@@ -209,6 +215,18 @@ func snapshotPackage(source string) (map[string][]byte, bool, string, error) {
 		return nil, false, "", err
 	}
 	return files, false, root, nil
+}
+
+// ignoredPackageEntry reports version-control metadata and Finder files,
+// which are never package content: they are neither copied nor hashed, so a
+// package can be installed from a checkout and browsing it does not ask for
+// trust again.
+func ignoredPackageEntry(name string) bool {
+	switch name {
+	case ".git", ".hg", ".svn", ".DS_Store":
+		return true
+	}
+	return false
 }
 
 func hashPackageFiles(files map[string][]byte) (map[string]string, string) {
