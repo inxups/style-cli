@@ -792,3 +792,9 @@
 - `codex exec` 没有 `/compact`；`-c model_auto_compact_token_limit=20000` resume 未触发压缩，不作证据。TUI 停在工作区信任（agent 不代为信任）。改用 Codex 自带 `codex app-server` stdio JSON-RPC（schema 由 `codex app-server generate-json-schema` 生成）：initialize → thread/resume → thread/compact/start → 两次 turn/start，单次 `-c` 导出 OTel。
 - 首次尝试：compact 完成后结束了 app-server，之后用新 exec 进程发 prompt，只触发 SessionStart(resume)，gen/epoch 不变、无补发。Codex 把 SessionStart(compact) 排在同进程下一回合，进程退出即丢失；流程无效，不计失败。0.159.3 未发 `thread/compacted` 通知，以 `contextCompaction` item 判定完成。
 - 有效复测（同一进程）：rollout compacted 04:28:52.987Z；下一回合 SessionStart 输出 terse-reviewer/session-info 与 m1b-probes/session-info 各一次，epoch 0→1、新增 `s.0.1.*` seen，rollout 只新增一条 hook 上下文；两条后续 prompt 均 dedup。压缩后 04:28:53.014Z 的模型输入仍含 STYLE 静态 developer_instructions，U11 结论为可见。证据 R2 JSON 的 B3；仅文档/证据变化。
+
+### 2026-10-16 — CODEX-09/B9 `[x]` md 改动经 trust 生效
+
+- 修改 `~/.style-m1b/packages/terse-reviewer/prompts/session-info.md` 为 `Current session (B9 trusted text): …`（原文另存）。操作失误：第一次 sync 漏传 STYLE_HOME，CLI 用默认 `~/.style`（仅 10-15 的旧 adapters 目录，无包）返回 0；核对 `~/.style` 无新写入，不计为结果。正确传入后：sync 退出 3、`trust terse-reviewer` 预览退出 1，两次 build/index.json 均不变。
+- trust 前新会话 01a142fa 的 rollout hook 上下文仍为原文字；`trust --yes` 退出 0，Claude settings 与 Codex 两个文件 hash 不变；新会话 01a142fb 的 rollout 为新文字。
+- 还原：拷回原文件，sync 退出 3，`trust --yes` 后 sync 0、list hash_matches=true，原文与仓库源一致。证据 R2 JSON 的 B9；仅文档/证据变化。

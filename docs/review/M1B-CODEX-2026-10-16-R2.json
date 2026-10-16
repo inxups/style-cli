@@ -86,5 +86,21 @@
     "after": "SessionStart at 04:28:53.08Z output terse-reviewer/session-info and m1b-probes/session-info once; epoch 0->1, new seen s.0.1.*; rollout gained exactly one hook context; both following prompts only dedup",
     "static_visibility": "developer message with <!-- style:terse-reviewer --> present in model input at 04:28:53.014Z after compaction (U11 visible)",
     "auto_compact_note": "-c model_auto_compact_token_limit=20000 on resume did not trigger compaction; not used as evidence"
+  },
+  "B9": {
+    "status": "pass",
+    "change": "installed prompts/session-info.md -> 'Current session (B9 trusted text): model ..., effort ...'",
+    "operator_error": "first sync omitted STYLE_HOME and used ~/.style (pre-existing, no packages, no new writes); discarded",
+    "before_trust": {
+      "sync": "exit 3, approval required",
+      "trust_preview": "exit 1",
+      "index": "unchanged",
+      "codex_session": "01a142fa-f8d2-7131-b290-bdfa4ad86503 rollout: 'Current session: model gpt-6.1-sol, effort medium.'"
+    },
+    "after_trust": {
+      "trust_yes": "exit 0 changed=true; Claude settings.json and Codex config/hooks hashes unchanged",
+      "codex_session": "01a142fb-a254-7442-a334-2d1f85fe4961 rollout: 'Current session (B9 trusted text): model gpt-6.1-sol, effort medium.'"
+    },
+    "restore": "original copied back, sync exit 3, trust --yes, sync 0, list hash_matches=true"
   }
 }
