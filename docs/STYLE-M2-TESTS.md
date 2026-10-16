@@ -97,6 +97,8 @@ Codex 真实配置由 agent 执行，步骤见 M2-PREP 建立的 `docs/STYLE-M2-
 
 ## M2b：Claude Code 真实环境
 
+- [x] **M2-PREP-03 C2/C3 最终验收准备**：三个采集器/启动器测试、实际 CLI 两包去重与三 native 安装、doctor 和四份基线卸载恢复通过；待用户 scratch 已生成，仅运行 Claude --version，无登录/真实模型会话。[准备证据](review/M2-PREP-03-CLAUDE-2026-10-17.json)；真实 C2/C3 保持待验。
+
 - [x] **M2-PREP-01 设计探针准备**：`test_probe_claude_m2_design.py` 七项通过，全部采集器 47 项通过；新增实际执行五个生成脚本核对真实 HOME/系统身份、独立配置、凭据变量排除，以及重写脚本时保留既有证据。首次 OAuth 保存失败的只读复现：原临时 HOME 下默认钥匙串查询退出 1，修正后退出 0；不据此推断解锁或 OAuth 保存成功，见 `review/M2-PREP-01-AUTH-2026-10-17.json`。此前固定 2.1.301 CLI loopback 四模式均 exit 0、各一份请求、rules 全文各一次，替换/keep 和既有 style 互斥全文命中。只有准备/补充检查通过，C1/C4 不因此标通过。
 
 Claude Code 界面项由用户执行，agent 提供手册与隔离 runbook。

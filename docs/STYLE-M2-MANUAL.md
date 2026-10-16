@@ -1,6 +1,6 @@
 # STYLE M2 真实环境手册
 
-更新时间：2026-10-17。当前提供 D4/D5 的 Claude 设计探针和 Codex B1–B4 的独立验收步骤；M2-PREP 仍为部分完成。Claude C2/C3 的最终安装验收步骤在 D4/D5 定稿及 T40/T50 闭合后补齐。
+更新时间：2026-10-17。提供 D4/D5 的 Claude 设计探针、Codex B1–B4 和 Claude C2/C3 的隔离验收步骤。T40/T50 离线实现已完成；手册/启动器准备通过，Claude 真实界面结果仍待额度恢复后补。
 
 任务和状态以 [任务清单](STYLE-M2-TASKS.md)、[测试矩阵](STYLE-M2-TESTS.md) 为准。Claude Code 界面项由用户执行；以下准备与本地协议结果不代替 M2-C1/C4。
 
@@ -117,3 +117,34 @@ PYTHONDONTWRITEBYTECODE=1 python3 testdata/manual/probe_codex_m2.py \
 脚本不修改日常安装；插件使用隔离 marketplace 登记，卸载前由原生命令移除登记。`passed` 和四个 `checks` 都为 true 才可标通过。失败报告保留错误类型和已收集事实，原始日志仍在 scratch；不将 exec 对哈希/插件信任的接受等同于首次 TUI 工作区信任提示。三项新增采集器测试覆盖全文/角色/重复/失败拒绝、stats 行与总量/折叠行核对、原生观察器白名单，全部采集器共 50 项。
 
 2026-10-17 实际结果：固定 codex-cli 0.159.3、T30 STYLE SHA256 `c35d85bd…ab8c`，codex-user/plugin 两路线各运行三次真实模型会话，B1–B4 全部通过；每路线共存场景两份 STYLE 输出与 26 估算 token，native 两份注入单列。完整证据分别为 [B1](review/M2-B1-CODEX-2026-10-17.json)、[B2](review/M2-B2-CODEX-2026-10-17.json)、[B3](review/M2-B3-CODEX-2026-10-17.json)、[B4](review/M2-B4-CODEX-2026-10-17.json)。原始日志和连接配置保留在 `/private/tmp/style-m2-codex-user-20261017`、`/private/tmp/style-m2-codex-plugin-20261017`，不入库。Claude 实测仍受额度阻塞，M2 尚未关闭。
+
+## 5. Claude C2/C3 最终安装验收
+
+本节在额度可用后由用户操作。准备程序只执行 STYLE install 与固定 Claude 的 `--version`，不登录、不启动模型会话。它创建独立配置/工作目录，保留真实 HOME/USER/LOGNAME 以便 macOS 钥匙串工作，并清除调用者的凭据与检测变量；需要登录时由用户运行隔离的 login.sh。不会复制日常凭据。
+
+准备新的空目录（已有证据目录会被拒绝）：
+
+```sh
+env -u CODEX_HOME -u CODEX_SANDBOX \
+  GOPATH=/tmp/style-cli-gopath GOMODCACHE=/tmp/style-cli-gomodcache \
+  GOCACHE=/tmp/style-cli-gocache \
+  go build -trimpath -buildvcs=false -o /tmp/style-m2-final ./cmd/style
+
+PYTHONDONTWRITEBYTECODE=1 python3 testdata/manual/prepare_claude_m2_acceptance.py \
+  --scratch "$(mktemp -d /private/tmp/style-m2-claude-acceptance.XXXXXX)" \
+  --style /tmp/style-m2-final \
+  --claude /Users/inxups/.nvm/versions/node/v24.21.0/bin/claude
+```
+
+程序输出 scratch 与启动器位置；以下以该路径为 `<scratch>`，不要原样输入尖括号占位符。`prepared.json` 的 `acceptance=false` 表示只准备完毕。固定包含两个等价静态声明，但只应有 `rules/style-m2-claude-first.md`；另有 SessionStart、匹配 Bash 和匹配 Read 的三条 native。用户自有 `CLAUDE.md`、`rules/user.md`、output style 及 InstructionsLoaded 观察器在安装前已保存为 baseline.json。源包、二进制、观察器及导入文件均留在私有 scratch，日志只收白名单加载/事件事实，不收提示词或工具输入。
+
+1. 记录 `prepared.json` 的 STYLE/Claude SHA256 和版本；如需登录，额度恢复后运行 `<scratch>/login.sh`，确认登录保存成功再继续。若仍有钥匙串错误，按 §2 处理，保留环境阻塞状态。
+2. 运行 `<scratch>/launch.sh`，在此隔离目录按 Claude 自己的流程确认工作区信任。发送：`用 Bash 只运行一次 printf STYLE_M2_TOOL_OK，禁止 Read 和其他工具，然后只回复 DONE。` 保持界面打开，直到异步观察器写出日志。不要以模型复述当投递证据。
+3. **C2**：`native-observations.jsonl` 应只有该真实 session 的 start/SessionStart、shell/PreToolUse 各一条，tool_name 为 Bash；Read fixture 为零。结合 Claude 原生 `/hooks` 或调试日志确认处理器执行；需要核对上下文时保留该会话原生请求中的完整固定正文，不只检查标记。不得通过手工喂 observer 输入声称真实触发。
+4. **C3**：`instructions.jsonl` 应有该 session 的 `file_path=<scratch>/claude/rules/style-m2-claude-first.md` 和加载原因，或保留含完整静态正文的原生请求；核对文件完整内容与 prepared.json 的正文摘要、折叠方文件不存在。记录用户规则/其他 memory 的实际加载顺序，不能只从文件名推断优先级。异步日志暂空不代表加载失败，先等待；仍缺证据则记 `[~]`。
+5. 退出 Claude，在独立终端运行 `<scratch>/style.sh uninstall --all --yes --json`，然后 `<scratch>/verify-restored.sh`。后者逐字节/权限核对四份外部基线、两份 STYLE rules 不存在、lock/index 删除；校验失败保留全部现场。
+6. 再运行 `<scratch>/launch.sh` 开一个全新会话，发送相同 Bash 指令。该新 session 不应新增任何 native fixture 行，也不应再观察到 STYLE rules 加载。外部 InstructionsLoaded 观察器仍在，这是为核对卸载后状态而保留的用户条目。
+
+回传时只提供版本/摘要、真实 session ID、白名单观察行、实际命令与退出码、卸载校验 JSON 和必要的加载/顺序结论。原始 debug/请求与登录数据留在私有 scratch；不要把凭据、完整用户提示或连接配置提交到仓库。C1/C4 的样式切换仍按 §2 的独立设计探针执行，不能由本节离线安装或 A8 回退通过代替。
+
+准备验证：[M2-PREP-03](review/M2-PREP-03-CLAUDE-2026-10-17.json)。三个新增测试实际执行生成启动器/观察器并验证系统身份、凭据排除、非空目录保护和恢复校验拒绝漂移；实际 STYLE CLI 的独立干跑验证两包/一份静态、3 个 native、doctor 健康及四份外部基线还原。干跑没有执行真实模型会话，不关闭 C2/C3。已有待用户运行的目录见该报告的 `ready_scratch`。

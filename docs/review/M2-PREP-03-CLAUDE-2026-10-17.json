@@ -1,0 +1,35 @@
+{
+  "item": "M2-PREP-03",
+  "acceptance": false,
+  "scope": "preparation only; native CLI invoked only for --version, no login or model sessions",
+  "style_binary_sha256": "32aef36dcb67d8cd0c57e123016094e1f82e5cce8adca37a9b6ae56c990cf81d",
+  "claude_version": "2.1.301 (Claude Code)",
+  "claude_sha256": "1f04c69e1c24e4d0a716a863af0aad8fc64d49a499334c29701f073700276b99",
+  "actual_cli_dry_round_trip": {
+    "package_count": 2,
+    "static_entries": 1,
+    "dedup_alias_file_absent": true,
+    "doctor_healthy": true,
+    "native_entries": 3,
+    "launcher_shell_syntax": true,
+    "restoration": {
+      "baseline_files": 4,
+      "external_bytes_and_modes_restored": true,
+      "managed_rules_lock_index_removed": true,
+      "real_session_acceptance": false
+    }
+  },
+  "ready_scratch": "/private/tmp/style-m2-claude-acceptance-20261017.d30zgr28",
+  "ready_prepared_json_sha256": "7fd29e21e26df6763e0383fde8d0af160db8f566c9e76edcd45bcda4e9cd95e8",
+  "collector_tests": {
+    "new_tests": 3,
+    "total": 53,
+    "status": "53 tests passed"
+  },
+  "source_revision": "497671359eb2975078507bc0f66b7aaf48f3d228",
+  "observer_sources_sha256": {
+    "prepare_claude_m2_acceptance.py": "109c5c5458778a82cc4f7ffafd41437cece035ac5e724efcbf99dcf7414fe244",
+    "probe_claude_m2_design.py": "0dc8bcaf6eb011a1a63abebcaa29fb73ca90ef12491d7a2080c9116008111854",
+    "claude_probe_support.py": "8993b0f141301ea9f460e4e6c87c38e855fcda8aeaecba85ca3bb8be20a0a37c"
+  }
+}

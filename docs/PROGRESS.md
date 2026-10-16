@@ -1503,3 +1503,12 @@ PY
 - degrade/skip 的 plan/install 为 skipped、无 placement，index 无静态/动态替代条目；error 的 plan blocked/退出 4、install 退出 4。所有场景缺 --allow-replace 都退出 1 并给授权提示；加授权不会创造槽位。失败时完整 STYLE_HOME/两家配置树的 bytes/mode/mtime 不变，STYLE_HOME 未创建。成功时整棵 Claude 用户 output-styles/settings 树在安装中保持；卸载后两家原配置 bytes/mode 精确还原，用户 outputStyle 选择仍为 user-existing。
 - 验证命令：python3 scripts/check_m2_replace.py /tmp/style-m2-rules.wG0JrxQX/style --report docs/review/M2-A8-REPLACE-FALLBACK-2026-10-17.json，12/12 passed；固定二进制 SHA256 38573d25583cb105dae11adf49ae55009c14487a501007399c8ec1513bae7184。脚本以最小环境运行并显式将 CODEX_HOME/CLAUDE_CONFIG_DIR/STYLE_HOME 指到临时目录；这与 Go 回归清理宿主变量的约定一致，未保留宿主检测环境。版本 stub 仅答 --version，不启动真实 harness、不读取日常配置/凭据。
 - 同一脚本加入 Ubuntu/macOS CI 的构建后二进制检查，但本条没有远端执行结果，不关闭 M2-CI-01。本条无 Go 生产变更，沿用 T40 已通过的双 module test/vet/race、50 采集器与 40 smoke；新增脚本实际运行、文档本地链接/锚点/围栏和 git diff --check 通过。T50/A8 关闭；C4 的真实界面样式切换/冲突观察仍因额度/OAuth 保持 [~]，D5 总条目不改为真实实测通过。
+
+
+### 2026-10-17 — M2-PREP-03 Claude 最终隔离验收准备 `[x]`
+
+- 接 clean 4976713。T40/T50 完成后补齐手册 §5 与 prepare_claude_m2_acceptance.py，生成私有固定二进制/观察器、两份等价静态包、SessionStart/Bash/Read 三 native、四份外部配置基线。安装后只保留 first/shared 静态，second 不生成文件；STYLE/登录/界面/恢复检查启动器以最小环境保留真实系统身份，独立 CLAUDE_CONFIG_DIR/STYLE_HOME/profile，排除调用者凭据。仅准备，不调用 auth login 或启动真实模型。
+- 新增三个测试：观察日志白名单排除 prompt/tool_input/密钥；拒绝非空 scratch 并保留证据；实际执行带空格/引号路径的启动器，确认 HOME/USER 与隔离配置、凭据排除、shell 语法与权限；运行复制的 observer 验证原生 JSON 形状，再核对恢复检查拒绝管理文件残留与权限漂移。PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s testdata/manual -p 'test_*.py'，53 项 OK。
+- 实际 CLI 干跑：固定 -trimpath -buildvcs=false 构建 /tmp/style-m2-final.Vi9x9bcm/style，SHA256 32aef36dcb67d8cd0c57e123016094e1f82e5cce8adca37a9b6ae56c990cf81d；标准临时 Go 三缓存，清理 CODEX_HOME/CODEX_SANDBOX。准备两个包、1 个静态入口/折叠文件不存在、list native_count 为 3/0、doctor healthy；生产 uninstall 后 verify-restored 校验四份外部 bytes/mode 还原、管理 rules/lock/index 删除。首次干跑汇总误读 list 的 native_hooks 键，改为现有 native_count 后全部通过，未把字段错误当成功。
+- Claude 只执行固定路径的 --version，仍为 2.1.301；不查询额度、不重试 OAuth、不改日常配置/凭据。另生成未启动会话的 /private/tmp/style-m2-claude-acceptance-20261017.d30zgr28，prepared.json acceptance=false；版本/二进制/观察器源摘要、干跑结果与 53 项测试记录在 docs/review/M2-PREP-03-CLAUDE-2026-10-17.json。没有手工注入 observer 的结果被用于 C2/C3 真实验收。
+- 手册明确额度恢复后登录保存确认、C2 真实 native 事件/matcher、C3 InstructionsLoaded 或请求完整正文与顺序证据、卸载恢复和新会话不再触发的步骤。只关闭 M2-PREP/PREP-03，C1/C4 仍 [~]、C2/C3 仍 [?]；原设计探针现场不覆盖，最终 CI 与官方计数继续等待。
