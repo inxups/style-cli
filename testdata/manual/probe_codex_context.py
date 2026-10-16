@@ -15,6 +15,25 @@ CHILD = "M1_FINAL_CHILD_CONTEXT_4129AC"
 TOOL = "M1_FINAL_CHILD_TOOL_CONTEXT_7284BC"
 
 
+def child_tool_results(rows):
+    allowed, blocked = [], False
+    for row in rows:
+        payload = row.get("payload", {})
+        if row.get("type") != "response_item" or payload.get("type") not in ("function_call_output", "custom_tool_call_output"):
+            continue
+        output = payload.get("output", "")
+        texts = [part.get("text", "") for part in output if isinstance(part, dict)] if isinstance(output, list) else [output]
+        for text in texts:
+            blocked = blocked or "Command blocked by PreToolUse hook: M1_FINAL_CHILD_BLOCKED" in text
+            try:
+                value = json.loads(text)
+            except (ValueError, TypeError):
+                continue
+            if isinstance(value, dict) and value.get("output") == "STYLE_CHILD_SCOPE_OK":
+                allowed.append({"exit_code": value.get("exit_code"), "output": value["output"]})
+    return {"allowed_printf_results": allowed, "blocked_printf_hook_result": blocked}
+
+
 def fixture(probe):
     package = probe.root / "context-probe"
     package.mkdir()
@@ -112,7 +131,8 @@ def run(probe, report):
         contexts = [row for row in rows if row.get("type") == "response_item" and row.get("payload", {}).get("role") == "developer"
                     and "hooks.additional_context" in json.dumps(row)]
         if "subagent" in json.dumps(meta.get("source")):
-            rollouts.append({"session_id": meta.get("id"), "source": meta.get("source"), "hook_context": contexts})
+            rollouts.append({"session_id": meta.get("id"), "source": meta.get("source"), "hook_context": contexts,
+                             "tool_results": child_tool_results(rows)})
     report["child_scopes"], report["child_rollouts"] = scopes, rollouts
     report["native_spawn_options"], report["calls"] = spawn_options, probe.calls
     verify_children(report)
@@ -130,6 +150,9 @@ def verify_children(report):
             assert any(row["entry"] == "context-probe/" + suffix and row["result"] == result for row in scope["rows"]), scope["path"]
     for rollout in rollouts:
         assert CHILD in json.dumps(rollout["hook_context"]) and TOOL in json.dumps(rollout["hook_context"])
+        if "tool_results" in rollout:
+            assert rollout["tool_results"]["blocked_printf_hook_result"]
+            assert rollout["tool_results"]["allowed_printf_results"] == [{"exit_code": 0, "output": "STYLE_CHILD_SCOPE_OK"}]
     paths = {row["source"]["subagent"]["thread_spawn"]["agent_path"] for row in rollouts}
     assert paths == {"/root/fresh_child", "/root/fork_child", "/root/fresh_child/grandchild"}
     if report.get("native_spawn_options"):

@@ -1,0 +1,39 @@
+{
+  "item": "M1-FINAL-07-CHILD-TOOLS",
+  "date": "2026-10-16",
+  "related_evidence": "M1-FINAL-07-CODEX-2026-10-16.json",
+  "observation": "Additional checker initially expected function_call_output with shell text exit markers; native code mode produces custom_tool_call_output content blocks containing JSON exit_code. Corrected extraction below.",
+  "results": [
+    {
+      "session_id": "01a14427-72f2-72a3-84e3-9e7d0b846ed5",
+      "allowed_printf_results": [
+        {
+          "exit_code": 0,
+          "output": "STYLE_CHILD_SCOPE_OK"
+        }
+      ],
+      "blocked_printf_hook_result": true
+    },
+    {
+      "session_id": "01a14427-4b6d-7e23-8b95-827314d1b6d6",
+      "allowed_printf_results": [
+        {
+          "exit_code": 0,
+          "output": "STYLE_CHILD_SCOPE_OK"
+        }
+      ],
+      "blocked_printf_hook_result": true
+    },
+    {
+      "session_id": "01a14427-e461-7940-b3f1-bd5ea53e64f8",
+      "allowed_printf_results": [
+        {
+          "exit_code": 0,
+          "output": "STYLE_CHILD_SCOPE_OK"
+        }
+      ],
+      "blocked_printf_hook_result": true
+    }
+  ],
+  "passed": true
+}

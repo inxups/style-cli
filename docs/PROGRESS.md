@@ -1132,3 +1132,10 @@ PY
 - U7：真实 native spawn 的 fork_turns 分别 none/all/none，agent_path 为 fresh_child、fork_child、fresh_child/grandchild（depth2）。三份子 rollout 都有自身 additional_context 和工具注入；三个 scope 各有 child context output、child-tool output、child-block blocked。父 main stats 无这些条目。阻断对象只是 harmless printf；允许 printf 的真实返回另留在原始 rollout。
 - 采集器末尾初版读取 scope.json 中不存在的 agent_id 而 exit1；数据与模型运行均已成功留存。修正为从 scope 文件目录取身份后，`--verify-report /tmp/style-m1-context-a.json --output /tmp/style-m1-context-final.json` 复核原始结果，保留 source SHA256 和错误观察记录；未覆盖原文件，也没有用离线 fixture 代替模型运行。证据：`review/M1-FINAL-07-CODEX-2026-10-16.json`、`M1-FINAL-07-COLLECTOR-OBSERVATION-2026-10-16.json`。
 - collector marker 回归和全部 17 项 Python 测试、语法/diff 检查通过；报告按实际 provider URL/token 扫描无泄漏。Claude 独立的 resume/fork/compact 未测，FINAL-07 保持 `[~]`，用户已选择稍后操作 Claude。
+
+
+### 2026-10-16 — M1-FINAL-07 子 agent 原生工具结果追加核对
+
+- 77c6990 提交前附加的 shell 退出码检查使用了错误的输出类型/文本格式而失败；该检查失败后 shell 仍继续提交。现已核对原始 rollout：本机 code mode 使用 custom_tool_call_output，input_text 中嵌套 JSON 的 exit_code=0，而不是普通 function_call_output 的 “Process exited” 文本。
+- 增强采集器同时读取两种输出，且只把精确 output=STYLE_CHILD_SCOPE_OK 的结构化结果算作允许命令；单纯函数参数包含标记不计通过。三个子线程均确认一条真实 block 结果和一条 exit_code=0 的允许 printf。原证据不覆盖，追加 `review/M1-FINAL-07-CHILD-TOOLS-2026-10-16.json` 与原报告关联。
+- 验证：新增 code mode 结果回归，全部 18 项 Python 测试、原始三线程结果提取断言及 diff 检查通过。后续提交命令明确 set -e，避免检查失败后继续提交。
