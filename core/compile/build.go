@@ -61,6 +61,9 @@ func Build(request Request) (Result, error) {
 		}
 	}
 	sortResult(&result)
+	if err := deduplicate(&result, request.Packages); err != nil {
+		return Result{}, err
+	}
 	return result, nil
 }
 

@@ -295,7 +295,7 @@ state/<sid>/
 
 ### 7.1 M2-D3 跨包去重契约
 
-T8 的实施契约见 [运行时 §7.5](STYLE-spec-runtime.md#75-m2-d3-跨包去重契约) 与 [编译产物 §9.6](STYLE-spec-compiled.md#96-m2-d3-编译去重契约)。D3 已于 2026-10-16 评审通过，T30 按此实现。
+T8 的实施契约见 [运行时 §7.5](STYLE-spec-runtime.md#75-m2-d3-跨包去重契约) 与 [编译产物 §9.6](STYLE-spec-compiled.md#96-m2-d3-编译去重契约)。D3 已于 2026-10-16 评审通过，T30 已实现。
 
 在上述步骤 6 之后，以静态变量替换后的完整正文和执行语义判定跨包等价，按 order 保留一条；native 保留，动态运行时偶然同文保留。全局 T003 与组合规划的有效成本按去重后产物计算，单包 plan 与源级预算检查继续独立；install/trust 的折叠行显示 `deduplicated_into`。不改变 agenthooks 职责或 index format，不新增持久跨包 repeat 键；卸载保留方后接替规则可能在已有会话再注入一次。这些边界已随 D3 评审通过。
 

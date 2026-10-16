@@ -13,6 +13,7 @@ Usage: python3 scripts/smoke.py path/to/style
 import json
 import os
 import shlex
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -148,6 +149,33 @@ def main():
         check("Review code concisely" in (home / ".claude" / "CLAUDE.md").read_text(),
               "claude CLAUDE.md written")
 
+        baseline_index = json.loads((home / ".style" / "build" / "index.json").read_text())
+        duplicate = work / "duplicate"
+        shutil.copytree(EXAMPLE, duplicate)
+        manifest = duplicate / "STYLE.yaml"
+        manifest.write_text(manifest.read_text().replace("name: terse-reviewer\n",
+                                                        "name: terse-reviewer-copy\n", 1))
+        result = style(binary, env, "install", str(duplicate), "--harness", "codex,claude-code",
+                       "--yes", "--json")
+        combined = json.loads(result.stdout)
+        alias_reports = [r for r in combined["reports"] if r["plan"]["package"] == "terse-reviewer-copy"]
+        check(result.returncode == 0 and len(alias_reports) == 2 and
+              all(any(row.get("deduplicated_into") == "terse-reviewer/style"
+                      for row in report["plan"]["rules"]) and
+                  report["tokens"]["always_on"] == {"tokens": 0, "chars": 0} and
+                  report["session_cost"]["total"] == 0 for report in alias_reports),
+              "combined install discloses cross-package aliases and zero additional cost")
+        combined_index = json.loads((home / ".style" / "build" / "index.json").read_text())
+        check(len(combined_index["packages"]) == 2 and
+              combined_index["static"] == baseline_index["static"] and
+              combined_index["harnesses"] == baseline_index["harnesses"] and
+              all((home / directory / filename).read_text().count("Review code concisely") == 1
+                  for directory, filename in ((".codex", "config.toml"), (".claude", "CLAUDE.md"))),
+              "two installed packages keep one set of static and runtime placements")
+        result = style(binary, env, "doctor", "--json")
+        check(result.returncode == 0 and json.loads(result.stdout)["healthy"] is True,
+              "doctor accepts cross-package compiled output")
+
         for provider, argv in hook_commands(home).items():
             for command in BLOCKED + ALLOWED:
                 result = run(argv, env, pre_tool_use(command))
@@ -173,6 +201,11 @@ def main():
               all(row["session"] == "smoke" for row in session_stats["rows"]) and
               session_stats["totals"] == rule_stats["totals"],
               "stats session grouping preserves hook counts and estimates")
+
+        result = style(binary, env, "uninstall", "terse-reviewer-copy", "--yes")
+        check(result.returncode == 0 and
+              json.loads((home / ".style" / "build" / "index.json").read_text()) == baseline_index,
+              "uninstalling an alias preserves canonical placements")
 
         result = style(binary, env, "sync", "--json")
         check(result.returncode == 0, "sync")

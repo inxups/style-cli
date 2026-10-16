@@ -1,0 +1,587 @@
+[
+  {
+    "provider": "codex",
+    "route": "codex-plugin",
+    "native_limit": {
+      "value": 2500,
+      "unit": "tokens",
+      "approximate": true,
+      "source": "Codex additionalContext default",
+      "overflow": "file-preview"
+    },
+    "budget": {
+      "per_rule": 400,
+      "per_event": 1200,
+      "always_on": 600
+    },
+    "plan": {
+      "package": "first",
+      "adapter": "codex",
+      "rules": [
+        {
+          "id": "static",
+          "source": "STYLE.yaml#static",
+          "target": "system",
+          "action": "inject",
+          "status": "native",
+          "needs": [
+            "agent"
+          ],
+          "placements": [
+            {
+              "action": "inject",
+              "status": "native",
+              "static_slot": "developer_instructions"
+            }
+          ]
+        },
+        {
+          "id": "dynamic",
+          "source": "STYLE.yaml#dynamic",
+          "target": "system",
+          "action": "inject",
+          "status": "native",
+          "needs": [
+            "agent",
+            "model"
+          ],
+          "placements": [
+            {
+              "event": "session.start",
+              "action": "inject",
+              "status": "native",
+              "capabilities": [
+                "add-context"
+              ],
+              "repeat": "session"
+            },
+            {
+              "event": "prompt.submitted",
+              "action": "inject",
+              "status": "native",
+              "capabilities": [
+                "add-context"
+              ],
+              "repeat": "session",
+              "reevaluate": true
+            }
+          ]
+        },
+        {
+          "id": "prompt",
+          "source": "STYLE.yaml#prompt",
+          "target": "event",
+          "action": "inject",
+          "status": "native",
+          "needs": [
+            "agent"
+          ],
+          "placements": [
+            {
+              "event": "prompt.submitted",
+              "action": "inject",
+              "status": "native",
+              "capabilities": [
+                "add-context"
+              ],
+              "repeat": "session"
+            }
+          ]
+        },
+        {
+          "id": "guard",
+          "source": "STYLE.yaml#guard",
+          "target": "tool",
+          "action": "block",
+          "status": "native",
+          "needs": [
+            "agent",
+            "tool.input.command"
+          ],
+          "placements": [
+            {
+              "event": "tool.pre",
+              "action": "block",
+              "status": "native",
+              "capabilities": [
+                "deny"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "warning",
+          "source": "STYLE.yaml#warning",
+          "target": "event",
+          "action": "warn",
+          "status": "native",
+          "needs": [
+            "agent"
+          ],
+          "placements": [
+            {
+              "event": "tool.post",
+              "action": "warn",
+              "status": "native",
+              "capabilities": [
+                "add-context",
+                "system-message"
+              ],
+              "repeat": "every"
+            }
+          ]
+        },
+        {
+          "id": "child",
+          "source": "STYLE.yaml#child",
+          "target": "event",
+          "action": "inject",
+          "status": "native",
+          "needs": [
+            "agent"
+          ],
+          "placements": [
+            {
+              "event": "subagent.start",
+              "action": "inject",
+              "status": "native",
+              "capabilities": [
+                "add-context"
+              ],
+              "repeat": "session"
+            }
+          ]
+        }
+      ],
+      "blocked": false
+    },
+    "tokens": {
+      "rules": [
+        {
+          "rule": "static",
+          "action": "inject",
+          "status": "native",
+          "estimate": {
+            "tokens": 8,
+            "chars": 27
+          }
+        },
+        {
+          "rule": "dynamic",
+          "action": "inject",
+          "status": "native",
+          "estimate": {
+            "tokens": 19,
+            "chars": 71
+          },
+          "events": [
+            "prompt.submitted",
+            "session.start"
+          ]
+        },
+        {
+          "rule": "prompt",
+          "action": "inject",
+          "status": "native",
+          "estimate": {
+            "tokens": 8,
+            "chars": 27
+          },
+          "events": [
+            "prompt.submitted"
+          ]
+        },
+        {
+          "rule": "guard",
+          "action": "block",
+          "status": "native",
+          "estimate": {
+            "tokens": 4,
+            "chars": 14
+          },
+          "events": [
+            "tool.pre"
+          ]
+        },
+        {
+          "rule": "warning",
+          "action": "warn",
+          "status": "native",
+          "estimate": {
+            "tokens": 3,
+            "chars": 8
+          },
+          "events": [
+            "tool.post"
+          ]
+        },
+        {
+          "rule": "child",
+          "action": "inject",
+          "status": "native",
+          "estimate": {
+            "tokens": 8,
+            "chars": 26
+          },
+          "events": [
+            "subagent.start"
+          ]
+        }
+      ],
+      "events": [
+        {
+          "key": "codex\u0000PostToolUse *",
+          "label": "PostToolUse *",
+          "estimate": {
+            "tokens": 3,
+            "chars": 8
+          },
+          "block": {
+            "tokens": 0,
+            "chars": 0
+          },
+          "other": {
+            "tokens": 3,
+            "chars": 8
+          },
+          "other_count": 1
+        },
+        {
+          "key": "codex\u0000PreToolUse Bash",
+          "label": "PreToolUse Bash",
+          "estimate": {
+            "tokens": 4,
+            "chars": 14
+          },
+          "block": {
+            "tokens": 4,
+            "chars": 14
+          },
+          "other": {
+            "tokens": 0,
+            "chars": 0
+          },
+          "has_block": true,
+          "block_count": 1
+        },
+        {
+          "key": "codex\u0000SessionStart",
+          "label": "SessionStart",
+          "estimate": {
+            "tokens": 19,
+            "chars": 71
+          },
+          "block": {
+            "tokens": 0,
+            "chars": 0
+          },
+          "other": {
+            "tokens": 19,
+            "chars": 71
+          },
+          "other_count": 1
+        },
+        {
+          "key": "codex\u0000SubagentStart",
+          "label": "SubagentStart",
+          "estimate": {
+            "tokens": 8,
+            "chars": 26
+          },
+          "block": {
+            "tokens": 0,
+            "chars": 0
+          },
+          "other": {
+            "tokens": 8,
+            "chars": 26
+          },
+          "other_count": 1
+        },
+        {
+          "key": "codex\u0000UserPromptSubmit",
+          "label": "UserPromptSubmit",
+          "estimate": {
+            "tokens": 28,
+            "chars": 100
+          },
+          "block": {
+            "tokens": 0,
+            "chars": 0
+          },
+          "other": {
+            "tokens": 27,
+            "chars": 98
+          },
+          "other_count": 2
+        }
+      ],
+      "always_on": {
+        "tokens": 27,
+        "chars": 98
+      }
+    },
+    "session_cost": {
+      "requests": 60,
+      "triggers": 3,
+      "always_on": 193.05,
+      "triggered": 204,
+      "total": 397.05
+    }
+  },
+  {
+    "provider": "codex",
+    "route": "codex-plugin",
+    "native_limit": {
+      "value": 2500,
+      "unit": "tokens",
+      "approximate": true,
+      "source": "Codex additionalContext default",
+      "overflow": "file-preview"
+    },
+    "budget": {
+      "per_rule": 400,
+      "per_event": 1200,
+      "always_on": 600
+    },
+    "plan": {
+      "package": "second",
+      "adapter": "codex",
+      "rules": [
+        {
+          "deduplicated_into": "first/static",
+          "id": "static",
+          "source": "STYLE.yaml#static",
+          "target": "system",
+          "action": "inject",
+          "status": "native",
+          "needs": [
+            "agent"
+          ],
+          "placements": [
+            {
+              "action": "inject",
+              "status": "native",
+              "static_slot": "developer_instructions"
+            }
+          ]
+        },
+        {
+          "deduplicated_into": "first/dynamic",
+          "id": "dynamic",
+          "source": "STYLE.yaml#dynamic",
+          "target": "system",
+          "action": "inject",
+          "status": "native",
+          "needs": [
+            "agent",
+            "model"
+          ],
+          "placements": [
+            {
+              "event": "session.start",
+              "action": "inject",
+              "status": "native",
+              "capabilities": [
+                "add-context"
+              ],
+              "repeat": "session"
+            },
+            {
+              "event": "prompt.submitted",
+              "action": "inject",
+              "status": "native",
+              "capabilities": [
+                "add-context"
+              ],
+              "repeat": "session",
+              "reevaluate": true
+            }
+          ]
+        },
+        {
+          "deduplicated_into": "first/prompt",
+          "id": "prompt",
+          "source": "STYLE.yaml#prompt",
+          "target": "event",
+          "action": "inject",
+          "status": "native",
+          "needs": [
+            "agent"
+          ],
+          "placements": [
+            {
+              "event": "prompt.submitted",
+              "action": "inject",
+              "status": "native",
+              "capabilities": [
+                "add-context"
+              ],
+              "repeat": "session"
+            }
+          ]
+        },
+        {
+          "deduplicated_into": "first/guard",
+          "id": "guard",
+          "source": "STYLE.yaml#guard",
+          "target": "tool",
+          "action": "block",
+          "status": "native",
+          "needs": [
+            "agent",
+            "tool.input.command"
+          ],
+          "placements": [
+            {
+              "event": "tool.pre",
+              "action": "block",
+              "status": "native",
+              "capabilities": [
+                "deny"
+              ]
+            }
+          ]
+        },
+        {
+          "deduplicated_into": "first/warning",
+          "id": "warning",
+          "source": "STYLE.yaml#warning",
+          "target": "event",
+          "action": "warn",
+          "status": "native",
+          "needs": [
+            "agent"
+          ],
+          "placements": [
+            {
+              "event": "tool.post",
+              "action": "warn",
+              "status": "native",
+              "capabilities": [
+                "add-context",
+                "system-message"
+              ],
+              "repeat": "every"
+            }
+          ]
+        },
+        {
+          "deduplicated_into": "first/child",
+          "id": "child",
+          "source": "STYLE.yaml#child",
+          "target": "event",
+          "action": "inject",
+          "status": "native",
+          "needs": [
+            "agent"
+          ],
+          "placements": [
+            {
+              "event": "subagent.start",
+              "action": "inject",
+              "status": "native",
+              "capabilities": [
+                "add-context"
+              ],
+              "repeat": "session"
+            }
+          ]
+        }
+      ],
+      "blocked": false
+    },
+    "tokens": {
+      "rules": [
+        {
+          "deduplicated_into": "first/static",
+          "rule": "static",
+          "action": "inject",
+          "status": "native",
+          "estimate": {
+            "tokens": 8,
+            "chars": 27
+          }
+        },
+        {
+          "deduplicated_into": "first/dynamic",
+          "rule": "dynamic",
+          "action": "inject",
+          "status": "native",
+          "estimate": {
+            "tokens": 19,
+            "chars": 71
+          },
+          "events": [
+            "prompt.submitted",
+            "session.start"
+          ]
+        },
+        {
+          "deduplicated_into": "first/prompt",
+          "rule": "prompt",
+          "action": "inject",
+          "status": "native",
+          "estimate": {
+            "tokens": 8,
+            "chars": 27
+          },
+          "events": [
+            "prompt.submitted"
+          ]
+        },
+        {
+          "deduplicated_into": "first/guard",
+          "rule": "guard",
+          "action": "block",
+          "status": "native",
+          "estimate": {
+            "tokens": 4,
+            "chars": 14
+          },
+          "events": [
+            "tool.pre"
+          ]
+        },
+        {
+          "deduplicated_into": "first/warning",
+          "rule": "warning",
+          "action": "warn",
+          "status": "native",
+          "estimate": {
+            "tokens": 3,
+            "chars": 8
+          },
+          "events": [
+            "tool.post"
+          ]
+        },
+        {
+          "deduplicated_into": "first/child",
+          "rule": "child",
+          "action": "inject",
+          "status": "native",
+          "estimate": {
+            "tokens": 8,
+            "chars": 26
+          },
+          "events": [
+            "subagent.start"
+          ]
+        }
+      ],
+      "events": null,
+      "always_on": {
+        "tokens": 0,
+        "chars": 0
+      }
+    },
+    "session_cost": {
+      "requests": 60,
+      "triggers": 3,
+      "always_on": 0,
+      "triggered": 0,
+      "total": 0
+    }
+  }
+]

@@ -46,7 +46,11 @@ func TestA18SecondInstallT003BlocksWithoutAnyChanges(t *testing.T) {
 		t.Fatal(err)
 	}
 	first := writeInstallPackage(t, filepath.Join(root, "first"), string(data))
-	second := writeInstallPackage(t, filepath.Join(root, "second"), strings.ReplaceAll(string(data), "tokens-t003", "tokens-t003-second"))
+	// M2 folds equivalent cross-package bodies. Keep the same 1002-token
+	// estimate but make this fixture distinct so T003 still tests real growth.
+	secondData := strings.ReplaceAll(string(data), "tokens-t003", "tokens-t003-second")
+	secondData = strings.Replace(secondData, "text: a", "text: z", 1)
+	second := writeInstallPackage(t, filepath.Join(root, "second"), secondData)
 	for _, source := range []string{first, second} {
 		planned, err := service.Plan(context.Background(), PlanRequest{Source: source, Harnesses: []string{"codex"}})
 		if err != nil || len(planned.Reports) != 1 {

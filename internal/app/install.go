@@ -335,7 +335,6 @@ func (s *Service) compileInstalled(ctx context.Context, packages []installPackag
 		compileInputs = append(compileInputs, compile.PackageInput{Package: item.resolved, Sequence: item.lock.Seq,
 			Lock: packageLockHash(item.lock.Files), Link: item.lock.Link, Settings: item.settings})
 	}
-	allTokenReports := make(map[adapter.ProviderID][]tokens.Report)
 	for _, target := range adapters {
 		if err := checkContext(ctx); err != nil {
 			return installCompilation{}, err
@@ -362,34 +361,23 @@ func (s *Service) compileInstalled(ctx context.Context, packages []installPackag
 			}
 			for _, finding := range budget.Diagnostics {
 				if finding.Severity == spec.SeverityError {
-					return installCompilation{}, &BlockedError{Message: fmt.Sprintf("%s %s blocks install: %s", finding.Code, finding.Event, finding.Message)}
+					return installCompilation{}, &BlockedError{Message: fmt.Sprintf("%s %s blocks install (single-package %s): %s", finding.Code, finding.Event, packages[index].lock.Name, finding.Message)}
 				}
-				result.diagnostics = append(result.diagnostics, Diagnostic{Code: finding.Code, Rule: finding.RuleID, Provider: string(target.provider), Severity: finding.Severity, Message: finding.Message})
+				result.diagnostics = append(result.diagnostics, Diagnostic{Code: finding.Code, Rule: finding.RuleID, Provider: string(target.provider), Severity: finding.Severity, Message: "single-package " + packages[index].lock.Name + ": " + finding.Message})
 			}
 			packages[index].report[target.provider] = planned
 			if err := result.appendNative(packages[index], target, planned); err != nil {
 				return installCompilation{}, err
 			}
 			packages[index].tokens[target.provider] = budget
-			allTokenReports[target.provider] = append(allTokenReports[target.provider], budget)
 			compileInputs = appendCompileInput(compileInputs, packages[index], target.provider)
-			if packages[index].lock.Name == reportPackage {
-				result.reports = append(result.reports, installPlanReport(target, planned, budget, packages[index].resolved))
-			}
-		}
-	}
-	for _, target := range adapters {
-		findings, err := tokens.AnalyzeInstalled(allTokenReports[target.provider], target.definition.Limits.Input)
-		if err != nil {
-			return installCompilation{}, err
-		}
-		if len(findings) > 0 {
-			finding := findings[0]
-			return installCompilation{}, &BlockedError{Message: fmt.Sprintf("%s %s blocks install: %s", finding.Code, finding.Event, finding.Message)}
 		}
 	}
 	compiled, err := compile.Build(compile.Request{StyleVersion: styleRuntimeVersion, Packages: compileInputs})
 	if err != nil {
+		return installCompilation{}, err
+	}
+	if err := effectiveInstallReports(&result, packages, adapters, compiled, reportPackage); err != nil {
 		return installCompilation{}, err
 	}
 	result.index = compiled.Index

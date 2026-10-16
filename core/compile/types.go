@@ -142,6 +142,29 @@ type StaticBody struct {
 type Result struct {
 	Index        Index
 	StaticBodies []StaticBody
+	// Deduplicated and DeduplicationWarnings describe cold-path decisions.
+	// Neither is part of the runtime index or persistent repeat identity.
+	Deduplicated          []Deduplication
+	DeduplicationWarnings []DeduplicationWarning
+}
+
+// Deduplication folds every placement of Rule into one canonical rule.
+type Deduplication struct {
+	Harness    string
+	Rule       string
+	Into       string
+	Placements []PlacementRef
+}
+
+type PlacementRef struct {
+	Event      string
+	StaticSlot string
+}
+
+type DeduplicationWarning struct {
+	Harness string
+	Rule    string
+	Reason  string
 }
 
 // RenderModelText renders the model-facing text, applying warn's implicit

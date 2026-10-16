@@ -22,6 +22,9 @@ func (report Report) String() string {
 		if len(rule.Needs) > 0 {
 			fmt.Fprintf(&output, "  needs: %s\n", strings.Join(rule.Needs, ", "))
 		}
+		if rule.DeduplicatedInto != "" {
+			fmt.Fprintf(&output, "  deduplicated into %s; no additional cost\n", rule.DeduplicatedInto)
+		}
 		if rule.Native != nil {
 			fmt.Fprintf(&output, "  -> native %s", rule.Native.Event)
 			if rule.Native.Matcher != "" {

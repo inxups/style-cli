@@ -20,6 +20,7 @@ func EstimatePlacement(rule spec.Rule, placement plan.Placement, pkg *spec.Resol
 
 func estimateRule(rule spec.Rule, planned plan.RulePlan, pkg *spec.ResolvedPackage) (RuleEstimate, []placementEstimate, error) {
 	result := RuleEstimate{RuleID: planned.ID, Action: planned.Action, Status: planned.Status}
+	result.DeduplicatedInto = planned.DeduplicatedInto
 	placements := make([]placementEstimate, 0, len(planned.Placements))
 	for _, placement := range planned.Placements {
 		text, include, err := modelText(rule, placement, pkg)

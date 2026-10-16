@@ -184,6 +184,9 @@ func estimateSessionCost(pkg *spec.ResolvedPackage, planned plan.Report, _ token
 		if index >= len(planned.Rules) {
 			continue
 		}
+		if planned.Rules[index].DeduplicatedInto != "" {
+			continue
+		}
 		requirement, err := plan.RequirementFor(rule)
 		if err != nil {
 			continue

@@ -23,6 +23,8 @@ func Analyze(pkg *spec.ResolvedPackage, planned plan.Report, sourceDiagnostics .
 }
 
 // AnalyzeWithLayout is Analyze with an adapter-supplied native event/tool map.
+// Deduplicated rules retain per-rule estimates and source budget diagnostics,
+// but do not contribute to effective Events or AlwaysOn totals.
 func AnalyzeWithLayout(pkg *spec.ResolvedPackage, planned plan.Report, layout Layout, sourceDiagnostics ...spec.Diagnostic) (Report, error) {
 	if pkg == nil || pkg.Package == nil {
 		return Report{}, fmt.Errorf("token analysis requires a resolved package")
@@ -39,6 +41,8 @@ func AnalyzeWithLayout(pkg *spec.ResolvedPackage, planned plan.Report, layout La
 	limits := limitsFromPackage(pkg)
 	report := Report{Rules: make([]RuleEstimate, 0, len(pkg.Rules))}
 	eventTotals := make(map[string]*eventAccumulator)
+	effectiveTotals := make(map[string]*eventAccumulator)
+	var sourceAlwaysOn Estimate
 	for index, rule := range pkg.Rules {
 		plannedRule := planned.Rules[index]
 		if plannedRule.ID == "" || plannedRule.ID != ruleID(rule) {
@@ -65,7 +69,10 @@ func AnalyzeWithLayout(pkg *spec.ResolvedPackage, planned plan.Report, layout La
 		}
 		for _, placement := range placements {
 			if isAlwaysOn(placement.placement, requirement) {
-				report.AlwaysOn = add(report.AlwaysOn, placement.estimate)
+				sourceAlwaysOn = add(sourceAlwaysOn, placement.estimate)
+				if plannedRule.DeduplicatedInto == "" {
+					report.AlwaysOn = add(report.AlwaysOn, placement.estimate)
+				}
 			}
 			if placement.placement.Event == "" {
 				continue
@@ -75,33 +82,42 @@ func AnalyzeWithLayout(pkg *spec.ResolvedPackage, planned plan.Report, layout La
 				return Report{}, fmt.Errorf("budget layout has no native bucket for rule %q at %s", ruleEstimate.RuleID, placement.placement.Event)
 			}
 			for _, bucket := range buckets {
-				accumulator := eventTotals[bucket.Key]
-				if accumulator == nil {
-					accumulator = &eventAccumulator{label: nonEmpty(bucket.Label, bucket.Key)}
-					eventTotals[bucket.Key] = accumulator
-				} else if bucket.Label != "" && bucket.Label < accumulator.label {
-					accumulator.label = bucket.Label
+				accumulateBucket(eventTotals, bucket, placement)
+				if plannedRule.DeduplicatedInto == "" {
+					accumulateBucket(effectiveTotals, bucket, placement)
 				}
-				accumulator.add(placement.placement.Action, placement.estimate)
 			}
 		}
 	}
-	for key, accumulator := range eventTotals {
+	for _, accumulator := range eventTotals {
 		estimate := accumulator.worstCase()
-		report.Events = append(report.Events, EventEstimate{
-			Key: key, Label: accumulator.label, Estimate: estimate,
-			Block: accumulator.block, Other: accumulator.other, HasBlock: accumulator.hasBlock,
-			BlockCount: accumulator.blockCount, OtherCount: accumulator.otherCount,
-		})
 		if float64(estimate.Tokens) > limits.PerEvent {
 			addDiagnostic(&report, Diagnostic{Code: "T002", Event: accumulator.label, Severity: budgetSeverity(pkg), Message: fmt.Sprintf("event estimate %d exceeds per_event %s", estimate.Tokens, formatLimit(limits.PerEvent))})
 		}
 	}
+	for key, accumulator := range effectiveTotals {
+		report.Events = append(report.Events, EventEstimate{
+			Key: key, Label: accumulator.label, Estimate: accumulator.worstCase(),
+			Block: accumulator.block, Other: accumulator.other, HasBlock: accumulator.hasBlock,
+			BlockCount: accumulator.blockCount, OtherCount: accumulator.otherCount,
+		})
+	}
 	sort.Slice(report.Events, func(i, j int) bool { return report.Events[i].Key < report.Events[j].Key })
-	if float64(report.AlwaysOn.Tokens) > limits.AlwaysOn {
-		addDiagnostic(&report, Diagnostic{Code: "T004", Severity: budgetSeverity(pkg), Message: fmt.Sprintf("always-on estimate %d exceeds always_on %s", report.AlwaysOn.Tokens, formatLimit(limits.AlwaysOn))})
+	if float64(sourceAlwaysOn.Tokens) > limits.AlwaysOn {
+		addDiagnostic(&report, Diagnostic{Code: "T004", Severity: budgetSeverity(pkg), Message: fmt.Sprintf("always-on estimate %d exceeds always_on %s", sourceAlwaysOn.Tokens, formatLimit(limits.AlwaysOn))})
 	}
 	addSpecDiagnostics(&report, pkg, sourceDiagnostics)
 	sortDiagnostics(report.Diagnostics)
 	return report, nil
+}
+
+func accumulateBucket(totals map[string]*eventAccumulator, bucket Bucket, placement placementEstimate) {
+	accumulator := totals[bucket.Key]
+	if accumulator == nil {
+		accumulator = &eventAccumulator{label: nonEmpty(bucket.Label, bucket.Key)}
+		totals[bucket.Key] = accumulator
+	} else if bucket.Label != "" && bucket.Label < accumulator.label {
+		accumulator.label = bucket.Label
+	}
+	accumulator.add(placement.placement.Action, placement.estimate)
 }

@@ -1,0 +1,92 @@
+second 0.1.0
+
+Harness: codex
+Preferred route: codex-plugin (availability checked during install)
+Package: first
+Adapter: codex
+- static: native (inject system)
+  needs: agent
+  -> static:developer_instructions inject (native)
+- dynamic: native (inject system)
+  needs: agent, model
+  -> session.start inject (native); capabilities: add-context
+  -> prompt.submitted inject (native); capabilities: add-context
+- prompt: native (inject event)
+  needs: agent
+  -> prompt.submitted inject (native); capabilities: add-context
+- guard: native (block tool)
+  needs: agent, tool.input.command
+  -> tool.pre block (native); capabilities: deny
+- warning: native (warn event)
+  needs: agent
+  -> tool.post warn (native); capabilities: add-context, system-message
+- child: native (inject event)
+  needs: agent
+  -> subagent.start inject (native); capabilities: add-context
+Token (estimated; calibration pending):
+  native input limit: 2500 tokens (approximate); overflow=file-preview; source=Codex additionalContext default
+  budget: per_rule 400; per_event 1200; always_on 600 tokens
+  always-on: 27 tokens / 98 chars
+  per-rule:
+    static: 8 tokens / 27 chars (native)
+    dynamic: 19 tokens / 71 chars (native)
+    prompt: 8 tokens / 27 chars (native)
+    guard: 4 tokens / 14 chars (native)
+    warning: 3 tokens / 8 chars (native)
+    child: 8 tokens / 26 chars (native)
+  PostToolUse *: 3 tokens / 8 chars
+  PreToolUse Bash: 4 tokens / 14 chars
+  SessionStart: 19 tokens / 71 chars
+  SubagentStart: 8 tokens / 26 chars
+  UserPromptSubmit: 28 tokens / 100 chars
+  session cost (requests=60 triggers=3): 193.1 always-on + 204.0 triggered = 397.1 units
+  scenario only: 1.25x cache write + 0.1x later hits; assumes an eligible unchanged prefix within cache lifetime; not billing
+
+Harness: codex
+Preferred route: codex-plugin (availability checked during install)
+Package: second
+Adapter: codex
+- static: native (inject system)
+  needs: agent
+  deduplicated into first/static; no additional cost
+  -> static:developer_instructions inject (native)
+- dynamic: native (inject system)
+  needs: agent, model
+  deduplicated into first/dynamic; no additional cost
+  -> session.start inject (native); capabilities: add-context
+  -> prompt.submitted inject (native); capabilities: add-context
+- prompt: native (inject event)
+  needs: agent
+  deduplicated into first/prompt; no additional cost
+  -> prompt.submitted inject (native); capabilities: add-context
+- guard: native (block tool)
+  needs: agent, tool.input.command
+  deduplicated into first/guard; no additional cost
+  -> tool.pre block (native); capabilities: deny
+- warning: native (warn event)
+  needs: agent
+  deduplicated into first/warning; no additional cost
+  -> tool.post warn (native); capabilities: add-context, system-message
+- child: native (inject event)
+  needs: agent
+  deduplicated into first/child; no additional cost
+  -> subagent.start inject (native); capabilities: add-context
+Token (estimated; calibration pending):
+  native input limit: 2500 tokens (approximate); overflow=file-preview; source=Codex additionalContext default
+  budget: per_rule 400; per_event 1200; always_on 600 tokens
+  always-on: 0 tokens / 0 chars
+  per-rule:
+    static: 8 tokens / 27 chars (native)
+      deduplicated into first/static; no additional cost
+    dynamic: 19 tokens / 71 chars (native)
+      deduplicated into first/dynamic; no additional cost
+    prompt: 8 tokens / 27 chars (native)
+      deduplicated into first/prompt; no additional cost
+    guard: 4 tokens / 14 chars (native)
+      deduplicated into first/guard; no additional cost
+    warning: 3 tokens / 8 chars (native)
+      deduplicated into first/warning; no additional cost
+    child: 8 tokens / 26 chars (native)
+      deduplicated into first/child; no additional cost
+  session cost (requests=60 triggers=3): 0.0 always-on + 0.0 triggered = 0.0 units
+  scenario only: 1.25x cache write + 0.1x later hits; assumes an eligible unchanged prefix within cache lifetime; not billing

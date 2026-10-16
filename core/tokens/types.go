@@ -71,11 +71,12 @@ type Diagnostic struct {
 
 // RuleEstimate records the largest model-facing placement for one rule.
 type RuleEstimate struct {
-	RuleID   string      `json:"rule"`
-	Action   string      `json:"action"`
-	Status   plan.Status `json:"status"`
-	Estimate Estimate    `json:"estimate"`
-	Events   []string    `json:"events,omitempty"`
+	DeduplicatedInto string      `json:"deduplicated_into,omitempty"`
+	RuleID           string      `json:"rule"`
+	Action           string      `json:"action"`
+	Status           plan.Status `json:"status"`
+	Estimate         Estimate    `json:"estimate"`
+	Events           []string    `json:"events,omitempty"`
 }
 
 // EventEstimate is the worst-case sum for one unified evaluation point.

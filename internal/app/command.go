@@ -234,6 +234,9 @@ func writePlanText(out io.Writer, result PlanResult) {
 		fmt.Fprintln(out, "  per-rule:")
 		for _, rule := range report.Tokens.Rules {
 			fmt.Fprintf(out, "    %s: %d tokens / %d chars (%s)\n", rule.RuleID, rule.Estimate.Tokens, rule.Estimate.Chars, rule.Status)
+			if rule.DeduplicatedInto != "" {
+				fmt.Fprintf(out, "      deduplicated into %s; no additional cost\n", rule.DeduplicatedInto)
+			}
 		}
 		for _, event := range report.Tokens.Events {
 			fmt.Fprintf(out, "  %s: %d tokens / %d chars\n", event.Label, event.Estimate.Tokens, event.Estimate.Chars)

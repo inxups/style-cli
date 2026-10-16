@@ -51,16 +51,17 @@ type Report struct {
 
 // RulePlan is one user rule and its resulting runtime or static placements.
 type RulePlan struct {
-	ID         string       `json:"id"`
-	Source     string       `json:"source"`
-	Target     string       `json:"target"`
-	Action     string       `json:"action,omitempty"` // empty for native rules
-	Status     Status       `json:"status"`
-	Needs      []string     `json:"needs,omitempty"`
-	Native     *NativeEntry `json:"native,omitempty"`
-	Placements []Placement  `json:"placements,omitempty"`
-	Reasons    []string     `json:"reasons,omitempty"`
-	Fatal      bool         `json:"fatal,omitempty"`
+	DeduplicatedInto string       `json:"deduplicated_into,omitempty"`
+	ID               string       `json:"id"`
+	Source           string       `json:"source"`
+	Target           string       `json:"target"`
+	Action           string       `json:"action,omitempty"` // empty for native rules
+	Status           Status       `json:"status"`
+	Needs            []string     `json:"needs,omitempty"`
+	Native           *NativeEntry `json:"native,omitempty"`
+	Placements       []Placement  `json:"placements,omitempty"`
+	Reasons          []string     `json:"reasons,omitempty"`
+	Fatal            bool         `json:"fatal,omitempty"`
 }
 
 // Placement is one event hook or static slot selected by the planner.

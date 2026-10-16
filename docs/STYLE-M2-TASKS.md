@@ -4,7 +4,7 @@
 
 本文件是 STYLE CLI M2 的持久化任务清单。每项任务完成后必须同时补充证据（命令、fixture、golden 文件或真实运行记录），不能只根据对话上下文标记完成。测试矩阵见 [STYLE-M2-TESTS.md](STYLE-M2-TESTS.md)，执行记录追加到 [PROGRESS.md](PROGRESS.md)。
 
-当前总状态：M2 已开始，文档建立（M2-00）与基线回归（M2-01）完成；M2-D1 native 规则格式设计评审通过，M2-T10–T13、M2-T60 完成；M2-D2 stats 输出设计与 M2-T20 实现完成；M2-D3 跨包去重设计评审通过，T30 开始实现。M1 已关闭并只读归档（[任务](STYLE-M1-TASKS.md)、[测试](STYLE-M1-TESTS.md)），唯一遗留为 M2-CARRY-01。
+当前总状态：M2 已开始，文档建立（M2-00）与基线回归（M2-01）完成；M2-D1 native 规则格式设计评审通过，M2-T10–T13、M2-T60 完成；M2-D2 stats 输出设计与 M2-T20 实现完成；M2-D3 跨包去重设计与 M2-T30 实现完成；下一步 D4/D5 的 Claude 真实环境结论。M1 已关闭并只读归档（[任务](STYLE-M1-TASKS.md)、[测试](STYLE-M1-TESTS.md)），唯一遗留为 M2-CARRY-01。
 
 ## 范围
 
@@ -69,7 +69,7 @@ M1 中已记录的已知限制（如 force-push 示例规则对 `--push-option` 
 - [x] **M2-T12 adapter `Native()` 与路线**：两家 `Facts.Native` 生成命令、归属 tag 和实际 timeout；安装编译在 runtime index 之外按 priority/包序号/规则序号收集 native hook，经三条路线交给 agenthooks 的 `RawCommand`/`RawTag` 渲染、owner 合并、卸载和 Codex 信任哈希。修复已有 foreign matcher 组时信任键序号未随合并偏移的问题。依赖：M2-T11。测试：M2-A3；双 module fresh test/vet 通过，见 `docs/PROGRESS.md` M2-T12。披露与 native 变更信任由下一项 T13 补齐。
 - [x] **M2-T13 CLI native 生命周期**：install 在写入前提供完整 capability/native 预览与确认回调，文本/JSON 披露命令和路线信任；批准快照保存 native 渲染字段，sync 对普通包/link 的 native 字段、增删、声明 timeout 和顺序变化均退出 3，配置/信任修复也必须 trust 确认。trust 单列 native 前后差异，保留其他包的未批准 link native 字节；list 显示条目数，doctor 以批准快照核对一致/缺失/改动及 codex-user 信任哈希。依赖：M2-T12。测试：M2-A4；双 module fresh test/vet、相关 race、采集器通过，见 `docs/PROGRESS.md` M2-T13。
 - [x] **M2-T20 `style stats` 命令**：实现默认 168h 的 rule/session 文本与 JSON format 1，六字段计数、稳定排序与质量报告；`core/state.ScanStats` 固定两层目录、有界逐行严格解码并跳过坏行/超长行/symlink，全程只读，I/O/取消/溢出退出 1 且不输出成功报告。doctor 复用扫描器，保持正常 top3/legacy/repeated_body，坏行继续有效聚合并告警。依赖：M2-D2。测试：M2-A5；固定 fixture/四份 golden、双 module fresh test/vet、state/app race、采集器 40 项与扩展 smoke 36 项通过，见 `docs/PROGRESS.md` M2-T20。
-- [ ] **M2-T30 跨包去重实现**：compile/plan/tokens/runtime 按 D3 去重。依赖：M2-D3。测试：M2-A6。
+- [x] **M2-T30 跨包去重实现**：compile 在静态替换、规范化与排序后按整条规则的全部 placement/执行语义等价折叠，保留最小 order；同包多重声明类和 native 保留，关系仅用于冷路径报告，index format 1 与 runtime 状态键不变。组合 install/trust 展示参与包的 `deduplicated_into`、原单条估算和零新增成本；源级预算独立，有效 events/always_on/session/T003 重算。依赖：M2-D3。测试：M2-A6；两份组合报告 golden、双 module fresh test/vet、compile/tokens/engine/state/app/conformance race、采集器 40 项、扩展 smoke 40 项通过，见 `docs/PROGRESS.md` M2-T30。
 - [ ] **M2-T40 Claude rules 静态位置与迁移**：仅 D4 成立时实现；否则标注“按 D4 结论不实现”并以 D4 证据关闭。依赖：M2-D4。测试：M2-A7。
 - [ ] **M2-T50 output style replace**：仅 D5 可行时实现；否则同上关闭。依赖：M2-D5。测试：M2-A8。
 - [x] **M2-T60 conformance 扩展**：共享路线测试新增三路线 × 三种文件尾的 9 次 native 安装往返，核对状态、独立命令、用户路线信任、幂等、卸载无残留、外部字节与权限还原；46 个真实 codec payload 在附加 native 声明后仍匹配原 stdout golden/白名单，runtime index 只有源文件摘要变化，统计记录除时间外与基线相同。依赖：M2-T12。测试：M2-A3、M2-A9；conformance race/vet、最终 native 构建与 smoke 32 项通过，见 `docs/PROGRESS.md` M2-T60。

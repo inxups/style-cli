@@ -145,10 +145,10 @@
 
 ### 9.6 M2-D3 编译去重契约
 
-相等判定、保留顺序、预算与运行时语义见 [运行时 §7.5](STYLE-spec-runtime.md#75-m2-d3-跨包去重契约)。T30 按本节实现，保持当前 schema。
+相等判定、保留顺序、预算与运行时语义见 [运行时 §7.5](STYLE-spec-runtime.md#75-m2-d3-跨包去重契约)。T30 已实现，保持当前 schema。
 
 - 在所有包完成 placement 构造、静态变量替换与排序后统一判定；只折叠不同包的完整等价规则，静态文本与 runtime 条目采用同一个保留方。动态规则的全部入口一起保留或折叠，不逐事件选择不同包。
-- `compile.Result` 额外返回不写入 index 的去重关系，包含 harness、被折叠规则、保留规则与对应 placement，交给 app 回填组合 plan/token 报告。`core` 不读取 lock/source、不导入具体 adapter；agenthooks 仍只负责最终 hook/静态块的 owner 合并、信任、写入与还原。
+- `compile.Result.Deduplicated` 额外返回不写入 index 的去重关系，包含 harness、被折叠规则、保留规则与对应 placement，交给 app 回填组合 plan/token 报告；`DeduplicationWarnings` 为同包多重声明类提供保留原因。`core` 不读取 lock/source、不导入具体 adapter；agenthooks 仍只负责最终 hook/静态块的 owner 合并、信任、写入与还原。
 - `index.json` 继续 `format=1`，无新必填字段；`packages` 保留全部包，`static`/`harnesses` 仅保留最终有效条目，`StaticBodies` 同步折叠。保留条目的 rule/entry、order、src、src_sha256、body_sha256 与正文均来自原包，不合成来源或别名身份。
 - 去重关系只用于冷路径报告；runtime 不解析别名、不重新选择保留方、不扫描包。不新增共享 state 键。升级后未 sync 的旧 index 继续保持旧行为；重新 install/sync/trust/uninstall 编译后开始去重。
 - doctor 以同样的全包编译结果核对 index 和静态块；卸载任何包仍重建其他已批准包的产物，最终卸载所有包的外部文件字节与权限保证保持。

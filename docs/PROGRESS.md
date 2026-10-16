@@ -1374,3 +1374,16 @@ PY
 - 上一轮已提交 D3 草案并请求评审，用户回复“继续”；按该契约同意编译阶段完整正文/执行语义去重、同包多条保守保留、native 排除、源级预算独立与有效组合成本、保留方切换可能再次注入的边界，进入 T30。
 - D3 改 `[x]`，规范草案改为实施契约，A6 保留未完成状态；没有扩大到尚需真实环境结论的 D4/D5。
 - 验证：仅文档状态与锚点同步，`git diff --check` 通过。下一步实现 T30。
+
+
+### 2026-10-16 — M2-T30 跨包去重与 M2-A6 `[x]`
+
+- 编译：`core/compile/dedup.go` 在所有包构造、静态替换和排序之后收集每条规则的完整 placement 集合；每个 harness 独立，以最终静态字节/slot/mode 或规范化 runtime 执行字段、编译片段、warn 双通道和能力判等。摘要只分桶，再逐结构比较（含 nil/空条件差异），不依赖原始 body/source 摘要。按小数 priority/包序号/规则序号保留第一条，原 provenance 不重写；同包多条等价声明的整个类保留并解释，native 不参与。`Index.Static`/`Harnesses` 与 `StaticBodies` 同步过滤，packages 保留全部，index schema/format 1、runtime/state 与 agenthooks 均未修改。
+- 报告与预算：`Result.Deduplicated`/`DeduplicationWarnings` 只返回冷路径关系。install/trust 包含请求包及关系中的参与包，plan/token 折叠行增加可选 `deduplicated_into`，保留状态/单条估算，文字标“no additional cost”，无正文/settings 泄露。先运行单包源级检查，再编译并重算有效 events/always_on/session/T003；保留源级 T001/T002/T004–T007，分隔符和 block/other 最大分支重算。静态 T001 仍在 validate 退出 1，T002/T004 安装预算与 T003 退出 4；规范补清阶段差异，均不写安装树。单包 plan 不读 STYLE_HOME。
+- 核心证据：`TestCrossPackageDedup*` 覆盖 3 包 × 2 harness、分数 priority、序号与反转输入、完整 dynamic system/skill 入口、静态替换、同包多重声明、skipped/never 与能力排除；`TestDedupPreservesDifferentCompiledSemantics` 逐项覆盖 22 种执行语义/正文形状差异，nil/空 alternatives 同 JSON 哈希桶仍不合并。`core/tokens/dedup_test.go` 验证源级诊断不变、有效桶零贡献，以及 tokens/chars 两种 T003 单位的分隔符/分支边界。
+- app 证据：`TestA6Dedup*` 覆盖三路线分别卸载保留方/折叠方、两条 Codex 路线切换、幂等、doctor、普通 trust/已信任 link 的正文/priority 改动、原文件字节与 0640 还原；原单包 plan 对比不变。组合报告两份 `testdata/golden/dedup-install-codex.{txt,json}`，先核对字段/成本与正文不泄露再更新 golden，随后无更新开关重跑。12 并发调用只有 1 次 session 输出、11 次 canonical dedup；compact/clear、turn、渲染正文变化、warn every、block every、subagent.start 不占位、条件不命中、cap-drop 释放、旧会话保留方卸载后接替身份可再输出均验证。
+- 边界：1002-token 两份等价声明去重前 2005 > Codex T003 的 2000，去重后 1002，可安装；不同 repeat 或运行时偶然同文仍退出 4，安装树完全不变；源级 T001/T002/T004 不能被另一个包抵消。相同 native 命令仍全部安装。同包歧义的组合报告解释保留原因。原 A18 T003 fixture 原先正文相同，现第二份改为等长不同首字母，继续独立验证真实增长为 2005 时拒绝；未改任何 M1 归档文档。
+- conformance：`TestCrossPackageDedupPreservesAllCodecGoldensAndRuntimeStats` 为真实语料追加等价包，两家 46 个 codec payload 的 canonical 条目、原 stdout golden/白名单和 stats 记录完全一致（仅排除运行时间），编译折叠方不生成虚构去重行；既有 index/plan/runtime golden 未改。
+- 验证：全部 Go 命令清除 CODEX_HOME/CODEX_SANDBOX，临时 GOPATH/GOMODCACHE/GOCACHE。`GOFLAGS='-mod=readonly -count=1' make test-go`、`GOFLAGS=-mod=readonly make vet-go` 双 module exit 0；`go test -race -count=1 ./core/compile ./core/tokens ./core/engine ./core/state ./internal/app ./internal/adapter/conformance` exit 0（app 22.219s，conformance 9.701s）；随后新增 turn/正文 claim 专项 race 通过，生产代码只补 API 注释。采集器 `PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s testdata/manual -p 'test_*.py'` 40 项 OK；初次误用不存在的 tools/collect-tokens 路径只得到 discovery ImportError，已改用上述仓库命令。
+- 最终构建：`go build -trimpath -buildvcs=false` 成功，二进制 `/var/folders/m5/gv7_10k149l3j4l02mt548zr0000gp/T/style-m2-dedup-final.kkbpbqzx/style` SHA256 `c35d85bd70c4bd575e5eaf401662870b45867b419995e2747a5917c57952ab8c`；扩展 smoke 40 项通过（36→40，新增实际 CLI 组合报告、单份静态/index、doctor、卸载折叠方不改保留产物）。缓存、二进制与临时探针均不入库。gofmt、5 份当前文档围栏/39 个存在的本地目标/D3 锚点与 JSON golden、`git diff --check` 通过；编译规范原有 3 处缺失外部材料链接未改。
+- T30/A6 改 `[x]`，A9 补本阶段回归并保持 `[~]` 等剩余 M2 任务最终复验。下一步 D4/D5 Claude 真实环境结论与手册准备；没有用离线测试替代真实 harness 证据。
