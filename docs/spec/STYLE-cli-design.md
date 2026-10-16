@@ -630,9 +630,9 @@ terse-reviewer 0.3.0 → codex（路线：plugin）
 - `style doctor` 维持最近 7 天、按 provider/规则的 top3：仅累加 `output`/`blocked` 中同时带有效估算与摘要的记录，`emits` 也是这部分记录数；缺字段的输出单列 `legacy_stats_without_estimate`。至少 3 次、只有一个正文摘要且总估算大于 0 时标 `repeated_body`，提示检查 `repeat`。
 - **只存估算值、摘要和计数，不存正文、提示词或 native 命令**。静态位置的常驻正文与 native 命令不经过 runtime，不产生这里的计数；缺少日志也不推断为零成本。
 
-#### 11.5.2 M2-D2 `style stats` 草案（待用户评审，尚未实现）
+#### 11.5.2 M2-D2 `style stats` 契约（评审通过，T20 实现中）
 
-本节是 T20 的拟实施契约；D2 评审通过前不修改 CLI 或日志读取行为。
+用户于 2026-10-16 同意继续按本节契约推进 T20。
 
 **命令与窗口**：
 

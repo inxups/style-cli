@@ -1341,3 +1341,10 @@ PY
 - 草案回写 CLI 设计 §4/§11.5.2：`--by rule|session` 默认 rule，`--since` 默认 168h、正 duration 或 RFC3339，until 单次捕获且边界包含；按 provider/规则或 provider/目录 session 分组，后者合并全部 agent。区分 outputs/blocks/dedup/cap_drops，历史 token 仅累加已有估算与摘要的实际输出；缺成本记 unestimated。文本/JSON format 1、排序、空报告、质量计数和退出码均给出契约，不把记录条数当作请求数或账单。
 - 拟定坏行/超长行有界跳过继续统计、partial 与计数可见；根 symlink/I/O/取消/溢出退出 1。stats 完全只读，不触发 adapter 检测、index 读取或清理。doctor 提取共享读取器，正常 top3/legacy/repeated_body 保持，坏行继续统计并保留 warning；agenthooks 与 runtime 写入格式不变。M2-A5 写入待评审验收清单，尚无 fixture/golden 或测试通过声明。
 - 验证：仅文档，代码/二进制仍为 T60 的已验证版本；当前文档本地链接、围栏、示例 JSON 结构和 `git diff --check` 通过。D2 保持 `[~]`，依任务清单“用户评审通过后才进入对应实现条目”，T20 未开始。
+
+
+### 2026-10-16 — M2-D2 评审通过 `[x]`
+
+- 上一轮已提交 D2 草案并请求评审，用户回复“继续”；按此同意原草案的默认 168h、rule/session 分组、只读/有界扫描、六字段计数、质量报告与 doctor 兼容契约，进入 T20。未扩大到尚未评审的 D3–D5 实现。
+- D2 改 `[x]`，CLI 设计 §11.5.2 改为实施契约，A5 按契约验收；T20/A5 尚未标完成。
+- 验证：仅文档状态更新，`git diff --check` 通过；当前草案已有的本地链接和 JSON 示例未改。下一步实现 T20。

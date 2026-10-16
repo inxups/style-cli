@@ -4,7 +4,7 @@
 
 本文件是 STYLE CLI M2 的持久化任务清单。每项任务完成后必须同时补充证据（命令、fixture、golden 文件或真实运行记录），不能只根据对话上下文标记完成。测试矩阵见 [STYLE-M2-TESTS.md](STYLE-M2-TESTS.md)，执行记录追加到 [PROGRESS.md](PROGRESS.md)。
 
-当前总状态：M2 已开始，文档建立（M2-00）与基线回归（M2-01）完成；M2-D1 native 规则格式设计评审通过，M2-T10–T13、M2-T60 完成；M2-D2 stats 输出草案已回写，等待用户评审，T20 未开始。M1 已关闭并只读归档（[任务](STYLE-M1-TASKS.md)、[测试](STYLE-M1-TESTS.md)），唯一遗留为 M2-CARRY-01。
+当前总状态：M2 已开始，文档建立（M2-00）与基线回归（M2-01）完成；M2-D1 native 规则格式设计评审通过，M2-T10–T13、M2-T60 完成；M2-D2 stats 输出设计已获用户同意，正在推进 T20。M1 已关闭并只读归档（[任务](STYLE-M1-TASKS.md)、[测试](STYLE-M1-TESTS.md)），唯一遗留为 M2-CARRY-01。
 
 ## 范围
 
@@ -55,7 +55,7 @@ M1 中已记录的已知限制（如 force-push 示例规则对 `--push-option` 
   - 与 Codex 固定订阅面、Claude 动态订阅面并存时的合并与排序。
 
   回写：`spec/STYLE-spec-rules.md` §3.3、`spec/STYLE-spec-runtime.md` 信任一节、`spec/STYLE-cli-design.md` §3 `Native()`。依赖：M2-01。
-- [~] **M2-D2 `style stats` 输出**：草案已回写 CLI 设计 §4、§11.5.2，待用户评审，未进入 T20。拟定：默认 rule/最近 168h，`--by session` 合并 main 与子 agent，`--since` 接受正 duration 或 RFC3339；只读留存日志，六个计数字段明确 output/blocked/去重/容量丢弃与缺估算；JSON format 1、稳定排序，坏行/超长行跳过计数、I/O 错误退出 1。doctor 复用读取器但保留 top3/旧记录/清理职责，坏行改为继续统计并告警。所有用户可见决策均待本项评审确认。依赖：M2-01。证据：`docs/PROGRESS.md` M2-D2 草案。
+- [x] **M2-D2 `style stats` 输出**：用户在上一轮草案评审请求后回复“继续”（2026-10-16），按该契约进入 T20。设计已回写 CLI 设计 §4、§11.5.2：默认 rule/最近 168h，`--by session` 合并 main 与子 agent，`--since` 接受正 duration 或 RFC3339；只读留存日志，六个计数字段明确 output/blocked/去重/容量丢弃与缺估算；JSON format 1、稳定排序，坏行/超长行跳过计数、I/O 错误退出 1。doctor 复用读取器但保留 top3/旧记录/清理职责，坏行改为继续统计并告警。草案中的用户可见决策按此定稿。依赖：M2-01。证据：`docs/PROGRESS.md` M2-D2 评审通过。
 - [ ] **M2-D3 跨包去重（T8）**：“正文完全相同”的判定时机（静态渲染后 / 动态运行时渲染后）、保留哪一份（包序号或 priority）、plan 与 T003 预算只计一次、卸载保留方后的重编译、运行时去重键是否跨包共享。回写：`spec/STYLE-spec-runtime.md` token 一节、`spec/STYLE-spec-compiled.md`。依赖：M2-01。
 - [ ] **M2-D4 U-C4 实测与静态位置决策**：用户在 Claude Code 中验证用户级 `~/.claude/rules/*.md` 是否加载（看 `InstructionsLoaded`）。成立则定迁移方案：已装包从 `CLAUDE.md` 标记块迁到 `style-<名字>.md` 的时机、sync/trust 是否需要重新批准、往返字节保证；不成立则记录“保持 `CLAUDE.md`”回退并关闭。回写：CLI 设计 §10.4、§15.1 U-C4。依赖：M2-01。测试：M2-C1。
 - [ ] **M2-D5 output style 做 replace 评估**：核对官方文档并实测 output style 能否替代 system prompt、与用户已有 output style 冲突时的处理。结局只有两种：可行 → 定位置与 `--allow-replace` 规则；不可行 → 维持规范第 5 节阶梯第 6 条，plan 说明。回写：CLI 设计 §10.4、`spec/STYLE-spec-compiled.md` 静态位置表。依赖：M2-01。测试：M2-C4。
