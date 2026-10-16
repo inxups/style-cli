@@ -113,3 +113,5 @@ PYTHONDONTWRITEBYTECODE=1 python3 testdata/manual/probe_codex_m2.py \
 - B4：两包保留在 index，等价规则只有保留方入口；组合报告标折叠关系，真实请求和 rollout 正文均只有一份，stats 只有保留方一次 output；卸载后配置字节与权限还原。
 
 脚本不修改日常安装；插件使用隔离 marketplace 登记，卸载前由原生命令移除登记。`passed` 和四个 `checks` 都为 true 才可标通过。失败报告保留错误类型和已收集事实，原始日志仍在 scratch；不将 exec 对哈希/插件信任的接受等同于首次 TUI 工作区信任提示。三项新增采集器测试覆盖全文/角色/重复/失败拒绝、stats 行与总量/折叠行核对、原生观察器白名单，全部采集器共 50 项。
+
+2026-10-17 实际结果：固定 codex-cli 0.159.3、T30 STYLE SHA256 `c35d85bd…ab8c`，codex-user/plugin 两路线各运行三次真实模型会话，B1–B4 全部通过；每路线共存场景两份 STYLE 输出与 26 估算 token，native 两份注入单列。完整证据分别为 [B1](review/M2-B1-CODEX-2026-10-17.json)、[B2](review/M2-B2-CODEX-2026-10-17.json)、[B3](review/M2-B3-CODEX-2026-10-17.json)、[B4](review/M2-B4-CODEX-2026-10-17.json)。原始日志和连接配置保留在 `/private/tmp/style-m2-codex-user-20261017`、`/private/tmp/style-m2-codex-plugin-20261017`，不入库。Claude 实测仍受额度阻塞，M2 尚未关闭。

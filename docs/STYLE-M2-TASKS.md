@@ -4,7 +4,7 @@
 
 本文件是 STYLE CLI M2 的持久化任务清单。每项任务完成后必须同时补充证据（命令、fixture、golden 文件或真实运行记录），不能只根据对话上下文标记完成。测试矩阵见 [STYLE-M2-TESTS.md](STYLE-M2-TESTS.md)，执行记录追加到 [PROGRESS.md](PROGRESS.md)。
 
-当前总状态：M2 已开始，文档建立（M2-00）与基线回归（M2-01）完成；M2-D1 native 规则格式设计评审通过，M2-T10–T13、M2-T60 完成；M2-D2 stats 输出设计与 M2-T20 实现完成；M2-D3 跨包去重设计与 M2-T30 实现完成；D4/D5 已有本地协议补充证据和隔离界面探针，因用户报告 Claude 订阅额度用尽暂挂真实界面步骤，等待额度可用后的实测与设计评审。OAuth 保存重试仍未确认。M1 已关闭并只读归档（[任务](STYLE-M1-TASKS.md)、[测试](STYLE-M1-TESTS.md)），唯一遗留为 M2-CARRY-01。
+当前总状态：M2 已开始，文档建立（M2-00）与基线回归（M2-01）完成；M2-D1 native 规则格式设计评审通过，M2-T10–T13、M2-T60 完成；M2-D2 stats 输出设计与 M2-T20 实现完成；M2-D3 跨包去重设计与 M2-T30 实现完成；Codex B1–B4 独立真实验收已在 user/plugin 两路线通过；D4/D5 已有本地协议补充证据和隔离界面探针，因用户报告 Claude 订阅额度用尽暂挂真实界面步骤，等待额度可用后的实测与设计评审。OAuth 保存重试仍未确认。M1 已关闭并只读归档（[任务](STYLE-M1-TASKS.md)、[测试](STYLE-M1-TESTS.md)），唯一遗留为 M2-CARRY-01。
 
 ## 范围
 
@@ -88,7 +88,7 @@ M1 中已记录的已知限制（如 force-push 示例规则对 `--push-option` 
 ## 里程碑验收
 
 - [ ] **M2a 离线验收**：测试矩阵 M2-A1–A9 全部有可重复证据。
-- [ ] **M2b Codex 真实环境**：M2-B1–B4。
+- [x] **M2b Codex 真实环境**：M2-B1–B4，codex-user/plugin 两路线真实服务、原生观察/OTel/rollout/stats 证据均通过，见测试矩阵和 `docs/review/M2-B*-CODEX-2026-10-17.json`。
 - [ ] **M2b Claude Code 真实环境**：M2-C1–C4。
 - [ ] **M2-FINAL 最终回归**：双 module fresh test/vet、相关 race、构建、smoke，以及最终提交的 Ubuntu/macOS CI（M2-CI-01）。
 - [ ] **M2-DOCS 文档同步**：[教程](STYLE-TUTORIAL.md)、[adapter 总览](STYLE-ADAPTERS-CURRENT.md)、CLI 设计 §14.4 与规范状态同步到 M2 结果（M2-DOCS-01）。

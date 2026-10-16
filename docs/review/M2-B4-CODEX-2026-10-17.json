@@ -1,0 +1,153 @@
+{
+  "date": "2026-10-17",
+  "item": "M2-B4",
+  "passed": true,
+  "scope": "two isolated native Codex routes with the configured real model service",
+  "source_commit": "f76b37e",
+  "source_sha256": "589d168506db60b7667431bd72ca310ecba5ff6fc933bbc1a0de215ec25489c6",
+  "style_binary_sha256": "c35d85bd70c4bd575e5eaf401662870b45867b419995e2747a5917c57952ab8c",
+  "provenance": {
+    "codex-user": {
+      "at_utc": "2026-10-16T15:21:31.051811+00:00",
+      "harness_version": "codex-cli 0.159.3",
+      "raw_report": "/private/tmp/style-m2-codex-user-20261017.json",
+      "raw_report_sha256": "9e838a6b9ce71f2c72e4a6478ed3caf64ed8122cf7eda5efde32d8d1e8890964",
+      "command": [
+        "python3",
+        "testdata/manual/probe_codex_m2.py",
+        "--style",
+        "<fixed T30 binary>",
+        "--route",
+        "codex-user",
+        "--scratch",
+        "/private/tmp/style-m2-codex-user-20261017",
+        "--output",
+        "/private/tmp/style-m2-codex-user-20261017.json"
+      ]
+    },
+    "codex-plugin": {
+      "at_utc": "2026-10-16T15:22:14.000360+00:00",
+      "harness_version": "codex-cli 0.159.3",
+      "raw_report": "/private/tmp/style-m2-codex-plugin-20261017.json",
+      "raw_report_sha256": "fb7ead455ecd2ef68130c32af0460b918f74e220c1b3de5d0b727f656035a79a",
+      "command": [
+        "python3",
+        "testdata/manual/probe_codex_m2.py",
+        "--style",
+        "<fixed T30 binary>",
+        "--route",
+        "codex-plugin",
+        "--scratch",
+        "/private/tmp/style-m2-codex-plugin-20261017",
+        "--output",
+        "/private/tmp/style-m2-codex-plugin-20261017.json"
+      ]
+    }
+  },
+  "routes": {
+    "codex-user": {
+      "passed": true,
+      "call": {
+        "session_id": "01a1454e-0d2a-7950-a157-c95694e6f87e",
+        "exit": 0,
+        "rollout_sha256": "6c69db53405c4a7d9a649681eaa480090fe2954091e51d9e8ceb11266c65d8aa",
+        "stats": [
+          {
+            "at": "2026-10-16T15:21:45.56944Z",
+            "provider": "codex",
+            "event": "SessionStart",
+            "point": "session.start",
+            "entry": "m2-first/shared@session.start",
+            "action": "inject",
+            "result": "output",
+            "est_tokens": 16,
+            "body_sha256": "sha256:3a832071b27009259fe24f44aaec1de1e57a1f2297e9b5e6487ea45b38cdc359"
+          }
+        ],
+        "hook_spans": [
+          {
+            "start_ns": "1792164105559425000",
+            "end_ns": "1792164105570137000",
+            "hook.event_name": "SessionStart",
+            "hook.handler_type": "command",
+            "hook.source": "user",
+            "hook.command_outcome": "completed"
+          },
+          {
+            "start_ns": "1792164105571594000",
+            "end_ns": "1792164105580973000",
+            "hook.event_name": "UserPromptSubmit",
+            "hook.handler_type": "command",
+            "hook.source": "user",
+            "hook.command_outcome": "completed"
+          }
+        ]
+      },
+      "delivery": {
+        "body_sha256": "sha256:3a832071b27009259fe24f44aaec1de1e57a1f2297e9b5e6487ea45b38cdc359",
+        "request_occurrences": [
+          1
+        ],
+        "rollout_occurrences": 1
+      },
+      "compiled_package_count": 2,
+      "compiled_rules": [
+        "m2-first/shared"
+      ],
+      "deduplicated_into": "m2-first/shared",
+      "configuration_byte_and_permission_roundtrip": true
+    },
+    "codex-plugin": {
+      "passed": true,
+      "call": {
+        "session_id": "01a1454e-ce25-7ea0-b9b3-7576846a60d9",
+        "exit": 0,
+        "rollout_sha256": "fafbe1dd857b08a55f43185c9e4a900b04b19a064a452966e40fac54d4db3731",
+        "stats": [
+          {
+            "at": "2026-10-16T15:22:35.175182Z",
+            "provider": "codex",
+            "event": "SessionStart",
+            "point": "session.start",
+            "entry": "m2-first/shared@session.start",
+            "action": "inject",
+            "result": "output",
+            "est_tokens": 16,
+            "body_sha256": "sha256:3a832071b27009259fe24f44aaec1de1e57a1f2297e9b5e6487ea45b38cdc359"
+          }
+        ],
+        "hook_spans": [
+          {
+            "start_ns": "1792164154965234000",
+            "end_ns": "1792164155175904000",
+            "hook.event_name": "SessionStart",
+            "hook.handler_type": "command",
+            "hook.source": "plugin",
+            "hook.command_outcome": "completed"
+          },
+          {
+            "start_ns": "1792164155177821000",
+            "end_ns": "1792164155193320000",
+            "hook.event_name": "UserPromptSubmit",
+            "hook.handler_type": "command",
+            "hook.source": "plugin",
+            "hook.command_outcome": "completed"
+          }
+        ]
+      },
+      "delivery": {
+        "body_sha256": "sha256:3a832071b27009259fe24f44aaec1de1e57a1f2297e9b5e6487ea45b38cdc359",
+        "request_occurrences": [
+          1
+        ],
+        "rollout_occurrences": 1
+      },
+      "compiled_package_count": 2,
+      "compiled_rules": [
+        "m2-first/shared"
+      ],
+      "deduplicated_into": "m2-first/shared",
+      "configuration_byte_and_permission_roundtrip": true
+    }
+  }
+}

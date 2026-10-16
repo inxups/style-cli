@@ -92,7 +92,7 @@ Codex 真实配置由 agent 执行，步骤见 M2-PREP 建立的 `docs/STYLE-M2-
 - [x] **M2-B1 native hook 真实触发**：codex-user/plugin 两路线的 SessionStart、Bash PreToolUse 各一次，Read matcher 不触发；白名单观察、OTel、rollout 和请求全文相符。卸载后额外真实会话无 hook/span/正文，配置字节与权限还原。只声明 exec 对用户哈希/插件登记的接受，不声明首次 TUI 工作区信任。证据：[M2-B1 双路线报告](review/M2-B1-CODEX-2026-10-17.json)；见 `docs/PROGRESS.md` M2-B1。
 - [x] **M2-B2 native 与 STYLE hook 共存**：codex-user/plugin 两路线在 SessionStart 和 PreToolUse 上各有两个 completed span（native 与 STYLE 各一），来源正确；四份完整正文各一次，STYLE runtime 两条 output，native 不进入规则日志。信任范围沿用 B1。证据：[M2-B2 双路线报告](review/M2-B2-CODEX-2026-10-17.json)；见 `docs/PROGRESS.md` M2-B2。
 - [x] **M2-B3 stats 真实汇总**：codex-user/plugin 两路线的生产 style stats rule/session 每行及总量与真实 runtime 记录一致：2 outputs、26 estimated_tokens；对应两份 STYLE rollout 全文，另外两份 native 注入单列排除。窗口内 session 身份正确，quality.partial=false。证据：[M2-B3 双路线报告](review/M2-B3-CODEX-2026-10-17.json)；见 `docs/PROGRESS.md` M2-B3。
-- [?] **M2-B4 跨包去重真实投递**：两个包含相同正文规则时，真实会话只注入一次。
+- [x] **M2-B4 跨包去重真实投递**：codex-user/plugin 两路线均保留两个 packages、只有 m2-first/shared 一个编译入口；组合报告标 m2-second/shared 折叠到保留方。真实请求/rollout 正文各一次，stats 仅保留方一次 output，卸载后配置字节与权限还原。证据：[M2-B4 双路线报告](review/M2-B4-CODEX-2026-10-17.json)；见 `docs/PROGRESS.md` M2-B4。
 
 ## M2b：Claude Code 真实环境
 
