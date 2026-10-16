@@ -4,7 +4,7 @@
 
 本文件是 STYLE CLI M2 的持久化任务清单。每项任务完成后必须同时补充证据（命令、fixture、golden 文件或真实运行记录），不能只根据对话上下文标记完成。测试矩阵见 [STYLE-M2-TESTS.md](STYLE-M2-TESTS.md)，执行记录追加到 [PROGRESS.md](PROGRESS.md)。
 
-当前总状态：M2 已开始，文档建立（M2-00）完成，下一步 M2-01 基线回归。M1 已关闭并只读归档（[任务](STYLE-M1-TASKS.md)、[测试](STYLE-M1-TESTS.md)），唯一遗留为 M2-CARRY-01。
+当前总状态：M2 已开始，文档建立（M2-00）与基线回归（M2-01）完成，下一步 M2-D1 native 规则格式设计。M1 已关闭并只读归档（[任务](STYLE-M1-TASKS.md)、[测试](STYLE-M1-TESTS.md)），唯一遗留为 M2-CARRY-01。
 
 ## 范围
 
@@ -37,7 +37,7 @@ M1 中已记录的已知限制（如 force-push 示例规则对 `--push-option` 
 ## 当前基线
 
 - [x] **M2-00 建立 M2 文档**：新建本文件与 [STYLE-M2-TESTS.md](STYLE-M2-TESTS.md)；M1 任务/测试首页改为已关闭并只读归档，FINAL-09 移交 M2-CARRY-01；`AGENTS.md` 改为指向当前里程碑文档。仅文档改动。证据：本地链接/围栏检查与 `git diff --check`，见 `docs/PROGRESS.md` M2-00。
-- [ ] **M2-01 基线回归**：在 M2 起点 HEAD 用隔离环境运行 `make test-go`、`make vet-go`、`-trimpath` 构建和 `scripts/smoke.py`，记录提交哈希、二进制 SHA256 与结果，作为 M2 改动的对照。依赖：M2-00。测试：M2-BASE-01。
+- [x] **M2-01 基线回归**：在 M2 起点 HEAD 用隔离环境运行 `make test-go`、`make vet-go`、`-trimpath` 构建和 `scripts/smoke.py`，记录提交哈希、二进制 SHA256 与结果，作为 M2 改动的对照。依赖：M2-00。测试：M2-BASE-01。证据：起点 6ec25f6 全部通过，见 `docs/PROGRESS.md` M2-01。
 
 ## 遗留项
 

@@ -4,7 +4,7 @@
 
 本文件记录 M2 测试矩阵和每项当前状态。测试通过必须有命令输出、fixture/golden 文件或真实环境记录作为证据。任务清单见 [STYLE-M2-TASKS.md](STYLE-M2-TASKS.md)，M1 测试矩阵已只读归档（[STYLE-M1-TESTS.md](STYLE-M1-TESTS.md)）。
 
-当前状态：全部条目尚未执行。M2a 断言为初稿，标“D* 定稿后细化”的条目在对应设计项通过评审时补全具体 fixture、golden 和退出码。
+当前状态：M2-BASE-01 已通过，其余条目尚未执行。M2a 断言为初稿，标“D* 定稿后细化”的条目在对应设计项通过评审时补全具体 fixture、golden 和退出码。
 
 ## 状态约定
 
@@ -40,7 +40,7 @@ env -u CODEX_HOME -u CODEX_SANDBOX \
 
 ## 基线
 
-- [ ] **M2-BASE-01**（M2-01）：M2 起点 HEAD 的 `make test-go`、`make vet-go`、`-trimpath` 构建与 `scripts/smoke.py` 通过；记录提交哈希、二进制 SHA256 和输出摘要。
+- [x] **M2-BASE-01**（M2-01）：M2 起点 HEAD 的 `make test-go`、`make vet-go`、`-trimpath` 构建与 `scripts/smoke.py` 通过；记录提交哈希、二进制 SHA256 和输出摘要。结果：6ec25f6 上 gofmt 无输出、双 module test/vet exit 0、采集器 40 项 OK、构建 SHA256 `48a86c05…0fa5`、smoke 32 项通过，见 `docs/PROGRESS.md` M2-01。
 
 ## 遗留项
 

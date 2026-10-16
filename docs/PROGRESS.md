@@ -1268,3 +1268,11 @@ PY
 - 改动：新建 `docs/STYLE-M2-TASKS.md`（基线、遗留、设计定稿 D1–D5、M2a 实现 T10–T60、M2b 准备、里程碑验收、backlog）与 `docs/STYLE-M2-TESTS.md`（BASE、CARRY、A1–A9、B1–B4、C1–C4、CI、DOCS）；`AGENTS.md` 改为指向当前里程碑文档，完成里程碑时提示下一步规划。`docs/STYLE-M2-MANUAL.md` 留给 M2-PREP。
 - 验证：改动文档的本地相对链接目标全部存在、代码围栏成对，`git diff --check` 通过。仅文档改动，未运行 Go 测试；Go 基线由 M2-01 执行。
 - 下一步：M2-01 基线回归，然后 M2-D1 native 规则格式设计。
+
+### 2026-10-16 — M2-01 M2 起点基线回归 `[x]`
+
+- 起点：clean HEAD 6ec25f62b190fe93dea96c9af13c059b68222f9b（M2-00 仅文档，Go/module/采集器/workflow 与通过 CI 的 62b9346 相同），go1.27.0 darwin/arm64。所有 Go 命令清除 CODEX_HOME/CODEX_SANDBOX，使用 `/tmp/style-cli-{gopath,gomodcache,gocache}`，步骤与 `.github/workflows/ci.yml` 对齐。
+- `gofmt -l $(git ls-files '*.go')` 无输出；`GOFLAGS='-mod=readonly -count=1' make test-go` exit 0（30 个包 ok，6 个包无测试文件，无 FAIL）；`GOFLAGS=-mod=readonly make vet-go` exit 0；`PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s testdata/manual -p 'test_*.py'` Ran 40 tests OK。
+- `env -u CODEX_HOME -u CODEX_SANDBOX GOPATH=/tmp/style-cli-gopath GOMODCACHE=/tmp/style-cli-gomodcache GOCACHE=/tmp/style-cli-gocache GOFLAGS=-mod=readonly go build -trimpath -o <scratch>/style ./cmd/style` exit 0，SHA256 48a86c05f79d7239b0595866e084eee4396377d27407fa900c35ca6a979c0fa5（含 VCS 元数据，换提交后哈希会变，只作本起点对照）；`PYTHONDONTWRITEBYTECODE=1 python3 scripts/smoke.py <scratch>/style` exit 0，32 项 ok，smoke passed。
+- 日志与二进制留在会话 scratch，不入库。M2-01 / M2-BASE-01 改 `[x]`；后续 M2 改动以此为回归对照（M2-A9）。
+- 下一步：M2-D1 native 规则格式设计，设计结论回写 `docs/spec` 后交用户评审，评审通过前不进入 M2-T10。
