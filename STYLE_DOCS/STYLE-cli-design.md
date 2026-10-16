@@ -720,31 +720,31 @@ F1–F4、F10 是安装和协议层的问题，最好也提给上游。F5–F9 �
 
 ### 15.1 要实测的
 
-保留设计阶段的待测项；已做的准备验证写在对应行，完整验收状态以 [测试矩阵](../docs/STYLE-M1-TESTS.md) 为准。"测之前"一栏记录当前采用的做法。
+保留设计阶段的待测项；已做的准备验证写在对应行，完整验收状态以 [测试矩阵](../docs/STYLE-M1-TESTS.md) 为准。"测之前"一栏记录当前采用的做法；"M1b 结果"一栏按 M1b 真实验收证据回填，B/C 编号指测试矩阵条目，"未测"表示 M1b 没有覆盖、原做法不变。
 
-| # | 问题 | 为什么重要 | 怎么测 | 测之前 | 结局对 M1 的影响 |
-|---|---|---|---|---|---|
-| U2 | Codex 个人 marketplace 登记和启用插件能否自动化 | `install` 能不能全自动 | 装一次，看 Codex 是否加载插件 | 当前由用户按 M1b 手册手动登记/启用；0.159.3 本地管理命令准备验证已通过，STYLE 尚未实现自动化 | 不能自动化不算失败，b1 按手动步骤做 |
-| U3 | 已生成的插件 hook `trusted_hash` 是否被真实 Codex 接受 | 生成摘要与实际信任是否一致 | 新会话记录是否仍有信任提示 | 渲染器默认生成摘要；插件路线仍报告 user-confirmation，不假定已信任，无额外 CLI 开关 | 不影响通过 |
-| U5 | 每次工具调用多起一个进程的开销（Codex 含登录 shell） | 固定订阅面是否可接受 | 基准：连续 1000 次 PreToolUse | 先按固定订阅面实现 | 超出预算 → 改成按规则生成 matcher（每次变化要重新信任），属于设计变更，M1b 暂停评审 |
-| U6 | Codex 云端 skill 的读取工具在 hook 里叫什么 | 云端 skill 能否识别 | 探针 hook 把 stdin 写日志 | 不支持，plan 里说明 | 不影响通过 |
-| U7 | Codex SubagentStart 返回的 context 是否真的进入子 agent | F7、`event: subagent.start` | 让子 agent 复述 | 按源码实现 | 不成立 → Codex 上 `subagent.start` 规则降级为丢弃，F7 移出 M1 |
-| U9 | Claude 的 hook 里能否知道思考被关闭 | Claude 能否产出 `none` | 关掉思考后看 payload 和环境变量 | 不产出 `none` | 不影响通过 |
-| U10 | Codex 配置层的优先级、项目信任的判断方法、`-c` 能否从祖先进程恢复 | Codex effort 准不准 | 多种组合启动，对比 `doctor` 的 effort 来源和 Codex 实际用的值 | 按 9.4 的顺序实现；判断不了项目信任就不读项目层 | 不影响通过，结论写回 9.4 |
-| U11 | Codex `/compact` 之后 `developer_instructions` 是否仍对模型可见；SessionStart(`compact`) 的时机 | 静态规则压缩后是否安全 | `/compact` 后让模型复述 | 认为可见 | 不可见 → Codex 上静态 system 规则同时挂一个只在 `compact` 来源触发的 `session.start` 条目补发 |
-| U-C1 | `$CLAUDE_EFFORT` 在 SessionStart、UserPromptSubmit 的 hook 进程里是否存在 | 第一次工具调用之前能否拿到强度 | 探针 hook 打印环境变量 | 认为存在；不存在就等工具事件，靠 3.7 的重新评估补上 | 不影响通过 |
-| U-C2 | 改了 `settings.json` 的 hooks 后，运行中的会话是否马上生效 | 报告怎么写 | 会话运行中装一个包 | 报告写"新会话生效" | 不影响通过 |
-| U-C3 | `/clear` 后 `session_id` 是否变化、`model` 是否缺失 | 状态和去重 | 探针 | gen +1 兼容两种情况；model 缺失时保留旧值 | 不影响通过 |
-| U-C4 | 用户级 `~/.claude/rules/*.md` 是否生效 | 静态位置选哪个 | 放一个文件，看 `InstructionsLoaded` | 用 `CLAUDE.md` | 生效 → M2 切换 |
-| U-C5 | Claude 各事件上的 `systemMessage` 是否显示给用户 | `warn` 给用户的那份 | 每个事件返回一条 | 认为 PreToolUse、PostToolUse、UserPromptSubmit、UserPromptExpansion 都显示 | 不显示的事件在适配器里去掉 `system-message` 能力，`warn` 只剩模型那句 |
-| U-T1 | resume、fork 之后，之前注入的文字是否还在上下文里（两家） | `sources` 的默认值 | 恢复后让模型复述 | resume 不注入、fork 注入 | fork 也保留 → 默认去掉 `fork`；Codex resume 不保留 → Codex 适配器把 `resume` 当 `startup` 处理 |
-| U-T2 | 压缩后 hook 注入的文字是否被摘要保留 | `reinject_on_compact` 的默认值 | `/compact` 后复述 | 认为丢失（`system` 默认补发） | 保留 → 默认值是否改成 false 由用户决定 |
-| U-T3 | 估算器校准 | 误差范围、系数 | 30–50 条真实规则（中英各半）对比两家实际计数 | ±25% | 调系数，不影响通过 |
-| U-T4 | 典型会话里各规则的注入次数和真实 token | 成本模型参数、预算默认值 | 用 `stats.jsonl` 记录真实会话 | 60 次请求、3 次触发；预算 400 / 1,200 / 600 | 调默认值 |
-| U-T5 | 超限时两家是否真的静默 | `T003` 的严重程度 | 注入 12,000 字符 / 3,000 token | 静默（文档说不提示模型） | 不影响通过 |
-| U-T6 | OpenAI / Codex 的提示词缓存细节（最小长度、保留时间、折扣） | Codex 的成本模型 | 查官方文档，看 usage 里的缓存字段 | 不依赖具体数字 | 不影响通过 |
-| U-V | 目标 Codex 版本和 `main` 在 hook 上的差异；Claude 的最低版本（`PostModelSwitch` v2.1.251、`mcp_server` v2.1.274、`onFailure` v2.1.295） | `requires.harness` 的取值 | 对目标版本重读源码并实测 | Claude ≥ 2.1.274；Codex 写实测版本 | 写回示例包 |
-| U-F9 | agenthooks `3f734c7` 的 Claude codec 已经有哪些字段和事件 | F9 的工作量 | 读 `codec_claudecode.go` | 按缺失处理 | 不影响通过 |
+| # | 问题 | 为什么重要 | 怎么测 | 测之前 | 结局对 M1 的影响 | M1b 结果（2026-10-16） |
+|---|---|---|---|---|---|---|
+| U2 | Codex 个人 marketplace 登记和启用插件能否自动化 | `install` 能不能全自动 | 装一次，看 Codex 是否加载插件 | 当前由用户按 M1b 手册手动登记/启用；0.159.3 本地管理命令准备验证已通过，STYLE 尚未实现自动化 | 不能自动化不算失败，b1 按手动步骤做 | 未自动化：B10 由 agent 手动执行 `codex plugin marketplace add` 与 `codex plugin add`，Codex 0.159.3 加载插件，只新增 marketplaces/plugins 两段；取消注册后 config.toml 逐字节还原 |
+| U3 | 已生成的插件 hook `trusted_hash` 是否被真实 Codex 接受 | 生成摘要与实际信任是否一致 | 新会话记录是否仍有信任提示 | 渲染器默认生成摘要；插件路线仍报告 user-confirmation，不假定已信任，无额外 CLI 开关 | 不影响通过 | 接受：B10 插件路线新会话四类 hook 全部 `hook.source=plugin`，无 hook 信任提示（`codex exec`）；B1 用户级路线的预置摘要在 exec 与 TUI 下也无 hook 信任提示。报告仍写 user-confirmation，未改 |
+| U5 | 每次工具调用多起一个进程的开销（Codex 含登录 shell） | 固定订阅面是否可接受 | 基准：连续 1000 次 PreToolUse | 先按固定订阅面实现 | 超出预算 → 改成按规则生成 matcher（每次变化要重新信任），属于设计变更，M1b 暂停评审 | 部分：连续 731 次真实 PreToolUse（用户叫停，未满 1000），p95=41.6ms、max=44.9ms，0 错误，远低于 150ms；不需改设计，见 B11 |
+| U6 | Codex 云端 skill 的读取工具在 hook 里叫什么 | 云端 skill 能否识别 | 探针 hook 把 stdin 写日志 | 不支持，plan 里说明 | 不影响通过 | 未测 |
+| U7 | Codex SubagentStart 返回的 context 是否真的进入子 agent | F7、`event: subagent.start` | 让子 agent 复述 | 按源码实现 | 不成立 → Codex 上 `subagent.start` 规则降级为丢弃，F7 移出 M1 | 未测：M1b 只验证主会话投递，subagent.start 仍按源码实现；示例包与探针包均无 subagent.start 规则 |
+| U9 | Claude 的 hook 里能否知道思考被关闭 | Claude 能否产出 `none` | 关掉思考后看 payload 和环境变量 | 不产出 `none` | 不影响通过 | 未测 |
+| U10 | Codex 配置层的优先级、项目信任的判断方法、`-c` 能否从祖先进程恢复 | Codex effort 准不准 | 多种组合启动，对比 `doctor` 的 effort 来源和 Codex 实际用的值 | 按 9.4 的顺序实现；判断不了项目信任就不读项目层 | 不影响通过，结论写回 9.4 | 部分：B2 从祖先进程恢复 `-c model_reasoning_effort` 与 `-m`，state 与 rollout 一致；profile 层与项目信任判断未在真实环境验证 |
+| U11 | Codex `/compact` 之后 `developer_instructions` 是否仍对模型可见；SessionStart(`compact`) 的时机 | 静态规则压缩后是否安全 | `/compact` 后让模型复述 | 认为可见 | 不可见 → Codex 上静态 system 规则同时挂一个只在 `compact` 来源触发的 `session.start` 条目补发 | 可见：B3 经 app-server compact 后 developer_instructions 仍在模型输入；SessionStart(compact) 排到下一回合开始时执行，compact 后进程退出则排队的事件丢失 |
+| U-C1 | `$CLAUDE_EFFORT` 在 SessionStart、UserPromptSubmit 的 hook 进程里是否存在 | 第一次工具调用之前能否拿到强度 | 探针 hook 打印环境变量 | 认为存在；不存在就等工具事件，靠 3.7 的重新评估补上 | 不影响通过 | 部分：C1 启动时 effort 为 unknown，Bash 读到 CLAUDE_EFFORT=high，首次工具后的下一条提示补上 high（按 3.7 补发）；未直接采集各 hook 进程环境 |
+| U-C2 | 改了 `settings.json` 的 hooks 后，运行中的会话是否马上生效 | 报告怎么写 | 会话运行中装一个包 | 报告写"新会话生效" | 不影响通过 | 未测 |
+| U-C3 | `/clear` 后 `session_id` 是否变化、`model` 是否缺失 | 状态和去重 | 探针 | gen +1 兼容两种情况；model 缺失时保留旧值 | 不影响通过 | 部分：C7 中 /clear 后 session_id 变化、scope gen=1；model 是否缺失未单独记录 |
+| U-C4 | 用户级 `~/.claude/rules/*.md` 是否生效 | 静态位置选哪个 | 放一个文件，看 `InstructionsLoaded` | 用 `CLAUDE.md` | 生效 → M2 切换 | 未测（M2） |
+| U-C5 | Claude 各事件上的 `systemMessage` 是否显示给用户 | `warn` 给用户的那份 | 每个事件返回一条 | 认为 PreToolUse、PostToolUse、UserPromptSubmit、UserPromptExpansion 都显示 | 不显示的事件在适配器里去掉 `system-message` 能力，`warn` 只剩模型那句 | 部分：C5 只确认 PreToolUse 的 systemMessage 在工具界面可见，其余事件未测，适配器能力未改 |
+| U-T1 | resume、fork 之后，之前注入的文字是否还在上下文里（两家） | `sources` 的默认值 | 恢复后让模型复述 | resume 不注入、fork 注入 | fork 也保留 → 默认去掉 `fork`；Codex resume 不保留 → Codex 适配器把 `resume` 当 `startup` 处理 | resume 部分：Codex B12 resume 时 SessionStart 执行但 STYLE 不注入，rollout 保留原有 hook 上下文；Claude C9 resume 返回 `{}`、状态不变。fork 未测，默认值不变 |
+| U-T2 | 压缩后 hook 注入的文字是否被摘要保留 | `reinject_on_compact` 的默认值 | `/compact` 后复述 | 认为丢失（`system` 默认补发） | 保留 → 默认值是否改成 false 由用户决定 | 未测：B3/C2 只证明压缩后按默认补发一次，未验证摘要是否保留原文字 |
+| U-T3 | 估算器校准 | 误差范围、系数 | 30–50 条真实规则（中英各半）对比两家实际计数 | ±25% | 调系数，不影响通过 | 未测 |
+| U-T4 | 典型会话里各规则的注入次数和真实 token | 成本模型参数、预算默认值 | 用 `stats.jsonl` 记录真实会话 | 60 次请求、3 次触发；预算 400 / 1,200 / 600 | 调默认值 | 未测：真实 stats.jsonl 已有，尚未统计 |
+| U-T5 | 超限时两家是否真的静默 | `T003` 的严重程度 | 注入 12,000 字符 / 3,000 token | 静默（文档说不提示模型） | 不影响通过 | 未测 |
+| U-T6 | OpenAI / Codex 的提示词缓存细节（最小长度、保留时间、折扣） | Codex 的成本模型 | 查官方文档，看 usage 里的缓存字段 | 不依赖具体数字 | 不影响通过 | 未测 |
+| U-V | 目标 Codex 版本和 `main` 在 hook 上的差异；Claude 的最低版本（`PostModelSwitch` v2.1.251、`mcp_server` v2.1.274、`onFailure` v2.1.295） | `requires.harness` 的取值 | 对目标版本重读源码并实测 | Claude ≥ 2.1.274；Codex 写实测版本 | 写回示例包 | 部分：实测版本为 Codex 0.159.3、Claude Code 2.1.300；示例包未写 `requires.harness` |
+| U-F9 | agenthooks `3f734c7` 的 Claude codec 已经有哪些字段和事件 | F9 的工作量 | 读 `codec_claudecode.go` | 按缺失处理 | 不影响通过 | 已关闭：T42 读取并补齐 Claude codec 字段与事件 |
 
 ### 15.2 已由文档或源码关闭（各留一个回归测试，不再算实测项）
 
