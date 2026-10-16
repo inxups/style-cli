@@ -855,3 +855,9 @@
 - 方案：新增条件操作 `shell_regex`，不引入外部依赖。`core/when/shell.go` 尽力按 POSIX shell 拆出会执行的简单命令：去引号、续行，分隔符、子 shell、`$(...)`、反引号，`sh|bash|zsh|dash|ksh -c` 脚本与喂给它们的 heredoc，`eval` 参数，未加引号 heredoc 的命令替换；注释、重定向目标、加引号 heredoc、here-string 是数据；去掉前导赋值、保留字和 `command/builtin/exec/nohup/env`。参数按单个空格连接，含空白或特殊字符的参数重新加单引号，引号内的 `--force` 不构成独立参数。嵌套上限 8 层；输入不完整不报错。
 - 示例规则改为 `shell_regex`，pattern 锚定单条命令：`^git(?:\s+-[cC]\s+\S+)*\s+push\b.*\s(?:--force|-f|\+\S+)(?:\s|$)`。`core/spec` 接受该操作并同样做 RE2 校验，`schema/index.schema.json` 加入枚举，`STYLE-spec-runtime.md` §4.3 写明读取范围与限制（`sudo`、`xargs`、管道喂给 shell、脚本文件不展开），`STYLE-spec-compiled.md` 示例与 golden 同步（只有 src_sha256、op、pattern 变化）。
 - 验证：`shell_test.go` 25 例拆分、嵌套上限、操作语义；`FuzzShellCommands` 30 秒约 779 万次无崩溃或卡死；示例规则 30 例（新增 bash -c、eval、喂给 bash 的 heredoc、未加引号 heredoc 的命令替换、赋值加重定向、续行、引号内 +refspec 均拦截；以 git 开头的 heredoc 行、注释、单个参数内的 --force、echo 均放行）；新增 `bad shell regex` 校验例。双 module `make test-go`、`make vet-go` 通过，`git diff --check` 通过。未在真实 harness 重装复测。
+
+### 2026-10-16 — M1B-TRUST-01 `[x]` trust diff 精简
+
+- 原因：B9 记录 trust 的 diff 只去掉首尾相同行，中间整段 -/+，一个文件里有两处改动时（如 rendered entry 的 src_sha256 与正文）中间未变行全部重复显示，内容正确但冗长。
+- 修改：`internal/app/trust_diff.go` 在去掉公共首尾后按行做 LCS 对齐，输出带 3 行上下文的统一 diff，多处改动分成多个 `@@` 段，间隔不超过 6 行的改动合并为一段。改动区域的比较表超过 4M 格（约 2048×2048 行）时退回原来的整段替换，避免大文件或重复行导致工作量失控。头部 `--- approved/` / `+++ current/`、Binary、Empty file、无末尾换行提示保持不变；JSON 输出的 `source_diff`/`rendered_diff` 字段结构不变，只是 diff 文本更短。
+- 验证：新增 `internal/app/trust_diff_test.go`：两处分离改动得到两段且中间行不重复；相邻改动合并并正确对齐插入行；新增/删除文件的行号为 0,0；无末尾换行；2100 行全改退回整段。既有 `sync_command_test` 的 trust 预览、Binary/Empty file 断言通过。双 module `make test-go`（30 个包 ok）、`make vet-go` 通过，`git diff --check` 通过。未在真实 trust 流程中重放 B9。

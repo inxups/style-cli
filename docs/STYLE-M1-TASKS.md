@@ -118,6 +118,8 @@ T20–T24 与 T30–T34 回顾结论和剩余范围见 `docs/STYLE-M1-REVIEW-202
 
 - [x] **M1B-EXAMPLE-02 force push 规则改为 shell 解析**：EXAMPLE-01 后的正则仍分不清以 git 开头的 heredoc 行和引号里出现在 `&&` 之后的 git，也拦不到 `bash -c "..."`、`eval`、喂给 shell 的 heredoc。新增条件操作 `shell_regex`（`core/when/shell.go`，无外部依赖）：把字段当 shell 命令拆成会执行的各条简单命令，去引号后逐条匹配 RE2；继续读子 shell、`$(...)`/反引号、`sh -c`、`eval`、喂给 shell 的 heredoc 和未加引号 heredoc 的命令替换，注释、重定向目标、加引号 heredoc 正文是数据。示例规则改用 `shell_regex`；spec 校验、index schema、runtime/compiled 规范、golden 同步更新。限制：`sudo`/`xargs`/管道喂给 shell/脚本文件不展开，已写入规范。证据：`core/when/shell_test.go`（25 例拆分、嵌套上限、操作语义、fuzz）、`core/compile/example_force_push_test.go`（30 例）、`core/spec/validate_test.go`。未在真实 harness 重装复测。
 
+- [x] **M1B-TRUST-01 trust diff 精简**：B9 观察到 trust 的 source/rendered diff 只去掉首尾相同行后整段替换，两处改动之间的未变行也显示为 -/+。`internal/app/trust_diff.go` 改为按行 LCS 对齐、每处改动带 3 行上下文的统一 diff 多段输出；改动区域超过 4M 个比较格时退回整段替换，保持工作量有界。二进制、空文件、无末尾换行提示不变。证据：`internal/app/trust_diff_test.go`（分段、相邻合并与插入对齐、新增/删除文件、无末尾换行、大改动退回）。
+
 - [x] **M1B-FIX-01 Codex 卸载换行残留**：修复两条路线在全新配置根卸载后遗留 1 字节 config.toml。原因与修复位于现有 agenthooks Codex TOML 渲染层；8 组回归覆盖不存在、原有换行、空白和用户配置，包含重复安装与双向路线切换，保留原文字节/权限。证据：`internal/app/uninstall_test.go:TestUninstallCodexConfigWithoutGeneratedNewlineResidue`；双 module 全量测试/vet 通过。真实 B8 仍待用户往返验收。
 
 - [x] **M1B-FIX-02 设计与 CLI 路线/信任契约**：修正 `STYLE_DOCS/STYLE-cli-design.md` 的路线 ID、命令表、锁文件示例、信任及插件手动注册说明；明确没有 `--preseed-trust`，区分报告的信任种类和锁文件存储值。真实构建 CLI 后，以临时配置根核对 help、拒绝未知选项且无写入、两条路线安装/卸载、生成摘要与锁文件；新引用链接及 diff 检查通过。设计文件原被忽略，本项将该文件单独纳入版本控制。
