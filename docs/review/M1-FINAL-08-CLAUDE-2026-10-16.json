@@ -1,0 +1,820 @@
+{
+  "date": "2026-10-16",
+  "item": "M1-FINAL-08-CLAUDE-LOCAL",
+  "harness_version": "2.1.300 (Claude Code)",
+  "passed": true,
+  "transport": "real Claude CLI to loopback-only scripted Anthropic Messages endpoint; no model inference",
+  "limits": "Unicode character counts; synthetic stub usage is excluded; no official token or cost claim",
+  "scratch": "/private/tmp/style-m1-claude-overflow-local-b-20261016",
+  "native_checks": [
+    {
+      "name": "session-9999",
+      "event": "SessionStart",
+      "raw_body_chars": 9999,
+      "body_sha256": "78eaba70c058ba454b7e50d3adf9725fa8c8dc033b9e76a94ea2fb844eb5fa02",
+      "raw_body_path": "/private/tmp/style-m1-claude-overflow-local-b-20261016/session-9999-body.txt",
+      "style_installed": false,
+      "hook_facts": [
+        {
+          "fields": {
+            "hook_event_name": "SessionStart",
+            "session_id": "a50e6c02-4e70-4004-aa31-130a39db9d28",
+            "source": "startup"
+          },
+          "payload_keys": [
+            "cwd",
+            "hook_event_name",
+            "session_id",
+            "source",
+            "transcript_path"
+          ],
+          "body_chars": 9999,
+          "body_sha256": "78eaba70c058ba454b7e50d3adf9725fa8c8dc033b9e76a94ea2fb844eb5fa02",
+          "stdout_sha256": "dc50a58d3873ba6c055b6e9a273695decde0c0743528c389797bd1d3a220f5d1"
+        }
+      ],
+      "native_cli_completed": true,
+      "outcome": "accepted-full",
+      "request_observations": [
+        {
+          "index": 0,
+          "outcome": "accepted-full",
+          "full_body_in_request": true,
+          "matches": [
+            {
+              "path": "/messages/1/content/0/text",
+              "text_chars": 10978,
+              "body_occurrences": 1
+            }
+          ],
+          "previews": [],
+          "saved_files": []
+        }
+      ]
+    },
+    {
+      "name": "session-10000",
+      "event": "SessionStart",
+      "raw_body_chars": 10000,
+      "body_sha256": "27c728fb28170814d19dc3526839ffb67edda42bfe7ce4877311e4862540982a",
+      "raw_body_path": "/private/tmp/style-m1-claude-overflow-local-b-20261016/session-10000-body.txt",
+      "style_installed": false,
+      "hook_facts": [
+        {
+          "fields": {
+            "hook_event_name": "SessionStart",
+            "session_id": "e092f110-fc7d-41c4-b7cf-6ee7e9d2738d",
+            "source": "startup"
+          },
+          "payload_keys": [
+            "cwd",
+            "hook_event_name",
+            "session_id",
+            "source",
+            "transcript_path"
+          ],
+          "body_chars": 10000,
+          "body_sha256": "27c728fb28170814d19dc3526839ffb67edda42bfe7ce4877311e4862540982a",
+          "stdout_sha256": "3d7baf00a8a411e986adac9e0456f918927d01de86f60305df96c1505ad9ea9b"
+        }
+      ],
+      "native_cli_completed": true,
+      "outcome": "accepted-full",
+      "request_observations": [
+        {
+          "index": 1,
+          "outcome": "accepted-full",
+          "full_body_in_request": true,
+          "matches": [
+            {
+              "path": "/messages/1/content/0/text",
+              "text_chars": 10979,
+              "body_occurrences": 1
+            }
+          ],
+          "previews": [],
+          "saved_files": []
+        }
+      ]
+    },
+    {
+      "name": "session-10001",
+      "event": "SessionStart",
+      "raw_body_chars": 10001,
+      "body_sha256": "356ef81aabee1fb6cefc0a3b6d3928c1050dcb0ea9bb5630843246aa4a390c42",
+      "raw_body_path": "/private/tmp/style-m1-claude-overflow-local-b-20261016/session-10001-body.txt",
+      "style_installed": false,
+      "hook_facts": [
+        {
+          "fields": {
+            "hook_event_name": "SessionStart",
+            "session_id": "e80d64a0-cbea-4bfe-865a-e6d2f1b4ec11",
+            "source": "startup"
+          },
+          "payload_keys": [
+            "cwd",
+            "hook_event_name",
+            "session_id",
+            "source",
+            "transcript_path"
+          ],
+          "body_chars": 10001,
+          "body_sha256": "356ef81aabee1fb6cefc0a3b6d3928c1050dcb0ea9bb5630843246aa4a390c42",
+          "stdout_sha256": "366f96c145bf187b223a3b8993a7c672ef63bb0ed28d3d018d13c2270e21b14f"
+        }
+      ],
+      "native_cli_completed": true,
+      "outcome": "file-preview",
+      "request_observations": [
+        {
+          "index": 2,
+          "outcome": "file-preview",
+          "full_body_in_request": false,
+          "matches": [],
+          "previews": [
+            {
+              "path": "/messages/1/content/0/text",
+              "text_chars": 3339
+            }
+          ],
+          "saved_files": [
+            {
+              "path": "/private/tmp/style-m1-claude-overflow-local-b-20261016/claude/projects/-private-tmp-style-m1-claude-overflow-local-b-20261016-work/e80d64a0-cbea-4bfe-865a-e6d2f1b4ec11/tool-results/hook-e95d49d4-0771-4de3-b88d-d48f42912026-1-additionalContext.txt",
+              "sha256": "356ef81aabee1fb6cefc0a3b6d3928c1050dcb0ea9bb5630843246aa4a390c42",
+              "chars": 10001,
+              "equals_raw_body": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "session-12000",
+      "event": "SessionStart",
+      "raw_body_chars": 12000,
+      "body_sha256": "12e5577e54a60a815b90345752ebd07ed103a6ac408523ea8722944d9be7618c",
+      "raw_body_path": "/private/tmp/style-m1-claude-overflow-local-b-20261016/session-12000-body.txt",
+      "style_installed": false,
+      "hook_facts": [
+        {
+          "fields": {
+            "hook_event_name": "SessionStart",
+            "session_id": "e928cf4c-d856-4aa5-a278-92f70d22c387",
+            "source": "startup"
+          },
+          "payload_keys": [
+            "cwd",
+            "hook_event_name",
+            "session_id",
+            "source",
+            "transcript_path"
+          ],
+          "body_chars": 12000,
+          "body_sha256": "12e5577e54a60a815b90345752ebd07ed103a6ac408523ea8722944d9be7618c",
+          "stdout_sha256": "b119dcafd11864b359e083990a2dfa19a5a37bac51c03671a0e9354ee6bfd986"
+        }
+      ],
+      "native_cli_completed": true,
+      "outcome": "file-preview",
+      "request_observations": [
+        {
+          "index": 3,
+          "outcome": "file-preview",
+          "full_body_in_request": false,
+          "matches": [],
+          "previews": [
+            {
+              "path": "/messages/1/content/0/text",
+              "text_chars": 3340
+            }
+          ],
+          "saved_files": [
+            {
+              "path": "/private/tmp/style-m1-claude-overflow-local-b-20261016/claude/projects/-private-tmp-style-m1-claude-overflow-local-b-20261016-work/e928cf4c-d856-4aa5-a278-92f70d22c387/tool-results/hook-92bda403-e626-4983-9d63-e17b81ba38a0-1-additionalContext.txt",
+              "sha256": "12e5577e54a60a815b90345752ebd07ed103a6ac408523ea8722944d9be7618c",
+              "chars": 12000,
+              "equals_raw_body": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "session-50000",
+      "event": "SessionStart",
+      "raw_body_chars": 50000,
+      "body_sha256": "4dccbbf31ee3403693abf06097363ac058515f8b38f791fc89ef570369200a00",
+      "raw_body_path": "/private/tmp/style-m1-claude-overflow-local-b-20261016/session-50000-body.txt",
+      "style_installed": false,
+      "hook_facts": [
+        {
+          "fields": {
+            "hook_event_name": "SessionStart",
+            "session_id": "0b27ef0f-a84b-4d51-a64b-3d0f37bf6f25",
+            "source": "startup"
+          },
+          "payload_keys": [
+            "cwd",
+            "hook_event_name",
+            "session_id",
+            "source",
+            "transcript_path"
+          ],
+          "body_chars": 50000,
+          "body_sha256": "4dccbbf31ee3403693abf06097363ac058515f8b38f791fc89ef570369200a00",
+          "stdout_sha256": "56aa9d0bfff84d2932a41a0b0f1257ef64a99616c00e3846771f70c14871c200"
+        }
+      ],
+      "native_cli_completed": true,
+      "outcome": "file-preview",
+      "request_observations": [
+        {
+          "index": 4,
+          "outcome": "file-preview",
+          "full_body_in_request": false,
+          "matches": [],
+          "previews": [
+            {
+              "path": "/messages/1/content/0/text",
+              "text_chars": 3340
+            }
+          ],
+          "saved_files": [
+            {
+              "path": "/private/tmp/style-m1-claude-overflow-local-b-20261016/claude/projects/-private-tmp-style-m1-claude-overflow-local-b-20261016-work/0b27ef0f-a84b-4d51-a64b-3d0f37bf6f25/tool-results/hook-8bf525d1-37a9-4c1a-b122-37e24277dccd-1-additionalContext.txt",
+              "sha256": "4dccbbf31ee3403693abf06097363ac058515f8b38f791fc89ef570369200a00",
+              "chars": 50000,
+              "equals_raw_body": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "prompt-12000",
+      "event": "UserPromptSubmit",
+      "raw_body_chars": 12000,
+      "body_sha256": "bd310eb4ce2fd53675981639f1caa04c334aa54c4ae1ae52cf5c91b56af1d00c",
+      "raw_body_path": "/private/tmp/style-m1-claude-overflow-local-b-20261016/prompt-12000-body.txt",
+      "style_installed": false,
+      "hook_facts": [
+        {
+          "fields": {
+            "hook_event_name": "UserPromptSubmit",
+            "session_id": "764fa36f-4628-47dd-a1c4-a2f3886beafa"
+          },
+          "payload_keys": [
+            "cwd",
+            "hook_event_name",
+            "permission_mode",
+            "prompt",
+            "prompt_id",
+            "session_id",
+            "transcript_path"
+          ],
+          "body_chars": 12000,
+          "body_sha256": "bd310eb4ce2fd53675981639f1caa04c334aa54c4ae1ae52cf5c91b56af1d00c",
+          "stdout_sha256": "aaac28ca41528fa90b90f42be0d155b0bf545a3da64bbe6afba1bc9b190d48ed"
+        }
+      ],
+      "native_cli_completed": true,
+      "outcome": "file-preview",
+      "request_observations": [
+        {
+          "index": 5,
+          "outcome": "file-preview",
+          "full_body_in_request": false,
+          "matches": [],
+          "previews": [
+            {
+              "path": "/messages/1/content/0/text",
+              "text_chars": 3344
+            }
+          ],
+          "saved_files": [
+            {
+              "path": "/private/tmp/style-m1-claude-overflow-local-b-20261016/claude/projects/-private-tmp-style-m1-claude-overflow-local-b-20261016-work/764fa36f-4628-47dd-a1c4-a2f3886beafa/tool-results/hook-b5ade4a6-44c5-4b4b-96c3-6a0d0e3ec4a8-1-additionalContext.txt",
+              "sha256": "bd310eb4ce2fd53675981639f1caa04c334aa54c4ae1ae52cf5c91b56af1d00c",
+              "chars": 12000,
+              "equals_raw_body": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "pre-12000",
+      "event": "PreToolUse",
+      "raw_body_chars": 12000,
+      "body_sha256": "c7747858daac46a1f8060721fd172ff57317cc3699adad34a55fb3f6514fb908",
+      "raw_body_path": "/private/tmp/style-m1-claude-overflow-local-b-20261016/pre-12000-body.txt",
+      "style_installed": false,
+      "hook_facts": [
+        {
+          "fields": {
+            "hook_event_name": "PreToolUse",
+            "session_id": "de9d8610-7bae-46fb-84f9-c94ffbeea7bb",
+            "tool_name": "Bash",
+            "effort": {
+              "level": "high"
+            }
+          },
+          "payload_keys": [
+            "cwd",
+            "effort",
+            "hook_event_name",
+            "permission_mode",
+            "prompt_id",
+            "session_id",
+            "tool_input",
+            "tool_name",
+            "tool_use_id",
+            "transcript_path"
+          ],
+          "body_chars": 12000,
+          "body_sha256": "c7747858daac46a1f8060721fd172ff57317cc3699adad34a55fb3f6514fb908",
+          "stdout_sha256": "1f921c70b728295e7cf6a6e6e0165d60a86948d7b46ff52fd3821d1bdaf0c12d"
+        }
+      ],
+      "native_cli_completed": true,
+      "outcome": "file-preview",
+      "request_observations": [
+        {
+          "index": 6,
+          "outcome": "not-found-or-invalid-artifact",
+          "full_body_in_request": false,
+          "matches": [],
+          "previews": [],
+          "saved_files": []
+        },
+        {
+          "index": 7,
+          "outcome": "file-preview",
+          "full_body_in_request": false,
+          "matches": [],
+          "previews": [
+            {
+              "path": "/messages/4/content/0/text",
+              "text_chars": 2436
+            }
+          ],
+          "saved_files": [
+            {
+              "path": "/private/tmp/style-m1-claude-overflow-local-b-20261016/claude/projects/-private-tmp-style-m1-claude-overflow-local-b-20261016-work/de9d8610-7bae-46fb-84f9-c94ffbeea7bb/tool-results/hook-toolu_style_fixture-1-additionalContext.txt",
+              "sha256": "c7747858daac46a1f8060721fd172ff57317cc3699adad34a55fb3f6514fb908",
+              "chars": 12000,
+              "equals_raw_body": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "post-12000",
+      "event": "PostToolUse",
+      "raw_body_chars": 12000,
+      "body_sha256": "d552ce4440980bca2c1bd329ea00f0d16deeee41d055e3a7c9b667a9388fd0b6",
+      "raw_body_path": "/private/tmp/style-m1-claude-overflow-local-b-20261016/post-12000-body.txt",
+      "style_installed": false,
+      "hook_facts": [
+        {
+          "fields": {
+            "hook_event_name": "PostToolUse",
+            "session_id": "24f50a53-3a32-4f98-9cf8-77674920d927",
+            "tool_name": "Bash",
+            "effort": {
+              "level": "high"
+            }
+          },
+          "payload_keys": [
+            "cwd",
+            "duration_ms",
+            "effort",
+            "hook_event_name",
+            "permission_mode",
+            "prompt_id",
+            "session_id",
+            "tool_input",
+            "tool_name",
+            "tool_response",
+            "tool_use_id",
+            "transcript_path"
+          ],
+          "body_chars": 12000,
+          "body_sha256": "d552ce4440980bca2c1bd329ea00f0d16deeee41d055e3a7c9b667a9388fd0b6",
+          "stdout_sha256": "a9467b893c5149216ed41416ee4439854ec28156a67b234047569b998ef6018a"
+        }
+      ],
+      "native_cli_completed": true,
+      "outcome": "file-preview",
+      "request_observations": [
+        {
+          "index": 8,
+          "outcome": "not-found-or-invalid-artifact",
+          "full_body_in_request": false,
+          "matches": [],
+          "previews": [],
+          "saved_files": []
+        },
+        {
+          "index": 9,
+          "outcome": "file-preview",
+          "full_body_in_request": false,
+          "matches": [],
+          "previews": [
+            {
+              "path": "/messages/4/content/0/text",
+              "text_chars": 2437
+            }
+          ],
+          "saved_files": [
+            {
+              "path": "/private/tmp/style-m1-claude-overflow-local-b-20261016/claude/projects/-private-tmp-style-m1-claude-overflow-local-b-20261016-work/24f50a53-3a32-4f98-9cf8-77674920d927/tool-results/hook-toolu_style_fixture-3-additionalContext.txt",
+              "sha256": "d552ce4440980bca2c1bd329ea00f0d16deeee41d055e3a7c9b667a9388fd0b6",
+              "chars": 12000,
+              "equals_raw_body": true
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "calls": [
+    {
+      "name": "session-9999",
+      "command": [
+        "/private/tmp/style-m1-claude-cli-2.1.300/claude",
+        "-p",
+        "--verbose",
+        "--output-format",
+        "stream-json",
+        "--include-hook-events",
+        "--setting-sources",
+        "user",
+        "--strict-mcp-config",
+        "--mcp-config",
+        "{\"mcpServers\":{}}",
+        "--model",
+        "claude-sonnet-5-5",
+        "--effort",
+        "high",
+        "--tools",
+        "",
+        "--debug-file",
+        "/private/tmp/style-m1-claude-overflow-local-b-20261016/session-9999-debug.log",
+        "Reply OK."
+      ],
+      "exit": 0,
+      "elapsed_seconds": 0.288,
+      "stdout_path": "/private/tmp/style-m1-claude-overflow-local-b-20261016/session-9999-stdout.jsonl",
+      "stderr_path": "/private/tmp/style-m1-claude-overflow-local-b-20261016/session-9999-stderr.txt",
+      "result": {
+        "subtype": "success",
+        "is_error": false,
+        "terminal_reason": "completed",
+        "num_turns": 1,
+        "permission_denials": []
+      },
+      "request_indices": [
+        0
+      ],
+      "session_id": "a50e6c02-4e70-4004-aa31-130a39db9d28"
+    },
+    {
+      "name": "session-10000",
+      "command": [
+        "/private/tmp/style-m1-claude-cli-2.1.300/claude",
+        "-p",
+        "--verbose",
+        "--output-format",
+        "stream-json",
+        "--include-hook-events",
+        "--setting-sources",
+        "user",
+        "--strict-mcp-config",
+        "--mcp-config",
+        "{\"mcpServers\":{}}",
+        "--model",
+        "claude-sonnet-5-5",
+        "--effort",
+        "high",
+        "--tools",
+        "",
+        "--debug-file",
+        "/private/tmp/style-m1-claude-overflow-local-b-20261016/session-10000-debug.log",
+        "Reply OK."
+      ],
+      "exit": 0,
+      "elapsed_seconds": 0.257,
+      "stdout_path": "/private/tmp/style-m1-claude-overflow-local-b-20261016/session-10000-stdout.jsonl",
+      "stderr_path": "/private/tmp/style-m1-claude-overflow-local-b-20261016/session-10000-stderr.txt",
+      "result": {
+        "subtype": "success",
+        "is_error": false,
+        "terminal_reason": "completed",
+        "num_turns": 1,
+        "permission_denials": []
+      },
+      "request_indices": [
+        1
+      ],
+      "session_id": "e092f110-fc7d-41c4-b7cf-6ee7e9d2738d"
+    },
+    {
+      "name": "session-10001",
+      "command": [
+        "/private/tmp/style-m1-claude-cli-2.1.300/claude",
+        "-p",
+        "--verbose",
+        "--output-format",
+        "stream-json",
+        "--include-hook-events",
+        "--setting-sources",
+        "user",
+        "--strict-mcp-config",
+        "--mcp-config",
+        "{\"mcpServers\":{}}",
+        "--model",
+        "claude-sonnet-5-5",
+        "--effort",
+        "high",
+        "--tools",
+        "",
+        "--debug-file",
+        "/private/tmp/style-m1-claude-overflow-local-b-20261016/session-10001-debug.log",
+        "Reply OK."
+      ],
+      "exit": 0,
+      "elapsed_seconds": 0.258,
+      "stdout_path": "/private/tmp/style-m1-claude-overflow-local-b-20261016/session-10001-stdout.jsonl",
+      "stderr_path": "/private/tmp/style-m1-claude-overflow-local-b-20261016/session-10001-stderr.txt",
+      "result": {
+        "subtype": "success",
+        "is_error": false,
+        "terminal_reason": "completed",
+        "num_turns": 1,
+        "permission_denials": []
+      },
+      "request_indices": [
+        2
+      ],
+      "session_id": "e80d64a0-cbea-4bfe-865a-e6d2f1b4ec11"
+    },
+    {
+      "name": "session-12000",
+      "command": [
+        "/private/tmp/style-m1-claude-cli-2.1.300/claude",
+        "-p",
+        "--verbose",
+        "--output-format",
+        "stream-json",
+        "--include-hook-events",
+        "--setting-sources",
+        "user",
+        "--strict-mcp-config",
+        "--mcp-config",
+        "{\"mcpServers\":{}}",
+        "--model",
+        "claude-sonnet-5-5",
+        "--effort",
+        "high",
+        "--tools",
+        "",
+        "--debug-file",
+        "/private/tmp/style-m1-claude-overflow-local-b-20261016/session-12000-debug.log",
+        "Reply OK."
+      ],
+      "exit": 0,
+      "elapsed_seconds": 0.254,
+      "stdout_path": "/private/tmp/style-m1-claude-overflow-local-b-20261016/session-12000-stdout.jsonl",
+      "stderr_path": "/private/tmp/style-m1-claude-overflow-local-b-20261016/session-12000-stderr.txt",
+      "result": {
+        "subtype": "success",
+        "is_error": false,
+        "terminal_reason": "completed",
+        "num_turns": 1,
+        "permission_denials": []
+      },
+      "request_indices": [
+        3
+      ],
+      "session_id": "e928cf4c-d856-4aa5-a278-92f70d22c387"
+    },
+    {
+      "name": "session-50000",
+      "command": [
+        "/private/tmp/style-m1-claude-cli-2.1.300/claude",
+        "-p",
+        "--verbose",
+        "--output-format",
+        "stream-json",
+        "--include-hook-events",
+        "--setting-sources",
+        "user",
+        "--strict-mcp-config",
+        "--mcp-config",
+        "{\"mcpServers\":{}}",
+        "--model",
+        "claude-sonnet-5-5",
+        "--effort",
+        "high",
+        "--tools",
+        "",
+        "--debug-file",
+        "/private/tmp/style-m1-claude-overflow-local-b-20261016/session-50000-debug.log",
+        "Reply OK."
+      ],
+      "exit": 0,
+      "elapsed_seconds": 0.272,
+      "stdout_path": "/private/tmp/style-m1-claude-overflow-local-b-20261016/session-50000-stdout.jsonl",
+      "stderr_path": "/private/tmp/style-m1-claude-overflow-local-b-20261016/session-50000-stderr.txt",
+      "result": {
+        "subtype": "success",
+        "is_error": false,
+        "terminal_reason": "completed",
+        "num_turns": 1,
+        "permission_denials": []
+      },
+      "request_indices": [
+        4
+      ],
+      "session_id": "0b27ef0f-a84b-4d51-a64b-3d0f37bf6f25"
+    },
+    {
+      "name": "prompt-12000",
+      "command": [
+        "/private/tmp/style-m1-claude-cli-2.1.300/claude",
+        "-p",
+        "--verbose",
+        "--output-format",
+        "stream-json",
+        "--include-hook-events",
+        "--setting-sources",
+        "user",
+        "--strict-mcp-config",
+        "--mcp-config",
+        "{\"mcpServers\":{}}",
+        "--model",
+        "claude-sonnet-5-5",
+        "--effort",
+        "high",
+        "--tools",
+        "",
+        "--debug-file",
+        "/private/tmp/style-m1-claude-overflow-local-b-20261016/prompt-12000-debug.log",
+        "Reply OK."
+      ],
+      "exit": 0,
+      "elapsed_seconds": 0.254,
+      "stdout_path": "/private/tmp/style-m1-claude-overflow-local-b-20261016/prompt-12000-stdout.jsonl",
+      "stderr_path": "/private/tmp/style-m1-claude-overflow-local-b-20261016/prompt-12000-stderr.txt",
+      "result": {
+        "subtype": "success",
+        "is_error": false,
+        "terminal_reason": "completed",
+        "num_turns": 1,
+        "permission_denials": []
+      },
+      "request_indices": [
+        5
+      ],
+      "session_id": "764fa36f-4628-47dd-a1c4-a2f3886beafa"
+    },
+    {
+      "name": "pre-12000",
+      "command": [
+        "/private/tmp/style-m1-claude-cli-2.1.300/claude",
+        "-p",
+        "--verbose",
+        "--output-format",
+        "stream-json",
+        "--include-hook-events",
+        "--setting-sources",
+        "user",
+        "--strict-mcp-config",
+        "--mcp-config",
+        "{\"mcpServers\":{}}",
+        "--model",
+        "claude-sonnet-5-5",
+        "--effort",
+        "high",
+        "--tools",
+        "Bash",
+        "--debug-file",
+        "/private/tmp/style-m1-claude-overflow-local-b-20261016/pre-12000-debug.log",
+        "--allowedTools",
+        "Bash",
+        "--permission-mode",
+        "dontAsk",
+        "Run the fixed harmless fixture command."
+      ],
+      "exit": 0,
+      "elapsed_seconds": 0.289,
+      "stdout_path": "/private/tmp/style-m1-claude-overflow-local-b-20261016/pre-12000-stdout.jsonl",
+      "stderr_path": "/private/tmp/style-m1-claude-overflow-local-b-20261016/pre-12000-stderr.txt",
+      "result": {
+        "subtype": "success",
+        "is_error": false,
+        "terminal_reason": "completed",
+        "num_turns": 2,
+        "permission_denials": []
+      },
+      "request_indices": [
+        6,
+        7
+      ],
+      "session_id": "de9d8610-7bae-46fb-84f9-c94ffbeea7bb"
+    },
+    {
+      "name": "post-12000",
+      "command": [
+        "/private/tmp/style-m1-claude-cli-2.1.300/claude",
+        "-p",
+        "--verbose",
+        "--output-format",
+        "stream-json",
+        "--include-hook-events",
+        "--setting-sources",
+        "user",
+        "--strict-mcp-config",
+        "--mcp-config",
+        "{\"mcpServers\":{}}",
+        "--model",
+        "claude-sonnet-5-5",
+        "--effort",
+        "high",
+        "--tools",
+        "Bash",
+        "--debug-file",
+        "/private/tmp/style-m1-claude-overflow-local-b-20261016/post-12000-debug.log",
+        "--allowedTools",
+        "Bash",
+        "--permission-mode",
+        "dontAsk",
+        "Run the fixed harmless fixture command."
+      ],
+      "exit": 0,
+      "elapsed_seconds": 0.287,
+      "stdout_path": "/private/tmp/style-m1-claude-overflow-local-b-20261016/post-12000-stdout.jsonl",
+      "stderr_path": "/private/tmp/style-m1-claude-overflow-local-b-20261016/post-12000-stderr.txt",
+      "result": {
+        "subtype": "success",
+        "is_error": false,
+        "terminal_reason": "completed",
+        "num_turns": 2,
+        "permission_denials": []
+      },
+      "request_indices": [
+        8,
+        9
+      ],
+      "session_id": "24f50a53-3a32-4f98-9cf8-77674920d927"
+    }
+  ],
+  "requests": [
+    {
+      "path": "/private/tmp/style-m1-claude-overflow-local-b-20261016/request-0001.json",
+      "sha256": "f30882a89fc4ab8a3d813fa61138429d597164dac30b2b5714e6b417d2269cf5"
+    },
+    {
+      "path": "/private/tmp/style-m1-claude-overflow-local-b-20261016/request-0002.json",
+      "sha256": "c0cb764318fc7f17e4ba3ea3f62984a777f33caf3803a32c63bc5cc055ee0c4e"
+    },
+    {
+      "path": "/private/tmp/style-m1-claude-overflow-local-b-20261016/request-0003.json",
+      "sha256": "d7a10a7fff848966bb21c92599e53b533d2f351a520fd99573381fba49ce314b"
+    },
+    {
+      "path": "/private/tmp/style-m1-claude-overflow-local-b-20261016/request-0004.json",
+      "sha256": "94a6c2f0de294654ae8307bcd9dfa5446919c4c78410ccfcfd3d41627631144c"
+    },
+    {
+      "path": "/private/tmp/style-m1-claude-overflow-local-b-20261016/request-0005.json",
+      "sha256": "ab9b4bdc20ce00f4c16507444a821148ede881f853d1543780ba19da9819500d"
+    },
+    {
+      "path": "/private/tmp/style-m1-claude-overflow-local-b-20261016/request-0006.json",
+      "sha256": "31b1a67f1b26257994eed6fd7051fff19f240800db4a6e8b5183d47db27ec687"
+    },
+    {
+      "path": "/private/tmp/style-m1-claude-overflow-local-b-20261016/request-0007.json",
+      "sha256": "c4dca3b208fc443b8f1581015d32a967465c5122cfd6bfe2604ab0ace436ef8e"
+    },
+    {
+      "path": "/private/tmp/style-m1-claude-overflow-local-b-20261016/request-0008.json",
+      "sha256": "2bfb8ba2d5e5234b9c01dd8e6b7fe7a8806b289568801b6b729d0e45e8287e24"
+    },
+    {
+      "path": "/private/tmp/style-m1-claude-overflow-local-b-20261016/request-0009.json",
+      "sha256": "0f083fe323e54e527373ee279144cc5cdf254d46c596fe5243eb6eb4c354de6c"
+    },
+    {
+      "path": "/private/tmp/style-m1-claude-overflow-local-b-20261016/request-0010.json",
+      "sha256": "3c67f348bb563e102f447c0f2be8b0222ba59787bb5e26deae3216dbaee201ec"
+    }
+  ],
+  "unexpected_requests": [],
+  "related_evidence": "M1-FINAL-08-OVERFLOW-2026-10-16.json",
+  "scope": "Actual native CLI request construction and file-preview handling. Loopback response is scripted, so this does not claim remote model inference, official token counts, or billing.",
+  "reproduce_command": "PYTHONDONTWRITEBYTECODE=1 python3 testdata/manual/probe_claude_overflow.py --claude /private/tmp/style-m1-claude-cli-2.1.300/claude --scratch /tmp/style-m1-claude-overflow-local-new --output /tmp/style-m1-claude-overflow-local-new.json"
+}

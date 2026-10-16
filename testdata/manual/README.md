@@ -93,3 +93,13 @@ PYTHONDONTWRITEBYTECODE=1 python3 testdata/manual/calibrate_tokens.py \
 已核对官方 [OpenAI counting tokens](https://developers.openai.com/api/docs/guides/token-counting) 和 [Claude token counting](https://platform.claude.com/docs/en/build-with-claude/token-counting)。计数接口的结果按其语义记录，不代表实际会话账单；计数模型若不可用，保留失败，另起有明确模型的新报告。
 
 `summarize_session_usage.py` 只读汇总真实报告和 retained Claude transcript/stats。Codex resume 使用最后会话累计 usage/stats，Claude 按响应身份保留最后 usage，避免重复相加；规则估算与整个会话 usage 分列。复现命令、缓存条件、覆盖范围及默认公式假设见 [FINAL-10](../../docs/review/M1-FINAL-10-CACHE-2026-10-16.md)。
+
+`probe_claude_overflow.py` 绕开 STYLE，驱动真实 Claude2.1.300 CLI 和真实 Bash；Messages 服务仅绑定127.0.0.1并返回脚本内容。它捕获原生实际请求，检查完整正文或原生预览文件的精确字节，不用首尾标记猜测完整投递，也不读取/转发日常凭据。stub 的 usage 是协议占位，不是官方计数。复现：
+
+```sh
+PYTHONDONTWRITEBYTECODE=1 python3 testdata/manual/probe_claude_overflow.py \
+  --claude /absolute/path/to/claude-2.1.300 \
+  --scratch "$(mktemp -d)" --output /tmp/claude-native-overflow.json
+```
+
+八组原生传输结果见 [FINAL-08 Claude](../../docs/review/M1-FINAL-08-CLAUDE-2026-10-16.json)。`probe_claude_failure.py` 使用同一本地协议支撑核对真实error字段、tool.error投递及stats；M1公开条件仍不开放tool.error上的tool.output。完整请求仅留私有scratch，提交报告排除合成usage和认证信息。

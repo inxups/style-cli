@@ -1194,3 +1194,11 @@ PY
 - `probe_claude_failure.py --claude /private/tmp/style-m1-claude-cli-2.1.300/claude --style /tmp/style-m1-final06-fixed --scratch /tmp/style-m1-claude-failure-d-20261016 --output /tmp/style-m1-claude-failure-d.json`：真实CLI/Bash exit7，observer见error=Exit code7且无tool_error，STYLE tool.error输出一次，实际Messages请求含完整固定标记，stats一致。服务为仅loopback的脚本响应，不调用模型，合成usage/cost不入证据。前几次准备失败（全局claude路径消失、原fixture误用被M1禁止的tool.output）原scratch均保留，未计通过。
 - 验收过程中全局npm安装变为2.1.301且claude入口消失，当前UI进程仍为2.1.300。只向私有目录npm pack目标2.1.300，核对官方包sha512 integrity，再固定native二进制475517ca…；未安装/回滚日常配置。隔离STYLE二进制原子更新为8d5fbf75…，旧8edcb3ce程序和launcher备份保留，独立launch-c9.sh写c9-final06-debug.log。详情见BOUNDARY JSON。
 - 验证环境清理CODEX_HOME/CODEX_SANDBOX，临时GOPATH/GOMODCACHE/GOCACHE和GOFLAGS=-mod=readonly：agenthooks `go test -count=1 ./...`、root `go test -count=1 ./internal/runtime ./internal/adapter/claude ./core/plan ./internal/app ./core/spec`及两边相关vet通过；30项Python单测通过（新增loopback/原生落盘精确比较/环境隔离；初版macOS符号路径断言改为resolve后通过）。FINAL-06-FIX关闭，FINAL-06保持部分完成待C9；不使用脚本准备或模型复述替代验收。
+
+
+### 2026-10-16 — M1-FINAL-08 Claude 原生超限边界实测
+
+- `PYTHONDONTWRITEBYTECODE=1 python3 testdata/manual/probe_claude_overflow.py --claude /private/tmp/style-m1-claude-cli-2.1.300/claude --scratch /tmp/style-m1-claude-overflow-local-b-20261016 --output /tmp/style-m1-claude-overflow-local-b.json` exit0；原生2.1.300，独立HOME/配置/work，没有STYLE包或STYLE裁剪。实际Messages请求只发loopback脚本服务，无凭据读取/转发，无远程推理；合成usage与cost从报告排除，不能计入U-T3/T4。
+- 八组ASCII正文：SessionStart9,999和10,000字符精确完整进入请求；10,001、12,000、50,000及UserPromptSubmit/PreToolUse/PostToolUse各12,000均由native生成persisted-output预览。六份native保存文件与原文bytes/SHA256完全相等；pre/post包含真实Bash printf成功返回。只收marker或首尾相同不算完整，采集器回归覆盖该误判及错误落盘内容。
+- 第一轮a探针所有原生运行已结束，采集器最初只判断fullbody，故把预览暂记not-full；原报告不覆盖，从保留请求和文件补判的新报告关联sourceSHA。第二轮b以修正后的完整脚本重跑八组，全通过，无意外HTTP路径。原scratch均保留，入库b报告 `review/M1-FINAL-08-CLAUDE-2026-10-16.json` 并关联既有两家STYLE保护/Codex原生证据。
+- 当前file-preview/10k adapter声明与ASCII原生边界一致，预算、来源和策略不改。30项Python采集器回归、脚本语法/报告断言/diff检查通过。FINAL-08关闭；不把本地脚本响应表述成真实模型推理或官方token计数。
