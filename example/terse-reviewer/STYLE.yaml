@@ -60,8 +60,10 @@ rules:
       agent: any
       conditions:
         # shell_regex matches each simple command the shell would run, with quotes
-        # removed, so quoted text, comments and heredoc data do not match.
-        - {field: tool.input.command, op: shell_regex, pattern: '^git(?:\s+-[cC]\s+\S+)*\s+push\b.*\s(?:--force|-f|\+\S+)(?:\s|$)'}
+        # removed, so quoted text, comments and heredoc data do not match. The
+        # pattern accepts git by path, git global options before push, and -f
+        # inside a short-option cluster unless an earlier -o takes it as a value.
+        - {field: tool.input.command, op: shell_regex, pattern: '^(?:\S*/)?git(?:\s+(?:-[cC]|--(?:git-dir|work-tree|namespace|attr-source))\s+\S+|\s+-\S+)*\s+push\b.*\s(?:--force|-[0-9A-Za-np-z]*f\S*|\+\S+)(?:\s|$)'}
     text: Do not force push; create a new commit.
   - id: on-review-prompt
     target: event

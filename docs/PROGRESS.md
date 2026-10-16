@@ -868,3 +868,10 @@
 - sync 退出 3（1 个文件变化）→ trust 预览退出 1：新 diff 中 source 为一段 `@@ -59,10 +59,9 @@`，rendered 三个 entry 的 src_sha256 与 op/pattern 各成独立小段（共 6 段），不再整段 -/+ → `trust --yes` 退出 0；随后 sync 0、两包 hash_matches、doctor healthy，Codex config.toml/hooks.json 与 Claude settings.json 哈希不变。
 - Codex 真实会话 01a1435b（codex-user，gpt-6.1-sol/medium），临时仓库 ex02-repo 只连本地 bare 远端：`cd ex02-repo; bash -c 'git push --force origin main'` 被 PreToolUse 拦截；写入含以 git 开头 force push 行的引号 heredoc 文档运行成功；`--force-with-lease` 运行成功（Everything up-to-date）；直接 `git -C ex02-repo push --force origin main` 被拦截。stats 两条 blocked，远端 main 仍为 6c88e18。用旧 EXAMPLE-01 pattern 对同样四条命令复核：第 1 条旧规则会放行、第 2 条会误拦，新规则两处都改正。
 - 同一 STYLE_HOME 也服务本 Claude 会话的 claude-user hook，更新后本会话随之使用新规则；Claude 配置文件未改动。证据 `docs/review/M1B-EXAMPLE-02-REAL-2026-10-16.json`；本项仅文档/证据变化，验证 JSON 语法与 `git diff --check`。
+
+### 2026-10-16 — M1B-EXAMPLE-03 force push 规则补漏
+
+- 起因：复核 EXAMPLE-02 pattern 时用 Python 对同一正则复算，`git push -fu origin main`、`git --git-dir=.git push --force origin main`、`/usr/bin/git push --force origin main`、`git --no-pager push -f origin main` 均不匹配。
+- 修改：`example/terse-reviewer/STYLE.yaml` 的 no-force-push pattern 接受带路径的 git、push 前的任意全局选项（带独立值的 `-C`/`-c`/`--git-dir`/`--work-tree`/`--namespace`/`--attr-source`），以及含 `f` 的短选项簇（`f` 前有 `o` 时视为 `-o` 的值）。`UPDATE_GOLDEN=1` 重生成 `testdata/golden/index.json`（src_sha256 ff1753d3… → fb5d9905…，pattern 变化），`STYLE_DOCS/STYLE-spec-compiled.md` 示例同步。
+- 验证：`core/compile/example_force_push_test.go` 由 30 例增至 46 例（新增 9 拦截、7 放行）。双 module `make test-go`（30 个包 ok）、`make vet-go`、`git diff --check` 通过。
+- 未做：真实安装 `~/.style-m1b` 仍是 EXAMPLE-02 版本，未 sync/trust；`-o -f`（`-f` 作为 push option 的值）会误拦，git alias 与 `sudo` 包装不覆盖。

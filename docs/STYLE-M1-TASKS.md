@@ -120,6 +120,8 @@ T20–T24 与 T30–T34 回顾结论和剩余范围见 `docs/STYLE-M1-REVIEW-202
 
 - [x] **M1B-TRUST-01 trust diff 精简**：B9 观察到 trust 的 source/rendered diff 只去掉首尾相同行后整段替换，两处改动之间的未变行也显示为 -/+。`internal/app/trust_diff.go` 改为按行 LCS 对齐、每处改动带 3 行上下文的统一 diff 多段输出；改动区域超过 4M 个比较格时退回整段替换，保持工作量有界。二进制、空文件、无末尾换行提示不变。证据：`internal/app/trust_diff_test.go`（分段、相邻合并与插入对齐、新增/删除文件、无末尾换行、大改动退回）；真实 trust 预览（EXAMPLE-02 更新）中每个 rendered entry 的 src_sha256 与 op/pattern 改动分为独立小段，见同一 review JSON。
 
+- [x] **M1B-EXAMPLE-03 force push 规则补漏**：EXAMPLE-02 后的 pattern 只认命令名 `git` 和 `-C`/`-c` 两个全局选项、只认单独的 `-f`，所以 `git push -fu`、`git --no-pager push -f`、`git --git-dir=.git push --force`、`/usr/bin/git push --force` 都会放行。示例规则改为：命令名可带路径（`(?:\S*/)?git`）；push 前可有任意 `-` 开头的全局选项，`-C`/`-c`/`--git-dir`/`--work-tree`/`--namespace`/`--attr-source` 还可带一个独立的值；短选项簇中出现 `f` 即视为 force，但 `f` 前面有 `o` 时按 `-o` 的值处理（`-of`、`-uof` 放行）。golden 与 compiled 规范示例同步更新。证据：`core/compile/example_force_push_test.go` 新增 9 个拦截例（`-fu`、`-uf`、`--no-pager`、`--git-dir=`、分开写值的 `--git-dir`/`--work-tree`、混合全局选项、绝对/相对路径、`env` 加路径）与 7 个放行例（`-u`、`-of`、`-uof`、`--follow-tags`、`legit`、`gitk`、全局选项后接其他子命令），共 46 例。仍不覆盖：`-o` 后单独一个词 `-f` 会被当成 force（误拦）、git alias、`sudo` 等未展开的包装。真实安装尚未 sync/trust 到此版本。
+
 - [x] **M1B-FIX-01 Codex 卸载换行残留**：修复两条路线在全新配置根卸载后遗留 1 字节 config.toml。原因与修复位于现有 agenthooks Codex TOML 渲染层；8 组回归覆盖不存在、原有换行、空白和用户配置，包含重复安装与双向路线切换，保留原文字节/权限。证据：`internal/app/uninstall_test.go:TestUninstallCodexConfigWithoutGeneratedNewlineResidue`；双 module 全量测试/vet 通过。真实 B8 仍待用户往返验收。
 
 - [x] **M1B-FIX-02 设计与 CLI 路线/信任契约**：修正 `STYLE_DOCS/STYLE-cli-design.md` 的路线 ID、命令表、锁文件示例、信任及插件手动注册说明；明确没有 `--preseed-trust`，区分报告的信任种类和锁文件存储值。真实构建 CLI 后，以临时配置根核对 help、拒绝未知选项且无写入、两条路线安装/卸载、生成摘要与锁文件；新引用链接及 diff 检查通过。设计文件原被忽略，本项将该文件单独纳入版本控制。

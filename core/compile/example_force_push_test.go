@@ -6,7 +6,7 @@ import (
 	"github.com/inxups/style-cli/core/when"
 )
 
-// M1B-EXAMPLE-01/02: the example block rule must treat only commands the shell
+// M1B-EXAMPLE-01/02/03: the example block rule must treat only commands the shell
 // would run as git invocations. Quoted text such as heredoc bodies or commit
 // messages that merely mention a force push must not be blocked.
 func TestExampleNoForcePushMatchesCommandPositionsOnly(t *testing.T) {
@@ -48,6 +48,22 @@ func TestExampleNoForcePushMatchesCommandPositionsOnly(t *testing.T) {
 		{"assignment and redirection", "GIT_TRACE=1 git push --force 2>&1 | tee push.log", true},
 		{"line continuation", "git push \\\n  --force origin main", true},
 		{"quoted plus refspec", "git push origin \"+main\"", true},
+		{"short cluster f first", "git push -fu origin main", true},
+		{"short cluster f last", "git push -uf origin main", true},
+		{"no-pager", "git --no-pager push -f origin main", true},
+		{"git-dir equals", "git --git-dir=.git push --force origin main", true},
+		{"git-dir and work-tree separate values", "git --git-dir .git --work-tree . push --force", true},
+		{"mixed global options", "git -c core.pager=cat --no-pager -C repo push --force", true},
+		{"absolute path", "/usr/bin/git push --force origin main", true},
+		{"relative path", "./bin/git push -f", true},
+		{"env and path", "env /usr/local/bin/git push -f", true},
+		{"short cluster without f", "git push -u origin main", false},
+		{"f as push option value", "git push -of origin main", false},
+		{"f as clustered push option value", "git push -uof origin main", false},
+		{"long option starting with f", "git push --follow-tags origin main", false},
+		{"other program ending in git", "/opt/legit push --force", false},
+		{"other program starting with git", "gitk push --force", false},
+		{"global option before other subcommand", "git --no-pager log --format=push -f", false},
 		{"lease", "git push --force-with-lease origin main", false},
 		{"heredoc line starting with git", "cat > notes.md <<'EOF'\ngit push --force origin main\nEOF", false},
 		{"comment", "git status # never git push --force", false},
