@@ -4,7 +4,7 @@
 
 本文件记录 M2 测试矩阵和每项当前状态。测试通过必须有命令输出、fixture/golden 文件或真实环境记录作为证据。任务清单见 [STYLE-M2-TASKS.md](STYLE-M2-TASKS.md)，M1 测试矩阵已只读归档（[STYLE-M1-TESTS.md](STYLE-M1-TESTS.md)）。
 
-当前状态：M2-BASE-01、M2-A1–A6 已通过，M2-A9 已完成 native/stats/跨包去重阶段回归、等待后续 M2 功能完成后复验，D4/D5 已完成设计探针准备和本地协议补充检查（M2-PREP-01），真实界面验收仍待执行。M2a 断言为初稿，标“D* 定稿后细化”的条目在对应设计项通过评审时补全具体 fixture、golden 和退出码。
+当前状态：M2-BASE-01、M2-A1–A6 已通过，M2-A9 已完成 native/stats/跨包去重阶段回归、等待后续 M2 功能完成后复验，D4/D5 已完成设计探针准备和本地协议补充检查（M2-PREP-01），真实界面验收因用户报告 Claude 订阅额度用尽暂挂，OAuth 保存重试仍未确认。M2a 断言为初稿，标“D* 定稿后细化”的条目在对应设计项通过评审时补全具体 fixture、golden 和退出码。
 
 ## 状态约定
 
@@ -98,10 +98,10 @@ Codex 真实配置由 agent 执行，步骤见 M2-PREP 建立的 `docs/STYLE-M2-
 
 Claude Code 界面项由用户执行，agent 提供手册与隔离 runbook。
 
-- [~] **M2-C1 U-C4 实测**（M2-D4）：用户级 `~/.claude/rules/*.md` 是否被加载，以 `InstructionsLoaded` 或原生请求为证；记录结局。本地协议已证实全文一次；首次界面登录因 OAuth 保存失败受阻，启动器 HOME 问题已修正，等待用户按手册重新登录并执行界面步骤。
+- [~] **M2-C1 U-C4 实测**（M2-D4）：用户级 `~/.claude/rules/*.md` 是否被加载，以 `InstructionsLoaded` 或原生请求为证；记录结局。本地协议已证实全文一次；首次 OAuth 保存失败的启动器 HOME 问题已修正，但保存成功尚未确认。2026-10-17 用户报告订阅额度用尽，暂停真实请求，额度可用后按手册继续。
 - [?] **M2-C2 native hook 真实触发**：Claude Code 真实会话中 native 命令按事件和 matcher 执行；卸载后 `settings.json` 逐字节还原。
 - [?] **M2-C3 rules 静态位置真实生效**（仅 D4 成立时）：安装后规则文件被加载，卸载后文件移除、`CLAUDE.md` 与安装前一致。
-- [~] **M2-C4 output style 实测**（M2-D5）：output style 能否替代 system prompt、与用户已有 output style 的冲突行为；记录结局。本地完整 prompt 对照与官方资料支持不作为整份替换位置；与 C1 同受首次 OAuth 保存失败阻塞，启动环境已修正，真实登录和界面切换待重试。
+- [~] **M2-C4 output style 实测**（M2-D5）：output style 能否替代 system prompt、与用户已有 output style 的冲突行为；记录结局。本地完整 prompt 对照与官方资料支持不作为整份替换位置；与 C1 同受首次 OAuth 保存失败和用户报告的订阅额度用尽阻塞，保留启动环境修复结果，额度可用后再登录/切换实测。
 
 ## 持续集成与文档核对
 

@@ -1408,3 +1408,12 @@ PY
 - 现有 `/private/tmp/style-m2-claude-ui-20261016` 的五个脚本已原位修复；旧脚本和 prepared.json 先备份到 `auth-home-fix-before-20261016/`。8 个已有设置/fixture/日志文件 SHA256 前后相同；prepared.json 追加环境策略和私有修复收据位置，acceptance 继续 false。原协议证据保留历史版本，未以新源码摘要重写旧报告。修复归档为 `docs/review/M2-PREP-01-AUTH-2026-10-17.json`。
 - 验证：`PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s testdata/manual -p 'test_*.py'` 47 项 OK。新增两项实际执行五个生成脚本（含空格/引号路径），核对真实 HOME/USER/LOGNAME、临时配置、工作目录、凭据/Codex 检测变量排除和 auth login 参数；核对单独重写启动器不覆盖设置或已有观察记录。五个实际修复脚本 `sh -n` 通过，修复环境的只读默认钥匙串查询 exit 0；这不证明钥匙串解锁/可写或 OAuth 保存成功。
 - 手册写明重新执行原 login.sh，看到 Login successful 后继续四种界面步骤；若同样失败，再检查 login 钥匙串解锁状态并回报错误。M2-PREP-01 脚本准备仍 `[x]`；C1/C4 由待执行改 `[~]`，表示真实界面受登录失败阻塞并待重试。D4/D5 维持 `[~]`，不进入 T40/T50。无 Go 修改，本条不重复运行已通过的 T30 Go 回归。
+
+
+### 2026-10-17 — M2-C1/C4 Claude 订阅额度阻塞 `[~]`
+
+- 用户报告“我claude订阅没额度了”，作为用户提供的环境状态记录；没有发起额外模型请求复核、推断额度恢复时间或把额度错误当成功能失败。原 OAuth 保存修复后仍未重试确认，两个阻塞原因分别保留。
+- 影响：D4/D5 真实界面证据与评审仍未完成；C1/C4 维持 `[~]`，T40/T50 依赖设计结论而未开始。C2/C3 仍为后续待验，不伪造已运行记录；已有 native/stats/去重离线通过证据不受用户额度报告影响。M2-CARRY-01 仍是两家官方 API key 缺失，与订阅额度问题分开。
+- 恢复步骤：额度可用后，若隔离登录仍需完成，执行 `/private/tmp/style-m2-claude-ui-20261016/login.sh`，再按手册依次运行 `launch-default.sh`、`launch-existing.sh`、`launch-replace.sh`、`launch-keep.sh`。现在不重复登录/发测试消息；已有 scratch、日志、协议报告与失败证据保留。没有创建轮询或自动重试任务。
+- 独立推进范围：Codex B1–B4 所需 T10–T13/T20/T30/T60 已完成，可以先准备和执行这部分独立验收，不把尚未评审的 Claude 迁移/replace 纳入。
+- 验证：仅任务/测试/手册状态与追加日志改动；当前文档本地链接、围栏和 `git diff --check` 检查，无代码/fixture/通过状态变化，不重复 Go/模型测试。
