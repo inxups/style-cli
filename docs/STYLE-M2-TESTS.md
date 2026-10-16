@@ -1,6 +1,6 @@
 # STYLE CLI M2 测试清单
 
-更新时间：2026-10-16
+更新时间：2026-10-17
 
 本文件记录 M2 测试矩阵和每项当前状态。测试通过必须有命令输出、fixture/golden 文件或真实环境记录作为证据。任务清单见 [STYLE-M2-TASKS.md](STYLE-M2-TASKS.md)，M1 测试矩阵已只读归档（[STYLE-M1-TESTS.md](STYLE-M1-TESTS.md)）。
 
@@ -94,14 +94,14 @@ Codex 真实配置由 agent 执行，步骤见 M2-PREP 建立的 `docs/STYLE-M2-
 
 ## M2b：Claude Code 真实环境
 
-- [x] **M2-PREP-01 设计探针准备**：`test_probe_claude_m2_design.py` 五项通过（白名单、完整正文/标记区分、fixture、隔离权限/特殊路径、拒绝覆盖），全部采集器 45 项通过；本机固定 2.1.301 CLI 在 loopback 四模式均 exit 0、各一份原生请求、rules 全文各一次，替换/keep 和既有 style 的互斥全文命中已核对。手册和隔离 UI 启动器已生成。只有准备/补充检查通过，C1/C4 不因此标通过。
+- [x] **M2-PREP-01 设计探针准备**：`test_probe_claude_m2_design.py` 七项通过，全部采集器 47 项通过；新增实际执行五个生成脚本核对真实 HOME/系统身份、独立配置、凭据变量排除，以及重写脚本时保留既有证据。首次 OAuth 保存失败的只读复现：原临时 HOME 下默认钥匙串查询退出 1，修正后退出 0；不据此推断解锁或 OAuth 保存成功，见 `review/M2-PREP-01-AUTH-2026-10-17.json`。此前固定 2.1.301 CLI loopback 四模式均 exit 0、各一份请求、rules 全文各一次，替换/keep 和既有 style 互斥全文命中。只有准备/补充检查通过，C1/C4 不因此标通过。
 
 Claude Code 界面项由用户执行，agent 提供手册与隔离 runbook。
 
-- [?] **M2-C1 U-C4 实测**（M2-D4）：用户级 `~/.claude/rules/*.md` 是否被加载，以 `InstructionsLoaded` 或原生请求为证；记录结局。本地协议已证实全文一次，用户界面待按手册执行。
+- [~] **M2-C1 U-C4 实测**（M2-D4）：用户级 `~/.claude/rules/*.md` 是否被加载，以 `InstructionsLoaded` 或原生请求为证；记录结局。本地协议已证实全文一次；首次界面登录因 OAuth 保存失败受阻，启动器 HOME 问题已修正，等待用户按手册重新登录并执行界面步骤。
 - [?] **M2-C2 native hook 真实触发**：Claude Code 真实会话中 native 命令按事件和 matcher 执行；卸载后 `settings.json` 逐字节还原。
 - [?] **M2-C3 rules 静态位置真实生效**（仅 D4 成立时）：安装后规则文件被加载，卸载后文件移除、`CLAUDE.md` 与安装前一致。
-- [?] **M2-C4 output style 实测**（M2-D5）：output style 能否替代 system prompt、与用户已有 output style 的冲突行为；记录结局。本地完整 prompt 对照与官方资料支持不作为整份替换位置，用户界面切换仍待执行。
+- [~] **M2-C4 output style 实测**（M2-D5）：output style 能否替代 system prompt、与用户已有 output style 的冲突行为；记录结局。本地完整 prompt 对照与官方资料支持不作为整份替换位置；与 C1 同受首次 OAuth 保存失败阻塞，启动环境已修正，真实登录和界面切换待重试。
 
 ## 持续集成与文档核对
 

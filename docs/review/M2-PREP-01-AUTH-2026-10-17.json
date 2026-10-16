@@ -1,0 +1,120 @@
+{
+  "item": "M2-PREP-01",
+  "date": "2026-10-17",
+  "scope": "launcher-environment-repair-not-OAuth-or-UI-acceptance",
+  "acceptance": false,
+  "source_revision_before_fix": "8e2de6d",
+  "source_sha256": "0dc8bcaf6eb011a1a63abebcaa29fb73ca90ef12491d7a2080c9116008111854",
+  "harness_version": "2.1.301 (Claude Code)",
+  "claude_binary_sha256": "1f04c69e1c24e4d0a716a863af0aad8fc64d49a499334c29701f073700276b99",
+  "user_reported_error": "OAuth error: Couldn't save your login. If your Mac's keychain is locked, unlock it and log in again.",
+  "diagnosis": "isolated HOME hides the default keychain; locked state and OAuth retry remain unverified",
+  "read_only_keychain_probes": {
+    "old_launcher_environment": {
+      "command": [
+        "/usr/bin/security",
+        "default-keychain",
+        "-d",
+        "user"
+      ],
+      "exit": 1,
+      "stdout": "",
+      "stderr": "security: SecKeychainCopyDomainDefault user: A default keychain could not be found."
+    },
+    "repaired_launcher_environment": {
+      "command": [
+        "/usr/bin/security",
+        "default-keychain",
+        "-d",
+        "user"
+      ],
+      "exit": 0,
+      "stdout": "\"/Users/inxups/Library/Keychains/login.keychain-db\"",
+      "stderr": ""
+    }
+  },
+  "reproduction": {
+    "old": [
+      "env",
+      "-i",
+      "PATH=<host PATH>",
+      "HOME=/private/tmp/style-m2-claude-ui-20261016/home",
+      "/usr/bin/security",
+      "default-keychain",
+      "-d",
+      "user"
+    ],
+    "fixed": [
+      "env",
+      "-i",
+      "PATH=<host PATH>",
+      "HOME=/Users/inxups",
+      "/usr/bin/security",
+      "default-keychain",
+      "-d",
+      "user"
+    ]
+  },
+  "environment_policy": "native-home-isolated-config-v2",
+  "configuration_isolation": {
+    "CLAUDE_CONFIG_DIR": "/private/tmp/style-m2-claude-ui-20261016/claude",
+    "ANTHROPIC_CONFIG_DIR": "/private/tmp/style-m2-claude-ui-20261016/anthropic",
+    "XDG_CONFIG_HOME": "/private/tmp/style-m2-claude-ui-20261016/xdg-config"
+  },
+  "scratch": "/private/tmp/style-m2-claude-ui-20261016",
+  "backup": "/private/tmp/style-m2-claude-ui-20261016/auth-home-fix-before-20261016",
+  "scripts_repaired": [
+    "login.sh",
+    "launch-default.sh",
+    "launch-existing.sh",
+    "launch-replace.sh",
+    "launch-keep.sh"
+  ],
+  "old_script_sha256": {
+    "login.sh": "50b46f3ef5b5e7130a9be0046c908ba0f3f948ed13ffa78c66ce8d78b6d8c6fb",
+    "launch-default.sh": "9efe0033fb81ed0a99760f5b49aef2d724490d84712ea66ae2cc099262a33721",
+    "launch-existing.sh": "22f703c18f0729a499bbaea92d0bb7b460d763d13cf8660fe2e6510c6adb220a",
+    "launch-replace.sh": "f060d367364bd5d72ae3c9b785255574be449714367fdf35caf3cec8136a4f9e",
+    "launch-keep.sh": "e7b15dfa6cd634ff5438b533004527619af6f2662cffaf30546bf9b4c870b3a4"
+  },
+  "new_script_sha256": {
+    "login.sh": "74a9418d43355fce2c3783494ab07b5ae29deaaf65096f936ed331dfc289f1d3",
+    "launch-default.sh": "f4542a5c876d1554a0f8de4b14f60a95ac7eb3508855f57031130015a7234e7d",
+    "launch-existing.sh": "33e93397d5fdf5faef141c96bca020644d21fe4b39a8ad2995bd4902bc163508",
+    "launch-replace.sh": "2128603b06927ed955fa4911eca3c03ac57417737a6b80813f9c2f3286b42272",
+    "launch-keep.sh": "42722ef91032e7a7f9f006780313dff9547052d27c73e48f5a633465bed4472a"
+  },
+  "preserved_file_sha256": {
+    "/private/tmp/style-m2-claude-ui-20261016/default-settings.json": "efda8473d922a8258119790cd9155af8030edb91a888af03c41202730e8b4011",
+    "/private/tmp/style-m2-claude-ui-20261016/existing-settings.json": "dbb77c2fae1c5eaa1bb1c5aa6a90db6d3656201cf03aaf0b5b848e46eb5ec8df",
+    "/private/tmp/style-m2-claude-ui-20261016/replace-settings.json": "43192c4a2dd41d9aa0c70cfcd37c592858582bf44a20ec4998d3f96e5c353189",
+    "/private/tmp/style-m2-claude-ui-20261016/keep-settings.json": "44d6ba9a0f069bd75d73468422d3240532be95cf22a44bc09bb807940a9f46c6",
+    "/private/tmp/style-m2-claude-ui-20261016/claude/settings.json": "2e7e085cf187f62243363909d2ab5ea410c431cd1b76656b6b2f72daa611a4c7",
+    "/private/tmp/style-m2-claude-ui-20261016/claude/CLAUDE.md": "7f43194a6f23d888f9aa40bed9660a526e8e33e5d1ba607142c06beaf93c578b",
+    "/private/tmp/style-m2-claude-ui-20261016/claude/rules/style-m2-user-probe.md": "c4af952ef58fa2cf2db7b684b5680a6ad12164ddd46d1e94c6bea228813cc9f7",
+    "/private/tmp/style-m2-claude-ui-20261016/default-debug.log": "f49defa6fb512ec354fff10815e25b99197ddf7b7033c41896c692136bfdb0a9"
+  },
+  "verification": {
+    "collector_tests": 47,
+    "collector_result": "OK",
+    "probe_tests": 7,
+    "shell_syntax": "five launchers passed sh -n",
+    "real_credential_reads": false,
+    "keychain_mutations": false,
+    "oauth_retry": "pending-user",
+    "M2-C1": "environment-blocked-awaiting-retry",
+    "M2-C4": "environment-blocked-awaiting-retry"
+  },
+  "official_references": [
+    {
+      "url": "https://code.claude.com/docs/en/authentication.md",
+      "sha256": "c43ef3e8ddcb34ff6ba8b8d9e72276326ba7b672cd99f1252d5167c111ce67ac",
+      "retrieval": "system curl with normal TLS verification; web tool returned no content"
+    },
+    {
+      "url": "https://code.claude.com/docs/en/env-vars.md",
+      "sha256": "26d89d476a05970b6701f565fd11549d63e59cd3a11fa319bacfebd560442061",
+      "retrieval": "system curl with normal TLS verification; web tool returned no content"
+    }
+  ]
+}

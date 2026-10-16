@@ -1398,3 +1398,13 @@ PY
 - 用户界面准备：`/private/tmp/style-m2-claude-ui-20261016/prepared.json` 为 acceptance=false，独立 login.sh 与 launch-default/existing/replace/keep.sh；没有启动这些脚本。`docs/STYLE-M2-MANUAL.md` 写明信任、短请求、/config 样式观察、证据回传与复现步骤；用户界面项遵守“Claude Code 界面项由用户执行”。M2-PREP 保持 `[~]`（其他最终验收 runbook 等 T40/T50），D4/D5 `[~]`，C1/C4 `[?]`，T40/T50 未开始。
 - 验证：`PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s testdata/manual -p 'test_*.py'` 45 项 OK（新增五项），覆盖观察器敏感内容排除、marker 不等于全文、三样式、特殊路径脚本语法/权限、仅 --version 无会话执行与拒绝覆盖。真实本地协议四请求再次逐项复算、源码 SHA256 与请求 system/messages 摘要、UI receipt/脚本权限和语法、本地文档链接/围栏/JSON、Python AST、`git diff --check` 通过。无 Go/agenthooks/生产行为修改，沿用 T30 的双 module test/vet/race 与 smoke 40 项证据。
 - 下一步需要用户按 M2 手册执行隔离 Claude 界面步骤；agent 收集证据后提出 D4 迁移和 D5 回退/实现的正式结论供评审，不能依据本条准备或本地 stub 提前关闭真实界面验收。
+
+
+### 2026-10-17 — M2-PREP-01 OAuth 启动环境修复；C1/C4 `[~]`
+
+- 用户首次登录报告 `OAuth error: Couldn't save your login. If your Mac's keychain is locked, unlock it and log in again.`。没有据此断言钥匙串已锁定，也没有把 OAuth 或界面验收记为成功。先读取当前任务/测试/手册和工作树，起点 clean `8e2de6d`。
+- 复现原因：原 prepare-ui 为隔离配置改写 HOME，macOS `security default-keychain -d user` 在该生成环境退出 1，stderr 为 `A default keychain could not be found.`；保留真实 HOME 的最小环境同一只读查询退出 0，返回用户 login.keychain-db。没有读取凭据值、写入/删除钥匙串条目或自动解锁。固定 Claude 2.1.301 的本机代码也通过 `security` 保存 OAuth；官方 authentication/env-vars 资料确认独立 CLAUDE_CONFIG_DIR 的用途和凭据作用域，页面摘要记录在修复报告。web 未返回正文，改用系统 curl 正常 TLS 校验，不关闭验证。
+- 修复：prepare-ui 保留真实 HOME/USER/LOGNAME，继续 env -i 排除 API key、OAuth token、CODEX_HOME/CODEX_SANDBOX 和宿主安全存储覆盖变量；CLAUDE_CONFIG_DIR、ANTHROPIC_CONFIG_DIR、XDG_CONFIG_HOME 指向私有 scratch，避免因保留 HOME 而复用默认 profile 配置。登录和四种会话均固定到临时工作目录。不改本地 loopback 协议模式的假 HOME，不改 STYLE/agenthooks 生产行为。
+- 现有 `/private/tmp/style-m2-claude-ui-20261016` 的五个脚本已原位修复；旧脚本和 prepared.json 先备份到 `auth-home-fix-before-20261016/`。8 个已有设置/fixture/日志文件 SHA256 前后相同；prepared.json 追加环境策略和私有修复收据位置，acceptance 继续 false。原协议证据保留历史版本，未以新源码摘要重写旧报告。修复归档为 `docs/review/M2-PREP-01-AUTH-2026-10-17.json`。
+- 验证：`PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s testdata/manual -p 'test_*.py'` 47 项 OK。新增两项实际执行五个生成脚本（含空格/引号路径），核对真实 HOME/USER/LOGNAME、临时配置、工作目录、凭据/Codex 检测变量排除和 auth login 参数；核对单独重写启动器不覆盖设置或已有观察记录。五个实际修复脚本 `sh -n` 通过，修复环境的只读默认钥匙串查询 exit 0；这不证明钥匙串解锁/可写或 OAuth 保存成功。
+- 手册写明重新执行原 login.sh，看到 Login successful 后继续四种界面步骤；若同样失败，再检查 login 钥匙串解锁状态并回报错误。M2-PREP-01 脚本准备仍 `[x]`；C1/C4 由待执行改 `[~]`，表示真实界面受登录失败阻塞并待重试。D4/D5 维持 `[~]`，不进入 T40/T50。无 Go 修改，本条不重复运行已通过的 T30 Go 回归。

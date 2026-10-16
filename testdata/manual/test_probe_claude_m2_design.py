@@ -2,12 +2,13 @@ import json
 import os
 from pathlib import Path
 import subprocess
+import sys
 import tempfile
 import unittest
 from unittest.mock import patch
 from types import SimpleNamespace
 
-from probe_claude_m2_design import MARKERS, STYLES, fixture, observation, prepare_ui, request_facts
+from probe_claude_m2_design import MARKERS, STYLES, fixture, observation, prepare_ui, request_facts, write_ui_launchers
 
 
 class M2ClaudeDesignTests(unittest.TestCase):
@@ -72,6 +73,61 @@ class M2ClaudeDesignTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "scratch must be empty"):
                 prepare_ui(root, "/missing/claude")
             self.assertEqual(file.read_text(), "original")
+
+    def test_launchers_preserve_os_identity_and_isolate_config_at_execution(self):
+        with tempfile.TemporaryDirectory(prefix="m2 'auth ") as directory:
+            parent = Path(directory).resolve()
+            root, cli, home = parent / "probe", parent / "fake claude", parent / "native home"
+            home.mkdir()
+            cli.write_text("#!" + sys.executable + "\nimport json, os, sys\n"
+                           "print('fixture' if sys.argv[1:] == ['--version'] else "
+                           "json.dumps({'env': dict(os.environ), 'cwd': os.getcwd(), 'args': sys.argv[1:]}))\n")
+            cli.chmod(0o700)
+            source_env = {"HOME": str(home), "USER": "fixture-user", "LOGNAME": "fixture-login",
+                          "ANTHROPIC_API_KEY": "DO_NOT_COPY", "CLAUDE_CODE_OAUTH_TOKEN": "DO_NOT_COPY",
+                          "ANTHROPIC_CONFIG_DIR": "DO_NOT_COPY", "XDG_CONFIG_HOME": "DO_NOT_COPY",
+                          "CLAUDE_SECURESTORAGE_CONFIG_DIR": "DO_NOT_COPY", "CODEX_HOME": "DO_NOT_COPY",
+                          "CODEX_SANDBOX": "DO_NOT_COPY", "CLAUDE_CONFIG_DIR": "DO_NOT_COPY"}
+            with patch.dict(os.environ, source_env):
+                report = prepare_ui(root, cli)
+            # Execute generated scripts with different caller identity and credentials.
+            # Preparation must pin the intended identity and discard these overrides.
+            caller_env = {**os.environ, **source_env, "HOME": str(parent / "wrong-home"), "USER": "wrong-user"}
+            for phase, launcher in {**report["launchers"], "login": report["login"]}.items():
+                with self.subTest(phase=phase):
+                    call = subprocess.run([launcher], env=caller_env, capture_output=True, text=True, check=True)
+                    facts = json.loads(call.stdout)
+                    environment = facts["env"]
+                    self.assertEqual(environment["HOME"], str(home))
+                    self.assertEqual(environment["USER"], "fixture-user")
+                    self.assertEqual(environment["LOGNAME"], "fixture-login")
+                    self.assertEqual(environment["CLAUDE_CONFIG_DIR"], str(root / "claude"))
+                    self.assertEqual(environment["ANTHROPIC_CONFIG_DIR"], str(root / "anthropic"))
+                    self.assertEqual(environment["XDG_CONFIG_HOME"], str(root / "xdg-config"))
+                    self.assertEqual(facts["cwd"], str(root / "work"))
+                    self.assertNotIn("DO_NOT_COPY", call.stdout)
+                    for key in ("ANTHROPIC_API_KEY", "CLAUDE_CODE_OAUTH_TOKEN", "CODEX_HOME", "CODEX_SANDBOX",
+                                "CLAUDE_SECURESTORAGE_CONFIG_DIR"):
+                        self.assertNotIn(key, environment)
+                    if phase == "login":
+                        self.assertEqual(facts["args"], ["auth", "login"])
+                    else:
+                        self.assertEqual(facts["args"][:2], ["--setting-sources", "user"])
+
+    def test_rewriting_launchers_preserves_configuration_and_prior_evidence(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "work").mkdir()
+            evidence = root / "instructions.jsonl"
+            evidence.write_text('{"prior": "observation"}\n')
+            settings = root / "existing-settings.json"
+            settings.write_text('{"outputStyle": "user-selected"}\n')
+            before = {path: path.read_bytes() for path in (evidence, settings)}
+            launchers, login = write_ui_launchers(root, Path("/pinned/claude"))
+            self.assertEqual(len(launchers), 4)
+            self.assertTrue(login.is_file())
+            for path, data in before.items():
+                self.assertEqual(path.read_bytes(), data)
 
 
 if __name__ == "__main__":

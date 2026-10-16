@@ -1,6 +1,6 @@
 # STYLE CLI M2 任务清单
 
-更新时间：2026-10-16
+更新时间：2026-10-17
 
 本文件是 STYLE CLI M2 的持久化任务清单。每项任务完成后必须同时补充证据（命令、fixture、golden 文件或真实运行记录），不能只根据对话上下文标记完成。测试矩阵见 [STYLE-M2-TESTS.md](STYLE-M2-TESTS.md)，执行记录追加到 [PROGRESS.md](PROGRESS.md)。
 
@@ -81,7 +81,7 @@ M1 中已记录的已知限制（如 force-push 示例规则对 `--push-option` 
 ## M2b 真实环境
 
 - [~] **M2-PREP 真实环境手册**：已新建 `docs/STYLE-M2-MANUAL.md` 并完成 D4/D5 设计探针准备（M2-PREP-01），其余最终验收 runbook 等 T40/T50 结论。完整手册包括固定二进制构建、备份、Codex（agent 执行）与 Claude Code（用户执行）的步骤和证据回传格式；探针包与脚本沿用 `testdata/manual/`，证据写入 `docs/review/`。依赖：M2a 相关实现完成。
-- [x] **M2-PREP-01 Claude 设计探针准备**：用户界面隔离启动器、白名单 InstructionsLoaded 观察器、四模式本地协议补充证据和手册；五个新增采集器测试、总计 45 项通过，真实 CLI 四请求 exit 0 且全文核对通过。它不关闭 C1/C4 或 D4/D5，不提前实现 T40/T50。证据：`docs/review/M2-D4-D5-PROTOCOL-2026-10-16.json`、`docs/PROGRESS.md` M2-PREP-01。
+- [x] **M2-PREP-01 Claude 设计探针准备**：用户界面隔离启动器、白名单 InstructionsLoaded 观察器、四模式本地协议补充证据和手册；探针七项、全部采集器 47 项通过，真实 CLI 四请求 exit 0 且全文核对通过。首次 OAuth 保存失败后，修正临时 HOME 导致找不到默认钥匙串的问题，保留系统身份并隔离 Claude/profile 配置；现有五脚本已备份并更新，实际 OAuth 保存仍待用户重试，C1/C4 记环境阻塞 `[~]`。它不关闭 C1/C4 或 D4/D5，不提前实现 T40/T50。证据：`docs/review/M2-D4-D5-PROTOCOL-2026-10-16.json`、`docs/review/M2-PREP-01-AUTH-2026-10-17.json`、`docs/PROGRESS.md` M2-PREP-01。
 - 真实验收条目见测试矩阵的 M2-B*（Codex）与 M2-C*（Claude Code）。
 
 ## 里程碑验收

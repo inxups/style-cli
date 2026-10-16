@@ -125,6 +125,37 @@ def run_protocol(scratch, claude):
         probe.close()
 
 
+def ui_environment(root):
+    # macOS security resolves the default login keychain using the real HOME.
+    # Isolate Claude/profile configuration without replacing the OS identity.
+    environment = {key: os.environ[key] for key in ("PATH", "TERM", "TMPDIR", "LANG", "LC_ALL", "USER", "LOGNAME")
+                   if key in os.environ}
+    environment.update(HOME=str(Path.home()), CLAUDE_CONFIG_DIR=str(root / "claude"),
+                       XDG_CONFIG_HOME=str(root / "xdg-config"), ANTHROPIC_CONFIG_DIR=str(root / "anthropic"),
+                       CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC="1", CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT="0", DISABLE_AUTOUPDATER="1",
+                       DISABLE_TELEMETRY="1", DISABLE_ERROR_REPORTING="1")
+    return environment
+
+
+def write_ui_launchers(root, claude):
+    environment = ui_environment(root)
+    prefix = "exec env -i " + " ".join(shlex.quote(key + "=" + value) for key, value in environment.items())
+    header = "#!/bin/sh\nset -eu\ncd " + shlex.quote(str(root / "work")) + "\n"
+    launchers = {}
+    for phase, style in STYLES.items():
+        settings = root / (phase + "-settings.json")
+        script = root / ("launch-" + phase + ".sh")
+        command = [str(claude), "--setting-sources", "user", "--strict-mcp-config", "--mcp-config", '{"mcpServers":{}}',
+                   "--settings", str(settings), "--debug-file", str(root / (phase + "-debug.log"))]
+        script.write_text(header + prefix + " " + shlex.join(command) + ' "$@"\n')
+        script.chmod(0o700)
+        launchers[phase] = str(script)
+    auth = root / "login.sh"
+    auth.write_text(header + prefix + " " + shlex.join([str(claude), "auth", "login"]) + "\n")
+    auth.chmod(0o700)
+    return launchers, auth
+
+
 def prepare_ui(scratch, claude):
     root, claude = Path(scratch).resolve(), Path(claude).resolve()
     if root.exists() and any(root.iterdir()):
@@ -133,32 +164,18 @@ def prepare_ui(scratch, claude):
         raise ValueError("pinned Claude executable is required")
     root.mkdir(parents=True, exist_ok=True, mode=0o700)
     root.chmod(0o700)
-    home, config, work = (root / name for name in ("home", "claude", "work"))
-    for path in (home, config, work):
-        path.mkdir(mode=0o700)
+    config = root / "claude"
+    for name in ("claude", "work", "xdg-config", "anthropic"):
+        (root / name).mkdir(mode=0o700)
     rule, base = fixture(config, root, "ui")
     base["outputStyle"] = STYLES["existing"]
     write_private(config / "settings.json", json.dumps(base, indent=2) + "\n")
-    environment = {key: os.environ[key] for key in ("PATH", "TERM", "TMPDIR", "LANG", "LC_ALL") if key in os.environ}
-    environment.update(HOME=str(home), CLAUDE_CONFIG_DIR=str(config),
-                       CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC="1", CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT="0", DISABLE_AUTOUPDATER="1",
-                       DISABLE_TELEMETRY="1", DISABLE_ERROR_REPORTING="1")
-    prefix = "exec env -i " + " ".join(shlex.quote(key + "=" + value) for key, value in environment.items())
-    launchers = {}
     for phase, style in STYLES.items():
-        settings = root / (phase + "-settings.json")
-        write_private(settings, json.dumps({"outputStyle": style}) + "\n")
-        script = root / ("launch-" + phase + ".sh")
-        command = [str(claude), "--setting-sources", "user", "--strict-mcp-config", "--mcp-config", '{"mcpServers":{}}',
-                   "--settings", str(settings), "--debug-file", str(root / (phase + "-debug.log"))]
-        script.write_text("#!/bin/sh\nset -eu\ncd " + shlex.quote(str(work)) + "\n" + prefix + " " + shlex.join(command) + ' "$@"\n')
-        script.chmod(0o700)
-        launchers[phase] = str(script)
-    auth = root / "login.sh"
-    auth.write_text("#!/bin/sh\nset -eu\n" + prefix + " " + shlex.join([str(claude), "auth", "login"]) + "\n")
-    auth.chmod(0o700)
+        write_private(root / (phase + "-settings.json"), json.dumps({"outputStyle": style}) + "\n")
+    launchers, auth = write_ui_launchers(root, claude)
     version = subprocess.run([str(claude), "--version"], text=True, capture_output=True, check=True, timeout=15).stdout.strip()
     report = {"items": ["M2-D4", "M2-D5"], "status": "prepared-awaiting-real-user-session", "acceptance": False,
+              "environment_policy": "native-home-isolated-config-v2",
               "scratch": str(root), "harness_version": version, "claude": str(claude),
               "claude_binary_sha256": hashlib.sha256(claude.read_bytes()).hexdigest(), "rules_file": str(rule),
               "config": str(config), "launchers": launchers, "login": str(auth), "observer_log": str(root / "instructions.jsonl"),
