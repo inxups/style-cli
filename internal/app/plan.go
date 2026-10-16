@@ -53,8 +53,8 @@ type BudgetSummary struct {
 	AlwaysOn float64 `json:"always_on"`
 }
 
-// SessionCost contains a rough cache-aware cost estimate using caller supplied
-// or documented default session assumptions.
+// SessionCost compares rule estimates under a hypothetical 1.25x write / 0.1x
+// later-hit cache scenario. It is not provider usage or a billing estimate.
 type SessionCost struct {
 	Requests  int     `json:"requests"`
 	Triggers  int     `json:"triggers"`

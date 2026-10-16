@@ -1157,3 +1157,11 @@ PY
 - 实际运行：`PYTHONDONTWRITEBYTECODE=1 python3 testdata/manual/calibrate_tokens.py --style /tmp/style-m1-final.rxdYyj/style-final05 --openai-model gpt-6.1-sol --anthropic-model claude-sonnet-5-5 --output /tmp/style-m1-calibration-blocked.json`，exit2；OPENAI_API_KEY 和 ANTHROPIC_API_KEY 均缺失，两家 actual completed=0，不发网络计数请求。模型为拟测模型，官方可用性未被认证验证。结果入库 `review/M1-FINAL-09-COUNTING-BLOCKED-2026-10-16.json`，真实校准保持 `[?]`。
 - 删除 plan、doctor、golden、教程/规范里未经验证的 ±25% 保证，明确 calibration pending；不改估算系数、JSON/index/lock/state 格式、预算默认值或公开命令。不能用另一分词器代替真实计数。
 - 验证：23 项 Python 测试（语料平衡与哈希、同结构请求、无 key 不联网/不伪造计数）；app/tokenestimate/tokens 测试与 app vet、gofmt/diff 通过。后续在可提供官方 API 环境的终端按 README 同一命令运行，失败时保留独立报告，不覆盖本次缺认证证据。
+
+### 2026-10-16 — M1-FINAL-10 U-T4 真实会话统计与 U-T6 缓存核对
+
+- 用户选择 Claude 界面稍后操作，本轮继续独立项，只读保留的 FINAL-04 报告及 Claude 历史主 transcript/stats。`summarize_session_usage.py` 复现命令见 `review/M1-FINAL-10-CACHE-2026-10-16.md`；输出 `review/M1-FINAL-10-USAGE-2026-10-16.json`，只收白名单 metadata、hash、usage 与规则统计，不复制提示词、工具正文、凭据。
+- 两条 Codex 路线各 19 调用归并 17 session，31 HTTP 尝试，16 session 有 usage；规则 inject53/warn1/dedup63，去重比例 53.85%，规则输出估算 796。缺 usage 的 unknown-effort 拒绝、compact native usage 覆盖缺口及自定义 provider 非官方账单明确记录。resume 后 exec usage 为累计；直接与 retained rollout `01a1440e-91dd…` 最后 total 53182 输入/150 输出、last 13788 输入对照，不逐调用累加。app-server 仅使用最后 total，字段仅部分会话提供时不冒充总和。
+- Claude 历史会话 `1a0e173f…` 的 130 usage 行按响应身份去重为108，删除22重复快照。input216 + creation25808 + read4878107 = 输入4904131，output11410；creation 全为1h，TTL明细不再加总。STYLE inject4/warn1/dedup10，估算69；主 transcript 不覆盖独立子 agent 或无 usage 的失败/重试。验收工作负载不校准典型会话默认值，也不能将总 usage 归因到每条规则。
+- 2026-10-16 成功打开官方 OpenAI/Claude prompt-caching 指南并核对门槛、前缀、TTL、读写倍率和 usage 字段。具体资料与例外记录于 CACHE 文档；例如当前 Sonnet5.5 读取0.05、1h写入2，与保留公式不完全相符。CLI 文本/golden、教程、设计 §11.3 明确公式是假设1.25写/0.1读的相对比较，不是实际账单；公式、JSON/index/lock/state、60/3和400/1200/600不变。
+- 验证：全部27项 Python 测试（新增4项覆盖 resume累计/追加stats、app-server累计、部分字段覆盖、Claude重复/TTL/隐私）；清理CODEX变量和临时Go缓存的 `go test -count=1 ./internal/app`、`go vet ./internal/app`，golden、汇总断言和 `git diff --check` 全部通过。FINAL-10 `[x]`；FINAL-06/07/08/09 仍按缺证据范围待验。

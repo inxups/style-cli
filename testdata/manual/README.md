@@ -91,3 +91,5 @@ PYTHONDONTWRITEBYTECODE=1 python3 testdata/manual/calibrate_tokens.py \
 ```
 
 已核对官方 [OpenAI counting tokens](https://developers.openai.com/api/docs/guides/token-counting) 和 [Claude token counting](https://platform.claude.com/docs/en/build-with-claude/token-counting)。计数接口的结果按其语义记录，不代表实际会话账单；计数模型若不可用，保留失败，另起有明确模型的新报告。
+
+`summarize_session_usage.py` 只读汇总真实报告和 retained Claude transcript/stats。Codex resume 使用最后会话累计 usage/stats，Claude 按响应身份保留最后 usage，避免重复相加；规则估算与整个会话 usage 分列。复现命令、缓存条件、覆盖范围及默认公式假设见 [FINAL-10](../../docs/review/M1-FINAL-10-CACHE-2026-10-16.md)。

@@ -60,3 +60,4 @@ Token (estimated; calibration pending):
   SessionStart: 59 tokens / 213 chars
   UserPromptSubmit: 87 tokens / 303 chars
   session cost (requests=60 triggers=3): 500.5 always-on + 939.2 triggered = 1439.8 units
+  scenario only: 1.25x cache write + 0.1x later hits; assumes an eligible unchanged prefix within cache lifetime; not billing

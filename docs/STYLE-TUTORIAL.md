@@ -40,7 +40,7 @@ STYLE 把一组**短规则**写进 Claude Code 和 Codex，用来微调它们的
 - **`style` 同时是管理 CLI 和 hook 入口。** 安装后，Claude Code / Codex 会在对应事件上调用 `style … agenthooks run --provider=…`，由它决定是否注入文字、警告或阻断。
 - **运行时不读规则源码。** 安装时把规则编译成 `$STYLE_HOME/build/index.json`，hook 只读这份编译产物和状态目录。
 - **规则有三种动作：** `inject`（给模型追加上下文）、`warn`（用户看全文，模型只看一句）、`block`（阻断工具调用或提示词）。
-- **注入的文字会留在对话历史里**，之后每次请求都要再付一次 token。所以 `plan` 会在安装前估算成本，`inject` 默认每个会话只注入一次。
+- **注入文字可能随历史重复进入后续请求。** 缓存命中、压缩和上下文管理会改变保留范围与费用；`plan` 提供规则级情景估算，`inject` 默认每个会话只注入一次。
 - **做不到就说。** 某个 harness 做不到的规则会按 `fallback` 降级、跳过或拒绝安装，并写进报告。
 
 当前支持的 harness：`claude-code`、`codex`。
@@ -309,6 +309,7 @@ Token (estimated; calibration pending):
   SessionStart: 24 tokens / 73 chars
   UserPromptSubmit: 24 tokens / 73 chars
   session cost (requests=60 triggers=3): 343.2 always-on + 459.0 triggered = 802.2 units
+  scenario only: 1.25x cache write + 0.1x later hits; assumes an eligible unchanged prefix within cache lifetime; not billing
 ```
 
 怎么读：
@@ -325,7 +326,7 @@ Token (estimated; calibration pending):
   | `skipped-m2` | `target: native`，M1 不执行 |
   | `install-error` | `fallback: error` 的规则做不到，安装会被阻止 |
 
-- **Token 为离线估算，误差尚未完成真实校准，没有百分比误差保证。** `always-on` 是常驻成本；`session cost` 用 `--assume-requests N`（默认 60）和 `--assume-triggers N`（默认 3）估算整个会话的相对成本，可以改这两个值模拟更长的会话。
+- **Token 为离线估算，误差尚未完成真实校准，没有百分比误差保证。** `always-on` 是常驻规则估算；`session cost` 用 `--assume-requests N`（默认 60）和 `--assume-triggers N`（默认 3）比较规则的相对成本。公式假设首次写缓存 1.25 倍、之后每次都以 0.1 倍命中，前缀符合模型门槛、内容不变且未过期；不包括基础上下文、工具与模型输出，也不是账单。默认值未被典型工作负载校准。真实会话 usage 与规则估算分列于 [FINAL-10 缓存与成本记录](review/M1-FINAL-10-CACHE-2026-10-16.md)。
 
 跳过与拒绝的真实例子。下面这条规则要求 `tool.error` 事件，在 Codex 上没有这个事件，又写了 `fallback: error`：
 

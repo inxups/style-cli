@@ -177,7 +177,7 @@ M1b 准备、真实验收中发现的问题及示例规则修正，按处理顺�
 - [~] **M1-FINAL-07 上下文继承**：Codex 真实 resume/fork 保留原上下文；关闭补发的 compact 探针中两条标记消失。fresh/fork/嵌套三个子 agent 各自收到 context，工具 inject/block 与 stats 均在各自 scope，父级无污染。Claude resume/fork/compact 补测仍待用户环境，默认值不变。证据：`review/M1-FINAL-07-CODEX-2026-10-16.json`。
 - [~] **M1-FINAL-08 真实超限**：两家 STYLE T003 对 14,040 字符规则在写入前拒绝；engine cap/release 回归通过。绕开 STYLE 的 Codex SessionStart 12,064/50,064 字符与 PreToolUse 12,056 字符均落盘并给约 10,100 字符预览，保存文件与原文逐字节一致，完整正文未投递。Claude 原生 12,000 字符探针待隔离认证。证据 `review/M1-FINAL-08-OVERFLOW-2026-10-16.json`。
 - [?] **M1-FINAL-09 token 校准**：固定 40 条中英各半的真实规则、正文/请求/语料哈希及生产 CLI 估算；官方计数客户端按相同结构请求减固定基线。两家 API key 缺失，实际计数均 0/40，保持待验；CLI/教程/规范删除未验证的 ±25% 保证，系数与预算不变。证据 `review/M1-FINAL-09-COUNTING-BLOCKED-2026-10-16.json`。
-- [ ] **M1-FINAL-10 成本与缓存**：U-T4/U-T6；统计真实 stats/usage，核对官方缓存资料，明确情景假设，保留估算公式与预算默认值。
+- [x] **M1-FINAL-10 成本与缓存**：U-T4 两条 Codex 路线各 17 会话/31 请求、53 次 inject，Claude 历史主会话 108 个带 usage 响应；累计/重复快照去重，规则估算与总 usage 分列。U-T6 核对官方前缀/门槛/TTL/字段与倍率，CLI、golden 和教程标注公式为情景而非账单，默认值不变。证据 `review/M1-FINAL-10-{USAGE,CACHE}-2026-10-16.*`；27 项 Python 测试、app 测试/vet 通过。
 - [ ] **M1-FINAL-11 文档一致性**：同步设计、adapter 总览、手册、教程与边界表，保留 degrade 最终可跳过的策略和历史证据。
 - [ ] **M1-FINAL-12 最终验证**：双 module test/vet、必要 race、采集器、构建/冒烟与 CI；无证据条目不得勾选，完成后规划 M2。
 

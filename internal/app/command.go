@@ -242,6 +242,7 @@ func writePlanText(out io.Writer, result PlanResult) {
 			fmt.Fprintf(out, "  %s: %s\n", diagnostic.Code, diagnostic.Message)
 		}
 		fmt.Fprintf(out, "  session cost (requests=%d triggers=%d): %.1f always-on + %.1f triggered = %.1f units\n", report.SessionCost.Requests, report.SessionCost.Triggers, report.SessionCost.AlwaysOn, report.SessionCost.Triggered, report.SessionCost.Total)
+		fmt.Fprintln(out, "  scenario only: 1.25x cache write + 0.1x later hits; assumes an eligible unchanged prefix within cache lifetime; not billing")
 	}
 }
 
