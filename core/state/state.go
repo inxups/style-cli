@@ -93,15 +93,19 @@ func (s *Store) Update(sessionID, agentID string, update EventUpdate) (Session, 
 		return Session{}, Scope{}, fmt.Errorf("state: create agent directory: %w", err)
 	}
 
+	sessionPath, scopePath := filepath.Join(sessionDir, "session.json"), filepath.Join(agentDir, "scope.json")
 	var session Session
-	if err := readJSON(filepath.Join(sessionDir, "session.json"), &session); err != nil {
+	sessionExists, err := readStateJSON(sessionPath, &session)
+	if err != nil {
 		return Session{}, Scope{}, fmt.Errorf("state: read session: %w", err)
 	}
 	var scope Scope
-	if err := readJSON(filepath.Join(agentDir, "scope.json"), &scope); err != nil {
+	scopeExists, err := readStateJSON(scopePath, &scope)
+	if err != nil {
 		return Session{}, Scope{}, fmt.Errorf("state: read scope: %w", err)
 	}
 	scope.SessionID, scope.AgentID = sessionID, agentID
+	sessionBefore, scopeBefore := cloneSession(session), scope
 
 	switch update.Source {
 	case "startup":
@@ -157,15 +161,47 @@ func (s *Store) Update(sessionID, agentID string, update EventUpdate) (Session, 
 	if update.HarnessVersion != "" {
 		session.HarnessVersion = update.HarnessVersion
 	}
-	session.UpdatedAt, scope.UpdatedAt = now, now
 
-	if err := writeJSON(filepath.Join(sessionDir, "session.json"), session); err != nil {
-		return Session{}, Scope{}, fmt.Errorf("state: write session: %w", err)
+	// Most hook events change nothing. Rewriting both files with fsync on every
+	// event dominated hook latency, so an unchanged file is not rewritten;
+	// UpdatedAt records the last change. The scope file's modification time is
+	// still refreshed so Cleanup sees the session as active.
+	if !sessionExists || !sameSession(session, sessionBefore) {
+		session.UpdatedAt = now
+		if err := writeJSON(sessionPath, session); err != nil {
+			return Session{}, Scope{}, fmt.Errorf("state: write session: %w", err)
+		}
 	}
-	if err := writeJSON(filepath.Join(agentDir, "scope.json"), scope); err != nil {
-		return Session{}, Scope{}, fmt.Errorf("state: write scope: %w", err)
+	if !scopeExists || !sameScope(scope, scopeBefore) {
+		scope.UpdatedAt = now
+		if err := writeJSON(scopePath, scope); err != nil {
+			return Session{}, Scope{}, fmt.Errorf("state: write scope: %w", err)
+		}
+	} else if err := os.Chtimes(scopePath, now, now); err != nil {
+		return Session{}, Scope{}, fmt.Errorf("state: refresh scope time: %w", err)
 	}
 	return session, scope, nil
+}
+
+func cloneSession(session Session) Session {
+	if session.EffortApprox != nil {
+		value := *session.EffortApprox
+		session.EffortApprox = &value
+	}
+	return session
+}
+
+// sameSession and sameScope compare persisted fields other than UpdatedAt.
+func sameSession(a, b Session) bool {
+	if (a.EffortApprox == nil) != (b.EffortApprox == nil) || a.EffortApprox != nil && *a.EffortApprox != *b.EffortApprox {
+		return false
+	}
+	return a.Model == b.Model && a.ThinkingEffort == b.ThinkingEffort && a.EffortRaw == b.EffortRaw &&
+		a.EffortResolved == b.EffortResolved && a.HarnessVersion == b.HarnessVersion
+}
+
+func sameScope(a, b Scope) bool {
+	return a.Generation == b.Generation && a.Epoch == b.Epoch && a.PromptCount == b.PromptCount
 }
 
 // Read returns state without refreshing its timestamps.
@@ -274,22 +310,29 @@ func component(value string) string {
 }
 
 func readJSON(path string, target any) error {
+	_, err := readStateJSON(path, target)
+	return err
+}
+
+// readStateJSON decodes a strict state file. A missing file leaves target
+// unchanged and reports exists=false.
+func readStateJSON(path string, target any) (bool, error) {
 	data, err := os.ReadFile(path)
 	if errors.Is(err, os.ErrNotExist) {
-		return nil
+		return false, nil
 	}
 	if err != nil {
-		return err
+		return false, err
 	}
 	decoder := json.NewDecoder(bytes.NewReader(data))
 	decoder.DisallowUnknownFields()
 	if err := decoder.Decode(target); err != nil {
-		return err
+		return true, err
 	}
 	if err := decoder.Decode(new(any)); err != io.EOF {
-		return fmt.Errorf("unexpected trailing JSON")
+		return true, fmt.Errorf("unexpected trailing JSON")
 	}
-	return nil
+	return true, nil
 }
 
 func writeJSON(path string, value any) error {
@@ -312,7 +355,7 @@ func writeJSON(path string, value any) error {
 		_ = file.Close()
 		return err
 	}
-	if err := file.Sync(); err != nil {
+	if err := syncFile(file); err != nil {
 		_ = file.Close()
 		return err
 	}
@@ -323,7 +366,7 @@ func writeJSON(path string, value any) error {
 		return err
 	}
 	if dir, err := os.Open(filepath.Dir(path)); err == nil {
-		_ = dir.Sync()
+		_ = syncFile(dir)
 		_ = dir.Close()
 	}
 	return nil

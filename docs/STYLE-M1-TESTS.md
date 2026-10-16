@@ -192,3 +192,7 @@ B1.2 和 B1.4 的历史通过状态表示原有测试套件在声明范围内通
 - [x] **CR-02** Codex/Claude Enrich 中 `tool.input` 与嵌套对象条件值保留 `&`、`<`、`>` 原文，不做 HTML 转义。证据：两家 `runtime_test.go:TestEnrichKeepsShellCharactersInToolInput`，修复前失败、修复后通过；`go test ./internal/...` 含 conformance golden 全部通过。
 - [x] **CR-03** 路线以相对路径运行时写入绝对 hook 命令：`HookCommand` 把 `./style`、`bin/style`、`../bin/style` 转为绝对路径，`style` 与绝对路径不变；Codex 用户路线的 hooks.json、Claude 的 settings.json 在 `os.Args[0]=./style` 时写绝对路径。证据：`internal/adapter/command_test.go`、两家 `route_test.go` 新增用例（修复前失败）；隔离 HOME 端到端安装确认。
 - [x] **CR-04** 包快照跳过 `.git`/`.hg`/`.svn` 与 `.DS_Store`：从带大 `.git` 对象的 checkout 安装成功，存储不含这些文件，之后存储中出现 `.DS_Store` 时 sync 不要求 trust。证据：`internal/app/package_snapshot_test.go`，修复前失败、修复后通过；两个 module 全量测试与 vet 通过。
+- [x] **CR-05** state.Update 只重写内容变化的状态文件，未变时只刷新 scope.json 的修改时间；需要写时在 Darwin 上用 fsync(2) 而不是 F_FULLFSYNC。
+  - 证据：`core/state/state_test.go:TestUpdateRewritesOnlyChangedStateFiles` 覆盖未变、prompt、model 变化、新 agent scope 四种情况，修复前失败；Cleanup 与严格解码的既有测试照常通过。
+  - 离线计时：隔离 HOME 下真实 hook 进程的 PreToolUse p50 从 18.7ms 降到 7.0ms，p95 从 21.4ms 降到 8.2ms。
+  - 真实 harness 计时（U5/C9）未复测。

@@ -972,3 +972,22 @@
 - 修复：遍历时跳过名为 `.git`、`.hg`、`.svn`（目录用 SkipDir，文件和链接直接略过，包括 worktree 的 `.git` 文件）和 `.DS_Store` 的条目，它们不复制、不哈希。安装、sync、list、trust 共用这个快照，所以行为一致。规范层读取的 STYLE.yaml 和规则路径不受影响。
 - 兼容：如果已有安装的 lock 记录了这类路径，升级后 sync 会报告这些路径已删除，需要 trust 一次。真实安装 `~/.style-m1b` 的 lock 中没有这类路径。
 - 测试：新增 `package_snapshot_test.go` 两例，暂存修复后都因 `file-too-large` 失败。根 module 与 agenthooks 全量测试、vet、gofmt 通过（隔离缓存，去掉 CODEX_HOME/CODEX_SANDBOX）。未改 agenthooks。
+
+### 2026-10-16 — M1B-CR-05 state.Update 不再每次 hook 都做 F_FULLFSYNC
+
+- 来源：只看代码的审查，用户指示修复。`internal/runtime/runtime.go` 对每个事件都调用 `core/state.Update`。`Update` 总是把 session.json 和 scope.json 各写一遍，只为刷新 `updated_at`。`writeJSON` 每个文件调用一次 `File.Sync`，再对目录调用一次 `Sync`。Go 在 Darwin 上把 `Sync` 实现为 `fcntl(F_FULLFSYNC)`（`internal/poll/fd_fsync_darwin.go`），所以每个 hook 要做 4 次清空磁盘缓存的同步。临时测试测得单次 Update p50 约 14ms、p95 约 16ms，与 PERF-01A 插桩得到的 11.9ms 一致。
+- 修复（`core/state/state.go`）：
+  - 读取时记录文件是否存在；比较除 `updated_at` 外的字段，只重写确有变化或尚不存在的文件，写入时才更新 `updated_at`（该字段没有读者，现在表示最后一次变更）。
+  - 都没变时用 `os.Chtimes` 刷新 scope.json 的修改时间，Cleanup 按修改时间判断活跃的语义不变。
+  - 实际写入仍是同目录临时文件加 rename；Darwin 上改用 `syscall.Fsync`（`sync_darwin.go`），其他平台仍用 `File.Sync`（`sync_other.go`）。
+- 取舍：PERF-01A 曾明确不删 fsync。本次保留了原子写和 fsync，只去掉无变化时的写入，并在 Darwin 上不再清空磁盘缓存。断电时可能丢失最近一次计数或 effort 更新；最坏情况是一次重复注入，或下一次事件重新解析 effort。状态文件 7 天过期，不是配置或安装数据。安装、sync 使用的 `writeAtomic` 不变，仍用 `File.Sync`。
+- 附带效果：多数工具事件不再写 session.json，并行 hook 之间的读改写覆盖窗口也随之缩小，但跨进程竞争本身没有处理。
+- 测试：
+  - 新增 `TestUpdateRewritesOnlyChangedStateFiles`：未变化的事件不改两份文件的字节，只刷新 scope 的 mtime；prompt 只写 scope；model 变化写 session；新 agent 首次写 scope。暂存修复后失败。
+  - 根 module 与 agenthooks 全量测试、`go vet ./...`、`GOOS=linux go vet ./core/state`、`GOOS=windows go build ./core/state`、`go test -race -count=1 ./core/state ./core/engine ./internal/runtime`、gofmt 通过。均使用临时 GOPATH/GOMODCACHE/GOCACHE，并去掉 CODEX_HOME/CODEX_SANDBOX。
+- 计时（离线，同一台机器）：
+  - 进程内 200 次 Update：未变化 p50 0.16ms / p95 0.29ms；prompt p50 0.33ms / p95 0.57ms。修复前约 14ms / 16ms。
+  - 隔离 HOME 下的 codex-user 安装（m1b-probes），真实 hook 进程（`agenthooks run --provider=codex`），每次清空 state 后先发 SessionStart，再发 200 次 PreToolUse 和 50 次 UserPromptSubmit：
+    - 修复前：PreToolUse p50 18.7ms / p95 21.4ms；UserPromptSubmit p50 19.1ms / p95 21.6ms。
+    - 修复后：PreToolUse p50 7.0ms / p95 8.2ms；UserPromptSubmit p50 8.1ms / p95 10.5ms。
+  - 这是离线进程计时，不替代真实 harness 的 U5/C9 测量；固定程序和真实安装未更新。

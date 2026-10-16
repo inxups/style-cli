@@ -132,6 +132,17 @@ M1b 准备、真实验收中发现的问题及示例规则修正，按处理顺�
 - [x] **M1B-CR-02 tool.input 条件值不做 HTML 转义**：两家适配器的 `flattenJSONFields` 用 `json.Marshal` 重新编码对象和数组，会把 `&`、`<`、`>` 转成 `\u0026`、`\u003c`、`\u003e`；而且根路径 `tool.input` 会被重新编码的结果覆盖。于是对 `tool.input` 或嵌套对象字段写 `contains: "&&"`、`regex: ">"` 的条件永远不满足（`tool.input.command` 这类字符串字段不受影响）。改用关闭 HTML 转义的编码器 `encodeJSONText`，其余输出不变（键顺序、数字、布尔照旧）。证据：`internal/adapter/{codex,claude}/runtime_test.go:TestEnrichKeepsShellCharactersInToolInput`，修复前根字段和嵌套对象字段都返回转义文本，修复后与原文一致；conformance golden 不变。
 - [x] **M1B-CR-03 hook 命令不写相对路径**：Codex/Claude 路线在未指定命令时直接用 `os.Args[0]`。用 `./style install …` 安装会把 `./style --style-home=…` 原样写进 hooks.json/settings.json，harness 在其他工作目录运行 hook 时找不到程序，hook 失败后按 fail-open 放行，规则静默失效。新增 `adapter.HookCommand`：含路径分隔符的相对路径转为绝对路径；不含分隔符的名字（如 `style`）仍交给 harness 的 PATH 查找，绝对路径不变。两条路线共用。证据：`internal/adapter/command_test.go`，以及 `internal/adapter/codex/route_test.go:TestCodexUserRouteWritesAbsoluteHookCommandForRelativeProgram`、`internal/adapter/claude/route_test.go:TestClaudeRouteWritesAbsoluteHookCommandForRelativeProgram`，两条路线测试修复前失败；隔离 HOME 中 `./style install … --route codex=codex-user --yes` 写入的 hooks.json 命令为绝对路径（修复前是 `./style`）。Codex 插件路线把程序复制到 `$PLUGIN_ROOT/bin/style`，原本就不受影响。
 - [x] **M1B-CR-04 包快照不收录 .git 与 .DS_Store**：`snapshotPackage` 遍历包目录下的全部文件，`.git`、`.DS_Store` 也被复制进 `packages/<名称>` 并写进 lock 哈希。从 git checkout 安装时，只要 `.git` 里有超过 256 KiB 的对象，安装就因 `file-too-large` 失败；对象较小时整个 `.git` 被复制。Finder 在源目录或存储目录生成 `.DS_Store` 后，sync 会把它当成改动，要求重新 trust。现在遍历时跳过 `.git`、`.hg`、`.svn`（目录、文件或链接）和 `.DS_Store`，这些文件不复制也不参与哈希；包规范读取的文件不受影响。真实安装的 lock 中没有这类路径，升级后不需要重新 trust。证据：`internal/app/package_snapshot_test.go` 两例（快照只含 STYLE.yaml 和规则；含 300 KiB `.git` 对象和 `.DS_Store` 的 checkout 能安装，存储中没有这两项，之后在存储里新增 `.DS_Store` 时 sync 不要求 trust），修复前两例都因 `file-too-large` 失败。
+- [x] **M1B-CR-05 state.Update 不再每次 hook 都做 F_FULLFSYNC**：每个 hook 事件都会调用 `state.Update`，它总是重写 session.json 和 scope.json（只为刷新 `updated_at`），每个文件各做一次 `File.Sync` 和一次目录 `Sync`。Go 在 Darwin 上把它们实现为 `F_FULLFSYNC`，单次 Update 中位数约 14ms，占 hook 进程时间的大半。修复：
+  - 内容（除 `updated_at`）没变的文件不再重写，`updated_at` 改为表示最后一次变更。
+  - 没变时用 `Chtimes` 刷新 scope.json 的修改时间，Cleanup 仍把活跃会话视为活跃。
+  - 需要写时仍是临时文件加 rename，Darwin 上改用 `fsync(2)`（`core/state/sync_darwin.go`），其他平台不变。
+
+  证据：
+  - `core/state/state_test.go:TestUpdateRewritesOnlyChangedStateFiles` 修复前失败。
+  - Update 在进程内的中位数：没有变化时 14ms → 0.16ms，prompt 时为 0.33ms。
+  - 隔离 HOME 下真实 hook 进程（Codex payload，各 200/50 次）：PreToolUse p50 18.7 → 7.0ms，p95 21.4 → 8.2ms；UserPromptSubmit p50 19.1 → 8.1ms。
+  - 双 module 测试、vet，以及 state/engine/runtime 的 race 测试都通过。
+  - 真实 harness 的 U5/C9 计时尚未复测。
 
 ## 后续 backlog
 

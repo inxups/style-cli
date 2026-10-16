@@ -430,3 +430,67 @@ func TestAppendStatsAcceptsOnlyBoundedMetadata(t *testing.T) {
 		t.Fatalf("stats mode = %o, want 600", info.Mode().Perm())
 	}
 }
+
+func TestUpdateRewritesOnlyChangedStateFiles(t *testing.T) {
+	root := filepath.Join(t.TempDir(), "state")
+	store, err := New(root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	clock := time.Date(2026, 10, 16, 8, 0, 0, 0, time.UTC)
+	store.now = func() time.Time { return clock }
+	approx := true
+	if _, _, err := store.Update("s", "main", EventUpdate{Model: "m", EffortRaw: "high", ThinkingEffort: "high", EffortApprox: &approx}); err != nil {
+		t.Fatal(err)
+	}
+	sessionPath, scopePath := filepath.Join(root, "s", "session.json"), filepath.Join(root, "s", "main", "scope.json")
+	read := func(path string) []byte {
+		t.Helper()
+		data, err := os.ReadFile(path)
+		if err != nil {
+			t.Fatal(err)
+		}
+		return data
+	}
+	session, scope := read(sessionPath), read(scopePath)
+
+	clock = clock.Add(time.Hour)
+	again := true
+	gotSession, gotScope, err := store.Update("s", "main", EventUpdate{Model: "m", EffortRaw: "high", ThinkingEffort: "high", EffortApprox: &again})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !bytes.Equal(read(sessionPath), session) || !bytes.Equal(read(scopePath), scope) {
+		t.Fatal("an event that changes nothing rewrote state files")
+	}
+	if gotSession.Model != "m" || gotScope.PromptCount != 0 {
+		t.Fatalf("unchanged update returned session %#v scope %#v", gotSession, gotScope)
+	}
+	if info, err := os.Stat(scopePath); err != nil || !info.ModTime().Equal(clock) {
+		t.Fatalf("scope modification time = %v, %v; want %v so Cleanup sees activity", info.ModTime(), err, clock)
+	}
+
+	clock = clock.Add(time.Hour)
+	if _, _, err := store.Update("s", "main", EventUpdate{PromptSubmitted: true}); err != nil {
+		t.Fatal(err)
+	}
+	if !bytes.Equal(read(sessionPath), session) {
+		t.Fatal("a prompt rewrote the unchanged session file")
+	}
+	if bytes.Equal(read(scopePath), scope) || !strings.Contains(string(read(scopePath)), `"prompt_count":1`) {
+		t.Fatalf("prompt count not persisted: %s", read(scopePath))
+	}
+
+	if _, _, err := store.Update("s", "main", EventUpdate{Model: "m2"}); err != nil {
+		t.Fatal(err)
+	}
+	if !strings.Contains(string(read(sessionPath)), `"model":"m2"`) {
+		t.Fatalf("model change not persisted: %s", read(sessionPath))
+	}
+	if _, _, err := store.Update("s", "worker", EventUpdate{}); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := os.Stat(filepath.Join(root, "s", "worker", "scope.json")); err != nil {
+		t.Fatalf("a new agent scope must be written even when empty: %v", err)
+	}
+}
