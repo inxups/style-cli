@@ -1,0 +1,13 @@
+{
+  "session_id": "sess-claude-failure",
+  "hook_event_name": "PostToolUseFailure",
+  "cwd": "/work/repo",
+  "permission_mode": "auto",
+  "prompt_id": "prompt-failure",
+  "tool_name": "Bash",
+  "tool_input": {"command": "exit 7 # STYLE_CLAUDE_BOUNDARY"},
+  "tool_use_id": "toolu_failure",
+  "error": "Exit code 7",
+  "is_interrupt": false,
+  "effort": {"level": "high"}
+}

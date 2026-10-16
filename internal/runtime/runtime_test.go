@@ -25,6 +25,35 @@ import (
 
 const runtimeTestSHA = "sha256:0000000000000000000000000000000000000000000000000000000000000000"
 
+func TestClaudeNativeFailureMatchesToolOutputCondition(t *testing.T) {
+	entry := runtimeTestEntry("pkg/failure", "tool.error", "event", "inject", staticBody("FAILURE_CONDITION_MATCHED"))
+	entry.When.Conditions = []when.Condition{{Field: "tool.output", Op: "contains", Pattern: "Exit code 7"}}
+	store, err := state.New(t.TempDir())
+	if err != nil {
+		t.Fatal(err)
+	}
+	core, err := engine.New(runtimeTestIndex(map[string][]compile.Entry{"tool.error": {entry}}), store)
+	if err != nil {
+		t.Fatal(err)
+	}
+	runtime, err := New(core, store, claudeadapter.NewEnricher(), agenthooks.ProviderClaudeCode, false)
+	if err != nil {
+		t.Fatal(err)
+	}
+	payload, err := os.ReadFile("../../agenthooks/agenthookstest/fixtures/claude/post_tool_use_failure.json")
+	if err != nil {
+		t.Fatal(err)
+	}
+	var stdout, stderr bytes.Buffer
+	if code := runtime.Run(context.Background(), claudeRunArgs(), bytes.NewReader(payload), &stdout, &stderr); code != 0 {
+		t.Fatalf("Run exit=%d stderr=%q", code, stderr.String())
+	}
+	want := `{"hookSpecificOutput":{"additionalContext":"FAILURE_CONDITION_MATCHED","hookEventName":"PostToolUseFailure"}}`
+	if stdout.String() != want {
+		t.Fatalf("failure output condition: got %s, want %s", stdout.String(), want)
+	}
+}
+
 func TestRunDecodesClaudeHookAndEmitsOnlyWhitelistedBlock(t *testing.T) {
 	root := t.TempDir()
 	store, err := state.New(root)

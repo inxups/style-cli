@@ -206,7 +206,10 @@ func (f Facts) DataSource(point, field string) adapter.DataAvailability {
 			return adapter.DataAvailability{Available: true, Source: "Claude PostToolUse payload"}
 		}
 	case plan.ToolError:
-		if claudeToolFieldAvailable(field, true) {
+		// Native errors are normalized by the codec, but M1's condition
+		// schema exposes tool.output and tool.added only at their specified
+		// pre/post points. Do not advertise them for tool.error planning.
+		if field != "tool.output" && field != "tool.added" && claudeToolFieldAvailable(field, false) {
 			return adapter.DataAvailability{Available: true, Source: "Claude PostToolUseFailure payload"}
 		}
 	case plan.SubagentStart:

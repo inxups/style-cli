@@ -15,7 +15,7 @@ import sys
 REPO = Path(__file__).resolve().parents[2]
 
 
-def prepare(root, style):
+def prepare(root, style, claude=None):
     root, style = Path(root).resolve(), Path(style).resolve()
     if root.exists() and any(root.iterdir()):
         raise ValueError("scratch must be empty")
@@ -31,6 +31,10 @@ def prepare(root, style):
     environment = {key: value for key, value in os.environ.items()
                    if key not in ("CODEX_HOME", "CODEX_SANDBOX", "STYLE_HOME", "CLAUDE_CONFIG_DIR", "CLAUDE_EFFORT")}
     environment.update(STYLE_HOME=str(store), CLAUDE_CONFIG_DIR=str(config))
+    claude_command = str(Path(claude).resolve()) if claude else "claude"
+    if claude:
+        (binary.parent / "claude").symlink_to(claude_command)
+        environment["PATH"] = str(binary.parent) + os.pathsep + environment.get("PATH", "")
     records = []
     for package in (REPO / "example/terse-reviewer", REPO / "testdata/manual/m1b-probes"):
         command = [str(binary), "install", str(package), "--harness", "claude-code", "--yes", "--json"]
@@ -65,20 +69,22 @@ def prepare(root, style):
             "args": [str(observer), str(root / "hook-facts.jsonl")], "timeout": 10}]})
     settings.write_text(json.dumps(data, indent=2) + "\n")
     settings.chmod(0o600)
-    skill = work / ".claude/skills/style-boundary/SKILL.md"
+    # The launcher selects only user settings. A project skill is intentionally
+    # outside that source selection, so install the probe in the user root.
+    skill = config / "skills/style-boundary/SKILL.md"
     skill.parent.mkdir(parents=True)
     skill.write_text("---\nname: style-boundary\ndescription: M1 isolated explicit skill probe\n---\nReply only STYLE_CLAUDE_SKILL_OK. Do not use tools.\n")
     hot = root / "hot-update"
     hot.mkdir()
     (hot / "STYLE.yaml").write_text(json.dumps({"spec": "style/v0.3", "name": "claude-hot-update", "version": "0.1.0",
-        "description": "New Glob subscription installed while the UI session is running", "rules": [
-            {"id": "glob", "target": "tool", "names": ["Glob"], "at": "after", "action": "warn",
-             "text": "M1_FINAL_CLAUDE_HOT_USER", "model_text": "M1_FINAL_CLAUDE_HOT_MODEL"}]}, indent=2))
+        "description": "New Read subscription installed while the UI session is running", "rules": [
+            {"id": "read", "target": "tool", "names": ["Read"], "at": "after", "action": "warn",
+             "text": "M1_FINAL_CLAUDE_HOT_READ_USER", "model_text": "M1_FINAL_CLAUDE_HOT_READ_MODEL"}]}, indent=2))
     (work / "probe-fixture.txt").write_text("STYLE_CLAUDE_HOT_FIXTURE\n")
     script = "#!/bin/sh\nset -eu\n" + "\n".join("export " + key + "=" + shlex.quote(value) for key, value in
         (("STYLE_HOME", str(store)), ("CLAUDE_CONFIG_DIR", str(config))))
     script += "\nunset CODEX_HOME CODEX_SANDBOX CLAUDE_EFFORT\ncd " + shlex.quote(str(work))
-    script += '\nexec claude --setting-sources user --debug-file ' + shlex.quote(str(root / "claude-debug.log")) + ' --effort high "$@"\n'
+    script += '\nexec ' + shlex.quote(claude_command) + ' --setting-sources user --debug-file ' + shlex.quote(str(root / "claude-debug.log")) + ' --effort high "$@"\n'
     launcher = root / "launch.sh"
     launcher.write_text(script)
     launcher.chmod(0o700)
@@ -99,8 +105,9 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--scratch", required=True, type=Path)
     parser.add_argument("--style", required=True, type=Path)
+    parser.add_argument("--claude", type=Path, help="Pin a native CLI version for repeatable acceptance")
     args = parser.parse_args()
-    print(json.dumps(prepare(args.scratch, args.style), indent=2))
+    print(json.dumps(prepare(args.scratch, args.style, args.claude), indent=2))
 
 
 if __name__ == "__main__":

@@ -46,6 +46,7 @@ type claudeIn struct {
 	ToolUseID            string           `json:"tool_use_id"`
 	ToolResponse         json.RawMessage  `json:"tool_response"`
 	ToolError            string           `json:"tool_error"`
+	NativeError          string           `json:"error"`
 	Prompt               string           `json:"prompt"`
 	Message              string           `json:"message"`
 	LastAssistantMessage string           `json:"last_assistant_message"`
@@ -73,6 +74,11 @@ func decodeClaude(v Variant, conf DetectionConfidence, now time.Time, payload []
 	var in claudeIn
 	if err := json.Unmarshal(payload, &in); err != nil {
 		return nil, err
+	}
+	// PostToolUseFailure uses error in native Claude payloads. Retain the
+	// historical tool_error alias without changing Codex's shared wire shape.
+	if in.HookEventName == "PostToolUseFailure" && in.ToolError == "" {
+		in.ToolError = in.NativeError
 	}
 	kind, ok := claudeKinds[in.HookEventName]
 	if !ok {

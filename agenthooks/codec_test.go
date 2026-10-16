@@ -21,6 +21,26 @@ func fixture(t *testing.T, name string) []byte {
 
 var testNow = time.Date(2026, 7, 2, 12, 0, 0, 0, time.UTC)
 
+func TestDecodeClaudeNativeFailureError(t *testing.T) {
+	typed, err := decodeClaude(VariantUnknown, DetectionConfig, testNow, fixture(t, "claude/post_tool_use_failure.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	post, ok := typed.(*ToolPostEvent)
+	if !ok || !post.Failed || post.Error != "Exit code 7" || post.Session.EffortRaw != "high" {
+		t.Fatalf("native failure = %#v", typed)
+	}
+	for _, payload := range []string{
+		`{"hook_event_name":"PostToolUseFailure","tool_error":"legacy error"}`,
+		`{"hook_event_name":"PostToolUseFailure","tool_error":"legacy error","error":"native error"}`,
+	} {
+		typed, err := decodeClaude(VariantUnknown, DetectionConfig, testNow, []byte(payload))
+		if err != nil || typed.(*ToolPostEvent).Error != "legacy error" {
+			t.Fatalf("legacy error compatibility: event=%#v err=%v", typed, err)
+		}
+	}
+}
+
 func TestDecodeClaudePreToolUse(t *testing.T) {
 	payload := fixture(t, "claude/pre_tool_use.json")
 	typed, err := decodeClaude(VariantUnknown, DetectionConfig, testNow, payload)

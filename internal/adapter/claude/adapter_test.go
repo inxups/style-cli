@@ -67,7 +67,8 @@ func TestClaudeFactsReportCapabilitiesDataAndStaticSlot(t *testing.T) {
 		{plan.ToolPre, "tool.input.file_path", true},
 		{plan.ToolPre, "tool.output", false},
 		{plan.ToolPost, "tool.output", true},
-		{plan.ToolError, "tool.output", true},
+		{plan.ToolError, "tool.output", false},
+		{plan.ToolError, "tool.added", false},
 		{plan.ToolPost, "tool.added", true},
 	} {
 		if got := facts.DataSource(test.point, test.field).Available; got != test.want {

@@ -1183,3 +1183,14 @@ PY
 - Claude用户已选择稍后操作。隔离scratch尚无hook-facts/debug/state，原23cf程序先存bin/style.before-final12-23cf8caa，再原子更新bin/style到本轮构建；prepared.json与配置字节不变，入口launch.sh路径不变。`review/M1-FINAL-12-CLAUDE-BINARY-2026-10-16.json`单独记录更新，不冒充UI/C9通过。日常安装未改。
 - 只读检查 `gh run list --repo inxups/style-cli --workflow ci.yml --limit 5` 和 `gh run view 38872445836 ... --json headSha,status,conclusion,jobs,url`：远端最新04371ef成功，Ubuntu/macOS均success；此前d7105f0成功仍保留。当前2f6426b无对应run，本轮提交尚未发布，不把旧CI当新源码验收。全部结果/复现命令汇总在 `review/M1-FINAL-12-REGRESSION-2026-10-16.json`。
 - FINAL-12 `[~]`：本地验证完成，远端本轮CI和FINAL-06/07/08/09真实补验收仍缺证据；剩余能力修复若更改代码需重跑相关检查。当前不声明M1全部完成、不开始M2；全部闭合后再提示下一步规划。
+
+
+### 2026-10-16 — M1-FINAL-06 用户界面边界与 native failure 修复
+
+- 用户完成隔离登录与界面步骤。初始 session163efdc3：SessionStart:startup、UserPromptSubmit、PreToolUse、PostToolUse、PostToolUseFailure 和 UserPromptExpansion 的 USER 标记均可见；每类对应 STYLE JSON 输出与stats核对，exit7 有真实失败 tool result。原项目技能被 user-only 来源排除，首次 Unknown command 保留；补到配置根 skills 后原进程自动发现并成功触发。
+- 原 Glob 热更新尝试实际执行 Bash/find，本版原生工具声明也无 Glob，不能计为通过。改为此前不存在的 Read matcher；未重启、未再次clear的当前进程实际 Read、POST hook、HOT_READ_USER 和 MODEL 标记及stats一致，U-C2 成立。准备脚本和runbook改用Read。
+- 原始 observer逐事件：SessionStart/UserPromptSubmit/UserPromptExpansion无effort和CLAUDE_EFFORT；工具前/后/失败有effort.level及环境high，调整后medium。用户所见选项为low/medium/high/extra/max，无off选项；不把medium当关闭，不宣称已获得off原生表示。clear创建新session6d6118da，source=clear且无model；新的state保持unknown，随后工具补medium。启动USER在hook输出中存在，用户界面未见，作为clear能力边界保留。
+- 真实失败payload字段是error而非tool_error。codec原生fixture和runtime管线回归先失败（Error空、条件结果为空），修复后通过；兼容旧tool_error、两者并存优先旧字段，且仅Claude decode变更，Codex共享形状不变。进一步核对M1规范只允许tool.output在tool.post；不扩展公开DSL，收窄tool.error的tool.output/tool.added能力声明。runtime测试直接构造index仅验证内部归一化管线，不代表公开条件范围扩大。原生失败探针改用既有tool.input.command条件。
+- `probe_claude_failure.py --claude /private/tmp/style-m1-claude-cli-2.1.300/claude --style /tmp/style-m1-final06-fixed --scratch /tmp/style-m1-claude-failure-d-20261016 --output /tmp/style-m1-claude-failure-d.json`：真实CLI/Bash exit7，observer见error=Exit code7且无tool_error，STYLE tool.error输出一次，实际Messages请求含完整固定标记，stats一致。服务为仅loopback的脚本响应，不调用模型，合成usage/cost不入证据。前几次准备失败（全局claude路径消失、原fixture误用被M1禁止的tool.output）原scratch均保留，未计通过。
+- 验收过程中全局npm安装变为2.1.301且claude入口消失，当前UI进程仍为2.1.300。只向私有目录npm pack目标2.1.300，核对官方包sha512 integrity，再固定native二进制475517ca…；未安装/回滚日常配置。隔离STYLE二进制原子更新为8d5fbf75…，旧8edcb3ce程序和launcher备份保留，独立launch-c9.sh写c9-final06-debug.log。详情见BOUNDARY JSON。
+- 验证环境清理CODEX_HOME/CODEX_SANDBOX，临时GOPATH/GOMODCACHE/GOCACHE和GOFLAGS=-mod=readonly：agenthooks `go test -count=1 ./...`、root `go test -count=1 ./internal/runtime ./internal/adapter/claude ./core/plan ./internal/app ./core/spec`及两边相关vet通过；30项Python单测通过（新增loopback/原生落盘精确比较/环境隔离；初版macOS符号路径断言改为resolve后通过）。FINAL-06-FIX关闭，FINAL-06保持部分完成待C9；不使用脚本准备或模型复述替代验收。

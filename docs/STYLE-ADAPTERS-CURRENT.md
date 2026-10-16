@@ -246,7 +246,8 @@ Codex 云端 skill 不在当前路线的支持范围，plan 会对 skill 规则�
 |---|---|
 | prompt | `prompt`；显式 skill 另有 `skill.name` |
 | tool.pre | `tool.name`、`tool.canonical`、`tool.input`、嵌套 `tool.input.*`、`tool.added`、MCP/skill、cwd |
-| tool.post / Claude tool.error | 上述工具字段，以及可用时的 `tool.output` |
+| tool.post | 上述工具字段，以及可用时的 `tool.output` |
+| Claude tool.error | 工具身份/输入/MCP/cwd；公开 M1 条件不开放 `tool.output` 或 `tool.added` |
 | subagent.start | agent 身份等公共字段；输出能力仍受第 4 节限制 |
 
 字段可用性声明表示 adapter 有提取路径，不保证每个 payload 都带值。条件缺值不匹配；模板缺值使用默认值或空文本。工具原文用于条件匹配，M1 校验禁止把工具输入/输出等事件内容直接放进模板。
@@ -255,7 +256,7 @@ Codex 云端 skill 不在当前路线的支持范围，plan 会对 skill 规则�
 
 ### 8.2 model
 
-Codex 从事件的 model 更新状态。Claude 的 SessionStart model 与 PostModelSwitch 的 to_model 更新状态；model 缺失时不伪造新值，必要时保留已有值。启动时 unknown 的边界在真实验收中保留。
+Codex 从事件的 model 更新状态。Claude 的 SessionStart model 与 PostModelSwitch 的 to_model 更新状态；model 缺失时不伪造新值，必要时保留已有值。启动时 unknown 的边界在真实验收中保留。FINAL-06 的 clear 创建新 session、payload 不含 model，新 session 的 model 保持 unknown；不跨 session 复制旧 model。
 
 ### 8.3 Codex effort
 
@@ -402,3 +403,5 @@ env -u CODEX_HOME -u CODEX_SANDBOX \
 | 未来能力 | native、Claude rules 静态位置、output style replace、provider 条件等按 M2/M3/M4 backlog 规划 |
 
 完整待验列表见 [任务清单 FINAL-06–12](STYLE-M1-TASKS.md)；Claude 界面步骤见 [隔离 runbook](review/M1-FINAL-06-CLAUDE-RUNBOOK.md)，成本与缓存证据见 [FINAL-10](review/M1-FINAL-10-CACHE-2026-10-16.md)。全部补项有证据后再开始 M2 规划。
+
+FINAL-06 补验收（2026-10-16）：六类已声明事件的 USER 标记在界面可见；clear 虽输出启动标记，界面未显示。启动/提示/显式技能没有 effort，工具前/后/失败带 effort.level 与 CLAUDE_EFFORT；观察到 high→medium，所测 Opus5.5 界面无关闭思考选项，未验证 off 原值。新增 Read matcher 在未重启进程中实际触发，热更新成立。原 Glob 探针没有原生调用，不能计通过。Native failure 使用 `error`，codec 已补归一化并保留 `tool_error` 兼容；公开 M1 `tool.output` 仍只用于 tool.post。证据见 [FINAL-06](review/M1-FINAL-06-BOUNDARY-2026-10-16.json)，最终 C9 仍待采集。
