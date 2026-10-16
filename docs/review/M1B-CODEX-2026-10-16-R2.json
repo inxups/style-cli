@@ -102,5 +102,23 @@
       "codex_session": "01a142fb-a254-7442-a334-2d1f85fe4961 rollout: 'Current session (B9 trusted text): model gpt-6.1-sol, effort medium.'"
     },
     "restore": "original copied back, sync exit 3, trust --yes, sync 0, list hash_matches=true"
+  },
+  "B7": {
+    "status": "pass (local stub MCP)",
+    "stub": "testdata/manual/github_mcp_stub.py mounted per run with -c mcp_servers.github.command/args; no network",
+    "denied_attempt": {
+      "thread": "01a142fc-8e37-7541-824f-dfb0b2d34164",
+      "codex": "MCP tool call requires approval, but approval policy is never",
+      "stats": "terse-reviewer/before-create-pr@tool.pre output 04:33:41.617Z",
+      "rollout": "hook context 04:33:41.618Z"
+    },
+    "approved_run": {
+      "thread": "01a142fd-2acd-72a0-8ddf-bb7f49e5fcb7",
+      "extra_config": "-c mcp_servers.github.tools.create_pull_request.approval_mode=\"approve\"",
+      "stats": "before-create-pr@tool.pre output 04:34:17.790555Z",
+      "rollout_hook_context": "Before creating a pull request, confirm the branch and test status. (04:34:17.791Z)",
+      "tool_result": "STYLE_M1B_MCP_STUB: no pull request was created (04:34:17.821Z)"
+    },
+    "limits": "Real GitHub MCP server not used to avoid creating an external pull request."
   }
 }

@@ -798,3 +798,10 @@
 - 修改 `~/.style-m1b/packages/terse-reviewer/prompts/session-info.md` 为 `Current session (B9 trusted text): …`（原文另存）。操作失误：第一次 sync 漏传 STYLE_HOME，CLI 用默认 `~/.style`（仅 10-15 的旧 adapters 目录，无包）返回 0；核对 `~/.style` 无新写入，不计为结果。正确传入后：sync 退出 3、`trust terse-reviewer` 预览退出 1，两次 build/index.json 均不变。
 - trust 前新会话 01a142fa 的 rollout hook 上下文仍为原文字；`trust --yes` 退出 0，Claude settings 与 Codex 两个文件 hash 不变；新会话 01a142fb 的 rollout 为新文字。
 - 还原：拷回原文件，sync 退出 3，`trust --yes` 后 sync 0、list hash_matches=true，原文与仓库源一致。证据 R2 JSON 的 B9；仅文档/证据变化。
+
+### 2026-10-16 — CODEX-07/B7 `[x]` MCP create_pull_request 前注入（本地 stub）
+
+- 真实 GitHub MCP 调用会在外部创建 PR，属对外操作，未执行。新增 `testdata/manual/github_mcp_stub.py`：stdio MCP，暴露 create_pull_request，固定返回 `STYLE_M1B_MCP_STUB: no pull request was created`，不联网、不访问 git。STYLE 规则仅按服务名/工具名匹配（`mcp: github/create_pull_request`），因此覆盖同一 hook 路径。
+- 首次（01a142fc）：Codex 以 `approval policy is never` 拒绝 MCP 调用，但 PreToolUse 已记 `before-create-pr@tool.pre output`，rollout 04:33:41.618Z 有 hook 上下文。
+- 复测（01a142fd）：只对该工具加单次 `-c mcp_servers.github.tools.create_pull_request.approval_mode="approve"`。PreToolUse 04:34:17.790Z output → rollout 04:34:17.791Z 注入 → 04:34:17.821Z 工具成功返回 stub 文字，注入先于调用结果。config.toml 无 github MCP 残留。
+- 局限：未使用真实 GitHub MCP 服务器。证据 R2 JSON 的 B7；验证 stub 实际被 Codex 列出与调用、`git diff --check`。
