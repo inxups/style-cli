@@ -4,7 +4,7 @@
 
 本文件记录 M2 测试矩阵和每项当前状态。测试通过必须有命令输出、fixture/golden 文件或真实环境记录作为证据。任务清单见 [STYLE-M2-TASKS.md](STYLE-M2-TASKS.md)，M1 测试矩阵已只读归档（[STYLE-M1-TESTS.md](STYLE-M1-TESTS.md)）。
 
-当前状态：M2-BASE-01、M2-A1–A4 已通过，M2-A9 已完成 native 阶段回归、等待后续 M2 功能完成后复验，其余条目尚未执行。M2a 断言为初稿，标“D* 定稿后细化”的条目在对应设计项通过评审时补全具体 fixture、golden 和退出码。
+当前状态：M2-BASE-01、M2-A1–A5 已通过，M2-A9 已完成 native 阶段回归、等待后续 M2 功能完成后复验，其余条目尚未执行。M2a 断言为初稿，标“D* 定稿后细化”的条目在对应设计项通过评审时补全具体 fixture、golden 和退出码。
 
 ## 状态约定
 
@@ -66,7 +66,7 @@ env -u CODEX_HOME -u CODEX_SANDBOX \
   - 非交互、无 `--yes`、本次会新增 native 条目时退出 1，harness 配置、锁文件、index 逐字节不变；带 `--yes` 成功。
   - 修改 native 的命令、事件、matcher、timeout 任一项，或增删 native 规则后，`sync` 退出 3；`--link` 包同样退出 3。`trust` 预览单列"native 条目差异"，给出改前改后四个字段；未确认时不写入，确认或 `--yes` 后配置与新渲染一致，`codex-user` 的 `trusted_hash` 同步更新。
   - `style list` 显示每个包的 native 条目数；`style doctor` 对一致、缺失、被手工改动三种状态分别输出正常、告警、告警，`codex-user` 另报 `trusted_hash` 是否匹配。
-- [ ] **M2-A5 stats**（M2-T20，按已批准 D2 契约，尚未实现/执行）：
+- [x] **M2-A5 stats**（M2-T20，按已批准 D2 契约）：结果：`core/state/stats_read_test.go` 与 `internal/app/stats_test.go` 覆盖以下断言；`testdata/stats/m2` 固定时钟/两家与历史 provider/多会话多 agent fixture，对照 `testdata/golden/stats-{rule,session}.{txt,json}` 四份 golden。双 module fresh test/vet、state/app race、采集器 40 项和扩展 smoke 36 项通过，见 `docs/PROGRESS.md` M2-T20。
   - 固定时钟、两家 provider、多规则/评估点、多个会话/main/子 agent 的 `stats.jsonl` fixture；rule/session 文本与 JSON golden 逐字节比较。核对 output/blocked/dedup/cap-drop、六个数值合计、相同规则名跨 provider 分组、估算排序与平手顺序、已卸载包历史仍可读。
   - 默认 168h、正 duration、带时区 RFC3339、两端边界、过旧/未来记录过滤；非法参数/未来 since/未知参数退出 1 且 stdout 为空。无 state/窗口无记录退出 0、rows 为 []、不建目录。
   - 缺估算/摘要的旧记录保留次数、增加 unestimated，不读取当前 index 或重新估算；静态/native 无日志时不杜撰成本。与 doctor 的正常 top3/legacy/repeated_body 结果兼容。
@@ -75,7 +75,7 @@ env -u CODEX_HOME -u CODEX_SANDBOX \
 - [ ] **M2-A6 跨包去重**（M2-T30，D3 定稿后细化）：两个包含正文完全相同的规则时，index 只保留一份、plan 与 T003 只计一次；运行时只注入一次；卸载保留方后重编译使另一份生效；正文不同的规则不受影响。
 - [ ] **M2-A7 Claude rules 静态位置**（M2-T40，仅 D4 成立时）：写入/删除 `~/.claude/rules/style-<名字>.md`；从 `CLAUDE.md` 标记块迁移后再卸载，两处文件逐字节还原。D4 不成立时本条以 D4 证据标注不适用并关闭。
 - [ ] **M2-A8 output style replace**（M2-T50，仅 D5 可行时）：断言随 D5 定稿；不可行时本条以 D5 证据标注不适用并关闭。
-- [~] **M2-A9 M1 回归**：native 阶段已通过双 module fresh test/vet、app/adapter/conformance race、采集器 40 项、构建与 smoke 32 项。T60 的 `TestNativeRulesLeaveRuntimeOutputsAndStatsUnchanged` 在两家共 46 个 payload 上核对原 stdout golden、输出白名单、runtime 条目与统计记录（只排除时间差）；inline 源文件摘要随新增声明改变是预期，其他条目字段不变。T60 未更新任何 golden。M1 的 A1–A22、adapter conformance 在后续 M2 实现后仍需最终复验，见 `docs/PROGRESS.md` M2-T13/T60。
+- [~] **M2-A9 M1 回归**：native 与 stats 阶段已通过双 module fresh test/vet、app/state/adapter/conformance race、采集器 40 项、构建与 smoke（stats 阶段扩为 36 项）。T60 的 `TestNativeRulesLeaveRuntimeOutputsAndStatsUnchanged` 在两家共 46 个 payload 上核对原 stdout golden、输出白名单、runtime 条目与统计记录（只排除时间差）；inline 源文件摘要随新增声明改变是预期，其他条目字段不变。T60 未更新任何 golden。M1 的 A1–A22、adapter conformance 在后续 M2 实现后仍需最终复验，见 `docs/PROGRESS.md` M2-T13/T60/T20。
 
 ## M2b：Codex 真实环境
 

@@ -166,7 +166,7 @@ map: { low: low, medium: medium, high: high, xhigh: xhigh, max: max }
 | `style doctor [--reset-state]` | 逐个适配器调 `Detect` 和每条路线的 `Status`；检查 index 和锁文件是否一致、Codex 登录 shell 是否有输出、effort 来源、花得最多的 3 条规则；`--reset-state` 清空所有会话状态 | M1 |
 | `style adapters` | 适配器、检测结果、可用路线、信任方式、能力摘要、上限 | M1 |
 | `style agenthooks run --provider=<h> [--owner=style] [--fail-closed]` | 隐藏，hook 入口（第 8 节） | M1 |
-| `style stats [--by rule\|session] [--since <duration\|RFC3339>] [--json]` | 只读汇总历史运行时记录，默认最近 7 天、按规则；D2 草案待评审（§11.5） | M2 |
+| `style stats [--by rule\|session] [--since <duration\|RFC3339>] [--json]` | 只读汇总历史运行时记录，默认最近 7 天、按规则；D2/T20 已实现（§11.5） | M2 |
 | `style explain --harness h --event e --payload f.json` | 离线模拟一次 hook 调用，打印命中的规则、去重判断和最终输出 | M3 |
 | `style probe [--harness h]` | 自检：确认 harness 真的在调用 hook | M3 |
 | `style update`、git 来源、`install --frozen`、`install --project`、`--count=exact` | | M3 |
@@ -630,9 +630,9 @@ terse-reviewer 0.3.0 → codex（路线：plugin）
 - `style doctor` 维持最近 7 天、按 provider/规则的 top3：仅累加 `output`/`blocked` 中同时带有效估算与摘要的记录，`emits` 也是这部分记录数；缺字段的输出单列 `legacy_stats_without_estimate`。至少 3 次、只有一个正文摘要且总估算大于 0 时标 `repeated_body`，提示检查 `repeat`。
 - **只存估算值、摘要和计数，不存正文、提示词或 native 命令**。静态位置的常驻正文与 native 命令不经过 runtime，不产生这里的计数；缺少日志也不推断为零成本。
 
-#### 11.5.2 M2-D2 `style stats` 契约（评审通过，T20 实现中）
+#### 11.5.2 M2-D2 `style stats` 契约（D2/T20 已完成）
 
-用户于 2026-10-16 同意继续按本节契约推进 T20。
+用户于 2026-10-16 同意按本节契约推进；T20 与 M2-A5 已完成，证据见 [PROGRESS.md](../PROGRESS.md) 的 M2-T20。
 
 **命令与窗口**：
 

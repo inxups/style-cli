@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """End-to-end smoke test for a built style binary.
 
-Runs validate, plan, install, list, doctor, sync and uninstall in a throwaway
+Runs validate, plan, install, list, doctor, stats, sync and uninstall in a throwaway
 HOME, then feeds harness hook payloads to the commands that install wrote into
 Codex hooks.json and Claude settings.json. Codex and Claude Code are replaced by
 stubs that only answer --version, so this checks the STYLE side of the contract,
@@ -115,6 +115,11 @@ def main():
         env.update(HOME=str(home), STYLE_HOME=str(home / ".style"),
                    PATH=str(stubs) + os.pathsep + env.get("PATH", ""))
 
+        result = style(binary, env, "stats", "--json")
+        empty_stats = json.loads(result.stdout)
+        check(result.returncode == 0 and empty_stats["rows"] == [] and
+              not (home / ".style").exists(), "stats on empty home creates no state")
+
         for package in (EXAMPLE, PROBES):
             name = package.name
             result = style(binary, env, "validate", str(package))
@@ -153,6 +158,22 @@ def main():
                     ok = verdict == "allow"
                 check(ok, f"{provider} PreToolUse {verdict}: {command}")
 
+        result = style(binary, env, "stats", "--by=rule", "--since=24h", "--json")
+        rule_stats = json.loads(result.stdout)
+        check(result.returncode == 0 and len(rule_stats["rows"]) == 2 and
+              {row["provider"] for row in rule_stats["rows"]} == {"codex", "claude-code"} and
+              all(row["rule"] == "terse-reviewer/no-force-push" and
+                  row["blocks"] == len(BLOCKED) and row["outputs"] == 0 and
+                  row["unestimated"] == 0 and row["estimated_tokens"] > 0
+                  for row in rule_stats["rows"]) and not rule_stats["quality"]["partial"],
+              "stats groups actual hook records by provider and rule")
+        result = style(binary, env, "stats", "--by", "session", "--json")
+        session_stats = json.loads(result.stdout)
+        check(result.returncode == 0 and len(session_stats["rows"]) == 2 and
+              all(row["session"] == "smoke" for row in session_stats["rows"]) and
+              session_stats["totals"] == rule_stats["totals"],
+              "stats session grouping preserves hook counts and estimates")
+
         result = style(binary, env, "sync", "--json")
         check(result.returncode == 0, "sync")
         result = style(binary, env, "uninstall", "--all", "--yes")
@@ -162,6 +183,9 @@ def main():
                      if path.exists() and ("agenthooks" in path.read_text() or "style:terse-reviewer" in path.read_text())]
         check(not leftovers, "uninstall removes STYLE hooks and static text" +
               ("" if not leftovers else ": " + ", ".join(shlex.quote(str(p)) for p in leftovers)))
+        result = style(binary, env, "stats", "--json")
+        check(result.returncode == 0 and json.loads(result.stdout)["rows"] == rule_stats["rows"],
+              "stats history remains available after uninstall")
 
 
 if __name__ == "__main__":

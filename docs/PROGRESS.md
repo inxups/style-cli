@@ -1348,3 +1348,14 @@ PY
 - 上一轮已提交 D2 草案并请求评审，用户回复“继续”；按此同意原草案的默认 168h、rule/session 分组、只读/有界扫描、六字段计数、质量报告与 doctor 兼容契约，进入 T20。未扩大到尚未评审的 D3–D5 实现。
 - D2 改 `[x]`，CLI 设计 §11.5.2 改为实施契约，A5 按契约验收；T20/A5 尚未标完成。
 - 验证：仅文档状态更新，`git diff --check` 通过；当前草案已有的本地链接和 JSON 示例未改。下一步实现 T20。
+
+
+### 2026-10-16 — M2-T20 stats 命令与 M2-A5 `[x]`
+
+- 实现：`internal/app/stats.go`/`stats_command.go` 接入 `style stats [--by rule|session] [--since <duration|RFC3339>] [--json]`，默认 168h、单次捕获 until、UTC/包含边界；按 provider+规则或 session 目录键汇总六个非负 int64 字段、稳定排序、JSON format 1。只累计历史 output/blocked 自带估算与摘要，缺任一字段保留次数并记 unestimated，dedup/cap-drop 不累加候选成本；不依赖 index、已装包或 adapter 检测。
+- 共享读取：`core/state/stats_read.go` 固定扫描 session/agent 两层目录，用 `os.Root` 固定目录句柄、Lstat 与 inode 核对拒绝路径替换，跳过后代 symlink、拒绝非法根；512 字节缓冲分片读取，>=512 字节行有界丢弃后继续，严格校验真实记录字段、时间、枚举与摘要。坏行/超长行/跳过 symlink 在 quality 计数，partial 时仍输出有效汇总；I/O/取消/计数溢出返回错误，CLI 在完整读取后才写报告，不回显原始坏行或敏感字段。agenthooks、runtime writer 与留存策略未改。
+- doctor：`doctor_stats.go` 复用同一读取器，正常最近 7 天 top3、legacy 与 repeated_body 保持；坏行后有效记录继续汇总，给 stats-invalid warning，仍保留 doctor 自己的清理职责。
+- 证据：`testdata/stats/m2` 固定 2026-10-16T00:00:00Z，含两家+未注册历史 provider、不同评估点、main/child、多会话与边界相邻 1ns；`TestA5StatsRuleAndSessionGoldens` 先独立核对每行及合计 11 outputs / 3 blocks / 1 dedup / 1 cap_drop / 96 estimated_tokens / 3 unestimated，再比四份文本/JSON golden。重生成命令为隔离 Go 环境下 `STYLE_UPDATE_GOLDENS=1 go test ./internal/app -run '^TestA5StatsRuleAndSessionGoldens$' -count=1`；本次随后去掉更新开关重跑全部测试通过。
+- 边界证据：`TestScanStats*`/`TestReadStatsLines*` 覆盖未知字段、非法元数据/JSON/截断、511/512/513/1MiB 行、旧成本字段、深度与 5 处 symlink、消失文件、权限/I/O、扫描中取消与质量计数溢出。`TestA5Stats*` 覆盖 duration/RFC3339/UTC/窗口、非法参数 stdout 空、空报告不建目录、坏行隐私标记不泄露、标识符转义、真实 component 哈希会话键、聚合溢出、全树字节/权限/mtime 不变和过期会话未清理；doctor 用同一 fixture 验证 top3 与三条旧记录，并验证坏行后继续统计/告警。
+- 验证：所有 Go 命令清除 CODEX_HOME/CODEX_SANDBOX，临时 GOPATH/GOMODCACHE/GOCACHE。`GOFLAGS='-mod=readonly -count=1' make test-go`、`GOFLAGS=-mod=readonly make vet-go` 双 module exit 0；`go test -race -count=1 ./core/state ./internal/app` exit 0（state 1.774s / app 21.528s）；Python 采集器 40 项 OK。`go build -trimpath -buildvcs=false` 成功，二进制 `/var/folders/m5/gv7_10k149l3j4l02mt548zr0000gp/T/style-m2-stats.xy26oody/style` SHA256 `63984423c125e04326864407f3074362a6f1b8c84bc8f39cc29f75e53f3fbe80`；扩展 `scripts/smoke.py` 36 项通过，新增空 home 只读、真实 hook 日志的 rule/session 汇总与卸载后历史仍可读。临时产物不入库，既有 plan/index/stdout golden 未改。
+- gofmt、本地文档链接/围栏、四份新 golden JSON 结构与 `git diff --check` 通过。T20/A5 改 `[x]`；A9 保持 `[~]` 等剩余 M2 功能完成后复验。下一步 D3 跨包去重设计，评审通过前不进入 T30。

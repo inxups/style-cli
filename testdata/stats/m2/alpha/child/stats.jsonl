@@ -1,0 +1,2 @@
+{"at":"2026-10-15T22:00:00Z","provider":"codex","event":"PreToolUse","point":"tool.pre","entry":"pkg/check@tool.pre","action":"warn","result":"output","est_tokens":3}
+{"at":"2026-10-15T22:00:00Z","provider":"claude-code","event":"PreToolUse","point":"tool.pre","entry":"pkg/check@tool.pre","action":"block","result":"blocked","est_tokens":7,"body_sha256":"sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"}

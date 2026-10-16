@@ -4,7 +4,7 @@
 
 本文件是 STYLE CLI M2 的持久化任务清单。每项任务完成后必须同时补充证据（命令、fixture、golden 文件或真实运行记录），不能只根据对话上下文标记完成。测试矩阵见 [STYLE-M2-TESTS.md](STYLE-M2-TESTS.md)，执行记录追加到 [PROGRESS.md](PROGRESS.md)。
 
-当前总状态：M2 已开始，文档建立（M2-00）与基线回归（M2-01）完成；M2-D1 native 规则格式设计评审通过，M2-T10–T13、M2-T60 完成；M2-D2 stats 输出设计已获用户同意，正在推进 T20。M1 已关闭并只读归档（[任务](STYLE-M1-TASKS.md)、[测试](STYLE-M1-TESTS.md)），唯一遗留为 M2-CARRY-01。
+当前总状态：M2 已开始，文档建立（M2-00）与基线回归（M2-01）完成；M2-D1 native 规则格式设计评审通过，M2-T10–T13、M2-T60 完成；M2-D2 stats 输出设计与 M2-T20 实现完成；下一项为 M2-D3 跨包去重设计。M1 已关闭并只读归档（[任务](STYLE-M1-TASKS.md)、[测试](STYLE-M1-TESTS.md)），唯一遗留为 M2-CARRY-01。
 
 ## 范围
 
@@ -68,7 +68,7 @@ M1 中已记录的已知限制（如 force-push 示例规则对 `--push-option` 
 - [x] **M2-T11 native plan 与 token 报告**：`core/plan`、`core/tokens` 输出 native 状态和报告，更新两家 plan golden。依赖：M2-T10。测试：M2-A2。实现：`plan.NativeHook` 状态取代 `skipped-m2`，`RulePlan.Native`（事件、matcher、实际 timeout，不含命令）；可选接口 `plan.NativeAdapter`，adapter 侧 `NativePlanningFacts` 由两家 `Facts.NativeHook` 实现（默认 60 秒，Codex `SessionEnd` 压到 3 秒）；native 规则从 token per-rule、预算和 lint 中移除，`tokens.Report.Unestimated` 单列。过渡状态：T12 之前 native-hook 只出现在 plan，尚未写入 harness 配置。证据见 `docs/PROGRESS.md` M2-T11。
 - [x] **M2-T12 adapter `Native()` 与路线**：两家 `Facts.Native` 生成命令、归属 tag 和实际 timeout；安装编译在 runtime index 之外按 priority/包序号/规则序号收集 native hook，经三条路线交给 agenthooks 的 `RawCommand`/`RawTag` 渲染、owner 合并、卸载和 Codex 信任哈希。修复已有 foreign matcher 组时信任键序号未随合并偏移的问题。依赖：M2-T11。测试：M2-A3；双 module fresh test/vet 通过，见 `docs/PROGRESS.md` M2-T12。披露与 native 变更信任由下一项 T13 补齐。
 - [x] **M2-T13 CLI native 生命周期**：install 在写入前提供完整 capability/native 预览与确认回调，文本/JSON 披露命令和路线信任；批准快照保存 native 渲染字段，sync 对普通包/link 的 native 字段、增删、声明 timeout 和顺序变化均退出 3，配置/信任修复也必须 trust 确认。trust 单列 native 前后差异，保留其他包的未批准 link native 字节；list 显示条目数，doctor 以批准快照核对一致/缺失/改动及 codex-user 信任哈希。依赖：M2-T12。测试：M2-A4；双 module fresh test/vet、相关 race、采集器通过，见 `docs/PROGRESS.md` M2-T13。
-- [ ] **M2-T20 `style stats` 命令**：读取 `stats.jsonl`，复用 `core/state/stats.go` 的记录格式，按 D2 输出文本/JSON。依赖：M2-D2。测试：M2-A5。
+- [x] **M2-T20 `style stats` 命令**：实现默认 168h 的 rule/session 文本与 JSON format 1，六字段计数、稳定排序与质量报告；`core/state.ScanStats` 固定两层目录、有界逐行严格解码并跳过坏行/超长行/symlink，全程只读，I/O/取消/溢出退出 1 且不输出成功报告。doctor 复用扫描器，保持正常 top3/legacy/repeated_body，坏行继续有效聚合并告警。依赖：M2-D2。测试：M2-A5；固定 fixture/四份 golden、双 module fresh test/vet、state/app race、采集器 40 项与扩展 smoke 36 项通过，见 `docs/PROGRESS.md` M2-T20。
 - [ ] **M2-T30 跨包去重实现**：compile/plan/tokens/runtime 按 D3 去重。依赖：M2-D3。测试：M2-A6。
 - [ ] **M2-T40 Claude rules 静态位置与迁移**：仅 D4 成立时实现；否则标注“按 D4 结论不实现”并以 D4 证据关闭。依赖：M2-D4。测试：M2-A7。
 - [ ] **M2-T50 output style replace**：仅 D5 可行时实现；否则同上关闭。依赖：M2-D5。测试：M2-A8。

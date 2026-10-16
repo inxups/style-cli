@@ -1,0 +1,64 @@
+{
+  "format": 1,
+  "by": "session",
+  "window": {
+    "since": "2026-10-09T00:00:00Z",
+    "until": "2026-10-16T00:00:00Z"
+  },
+  "totals": {
+    "outputs": 11,
+    "blocks": 3,
+    "dedup": 1,
+    "cap_drops": 1,
+    "estimated_tokens": 96,
+    "unestimated": 3
+  },
+  "rows": [
+    {
+      "provider": "codex",
+      "session": "alpha",
+      "outputs": 6,
+      "blocks": 1,
+      "dedup": 1,
+      "cap_drops": 1,
+      "estimated_tokens": 47,
+      "unestimated": 2
+    },
+    {
+      "provider": "claude-code",
+      "session": "alpha",
+      "outputs": 1,
+      "blocks": 1,
+      "dedup": 0,
+      "cap_drops": 0,
+      "estimated_tokens": 27,
+      "unestimated": 0
+    },
+    {
+      "provider": "codex",
+      "session": "beta",
+      "outputs": 3,
+      "blocks": 1,
+      "dedup": 0,
+      "cap_drops": 0,
+      "estimated_tokens": 22,
+      "unestimated": 1
+    },
+    {
+      "provider": "retired-harness",
+      "session": "alpha",
+      "outputs": 1,
+      "blocks": 0,
+      "dedup": 0,
+      "cap_drops": 0,
+      "estimated_tokens": 0,
+      "unestimated": 0
+    }
+  ],
+  "quality": {
+    "partial": false,
+    "invalid_lines": 0,
+    "oversized_lines": 0,
+    "skipped_symlinks": 0
+  }
+}

@@ -1,0 +1,11 @@
+Window: 2026-10-09T00:00:00Z .. 2026-10-16T00:00:00Z
+available runtime records; estimated tokens; calibration pending
+Totals: outputs=11 blocks=3 dedup=1 cap_drops=1 estimated_tokens=96 unestimated=3
+PROVIDER         RULE            OUTPUTS  BLOCKS  DEDUP  CAP_DROPS  EST_TOKENS  UNESTIMATED
+codex            pkg/check       6        0       1      1          37          1
+claude-code      pkg/check       1        1       0      0          27          0
+codex            pkg/stop        0        1       0      0          12          0
+codex            pkg/boundary    1        0       0      0          10          0
+codex            pkg/else        1        0       0      0          10          0
+codex            removed/legacy  1        1       0      0          0           2
+retired-harness  removed/free    1        0       0      0          0           0
