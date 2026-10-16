@@ -22,9 +22,9 @@
 
 最终短生命周期 headless 运行的 `InstructionsLoaded` 异步日志为空，但四份请求均包含 rules 全文；不将空日志判为规则未加载。此前短 prompt 对照曾记录 `memory_type=User`、`load_reason=session_start`，最终保留报告以可核对的完整请求为证。界面会话需要保持打开直到观察器写出记录。
 
-官方资料复核日期为 2026-10-16，页面 URL/内容摘要见协议报告的 `official_references`：memory 说明用户级 rules，hooks 说明 `InstructionsLoaded` 的异步观察性质，output-styles 说明 `keep-coding-instructions` 只控制完整 prompt 中的编码指令部分。设计结论仍需按任务清单评审，T40/T50 尚未开始。
+官方资料复核日期为 2026-10-16，页面 URL/内容摘要见协议报告的 `official_references`：memory 说明用户级 rules，hooks 说明 `InstructionsLoaded` 的异步观察性质，output-styles 说明 `keep-coding-instructions` 只控制完整 prompt 中的编码指令部分。设计已于 2026-10-17 经用户批准，T40/T50 按任务清单依次推进，真实界面验收继续待补。
 
-额度阻塞期间已整理 [D4/D5 具体设计草案](review/M2-D4-D5-DESIGN-2026-10-17.md)：rules 迁移时机/归属/冲突/往返、replace 回退和候选验收均已列明。草案另请用户决定是否先凭现有原生请求证据开发 T40、界面验收后补；评审前仍保留当前门槛，不执行该迁移。
+额度阻塞期间已整理 [D4/D5 具体设计](review/M2-D4-D5-DESIGN-2026-10-17.md)：rules 迁移时机/归属/冲突/往返、replace 回退和候选验收均已列明。用户已批准先凭现有原生请求证据开发 T40、界面验收后补；实现状态以任务清单为准，当前不重复调用 Claude。
 
 ## 2. 用户执行的 Claude 界面步骤
 

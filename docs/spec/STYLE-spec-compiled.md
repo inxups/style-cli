@@ -167,10 +167,10 @@
    | harness | `append` | `replace` |
    |---|---|---|
    | Codex | `config.toml` 的 `developer_instructions`，每个包一段，用 `<!-- style:<名字> -->` … `<!-- /style:<名字> -->` 包住。**只在用户自己没设 `developer_instructions` 时由 STYLE 管理这个键**；用户已经设了就不碰，这些规则改走动态路径（`session.start` + `reinject_on_compact`），报告里说明 | 当前 adapter 无 replace 槽位；`--allow-replace` 仅授权，不会启用替换（第 5 节阶梯第 6 条） |
-   | Claude Code | 当前为 `~/.claude/CLAUDE.md` 每包一段标记块；M2-D4 设计与真实验收尚未关闭，尚未迁到 `rules/style-<名字>.md` | 当前无槽位；M2-D5 output style 评估待定稿（第 5 节阶梯第 6 条） |
+   | Claude Code | 当前为 `~/.claude/CLAUDE.md` 每包一段标记块；M2-D4 设计已批准、T40 待实现，尚未迁到 `rules/style-<名字>.md` | 当前无槽位；M2-D5 已决定不提供 output style replace，保持回退（第 5 节阶梯第 6 条） |
 
    静态指令仍消耗输入上下文，只有满足模型缓存门槛、前缀一致和有效期等条件时才可能命中缓存；具体情景与费用边界见 CLI 设计 §11.3。只有"几乎每个请求都要生效、而且很短"的规则才适合放这里，常驻预算（7.2）管着它。
-   M2-D4/D5 的 [迁移与回退草案](../review/M2-D4-D5-DESIGN-2026-10-17.md) 尚待用户评审；其中 `claude_rules` 是拟议槽位，当前产物仍使用 `claude_md`，不据草案解释既有 index。
+   M2-D4/D5 的 [迁移与回退契约](../review/M2-D4-D5-DESIGN-2026-10-17.md) 已于 2026-10-17 获用户批准；`claude_rules` 是 T40 的新槽位，旧产物 `claude_md` 继续按旧布局解释，迁移在成功重建路线时进行；真实界面验收仍待补。
 5. 改过的 md 不会自动生效：要 `style sync` 重新编译，并经 `style trust <名字>` 确认。这补上了 Codex 信任哈希不覆盖 md 内容的缺口。`--link` 开发包第一次 `trust` 之后，后续改动只在 `sync` 时显示差异摘要，不阻塞。
 
 ## 11. 依赖的 fork 改动

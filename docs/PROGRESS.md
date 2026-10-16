@@ -1476,3 +1476,10 @@ PY
 - D5 建议不将 output style 作为 replace、不修改用户样式，维持 degrade/skip 跳过及 error 拒绝。草案区分 --allow-replace 授权检查与实际能力；评审后 T50 可按不实现关闭，A8 仍须补齐 skip 和样式/设置不变的真实 CLI 证据，不能直接标成功。C4 界面切换仍阻塞。
 - 为继续离线实现，单独提出调整 T40 前提为“本设计评审通过 + 已有原生请求证据”，真实用户界面 C1/C3/C4 留待额度可用后补；该依赖调整明确等待用户决定，不用本次“继续”追认尚未展示的方案。任务清单的规范先行约定要求用户评审通过后进入实现，因此在具体方案可审阅后请求设计确认。
 - 验证：从历史原生协议 JSON 独立核对四个 phase 的 exit 0/单请求、rules 全文一次、选中样式互斥且均在 messages、system 长度 26512/23229/23229/26550 和候选公共片段 20615；报告 SHA256 9d23d962b8e3f517ac4015d8778322975a37c7e742832104295a71829d3dcc7e。核对现有 core/plan 的 TestBuildRejectsReplaceWhenStaticLocationIsUnavailable 与 Claude Facts 测试源码、route/ApplyFiles/sync/trust 的事务和批准职责；没有重跑模型请求或把 stub usage 当官方计数。本地文档链接/锚点/围栏、追加日志、git diff --check 通过；无生产代码、agenthooks 或 M1 归档修改，不重复既有 Go 回归。
+
+
+### 2026-10-17 — M2-D4/D5 设计评审通过；允许先实现 T40/T50
+
+- 用户对 61413eb 展示的三项具体决定回复“同意”：每包 rules 文件、首次重建自动迁移且单纯迁移无需额外 trust；output style 不做 replace、保留现有 fallback；以设计评审和已有四份原生请求证据先实现，Claude 界面验收后补。
+- 先回写设计定稿、CLI/编译规范与任务依赖；细化 A7 的新旧布局/迁移入口/字节权限/冲突回滚/批准隔离验收，A8 的 degrade/skip/error、授权和样式设置不变验收。D4/D5 总条目保留 [~] 明确真实界面尚未闭合；C1/C3/C4、M2 最终回归/CI 和官方计数均未因此关闭。
+- 验证：设计的用户批准记录与历史协议证据对应，文档本地链接/锚点/围栏与 git diff --check 通过。仅设计/验收文档修改，未改生产代码或 M1 归档。本提交完成后进入 T40，不再重复请求已授予的批准。

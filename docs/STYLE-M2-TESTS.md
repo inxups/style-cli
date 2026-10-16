@@ -4,7 +4,7 @@
 
 本文件记录 M2 测试矩阵和每项当前状态。测试通过必须有命令输出、fixture/golden 文件或真实环境记录作为证据。任务清单见 [STYLE-M2-TASKS.md](STYLE-M2-TASKS.md)，M1 测试矩阵已只读归档（[STYLE-M1-TESTS.md](STYLE-M1-TESTS.md)）。
 
-当前状态：M2-BASE-01、M2-A1–A6 已通过，M2-A9 已完成 native/stats/跨包去重阶段回归、等待后续 M2 功能完成后复验，D4/D5 已完成设计探针准备和本地协议补充检查（M2-PREP-01），真实界面验收因用户报告 Claude 订阅额度用尽暂挂，OAuth 保存重试仍未确认。M2a 断言为初稿，标“D* 定稿后细化”的条目在对应设计项通过评审时补全具体 fixture、golden 和退出码。
+当前状态：M2-BASE-01、M2-A1–A6 已通过，M2-A9 已完成 native/stats/跨包去重阶段回归、等待后续 M2 功能完成后复验，D4/D5 已完成设计探针准备和本地协议补充检查（M2-PREP-01），真实界面验收因用户报告 Claude 订阅额度用尽暂挂，OAuth 保存重试仍未确认。D4/D5 设计已于 2026-10-17 经用户批准，允许先按原生请求证据实施迁移/回退，界面验收后补；A7/A8 已据此细化。
 
 ## 状态约定
 
@@ -79,10 +79,8 @@ env -u CODEX_HOME -u CODEX_SANDBOX \
   - 源级 T001/T002/T004 检查保留（静态 T001 在 validate 阶段退出 1，T002/T004 安装预算退出 4）；组合有效 events/always_on/session 情景与 T003 只计一次并重算分隔符；不同语义或仅运行时偶然同文不降预算；去重前超 80% 而去重后合法时可安装，真实超限仍退出 4 且无写入。
   - runtime 条件/重复/并发/compact/gen/epoch/block/warn/subagent.start/cap-drop 回归；等价组仅保留方产生日志，stats 不虚构折叠行。无去重组的现有黄金输出保持。
   - 卸载保留方/被折叠方、trust/link sync 改正文/priority、三条路线切换与重复编译；接替规则按新 rule 身份在已有会话可再注入；doctor 认同重建结果，最终外部字节/权限精确还原。
-- [ ] **M2-A7 Claude rules 静态位置**（M2-T40，仅 D4 成立时）：写入/删除 `~/.claude/rules/style-<名字>.md`；从 `CLAUDE.md` 标记块迁移后再卸载，两处文件逐字节还原。D4 不成立时本条以 D4 证据标注不适用并关闭。
-- [ ] **M2-A8 output style replace**（M2-T50，仅 D5 可行时）：断言随 D5 定稿；不可行时本条以 D5 证据标注不适用并关闭。
-
-A7/A8 的具体候选验收见 [D4/D5 草案](review/M2-D4-D5-DESIGN-2026-10-17.md)；尚未评审，不覆盖上面的现行依赖，也不因此标实现或验收完成。若接受 D5 回退方案，A8 将按该草案验证现有 fallback 与不写样式设置的保证后再关闭。
+- [ ] **M2-A7 Claude rules 静态位置**（M2-T40，D4 已批准）：新装两个静态包/一个动态包与自定义配置目录；旧安装经 install/sync/trust/uninstall 迁移、重复 sync 幂等、旧锁兼容、单纯搬迁不额外批准；CLAUDE.md LF/CRLF/无末尾换行/Unicode 外部字节和权限还原；等价包保留方/接替、混合未批准源码隔离；同名外部文件/伪造头尾/漂移/symlink/损坏旧块/陈旧计划/写入失败不损坏配置、index、lock 或批准记录；list/doctor 识别新旧布局；三路线 conformance、双 module test/vet、相关 race、build/smoke 通过。详细契约：[D4 设计](review/M2-D4-D5-DESIGN-2026-10-17.md)。C1/C3 真实界面另行验收。
+- [ ] **M2-A8 output style replace 回退**（M2-T50，D5 已批准）：真实 CLI 两家 plan/install 的 degrade/skip 为 skipped 且无 placement；error 为 blocked/退出 4、无写入；缺 replace 授权仍退出 1，--allow-replace 不创造槽位。完整文件树核对用户 output-style 文件及 outputStyle 设置无变化，安装卸载往返保持；C4 界面观察仍单列阻塞，不据本项成功关闭。
 
 - [~] **M2-A9 M1 回归**：native、stats 与跨包去重阶段已通过双 module fresh test/vet、app/state/adapter/conformance race、采集器 40 项、构建与 smoke（stats 阶段 36 项，去重阶段扩为 40 项）。T60 的 `TestNativeRulesLeaveRuntimeOutputsAndStatsUnchanged` 在两家共 46 个 payload 上核对原 stdout golden、输出白名单、runtime 条目与统计记录（只排除时间差）；inline 源文件摘要随新增声明改变是预期，其他条目字段不变。T60 未更新任何 golden。M1 的 A1–A22、adapter conformance 在后续 M2 实现后仍需最终复验，见 `docs/PROGRESS.md` M2-T13/T60/T20/T30。
 
