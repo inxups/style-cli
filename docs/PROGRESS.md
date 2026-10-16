@@ -1048,3 +1048,9 @@ PY
 - 本地验证（隔离 Go 缓存，GOFLAGS=-mod=readonly）：gofmt 无输出；两个 module vet、test 通过；两个收集器单测 OK；构建后冒烟 32 项全部 ok。
 - 反向对照：对修复前程序 `style.pre-cr` 运行冒烟，6 项失败，都是两家 `bash --rcfile/-O/-eo -c` 形式的 force push 被放行，其余通过。
 - 未覆盖：真实 harness 的配置接受、上下文投递和计时；Windows runner（hook 依赖 POSIX shell 的场景未适配）。GitHub 首次运行结果待推送后补记。
+
+### 2026-10-16 — CI-01 GitHub 首次运行结果
+
+- 推送 origin/main d3c0874..d7105f0（101 个提交）。推送前扫描了新增内容：没有令牌、私钥或邮箱；证据文档里有 238 行本机路径 `/Users/inxups/...`。仓库是公开的。
+- 运行 https://github.com/inxups/style-cli/actions/runs/38872171780（push 触发）：Test (ubuntu-latest) 47s 通过，Test (macos-latest) 1m17s 通过。两个 job 日志都有 `smoke passed`，两家 `bash --rcfile /dev/null -c` force push 都是 deny。
+- 注意：GitHub 提示 ubuntu-latest 将在 2026-10-19 起迁到 Ubuntu 26，届时需要关注首次运行。
