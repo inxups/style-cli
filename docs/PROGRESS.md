@@ -786,3 +786,9 @@
 - 会话 01a142ca-fa6d（gpt-6-sol/high）以 `codex exec resume <id>` 恢复三次，均带原 model/effort。第三次加单次 OTel 导出到独立 sink（4319，与 B11 样本隔离）：SessionStart span completed 26.434ms，随后 UserPromptSubmit 23.117ms，证明 Codex 在 resume 时确实调用 hook。
 - STYLE 状态：gen/epoch 0/0，两个 seen 文件不变，prompt_count 1→2→3→4；stats 每次仅新增两条 session-info prompt dedup，没有 session.start 输出，符合设计 a8 的 `resume` 默认不触发。
 - 历史：rollout 仍是同一文件，四条用户消息按序保留；hook 上下文仅最初 03:39:21Z 一条。`RUST_LOG=debug` 只显示 hook 指标注册，不作为证据。证据 R2 JSON 的 B12；仅文档/证据变化。
+
+### 2026-10-16 — CODEX-03/B3 `[x]` compact 补发一次
+
+- `codex exec` 没有 `/compact`；`-c model_auto_compact_token_limit=20000` resume 未触发压缩，不作证据。TUI 停在工作区信任（agent 不代为信任）。改用 Codex 自带 `codex app-server` stdio JSON-RPC（schema 由 `codex app-server generate-json-schema` 生成）：initialize → thread/resume → thread/compact/start → 两次 turn/start，单次 `-c` 导出 OTel。
+- 首次尝试：compact 完成后结束了 app-server，之后用新 exec 进程发 prompt，只触发 SessionStart(resume)，gen/epoch 不变、无补发。Codex 把 SessionStart(compact) 排在同进程下一回合，进程退出即丢失；流程无效，不计失败。0.159.3 未发 `thread/compacted` 通知，以 `contextCompaction` item 判定完成。
+- 有效复测（同一进程）：rollout compacted 04:28:52.987Z；下一回合 SessionStart 输出 terse-reviewer/session-info 与 m1b-probes/session-info 各一次，epoch 0→1、新增 `s.0.1.*` seen，rollout 只新增一条 hook 上下文；两条后续 prompt 均 dedup。压缩后 04:28:53.014Z 的模型输入仍含 STYLE 静态 developer_instructions，U11 结论为可见。证据 R2 JSON 的 B3；仅文档/证据变化。

@@ -76,5 +76,15 @@
     "stats": "each resume added only terse-reviewer and m1b-probes session-info prompt.submitted dedup; no session.start output",
     "rollout": "same rollout file appended; all four user prompts retained in order; only the original 03:39:21Z hook context exists",
     "conclusion": "resume runs SessionStart, STYLE treats source=resume as non-triggering per design a8, history is retained"
+  },
+  "B3": {
+    "status": "pass",
+    "thread": "01a142e9-dbe0-7f22-8557-93cc459ca80c",
+    "method": "codex app-server stdio JSON-RPC: initialize, thread/resume, thread/compact/start, then two turn/start prompts in the same process (OTel to a separate sink)",
+    "first_attempt_invalid": "The first compact ran in an app-server process that was then terminated; later prompts in new exec processes fired SessionStart(resume), so no reinjection. Codex queues SessionStart(compact) in-process until the next turn, so that procedure could not test B3 and is not counted as a failure.",
+    "compaction": "rollout compacted entry 04:28:52.987Z; app-server reported a contextCompaction item (0.159.3 sent no thread/compacted notification)",
+    "after": "SessionStart at 04:28:53.08Z output terse-reviewer/session-info and m1b-probes/session-info once; epoch 0->1, new seen s.0.1.*; rollout gained exactly one hook context; both following prompts only dedup",
+    "static_visibility": "developer message with <!-- style:terse-reviewer --> present in model input at 04:28:53.014Z after compaction (U11 visible)",
+    "auto_compact_note": "-c model_auto_compact_token_limit=20000 on resume did not trigger compaction; not used as evidence"
   }
 }
