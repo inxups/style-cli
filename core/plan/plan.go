@@ -46,8 +46,7 @@ func planRule(rule spec.Rule, adapterName string, adapter Adapter) (RulePlan, er
 		Action: req.Action, Needs: append([]string(nil), req.Needs...)}
 	switch {
 	case req.Target == "native":
-		result.Status = SkippedM2
-		result.Reasons = []string{"native rules are implemented in M2"}
+		result = planNative(rule, req, result, adapter)
 	case !harnessSelectorMatches(rule, adapterName):
 		result.Status = Skipped
 		result.Reasons = []string{"when.harness.name does not include this adapter"}

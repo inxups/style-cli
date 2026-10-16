@@ -1298,3 +1298,13 @@ PY
 - 测试：`core/spec/validate_native_test.go` 替换旧的 `validate_native_single_file_test.go`，49 例在目录包与单文件包上逐例比对错误码，另有默认值、`from` 整体覆盖、非 native 规则写 `codex:` 报 `invalid-schema`、假注册表注入、`NativeRules` 解析；`testdata/invalid/` 新增 `native-mapping`/`native-field`/`native-event`/`native-matcher`/`native-command`/`native-timeout` 并加入 A1 清单；`internal/app/native_catalog_test.go` 核对注册表接线与两家事件/matcher 表。变异检查：令 `nativeCommandProblem` 恒返回空，13 个命令用例转红，已还原。
 - 验证：`gofmt -l` 无输出；`GOFLAGS='-mod=readonly -count=1' make test-go` exit 0（30 个包 ok）；`GOFLAGS=-mod=readonly make vet-go` exit 0；`go build -trimpath` 后 `scripts/smoke.py` 32 项通过。plan/compile golden 未变（native 仍为 `skipped-m2`，由 T11 改）。
 - 审查发现：`when.harness.name`、`requires.harness`、`recommends` 仍写死 harness 名，记为 M2-RV-01 `[!]`，待用户决定是否纳入 M2。下一步 M2-T11。
+
+### 2026-10-16 — M2-T11 native plan 与 token 报告 `[x]`
+
+- plan：`core/plan/native.go` 的 `planNative` 按适配器名取 `spec.NativeRules` 的映射。没有映射时报 `skipped`（原因 "no native mapping for this harness"，不看 fallback）；适配器实现 `plan.NativeAdapter` 且成功时报 `native-hook`，附 `RulePlan.Native{event, matcher, timeout}`；写不了时 `skip`/`degrade` 报 `skipped`，`error` 报 `install-error` 并阻塞。`skipped-m2` 状态删除。`RequirementFor` 对 native 提前返回，不带 action、needs、events，包级 `defaults` 与正文模板都不参与；`RulePlan.Action` 加 `omitempty`，文本报告写成 `- id: native-hook (native)` 和 `-> native <事件>[ matcher …]; timeout Ns`。compile 的 `checkPlan` 对 native 期望 action 为空。
+- adapter：`adapter.NativePlanningFacts` 与 `planAdapter.NativeHook` 委托；`codex`/`claude` 的 `Facts.NativeHook` 给出实际 timeout（省略为 60；Codex `SessionEnd` 与 agenthooks 一致压到 3）。
+- token：`AnalyzeWithLayout` 跳过 native 规则，不进 per-rule、always-on、事件合计、T001/T003；`native-hook` 的规则列入 `Report.Unestimated`（JSON `native_unestimated`），文本报告加一行 `native hook output not estimated: <规则> (<事件>)`。
+- 示例：`codex-only-notify` 正文改为作者说明。两家 plan golden 重新生成，差异只有 native 一行、per-rule 中去掉 native、Codex 多一行不估算说明；其余估算与 M2-01 起点逐字相同。
+- 测试：`core/plan/native_test.go`（native-hook、无映射、fallback 三态与不支持 native 的适配器、requirement 为空、文本不含命令或正文），`internal/adapter` 委托测试，两家 `native_test.go` 的 timeout 解析，`internal/app/native_plan_test.go`（A2 JSON 契约，fallback error 时 install 退出 4 且不建目录，plan 输出原因；skip/degrade 时 install 退出 0）。
+- 验证：gofmt 无输出；`GOFLAGS='-mod=readonly -count=1' make test-go` exit 0（30 个包 ok）；`GOFLAGS=-mod=readonly make vet-go` exit 0；采集器 40 项 OK；`-trimpath` 构建后 smoke 32 项通过。
+- 过渡状态：T12 之前 native-hook 只在 plan 中出现，install 不写 native 条目。下一步 M2-T12。

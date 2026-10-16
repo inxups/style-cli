@@ -152,6 +152,16 @@ func (adapter planAdapter) BlindSpot(rule spec.Rule) (string, bool) {
 	return adapter.facts.BlindSpot(rule)
 }
 
+// NativeHook implements plan.NativeAdapter for providers whose facts
+// support native rules; other providers report the mapping as unwritable.
+func (adapter planAdapter) NativeHook(rule spec.NativeRule) (plan.NativeEntry, error) {
+	native, ok := adapter.facts.(NativePlanningFacts)
+	if !ok {
+		return plan.NativeEntry{}, fmt.Errorf("adapter %s does not support native hooks", adapter.provider)
+	}
+	return native.NativeHook(rule)
+}
+
 func (adapter planAdapter) StaticLocation(mode string) (string, bool) {
 	location, ok := adapter.facts.StaticLocation(mode)
 	if !ok || !location.Supported {

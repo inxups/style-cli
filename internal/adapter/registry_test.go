@@ -228,3 +228,27 @@ func TestDefinitionRetainsRoutePriorityAndDetectorError(t *testing.T) {
 		t.Fatalf("Route.Status() = %#v, %v", status, err)
 	}
 }
+
+type nativeTestFacts struct{ testFacts }
+
+func (nativeTestFacts) NativeHook(rule spec.NativeRule) (plan.NativeEntry, error) {
+	return plan.NativeEntry{Event: rule.Event, Timeout: 7}, nil
+}
+
+func TestPlanAdapterDelegatesNativeHooksToFacts(t *testing.T) {
+	planner, err := BuildPlanAdapter("codex", nativeTestFacts{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	entry, err := planner.(plan.NativeAdapter).NativeHook(spec.NativeRule{Event: "Stop"})
+	if err != nil || entry != (plan.NativeEntry{Event: "Stop", Timeout: 7}) {
+		t.Fatalf("NativeHook = %#v, %v", entry, err)
+	}
+	plain, err := BuildPlanAdapter("codex", testFacts{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := plain.(plan.NativeAdapter).NativeHook(spec.NativeRule{Event: "Stop"}); err == nil || err.Error() != "adapter codex does not support native hooks" {
+		t.Fatalf("facts without native support: err = %v", err)
+	}
+}

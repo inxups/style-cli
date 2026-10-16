@@ -1,6 +1,12 @@
 package claude
 
-import "regexp"
+import (
+	"fmt"
+	"regexp"
+
+	"github.com/inxups/style-cli/core/plan"
+	"github.com/inxups/style-cli/core/spec"
+)
 
 // nativeEvents lists the Claude Code hook events a target: native rule may
 // write (CLI design §10.2), matching agenthooks' kindToClaude. The value
@@ -39,4 +45,20 @@ func (NativeSurface) ValidMatcher(matcher string) bool {
 	}
 	_, err := regexp.Compile(matcher)
 	return err == nil
+}
+
+// defaultNativeTimeout is used when a native mapping omits timeout.
+const defaultNativeTimeout = 60
+
+// NativeHook resolves one native mapping for planning: the effective timeout
+// is the one the route will write.
+func (f Facts) NativeHook(rule spec.NativeRule) (plan.NativeEntry, error) {
+	if _, ok := nativeEvents[rule.Event]; !ok {
+		return plan.NativeEntry{}, fmt.Errorf("Claude Code has no native event %q", rule.Event)
+	}
+	timeout := rule.Timeout
+	if timeout == 0 {
+		timeout = defaultNativeTimeout
+	}
+	return plan.NativeEntry{Event: rule.Event, Matcher: rule.Matcher, Timeout: timeout}, nil
 }

@@ -26,6 +26,21 @@ type Adapter interface {
 	StaticLocation(mode string) (slot string, supported bool)
 }
 
+// NativeAdapter is implemented by adapters that can write target: native
+// rules (rules §3.10). An error means the mapping cannot be written on this
+// harness version or route; the planner then applies the rule's fallback.
+type NativeAdapter interface {
+	NativeHook(rule spec.NativeRule) (NativeEntry, error)
+}
+
+// NativeEntry is the adapter's resolution of one native mapping. It carries
+// no command: plan reports never show native commands or bodies.
+type NativeEntry struct {
+	Event   string `json:"event"`
+	Matcher string `json:"matcher,omitempty"`
+	Timeout int    `json:"timeout"`
+}
+
 // Report contains the deterministic plan for one adapter.
 type Report struct {
 	Package string     `json:"package"`
@@ -36,15 +51,16 @@ type Report struct {
 
 // RulePlan is one user rule and its resulting runtime or static placements.
 type RulePlan struct {
-	ID         string      `json:"id"`
-	Source     string      `json:"source"`
-	Target     string      `json:"target"`
-	Action     string      `json:"action"`
-	Status     Status      `json:"status"`
-	Needs      []string    `json:"needs,omitempty"`
-	Placements []Placement `json:"placements,omitempty"`
-	Reasons    []string    `json:"reasons,omitempty"`
-	Fatal      bool        `json:"fatal,omitempty"`
+	ID         string       `json:"id"`
+	Source     string       `json:"source"`
+	Target     string       `json:"target"`
+	Action     string       `json:"action,omitempty"` // empty for native rules
+	Status     Status       `json:"status"`
+	Needs      []string     `json:"needs,omitempty"`
+	Native     *NativeEntry `json:"native,omitempty"`
+	Placements []Placement  `json:"placements,omitempty"`
+	Reasons    []string     `json:"reasons,omitempty"`
+	Fatal      bool         `json:"fatal,omitempty"`
 }
 
 // Placement is one event hook or static slot selected by the planner.
@@ -73,7 +89,7 @@ const (
 	Partial      Status = "partial"
 	Skipped      Status = "skipped"
 	Never        Status = "never-trigger"
-	SkippedM2    Status = "skipped-m2"
+	NativeHook   Status = "native-hook"
 	InstallError Status = "install-error"
 )
 

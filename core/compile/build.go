@@ -80,6 +80,9 @@ func checkPlan(pkg *spec.ResolvedPackage, report plan.Report, seen map[string]bo
 			action = "inject"
 		}
 		target := text(rule.Effective["target"])
+		if target == "native" {
+			action = "" // Native rules carry no action (rules §3.10).
+		}
 		planned := report.Rules[i]
 		if id == "" || ids[id] || rule.Index < 0 || indices[rule.Index] || planned.ID != id ||
 			planned.Source != rule.Source || planned.Target != target || planned.Action != action || planned.Fatal ||
@@ -98,7 +101,7 @@ func checkPlan(pkg *spec.ResolvedPackage, report plan.Report, seen map[string]bo
 
 func knownStatus(status plan.Status) bool {
 	switch status {
-	case plan.Native, plan.Degraded, plan.Partial, plan.Skipped, plan.Never, plan.SkippedM2, plan.InstallError:
+	case plan.Native, plan.Degraded, plan.Partial, plan.Skipped, plan.Never, plan.NativeHook, plan.InstallError:
 		return true
 	default:
 		return false

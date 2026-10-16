@@ -17,7 +17,7 @@ import (
 )
 
 func appendPlacement(result *Result, pkg *spec.ResolvedPackage, info PackageInfo, rule spec.Rule, planned plan.RulePlan, placement plan.Placement, harness string, context tokenestimate.Context) error {
-	if placement.Status == plan.Skipped || placement.Status == plan.Never || placement.Status == plan.SkippedM2 || placement.Status == plan.InstallError {
+	if placement.Status == plan.Skipped || placement.Status == plan.Never || placement.Status == plan.InstallError {
 		return nil
 	}
 	order, err := ruleOrder(rule, info.Seq)

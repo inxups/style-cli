@@ -275,7 +275,8 @@ func TestBuildSpecialStatusesAndFallbackError(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if report.Rules[0].Status != SkippedM2 || report.Rules[1].Status != Never || report.Rules[2].Status != Never {
+	// The native rule has no codex mapping, so it is skipped regardless of fallback.
+	if report.Rules[0].Status != Skipped || report.Rules[1].Status != Never || report.Rules[2].Status != Never {
 		t.Fatalf("special statuses = %#v", report.Rules[:3])
 	}
 	if !report.Blocked || report.Rules[3].Status != InstallError || !report.Rules[3].Fatal {

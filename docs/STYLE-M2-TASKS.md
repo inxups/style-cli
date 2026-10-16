@@ -4,7 +4,7 @@
 
 本文件是 STYLE CLI M2 的持久化任务清单。每项任务完成后必须同时补充证据（命令、fixture、golden 文件或真实运行记录），不能只根据对话上下文标记完成。测试矩阵见 [STYLE-M2-TESTS.md](STYLE-M2-TESTS.md)，执行记录追加到 [PROGRESS.md](PROGRESS.md)。
 
-当前总状态：M2 已开始，文档建立（M2-00）与基线回归（M2-01）完成；M2-D1 native 规则格式设计评审通过，M2-T10 native schema 与 validate 完成，下一步 M2-T11 native plan 与 token 报告。M1 已关闭并只读归档（[任务](STYLE-M1-TASKS.md)、[测试](STYLE-M1-TESTS.md)），唯一遗留为 M2-CARRY-01。
+当前总状态：M2 已开始，文档建立（M2-00）与基线回归（M2-01）完成；M2-D1 native 规则格式设计评审通过，M2-T10、M2-T11 完成，下一步 M2-T12 adapter `Native()` 与路线。M1 已关闭并只读归档（[任务](STYLE-M1-TASKS.md)、[测试](STYLE-M1-TESTS.md)），唯一遗留为 M2-CARRY-01。
 
 ## 范围
 
@@ -65,7 +65,7 @@ M1 中已记录的已知限制（如 force-push 示例规则对 `--push-option` 
 每条依赖对应设计项定稿；实现前后都检查工作树，保留 agenthooks 职责边界，`core` 仍不导入具体 adapter。
 
 - [x] **M2-T10 native schema 与 validate**：`core/spec` 按 D1 校验 native 字段与诊断码，目录包与单文件包一致。依赖：M2-D1。测试：M2-A1。实现：`core/spec/native.go`（`Validate` 做与 harness 无关的形状检查，`ValidateNative` 按注册表查 harness 键、事件和 matcher；`NativeRules` 解析映射），adapter `Definition.Native` 与 `Registry.NativeCatalog()`，app 层所有入包路径改用 `Service.validateSpec`；删除写死的 `isNativeProviderField`。证据见 `docs/PROGRESS.md` M2-T10。
-- [ ] **M2-T11 native plan 与 token 报告**：`core/plan`、`core/tokens` 输出 native 状态和报告，更新两家 plan golden。依赖：M2-T10。测试：M2-A2。
+- [x] **M2-T11 native plan 与 token 报告**：`core/plan`、`core/tokens` 输出 native 状态和报告，更新两家 plan golden。依赖：M2-T10。测试：M2-A2。实现：`plan.NativeHook` 状态取代 `skipped-m2`，`RulePlan.Native`（事件、matcher、实际 timeout，不含命令）；可选接口 `plan.NativeAdapter`，adapter 侧 `NativePlanningFacts` 由两家 `Facts.NativeHook` 实现（默认 60 秒，Codex `SessionEnd` 压到 3 秒）；native 规则从 token per-rule、预算和 lint 中移除，`tokens.Report.Unestimated` 单列。过渡状态：T12 之前 native-hook 只出现在 plan，尚未写入 harness 配置。证据见 `docs/PROGRESS.md` M2-T11。
 - [ ] **M2-T12 adapter `Native()` 与路线**：Codex/Claude adapter 把 native 规则转为 HookSpec，经 `agenthooks/install` 合并、owner 标记和卸载。依赖：M2-T11。测试：M2-A3。
 - [ ] **M2-T13 CLI native 生命周期**：install 披露、sync/trust 差异、list/doctor 展示 native 条目。依赖：M2-T12。测试：M2-A4。
 - [ ] **M2-T20 `style stats` 命令**：读取 `stats.jsonl`，复用 `core/state/stats.go` 的记录格式，按 D2 输出文本/JSON。依赖：M2-D2。测试：M2-A5。

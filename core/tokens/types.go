@@ -97,4 +97,13 @@ type Report struct {
 	Events      []EventEstimate `json:"events"`
 	AlwaysOn    Estimate        `json:"always_on"`
 	Diagnostics []Diagnostic    `json:"diagnostics,omitempty"`
+	// Unestimated lists native hooks whose command output STYLE cannot
+	// estimate. Native rules are excluded from Rules, budgets and lints.
+	Unestimated []NativeOutput `json:"native_unestimated,omitempty"`
+}
+
+// NativeOutput identifies one native hook left out of token estimates.
+type NativeOutput struct {
+	RuleID string `json:"rule"`
+	Event  string `json:"event"`
 }

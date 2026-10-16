@@ -44,6 +44,12 @@ func AnalyzeWithLayout(pkg *spec.ResolvedPackage, planned plan.Report, layout La
 		if plannedRule.ID == "" || plannedRule.ID != ruleID(rule) {
 			return Report{}, fmt.Errorf("plan rule %d does not match resolved rule", index)
 		}
+		if plannedRule.Target == "native" {
+			if plannedRule.Status == plan.NativeHook && plannedRule.Native != nil {
+				report.Unestimated = append(report.Unestimated, NativeOutput{RuleID: plannedRule.ID, Event: plannedRule.Native.Event})
+			}
+			continue
+		}
 		requirement, err := plan.RequirementFor(rule)
 		if err != nil {
 			return Report{}, err

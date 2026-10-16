@@ -238,6 +238,13 @@ func writePlanText(out io.Writer, result PlanResult) {
 		for _, event := range report.Tokens.Events {
 			fmt.Fprintf(out, "  %s: %d tokens / %d chars\n", event.Label, event.Estimate.Tokens, event.Estimate.Chars)
 		}
+		if len(report.Tokens.Unestimated) > 0 {
+			hooks := make([]string, len(report.Tokens.Unestimated))
+			for i, hook := range report.Tokens.Unestimated {
+				hooks[i] = fmt.Sprintf("%s (%s)", hook.RuleID, hook.Event)
+			}
+			fmt.Fprintf(out, "  native hook output not estimated: %s\n", strings.Join(hooks, ", "))
+		}
 		for _, diagnostic := range report.Tokens.Diagnostics {
 			fmt.Fprintf(out, "  %s: %s\n", diagnostic.Code, diagnostic.Message)
 		}

@@ -14,9 +14,20 @@ func (report Report) String() string {
 	}
 	fmt.Fprintf(&output, "Adapter: %s\n", report.Adapter)
 	for _, rule := range report.Rules {
-		fmt.Fprintf(&output, "- %s: %s (%s %s)\n", rule.ID, rule.Status, rule.Action, rule.Target)
+		if rule.Action == "" {
+			fmt.Fprintf(&output, "- %s: %s (%s)\n", rule.ID, rule.Status, rule.Target)
+		} else {
+			fmt.Fprintf(&output, "- %s: %s (%s %s)\n", rule.ID, rule.Status, rule.Action, rule.Target)
+		}
 		if len(rule.Needs) > 0 {
 			fmt.Fprintf(&output, "  needs: %s\n", strings.Join(rule.Needs, ", "))
+		}
+		if rule.Native != nil {
+			fmt.Fprintf(&output, "  -> native %s", rule.Native.Event)
+			if rule.Native.Matcher != "" {
+				fmt.Fprintf(&output, " matcher %s", rule.Native.Matcher)
+			}
+			fmt.Fprintf(&output, "; timeout %ds\n", rule.Native.Timeout)
 		}
 		for _, placement := range rule.Placements {
 			destination := placement.Event

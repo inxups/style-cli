@@ -5,4 +5,4 @@ codex:
   event: Stop
   command: "notify"
 ---
-Native hooks are intentionally skipped by the M1 compiler fixture.
+Runs the local notify command when a Codex turn stops. Native rule bodies are author notes only: STYLE never injects or estimates them.

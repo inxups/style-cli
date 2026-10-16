@@ -44,7 +44,7 @@ func estimateRule(rule spec.Rule, planned plan.RulePlan, pkg *spec.ResolvedPacka
 }
 
 func modelText(rule spec.Rule, placement plan.Placement, pkg *spec.ResolvedPackage) (string, bool, error) {
-	if placement.Status == plan.Skipped || placement.Status == plan.Never || placement.Status == plan.SkippedM2 || placement.Status == plan.InstallError {
+	if placement.Status == plan.Skipped || placement.Status == plan.Never || placement.Status == plan.InstallError {
 		return "", false, nil
 	}
 	if placement.Action == "warn" && !hasCapability(placement.Capabilities, plan.AddContext) {

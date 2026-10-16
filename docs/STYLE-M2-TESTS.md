@@ -4,7 +4,7 @@
 
 本文件记录 M2 测试矩阵和每项当前状态。测试通过必须有命令输出、fixture/golden 文件或真实环境记录作为证据。任务清单见 [STYLE-M2-TASKS.md](STYLE-M2-TASKS.md)，M1 测试矩阵已只读归档（[STYLE-M1-TESTS.md](STYLE-M1-TESTS.md)）。
 
-当前状态：M2-BASE-01、M2-A1 已通过，其余条目尚未执行。M2a 断言为初稿，标“D* 定稿后细化”的条目在对应设计项通过评审时补全具体 fixture、golden 和退出码。
+当前状态：M2-BASE-01、M2-A1、M2-A2 已通过，其余条目尚未执行。M2a 断言为初稿，标“D* 定稿后细化”的条目在对应设计项通过评审时补全具体 fixture、golden 和退出码。
 
 ## 状态约定
 
@@ -55,7 +55,7 @@ env -u CODEX_HOME -u CODEX_SANDBOX \
   - 非 native 规则上写 `codex:` 仍报 `invalid-schema`。
   - 单文件包（`STYLE.md` frontmatter）与等价目录包对上述合法/非法用例给出相同的码和退出码。
   - harness 键与事件名来自注册表：用只注册一个假 harness 的注册表做单测，`codex` 键即报 `native-field`；`core/...` 不导入具体适配器的依赖测试仍通过。
-- [ ] **M2-A2 native plan**（M2-T11，按规则 3.10）：
+- [x] **M2-A2 native plan**（M2-T11，按规则 3.10）：结果：文本 golden `testdata/golden/plan-{codex,claude-code}.txt` 已更新（仅 native 行与“native hook output not estimated”一行变化，其他数字与 M2-01 起点相同）；JSON 契约由 `internal/app` 的 `TestA2NativePlanReports` 断言（无 JSON golden 文件）；fallback 三种结果由 `core/plan` 的 `TestUnwritableNativeMappingAppliesFallback` 与 `internal/app` 的 `TestA2NativeFallbackErrorBlocksInstallWithoutChanges`（install 退出 4、STYLE_HOME 与 Codex 配置目录都未创建）覆盖，见 `docs/PROGRESS.md` M2-T11。
   - 两家 plan golden（文本与 JSON）：`codex-only-notify` 在 Codex 上为 `native-hook`，附事件 `Stop`、实际 timeout 60；在 Claude 上为 `skipped`，原因"没有该 harness 的 native 映射"。输出中不再出现 `skipped-m2` 或"跳过（M2）"。
   - token 一节单列"native hook 输出不估算"及规则/事件；常驻、单条、按原生事件合计与 M2-01 起点相比不含 native，`T001`/`T003` 不计 native。
   - `fallback`：用假适配器让 `Native()` 返回错误，`skip`/`degrade` 得 `skipped`，`error` 得 `install-error` 且 install 退出 4、不写任何文件。

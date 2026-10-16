@@ -46,6 +46,12 @@ type StaticLocationProvider interface {
 	StaticLocation(mode string) (StaticLocation, bool)
 }
 
+// NativePlanningFacts is implemented by providers that can write
+// target: native rules (rules §3.10).
+type NativePlanningFacts interface {
+	NativeHook(rule spec.NativeRule) (plan.NativeEntry, error)
+}
+
 // PlanningFacts composes only the provider facts needed by core/plan.
 // BuildPlanAdapter projects this richer contract onto core/plan's small port.
 type PlanningFacts interface {

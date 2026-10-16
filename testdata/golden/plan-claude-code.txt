@@ -34,9 +34,8 @@ Adapter: claude-code
 - on-review-prompt: skipped (warn event)
   needs: agent, harness.name, model, prompt
   ! when.harness.name does not include this adapter
-- codex-only-notify: skipped-m2 (inject native)
-  needs: agent
-  ! native rules are implemented in M2
+- codex-only-notify: skipped (native)
+  ! no native mapping for this harness
 Token (estimated; calibration pending):
   native input limit: 10000 chars; overflow=file-preview; source=Claude Code hook input limit
   budget: per_rule 400; per_event 1200; always_on 600 tokens
@@ -51,7 +50,6 @@ Token (estimated; calibration pending):
     before-create-pr: 21 tokens / 68 chars (native)
     no-force-push: 12 tokens / 39 chars (native)
     on-review-prompt: 0 tokens / 0 chars (skipped)
-    codex-only-notify: 0 tokens / 0 chars (skipped-m2)
   PostToolUse Bash: 23 tokens / 78 chars
   PostToolUse Edit: 11 tokens / 35 chars
   PostToolUse MultiEdit: 11 tokens / 35 chars

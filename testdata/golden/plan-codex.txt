@@ -35,9 +35,8 @@ Adapter: codex
 - on-review-prompt: native (warn event)
   needs: agent, harness.name, model, prompt
   -> prompt.submitted warn (native); capabilities: add-context, system-message
-- codex-only-notify: skipped-m2 (inject native)
-  needs: agent
-  ! native rules are implemented in M2
+- codex-only-notify: native-hook (native)
+  -> native Stop; timeout 60s
 Token (estimated; calibration pending):
   native input limit: 2500 tokens (approximate); overflow=file-preview; source=Codex additionalContext default
   budget: per_rule 400; per_event 1200; always_on 600 tokens
@@ -52,12 +51,12 @@ Token (estimated; calibration pending):
     before-create-pr: 21 tokens / 68 chars (native)
     no-force-push: 12 tokens / 39 chars (native)
     on-review-prompt: 7 tokens / 24 chars (native)
-    codex-only-notify: 0 tokens / 0 chars (skipped-m2)
   PostToolUse Bash: 43 tokens / 142 chars
   PostToolUse apply_patch: 11 tokens / 35 chars
   PreToolUse Bash: 12 tokens / 39 chars
   PreToolUse mcp: 21 tokens / 68 chars
   SessionStart: 59 tokens / 213 chars
   UserPromptSubmit: 87 tokens / 303 chars
+  native hook output not estimated: codex-only-notify (Stop)
   session cost (requests=60 triggers=3): 500.5 always-on + 939.2 triggered = 1439.8 units
   scenario only: 1.25x cache write + 0.1x later hits; assumes an eligible unchanged prefix within cache lifetime; not billing
