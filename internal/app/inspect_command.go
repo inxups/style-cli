@@ -79,7 +79,7 @@ func runInspect(ctx context.Context, service *Service, workDir, command string, 
 		for _, effort := range result.Effort {
 			fmt.Fprintf(out, "effort %s: source=%s raw=%q tier=%q; %s\n", effort.Provider, effort.Source, effort.Raw, effort.Tier, effort.Detail)
 		}
-		fmt.Fprintln(out, "Top rules (last 7 days; estimated tokens ≈ ±25%):")
+		fmt.Fprintln(out, "Top rules (last 7 days; estimated tokens; calibration pending):")
 		for _, cost := range result.TopRules {
 			fmt.Fprintf(out, "  %s %s: %d tokens, %d emits, %d body hashes\n", cost.Provider, cost.Rule, cost.EstimatedTokens, cost.Emits, cost.DistinctBodyHashes)
 		}

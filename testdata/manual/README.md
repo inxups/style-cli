@@ -81,3 +81,13 @@ PYTHONDONTWRITEBYTECODE=1 python3 testdata/manual/probe_codex_overflow.py \
 ```
 
 此脚本对 Claude 只验证 STYLE 自身保护；Claude 的原生大字段仍需已认证的隔离会话，不得据此关闭该部分。
+
+`calibrate_tokens.py` 使用固定 `token-calibration-40.json`（20 中文/20 英文），通过生产 STYLE CLI plan 取得估算；两家官方 count 接口分别对同结构基线和每条正文请求计数，差值用于比较。模型需显式指定。只读取 OPENAI_API_KEY / ANTHROPIC_API_KEY，忽略代理 base URL 和日常 Codex 令牌；缺凭据退出 2，报告保持 pending，不能当实际计数通过。不要把 key 粘到命令参数或报告里。
+
+```sh
+PYTHONDONTWRITEBYTECODE=1 python3 testdata/manual/calibrate_tokens.py \
+  --style /absolute/path/to/style --openai-model gpt-6.1-sol \
+  --anthropic-model claude-sonnet-5-5 --output /tmp/token-calibration.json
+```
+
+已核对官方 [OpenAI counting tokens](https://developers.openai.com/api/docs/guides/token-counting) 和 [Claude token counting](https://platform.claude.com/docs/en/build-with-claude/token-counting)。计数接口的结果按其语义记录，不代表实际会话账单；计数模型若不可用，保留失败，另起有明确模型的新报告。

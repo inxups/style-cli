@@ -1148,3 +1148,12 @@ PY
 - Codex 原生：没有安装 STYLE 包，直接生成 raw Python hook 并预置信任；SessionStart 12,064/50,064 字符、PreToolUse 12,056 字符三次均真的输出完整正文，模型运行成功。native 保存完整原文，模型收到约 10,100 字符头尾预览和 Full hook output saved to 路径；保存文件 bytes/SHA256 与输入正文一致，原文未完整出现在 hook context。首尾标记在预览中仍同时出现，因此新增回归防止错误推断“完整接受”。字符数明确为字符，不冒充官方 token 计数。
 - 报告：`review/M1-FINAL-08-OVERFLOW-2026-10-16.json`，保存所有请求/rollout 与实际结果；采集后对现有原生落盘文件做精确比较，无再次推理或结果替换。Codex file-preview 声明与实测一致。Claude 原生超限仍因隔离认证缺失待测，FINAL-08 `[~]`，不改变预算默认值。
 - Python 全部 20 项测试、语法/diff 检查通过，报告按真实 provider URL/token 扫描无泄漏。
+
+
+### 2026-10-16 — M1-FINAL-09 固定语料、官方计数准备与未验证误差保证修正
+
+- 官方依据（2026-10-16）：OpenAI Counting tokens 指南 `https://developers.openai.com/api/docs/guides/token-counting` 明示 POST /v1/responses/input_tokens，可传 instructions/input，读取 input_tokens；Claude token counting 指南 `https://platform.claude.com/docs/en/build-with-claude/token-counting` 支持 system/messages 结构及 input_tokens。OpenAI 巨型 reference 页抓取失败，改用已成功打开的官方指南核对。
+- 固定 `testdata/manual/token-calibration-40.json`：20 英文、20 中文可直接使用的工程规则，意义配对，逐条 UTF-8 SHA256；非重复填充。`calibrate_tokens.py` 用真实 CLI plan 取得原估算，官方计数请求与固定基线只差规则正文，记录请求摘要、模型、API request id、差值和相对误差。只向两家官方固定域名发送各自明确环境 key，不读取/转发日常代理 provider token。
+- 实际运行：`PYTHONDONTWRITEBYTECODE=1 python3 testdata/manual/calibrate_tokens.py --style /tmp/style-m1-final.rxdYyj/style-final05 --openai-model gpt-6.1-sol --anthropic-model claude-sonnet-5-5 --output /tmp/style-m1-calibration-blocked.json`，exit2；OPENAI_API_KEY 和 ANTHROPIC_API_KEY 均缺失，两家 actual completed=0，不发网络计数请求。模型为拟测模型，官方可用性未被认证验证。结果入库 `review/M1-FINAL-09-COUNTING-BLOCKED-2026-10-16.json`，真实校准保持 `[?]`。
+- 删除 plan、doctor、golden、教程/规范里未经验证的 ±25% 保证，明确 calibration pending；不改估算系数、JSON/index/lock/state 格式、预算默认值或公开命令。不能用另一分词器代替真实计数。
+- 验证：23 项 Python 测试（语料平衡与哈希、同结构请求、无 key 不联网/不伪造计数）；app/tokenestimate/tokens 测试与 app vet、gofmt/diff 通过。后续在可提供官方 API 环境的终端按 README 同一命令运行，失败时保留独立报告，不覆盖本次缺认证证据。

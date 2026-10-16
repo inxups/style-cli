@@ -217,7 +217,7 @@ func writePlanText(out io.Writer, result PlanResult) {
 		fmt.Fprintf(out, "\nHarness: %s\n", report.Provider)
 		fmt.Fprintf(out, "Preferred route: %s (availability checked during install)\n", report.Route)
 		fmt.Fprint(out, report.Plan.String())
-		fmt.Fprintln(out, "Token (estimated ≈ ±25%):")
+		fmt.Fprintln(out, "Token (estimated; calibration pending):")
 		fmt.Fprintf(out, "  native input limit: %d %s", report.NativeLimit.Value, report.NativeLimit.Unit)
 		if report.NativeLimit.Approximate {
 			fmt.Fprint(out, " (approximate)")

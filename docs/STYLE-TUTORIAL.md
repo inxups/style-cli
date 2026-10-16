@@ -294,7 +294,7 @@ Adapter: claude-code
 - no-todo: native (warn tool)
   needs: agent, tool.added
   -> tool.post warn (native); capabilities: add-context, system-message
-Token (estimated ≈ ±25%):
+Token (estimated; calibration pending):
   native input limit: 10000 chars; overflow=file-preview; source=Claude Code hook input limit
   budget: per_rule 400; per_event 1200; always_on 600 tokens
   always-on: 48 tokens / 108 chars
@@ -325,7 +325,7 @@ Token (estimated ≈ ±25%):
   | `skipped-m2` | `target: native`，M1 不执行 |
   | `install-error` | `fallback: error` 的规则做不到，安装会被阻止 |
 
-- **Token 估算误差约 ±25%。** `always-on` 是常驻成本；`session cost` 用 `--assume-requests N`（默认 60）和 `--assume-triggers N`（默认 3）估算整个会话的相对成本，可以改这两个值模拟更长的会话。
+- **Token 为离线估算，误差尚未完成真实校准，没有百分比误差保证。** `always-on` 是常驻成本；`session cost` 用 `--assume-requests N`（默认 60）和 `--assume-triggers N`（默认 3）估算整个会话的相对成本，可以改这两个值模拟更长的会话。
 
 跳过与拒绝的真实例子。下面这条规则要求 `tool.error` 事件，在 Codex 上没有这个事件，又写了 `fallback: error`：
 
@@ -626,7 +626,7 @@ claude-code: detected=true version= config=…/claude
   claude-user: available=true installed=true trusted=false trust=workspace stable_key=true; available
 effort codex: source=unknown raw="" tier=""; configuration fallback only; …
 effort claude-code: source=environment raw="high" tier="high"; environment fallback only; …
-Top rules (last 7 days; estimated tokens ≈ ±25%):
+Top rules (last 7 days; estimated tokens; calibration pending):
   claude-code team-style/model-info: 26 tokens, 2 emits, 1 body hashes
   claude-code team-style/no-todo: 24 tokens, 1 emits, 1 body hashes
   claude-code team-style/no-force-push: 12 tokens, 1 emits, 1 body hashes

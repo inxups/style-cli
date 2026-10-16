@@ -221,7 +221,7 @@ B1.2 和 B1.4 的历史通过状态表示原有测试套件在声明范围内通
 - [?] **FINAL-06 Claude**：U9、U-C1/C2/C3/C5 和最终程序 C9；隔离 CLAUDE_CONFIG_DIR 的真实 auth status 为未登录，等待用户登录并操作界面。固定二进制、三包和独立观察器已准备，安装及白名单检查通过；不代表 UI 或 C9 通过。操作与复算步骤见 `review/M1-FINAL-06-CLAUDE-RUNBOOK.md`。
 - [~] **FINAL-07 继承**：Codex 真实 exec/app-server 请求、rollout、state/stats 核对通过。resume/fork 保留；compact 无补发且两条标记均消失；fresh/fork=all/嵌套 depth2 的三个子 agent 各有一次 context、tool inject 和 block，独立 scope，父 scope 无子事件。采集器末尾路径字段错误及从原始结果续验分别记录。Claude 仍待测，不能标记整项完成。证据 `review/M1-FINAL-07-CODEX-2026-10-16.json`、COLLECTOR-OBSERVATION。
 - [~] **FINAL-08 超限**：两家 built CLI 的 T003 超限安装拒绝、配置未改/STYLE_HOME 未创建；core engine/tokens/app 回归通过。Codex 三个独立 raw hook（SessionStart 12k/50k、PreToolUse 12k）完整输出被 native 落盘，真实模型收到预览，正文未完整出现；保存文件 SHA256/字节与原文一致。首尾标记同时出现不计完整投递，新增回归。Claude 原生行为未测，不能勾整项。证据 `review/M1-FINAL-08-OVERFLOW-2026-10-16.json`。
-- [?] **FINAL-09 校准**：40 条中英各半，两家真实计数接口，固定基线和正文摘要。
+- [?] **FINAL-09 校准**：40 条固定中英各半规则，逐条 SHA256、同结构基线/请求摘要、模型和生产 CLI 估算已记录；官方 API key 均缺失，脚本 exit2、两家 0/40，不宣称校准通过。新增语料/请求结构/缺凭据禁止网络回归，修正 plan/doctor 未验证的误差保证及 golden。真实重跑命令见 manual README。
 - [ ] **FINAL-10 成本**：实际 stats/usage 分层统计、缓存官方资料核对。
 - [ ] **FINAL-11 文档**：版本、状态、fallback 和能力说明一致。
 - [ ] **FINAL-12 回归**：双 module test/vet、必要 race、Python 采集器、构建/冒烟与 CI。

@@ -38,7 +38,7 @@ Adapter: codex
 - codex-only-notify: skipped-m2 (inject native)
   needs: agent
   ! native rules are implemented in M2
-Token (estimated ≈ ±25%):
+Token (estimated; calibration pending):
   native input limit: 2500 tokens (approximate); overflow=file-preview; source=Codex additionalContext default
   budget: per_rule 400; per_event 1200; always_on 600 tokens
   always-on: 70 tokens / 252 chars

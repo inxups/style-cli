@@ -543,7 +543,7 @@ chars = Unicode 字符（rune）个数，精确值
 ```
 
 - 动态正文里的每个变量按占位长度算：一般变量 16 token / 64 字符；`harness.cwd` 32 token / 128 字符。
-- 结果标 `≈`。误差估计 ±25%，是猜测，用 U-T3 校准后调系数。
+- 结果明确标为估算，不提供百分比误差保证；U-T3 官方计数校准尚未完成，不调整现有系数。
 - `--count=exact`（调用 Anthropic 的 token 计数接口、本地 OpenAI 分词器）留到 M3。
 
 ### 11.2 按原生事件分组
@@ -572,7 +572,7 @@ terse-reviewer 0.3.0 → codex（路线：plugin）
   on-review-prompt   prompt.submitted                                 原生
   codex-only-notify  native                                           跳过（M2）
 
-  Token（估算 ≈ ±25%，单位 token；数字为示意）
+  Token（离线估算，校准待验；单位 token，数字为示意）
   常驻            style ≈ 45 · session-info ≈ 45（每个会话都付）     合计 ≈ 90 / always_on 600
   单条            最大 review-skill ≈ 30 / per_rule 400
   按原生事件的最坏合计（上限 2,500，报错线 2,000）
@@ -739,7 +739,7 @@ F1–F4、F10 是安装和协议层的问题，最好也提给上游。F5–F9 �
 | U-C5 | Claude 各事件上的 `systemMessage` 是否显示给用户 | `warn` 给用户的那份 | 每个事件返回一条 | 认为 PreToolUse、PostToolUse、UserPromptSubmit、UserPromptExpansion 都显示 | 不显示的事件在适配器里去掉 `system-message` 能力，`warn` 只剩模型那句 | 部分：C5 只确认 PreToolUse 的 systemMessage 在工具界面可见，其余事件未测，适配器能力未改 |
 | U-T1 | resume、fork 之后，之前注入的文字是否还在上下文里（两家） | `sources` 的默认值 | 恢复后让模型复述 | resume 不注入、fork 注入 | fork 也保留 → 默认去掉 `fork`；Codex resume 不保留 → Codex 适配器把 `resume` 当 `startup` 处理 | Codex FINAL-07：resume/fork 的真实请求保留原 context；startup-only 探针没有补发，默认 sources 的 fork 条目按既定策略仍投递一次。Claude 新补测待用户环境；不改 sources 默认值 |
 | U-T2 | 压缩后 hook 注入的文字是否被摘要保留 | `reinject_on_compact` 的默认值 | `/compact` 后复述 | 认为丢失（`system` 默认补发） | 保留 → 默认值是否改成 false 由用户决定 | Codex FINAL-07 实测：关闭 reinject 且 startup-only 的专用探针，compact 后 epoch=1、输出仍各一次，真实请求中两条动态标记均消失；支持保留补发默认值。Claude 专用探针未测 |
-| U-T3 | 估算器校准 | 误差范围、系数 | 30–50 条真实规则（中英各半）对比两家实际计数 | ±25% | 调系数，不影响通过 | 未测 |
+| U-T3 | 估算器校准 | 误差范围、系数 | 固定 40 条中英各半规则，两家官方接口相同结构基线增量 | 不承诺误差范围 | 保留现有系数，真实校准后再议 | FINAL-09：语料/正文哈希、模型和请求摘要已固定，生产 CLI 估算已记录；两家官方 API key 缺失，真实计数均 0/40，保持待验；删除 CLI ±25% 未验证保证 |
 | U-T4 | 典型会话里各规则的注入次数和真实 token | 成本模型参数、预算默认值 | 用 `stats.jsonl` 记录真实会话 | 60 次请求、3 次触发；预算 400 / 1,200 / 600 | 调默认值 | 未测：真实 stats.jsonl 已有，尚未统计 |
 | U-T5 | 超限时两家如何处理 | `T003` 的严重程度 | 原生 raw hook 绕开 STYLE，分别记录完整/预览/丢弃/报错 | 保留 STYLE 保护 | 不影响通过 | FINAL-08：两家 STYLE T003 写入前拒绝；Codex SessionStart 12k/50k 与 PreToolUse 12k 实际落盘并传头尾预览及路径，文件逐字节等于 raw body；不等于静默丢弃。Claude 原生待隔离认证，无官方 token 计数结论 |
 | U-T6 | OpenAI / Codex 的提示词缓存细节（最小长度、保留时间、折扣） | Codex 的成本模型 | 查官方文档，看 usage 里的缓存字段 | 不依赖具体数字 | 不影响通过 | 未测 |

@@ -37,7 +37,7 @@ Adapter: claude-code
 - codex-only-notify: skipped-m2 (inject native)
   needs: agent
   ! native rules are implemented in M2
-Token (estimated ≈ ±25%):
+Token (estimated; calibration pending):
   native input limit: 10000 chars; overflow=file-preview; source=Claude Code hook input limit
   budget: per_rule 400; per_event 1200; always_on 600 tokens
   always-on: 70 tokens / 252 chars
