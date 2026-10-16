@@ -759,3 +759,9 @@
 - TUI：Terminal 面板启动 codex，先出现 0.159.3→0.163.0 升级提示（跳过，未升级），再出现工作区“Trust this folder?”；agent 未代为信任，其后的 hook 信任行为未观察，配置字节不变。expect 无终端能力应答，TUI 无输出，不作证据。
 - 状态：B1/B2/B8/B9/B11 记 `[~]` 部分证据，B3/B4/B7/B10/B12 仍 `[?]`。证据 `docs/review/M1B-CODEX-2026-10-16.json`（不含凭据）。本项无 Go 改动，仅验证 JSON 语法、凭据未入库与 `git diff --check`。
 - 下一步：服务恢复后在同一 codex-user 安装上依次补模型投递、compact（需 TUI 和用户确认工作区信任）、skill、MCP、resume、PreToolUse 采样，再切插件路线（B10），最后卸载对照 2026-10-16 备份（B8）。
+
+### 2026-10-16 — CODEX-02/B2 `[x]` 注入投递（minimal/high）
+
+- 用户修复模型服务后，在同一 codex-user 安装上运行 `codex exec --json -m gpt-6-sol -c model_reasoning_effort="minimal"` 与 `"high"` 两个新会话。
+- 证据来自 Codex 自己的 rollout：两次都有 `content_item_kinds=["hooks.additional_context"]` 的 developer 消息，文字与 state 一致；minimal 含 low-effort 规则，high 正确不含。两次 rollout 同时包含 STYLE 静态 developer_instructions。
+- 模型两次拒绝复述注入内容，不以自述为证；以 harness rollout 证明投递，并与 10-15 的 low 证据合并完成 B2。证据 `docs/review/M1B-CODEX-2026-10-16-R2.json` 的 B2。仅文档/证据变化，验证 JSON 语法与 `git diff --check`。

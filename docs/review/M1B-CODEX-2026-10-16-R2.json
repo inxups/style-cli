@@ -1,0 +1,33 @@
+{
+  "date": "2026-10-16",
+  "provider": "codex",
+  "harness_version": "0.159.3",
+  "route": "codex-user",
+  "configuration": "Agent-performed Codex configuration (user instruction 2026-10-16), same install as M1B-CODEX-2026-10-16.json. Model service restored by the user; the default config later read gpt-6.1-sol/medium. Workspace ~/.style-m1b/manual-workspace/codex-b; CODEX_HOME/CODEX_SANDBOX unset for every run.",
+  "evidence_sources": {
+    "rollout": "~/.codex/sessions/2026/10/16/rollout-*-<thread>.jsonl: developer messages with internal content_item_kinds=[\"hooks.additional_context\"] are the hook output Codex placed in model input",
+    "stats": "~/.style-m1b/state/<thread>/main/{scope.json,stats.jsonl,seen/}",
+    "otel": "codex exec/app-server -c otel.trace_exporter=otlp-http json to a local sink; codex.hooks.command spans carry hook.event_name, hook.source, hook.command_outcome"
+  },
+  "B2": {
+    "status": "pass",
+    "sessions": [
+      {
+        "thread": "01a142ca-3432-72d0-9a1b-c29a49b64259",
+        "args": "-m gpt-6-sol -c model_reasoning_effort=\"minimal\"",
+        "rollout_hook_context": "Current session: model gpt-6-sol, effort minimal.\\n\\n\\nUse a concise review format for low-effort runs.\\n\\n\\nM1B_SESSION model=gpt-6-sol effort=minimal.",
+        "static": "developer message containing <!-- style:terse-reviewer --> present",
+        "model_reply": "refused to quote internal injected context"
+      },
+      {
+        "thread": "01a142ca-fa6d-7440-b4b5-58099048bf6a",
+        "args": "-m gpt-6-sol -c model_reasoning_effort=\"high\"",
+        "rollout_hook_context": "Current session: model gpt-6-sol, effort high.\\n\\n\\nM1B_SESSION model=gpt-6-sol effort=high.",
+        "note": "low-effort-guard correctly absent for high (when thinking_effort <=low)",
+        "model_reply": "refused to provide the content"
+      }
+    ],
+    "earlier": "gpt-6-sol/low from 2026-10-15 (M1B-CODEX-2026-10-15.json) and gpt-6.1-sol/low state from M1B-CODEX-2026-10-16.json",
+    "limits": "Model self-report was refused, so delivery is proven by the harness rollout, not by model recitation."
+  }
+}
