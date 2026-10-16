@@ -27,7 +27,7 @@ func inspectEffort(report AdapterReport, workDir string) (EffortReport, error) {
 	result := EffortReport{Provider: report.Provider, Source: "unknown"}
 	switch report.Provider {
 	case "codex":
-		value, err := codex.ResolveEffort(codex.EffortInput{Home: report.ConfigDir, CWD: workDir})
+		value, err := codex.ResolveEffort(codex.EffortInput{Home: report.ConfigDir, CWD: workDir, HarnessVersion: report.Version})
 		if err != nil {
 			return result, err
 		}

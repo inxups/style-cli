@@ -89,6 +89,25 @@ func TestEnricherStateUpdateKeepsUnknownEffortRaw(t *testing.T) {
 	}
 }
 
+func TestEnricherSelectsFileProfileFromInstalledHarnessVersion(t *testing.T) {
+	home := t.TempDir()
+	enricher := &Enricher{Home: home, HarnessVersion: "0.159.3",
+		LaunchSettings: func(string) (agenthooks.CodexLaunchSettings, bool) {
+			return agenthooks.CodexLaunchSettings{Profile: "probe"}, true
+		},
+		ReadFile: func(path string) ([]byte, error) {
+			if path == filepath.Join(home, "probe.config.toml") {
+				return []byte(`model_reasoning_effort="high"`), nil
+			}
+			return []byte(`model_reasoning_effort="low"`), nil
+		},
+	}
+	update := enricher.StateUpdate(&agenthooks.Event{Provider: agenthooks.ProviderCodex}, nil, state.Session{})
+	if !update.EffortResolved || update.ThinkingEffort != "high" || update.HarnessVersion != "0.159.3" {
+		t.Fatalf("installed version did not select file profile: %+v", update)
+	}
+}
+
 func TestEnricherCreatesSessionStartAndZeroTurnFallback(t *testing.T) {
 	event := runtimeEvent(agenthooks.KindSessionStart, "SessionStart", `{"session_id":"session-start","cwd":"/repo","source":"startup"}`)
 	input, limit, err := NewEnricher().Enrich(event, &agenthooks.SessionStartEvent{Event: *event, Source: "startup"}, state.Session{}, state.Scope{

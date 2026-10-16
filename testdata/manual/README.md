@@ -43,3 +43,9 @@ PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover \
   -s testdata/manual -p 'test_measure_codex_hooks.py'
 python3 testdata/manual/measure_codex_hooks.py /path/to/otlp.jsonl --source user
 ```
+
+`probe_codex_config.py` 使用临时 CODEX_HOME、临时 git 项目和本地 HTTP sink，运行真实 Codex 解析配置并记录请求的 reasoning.effort。sink 故意返回 400，进程非零是预期；脚本按每例断言判定通过，不宣称模型推理或 STYLE 注入投递。
+
+```sh
+PYTHONDONTWRITEBYTECODE=1 python3 testdata/manual/probe_codex_config.py
+```

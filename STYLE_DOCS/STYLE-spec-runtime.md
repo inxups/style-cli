@@ -141,7 +141,7 @@ reads:
 | 数据 | Codex | Claude Code |
 |---|---|---|
 | `model` | 每个事件 stdin 的 `model`【源码】 | 只有 SessionStart 带，而且不一定有（例如 `/clear` 之后）；之后用 `PostModelSwitch` 的 `to_model` 更新【文档】 |
-| `thinking_effort` | **hook 输入里没有**。读配置里的请求值 `model_reasoning_effort`，按这个顺序取第一个有值的：命令行 `-c model_reasoning_effort=…`（从祖先进程参数恢复）→ 选中的 profile（`-p`，或配置顶层的 `profile = "…"`）的 `[profiles.<名字>].model_reasoning_effort` → 项目 `.codex/config.toml`（**只在项目受信任时读**，否则不可信的仓库能左右哪些规则触发；判断不了就不读这一层）→ 用户 `CODEX_HOME/config.toml`。都没有就取不到。每个会话第一次需要时解析一次。会话中途 `/model` 改强度看不到；`plan_mode_reasoning_effort` 不读【源码，待测 U10】 | 工具类事件（`PreToolUse`、`PostToolUse`、`Stop`…）里的 `effort.level`；其他事件读环境变量 `$CLAUDE_EFFORT`（所有 hook 进程里是否都有待测 U-C1）；都没有就用状态里最近一次的值【文档】 |
+| `thinking_effort` | **hook 输入里没有**。读配置里的请求值 `model_reasoning_effort`，0.159.3 按第一个有值的来源解析：命令行 `-c model_reasoning_effort=…`（从祖先进程恢复）→ 明确受信项目 `.codex/config.toml` → `-p` 指定的 `CODEX_HOME/<name>.config.toml` → 用户 `config.toml`。**判断不了项目信任就不读项目层**；生产当前采用此回退。缺失 profile 文件可继承用户配置；新 CLI 拒绝 legacy profile selector/选中 table。旧/未知版本保留原表式 profile → 受信项目 → 用户的兼容解析。配置都没有就取不到，不推断模型默认强度。每个会话第一次需要时解析一次。会话中途 `/model` 改强度看不到；`plan_mode_reasoning_effort` 不读【M1-FINAL-02 配置实测；模型投递独立验收】 | 工具类事件（`PreToolUse`、`PostToolUse`、`Stop`…）里的 `effort.level`；其他事件读环境变量 `$CLAUDE_EFFORT`（所有 hook 进程里是否都有待测 U-C1）；都没有就用状态里最近一次的值【文档】 |
 | 回合 | `turn_id`，SessionStart 上没有【源码】 | `prompt_id`，第一条提示之前没有【文档】 |
 | 会话来源 | SessionStart 的 `source` | 同左 |
 | agent | `agent_id`、`agent_type` | 同左；主 agent = 没有 `agent_id`【文档】 |

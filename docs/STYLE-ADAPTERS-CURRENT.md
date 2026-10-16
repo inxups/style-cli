@@ -262,9 +262,11 @@ Codex 从事件的 model 更新状态。Claude 的 SessionStart model 与 PostMo
 读取的是配置请求值，不是 hook 中实时报告的实际推理强度。解析顺序为：
 
 1. 祖先进程启动参数中的 `-c model_reasoning_effort=…`。
-2. 选中 profile（`-p` 或用户配置的 profile）的配置值。
-3. 明确受信工作目录下 `.codex/config.toml`。
+2. 明确受信工作目录下 `.codex/config.toml`（生产未知信任时跳过）。
+3. `-p` 指定的 `CODEX_HOME/<name>.config.toml`。
 4. 用户 `config.toml` 的顶层值。
+
+以上为实测 Codex 0.159.3 的顺序；缺失 profile 文件继承用户配置，新版拒绝 legacy profile selector/选中 table。旧/未知版本保留表式 profile 兼容解析。本轮真实 CLI 配置请求由本地 sink 记录，不等同远端模型投递。
 
 每会话解析一次，即使没有值也标记 resolved；不会每个工具 hook 重读。`plan_mode_reasoning_effort` 不读取，会话中途通过 `/model` 改 effort 的检测未实现。
 

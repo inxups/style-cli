@@ -2,6 +2,7 @@ package codex
 
 import (
 	"errors"
+	"os"
 	"path/filepath"
 	"testing"
 
@@ -91,5 +92,61 @@ func TestCodexStateUpdateResolvesOnceIncludingUnknown(t *testing.T) {
 	second := StateUpdate(EffortInput{Launch: agenthooks.CodexLaunchSettings{ModelReasoningEffort: "high"}}, state.Session{EffortResolved: true})
 	if second.EffortResolved || second.EffortRaw != "" || second.ThinkingEffort != "" {
 		t.Fatalf("resolved session repeated effort lookup: %#v", second)
+	}
+}
+
+func TestFileProfilesMatchCodex159Configuration(t *testing.T) {
+	root := t.TempDir()
+	home, project := filepath.Join(root, "home"), filepath.Join(root, "project")
+	for _, tc := range []struct {
+		name, user, profile, override string
+		trusted, ignore               bool
+		want, source                  string
+		bad                           bool
+	}{
+		{name: "selected file", user: `model_reasoning_effort="low"`, profile: `model_reasoning_effort="high"`, want: "high", source: "profile file"},
+		{name: "project overrides file", user: `model_reasoning_effort="low"`, profile: `model_reasoning_effort="high"`, trusted: true, want: "xhigh", source: "project config"},
+		{name: "launch overrides project and file", profile: `model_reasoning_effort="high"`, override: "medium", trusted: true, want: "medium", source: "launch -c"},
+		{name: "empty file inherits user", user: `model_reasoning_effort="low"`, profile: "# empty", want: "low", source: "user config"},
+		{name: "ignore user still loads selected file", user: `model_reasoning_effort="low"`, profile: `model_reasoning_effort="high"`, ignore: true, want: "high", source: "profile file"},
+		{name: "raw unknown is preserved", profile: `model_reasoning_effort="future-tier"`, source: "profile file"},
+		{name: "missing file inherits user", user: `model_reasoning_effort="low"`, want: "low", source: "user config"},
+		{name: "malformed file is an error", profile: "= not toml", bad: true},
+		{name: "legacy default rejected", user: `profile="probe"`, profile: `model_reasoning_effort="high"`, bad: true},
+		{name: "legacy selected table rejected", user: "[profiles.probe]\nmodel_reasoning_effort=\"medium\"", profile: `model_reasoning_effort="high"`, bad: true},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			files := map[string][]byte{filepath.Join(home, "config.toml"): []byte(tc.user), filepath.Join(project, ".codex", "config.toml"): []byte(`model_reasoning_effort="xhigh"`)}
+			if tc.profile != "" {
+				files[filepath.Join(home, "probe.config.toml")] = []byte(tc.profile)
+			}
+			input := EffortInput{Home: home, CWD: project, HarnessVersion: "0.159.3", ProjectTrusted: tc.trusted,
+				Launch: agenthooks.CodexLaunchSettings{Profile: "probe", IgnoreUserConfig: tc.ignore, ModelReasoningEffort: tc.override},
+				ReadFile: func(path string) ([]byte, error) {
+					value, ok := files[path]
+					if !ok {
+						return nil, os.ErrNotExist
+					}
+					return value, nil
+				}}
+			got, err := ResolveEffort(input)
+			if tc.bad {
+				if err == nil {
+					t.Fatalf("invalid configuration accepted: %+v", got)
+				}
+				return
+			}
+			if err != nil || got.Effort != tc.want || got.Source != tc.source {
+				t.Fatalf("resolution=%+v err=%v; want %s/%s", got, err, tc.want, tc.source)
+			}
+			if tc.name == "raw unknown is preserved" && (got.EffortRaw != "future-tier" || got.EffortApprox != nil) {
+				t.Fatalf("unknown=%+v", got)
+			}
+		})
+	}
+	for _, profile := range []string{"../escape", "/absolute", `sub\profile`, ".", ".."} {
+		if _, err := ResolveEffort(EffortInput{Home: home, HarnessVersion: "0.159.3", Launch: agenthooks.CodexLaunchSettings{Profile: profile}}); err == nil {
+			t.Fatalf("accepted unsafe profile %q", profile)
+		}
 	}
 }

@@ -68,7 +68,7 @@ func (enricher *Enricher) StateUpdate(event *agenthooks.Event, typed any, previo
 		return update
 	}
 
-	input := EffortInput{CWD: event.Session.CWD}
+	input := EffortInput{CWD: event.Session.CWD, HarnessVersion: update.HarnessVersion}
 	if enricher != nil {
 		input.Home = enricher.Home
 		input.ReadFile = enricher.ReadFile

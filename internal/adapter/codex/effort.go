@@ -3,6 +3,7 @@ package codex
 
 import (
 	"embed"
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -32,6 +33,7 @@ func EffortTable() (effortmap.Table, error) {
 type EffortInput struct {
 	Home           string
 	CWD            string
+	HarnessVersion string
 	ProjectTrusted bool
 	Launch         agenthooks.CodexLaunchSettings
 	ReadFile       func(string) ([]byte, error)
@@ -43,9 +45,10 @@ type EffortResolution struct {
 	Source string
 }
 
-// ResolveEffort follows the documented order: launch -c, selected profile,
-// trusted project config, then user config. When trust is unknown, the project
-// layer is skipped.
+// ResolveEffort resolves configuration requests, not the model's own default.
+// Codex 0.159.3 uses named profile files and project layers override profiles.
+// Earlier versions retain the legacy table resolver. Unknown project trust
+// always excludes project configuration.
 func ResolveEffort(input EffortInput) (EffortResolution, error) {
 	table, err := EffortTable()
 	if err != nil {
@@ -72,6 +75,11 @@ func ResolveEffort(input EffortInput) (EffortResolution, error) {
 	var userConfig map[string]any
 	if !input.Launch.IgnoreUserConfig {
 		userConfig, _ = readConfig(reader, filepath.Join(home, "config.toml"))
+	}
+	if fileProfiles(input.HarnessVersion) {
+		return resolveFileProfile(input, reader, home, userConfig, table)
+	}
+	if !input.Launch.IgnoreUserConfig {
 		profile := input.Launch.Profile
 		if profile == "" {
 			profile = stringValue(userConfig["profile"])
@@ -87,6 +95,50 @@ func ResolveEffort(input EffortInput) (EffortResolution, error) {
 		if raw := stringValue(projectConfig["model_reasoning_effort"]); raw != "" {
 			return mapped(table, raw, "project config"), nil
 		}
+	}
+	if raw := stringValue(userConfig["model_reasoning_effort"]); raw != "" {
+		return mapped(table, raw, "user config"), nil
+	}
+	return EffortResolution{}, nil
+}
+
+// fileProfiles pins the observed format boundary to the tested release. Do not
+// infer a new format for an unknown/older installation from this process's CLI.
+func fileProfiles(version string) bool {
+	var major, minor, patch int
+	if n, _ := fmt.Sscanf(strings.TrimPrefix(version, "v"), "%d.%d.%d", &major, &minor, &patch); n != 3 {
+		return false
+	}
+	return major > 0 || minor > 159 || minor == 159 && patch >= 3
+}
+
+func resolveFileProfile(input EffortInput, reader func(string) ([]byte, error), home string, userConfig map[string]any, table effortmap.Table) (EffortResolution, error) {
+	profile := input.Launch.Profile
+	if stringValue(userConfig["profile"]) != "" {
+		return EffortResolution{}, fmt.Errorf("codex effort: legacy profile selector is unsupported by this harness version")
+	}
+	var profileConfig map[string]any
+	if profile != "" {
+		if profile == "." || profile == ".." || strings.ContainsAny(profile, `/\\`) {
+			return EffortResolution{}, fmt.Errorf("codex effort: profile name must not contain a path")
+		}
+		if _, exists := nested(userConfig, "profiles", profile).(map[string]any); exists {
+			return EffortResolution{}, fmt.Errorf("codex effort: selected legacy profile table is unsupported by this harness version")
+		}
+		var err error
+		profileConfig, err = readConfig(reader, filepath.Join(home, profile+".config.toml"))
+		if err != nil && !errors.Is(err, os.ErrNotExist) {
+			return EffortResolution{}, fmt.Errorf("codex effort: cannot read selected profile: %w", err)
+		}
+	}
+	if input.ProjectTrusted && input.CWD != "" {
+		projectConfig, _ := readConfig(reader, filepath.Join(input.CWD, ".codex", "config.toml"))
+		if raw := stringValue(projectConfig["model_reasoning_effort"]); raw != "" {
+			return mapped(table, raw, "project config"), nil
+		}
+	}
+	if raw := stringValue(profileConfig["model_reasoning_effort"]); raw != "" {
+		return mapped(table, raw, "profile file"), nil
 	}
 	if raw := stringValue(userConfig["model_reasoning_effort"]); raw != "" {
 		return mapped(table, raw, "user config"), nil

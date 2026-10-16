@@ -1,0 +1,106 @@
+{
+  "harness_version": "codex-cli 0.159.3",
+  "measurement": "real CLI configuration loading; local HTTP sink; no inference or STYLE hook acceptance claimed",
+  "cases": [
+    {
+      "case": "user",
+      "expected": "low",
+      "observed_request_effort": "low",
+      "request_count": 1,
+      "exit": 1,
+      "passed": true,
+      "note": "local sink deliberately rejects the model request"
+    },
+    {
+      "case": "file",
+      "expected": "high",
+      "observed_request_effort": "high",
+      "request_count": 1,
+      "exit": 1,
+      "passed": true,
+      "note": "local sink deliberately rejects the model request"
+    },
+    {
+      "case": "project",
+      "expected": "xhigh",
+      "observed_request_effort": "xhigh",
+      "request_count": 1,
+      "exit": 1,
+      "passed": true,
+      "note": "local sink deliberately rejects the model request"
+    },
+    {
+      "case": "untrusted",
+      "expected": "medium",
+      "observed_request_effort": "medium",
+      "request_count": 1,
+      "exit": 1,
+      "passed": true,
+      "note": "local sink deliberately rejects the model request"
+    },
+    {
+      "case": "override",
+      "expected": "medium",
+      "observed_request_effort": "medium",
+      "request_count": 1,
+      "exit": 1,
+      "passed": true,
+      "note": "local sink deliberately rejects the model request"
+    },
+    {
+      "case": "unknown-raw",
+      "expected": "future-tier",
+      "observed_request_effort": "future-tier",
+      "request_count": 1,
+      "exit": 1,
+      "passed": true,
+      "note": "local sink deliberately rejects the model request"
+    },
+    {
+      "case": "unset",
+      "expected": "default",
+      "observed_request_effort": "low",
+      "request_count": 1,
+      "exit": 1,
+      "passed": true,
+      "note": "local sink deliberately rejects the model request"
+    },
+    {
+      "case": "legacy-table",
+      "expected": "reject",
+      "observed_request_effort": null,
+      "request_count": 0,
+      "exit": 1,
+      "passed": true,
+      "note": "native rejects legacy or absent profile"
+    },
+    {
+      "case": "legacy-default",
+      "expected": "reject",
+      "observed_request_effort": null,
+      "request_count": 0,
+      "exit": 1,
+      "passed": true,
+      "note": "native rejects legacy or absent profile"
+    },
+    {
+      "case": "legacy-conflict",
+      "expected": "reject",
+      "observed_request_effort": null,
+      "request_count": 0,
+      "exit": 1,
+      "passed": true,
+      "note": "native rejects legacy or absent profile"
+    },
+    {
+      "case": "missing-profile",
+      "expected": "low",
+      "observed_request_effort": "low",
+      "request_count": 1,
+      "exit": 1,
+      "passed": true,
+      "note": "local sink deliberately rejects the model request"
+    }
+  ],
+  "passed": true
+}

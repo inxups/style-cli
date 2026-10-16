@@ -372,7 +372,7 @@ exec '/abs/path/to/style' "$@"
 | 数据 | 做法 |
 |---|---|
 | model | 每个事件 stdin 的 `model` |
-| effort | 只看配置里的请求值，按规范第 6 节的顺序解析 `model_reasoning_effort`：`-c` 参数复用 agenthooks `codexlaunch.go` 从祖先进程恢复的启动参数；profile 取 `-p` / `--profile`，没有就取用户配置顶层的 `profile = "…"`；项目层只在项目受信任时读（判断方法待 U10 核对，判断不了就不读这一层）。结果用 `EffortMap()` 转成档位，原值存 `EffortRaw`，缓存到 `session.json`，一个会话只解析一次 |
+| effort | 只看配置请求值。实测 0.159.3：祖先进程 `-c` → 明确受信项目配置 → `-p` / `--profile` 指定的 `CODEX_HOME/<name>.config.toml` → 用户配置。缺失 profile 文件继承用户配置；legacy selector/table 与新 profile 同选时原生拒绝。旧/未知版本保留原有表式解析。生产 `runHook` 尚无可靠信任回调，明确跳过项目层；不从模型默认值伪造配置 effort。结果映射并缓存到 session，一会话一次。证据：M1-FINAL-02 |
 | 回合 | `turn_id`；SessionStart 上没有，用 `prompt_count` |
 | agent | `agent_id`、`agent_type` |
 | `tool.added` | `apply_patch` 的输入是 `{"command": "<补丁文本>"}`【源码】：取以 `+` 开头的行，去掉 `+`，跳过 `+++` |
@@ -655,7 +655,7 @@ F1–F4、F10 是安装和协议层的问题，最好也提给上游。F5–F9 �
 | a7 | 并发：20 个进程同时对同一个 `(作用域, 规则, bh)` 触发，恰好 1 个有输出 |
 | a8 | 会话来源：`startup` 触发；`resume` 默认不触发；`clear` 后 gen +1 重新触发；`compact` 只触发 `reinject_on_compact` 的规则，之后 `reinject_on_compact: false` 的 `session` 规则不再出现 |
 | a9 | 重新评估：动态 system 规则在模型变化后（Codex 事件里的 `model` / Claude 的 `PostModelSwitch`）的下一条 `prompt.submitted` 上补发一次；没变化就不发；`when` 后来才满足的在那时注入 |
-| a10 | effort：每行映射有 fixture；未知值为空；`">=high"` 对空档位不触发；`open` 只被单值或列表匹配；Codex 配置解析按 `-c` > profile > 受信任项目 > 用户的顺序，未受信任的项目层被忽略；Claude 按事件 > 环境变量 > 状态的顺序 |
+| a10 | effort：每行映射有 fixture；未知值为空；`">=high"` 对空档位不触发；`open` 只被单值或列表匹配；Codex 0.159.3 按 `-c` > 受信任项目 > 独立 profile 文件 > 用户的顺序（旧版表式解析保留兼容），未受信任的项目层被忽略；Claude 按事件 > 环境变量 > 状态的顺序 |
 | a11 | agent：不写 `agent` 的规则在子 agent 事件上不触发；`any` 触发；`subagent.start` 规则默认触发且不去重 |
 | a12 | 信任：改动包内 md 后 `sync` 退出码 3 并列出差异，index 不变；`trust` 后 index 更新；`trust` 过程中源文件又被改动，结果仍基于确认时的字节；link 包首次 trust 后改动不阻塞 |
 | a13 | 安装隔离：对含他人条目的 Codex `hooks.json` / `config.toml`、Claude `settings.json` / `CLAUDE.md`，`install` → `uninstall` 后逐字节还原；重复 `install` 幂等；换路线后无残留 |
@@ -730,7 +730,7 @@ F1–F4、F10 是安装和协议层的问题，最好也提给上游。F5–F9 �
 | U6 | Codex 云端 skill 的读取工具在 hook 里叫什么 | 云端 skill 能否识别 | 探针 hook 把 stdin 写日志 | 不支持，plan 里说明 | 不影响通过 | 未测 |
 | U7 | Codex SubagentStart 返回的 context 是否真的进入子 agent | F7、`event: subagent.start` | 让子 agent 复述 | 按源码实现 | 不成立 → Codex 上 `subagent.start` 规则降级为丢弃，F7 移出 M1 | 成立：CDEX-U7 中 spawn_agent 启动的子线程 rollout 有逐字相同的 `hooks.additional_context`，stats 记在子 agent scope，父线程没有；F7 保留在 M1。嵌套子 agent 与 fork 未测 |
 | U9 | Claude 的 hook 里能否知道思考被关闭 | Claude 能否产出 `none` | 关掉思考后看 payload 和环境变量 | 不产出 `none` | 不影响通过 | 未测 |
-| U10 | Codex 配置层的优先级、项目信任的判断方法、`-c` 能否从祖先进程恢复 | Codex effort 准不准 | 多种组合启动，对比 `doctor` 的 effort 来源和 Codex 实际用的值 | 按 9.4 的顺序实现；判断不了项目信任就不读项目层 | 不影响通过，结论写回 9.4 | 部分：B2 从祖先进程恢复 `-c model_reasoning_effort` 与 `-m`，state 与 rollout 一致；profile 层与项目信任判断未在真实环境验证 |
+| U10 | Codex 配置层的优先级、项目信任的判断方法、`-c` 能否从祖先进程恢复 | Codex effort 准不准 | 多种组合启动，对比 `doctor` 的 effort 来源和 Codex 实际用的值 | 按 9.4 的顺序实现；判断不了项目信任就不读项目层 | 不影响通过，结论写回 9.4 | 配置解析已实测：M1-FINAL-02 用真实 0.159.3 与本地请求 sink 核对 11 组配置，修复独立 profile 和项目优先级；legacy 新版拒绝、缺失 profile 继承用户。生产未知信任仍跳过项目层；本地 sink 不证明远端模型投递，B2 补验收独立记录 |
 | U11 | Codex `/compact` 之后 `developer_instructions` 是否仍对模型可见；SessionStart(`compact`) 的时机 | 静态规则压缩后是否安全 | `/compact` 后让模型复述 | 认为可见 | 不可见 → Codex 上静态 system 规则同时挂一个只在 `compact` 来源触发的 `session.start` 条目补发 | 可见：B3 经 app-server compact 后 developer_instructions 仍在模型输入；SessionStart(compact) 排到下一回合开始时执行，compact 后进程退出则排队的事件丢失 |
 | U-C1 | `$CLAUDE_EFFORT` 在 SessionStart、UserPromptSubmit 的 hook 进程里是否存在 | 第一次工具调用之前能否拿到强度 | 探针 hook 打印环境变量 | 认为存在；不存在就等工具事件，靠 3.7 的重新评估补上 | 不影响通过 | 部分：C1 启动时 effort 为 unknown，Bash 读到 CLAUDE_EFFORT=high，首次工具后的下一条提示补上 high（按 3.7 补发）；未直接采集各 hook 进程环境 |
 | U-C2 | 改了 `settings.json` 的 hooks 后，运行中的会话是否马上生效 | 报告怎么写 | 会话运行中装一个包 | 报告写"新会话生效" | 不影响通过 | 未测 |

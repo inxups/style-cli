@@ -213,7 +213,7 @@ B1.2 和 B1.4 的历史通过状态表示原有测试套件在声明范围内通
 ## M1 全部未闭合项补验收
 
 - [x] **FINAL-01 版本门槛**：旧版/未知版本跳过且不写入，混合版本只安装兼容目标，已有旧包及路线保留，sync 不重新引入不兼容条目；示例 compile golden 仅来源摘要更新。证据：`internal/app/harness_requirement_test.go`，app/compile/spec 测试和 app/compile vet 通过。
-- [ ] **FINAL-02 effort**：独立/表式 profile、启动覆盖、项目层/信任、unknown 的单测与目标 CLI 对照。
+- [x] **FINAL-02 effort**：Codex 0.159.3 的 11 组真实配置加载/本地请求 sink 对照通过；profile 文件、受信项目覆盖、未受信忽略、启动覆盖、未知 raw、无配置、legacy 拒绝、缺失文件回退均有证据。Go v2/legacy、错误/路径与 runtime 安装版本接线测试通过。证据见 `docs/review/M1-FINAL-02-CODEX-CONFIG-2026-10-16.json`；命令为 `PYTHONDONTWRITEBYTECODE=1 python3 testdata/manual/probe_codex_config.py`。不宣称远端模型接收。
 - [ ] **FINAL-03 link**：源码改动的 list 漂移、sync/trust 文件差异与批准快照。
 - [?] **FINAL-04 B2/B10**：两条 Codex 路线各 B1–B9 及双向切换，unknown 分支独立留证。
 - [?] **FINAL-05 U2/U6**：真实插件登记往返、云端能力边界。

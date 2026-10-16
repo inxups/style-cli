@@ -1072,3 +1072,11 @@ PY
 - 示例 requires.harness 回填 Codex >=0.159.3 / Claude >=2.1.300；index golden 只有两个 inline 规则来源 SHA256 变化。
 - 回归：`TestExampleRequirementsSkipOldAndUnknownHarnessesWithoutMutation`、`TestExampleRequirementsInstallOnlyCompatibleHarnessAndRebuildPerPackage`。
 - 验证通过（GOPATH=/tmp/style-cli-gopath、GOMODCACHE=/tmp/style-cli-gomodcache、GOCACHE=/tmp/style-cli-gocache，清除 CODEX_HOME/CODEX_SANDBOX，GOFLAGS=-mod=readonly）：`go test -count=1 ./internal/app ./core/compile ./core/spec`、`go vet ./internal/app ./core/compile`、gofmt、`git diff --check`。黄金文件按明确元数据变更用 UPDATE_GOLDEN=1 重建，再无更新重跑通过。
+
+### 2026-10-16 — M1-FINAL-02 / FINAL-02 Codex 原生配置对照与 effort 修复
+
+- 真实 Codex 0.159.3 已改用 `-p <name>` 加载 `<name>.config.toml`；旧实现只读 `[profiles.<name>]`。新版拒绝 legacy 顶层 profile selector、与所选 profile 同名的 legacy table；缺失独立文件则继承用户配置（不是错误）。另实测受信项目覆盖 profile，未受信项目忽略，`-c` 最高优先级。配置 raw 未知值原样进入模型请求；不设配置时本机请求默认 low，但 STYLE 继续报告配置 unknown，避免把模型默认值当作配置值。
+- 新增版本分支，0.159.3 起使用独立文件/项目覆盖顺序；旧/未知版本保留现有 table 兼容路径。runtime 与 doctor 传入检测/事件版本。未知项目信任继续不读项目层，未新增信任推断。
+- 新增 `testdata/manual/probe_codex_config.py`：仅用临时配置和本地 HTTP sink，真实 CLI 构建请求后 sink 故意返回 400；11 例均通过。此记录证明配置加载，不能替代 B2/B10 的真实模型、工具或上下文验收。只保存合成 fixture 与安全字段，不读取凭据。早期探索发现缺失文件可回退后修正实现/断言，未把失败结果标完成。
+- 单测保留旧版表式解析，并覆盖独立文件、项目优先级、启动覆盖、ignore-user-config、未知 raw、缺失/损坏文件、legacy 拒绝、路径逃逸，以及 Enricher 使用固定 harness 版本选择解析器。
+- 验证：隔离缓存并去掉 CODEX_HOME/CODEX_SANDBOX，`go test -count=1 ./internal/adapter/codex ./internal/app ./internal/runtime`，`go vet ./internal/adapter/codex ./internal/app`；原生对照脚本、gofmt、`git diff --check`。证据 `docs/review/M1-FINAL-02-CODEX-CONFIG-2026-10-16.json`。
