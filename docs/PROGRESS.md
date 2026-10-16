@@ -1284,3 +1284,9 @@ PY
 - 回写：`spec/STYLE-spec-rules.md` 新增 §3.10（字段、`command` 约束、六个诊断码 `native-mapping`/`native-field`/`native-event`/`native-matcher`/`native-command`/`native-timeout`、plan 状态 `native-hook` 取代 `skipped-m2`、token 单列不估算、写入顺序与归属前缀），§3.3/§3.4 表同步；`spec/STYLE-spec-runtime.md` §8.6 增加 native 披露、非交互必须 `--yes`、native 变化 `sync` 退出 3（`--link` 也不例外）、trust 预览单列差异、list/doctor 核对；`spec/STYLE-cli-design.md` §3 增加 `NativeEvents()`、`HookSpec.Command/NativeTag` 和注册表注入 validate，§6 安装流程、§9.3 Codex native 事件与信任键序号、§10.2 Claude native 条目、§11.3 报告示例、§13 新增 F11（agenthooks `install.HookSpec.RawCommand/RawTag`，空值时渲染逐字节不变）。
 - 我自行定的、需评审确认的点：native 变化对 `--link` 包也阻塞；matcher 两家都只开放工具类事件；省略 timeout 按 60 秒；正文可选且豁免 `empty-body`；包级 `defaults` 不作用于 native；Windows 写法随 M3。
 - 验证：仅文档；本地链接与围栏检查、`git diff --check` 通过。未改 Go，M2-T10 在评审通过前不开始。
+
+### 2026-10-16 — M2-D1 评审通过 `[x]`，细化 M2-A1/A2/A4
+
+- 用户明确“M2-D1 评审通过，标 [x]，细化 M2-A1/A2/A4 后开始 M2-T10”。上一条记录中自行定的点（`--link` 也阻塞、matcher 只开放工具类事件、timeout 默认 60、正文可选、`defaults` 不作用于 native、Windows 随 M3）一并按规范定稿。
+- 测试矩阵：M2-A1 列出六个新 invalid fixture、各码子情况、合法用例、单文件/目录一致与注册表注入单测；M2-A2 列出两家 golden 期望、token 单列、fallback 三种结果与报告不含命令；M2-A4 列出披露字段、非交互退出 1、`sync` 退出 3（含 `--link`）、trust 预览差异与 list/doctor 三态。
+- 验证：仅文档，`git diff --check` 通过。下一步 M2-T10。

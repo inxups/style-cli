@@ -48,10 +48,24 @@ env -u CODEX_HOME -u CODEX_SANDBOX \
 
 ## M2a：离线验收
 
-- [ ] **M2-A1 native validate**（M2-T10，D1 定稿后细化）：合法 native 规则 validate 退出 0；缺 harness 映射、未知 harness 键、非法原生事件、空命令等 fixture 在文本/JSON 两种模式下退出 1 并含预期诊断码；目录包与单文件包结果一致。
-- [ ] **M2-A2 native plan**（M2-T11）：两家 plan golden 中 native 规则不再报“跳过（M2）”，状态和原因符合 D1；token 一节明确标注原生命令输出不估算；JSON 报告不含命令以外的正文。
+- [ ] **M2-A1 native validate**（M2-T10，按规则 3.10）：
+  - 验收清单：`testdata/invalid/` 新增 `native-mapping`、`native-field`、`native-event`、`native-matcher`、`native-command`、`native-timeout` 六个 fixture，纳入 `TestA1ValidateExampleAndEveryInvalidFixture` 的清单；每个在文本/JSON 两种模式下退出 1、stderr 为空、输出含对应码。
+  - `core/spec` 表驱动用例覆盖各码的子情况：没有 harness 键、harness 值是列表或标量（`native-mapping`）；规则上写 `action`/`when`/`repeat`/`event`、顶层写 `gemini:`、映射里写 `async`/`onFailure`/`type`/`args`（`native-field`）；缺 `event`、非字符串、Codex 写 `UserPromptExpansion`、Claude 写 `PostModelSwitch`（`native-event`）；空串、首尾空白、写在 `Stop`/`UserPromptSubmit` 上、Codex 非法正则、Claude `*` 合法（`native-matcher`）；缺失、非字符串、含换行/回车/NUL、首尾空白、以 `;`/`&`/`|`/`)`/`#` 开头、未转义 `\` 结尾、引号不成对（`native-command`）；`0`、`601`、`1.5`、字符串（`native-timeout`）。
+  - 合法用例退出 0：示例包（`codex-only-notify` 更新为 3.10 写法）；同时写两家映射、只写一家、带 matcher 与 timeout、正文为空的 native 规则；包级 `defaults.action: warn` 不使 native 报错；`from:` 整体覆盖某个 harness 映射。
+  - 非 native 规则上写 `codex:` 仍报 `invalid-schema`。
+  - 单文件包（`STYLE.md` frontmatter）与等价目录包对上述合法/非法用例给出相同的码和退出码。
+  - harness 键与事件名来自注册表：用只注册一个假 harness 的注册表做单测，`codex` 键即报 `native-field`；`core/...` 不导入具体适配器的依赖测试仍通过。
+- [ ] **M2-A2 native plan**（M2-T11，按规则 3.10）：
+  - 两家 plan golden（文本与 JSON）：`codex-only-notify` 在 Codex 上为 `native-hook`，附事件 `Stop`、实际 timeout 60；在 Claude 上为 `skipped`，原因"没有该 harness 的 native 映射"。输出中不再出现 `skipped-m2` 或"跳过（M2）"。
+  - token 一节单列"native hook 输出不估算"及规则/事件；常驻、单条、按原生事件合计与 M2-01 起点相比不含 native，`T001`/`T003` 不计 native。
+  - `fallback`：用假适配器让 `Native()` 返回错误，`skip`/`degrade` 得 `skipped`，`error` 得 `install-error` 且 install 退出 4、不写任何文件。
+  - plan 报告（文本/JSON）不含 native 规则正文，也不含命令；命令只在 install 披露、trust 预览和 doctor 里出现。
 - [ ] **M2-A3 native 安装往返**（M2-T12/T60）：codex-plugin、codex-user、claude-user 三条路线 install → uninstall 后配置逐字节还原，他人条目保留，重复安装幂等，换路线无残留；native 条目带 STYLE owner 标记。
-- [ ] **M2-A4 native 披露与信任**（M2-T13）：安装报告列出每条 native 命令；非交互无 `--yes` 退出 1；改 native 命令后 sync 退出 3，trust 预览显示命令差异且不写入，`--yes` 后生效；list/doctor 展示 native 条目。
+- [ ] **M2-A4 native 披露与信任**（M2-T13，按运行时 8.6）：
+  - 安装报告逐条列出 harness、规则、事件、matcher、实际 timeout、作者命令原文（不含 `: --owner=style --native=…;` 前缀），并写明路线信任方式（`codex-user` 预置、`codex-plugin` 插件信任、`claude-user` 工作区信任）。
+  - 非交互、无 `--yes`、本次会新增 native 条目时退出 1，harness 配置、锁文件、index 逐字节不变；带 `--yes` 成功。
+  - 修改 native 的命令、事件、matcher、timeout 任一项，或增删 native 规则后，`sync` 退出 3；`--link` 包同样退出 3。`trust` 预览单列"native 条目差异"，给出改前改后四个字段；未确认时不写入，确认或 `--yes` 后配置与新渲染一致，`codex-user` 的 `trusted_hash` 同步更新。
+  - `style list` 显示每个包的 native 条目数；`style doctor` 对一致、缺失、被手工改动三种状态分别输出正常、告警、告警，`codex-user` 另报 `trusted_hash` 是否匹配。
 - [ ] **M2-A5 stats**（M2-T20，D2 定稿后细化）：固定 `stats.jsonl` fixture 按规则、按会话汇总的文本与 JSON 输出与 golden 逐字节一致；时间窗口过滤正确；坏行、超长行按 D2 处理；输出不含规则正文或提示词。
 - [ ] **M2-A6 跨包去重**（M2-T30，D3 定稿后细化）：两个包含正文完全相同的规则时，index 只保留一份、plan 与 T003 只计一次；运行时只注入一次；卸载保留方后重编译使另一份生效；正文不同的规则不受影响。
 - [ ] **M2-A7 Claude rules 静态位置**（M2-T40，仅 D4 成立时）：写入/删除 `~/.claude/rules/style-<名字>.md`；从 `CLAUDE.md` 标记块迁移后再卸载，两处文件逐字节还原。D4 不成立时本条以 D4 证据标注不适用并关闭。
