@@ -82,7 +82,7 @@
 
 ### 9.5 示例（和示例包一致）
 
-[example/terse-reviewer](../example/terse-reviewer/STYLE.yaml) 的 `rules[]`：0 `no-todo-comments`（`from:` 引入，`priority: 40`）、1 `style`、2 `session-info`、3 `low-effort-guard`、4 `review-skill`、5 `after-git-diff`、6 `before-create-pr`、7 `no-force-push`、8 `on-review-prompt`、9 `codex-only-notify`。包是第 1 个安装的。下面摘几个 Codex 上的条目（哈希省略）：
+[example/terse-reviewer](../../example/terse-reviewer/STYLE.yaml) 的 `rules[]`：0 `no-todo-comments`（`from:` 引入，`priority: 40`）、1 `style`、2 `session-info`、3 `low-effort-guard`、4 `review-skill`、5 `after-git-diff`、6 `before-create-pr`、7 `no-force-push`、8 `on-review-prompt`、9 `codex-only-notify`。包是第 1 个安装的。下面摘几个 Codex 上的条目（哈希省略）：
 
 ```json
 {
@@ -189,7 +189,7 @@
 
 ## 附录 A：推迟的 harness 备忘
 
-M1 不实现，留给以后写适配器时参考。详细资料在 [cross-harness.md](../style-gen/cross-harness.md) 和 [thinking-effort.md](../style-gen/thinking-effort.md)（这两份里"六档"、`on_unknown` 等旧口径已被本文取代）。
+M1 不实现，留给以后写适配器时参考。详细资料在 [cross-harness.md](../../style-gen/cross-harness.md) 和 [thinking-effort.md](../../style-gen/thinking-effort.md)（这两份里"六档"、`on_unknown` 等旧口径已被本文取代）。
 
 **effort 映射**（以后的适配器照 4.2 的规则写自己的 `effort.yaml`）：
 
@@ -209,4 +209,4 @@ M1 不实现，留给以后写适配器时参考。详细资料在 [cross-harnes
 |---|---|---|---|---|---|---|---|
 | 档位 | `none` | `minimal` | `low` | `medium` | `high` | `xhigh` | 取不到 |
 
-**能力提醒**：Cursor 的 `additional_context` 能否送到模型各方说法矛盾；Gemini 会转义 `<>`；Kimi 只有提示词事件的纯文本能进上下文；Windsurf 完全不能注入；OpenCode 是进程内函数，每次请求重建系统提示词，不需要压缩处理。加这些 harness 时，压缩信号可能需要"信号和动作分开、延后补发"的做法（见 [solution-2026-10-12.md](../style-review/solution-2026-10-12.md) A2），适配器接口里的 `CompactSignal()` 就是为它留的。
+**能力提醒**：Cursor 的 `additional_context` 能否送到模型各方说法矛盾；Gemini 会转义 `<>`；Kimi 只有提示词事件的纯文本能进上下文；Windsurf 完全不能注入；OpenCode 是进程内函数，每次请求重建系统提示词，不需要压缩处理。加这些 harness 时，压缩信号可能需要"信号和动作分开、延后补发"的做法（见 [solution-2026-10-12.md](../../style-review/solution-2026-10-12.md) A2），适配器接口里的 `CompactSignal()` 就是为它留的。

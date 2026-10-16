@@ -1253,3 +1253,9 @@ PY
 - `gh run view 38894349556 --repo inxups/style-cli --json databaseId,headSha,status,conclusion,jobs,url,createdAt,updatedAt` 与 `--log`核对通过；原日志留私有/tmp/style-m1-final12-i20hx2za/ci-38894349556.log。逐job/step元数据、日志SHA256及断言追加入 `review/M1-FINAL-12-CI-2026-10-16.json`，关联最终本地REGRESSION，保留所有历史待验和失败记录。
 - FINAL-12任务/矩阵改[x]，当前首页/总览/教程同步。15个FINAL主/补条目已有14项关闭，唯一FINAL-09按用户“暂时没有key，保留计数待验”继续[?]；M1不宣称全部闭合，M2未开始。
 - 本次收尾仅文档/证据，Go、采集器、示例和workflow与通过CI的62b9346完全相同；提交推送后继续核验最终文档HEAD的CI。`git diff --check`、JSON/本地链接检查和工作树检查通过。
+
+### 2026-10-16 — 规范与设计基线迁入 docs/spec
+
+- 按用户指示，把 `STYLE_DOCS/` 下已跟踪的 `STYLE-spec*.md`（6 份，含 `STYLE-cli-design.md`）用 `git mv` 迁到 `docs/spec/`，并新纳入原被忽略的 20 张 `svg/*.svg`；删除与 `svg/` 逐文件 diff 一致的 `STYLE-cli-diagrams-svg.zip` 和 `.DS_Store`。`STYLE_DOCS/STYLE.yaml` 是早期草稿，已被 `example/terse-reviewer/STYLE.yaml` 取代，未迁移，仍在 `.gitignore` 下。SVG 内嵌的 C2PA 元数据只含来源凭证，无本机路径或个人信息。
+- 链接：迁入文档里 `../docs/X` 改为 `../X`，其余仓库根相对路径加一层 `../`；教程、adapter 总览和任务清单改指 `spec/` 或 `docs/spec/`；规范入口增加流程图目录链接。本条以上的日志条目、`review/*.json` 证据和 2026-10-13 两份评审/设计文档里的 `STYLE_DOCS/...` 是历史路径，按原样保留，对应文件现位于 `docs/spec/`。
+- 验证：`docs/**/*.md` 相对链接检查只剩 `STYLE-spec-compiled.md` 指向 `style-gen/`、`style-review/` 的 3 个链接，这三个目标迁移前就不存在（见 `STYLE-M1-REVIEW-2026-10-13.md`），本次未新增断链。清理 CODEX_HOME/CODEX_SANDBOX、使用临时 GOPATH/GOMODCACHE/GOCACHE 的 `go test ./... ./agenthooks/...` 全部通过；`git diff --check` 通过。仅移动文档，未改 Go、采集器、示例或 workflow。

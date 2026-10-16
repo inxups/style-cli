@@ -2,7 +2,7 @@
 
 对应规范：[STYLE-spec.md](STYLE-spec.md)（v0.3）。规范定义包格式、运行时语义、token 预算、安全约束和 `index.json`；本文定义命令、本地布局、编译和运行时流程、Claude Code 与 Codex 两个适配器、token 估算器、fork 改动、里程碑、验收和未决项。冲突时，格式和语义以规范为准，实现细节以本文为准。
 
-状态（2026-10-16）：M1a 离线验收已完成，M1b B/C 历史条目按各自记录范围通过，全部 M1 补验收仍进行中。FINAL-01–08、10–11 已闭合，官方计数仍待验证，最终Ubuntu/macOS CI已通过（FINAL-12）；逐项证据以 [任务清单](../docs/STYLE-M1-TASKS.md) 和 [测试矩阵](../docs/STYLE-M1-TESTS.md) 为准。M1 只做 **Claude Code** 和 **Codex**。本文接口代码为设计示意；当前接口与职责见 [adapter 总览](../docs/STYLE-ADAPTERS-CURRENT.md)。
+状态（2026-10-16）：M1a 离线验收已完成，M1b B/C 历史条目按各自记录范围通过，全部 M1 补验收仍进行中。FINAL-01–08、10–11 已闭合，官方计数仍待验证，最终Ubuntu/macOS CI已通过（FINAL-12）；逐项证据以 [任务清单](../STYLE-M1-TASKS.md) 和 [测试矩阵](../STYLE-M1-TESTS.md) 为准。M1 只做 **Claude Code** 和 **Codex**。本文接口代码为设计示意；当前接口与职责见 [adapter 总览](../STYLE-ADAPTERS-CURRENT.md)。
 
 **依据**：
 - agenthooks `3f734c7` 源码，历史整理资料为 `agenthooks-codex.md`（外部资料，本仓库未收录）；
@@ -164,7 +164,7 @@ map: { low: low, medium: medium, high: high, xhigh: xhigh, max: max }
 - `--yes`：跳过安装前的能力披露确认（规范 8.6）。非交互环境没有 `--yes` 就退出码 1。
 - `--set k=v`：给 settings 赋值；非交互环境缺必填且没有 `default` 时退出码 1。
 
-实现对照：[CLI 选项解析](../internal/app/lifecycle_command.go)、[Codex 路线 ID](../internal/adapter/codex/adapter.go)、[Claude 路线 ID](../internal/adapter/claude/adapter.go)、[Codex 信任摘要渲染](../agenthooks/install/render_codex.go)。路线 ID 是安装参数；`adapters` 的信任种类与锁文件持久值是不同表示，映射见 [trustState](../internal/app/install.go)：`user-confirmation` → `user`，`preseed` → `preseeded`，`workspace` → `workspace`，其余 → `managed`。这些值描述路线策略，不能当作真实 UI 信任确认记录。
+实现对照：[CLI 选项解析](../../internal/app/lifecycle_command.go)、[Codex 路线 ID](../../internal/adapter/codex/adapter.go)、[Claude 路线 ID](../../internal/adapter/claude/adapter.go)、[Codex 信任摘要渲染](../../agenthooks/install/render_codex.go)。路线 ID 是安装参数；`adapters` 的信任种类与锁文件持久值是不同表示，映射见 [trustState](../../internal/app/install.go)：`user-confirmation` → `user`，`preseed` → `preseeded`，`workspace` → `workspace`，其余 → `managed`。这些值描述路线策略，不能当作真实 UI 信任确认记录。
 
 **退出码**：`0` 成功；`1` 校验失败或用法错误；`3` `sync` 发现改动，需要 `trust`；`4` 安装被中止（`fallback: error` 命中，或 `T003`）。`agenthooks run` 永远退出 0，只有 `--fail-closed` 模式下内部出错时退出 1。
 
@@ -345,7 +345,7 @@ exec '/abs/path/to/style' "$@"
 ```
 
 - Codex 把 hook 命令交给 shell 的 `-lc` 执行，并设置 `PLUGIN_ROOT`【源码】，所以 `$PLUGIN_ROOT` 会被展开。命令字符串固定不变；`style` 二进制换位置时只重写 `bin/style`，它不在信任哈希里，不用重新信任。
-- 当前 STYLE 仅生成插件目录，不自动登记 marketplace 或启用插件。手动注册、缓存副本以及切回用户路线前的取消步骤见 [M1b 手册第 6 节](../docs/STYLE-M1B-MANUAL.md#6-codex-插件路线与手动注册)；本机 Codex CLI 0.159.3 的完整手动登记、第二包变更、真实 plugin hook、取消登记及双向切换已通过（FINAL-04/05）。
+- 当前 STYLE 仅生成插件目录，不自动登记 marketplace 或启用插件。手动注册、缓存副本以及切回用户路线前的取消步骤见 [M1b 手册第 6 节](../STYLE-M1B-MANUAL.md#6-codex-插件路线与手动注册)；本机 Codex CLI 0.159.3 的完整手动登记、第二包变更、真实 plugin hook、取消登记及双向切换已通过（FINAL-04/05）。
 - **不写 `additionalContextLimit`**：2,500 token 的默认值正好当保险，STYLE 自己的预算更严；不写也避开了"这个字段是否参与信任哈希"的问题（规范 7.1）。
 - 不写 `async`（Codex 解析但不执行，quirk #10）。
 
@@ -590,7 +590,7 @@ terse-reviewer 0.3.0 → codex（路线：plugin）
 
 - 每个目标 harness 各出一份，单位和上限不同。
 - 前几块都是确定性的计算，不联网。
-- **会话成本情景**：一段 N token 的文字在共 K 次请求的会话里、于第 k 次请求注入，保留公式 `N × (1.25 + 0.1 × (K − k))`（单位：基础输入 token 价）。它假设符合缓存门槛的前缀始终不变且未过期，首次写入 1.25 倍、后续每次命中 0.1 倍；对应 Claude 5 分钟缓存情景，不代表所有模型、Codex 或真实账单。Claude 1 小时写入及 OpenAI 模型的条件/倍率另见 [FINAL-10 官方资料核对](../docs/review/M1-FINAL-10-CACHE-2026-10-16.md)。常驻和静态的 k = 1；触发型规则的 T 次触发均匀分布在 `k_i = round(i × K / (T + 1))`；`repeat: session` 只算第一次，`turn` / `every` 每次都算。公式不包括基础上下文、工具与模型输出；默认 60 次请求、3 次触发及预算 400/1200/600 保留，尚无代表性工作负载支持调整。真实统计分列规则估算和会话总 usage，不能逐规则归因缓存费用。
+- **会话成本情景**：一段 N token 的文字在共 K 次请求的会话里、于第 k 次请求注入，保留公式 `N × (1.25 + 0.1 × (K − k))`（单位：基础输入 token 价）。它假设符合缓存门槛的前缀始终不变且未过期，首次写入 1.25 倍、后续每次命中 0.1 倍；对应 Claude 5 分钟缓存情景，不代表所有模型、Codex 或真实账单。Claude 1 小时写入及 OpenAI 模型的条件/倍率另见 [FINAL-10 官方资料核对](../review/M1-FINAL-10-CACHE-2026-10-16.md)。常驻和静态的 k = 1；触发型规则的 T 次触发均匀分布在 `k_i = round(i × K / (T + 1))`；`repeat: session` 只算第一次，`turn` / `every` 每次都算。公式不包括基础上下文、工具与模型输出；默认 60 次请求、3 次触发及预算 400/1200/600 保留，尚无代表性工作负载支持调整。真实统计分列规则估算和会话总 usage，不能逐规则归因缓存费用。
 
 ### 11.4 lint 输出
 
@@ -706,7 +706,7 @@ F1–F4、F10 是安装和协议层的问题，最好也提给上游。F5–F9 �
 
 ### 14.3 实测项的结局
 
-每个实测项记录**符合预期**、**回退方案生效**或**阻塞**，并保留实际范围与失败证据。原 M1b 门槛不替代后来批准的全部补验收；任何尚缺证据的 FINAL 条目继续保留 `[~]` / `[!]` / `[?]`，不以脚本准备或历史程序结果标记当前完成。最终程序已完成50次串行Bash、全部103条hook计时，整体p95=28ms，启动341ms和切换54ms完整保留；见 [C9证据](../docs/review/M1-FINAL-06-C9-2026-10-16.json) 和 [隔离runbook](../docs/review/M1-FINAL-06-CLAUDE-RUNBOOK.md)。全部 M1 补项闭合后再规划 M2。
+每个实测项记录**符合预期**、**回退方案生效**或**阻塞**，并保留实际范围与失败证据。原 M1b 门槛不替代后来批准的全部补验收；任何尚缺证据的 FINAL 条目继续保留 `[~]` / `[!]` / `[?]`，不以脚本准备或历史程序结果标记当前完成。最终程序已完成50次串行Bash、全部103条hook计时，整体p95=28ms，启动341ms和切换54ms完整保留；见 [C9证据](../review/M1-FINAL-06-C9-2026-10-16.json) 和 [隔离runbook](../review/M1-FINAL-06-CLAUDE-RUNBOOK.md)。全部 M1 补项闭合后再规划 M2。
 
 ### 14.4 之后
 
@@ -720,9 +720,9 @@ F1–F4、F10 是安装和协议层的问题，最好也提给上游。F5–F9 �
 
 ### 15.1 要实测的
 
-保留设计阶段的待测项；已做的准备验证写在对应行，完整验收状态以 [测试矩阵](../docs/STYLE-M1-TESTS.md) 为准。"测之前"一栏记录当前采用的做法；"M1b 结果"一栏按 M1b 真实验收证据回填，B/C 编号指测试矩阵条目，"未测"表示 M1b 没有覆盖、原做法不变。
+保留设计阶段的待测项；已做的准备验证写在对应行，完整验收状态以 [测试矩阵](../STYLE-M1-TESTS.md) 为准。"测之前"一栏记录当前采用的做法；"M1b 结果"一栏按 M1b 真实验收证据回填，B/C 编号指测试矩阵条目，"未测"表示 M1b 没有覆盖、原做法不变。
 
-Claude U9、U-C1/C2/C3/C5 已由用户界面观察、原生请求/hook及state交叉核对，最终C9也已补采。按 [FINAL-06 runbook](../docs/review/M1-FINAL-06-CLAUDE-RUNBOOK.md) 关联BOUNDARY/THINKING/C9证据；实际关闭思考未实现，按既定不产出none边界关闭，不把medium当off。
+Claude U9、U-C1/C2/C3/C5 已由用户界面观察、原生请求/hook及state交叉核对，最终C9也已补采。按 [FINAL-06 runbook](../review/M1-FINAL-06-CLAUDE-RUNBOOK.md) 关联BOUNDARY/THINKING/C9证据；实际关闭思考未实现，按既定不产出none边界关闭，不把medium当off。
 
 | # | 问题 | 为什么重要 | 怎么测 | 测之前 | 结局对 M1 的影响 | M1b 结果（2026-10-16） |
 |---|---|---|---|---|---|---|

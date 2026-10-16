@@ -1,6 +1,6 @@
 # STYLE 分发格式 v0.3（实现基线）
 
-状态（2026-10-16）：M1a 离线验收已完成，Codex 0.159.3 和 Claude Code 2.1.300 已有真实验收证据；M1 全部补验收仍进行中。Claude 界面/上下文/原生超限已补验，两家官方 token 计数仍待验，最终Ubuntu/macOS CI已通过（FINAL-12），逐项状态以 [任务清单](../docs/STYLE-M1-TASKS.md) 和 [测试矩阵](../docs/STYLE-M1-TESTS.md) 为准。读文档或源码得出的结论保留出处；`Uxx` 的当前结果见 [CLI 设计第 15 节](STYLE-cli-design.md#15-未决项)。
+状态（2026-10-16）：M1a 离线验收已完成，Codex 0.159.3 和 Claude Code 2.1.300 已有真实验收证据；M1 全部补验收仍进行中。Claude 界面/上下文/原生超限已补验，两家官方 token 计数仍待验，最终Ubuntu/macOS CI已通过（FINAL-12），逐项状态以 [任务清单](../STYLE-M1-TASKS.md) 和 [测试矩阵](../STYLE-M1-TESTS.md) 为准。读文档或源码得出的结论保留出处；`Uxx` 的当前结果见 [CLI 设计第 15 节](STYLE-cli-design.md#15-未决项)。
 
 **范围**：M1 只支持 **Claude Code** 和 **Codex**。其他 harness 推迟，但"通用核心 + 每家一个薄适配器"的边界保留，以后加一家只写一个适配器。已经调研过的资料放在附录 A。
 
@@ -13,7 +13,7 @@
 
 **和 CLI 设计的分工**：本规范定义包格式、运行时语义、token 预算、安全约束和编译产物 `index.json`。命令、本地布局、两个适配器的具体做法、fork 改动、里程碑、验收和未决项在 [STYLE-cli-design.md](STYLE-cli-design.md)。两份冲突时，格式和语义以本规范为准，实现细节以 CLI 设计为准。
 
-**完整示例**：[example/terse-reviewer/STYLE.yaml](../example/terse-reviewer/STYLE.yaml)
+**完整示例**：[example/terse-reviewer/STYLE.yaml](../../example/terse-reviewer/STYLE.yaml)
 
 **出处标记**：
 
@@ -56,3 +56,5 @@
 - [规则定义（第 3 节）](STYLE-spec-rules.md)
 - [条件、运行时数据、预算与安全（第 4–8 节）](STYLE-spec-runtime.md)
 - [编译产物、安装状态与未决项（第 9–12 节及附录 A）](STYLE-spec-compiled.md)
+
+设计阶段的 20 张流程图在 [svg/](svg/)，配合 [CLI 设计](STYLE-cli-design.md) 阅读。

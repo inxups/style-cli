@@ -122,7 +122,7 @@ Codex 一列以 agenthooks `capability.go` 为准；Claude 一列结合官方文
 
 `degrade` 允许最终跳过，不保证保留规则。`skip` 在普通能力不足时移除规则，不尝试替代路径；`error` 在普通能力或数据失败时阻止安装。harness 过滤、M1 不求值的 provider、native 留到 M2、固有工具盲区等前置分支仍按各自状态报告，不承诺 error 拦住所有未生效规则。
 
-当前实例与源码入口见 [adapter 总览 §6](../docs/STYLE-ADAPTERS-CURRENT.md#6-fallback当前代码语义)。Codex `subagent.start` 已真实投递，不再作为缺能力的例子。Claude 各事件用户提示可见性仍待 FINAL-06 实测，表中声明不等同完整 UI 验收。
+当前实例与源码入口见 [adapter 总览 §6](../STYLE-ADAPTERS-CURRENT.md#6-fallback当前代码语义)。Codex `subagent.start` 已真实投递，不再作为缺能力的例子。Claude 各事件用户提示可见性仍待 FINAL-06 实测，表中声明不等同完整 UI 验收。
 
 ## 6. 运行时数据（`reads`）
 

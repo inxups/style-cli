@@ -211,7 +211,7 @@ Claude Enricher 能构造 `subagent.start` 评估点，但 Facts 不声明输出
 
 FINAL-11 已将规范同步到上述现有行为：degrade 可最终跳过；Codex 无条件 tool.error 为 skipped；工具静态回退要求没有任何 when；动态 system 两点可用时双挂载，完全不可用时按 §5.2 报告。没有增加“降级不成功一律报错”的新保证，也没有改变规划器。
 
-源码：[requirements.go](../core/plan/requirements.go)、[events.go](../core/plan/events.go)、[policy.go](../core/plan/policy.go)、[plan.go](../core/plan/plan.go)；规范：[运行时 §5](../STYLE_DOCS/STYLE-spec-runtime.md)、[规则定义](../STYLE_DOCS/STYLE-spec-rules.md)。
+源码：[requirements.go](../core/plan/requirements.go)、[events.go](../core/plan/events.go)、[policy.go](../core/plan/policy.go)、[plan.go](../core/plan/plan.go)；规范：[运行时 §5](spec/STYLE-spec-runtime.md)、[规则定义](spec/STYLE-spec-rules.md)。
 
 ## 7. 工具、MCP 和 skill 归一化
 
@@ -385,7 +385,7 @@ env -u CODEX_HOME -u CODEX_SANDBOX \
 - FINAL-07 的无补发探针确认 Codex resume/fork 保留原 context，compact 后两个动态标记消失；三种子 agent 的工具注入/阻断各在独立 scope。Claude 真实resume/fork也保留，两条关闭补发标记在compact后消失；原生子agent不继承所测父动态标记，工具注入/阻断在独立scope生效。
 - FINAL-10 已统计真实请求、注入/去重与会话 usage，缓存条件已核对官方资料；公式是情景比较，token 官方计数仍待 API 认证。
 
-完整证据见 [测试矩阵](STYLE-M1-TESTS.md)、[进度日志](PROGRESS.md)、[M1b 手册](STYLE-M1B-MANUAL.md)、[设计 §15](../STYLE_DOCS/STYLE-cli-design.md)。
+完整证据见 [测试矩阵](STYLE-M1-TESTS.md)、[进度日志](PROGRESS.md)、[M1b 手册](STYLE-M1B-MANUAL.md)、[设计 §15](spec/STYLE-cli-design.md)。
 
 ## 12. 已知边界与后续工作
 

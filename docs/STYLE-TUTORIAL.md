@@ -2,7 +2,7 @@
 
 更新时间：2026-10-16。实现核对基线：`ce912e6`（最终codec/能力修复），支持 Claude Code 与 Codex。M1a 已完成，M1b 历史结果按各自范围保留；Claude补验收已完成，两家官方计数仍待验，最终Ubuntu/macOS CI已通过，当前状态见 [任务清单](STYLE-M1-TASKS.md)。
 
-本教程面向第一次使用 `style` 的人，从构建到卸载走完整个生命周期。文中命令输出都是在隔离沙箱里真实运行得到的（路径已缩写），不是手写示例。规则语义的权威定义在 [STYLE_DOCS](../STYLE_DOCS/STYLE-spec.md)，adapter 的实现细节见 [STYLE-ADAPTERS-CURRENT.md](STYLE-ADAPTERS-CURRENT.md)，真实环境验收步骤见 [STYLE-M1B-MANUAL.md](STYLE-M1B-MANUAL.md)。
+本教程面向第一次使用 `style` 的人，从构建到卸载走完整个生命周期。文中命令输出都是在隔离沙箱里真实运行得到的（路径已缩写），不是手写示例。规则语义的权威定义在 [docs/spec](spec/STYLE-spec.md)，adapter 的实现细节见 [STYLE-ADAPTERS-CURRENT.md](STYLE-ADAPTERS-CURRENT.md)，真实环境验收步骤见 [STYLE-M1B-MANUAL.md](STYLE-M1B-MANUAL.md)。
 
 ## 目录
 
@@ -225,7 +225,7 @@ when:
 
 **单文件包** 把包信息和**一条**规则合在一个 `<name>.style.md` 里，适合只有一条规则的场景；需要第二条时改成目录包。
 
-完整字段与约束见 [规则定义](../STYLE_DOCS/STYLE-spec-rules.md) 与 [包结构](../STYLE_DOCS/STYLE-spec-package.md)。规则写作建议：写事实陈述而不是“你必须…”之类的命令式文字；一条规则只说一件事；挂得越窄越省 token。
+完整字段与约束见 [规则定义](spec/STYLE-spec-rules.md) 与 [包结构](spec/STYLE-spec-package.md)。规则写作建议：写事实陈述而不是“你必须…”之类的命令式文字；一条规则只说一件事；挂得越窄越省 token。
 
 ---
 
