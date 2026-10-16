@@ -289,7 +289,7 @@ done
 
 官方参考（核对日期 2026-10-15）：[Codex hooks](https://developers.openai.com/codex/hooks)、[插件本地 marketplace](https://developers.openai.com/plugins/build/plugins)、[Claude hooks](https://code.claude.com/docs/en/hooks)。CLI 子命令以用户已安装版本的 help 为准。
 
-## 9. 补验收的剩余条件
+## 9. 补验收状态与剩余条件
 
 - FINAL-06：界面六事件USER可见、Read热更新、clear和原生effort已核对。所测UI及控制配置未实现关闭思考，按不产出none的既定能力边界关闭；最终修复版50次严格串行Bash、全部103条hook completion整体p95=28ms，启动341ms和切换54ms仍保留，详见BOUNDARY/THINKING/C9证据。
 - FINAL-07：Claude真实resume/fork、关闭补发compact和原生Agent scope已补测；与Codex一起关闭。专用compact核对输出次数未增长，native边界、state和真实请求一致。FINAL-08原生超限已独立关闭，八组Claude原生CLI/本地协议stub实际请求及保存文件精确比较见对应证据；不宣称远程推理或官方计数。
@@ -299,3 +299,5 @@ done
 以上都闭合并通过最终回归后，才开始 M2 规划；不为补验收增加云端 skill、插件自动登记或公开命令。
 
 2026-10-16 最终修复版 C9：2.1.300、STYLE8d5fbf75、Haiku5.5，50次固定printf均成功，50个独立带工具assistant消息，实际返回后才发起下一次，无重叠。103条STYLE command completion整体median15ms/p95=28ms/max341ms；PreToolUse p95=29ms、PostToolUse=13ms，启动341ms/模型切换54ms保留，零hook错误。完整原样片段见 [FINAL-06 C9 HOOKS](review/M1-FINAL-06-C9-HOOKS-2026-10-16.txt)，元数据与复算见 [C9 JSON](review/M1-FINAL-06-C9-2026-10-16.json)。模型/原生输入快照无timestamp的46条工具结果不算额外执行。
+
+- FINAL-12：最终本地回归及62b9346的Ubuntu/macOS CI均通过，见 [CI证据](review/M1-FINAL-12-CI-2026-10-16.json)。当前仅FINAL-09官方计数按用户要求保留待验；不据此开始M2。

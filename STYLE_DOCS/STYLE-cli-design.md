@@ -2,7 +2,7 @@
 
 对应规范：[STYLE-spec.md](STYLE-spec.md)（v0.3）。规范定义包格式、运行时语义、token 预算、安全约束和 `index.json`；本文定义命令、本地布局、编译和运行时流程、Claude Code 与 Codex 两个适配器、token 估算器、fork 改动、里程碑、验收和未决项。冲突时，格式和语义以规范为准，实现细节以本文为准。
 
-状态（2026-10-16）：M1a 离线验收已完成，M1b B/C 历史条目按各自记录范围通过，全部 M1 补验收仍进行中。FINAL-01–08、10–11 已闭合，官方计数及最终远端CI仍待验证；逐项证据以 [任务清单](../docs/STYLE-M1-TASKS.md) 和 [测试矩阵](../docs/STYLE-M1-TESTS.md) 为准。M1 只做 **Claude Code** 和 **Codex**。本文接口代码为设计示意；当前接口与职责见 [adapter 总览](../docs/STYLE-ADAPTERS-CURRENT.md)。
+状态（2026-10-16）：M1a 离线验收已完成，M1b B/C 历史条目按各自记录范围通过，全部 M1 补验收仍进行中。FINAL-01–08、10–11 已闭合，官方计数仍待验证，最终Ubuntu/macOS CI已通过（FINAL-12）；逐项证据以 [任务清单](../docs/STYLE-M1-TASKS.md) 和 [测试矩阵](../docs/STYLE-M1-TESTS.md) 为准。M1 只做 **Claude Code** 和 **Codex**。本文接口代码为设计示意；当前接口与职责见 [adapter 总览](../docs/STYLE-ADAPTERS-CURRENT.md)。
 
 **依据**：
 - agenthooks `3f734c7` 源码，历史整理资料为 `agenthooks-codex.md`（外部资料，本仓库未收录）；

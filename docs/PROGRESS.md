@@ -1245,3 +1245,11 @@ PY
 - 工作流补齐与Makefile一致的临时GOPATH/GOMODCACHE/GOCACHE，YAML解析/路径断言和实际 `go env -json GOPATH GOMODCACHE GOCACHE GOFLAGS`一致；原有Ubuntu/macOS、双module、全部采集器和smoke步骤保留。此项只验证配置，未冒充远端执行。
 - 只读 `gh run list --repo inxups/style-cli --workflow ci.yml --commit b5caed2...`结果为空；最新公开run仍38872445836/04371ef success。当前批次未推送，不用旧run替代。汇总追加 `review/M1-FINAL-12-REGRESSION-FINAL-2026-10-16.json`并关联旧REGRESSION，任务/矩阵12保留[~]。
 - 用户明确“暂时没有，保留计数待验”：FINAL-09继续[?]，未用登录态、合成usage或其他估算器代替官方计数。除官方计数和本轮远端CI外的M1补项均已由独立证据关闭；不宣称M1全部完成，不开始M2。
+
+### 2026-10-16 — M1-FINAL-12 用户授权发布，最终源码双平台CI通过
+
+- 本地实现/证据与62b9346提交全部可审阅、工作树干净后，用户明确授权“推送并验证CI”。先fetch并确认origin/main为祖先，再普通fast-forward推送04371ef→62b9346，无force操作。
+- 真实GitHub Actions run38894349556（head62b9346ce73a27cb7fcfc57738c7ba0d1efb7ea7）completed/success。Test(macos-latest)、Test(ubuntu-latest)均success；逐步核对format、双module vet/test、全部采集器、build和smoke均成功。完整日志各出现一次Ran 40 tests和smoke passed，共两套，不用旧04371ef绿灯替代。
+- `gh run view 38894349556 --repo inxups/style-cli --json databaseId,headSha,status,conclusion,jobs,url,createdAt,updatedAt` 与 `--log`核对通过；原日志留私有/tmp/style-m1-final12-i20hx2za/ci-38894349556.log。逐job/step元数据、日志SHA256及断言追加入 `review/M1-FINAL-12-CI-2026-10-16.json`，关联最终本地REGRESSION，保留所有历史待验和失败记录。
+- FINAL-12任务/矩阵改[x]，当前首页/总览/教程同步。15个FINAL主/补条目已有14项关闭，唯一FINAL-09按用户“暂时没有key，保留计数待验”继续[?]；M1不宣称全部闭合，M2未开始。
+- 本次收尾仅文档/证据，Go、采集器、示例和workflow与通过CI的62b9346完全相同；提交推送后继续核验最终文档HEAD的CI。`git diff --check`、JSON/本地链接检查和工作树检查通过。

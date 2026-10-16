@@ -1,6 +1,6 @@
 # STYLE CLI 使用教程
 
-更新时间：2026-10-16。实现核对基线：`ce912e6`（最终codec/能力修复），支持 Claude Code 与 Codex。M1a 已完成，M1b 历史结果按各自范围保留；Claude补验收已完成，两家官方计数及最终远端CI仍待验，当前状态见 [任务清单](STYLE-M1-TASKS.md)。
+更新时间：2026-10-16。实现核对基线：`ce912e6`（最终codec/能力修复），支持 Claude Code 与 Codex。M1a 已完成，M1b 历史结果按各自范围保留；Claude补验收已完成，两家官方计数仍待验，最终Ubuntu/macOS CI已通过，当前状态见 [任务清单](STYLE-M1-TASKS.md)。
 
 本教程面向第一次使用 `style` 的人，从构建到卸载走完整个生命周期。文中命令输出都是在隔离沙箱里真实运行得到的（路径已缩写），不是手写示例。规则语义的权威定义在 [STYLE_DOCS](../STYLE_DOCS/STYLE-spec.md)，adapter 的实现细节见 [STYLE-ADAPTERS-CURRENT.md](STYLE-ADAPTERS-CURRENT.md)，真实环境验收步骤见 [STYLE-M1B-MANUAL.md](STYLE-M1B-MANUAL.md)。
 

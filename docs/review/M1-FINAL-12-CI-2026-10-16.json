@@ -1,0 +1,246 @@
+{
+  "item": "M1-FINAL-12-CI",
+  "date": "2026-10-16",
+  "passed": true,
+  "tested_source_head": "62b9346ce73a27cb7fcfc57738c7ba0d1efb7ea7",
+  "run": {
+    "conclusion": "success",
+    "createdAt": "2026-10-16T11:31:33Z",
+    "databaseId": 38894349556,
+    "headSha": "62b9346ce73a27cb7fcfc57738c7ba0d1efb7ea7",
+    "jobs": [
+      {
+        "completedAt": "2026-10-16T11:33:04Z",
+        "conclusion": "success",
+        "databaseId": 116951128378,
+        "name": "Test (macos-latest)",
+        "startedAt": "2026-10-16T11:31:44Z",
+        "status": "completed",
+        "steps": [
+          {
+            "completedAt": "2026-10-16T11:31:47Z",
+            "conclusion": "success",
+            "name": "Set up job",
+            "number": 1,
+            "startedAt": "2026-10-16T11:31:45Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-16T11:31:49Z",
+            "conclusion": "success",
+            "name": "Run actions/checkout@v6",
+            "number": 2,
+            "startedAt": "2026-10-16T11:31:47Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-16T11:32:20Z",
+            "conclusion": "success",
+            "name": "Set up Go",
+            "number": 3,
+            "startedAt": "2026-10-16T11:31:49Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-16T11:32:20Z",
+            "conclusion": "success",
+            "name": "Check formatting",
+            "number": 4,
+            "startedAt": "2026-10-16T11:32:20Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-16T11:32:34Z",
+            "conclusion": "success",
+            "name": "Vet",
+            "number": 5,
+            "startedAt": "2026-10-16T11:32:20Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-16T11:32:47Z",
+            "conclusion": "success",
+            "name": "Test",
+            "number": 6,
+            "startedAt": "2026-10-16T11:32:34Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-16T11:32:49Z",
+            "conclusion": "success",
+            "name": "Test acceptance collectors",
+            "number": 7,
+            "startedAt": "2026-10-16T11:32:47Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-16T11:32:56Z",
+            "conclusion": "success",
+            "name": "Build",
+            "number": 8,
+            "startedAt": "2026-10-16T11:32:49Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-16T11:32:57Z",
+            "conclusion": "success",
+            "name": "Smoke test built binary",
+            "number": 9,
+            "startedAt": "2026-10-16T11:32:56Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-16T11:32:59Z",
+            "conclusion": "success",
+            "name": "Post Set up Go",
+            "number": 17,
+            "startedAt": "2026-10-16T11:32:57Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-16T11:33:00Z",
+            "conclusion": "success",
+            "name": "Post Run actions/checkout@v6",
+            "number": 18,
+            "startedAt": "2026-10-16T11:33:00Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-16T11:33:01Z",
+            "conclusion": "success",
+            "name": "Complete job",
+            "number": 19,
+            "startedAt": "2026-10-16T11:33:00Z",
+            "status": "completed"
+          }
+        ],
+        "url": "https://github.com/inxups/style-cli/actions/runs/38894349556/job/116951128378"
+      },
+      {
+        "completedAt": "2026-10-16T11:32:18Z",
+        "conclusion": "success",
+        "databaseId": 116951128763,
+        "name": "Test (ubuntu-latest)",
+        "startedAt": "2026-10-16T11:31:37Z",
+        "status": "completed",
+        "steps": [
+          {
+            "completedAt": "2026-10-16T11:31:38Z",
+            "conclusion": "success",
+            "name": "Set up job",
+            "number": 1,
+            "startedAt": "2026-10-16T11:31:37Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-16T11:31:39Z",
+            "conclusion": "success",
+            "name": "Run actions/checkout@v6",
+            "number": 2,
+            "startedAt": "2026-10-16T11:31:38Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-16T11:31:46Z",
+            "conclusion": "success",
+            "name": "Set up Go",
+            "number": 3,
+            "startedAt": "2026-10-16T11:31:39Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-16T11:31:46Z",
+            "conclusion": "success",
+            "name": "Check formatting",
+            "number": 4,
+            "startedAt": "2026-10-16T11:31:46Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-16T11:31:56Z",
+            "conclusion": "success",
+            "name": "Vet",
+            "number": 5,
+            "startedAt": "2026-10-16T11:31:46Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-16T11:32:06Z",
+            "conclusion": "success",
+            "name": "Test",
+            "number": 6,
+            "startedAt": "2026-10-16T11:31:56Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-16T11:32:07Z",
+            "conclusion": "success",
+            "name": "Test acceptance collectors",
+            "number": 7,
+            "startedAt": "2026-10-16T11:32:06Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-16T11:32:13Z",
+            "conclusion": "success",
+            "name": "Build",
+            "number": 8,
+            "startedAt": "2026-10-16T11:32:07Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-16T11:32:14Z",
+            "conclusion": "success",
+            "name": "Smoke test built binary",
+            "number": 9,
+            "startedAt": "2026-10-16T11:32:13Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-16T11:32:15Z",
+            "conclusion": "success",
+            "name": "Post Set up Go",
+            "number": 17,
+            "startedAt": "2026-10-16T11:32:14Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-16T11:32:16Z",
+            "conclusion": "success",
+            "name": "Post Run actions/checkout@v6",
+            "number": 18,
+            "startedAt": "2026-10-16T11:32:15Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-16T11:32:16Z",
+            "conclusion": "success",
+            "name": "Complete job",
+            "number": 19,
+            "startedAt": "2026-10-16T11:32:16Z",
+            "status": "completed"
+          }
+        ],
+        "url": "https://github.com/inxups/style-cli/actions/runs/38894349556/job/116951128763"
+      }
+    ],
+    "status": "completed",
+    "updatedAt": "2026-10-16T11:33:05Z",
+    "url": "https://github.com/inxups/style-cli/actions/runs/38894349556"
+  },
+  "log": {
+    "private_path": "/tmp/style-m1-final12-i20hx2za/ci-38894349556.log",
+    "sha256": "f982c3e0c359119696d3cf83e16782f19cf5158f51a6cf48a8f0bb077fc74085",
+    "assertions": {
+      "collector_40_tests": 2,
+      "smoke_passed": 2
+    }
+  },
+  "related_local_regression": "M1-FINAL-12-REGRESSION-FINAL-2026-10-16.json",
+  "verification_commands": [
+    "gh run view 38894349556 --repo inxups/style-cli --json databaseId,headSha,status,conclusion,jobs,url,createdAt,updatedAt",
+    "gh run view 38894349556 --repo inxups/style-cli --log"
+  ],
+  "scope": "Both actual GitHub runner jobs passed formatting, both-module vet/test, all 40 acceptance collector tests, trimpath build and smoke. No official model token count or native live inference is claimed by CI.",
+  "followup": "This evidence/status-only follow-up will be pushed and its final HEAD CI verified separately; tested runtime, collector and workflow sources are unchanged from 62b9346."
+}

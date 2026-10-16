@@ -182,8 +182,8 @@ M1b 准备、真实验收中发现的问题及示例规则修正，按处理顺�
 - [x] **M1-FINAL-08 原生超限与 STYLE 保护**：既有两家 T003/engine 保护和 Codex 三组真实落盘证据保留。Claude2.1.300 原生 CLI 对本地协议 stub 的8组实际请求：SessionStart 9,999/10,000字符完整；10,001/12k/50k及prompt/pre/post 12k转文件预览，六份原生保存文件逐字节相等，无STYLE提前裁剪。仅测原生传输，不宣称远程推理或官方计数。证据 `review/M1-FINAL-08-CLAUDE-2026-10-16.json`；30项采集器回归通过。
 - [?] **M1-FINAL-09 token 校准**：固定 40 条中英各半的真实规则、正文/请求/语料哈希及生产 CLI 估算；官方计数客户端按相同结构请求减固定基线。两家 API key 缺失，实际计数均 0/40，保持待验；CLI/教程/规范删除未验证的 ±25% 保证，系数与预算不变。证据 `review/M1-FINAL-09-COUNTING-BLOCKED-2026-10-16.json`。 用户已确认暂时没有两家key，按其要求保留计数待验。
 - [x] **M1-FINAL-10 成本与缓存**：U-T4 两条 Codex 路线各 17 会话/31 请求、53 次 inject，Claude 历史主会话 108 个带 usage 响应；累计/重复快照去重，规则估算与总 usage 分列。U-T6 核对官方前缀/门槛/TTL/字段与倍率，CLI、golden 和教程标注公式为情景而非账单，默认值不变。证据 `review/M1-FINAL-10-{USAGE,CACHE}-2026-10-16.*`；27 项 Python 测试、app 测试/vet 通过。
-- [x] **M1-FINAL-11 文档一致性**：设计/规范首页、adapter 总览、手册、教程和状态表同步到 FINAL 证据。统一 tool.error 状态、无任何 when 的静态回退、动态 system 双挂载及例外，保留 degrade 可跳过；纠正未实现的事件版本裁剪描述。真实 CLI 四组 fallback 结果、94 个本地链接/围栏和 adapter/runtime/plan/app 回归通过，见 `review/M1-FINAL-11-PLAN-2026-10-16.json`。补充审计已将FINAL-06–08真实结果回填当前首页、正文及教程，消除旧待测表述；官方计数与远端CI继续待验。
-- [~] **M1-FINAL-12 最终验证**：最终codec/facts修复后的双module fresh test/vet、runtime/Claude定向race通过；后续无Go/module变更。40项采集器测试、302文件gofmt、30文件Python语法、clean d276b17构建及32项冒烟通过。CI补齐临时Go缓存并通过YAML/环境核对；本轮未推送，当前源码无远端run，旧04371ef绿灯不覆盖本轮。Claude真实补验已关闭，仅官方计数与当前远端CI仍待验；见 `review/M1-FINAL-12-REGRESSION-FINAL-2026-10-16.json`，旧证据保留，M2未开始。
+- [x] **M1-FINAL-11 文档一致性**：设计/规范首页、adapter 总览、手册、教程和状态表同步到 FINAL 证据。统一 tool.error 状态、无任何 when 的静态回退、动态 system 双挂载及例外，保留 degrade 可跳过；纠正未实现的事件版本裁剪描述。真实 CLI 四组 fallback 结果、94 个本地链接/围栏和 adapter/runtime/plan/app 回归通过，见 `review/M1-FINAL-11-PLAN-2026-10-16.json`。补充审计已将FINAL-06–08真实结果回填当前首页、正文及教程，消除旧待测表述；官方计数继续待验，最终远端CI见FINAL-12。
+- [x] **M1-FINAL-12 最终验证**：最终修复代码双module fresh test/vet、runtime/Claude race、40项采集器测试、302文件gofmt、30文件Python语法、构建及32项冒烟通过。用户授权推送后，62b9346的真实GitHub CI run38894349556在Ubuntu/macOS均success；两边各有40测试和smoke passed，临时Go缓存已生效。证据 `review/M1-FINAL-12-CI-2026-10-16.json`，关联最终本地REGRESSION；旧失败/旧CI证据保留。M1仅FINAL-09官方计数按用户要求继续待验，M2未开始。
 
 ## 后续 backlog
 

@@ -402,7 +402,7 @@ env -u CODEX_HOME -u CODEX_SANDBOX \
 | 路线与 provider | 项目级路线、Claude 插件路线、其他 STYLE provider adapter 尚未实现 |
 | 未来能力 | native、Claude rules 静态位置、output style replace、provider 条件等按 M2/M3/M4 backlog 规划 |
 
-完整待验列表见 [任务清单 FINAL-06–12](STYLE-M1-TASKS.md)；Claude 界面步骤见 [隔离 runbook](review/M1-FINAL-06-CLAUDE-RUNBOOK.md)，成本与缓存证据见 [FINAL-10](review/M1-FINAL-10-CACHE-2026-10-16.md)。全部补项有证据后再开始 M2 规划。
+当前仅FINAL-09官方计数待验，其余真实边界与最终回归记录见 [任务清单](STYLE-M1-TASKS.md)；Claude 界面步骤见 [隔离 runbook](review/M1-FINAL-06-CLAUDE-RUNBOOK.md)，成本与缓存证据见 [FINAL-10](review/M1-FINAL-10-CACHE-2026-10-16.md)。全部补项有证据后再开始 M2 规划。
 
 FINAL-06 补验收（2026-10-16）：六类已声明事件的 USER 标记在界面可见；clear 虽输出启动标记，界面未显示。启动/提示/显式技能没有 effort，工具前/后/失败带 effort.level 与 CLAUDE_EFFORT；观察到 high→medium，所测 Opus5.5 界面无关闭思考选项，未验证 off 原值。新增 Read matcher 在未重启进程中实际触发，热更新成立。原 Glob 探针没有原生调用，不能计通过。Native failure 使用 `error`，codec 已补归一化并保留 `tool_error` 兼容；公开 M1 `tool.output` 仍只用于 tool.post。证据见 [FINAL-06](review/M1-FINAL-06-BOUNDARY-2026-10-16.json)，最终 C9 已通过，见追加证据。
 
