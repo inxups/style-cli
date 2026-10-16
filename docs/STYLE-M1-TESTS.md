@@ -189,3 +189,4 @@ B1.2 和 B1.4 的历史通过状态表示原有测试套件在声明范围内通
 ## 代码审查修复
 
 - [x] **CR-01** `shell_regex` 跳过 shell 取值选项后再读 `-c` 脚本和管道脚本：`bash --rcfile /dev/null --init-file x -O extglob +O nullglob -c '…'`、`bash -eo pipefail -cO extglob '…'`、`echo '…' | bash --rcfile /dev/null -O extglob` 都拆出内层命令；示例 force-push 规则拦截 `--rcfile`、`-O extglob`、`-eo pipefail` 三种写法。证据：`core/when/shell_test.go:TestShellCommandsSplitsSimpleCommands`、`core/compile/example_force_push_test.go`，修复前 6 例失败、修复后通过。
+- [x] **CR-02** Codex/Claude Enrich 中 `tool.input` 与嵌套对象条件值保留 `&`、`<`、`>` 原文，不做 HTML 转义。证据：两家 `runtime_test.go:TestEnrichKeepsShellCharactersInToolInput`，修复前失败、修复后通过；`go test ./internal/...` 含 conformance golden 全部通过。

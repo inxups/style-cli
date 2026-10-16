@@ -947,3 +947,10 @@
 - 修复：新增 `shellOptionValues`，两处共用。`--rcfile`、`--init-file` 取一个值；`-`/`+` 开头的短选项簇中每个 `o`/`O` 取一个值。本机 bash 5.3.15 实测 `-eo pipefail -c`、`-oe pipefail -c`、`-co pipefail '…'`、`-cO extglob '…'`、`+O extglob -c`、`-c -O extglob '…'` 都执行了脚本，与该规则一致。
 - 测试：`shell_test.go` 新增 3 例，`example_force_push_test.go` 新增 3 个拦截例；修复前 6 例失败。`go test ./core/...`、`go vet ./core/when ./core/compile`、gofmt 通过（临时 GOPATH/GOMODCACHE/GOCACHE，去掉 CODEX_HOME/CODEX_SANDBOX）。
 - 文档：运行时规范 §4 `shell_regex` 说明补充选项值的跳过规则，并在不展开列表中写明 `fish` 等未列出的 shell。未改 agenthooks。真实安装未更新（固定程序未重建）。
+
+### 2026-10-16 — M1B-CR-02 tool.input 条件值不做 HTML 转义
+
+- 来源：只看代码的审查。`internal/adapter/{codex,claude}/runtime.go` 的 `flattenJSONFields` 对对象和数组用 `json.Marshal`，默认 HTML 转义；根路径 `tool.input` 先写入 compact 原文，随后又被这个转义结果覆盖。临时测试中 `{"command":"a && b > c <d"}` 的 `tool.input` 变成 `a \u0026\u0026 b \u003e c \u003cd`，`tool.input.command` 正常。
+- 影响：对 `tool.input` 或 `tool.input.<对象>` 写含 `&`、`<`、`>` 的条件匹配不到，模板不受影响（validate 禁止事件变量进模板）。
+- 修复：新增 `encodeJSONText`（`json.Encoder` + `SetEscapeHTML(false)`，去掉末尾换行），替换三处 `json.Marshal`。键排序与数字、布尔的表示不变，所以现有 golden 不变。未改 agenthooks。
+- 测试：两家新增 `TestEnrichKeepsShellCharactersInToolInput`，暂存修复后单独运行确认失败，恢复后 `go test ./internal/...`、gofmt 通过（隔离缓存，去掉 CODEX_HOME/CODEX_SANDBOX）。真实安装未更新。

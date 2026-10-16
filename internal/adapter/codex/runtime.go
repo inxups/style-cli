@@ -493,15 +493,15 @@ func flattenJSONFields(destination map[string]string, prefix string, raw json.Ra
 	walk = func(path string, item any) {
 		switch typed := item.(type) {
 		case map[string]any:
-			if encoded, err := json.Marshal(typed); err == nil {
-				destination[path] = string(encoded)
+			if encoded, ok := encodeJSONText(typed); ok {
+				destination[path] = encoded
 			}
 			for key, child := range typed {
 				walk(path+"."+key, child)
 			}
 		case []any:
-			if encoded, err := json.Marshal(typed); err == nil {
-				destination[path] = string(encoded)
+			if encoded, ok := encodeJSONText(typed); ok {
+				destination[path] = encoded
 			}
 			for index, child := range typed {
 				walk(path+"."+strconv.Itoa(index), child)
@@ -514,13 +514,24 @@ func flattenJSONFields(destination map[string]string, prefix string, raw json.Ra
 			destination[path] = strconv.FormatBool(typed)
 		case nil:
 		default:
-			encoded, err := json.Marshal(typed)
-			if err == nil {
-				destination[path] = string(encoded)
+			if encoded, ok := encodeJSONText(typed); ok {
+				destination[path] = encoded
 			}
 		}
 	}
 	walk(prefix, value)
+}
+
+// encodeJSONText re-encodes a decoded tool input value without HTML escaping,
+// so condition fields keep characters such as & < > as the harness sent them.
+func encodeJSONText(value any) (string, bool) {
+	var encoded bytes.Buffer
+	encoder := json.NewEncoder(&encoded)
+	encoder.SetEscapeHTML(false)
+	if encoder.Encode(value) != nil {
+		return "", false
+	}
+	return strings.TrimSuffix(encoded.String(), "\n"), true
 }
 
 func cloneValues(values map[string]string) map[string]string {

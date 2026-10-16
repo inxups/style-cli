@@ -129,6 +129,7 @@ M1b 准备、真实验收中发现的问题及示例规则修正，按处理顺�
 只看代码的审查发现以下问题，按用户指示逐项修复，每项单独提交。
 
 - [x] **M1B-CR-01 shell_regex 跳过 shell 选项的值**：`shellScriptArgument` 只把 `-o`/`+o` 当成带值选项，`bash --rcfile /dev/null -c '…'`、`bash -O extglob -c '…'` 会把选项值当成脚本参数，读不到 `-c` 脚本；示例 force-push 规则以 `^git` 锚定，这类命令因此放行。`readsScriptFromStdin` 同样漏了 `-O`。新增 `shellOptionValues`：`--rcfile`、`--init-file` 取一个值，短选项簇里每个 `o`/`O` 各取一个值（与 bash 5.3 实测一致：`-eo pipefail`、`-oe pipefail`、`-cO extglob` 都把下一个词当值）。运行时规范 §4 的 `shell_regex` 说明同步。证据：`core/when/shell_test.go` 新增 3 例（选项值后的 `-c`、选项簇里的值、带选项值的 shell 从管道读脚本），`core/compile/example_force_push_test.go` 新增 3 个拦截例；修复前这 6 例都失败。仍不读：`fish` 等未列出的 shell。
+- [x] **M1B-CR-02 tool.input 条件值不做 HTML 转义**：两家适配器的 `flattenJSONFields` 用 `json.Marshal` 重新编码对象和数组，会把 `&`、`<`、`>` 转成 `\u0026`、`\u003c`、`\u003e`；而且根路径 `tool.input` 会被重新编码的结果覆盖。于是对 `tool.input` 或嵌套对象字段写 `contains: "&&"`、`regex: ">"` 的条件永远不满足（`tool.input.command` 这类字符串字段不受影响）。改用关闭 HTML 转义的编码器 `encodeJSONText`，其余输出不变（键顺序、数字、布尔照旧）。证据：`internal/adapter/{codex,claude}/runtime_test.go:TestEnrichKeepsShellCharactersInToolInput`，修复前根字段和嵌套对象字段都返回转义文本，修复后与原文一致；conformance golden 不变。
 
 ## 后续 backlog
 

@@ -266,6 +266,26 @@ func TestEnricherRejectsMismatchedEventsAndProviders(t *testing.T) {
 	}
 }
 
+func TestEnrichKeepsShellCharactersInToolInput(t *testing.T) {
+	raw := `{"command":"cd repo && git push > out.log 2<&1","nested":{"q":"a&b<c>"}}`
+	event := runtimeEvent(agenthooks.KindToolPre, "PreToolUse", `{"session_id":"s9","tool_name":"shell","tool_input":`+raw+`}`)
+	pre := &agenthooks.ToolPreEvent{Event: *event, Tool: agenthooks.ToolCall{Name: "shell", Input: json.RawMessage(raw)}}
+	input, _, err := NewEnricher().Enrich(event, pre, state.Session{}, state.Scope{SessionID: "s9", AgentID: "main"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	point := input.Points[0]
+	for field, want := range map[string]string{
+		"tool.input":         `{"command":"cd repo && git push > out.log 2<&1","nested":{"q":"a&b<c>"}}`,
+		"tool.input.nested":  `{"q":"a&b<c>"}`,
+		"tool.input.command": "cd repo && git push > out.log 2<&1",
+	} {
+		if got, ok := point.When.Fields.ReadConditionField(field); !ok || got != want {
+			t.Errorf("condition field %q = %q, %v; want %q", field, got, ok, want)
+		}
+	}
+}
+
 func runtimeEvent(kind agenthooks.EventKind, nativeName, raw string) *agenthooks.Event {
 	var session struct {
 		ID             string `json:"session_id"`
