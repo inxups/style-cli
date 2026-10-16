@@ -1,0 +1,68 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Test (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    env:
+      GOFLAGS: -mod=readonly
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version-file: go.mod
+          cache-dependency-path: |
+            go.sum
+            agenthooks/go.sum
+
+      - name: Check formatting
+        run: |
+          unformatted=$(gofmt -l $(git ls-files '*.go'))
+          if [ -n "$unformatted" ]; then
+            echo "gofmt needed:"; echo "$unformatted"; exit 1
+          fi
+
+      # AGENTS.md: CODEX_HOME and CODEX_SANDBOX change harness detection.
+      - name: Vet
+        run: |
+          env -u CODEX_HOME -u CODEX_SANDBOX go vet ./...
+          env -u CODEX_HOME -u CODEX_SANDBOX go vet -C agenthooks ./...
+
+      - name: Test
+        run: |
+          env -u CODEX_HOME -u CODEX_SANDBOX go test ./...
+          env -u CODEX_HOME -u CODEX_SANDBOX go test -C agenthooks ./...
+
+      - name: Test timing collectors
+        env:
+          PYTHONDONTWRITEBYTECODE: "1"
+        run: |
+          python3 -m unittest discover -s testdata/manual -p 'test_measure_claude_hooks.py'
+          python3 -m unittest discover -s testdata/manual -p 'test_measure_codex_hooks.py'
+
+      - name: Build
+        run: env -u CODEX_HOME -u CODEX_SANDBOX go build -trimpath -o "$RUNNER_TEMP/style" ./cmd/style
+
+      - name: Smoke test built binary
+        env:
+          PYTHONDONTWRITEBYTECODE: "1"
+        run: python3 scripts/smoke.py "$RUNNER_TEMP/style"

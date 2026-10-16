@@ -205,3 +205,7 @@ B1.2 和 B1.4 的历史通过状态表示原有测试套件在声明范围内通
   - 用同一 index 离线对比：旧程序 1f2b1691 四条都放行，新程序拦截前三条。
   - U5 复测见 B11。
   - 证据：`docs/review/M1B-CR-REAL-2026-10-16.json`。
+
+## 持续集成
+
+- [?] **CI-01** GitHub Actions（`.github/workflows/ci.yml`）在 ubuntu-latest 与 macos-latest 上运行 gofmt、vet、两个 module 的 go test、计时收集器单测、构建和 `scripts/smoke.py`。冒烟用 codex/claude 版本桩在临时 HOME 中走完 validate → plan → install → list/doctor → 两家 PreToolUse hook（6 条 force push deny、4 条对照放行）→ sync → uninstall 无残留。本地全部通过，修复前程序会失败 6 项；等待 GitHub 首次运行结果。

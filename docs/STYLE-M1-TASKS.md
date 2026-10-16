@@ -153,6 +153,14 @@ M1b 准备、真实验收中发现的问题及示例规则修正，按处理顺�
   - 证据：`docs/review/M1B-CR-REAL-2026-10-16.json`、`docs/review/M1B-CODEX-U5B-SPANS-2026-10-16.jsonl`，测试矩阵 CR-REAL 与 B11。
   - 未覆盖：Claude C9 计时未复测。
 
+## 持续集成（2026-10-16 起）
+
+- [?] **CI-01 GitHub Actions 验证程序可用**：新增 `.github/workflows/ci.yml`，push 到 main、PR 和手动触发时在 ubuntu-latest 与 macos-latest 上依次运行 gofmt 检查、两个 module 的 vet 与 test（清除 CODEX_HOME/CODEX_SANDBOX）、两个计时收集器的 Python 单测、`-trimpath` 构建，以及 `scripts/smoke.py` 端到端冒烟。
+  - 冒烟在临时 HOME 中用只回答 `--version` 的 codex/claude 桩：validate/plan 两个包，install terse-reviewer（codex-user + claude-user），list hash_matches、doctor healthy、静态文本写入；把 6 条 force push（含 `bash --rcfile/-O/-eo -c`）和 4 条对照 payload 喂给 hooks.json 与 settings.json 中写入的 hook 命令，要求前者 deny、后者放行；再 sync、uninstall 并确认配置无残留。
+  - 本地：按工作流各步在隔离环境运行全部通过；冒烟对修复前程序 `style.pre-cr` 报 6 项失败（两家各 3 条 `bash -c` force push 被放行），确认能抓到 CR-01 回归。
+  - 待验证：GitHub 上的首次运行结果。
+  - 不覆盖：真实 Codex/Claude 是否接受配置、上下文投递和计时；这些仍以 M1b 手动验收为准。
+
 ## 后续 backlog
 
 - [ ] **M2**：`target: native`、`style stats`、跨包去重、Claude `~/.claude/rules/` 静态位置和 replace 评估。

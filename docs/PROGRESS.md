@@ -1039,3 +1039,12 @@ PY
   - 对比：上一轮旧程序 731 次的 median 36.8ms、p95 41.6ms，median 约降 11ms，与 CR-05 去掉的 state.Update 开销一致。两轮的时间段和机器负载不同，不是 A/B 对照。
 - 入库：`docs/review/M1B-CODEX-U5B-SPANS-2026-10-16.jsonl`（404 个 hook span，只保留名称、trace id、起止时间和 hook.* 属性；核对后没有主机或账号字段）和 `docs/review/M1B-CR-REAL-2026-10-16.json`。同一命令复算 within-budget（`--min-samples 200` 也是）。
 - 文档：设计 §15.1 U5 改为成立（以 200 次为准）；测试矩阵 B11 补上复测，新增 CR-REAL；任务清单新增 M1B-CR-REAL，CR-05 的未复测说明同步更新。Claude C9 未复测。本项只改文档和证据。
+
+### 2026-10-16 — CI-01 GitHub Actions 与端到端冒烟
+
+- 用户要求提交到 GitHub 并用 GitHub Actions 验证当前程序可用。
+- 新增 `.github/workflows/ci.yml`：push 到 main、pull_request、workflow_dispatch 触发；ubuntu-latest、macos-latest 两个 runner，`permissions: contents: read`，Go 版本取自 go.mod。步骤：gofmt 检查；`env -u CODEX_HOME -u CODEX_SANDBOX` 下两个 module 的 vet 和 test；`testdata/manual` 两个收集器单测；`go build -trimpath`；`python3 scripts/smoke.py`。CI 用 setup-go 自带的缓存，不用 Makefile 的 /tmp 缓存路径。
+- 新增 `scripts/smoke.py`（只用标准库）：临时 HOME/STYLE_HOME，PATH 前置只输出 `codex-cli 0.159.3`、`2.1.300 (Claude Code)` 的桩，清除 CODEX_HOME/CODEX_SANDBOX/CLAUDE_CONFIG_DIR/STYLE_HOME。检查 validate/plan 两个包；install terse-reviewer（`--route codex=codex-user`，claude-user）；list hash_matches、doctor healthy、config.toml 与 CLAUDE.md 写入静态文本；从 hooks.json（经 `/bin/sh -c`）和 settings.json（command+args）取出 hook 命令，6 条 force push 须 deny 且理由为规则原文，4 条对照（含 `echo 'git push --force'`）须放行；sync；uninstall --all 后四个配置文件无 STYLE 残留。
+- 本地验证（隔离 Go 缓存，GOFLAGS=-mod=readonly）：gofmt 无输出；两个 module vet、test 通过；两个收集器单测 OK；构建后冒烟 32 项全部 ok。
+- 反向对照：对修复前程序 `style.pre-cr` 运行冒烟，6 项失败，都是两家 `bash --rcfile/-O/-eo -c` 形式的 force push 被放行，其余通过。
+- 未覆盖：真实 harness 的配置接受、上下文投递和计时；Windows runner（hook 依赖 POSIX shell 的场景未适配）。GitHub 首次运行结果待推送后补记。
