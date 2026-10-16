@@ -61,3 +61,13 @@ PYTHONDONTWRITEBYTECODE=1 python3 testdata/manual/probe_codex_routes.py \
 ```
 
 minimal/启动覆盖用历史实测支持 minimal 的 `gpt-6-sol`，其他分支沿用配置模型。未知原值要求 native request、STYLE unknown 与条件不命中相符；模型服务可能拒绝该值，结果单列 `model_turn_completed=false`，不宣称远端模型支持未知档位。项目层无法可靠确定信任时，STYLE 按既定边界跳过并由 doctor 解释；报告同时列出原生值与 STYLE 值。首次工作区 TUI 信任不由 exec 探针验收。
+
+`probe_codex_context.py` 单独测量 resume/fork/compact 和 fresh/fork/嵌套子 agent 的 scope。compact 使用 `reinject_on_compact: false` 与 startup-only 探针；转发器只记录指定标记在请求各角色的位置/摘要，不把模型复述当投递证据。子 agent 的 harmless printf 分别用于 block/allow；没有远端操作。
+
+```sh
+PYTHONDONTWRITEBYTECODE=1 python3 testdata/manual/probe_codex_context.py \
+  --style /absolute/path/to/style --scratch "$(mktemp -d)" \
+  --output /tmp/codex-context-result.json
+```
+
+若仅采集器断言失败，原始报告保留；`--verify-report <original.json> --output <new.json>` 只能对已有真实结果续验，不运行模型，并记录原报告摘要。真实运行未成功时不能用它把失败改为通过。

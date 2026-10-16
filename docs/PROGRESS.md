@@ -1122,3 +1122,13 @@ PY
 - 新增 `prepare_claude_acceptance.py`：拒绝非空 scratch，复制固定二进制，在独立 STYLE_HOME/工作区安装两个原包和六类用户提示探针；独立 observer 记录原生字段和 effort 环境，不包裹 STYLE 的计时命令。另备运行中安装的 Glob 新订阅以区分热更新/新会话加载。
 - 已运行：`PYTHONDONTWRITEBYTECODE=1 python3 testdata/manual/prepare_claude_acceptance.py --style /tmp/style-m1-final.rxdYyj/style-final05 --scratch /tmp/style-m1-claude-ui-c-20261016`，三个包真实 install 成功；热更新包 validate、observer 白名单检查通过。固定程序 SHA256 `23cf8caae7d447fc1e621f569b17fb5fd9db0584132bf116bcccff68ccb0cde3`。准备中首次 fixture 校验报缺 description/非法 event，已修正为 skill target 后在全新目录重跑，失败目录未覆盖。
 - 用户执行入口与步骤：`review/M1-FINAL-06-CLAUDE-RUNBOOK.md`，包含隔离登录、思考关闭、各 hook effort、clear、六类 systemMessage、运行中配置变更和最终 C9。当前没有新真实模型/UI/C9 通过结论，FINAL-06 保持 `[?]`。可继续不依赖该认证的 Codex/成本项。
+
+
+### 2026-10-16 — M1-FINAL-07 Codex 上下文继承、无补发 compact 与子 agent scope
+
+- 固定程序 23cf8caa，Codex 0.159.3；私有 `/tmp/style-m1-context-a-20261016`，独立 CODEX_HOME/STYLE_HOME/工作区，现有 provider 的真实推理。运行 `PYTHONDONTWRITEBYTECODE=1 python3 testdata/manual/probe_codex_context.py --style /tmp/style-m1-final.rxdYyj/style-final05 --scratch /tmp/style-m1-context-a-20261016 --output /tmp/style-m1-context-a.json`。不改日常安装。
+- U-T1：exec resume 原 thread，startup-only 历史规则累计输出一次、原始标记仍在下一次真实请求；app-server fork 新 thread 也保留该标记，无新 history 输出，默认 sources 的另一条规则在 fork 输出一次。沿用默认 sources，不因一例保留改策略。
+- U-T2：专用规则关闭 reinject；compact 后 epoch=1，两条动态规则累计仍各一次，后续真实请求的 marker_locations 均为空，未把补发误判成保留。该短会话仅证明这组标记没有保留，不是所有内容必定丢失的保证。
+- U7：真实 native spawn 的 fork_turns 分别 none/all/none，agent_path 为 fresh_child、fork_child、fresh_child/grandchild（depth2）。三份子 rollout 都有自身 additional_context 和工具注入；三个 scope 各有 child context output、child-tool output、child-block blocked。父 main stats 无这些条目。阻断对象只是 harmless printf；允许 printf 的真实返回另留在原始 rollout。
+- 采集器末尾初版读取 scope.json 中不存在的 agent_id 而 exit1；数据与模型运行均已成功留存。修正为从 scope 文件目录取身份后，`--verify-report /tmp/style-m1-context-a.json --output /tmp/style-m1-context-final.json` 复核原始结果，保留 source SHA256 和错误观察记录；未覆盖原文件，也没有用离线 fixture 代替模型运行。证据：`review/M1-FINAL-07-CODEX-2026-10-16.json`、`M1-FINAL-07-COLLECTOR-OBSERVATION-2026-10-16.json`。
+- collector marker 回归和全部 17 项 Python 测试、语法/diff 检查通过；报告按实际 provider URL/token 扫描无泄漏。Claude 独立的 resume/fork/compact 未测，FINAL-07 保持 `[~]`，用户已选择稍后操作 Claude。

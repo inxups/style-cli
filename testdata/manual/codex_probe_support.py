@@ -33,6 +33,17 @@ def digest(data):
     return hashlib.sha256(data).hexdigest()
 
 
+def marker_locations(body, markers):
+    locations = {marker: [] for marker in markers}
+    for index, item in enumerate(body.get("input", [])):
+        text = json.dumps(item, ensure_ascii=False)
+        for marker in markers:
+            if marker in text:
+                locations[marker].append({"input_index": index, "role": item.get("role"), "type": item.get("type"),
+                                          "occurrences": text.count(marker), "item_sha256": digest(text.encode())})
+    return locations
+
+
 class NativeProbe:
     def __init__(self, root, style, codex="codex"):
         self.root, self.style, self.codex = Path(root).resolve(), str(Path(style).resolve()), codex
@@ -43,6 +54,7 @@ class NativeProbe:
         self.home.mkdir(exist_ok=True)
         self.work.mkdir(exist_ok=True)
         self.requests, self.calls, self.hook_spans = [], [], []
+        self.evidence_markers = ()
         original = Path(os.environ.get("CODEX_HOME", Path.home() / ".codex"))
         config = tomllib.loads((original / "config.toml").read_text())
         provider = config.get("model_provider", "openai")
@@ -99,6 +111,7 @@ class NativeProbe:
                     "model": body.get("model"), "reasoning": body.get("reasoning"),
                     "body_sha256": digest(raw), "style_context": contexts,
                     "static_rule_present": "Review code concisely in zh-CN." in json.dumps(body),
+                    **({"marker_locations": marker_locations(body, owner.evidence_markers)} if owner.evidence_markers else {}),
                 })
                 headers = {key: value for key, value in self.headers.items()
                            if key.lower() not in ("host", "content-length", "connection", "accept-encoding")}

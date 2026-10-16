@@ -174,7 +174,7 @@ M1b 准备、真实验收中发现的问题及示例规则修正，按处理顺�
 - [x] **M1-FINAL-04-FIX 插件登记保留**：修复 Codex 原生 TOML 编辑器把 marketplace/plugin 表追加到 STYLE 标记内后，被 install/sync 误删的问题。仅 Codex 合并/卸载识别并保留非 trust 表；损坏区域拒绝写入，Kimi 逻辑不变。真实登记→第二包 install/sync/uninstall/sync 配置字节不变，取消登记及最后卸载逐字节还原；证据为 `agenthooks/install/codex_foreign_toml_test.go`、`docs/review/M1-FINAL-04-PLUGIN-REGISTRATION-2026-10-16.json`。
 - [x] **M1-FINAL-05 U2/U6 能力边界**：U2 复用 FINAL-04 独立插件全流程及双向切换的真实证据。U6 按既定“不支持，plan 说明”边界关闭：skill plan 保留本地显式/隐式挂载并提示云端读取不受支持；固定订阅与未知读取工具回归通过。云端原生工具名仍未采集，不宣称真实云端投递通过；不新增自动登记或云端路线。
 - [?] **M1-FINAL-06 Claude 边界及 C9**：U9、U-C1/C2/C3/C5 与最终程序 50 次 Bash 性能。隔离环境未认证，界面项等待用户操作；三包安装、观察器字段白名单与热更新 fixture 准备检查通过，不能替代真实通过。步骤见 `review/M1-FINAL-06-CLAUDE-RUNBOOK.md`。
-- [?] **M1-FINAL-07 上下文继承**：U-T1/T2 和 U7 补充；区分历史保留、补发和 agent scope，不调整既有默认值。
+- [~] **M1-FINAL-07 上下文继承**：Codex 真实 resume/fork 保留原上下文；关闭补发的 compact 探针中两条标记消失。fresh/fork/嵌套三个子 agent 各自收到 context，工具 inject/block 与 stats 均在各自 scope，父级无污染。Claude resume/fork/compact 补测仍待用户环境，默认值不变。证据：`review/M1-FINAL-07-CODEX-2026-10-16.json`。
 - [?] **M1-FINAL-08 真实超限**：U-T5；分别检验 STYLE cap 与独立原生探针超限，不能提前裁剪后宣称已测原生上限。
 - [?] **M1-FINAL-09 token 校准**：U-T3；40 条中英各半的固定语料，通过两家真实计数接口记录误差，不把估算器当真实计数。
 - [ ] **M1-FINAL-10 成本与缓存**：U-T4/U-T6；统计真实 stats/usage，核对官方缓存资料，明确情景假设，保留估算公式与预算默认值。

@@ -219,7 +219,7 @@ B1.2 和 B1.4 的历史通过状态表示原有测试套件在声明范围内通
 - [x] **FINAL-04-FIX 登记保留**：修复前 user/plugin 两个生命周期回归均失败，修复后 install 全量、app/Codex adapter 测试及 install vet 通过；解析器覆盖 quoted/array table、multiline string 内伪表头与损坏区域。真实 native plugin 管理后四步配置字节不变，取消登记及最后卸载字节还原，见 `review/M1-FINAL-04-PLUGIN-REGISTRATION-2026-10-16.json`。
 - [x] **FINAL-05 U2/U6**：U2 的手动登记、真实 plugin hook 来源、第二包变更保留登记、取消/切换/配置字节往返由 FINAL-04 三组报告支撑。U6 按不支持边界关闭：Codex skill plan 明确只覆盖显式 `$name` 和本地 SKILL.md 读取；plan golden、固定 matcher 和未知读取工具 runtime 回归通过。此项未测云端实际工具名或投递。core/plan、Codex adapter、app 测试及 vet 通过。
 - [?] **FINAL-06 Claude**：U9、U-C1/C2/C3/C5 和最终程序 C9；隔离 CLAUDE_CONFIG_DIR 的真实 auth status 为未登录，等待用户登录并操作界面。固定二进制、三包和独立观察器已准备，安装及白名单检查通过；不代表 UI 或 C9 通过。操作与复算步骤见 `review/M1-FINAL-06-CLAUDE-RUNBOOK.md`。
-- [?] **FINAL-07 继承**：resume/fork/compact、子 agent scope，compact 探针禁补发。
+- [~] **FINAL-07 继承**：Codex 真实 exec/app-server 请求、rollout、state/stats 核对通过。resume/fork 保留；compact 无补发且两条标记均消失；fresh/fork=all/嵌套 depth2 的三个子 agent 各有一次 context、tool inject 和 block，独立 scope，父 scope 无子事件。采集器末尾路径字段错误及从原始结果续验分别记录。Claude 仍待测，不能标记整项完成。证据 `review/M1-FINAL-07-CODEX-2026-10-16.json`、COLLECTOR-OBSERVATION。
 - [?] **FINAL-08 超限**：STYLE guard 与原生绕开 STYLE 的独立超限探针。
 - [?] **FINAL-09 校准**：40 条中英各半，两家真实计数接口，固定基线和正文摘要。
 - [ ] **FINAL-10 成本**：实际 stats/usage 分层统计、缓存官方资料核对。

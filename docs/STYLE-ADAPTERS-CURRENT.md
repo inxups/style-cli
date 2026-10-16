@@ -393,7 +393,7 @@ env -u CODEX_HOME -u CODEX_SANDBOX \
 | Codex 工具 | 固定订阅盲区仍存在，不能把 canonical `*` 当成原生全工具覆盖 |
 | Codex effort | 配置请求值、每会话一次；生产未注入项目信任回调；profile/项目信任真实组合覆盖不完整 |
 | Codex plugin | marketplace 登记/启用须手动执行；完整登记、更新、移除和切换已实测 |
-| Codex skill / 子 agent | 云端 skill 不支持且 plan 提示；原生工具名未采集。U7 未覆盖嵌套子 agent、fork 启动和子 agent 内工具规则 |
+| Codex skill / 子 agent | 云端 skill 不支持且 plan 提示；原生工具名未采集。FINAL-07 已覆盖 fresh/fork/depth2 子 agent context、工具注入/阻断与独立 scope |
 | Claude | workspace trust 无法自动确认；hook 热更新未测；思考关闭的 effort 表示未测；多数事件的 systemMessage 用户显示未测 |
 | 成本与超限 | token 校准、典型会话成本、真实超限表现和提示词缓存细节仍有未决项 |
 | 路线与 provider | 项目级路线、Claude 插件路线、其他 STYLE provider adapter 尚未实现 |

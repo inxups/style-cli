@@ -1,0 +1,9 @@
+{
+  "item": "M1-FINAL-07",
+  "native_runs_completed": true,
+  "original_collector_exit": 1,
+  "error": "KeyError: agent_id (scope.json deliberately omits the runtime identity; path identifies scope)",
+  "original_report_sha256": "894e89dc912859411a232b7067d2c9160e0bb288aabc52f98e6ac3c8910b6bcf",
+  "original_retained": "Private scratch /tmp/style-m1-context-a.json, unchanged",
+  "continuation": "Corrected verifier checks existing native run, three persisted scope paths, all context/tool/block outcomes and child rollout annotations. No simulated event or new native result substituted."
+}
