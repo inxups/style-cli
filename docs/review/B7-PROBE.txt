@@ -1,0 +1,1 @@
+STYLE M1b B7 real GitHub MCP probe (2026-10-16). This PR is closed unmerged.
