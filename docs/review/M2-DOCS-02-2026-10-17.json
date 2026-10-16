@@ -1,0 +1,52 @@
+{
+  "item": "M2-DOCS-02",
+  "date": "2026-10-17",
+  "source_commit": "e6dd778",
+  "style_binary_sha256": "c35d85bd70c4bd575e5eaf401662870b45867b419995e2747a5917c57952ab8c",
+  "scratch": "/private/tmp/style-m2-docs-20261017.jdmdko4y",
+  "native_example": {
+    "document": "docs/STYLE-TUTORIAL.md",
+    "section": "4.4",
+    "command_sha256": "acb031b42af1930fa95f1afcbaabde9d33d8ca510a4977e0473aca106176a7c5",
+    "exit": 0,
+    "both_plans_native_hook": true,
+    "config_bytes_and_0640_restored": true,
+    "codex_hooks_removed": true,
+    "native_event_execution": "not run; see M2-B1 for real Codex acceptance"
+  },
+  "stats_examples": [
+    {
+      "command": "style stats",
+      "exit": 0,
+      "empty": true
+    },
+    {
+      "command": "style stats --by session --since 24h",
+      "exit": 0,
+      "empty": true
+    },
+    {
+      "command": "style stats --by rule --since 2026-10-01T00:00:00Z --json",
+      "exit": 0,
+      "empty": true
+    }
+  ],
+  "invalid_7d": {
+    "exit": 1,
+    "stdout_empty": true
+  },
+  "production_changed": false,
+  "passed": true,
+  "documents": {
+    "docs/STYLE-TUTORIAL.md": "f611740590534a8f1da7acd33fd5e998c00e769ecb02772c5ef60b82e31691bd",
+    "docs/STYLE-ADAPTERS-CURRENT.md": "2450d2251f0be60da9f3a3db984e3a9d1afb4c682466282ab572d4c42a72d204",
+    "docs/spec/STYLE-cli-design.md": "99642ba00a6eebc494230cdc313eca28699f0563e766db76c739ac78d38f0282",
+    "docs/spec/STYLE-spec-compiled.md": "5d0e0b8155162abb4a9a0253861d2bf64e46a5e13b2d80915efd761414c807b6"
+  },
+  "document_checks": {
+    "fences_paired": true,
+    "local_links_and_anchors": 116,
+    "missing_targets": [],
+    "preexisting_external_missing_links": "replaced with explicit unbundled historical material names (3)"
+  }
+}

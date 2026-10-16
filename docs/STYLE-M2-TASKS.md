@@ -91,7 +91,8 @@ M1 中已记录的已知限制（如 force-push 示例规则对 `--push-option` 
 - [x] **M2b Codex 真实环境**：M2-B1–B4，codex-user/plugin 两路线真实服务、原生观察/OTel/rollout/stats 证据均通过，见测试矩阵和 `docs/review/M2-B*-CODEX-2026-10-17.json`。
 - [ ] **M2b Claude Code 真实环境**：M2-C1–C4。
 - [ ] **M2-FINAL 最终回归**：双 module fresh test/vet、相关 race、构建、smoke，以及最终提交的 Ubuntu/macOS CI（M2-CI-01）。
-- [ ] **M2-DOCS 文档同步**：[教程](STYLE-TUTORIAL.md)、[adapter 总览](STYLE-ADAPTERS-CURRENT.md)、CLI 设计 §14.4 与规范状态同步到 M2 结果（M2-DOCS-01）。
+- [~] **M2-DOCS 文档同步**：已完成功能的同步见 M2-DOCS-02；D4/D5 定稿与最终验收后再同步完整 M2 结果并关闭 M2-DOCS-01。
+- [x] **M2-DOCS-02 已实现功能文档同步**：[教程](STYLE-TUTORIAL.md) 和 [adapter 总览](STYLE-ADAPTERS-CURRENT.md) 补 native、stats、跨包等价去重，移除 M1 过时支持状态；CLI 设计 §14.4 与编译规范静态位置表反映当前实现，明确 Claude 待定与最终验收边界。真实固定二进制跑通教程新增 native 包的 validate/双 harness plan/install/uninstall 和三个 stats 命令；配置字节/0640 还原，文档链接/锚点/围栏检查通过。证据：`docs/review/M2-DOCS-02-2026-10-17.json`、`docs/PROGRESS.md` M2-DOCS-02。本项不关闭 D4/D5、Claude 真实验收或最终文档总验收。
 
 M2 全部闭合后提示用户进行 M3 规划。
 

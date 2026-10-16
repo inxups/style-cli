@@ -812,6 +812,8 @@ F1–F4、F10 是安装和协议层的问题，最好也提给上游。F5–F9 �
 | M3 | `explain`、`probe`、`update`、git 来源、`--frozen`、项目级路线（含 Claude 云端会话）、Claude 插件路线、`--count=exact`、`refresh`（token 设计 T4）、事件内容带围栏进模板、`provider`、规则级 `fail: closed`、用户自定义 effort 映射、`unknown` 匹配、Windows |
 | M4 | 其他 harness（Gemini、OpenCode、Cursor、Copilot、Kimi…），每家一个适配器；资料见规范附录 A |
 
+M2 当前进展（2026-10-17）：native、stats、跨包语义去重已实现，Codex B1–B4 在 user/plugin 两路线通过。Claude 静态位置仍为 `CLAUDE.md`，output style 未开放 replace；D4/D5 与 Claude 界面验收受用户报告的订阅额度阻塞，等待设计评审。M2 最终回归、CI 与完整文档验收尚未关闭，状态以 [M2 任务清单](../STYLE-M2-TASKS.md) 和 [测试矩阵](../STYLE-M2-TESTS.md) 为准。
+
 ## 15. 未决项
 
 ### 15.1 要实测的

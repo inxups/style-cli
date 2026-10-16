@@ -1459,3 +1459,11 @@ PY
 - 归档仅提取本条白名单结果，不写连接配置、provider 地址、鉴权信息或原始 prompt；真实推理使用用户已有 Responses 服务，未调用 Claude 或改变额度相关状态。原始日志在两份私有 scratch 中保留；未修改日常安装。
 - 验证：重算两份原始报告的 SHA256，核对源码/固定二进制摘要与本条双路线 passed=true、抽取结果逐字段相同；JSON 可解析、当前文档链接/围栏、追加式日志和 `git diff --check` 通过。源码/采集器沿用 f76b37e 已通过的 50 项，无 Go 生产代码改动，不重复已通过的 Go 回归。
 - M2b Codex 验收汇总改 `[x]`。D4/D5、C1/C4 的 Claude 额度/OAuth 阻塞、T40/T50 未定稿、最终 M2 回归/CI/文档同步和官方计数遗留均未因此关闭。
+
+
+### 2026-10-17 — M2-DOCS-02 已实现功能文档同步 `[x]`
+
+- 起点 clean e6dd778。Claude 额度/OAuth 阻塞与 D4/D5 评审依赖未变，先推进已完成 T10–T13/T20/T30 的文档。教程补 native 完整包、stats 用法和六字段口径、跨包等价去重及保留方卸载边界；修正旧的“native 只校验”和“stats 未实现”、link native 重新批准与 sync 退出 3 的说明。
+- adapter 总览补 native 的规划/渲染/归属职责、与固定订阅面的并存、信任/输出限制、编译等价语义、stats 留存与只读边界，以及 Codex B1–B4 双路线实测范围。当前设计 §14.4 写明 M2 部分进展；编译规范的 Codex replace 表从未实现的 model_instructions_file 方案改为当前无槽位，与 core/plan 和两家 Facts 一致；Claude 仍为 CLAUDE.md，D4/D5 未关闭。静态缓存文字改为条件情景，三处未分发外部设计材料改用明确的历史材料名，避免失效链接。
+- 验证：固定 T30 二进制 SHA256 c35d85bd70c4bd575e5eaf401662870b45867b419995e2747a5917c57952ab8c，在独立 /private/tmp/style-m2-docs-20261017.jdmdko4y 逐字提取教程 §4.4 命令，用真实 CLI 完成 validate、两家 plan、codex-user/claude-user 安装和卸载；均退出 0，原 settings.json/config.toml 字节与 0640 还原、hooks.json 无残留。首次草稿试跑发现缺少包 description，补齐后全流程通过；没有运行 native 事件或远端模型请求。§10.4 三条 stats 命令退出 0、空记录语义正确；7d 退出 1/stdout 空。结果、命令摘要和四份内容文档摘要见 docs/review/M2-DOCS-02-2026-10-17.json。
+- 四份内容文档 116 个本地链接/锚点、围栏成对；任务/测试/追加日志和 git diff --check 另行核对。仅文档与本地证据，不改生产 Go、agenthooks 或 M1 归档，不重复已通过的 Go/模型验收。M2-DOCS 改为部分完成，新增 DOCS-02 独立可验收条目；DOCS-01 保留部分状态，等待 Claude 设计和最终 M2 结果回写。

@@ -1,8 +1,8 @@
 # STYLE CLI 使用教程
 
-更新时间：2026-10-16。实现核对基线：`ce912e6`（最终codec/能力修复），支持 Claude Code 与 Codex。M1a 已完成，M1b 历史结果按各自范围保留；Claude补验收已完成，两家官方计数仍待验，最终Ubuntu/macOS CI已通过，当前状态见 [任务清单](STYLE-M1-TASKS.md)。
+更新时间：2026-10-17。实现核对基线：`74a473d`（M2 native、stats、跨包去重），支持 Claude Code 与 Codex。Codex M2 B1–B4 已在两条路线通过；Claude rules 迁移与 output style 仍待设计定稿，真实界面步骤受订阅额度阻塞。当前状态见 [M2 任务清单](STYLE-M2-TASKS.md)；M1 结果只作为历史证据，M2 最终回归和 CI 尚未关闭。
 
-本教程面向第一次使用 `style` 的人，从构建到卸载走完整个生命周期。文中命令输出都是在隔离沙箱里真实运行得到的（路径已缩写），不是手写示例。规则语义的权威定义在 [docs/spec](spec/STYLE-spec.md)，adapter 的实现细节见 [STYLE-ADAPTERS-CURRENT.md](STYLE-ADAPTERS-CURRENT.md)，真实环境验收步骤见 [STYLE-M1B-MANUAL.md](STYLE-M1B-MANUAL.md)。
+本教程面向第一次使用 `style` 的人，从构建到卸载走完整个生命周期。文中命令输出是在隔离沙箱里运行得到的（路径已缩写）；新增 M2 示例只有命令和配置，其验证见 M2 进度日志。规则语义的权威定义在 [docs/spec](spec/STYLE-spec.md)，adapter 的实现细节见 [STYLE-ADAPTERS-CURRENT.md](STYLE-ADAPTERS-CURRENT.md)，当前真实环境验收步骤见 [STYLE-M2-MANUAL.md](STYLE-M2-MANUAL.md)。
 
 ## 目录
 
@@ -15,7 +15,7 @@
 7. [验证规则真的生效](#7-验证规则真的生效)
 8. [修改规则：copy、link、sync、trust](#8-修改规则copylinksynctrust)
 9. [uninstall](#9-uninstall)
-10. [日常检查：list、doctor、adapters](#10-日常检查listdoctoradapters)
+10. [日常检查：list、doctor、adapters、stats](#10-日常检查listdoctoradaptersstats)
 11. [命令速查与退出码](#11-命令速查与退出码)
 12. [目录与文件布局](#12-目录与文件布局)
 13. [常见场景](#13-常见场景)
@@ -37,7 +37,7 @@ STYLE 把一组**短规则**写进 Claude Code 和 Codex，用来微调它们的
 
 要点：
 
-- **`style` 同时是管理 CLI 和 hook 入口。** 安装后，Claude Code / Codex 会在对应事件上调用 `style … agenthooks run --provider=…`，由它决定是否注入文字、警告或阻断。
+- **`style` 同时是管理 CLI 和 hook 入口。** 普通规则由 Claude Code / Codex 调用 `style … agenthooks run --provider=…`，决定是否注入文字、警告或阻断；`target: native` 直接执行作者声明的命令。
 - **运行时不读规则源码。** 安装时把规则编译成 `$STYLE_HOME/build/index.json`，hook 只读这份编译产物和状态目录。
 - **规则有三种动作：** `inject`（给模型追加上下文）、`warn`（用户看全文，模型只看一句）、`block`（阻断工具调用或提示词）。
 - **注入文字可能随历史重复进入后续请求。** 缓存命中、压缩和上下文管理会改变保留范围与费用；`plan` 提供规则级情景估算，`inject` 默认每个会话只注入一次。
@@ -202,7 +202,7 @@ when:
 | `mcp` | 某个 MCP 工具 | `mcp: "server/tool"`，支持 `server/*` |
 | `skill` | 某个 skill 被使用 | `skill: <名字>`，同时覆盖隐式（模型自己用）和显式（用户点名） |
 | `event` | 统一事件 | `event:` 取 `session.start` / `prompt.submitted` / `tool.pre` / `tool.post` / `tool.error` / `subagent.start` |
-| `native` | 原生 hook | M1 只校验，`plan` 报“跳过（M2）” |
+| `native` | 直接写入原生 hook，不经过规则引擎 | 每个 harness 一个含 `event` / `command` 及可选 `matcher` / `timeout` 的映射 |
 
 | action | 模型看到什么 | 用户看到什么 |
 |---|---|---|
@@ -226,6 +226,39 @@ when:
 **单文件包** 把包信息和**一条**规则合在一个 `<name>.style.md` 里，适合只有一条规则的场景；需要第二条时改成目录包。
 
 完整字段与约束见 [规则定义](spec/STYLE-spec-rules.md) 与 [包结构](spec/STYLE-spec-package.md)。规则写作建议：写事实陈述而不是“你必须…”之类的命令式文字；一条规则只说一件事；挂得越窄越省 token。
+
+### 4.4 原生 hook
+
+需要执行自定义命令时使用 `target: native`。在前面建立的隔离沙箱里创建一个独立示例包：
+
+```bash
+mkdir native-notice
+cat > native-notice/STYLE.yaml <<'YAML'
+spec: style/v0.3
+name: native-notice
+version: 0.1.0
+description: Stop 事件的原生命令示例
+rules:
+  - id: on-stop
+    target: native
+    codex:
+      event: Stop
+      command: "printf STYLE_NATIVE_NOTICE >&2"
+      timeout: 10
+    claude-code:
+      event: Stop
+      command: "printf STYLE_NATIVE_NOTICE >&2"
+      timeout: 10
+YAML
+style validate native-notice
+style plan native-notice --harness codex,claude-code
+style install native-notice --harness codex,claude-code --route codex=codex-user --yes
+style uninstall native-notice --yes
+```
+
+`plan` 显示 `native-hook`、事件和实际 timeout，命令在安装确认和 `trust` 预览中披露。上面的命令仅向 stderr 写标记；安装不会立刻执行它，真正触发由 harness 的 `Stop` 事件决定。Codex 插件路线仍需按第 6.3 节登记并启用插件，Claude 仍需工作区信任。
+
+native 的事件名和 matcher 使用各 harness 的原生写法，不使用 STYLE 的 `event: session.start` 或 `tool: shell`。不写 `action`、`when`、`repeat` 等规则引擎字段；命令的输出、退出码和副作用由作者负责。native 不参与跨包去重、不进入 `style stats`，也不估算输出 token。普通包和已授权 `--link` 包只要变更 native 命令、事件、matcher、timeout 或条目顺序，都需重新 `trust`；`sync` 退出 3。
 
 ---
 
@@ -323,7 +356,7 @@ Token (estimated; calibration pending):
   | `degraded` / `partial` | 降级或只保留部分输出（如 `warn` 只剩一个通道） |
   | `skipped` | 这个 harness 做不到，规则被跳过 |
   | `never-trigger` | 条件依赖的数据在该 harness 取不到，永远不会触发 |
-  | `skipped-m2` | `target: native`，M1 不执行 |
+  | `native-hook` | `target: native`，直接写入原生命令，不经过规则引擎 |
   | `install-error` | `fallback: error` 的规则做不到，安装会被阻止 |
 
 - **Token 为离线估算，误差尚未完成真实校准，没有百分比误差保证。** `always-on` 是常驻规则估算；`session cost` 用 `--assume-requests N`（默认 60）和 `--assume-triggers N`（默认 3）比较规则的相对成本。公式假设首次写缓存 1.25 倍、之后每次都以 0.1 倍命中，前缀符合模型门槛、内容不变且未过期；不包括基础上下文、工具与模型输出，也不是账单。默认值未被典型工作负载校准。真实会话 usage 与规则估算分列于 [FINAL-10 缓存与成本记录](review/M1-FINAL-10-CACHE-2026-10-16.md)。
@@ -561,7 +594,7 @@ style trust team-style --yes   # 批准并应用
 trust complete (changed=true, expired sessions=0)
 ```
 
-首次批准完成后，编辑 `team-style/prompts/style.md`，再运行 `style sync`：它会列出变化并直接更新 `CLAUDE.md`，退出码 0；无需每次重新 `trust`。再运行一次得到 `sync complete (changed=false, expired sessions=0)`。每次同步仍会校验规则，新增 replace 等策略变更仍需显式授权。
+首次批准完成后，编辑 `team-style/prompts/style.md`，再运行 `style sync`：它会列出变化并直接更新 `CLAUDE.md`，退出码 0；无需每次重新 `trust`。再运行一次得到 `sync complete (changed=false, expired sessions=0)`。每次同步仍会校验规则；native 定义和顺序变化需重新 `trust`，replace 等策略变更也需显式授权。
 
 M1-FINAL-03 用真实 CLI 重测：源码改动会正确出现在 `list`、changed files 和 Source diff 中；旧教程记录的漂移缺口未复现。首次未改源码的链接也要授权，应与真实文件变化区分。完整结果见 [link 生命周期证据](review/M1-FINAL-03-LINK-2026-10-16.json)。多个包同时需要批准时，`trust <name>` 只批准指定的那个包，其余未批准包保持之前批准的快照。
 
@@ -569,7 +602,13 @@ M1-FINAL-03 用真实 CLI 重测：源码改动会正确出现在 `list`、chang
 
 ### 8.3 只想同步状态
 
-`style sync` 检查源码和已安装状态是否一致：一致时输出 `sync complete (changed=false, …)` 并退出 0；普通安装副本有变化或开发链接尚未首次授权时退出 3，由你用 `style trust` 决定是否应用；已授权开发链接的变化会直接同步。`expired sessions=N` 是应用变更后被判为过期的会话状态数。
+`style sync` 检查源码和已安装状态是否一致：一致时输出 `sync complete (changed=false, …)` 并退出 0；普通安装副本有变化或开发链接尚未首次授权时退出 3，由你用 `style trust` 决定是否应用；已授权开发链接的普通正文变化会直接同步，native 变化仍退出 3。`expired sessions=N` 是应用变更后被判为过期的会话状态数。
+
+### 8.4 跨包等价规则
+
+组合安装时，静态变量替换后的完整正文和全部执行语义相同的规则只保留一条，优先级、包安装序号、包内序号小的优先。安装和 `trust` 报告会标明 `deduplicated_into`，被折叠规则保留源级估算，但组合有效成本为零。单包 `plan` 仍独立计算。
+
+正文相同而条件、动作、repeat 或其他执行语义不同的规则会保留；native 也全部保留。同一等价组内任意一个包声明多条等价规则时，整组保守保留并在组合报告说明。卸载保留方后，另一包的规则接替；因为规则身份改变，在已有会话中可能再注入一次。编译阶段被折叠的规则不会生成虚构的运行时 stats 记录。
 
 ---
 
@@ -595,7 +634,7 @@ route updated: codex=codex-user
 
 ---
 
-## 10. 日常检查：list、doctor、adapters
+## 10. 日常检查：list、doctor、adapters、stats
 
 ### 10.1 list
 
@@ -652,6 +691,25 @@ style adapters
 
 列出每个 harness 的检测结果（版本、配置目录）、路线可用性与信任状态、adapter 输入上限（Codex 2500 token，近似；Claude 10000 字符）、静态槽位，以及每个评估点的能力（`add-context` / `system-message` / `deny`）和可用字段。**写条件规则前先看它**：例如 Codex 的 `tool.error` 能力全部不可用，无条件规则的 degrade/skip 为 skipped，error 则阻止安装；缺失条件数据还可能先报告 never-trigger。单个 harness 检测失败只是报告里的一项，不影响其他 harness。
 
+### 10.4 stats
+
+```bash
+style stats
+style stats --by session --since 24h
+style stats --by rule --since 2026-10-01T00:00:00Z --json
+```
+
+默认按规则汇总最近 168 小时的留存运行时记录；`--by session` 将同一 provider/session 的主 agent 和子 agent 合计。`--since` 接受正 duration（如 `30m`、`24h`）或带时区的 RFC3339 时间，`7d` 不是有效 duration。
+
+| 字段 | 含义 |
+|---|---|
+| `outputs` / `blocks` | 普通规则的输出次数 / 阻断次数 |
+| `dedup` / `cap_drops` | 运行时重复抑制次数 / 容量丢弃次数 |
+| `estimated_tokens` | output/blocked 中带有效估算和正文摘要的 token 估算之和 |
+| `unestimated` | 缺估算或摘要的 output/blocked 次数 |
+
+它只读已有日志，不重新估算历史、不清理状态，也不要求包仍安装。没有记录时输出空结果。静态常驻正文、native 输出和已在编译阶段折叠的规则不在记录中；这里的 token 是规则输出估算，不是会话账单或缓存费用。坏行等可跳过问题在 JSON 的 `quality.partial` 与计数中披露；I/O 等致命错误退出 1。日志可能已被 `sync` / `doctor` 清理，较长窗口只覆盖仍保留的部分。
+
 ---
 
 ## 11. 命令速查与退出码
@@ -667,13 +725,14 @@ style sync [--json]
 style trust <name> [--allow-replace] [--yes] [--json]
 style doctor [--reset-state] [--json]
 style adapters [--json]
+style stats [--by rule|session] [--since <duration|RFC3339>] [--json]
 ```
 
 | 退出码 | 含义 |
 |---|---|
 | 0 | 成功 |
 | 1 | 校验失败、用法错误、冲突、需要确认但未批准、`doctor` 不健康 |
-| 3 | 仅 `sync`：有包的源码变化，需要 `style trust` 批准 |
+| 3 | 仅 `sync`：源码、native 定义或安装信任需由 `style trust` 批准 |
 | 4 | 仅 `plan`/`install`：被阻止（`fallback: error` 做不到、token 预算触发错误） |
 
 在脚本和 CI 里：
@@ -703,7 +762,7 @@ $CLAUDE_CONFIG_DIR/                默认 ~/.claude
 └── CLAUDE.md                      <!-- style:<包名> --> 托管块
 
 $CODEX_HOME/                       默认 ~/.codex
-├── hooks.json                     固定五类事件的 hook
+├── hooks.json                     STYLE 固定五类事件的 hook + 包声明的 native hook
 └── config.toml                    developer_instructions 托管区 + hooks.state 信任摘要
 ```
 
@@ -806,14 +865,14 @@ style plan ./pkg --harness codex,claude-code --json
 
 ## 15. 当前不支持的功能
 
-教程范围就是 M1 实际能做的事。以下功能在 [任务清单](STYLE-M1-TASKS.md) 的 backlog 里，**还不能用**：
+教程覆盖当前已实现的 M2 部分。以下功能的状态见 [任务清单](STYLE-M2-TASKS.md)，**还不能用**：
 
-- 安装来源只有本地包目录或 `*.style.md` 文件；git 来源、`update`、`--frozen`、`explain`、`probe`、`stats` 命令未实现。
+- 安装来源只有本地包目录或 `*.style.md` 文件；git 来源、`update`、`--frozen`、`explain`、`probe` 命令未实现。
 - 只支持 Claude Code 与 Codex；Gemini、OpenCode、Cursor 等 provider 未接入。
 - 只有用户级路线；项目级路线、Claude 插件路线未实现。
-- `target: native` 只校验，不执行（M2）。
+- Claude 静态指令当前仍写 `CLAUDE.md` 托管块；迁移到用户级 `rules/` 尚未实现，等待 D4 实测与评审。
 - `mode: replace`：两家都没有替换槽位，规则会被跳过或拒绝，STYLE 只能**追加**，不能替换 harness 自带的 system prompt。
 - Codex 的插件路线不会自动登记到 marketplace；Codex 云端 skill 未验证。
 - Windows 未适配（hook 依赖 POSIX shell 的场景）。
 
-真实环境的验收结论与剩余未决项见 [测试矩阵](STYLE-M1-TESTS.md) 和 [adapter 现状总览](STYLE-ADAPTERS-CURRENT.md) 第 12 节。
+真实环境的验收结论与剩余未决项见 [M2 测试矩阵](STYLE-M2-TESTS.md) 和 [adapter 现状总览](STYLE-ADAPTERS-CURRENT.md) 第 12 节。

@@ -1,6 +1,6 @@
 # STYLE 当前 adapter 实现总览
 
-更新时间：2026-10-16。源码核对基线：`ce912e6`（最终 codec/能力修复）；真实验收补充至 `d276b17`（FINAL-06–08）。
+更新时间：2026-10-17。源码核对基线：`74a473d`（M2 native、stats、跨包去重）；Codex M2 B1–B4 双路线证据归档至 `e6dd778`。Claude D4/D5 设计和界面验收仍待完成，M2 最终回归/CI 尚未关闭。
 
 本文总结当前仓库的实现，不代表 Claude Code / Codex 所有版本的完整产品能力。能力声明、安装配置、运行时可接收事件和真实验收结果分别说明；未修改现有 fallback 语义。
 
@@ -31,6 +31,7 @@ STYLE 当前完整接入两个 provider：`codex` 和 `claude-code`。`agenthook
 | `PlanningFacts.DataSource` | 某评估点能否提供条件/模板所需字段，记录来源与近似标记 |
 | `PlanningFacts.BlindSpot` | 整条规则是否不可观测；非 fatal reason 说明部分可见性边界 |
 | `PlanningFacts.StaticLocation` | `append` / `replace` 是否有可用静态槽位 |
+| `NativePlanningFacts` / `NativeWriter` / `Definition.Native` | 分别提供 native 规划事实、命令渲染与合法原生事件；注册表向 validate 提供 native catalog |
 | `StaticPositionProvider` | 列出具体安装的静态位置，供报告使用 |
 | `Routes` | 安装路线及其优先级，声明顺序保留 |
 | `Limits` | 原生输入限制、计量单位、是否近似和外部超限行为 |
@@ -122,13 +123,23 @@ Claude Enricher 能构造 `subagent.start` 评估点，但 Facts 不声明输出
 ^(Bash|apply_patch|mcp__.*)$
 ```
 
-包和规则在进程内过滤，新增包不改变固定 hook 定义的信任指纹。Manifest 将这些 hook 设置为同步执行，timeout 为 10 秒。
+普通规则在进程内过滤，新增普通规则包不改变这组固定 hook 定义的信任指纹。Manifest 将这些 hook 设置为同步执行，timeout 为 10 秒。native 规则额外追加原生 handler，会改变对应定义与信任摘要。
 
 **Claude 按编译结果生成订阅**：`hooksForProvider` 从 index 推导原生事件与 matcher，再由 `Surface` 按 event+matcher 合并、去重和排序。工具、MCP、Skill 规则分别生成相应 matcher；全事件规则可使用空 matcher。
 
 若已编译条目需要 `model`，额外订阅同步 `PostModelSwitch`。该事件只更新 session，不立即注入正文；下一评估点读取新 model 后再判断规则。`DefaultSurface` 只是缺少包专用请求时的默认集合，不代表每次安装都会订阅其中全部事件。
 
 源码：[hooksForProvider](../internal/app/install.go)、两家 `adapter.go` 的 `Surface` / `HookManifest`。
+
+### 4.4 native hook
+
+`target: native` 每个 harness 对应一个原生映射，M2 支持 `event`、`matcher`、`command`、`timeout`。校验使用注册表提供的事件和 matcher 事实；plan 状态为 `native-hook`，只显示事件、matcher 和实际 timeout。缺少当前 harness 的映射时为 `skipped`；有映射但无法写入时，`fallback: error` 阻止安装，其他策略跳过。
+
+adapter 渲染作者命令，agenthooks 负责加归属前缀 `: --owner=style --native=<包>/<id>;`、合并、信任与卸载。native 不进入 runtime index，不使用普通规则的条件/repeat、输出白名单、运行时容量保护或 fail-closed；命令即使相同也不做跨包去重。默认 timeout 60 秒，Codex `SessionEnd` 实际压到 3 秒；其输出由原生 harness 处理，不做 STYLE token 估算或 stats 记录。
+
+安装前披露完整命令和路线信任方式。native 字段、增删和排序变化，无论普通安装还是已授权开发链接，都由 `sync` 退出 3，需 `trust` 重新批准。`list` 展示 native 数量，`doctor` 对照批准快照检查条目和用户路线的信任哈希。Codex 仍区分 user 的 preseed 与 plugin 的 user-confirmation；Claude 的 workspace 信任无法自动确认。
+
+源码：[native schema](../core/spec/native.go)、[native plan](../core/plan/native.go)、[CLI 生命周期](../internal/app/native_lifecycle_test.go)；完整字段约束见 [规则 §3.10](spec/STYLE-spec-rules.md#310-target-native)。
 
 ## 5. 静态指令、动态 system 与 replace
 
@@ -203,9 +214,9 @@ Claude Enricher 能构造 `subagent.start` 评估点，但 Facts 不声明输出
 
 ### 6.3 状态与特殊分支
 
-规划状态包括 `native`、`degraded`、`partial`、`skipped`、`never-trigger`、`skipped-m2`、`install-error`。
+规划状态包括 `native`（普通规则的原生投递位置）、`native-hook`（作者命令）、`degraded`、`partial`、`skipped`、`never-trigger`、`install-error`。M1 的 `skipped-m2` 已移除。
 
-`when.harness.name` 排除当前 adapter、`when.provider` 在 M1 不求值、`target: native` 留到 M2、工具盲区等分支，发生在普通 fallback 评估前。它们分别跳过或标记 never/M2；不能承诺 `fallback: error` 会拦住所有未生效规则。缺失条件数据与普通输出能力不足也有不同状态。
+`when.harness.name` 排除当前 adapter、`when.provider` 尚不求值、工具盲区等分支，发生在普通 fallback 评估前，分别跳过或标记 never。native 由独立分支处理；缺少映射直接跳过。因此不能承诺 `fallback: error` 会拦住所有未生效规则。缺失条件数据与普通输出能力不足也有不同状态。
 
 ### 6.4 与规范的对应
 
@@ -310,6 +321,12 @@ flowchart TD
 
 源码：[runtime](../internal/runtime/runtime.go)、[Codex Enricher](../internal/adapter/codex/runtime.go)、[Claude Enricher](../internal/adapter/claude/runtime.go)。
 
+### 9.1 跨包编译去重
+
+compile 在静态变量替换、规范化和排序后比较整条规则的全部 placement、正文与执行语义，按 priority、包安装序号、包内序号保留一条。native、仅运行时偶然同文、同包多重声明的等价类均保守保留。组合 install/trust 报告标 `deduplicated_into` 与零新增成本；单包 plan 和源级预算继续独立，组合有效成本与 T003 按保留产物重算。
+
+关系只用于编译和冷路径报告，index format 1、runtime 状态键与 agenthooks 职责保持。折叠方不生成 runtime stats；卸载保留方后接替规则身份改变，可在旧会话中再次注入。源码：[dedup.go](../core/compile/dedup.go)；契约见 [运行时 §7.5](spec/STYLE-spec-runtime.md#75-m2-d3-跨包去重契约)。
+
 ## 10. 输出、失败策略和限制
 
 ### 10.1 输出白名单
@@ -348,9 +365,13 @@ style adapters --json
 style plan example/terse-reviewer --harness codex
 style plan example/terse-reviewer --harness claude-code
 style doctor
+style stats --by rule --since 168h
+style stats --by session --since 24h --json
 ```
 
 `adapters` 列出检测目录/版本、各路线状态与信任、能力、字段、静态槽位和限制。单个 provider 的检测失败作为报告数据，不隐藏其他 provider。`doctor` 结合已安装 lock 检查实际安装根、配置/index/包漂移、路线、信任边界和运行环境。
+
+`stats` 只读留存运行时元数据，默认最近 168h/按 rule，也支持 session（合并主/子 agent）。六个计数字段为 outputs、blocks、dedup、cap_drops、estimated_tokens、unestimated；估算合计只含 output/blocked 的有效历史估算与摘要。它不读取当前 index 重新估算，也不检测 adapter、写目录或清理日志；静态/native 不计入。坏行等可跳过问题在 quality 披露，致命读取错误退出 1 且无成功报告。完整窗口、JSON format 1、排序与质量语义见 [CLI 设计 §11.5.2](spec/STYLE-cli-design.md#1152-m2-d2-style-stats-契约d2t20-已完成)。
 
 ### 11.1 离线验证
 
@@ -361,7 +382,7 @@ style doctor
 - 真实构建 CLI 处理所有 wire golden，及生成命令的 hook 入口验证。
 - core 导入边界、输出白名单、agent scope 和规划/token 报告 golden。
 
-本次文档核对使用的回归命令：
+M1 FINAL-11 文档核对使用的回归命令（历史范围）：
 
 ```sh
 env -u CODEX_HOME -u CODEX_SANDBOX \
@@ -375,7 +396,9 @@ env -u CODEX_HOME -u CODEX_SANDBOX \
 
 ### 11.2 已有真实证据的范围
 
-项目记录的实测版本为 Codex 0.159.3、Claude Code 2.1.300。M1b 的 B/C 条目已按测试矩阵声明范围通过，不代表设计 §15 的所有未决项都关闭。
+M1b 实测版本为 Codex 0.159.3、Claude Code 2.1.300。M1b 的 B/C 条目已按测试矩阵声明范围通过，不代表设计 §15 的所有未决项都关闭。M2 Codex 沿用 0.159.3；Claude 2.1.301 仅补了本地原生协议探针，界面验收仍待执行。
+
+- M2 B1–B4：Codex user/plugin 两路线真实服务中，native SessionStart/Bash PreToolUse 各一次，Read matcher 不命中；STYLE 与 native 共存，OTel、完整请求正文和 rollout 一致。stats 每路线为 2 outputs / 26 estimated_tokens，native 单列排除；两包等价规则只有保留方一次投递和日志。卸载字节/权限还原。信任结论限 exec 的预置哈希与插件登记接受，未宣称首次 TUI 工作区信任。证据见 [M2 测试矩阵](STYLE-M2-TESTS.md)。
 
 - Codex 上下文投递以 rollout 中 `hooks.additional_context` 为证；U7 验证 spawn_agent 的子线程收到 subagent.start 上下文，父线程没有该注入。
 - Codex compact 后 developer_instructions 可见；compact 来源的 SessionStart 延迟到下一回合开始执行。
@@ -400,9 +423,10 @@ env -u CODEX_HOME -u CODEX_SANDBOX \
 | Claude | workspace trust 无法自动确认；Read新订阅热更新已测。所测环境未实现实际关闭思考，保留不产出none；六事件USER可见，clear来源启动USER未显示；SubagentStart不支持上下文注入 |
 | 成本与超限 | 官方计数待API key；真实会话统计不代表典型账单。两家原生文件预览已测，字符边界不等于token校准，Claude ASCII结果不外推Unicode边界 |
 | 路线与 provider | 项目级路线、Claude 插件路线、其他 STYLE provider adapter 尚未实现 |
-| 未来能力 | native、Claude rules 静态位置、output style replace、provider 条件等按 M2/M3/M4 backlog 规划 |
+| M2 Claude | rules 迁移与 output style 设计尚未定稿；用户报告订阅额度用尽，C1/C4 暂挂；OAuth 保存重试仍未确认 |
+| 未来能力 | provider 条件等按 M3/M4 backlog 规划 |
 
-当前仅FINAL-09官方计数待验，其余真实边界与最终回归记录见 [任务清单](STYLE-M1-TASKS.md)；Claude 界面步骤见 [隔离 runbook](review/M1-FINAL-06-CLAUDE-RUNBOOK.md)，成本与缓存证据见 [FINAL-10](review/M1-FINAL-10-CACHE-2026-10-16.md)。全部补项有证据后再开始 M2 规划。
+当前 M2 剩余设计、Claude 验收、最终回归/CI 与官方计数遗留见 [M2 任务清单](STYLE-M2-TASKS.md)；Claude 恢复步骤见 [M2 手册](STYLE-M2-MANUAL.md)，M1 界面历史见 [隔离 runbook](review/M1-FINAL-06-CLAUDE-RUNBOOK.md)，成本与缓存证据见 [FINAL-10](review/M1-FINAL-10-CACHE-2026-10-16.md)。
 
 FINAL-06 补验收（2026-10-16）：六类已声明事件的 USER 标记在界面可见；clear 虽输出启动标记，界面未显示。启动/提示/显式技能没有 effort，工具前/后/失败带 effort.level 与 CLAUDE_EFFORT；观察到 high→medium，所测 Opus5.5 界面无关闭思考选项，未验证 off 原值。新增 Read matcher 在未重启进程中实际触发，热更新成立。原 Glob 探针没有原生调用，不能计通过。Native failure 使用 `error`，codec 已补归一化并保留 `tool_error` 兼容；公开 M1 `tool.output` 仍只用于 tool.post。证据见 [FINAL-06](review/M1-FINAL-06-BOUNDARY-2026-10-16.json)，最终 C9 已通过，见追加证据。
 

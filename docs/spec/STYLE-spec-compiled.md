@@ -159,17 +159,17 @@
 
 1. 包被复制到 `~/.style/packages/<名字>/`；`~/.style/style.lock.yaml` 记录每个包的版本、来源、安装序号和逐文件 sha256。
 2. 所有已装包编译成一份 `~/.style/build/index.json`。
-3. 每个目标 harness 上装着 hook，命令都是 `style agenthooks run --provider=<harness>`：
+3. 每个目标 harness 上装着普通规则的 hook，命令为 `style agenthooks run --provider=<harness>`；native 命令另按规则 3.10 写入，不经过运行时：
    - **Codex**：一组**固定**的 hook（订阅面不随规则变化），哪条规则命中由运行时读 index 判断。装、卸、更新包通常只改 index 和静态块，不改 hook 定义，也就不用重新信任。默认装成插件 `style-runtime`。
    - **Claude Code**：订阅面**跟着规则走**（Claude 没有逐个 hook 的哈希信任，只有工作区信任【文档】），装、卸包时重写 `settings.json` 里 STYLE 的条目。
 4. 无条件、正文静态的 `system` 规则写在静态位置：
 
    | harness | `append` | `replace` |
    |---|---|---|
-   | Codex | `config.toml` 的 `developer_instructions`，每个包一段，用 `<!-- style:<名字> -->` … `<!-- /style:<名字> -->` 包住。**只在用户自己没设 `developer_instructions` 时由 STYLE 管理这个键**；用户已经设了就不碰，这些规则改走动态路径（`session.start` + `reinject_on_compact`），报告里说明 | `model_instructions_file` 指向 `~/.style/build/codex-instructions.md`。要 `--allow-replace`；用户已设这个键时报错 |
-   | Claude Code | `~/.claude/CLAUDE.md` 里每个包一段标记块（U-C4 证明用户级 `~/.claude/rules/` 生效后，M2 改成每包一个文件 `~/.claude/rules/style-<名字>.md`，卸载更干净） | M1 不支持（第 5 节阶梯第 6 条） |
+   | Codex | `config.toml` 的 `developer_instructions`，每个包一段，用 `<!-- style:<名字> -->` … `<!-- /style:<名字> -->` 包住。**只在用户自己没设 `developer_instructions` 时由 STYLE 管理这个键**；用户已经设了就不碰，这些规则改走动态路径（`session.start` + `reinject_on_compact`），报告里说明 | 当前 adapter 无 replace 槽位；`--allow-replace` 仅授权，不会启用替换（第 5 节阶梯第 6 条） |
+   | Claude Code | 当前为 `~/.claude/CLAUDE.md` 每包一段标记块；M2-D4 设计与真实验收尚未关闭，尚未迁到 `rules/style-<名字>.md` | 当前无槽位；M2-D5 output style 评估待定稿（第 5 节阶梯第 6 条） |
 
-   静态位置在前缀里：不改就一直被缓存，每次请求只付命中价；改了会让之后新会话的缓存重写一次。只有"几乎每个请求都要生效、而且很短"的规则才适合放这里，常驻预算（7.2）管着它。
+   静态指令仍消耗输入上下文，只有满足模型缓存门槛、前缀一致和有效期等条件时才可能命中缓存；具体情景与费用边界见 CLI 设计 §11.3。只有"几乎每个请求都要生效、而且很短"的规则才适合放这里，常驻预算（7.2）管着它。
 5. 改过的 md 不会自动生效：要 `style sync` 重新编译，并经 `style trust <名字>` 确认。这补上了 Codex 信任哈希不覆盖 md 内容的缺口。`--link` 开发包第一次 `trust` 之后，后续改动只在 `sync` 时显示差异摘要，不阻塞。
 
 ## 11. 依赖的 fork 改动
@@ -199,7 +199,7 @@
 
 ## 附录 A：推迟的 harness 备忘
 
-M1 不实现，留给以后写适配器时参考。详细资料在 [cross-harness.md](../../style-gen/cross-harness.md) 和 [thinking-effort.md](../../style-gen/thinking-effort.md)（这两份里"六档"、`on_unknown` 等旧口径已被本文取代）。
+当前不实现，留给以后写适配器时参考。历史设计材料 `style-gen/cross-harness.md` 和 `style-gen/thinking-effort.md` 未随本仓库分发；其中"六档"、`on_unknown` 等旧口径已被本文取代。这里的候选资料不作为已接入 adapter 的能力保证。
 
 **effort 映射**（以后的适配器照 4.2 的规则写自己的 `effort.yaml`）：
 
@@ -219,4 +219,4 @@ M1 不实现，留给以后写适配器时参考。详细资料在 [cross-harnes
 |---|---|---|---|---|---|---|---|
 | 档位 | `none` | `minimal` | `low` | `medium` | `high` | `xhigh` | 取不到 |
 
-**能力提醒**：Cursor 的 `additional_context` 能否送到模型各方说法矛盾；Gemini 会转义 `<>`；Kimi 只有提示词事件的纯文本能进上下文；Windsurf 完全不能注入；OpenCode 是进程内函数，每次请求重建系统提示词，不需要压缩处理。加这些 harness 时，压缩信号可能需要"信号和动作分开、延后补发"的做法（见 [solution-2026-10-12.md](../../style-review/solution-2026-10-12.md) A2），适配器接口里的 `CompactSignal()` 就是为它留的。
+**能力提醒**：Cursor 的 `additional_context` 能否送到模型各方说法矛盾；Gemini 会转义 `<>`；Kimi 只有提示词事件的纯文本能进上下文；Windsurf 完全不能注入；OpenCode 是进程内函数，每次请求重建系统提示词，不需要压缩处理。加这些 harness 时，压缩信号可能需要"信号和动作分开、延后补发"的做法（历史材料 `style-review/solution-2026-10-12.md` A2 未随本仓库分发），适配器接口里的 `CompactSignal()` 就是为它留的。

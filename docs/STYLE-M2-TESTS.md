@@ -108,4 +108,5 @@ Claude Code 界面项由用户执行，agent 提供手册与隔离 runbook。
 ## 持续集成与文档核对
 
 - [ ] **M2-CI-01**：M2 最终提交的 GitHub Actions 在 Ubuntu/macOS 上 format、vet、双 module test、采集器测试、build、smoke 全部 success。
-- [ ] **M2-DOCS-01**：M2 修改过的当前文档本地链接目标全部存在、代码围栏成对，`git diff --check` 通过。
+- [~] **M2-DOCS-01**：已实现功能文档检查通过（M2-DOCS-02）；D4/D5 与最终结果回写后，再核对 M2 修改过的全部当前文档本地链接、代码围栏和 `git diff --check`。
+- [x] **M2-DOCS-02**：教程 §4.4 新包 validate/两家 native-hook plan/install/uninstall 退出 0，原有配置字节与 0640 权限还原、Codex hooks 无残留；§10.4 三个 stats 示例为空记录成功，`--since 7d` 退出 1 且 stdout 为空。四份内容文档的 116 个本地链接/锚点和围栏通过；原有三处仓库未分发材料的失效链接改为明确的历史材料名。证据：[文档示例报告](review/M2-DOCS-02-2026-10-17.json)。仅本地 CLI 示例，不代替真实 harness 触发或 M2 最终回归。
