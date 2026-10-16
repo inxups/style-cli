@@ -71,6 +71,15 @@ func (r *route) manifest(hooks []adapter.HookSpec) install.Manifest {
 	return HookManifest(r.commandLine(), hooks)
 }
 
+func (r *route) InspectNative(_ context.Context, hooks []adapter.HookSpec) ([]adapter.NativeStatus, error) {
+	statuses, err := install.InspectNative(r.manifest(hooks), r.target())
+	result := make([]adapter.NativeStatus, 0, len(statuses))
+	for _, status := range statuses {
+		result = append(result, adapter.NativeStatus{Tag: status.Tag, State: status.State, Trust: status.Trust})
+	}
+	return result, err
+}
+
 func (r *route) Status(ctx context.Context, installation adapter.Installation) (adapter.RouteStatus, error) {
 	available, detail, err := r.Available(ctx, installation)
 	if err != nil || !available {

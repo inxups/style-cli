@@ -121,6 +121,15 @@ func (r *route) Plan(_ context.Context, hooks []adapter.HookSpec, blocks []adapt
 	return r.planStatic(planned, blocks)
 }
 
+func (r *route) InspectNative(_ context.Context, hooks []adapter.HookSpec) ([]adapter.NativeStatus, error) {
+	statuses, err := install.InspectNative(r.manifest(hooks), r.target())
+	result := make([]adapter.NativeStatus, 0, len(statuses))
+	for _, status := range statuses {
+		result = append(result, adapter.NativeStatus{Tag: status.Tag, State: status.State, Trust: status.Trust})
+	}
+	return result, err
+}
+
 func (r *route) planStatic(planned []install.PlannedFile, blocks []adapter.StaticBlock) (adapter.Changeset, error) {
 	if len(blocks) > 0 && !r.facts.StaticAppendAvailable {
 		return adapter.Changeset{}, errors.New("codex route: developer_instructions is already user-owned")

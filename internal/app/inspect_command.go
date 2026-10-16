@@ -76,6 +76,13 @@ func runInspect(ctx context.Context, service *Service, workDir, command string, 
 		fmt.Fprintf(out, "healthy=%t\n", result.Healthy)
 		writeListText(out, result.Packages)
 		writeAdaptersText(out, result.Adapters, false)
+		for _, native := range result.Native {
+			fmt.Fprintf(out, "native %s %s: %s; event=%s matcher=%q timeout=%ds command=%s\n", native.Harness, native.Rule,
+				native.Status, native.Event, native.Matcher, native.Timeout, native.Command)
+			if native.TrustStatus != "" {
+				fmt.Fprintf(out, "  trusted_hash: %s\n", native.TrustStatus)
+			}
+		}
 		for _, effort := range result.Effort {
 			fmt.Fprintf(out, "effort %s: source=%s raw=%q tier=%q; %s\n", effort.Provider, effort.Source, effort.Raw, effort.Tier, effort.Detail)
 		}
@@ -94,7 +101,7 @@ func writeListText(out io.Writer, packages []InstalledPackage) {
 		fmt.Fprintln(out, "No packages installed.")
 	}
 	for _, pkg := range packages {
-		fmt.Fprintf(out, "%s %s seq=%d source=%s:%s link=%s hash_matches=%t\n", pkg.Name, pkg.Version, pkg.Sequence, pkg.SourceKind, pkg.Source, pkg.Link, pkg.HashMatches)
+		fmt.Fprintf(out, "%s %s seq=%d source=%s:%s link=%s hash_matches=%t native=%d\n", pkg.Name, pkg.Version, pkg.Sequence, pkg.SourceKind, pkg.Source, pkg.Link, pkg.HashMatches, pkg.NativeCount)
 		if len(pkg.ChangedFiles) > 0 {
 			fmt.Fprintf(out, "  changed: %s\n", strings.Join(pkg.ChangedFiles, ", "))
 		}

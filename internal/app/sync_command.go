@@ -102,11 +102,37 @@ func writeSyncChanges(out io.Writer, result SyncResult, full bool) {
 		for _, file := range change.Files {
 			fmt.Fprintf(out, "  %s\n", file)
 		}
+		if change.NativeChanged {
+			fmt.Fprintln(out, "  native declaration/order/configuration change; renewed approval required")
+		}
 		if full && change.NeedsTrust && change.Package != result.ApprovalTarget {
 			fmt.Fprintln(out, "keeping the approved snapshot; current source is excluded from this approval")
 			continue
 		}
 		if full {
+			if len(change.NativeDiff) > 0 || change.NativeChanged {
+				fmt.Fprintln(out, "Native entry diff:")
+				for _, native := range change.NativeDiff {
+					fmt.Fprintf(out, "  %s %s\n", native.Harness, native.Rule)
+					for _, side := range []struct {
+						label string
+						hook  *NativeHookReport
+					}{{"before", native.Before}, {"after", native.After}} {
+						if side.hook == nil {
+							fmt.Fprintf(out, "    %s: absent\n", side.label)
+						} else {
+							declared := "default"
+							if side.hook.DeclaredTimeout > 0 {
+								declared = fmt.Sprintf("%ds", side.hook.DeclaredTimeout)
+							}
+							fmt.Fprintf(out, "    %s: event=%s matcher=%q timeout=%ds (declared: %s) command=%s\n", side.label, side.hook.Event, side.hook.Matcher, side.hook.Timeout, declared, side.hook.Command)
+						}
+					}
+				}
+				if len(change.NativeDiff) == 0 {
+					fmt.Fprintln(out, "  effective command fields unchanged; review declared timeout/order changes and configuration repair")
+				}
+			}
 			if !change.BaselineAvailable {
 				fmt.Fprintln(out, "previous approved bytes unavailable; showing the complete current source and compiled representation")
 			}
@@ -125,6 +151,9 @@ func writeSyncChanges(out io.Writer, result SyncResult, full bool) {
 	}
 	for _, report := range result.Reports {
 		writePlanText(out, PlanResult{Reports: []PlanReport{report}})
+	}
+	if full {
+		writeNativeHooks(out, result.Native)
 	}
 	writeDiagnostics(out, result.Diagnostics)
 }

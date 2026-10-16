@@ -38,18 +38,23 @@ type InstallRequest struct {
 	Yes          bool
 	AllowReplace bool
 	FailClosed   []string
+	// Confirm receives the complete detached capability and native preview
+	// before package staging or any installation writes.
+	Confirm func(InstallResult) (bool, error)
 }
 
 // InstallResult is the stable summary written after an install transaction.
 type InstallResult struct {
-	Package     string       `json:"package"`
-	Version     string       `json:"version"`
-	Changed     bool         `json:"changed"`
-	Link        bool         `json:"link"`
-	Replace     bool         `json:"replace"`
-	Routes      []string     `json:"routes"`
-	Reports     []PlanReport `json:"reports"`
-	Diagnostics []Diagnostic `json:"diagnostics,omitempty"`
+	Package              string             `json:"package"`
+	Version              string             `json:"version"`
+	Changed              bool               `json:"changed"`
+	Link                 bool               `json:"link"`
+	Replace              bool               `json:"replace"`
+	Routes               []string           `json:"routes"`
+	Reports              []PlanReport       `json:"reports"`
+	Diagnostics          []Diagnostic       `json:"diagnostics,omitempty"`
+	Native               []NativeHookReport `json:"native_hooks,omitempty"`
+	AwaitingConfirmation bool               `json:"awaiting_confirmation,omitempty"`
 }
 
 type installPackage struct {
@@ -84,9 +89,6 @@ type installCompilation struct {
 func (s *Service) Install(ctx context.Context, request InstallRequest) (InstallResult, error) {
 	if err := checkContext(ctx); err != nil {
 		return InstallResult{}, err
-	}
-	if !request.Yes {
-		return InstallResult{}, &UsageError{Message: "installation requires capability confirmation; pass --yes in non-interactive mode"}
 	}
 	if strings.TrimSpace(request.Source) == "" {
 		return InstallResult{}, &UsageError{Message: "package source is required"}
@@ -221,6 +223,7 @@ func (s *Service) Install(ctx context.Context, request InstallRequest) (InstallR
 		return InstallResult{}, err
 	}
 	result.Reports, result.Diagnostics = compilation.reports, compilation.diagnostics
+	result.Native = compilation.nativeReports("")
 	for _, finding := range versionDiagnostics {
 		if lock.Harnesses[finding.Provider].Route == "" {
 			result.Diagnostics = append(result.Diagnostics, finding)
@@ -268,6 +271,20 @@ func (s *Service) Install(ctx context.Context, request InstallRequest) (InstallR
 	plannedChanges, err = uniquePlannedFiles(plannedChanges)
 	if err != nil {
 		return InstallResult{}, err
+	}
+	confirmed := request.Yes
+	if !confirmed && request.Confirm != nil {
+		data, _ := json.Marshal(result)
+		var preview InstallResult
+		_ = json.Unmarshal(data, &preview)
+		confirmed, err = request.Confirm(preview)
+		if err != nil {
+			return result, err
+		}
+	}
+	if !confirmed {
+		result.AwaitingConfirmation = true
+		return result, &UsageError{Message: "installation requires capability confirmation; pass --yes in non-interactive mode"}
 	}
 	if len(plannedChanges) == 0 {
 		return result, nil

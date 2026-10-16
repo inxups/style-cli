@@ -11,25 +11,28 @@ import (
 type SyncRequest struct{ Home string }
 
 type PackageChange struct {
-	Package           string     `json:"package"`
-	Link              bool       `json:"link"`
-	Files             []string   `json:"files"`
-	NeedsTrust        bool       `json:"needs_trust"`
-	BaselineAvailable bool       `json:"baseline_available"`
-	SourceDiff        []FileDiff `json:"source_diff,omitempty"`
-	RenderedDiff      []FileDiff `json:"rendered_diff,omitempty"`
+	Package           string           `json:"package"`
+	Link              bool             `json:"link"`
+	Files             []string         `json:"files"`
+	NeedsTrust        bool             `json:"needs_trust"`
+	BaselineAvailable bool             `json:"baseline_available"`
+	SourceDiff        []FileDiff       `json:"source_diff,omitempty"`
+	RenderedDiff      []FileDiff       `json:"rendered_diff,omitempty"`
+	NativeChanged     bool             `json:"native_changed,omitempty"`
+	NativeDiff        []NativeHookDiff `json:"native_diff,omitempty"`
 }
 
 type SyncResult struct {
-	ApprovalTarget       string          `json:"approval_target,omitempty"`
-	Changed              bool            `json:"changed"`
-	Changes              []PackageChange `json:"changes"`
-	NeedsTrust           []string        `json:"needs_trust"`
-	AwaitingConfirmation bool            `json:"awaiting_confirmation"`
-	Routes               []string        `json:"routes"`
-	Reports              []PlanReport    `json:"reports,omitempty"`
-	Diagnostics          []Diagnostic    `json:"diagnostics,omitempty"`
-	ExpiredSessions      int             `json:"expired_sessions"`
+	ApprovalTarget       string             `json:"approval_target,omitempty"`
+	Changed              bool               `json:"changed"`
+	Changes              []PackageChange    `json:"changes"`
+	NeedsTrust           []string           `json:"needs_trust"`
+	AwaitingConfirmation bool               `json:"awaiting_confirmation"`
+	Routes               []string           `json:"routes"`
+	Reports              []PlanReport       `json:"reports,omitempty"`
+	Diagnostics          []Diagnostic       `json:"diagnostics,omitempty"`
+	ExpiredSessions      int                `json:"expired_sessions"`
+	Native               []NativeHookReport `json:"native_hooks,omitempty"`
 }
 
 type syncPreparation struct {
@@ -39,7 +42,8 @@ type syncPreparation struct {
 }
 
 // Sync blocks unapproved ordinary edits and the first development-link trust.
-// Approved links may change freely, but still pass validation and policy gates.
+// Approved links may change ordinary rules freely. Native changes and native
+// configuration repairs require renewed approval.
 func (s *Service) Sync(ctx context.Context, request SyncRequest) (SyncResult, error) {
 	prepared, err := s.prepareSync(ctx, TrustRequest{Home: request.Home})
 	if err != nil {

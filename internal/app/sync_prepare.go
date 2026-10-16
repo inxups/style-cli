@@ -42,6 +42,8 @@ func (s *Service) prepareSync(ctx context.Context, request TrustRequest) (syncPr
 		return prepared, err
 	}
 	snapshots := make(map[string]map[string][]byte, len(lock.Packages))
+	baselines := make(map[string]approvedSnapshot, len(lock.Packages))
+	baselineAvailable := make(map[string]bool, len(lock.Packages))
 	for _, item := range lock.Packages {
 		if err := checkContext(ctx); err != nil {
 			return prepared, err
@@ -53,11 +55,28 @@ func (s *Service) prepareSync(ctx context.Context, request TrustRequest) (syncPr
 		if files == nil {
 			files = map[string][]byte{}
 		}
+		baseline, available, err := loadApproval(home, item)
+		if err != nil {
+			return prepared, err
+		}
+		baselines[item.Name], baselineAvailable[item.Name] = baseline, available
 		snapshots[item.Name] = files
 		changed := filesChanged(item, files)
-		needs := len(changed) > 0 && !item.Link || item.Link && !item.LinkTrusted
+		nativeChanged := false
+		if len(changed) > 0 {
+			if !available {
+				// Without old bytes a development link cannot prove that an
+				// executable native entry was not removed or modified.
+				nativeChanged = item.Link
+			} else {
+				before, beforeErr := nativeSourceFingerprint(item, baseline.Files)
+				after, afterErr := nativeSourceFingerprint(item, files)
+				nativeChanged = beforeErr != nil || afterErr != nil || before != after
+			}
+		}
+		needs := len(changed) > 0 && (!item.Link || nativeChanged) || item.Link && !item.LinkTrusted
 		if len(changed) > 0 || needs || item.Name == request.Name {
-			prepared.result.Changes = append(prepared.result.Changes, PackageChange{Package: item.Name, Link: item.Link, Files: changed, NeedsTrust: needs})
+			prepared.result.Changes = append(prepared.result.Changes, PackageChange{Package: item.Name, Link: item.Link, Files: changed, NeedsTrust: needs, NativeChanged: nativeChanged})
 		}
 		if needs && item.Name != request.Name {
 			prepared.result.NeedsTrust = append(prepared.result.NeedsTrust, item.Name)
@@ -66,21 +85,23 @@ func (s *Service) prepareSync(ctx context.Context, request TrustRequest) (syncPr
 	if request.Name == "" && len(prepared.result.NeedsTrust) > 0 {
 		return prepared, nil
 	}
+	checks, err := s.checkNative(ctx, home, lock, request.Name)
+	if err != nil {
+		return prepared, err
+	}
+	requireNativeRepairs(&prepared.result, checks, lock, request.Name)
+	if request.Name == "" && len(prepared.result.NeedsTrust) > 0 {
+		return prepared, nil
+	}
 	if err := checkStateRoot(filepath.Join(home, "state")); err != nil {
 		return prepared, err
 	}
 	currentSnapshots := snapshots
 	snapshots = make(map[string]map[string][]byte, len(lock.Packages))
-	baselines := make(map[string]approvedSnapshot, len(lock.Packages))
-	baselineAvailable := make(map[string]bool, len(lock.Packages))
 	for _, item := range lock.Packages {
-		baseline, available, err := loadApproval(home, item)
-		if err != nil {
-			return prepared, err
-		}
-		baselines[item.Name], baselineAvailable[item.Name] = baseline, available
+		baseline, available := baselines[item.Name], baselineAvailable[item.Name]
 		snapshots[item.Name] = currentSnapshots[item.Name]
-		if request.Name != "" && item.Name != request.Name && ((!item.Link && len(filesChanged(item, currentSnapshots[item.Name])) > 0) || (item.Link && !item.LinkTrusted)) {
+		if request.Name != "" && item.Name != request.Name && packageNeedsTrust(prepared.result, item.Name) {
 			if !available {
 				return prepared, &ConflictError{Message: fmt.Sprintf("cannot rebuild %s while its source differs and its approval baseline is unavailable; restore its locked bytes first", item.Name)}
 			}
@@ -118,6 +139,9 @@ func (s *Service) prepareSync(ctx context.Context, request TrustRequest) (syncPr
 		return prepared, err
 	}
 	prepared.result.Diagnostics, prepared.result.Reports = compilation.diagnostics, compilation.reports
+	if request.Name != "" {
+		prepared.result.Native = compilation.nativeReports("")
+	}
 	prepared.files, updated.Harnesses, prepared.result.Routes, err = planInstallRoutes(ctx, home, adapters, compilation, lock, nil)
 	if err != nil {
 		return prepared, err
@@ -141,6 +165,16 @@ func (s *Service) prepareSync(ctx context.Context, request TrustRequest) (syncPr
 			change.BaselineAvailable = available
 			change.SourceDiff = diffMaps(baseline.Files, currentSnapshots[item.lock.Name])
 			change.RenderedDiff = diffMaps(baseline.Rendered, current.Rendered)
+			if request.Name != "" {
+				var previous []NativeHookReport
+				if available {
+					previous, err = s.baselineNative(original, baseline, adapters)
+					if err != nil {
+						return prepared, err
+					}
+				}
+				change.NativeDiff = nativeDiff(previous, current.Native)
+			}
 		}
 		item.lock.Approval = hashBytes(approval)
 		updated.Packages = append(updated.Packages, item.lock)
@@ -172,6 +206,15 @@ func (s *Service) prepareSync(ctx context.Context, request TrustRequest) (syncPr
 	}
 	prepared.files, err = uniquePlannedFiles(prepared.files)
 	return prepared, err
+}
+
+func packageNeedsTrust(result SyncResult, name string) bool {
+	for _, change := range result.Changes {
+		if change.Package == name {
+			return change.NeedsTrust
+		}
+	}
+	return false
 }
 
 func detachedSyncResult(result SyncResult) SyncResult {

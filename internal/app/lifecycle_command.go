@@ -26,8 +26,21 @@ func runInstall(ctx context.Context, service *Service, workDir string, args []st
 	if !filepath.IsAbs(request.Source) {
 		request.Source = filepath.Join(workDir, request.Source)
 	}
+	previewWritten := false
+	if !jsonOutput {
+		yes := request.Yes
+		request.Yes = false
+		request.Confirm = func(preview InstallResult) (bool, error) {
+			writeInstallPreview(out, preview)
+			previewWritten = true
+			return yes, nil
+		}
+	}
 	result, err := service.Install(ctx, request)
 	if err != nil {
+		if result.AwaitingConfirmation && jsonOutput {
+			_ = encodeJSON(out, result)
+		}
 		var usageErr *UsageError
 		var conflictErr *ConflictError
 		var blockedErr *BlockedError
@@ -58,8 +71,8 @@ func runInstall(ctx context.Context, service *Service, workDir string, args []st
 		}
 		return ExitOK
 	}
-	if len(result.Reports) > 0 {
-		writePlanText(out, PlanResult{Package: result.Package, Version: result.Version, Diagnostics: result.Diagnostics, Reports: result.Reports})
+	if !previewWritten {
+		writeInstallPreview(out, result)
 	}
 	if len(result.Reports) == 0 && len(result.Routes) == 0 && len(result.Diagnostics) > 0 && !result.Changed {
 		fmt.Fprintf(out, "skipped %s %s (no compatible harness)\n", result.Package, result.Version)
@@ -79,6 +92,13 @@ func runInstall(ctx context.Context, service *Service, workDir string, args []st
 		fmt.Fprintf(out, "warning %s: %s\n", diagnostic.Code, diagnostic.Message)
 	}
 	return ExitOK
+}
+
+func writeInstallPreview(out io.Writer, result InstallResult) {
+	if len(result.Reports) > 0 {
+		writePlanText(out, PlanResult{Package: result.Package, Version: result.Version, Diagnostics: result.Diagnostics, Reports: result.Reports})
+	}
+	writeNativeHooks(out, result.Native)
 }
 
 func parseInstallArgs(args []string) (InstallRequest, bool, error) {

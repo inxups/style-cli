@@ -14,9 +14,10 @@ import (
 // An approval retains the bytes and compiled representation that the user
 // accepted. Lock hashes authenticate it; it is never a runtime input.
 type approvedSnapshot struct {
-	Format   int               `json:"format"`
-	Files    map[string][]byte `json:"files"`
-	Rendered map[string][]byte `json:"rendered"`
+	Format   int                `json:"format"`
+	Files    map[string][]byte  `json:"files"`
+	Rendered map[string][]byte  `json:"rendered"`
+	Native   []NativeHookReport `json:"native"`
 }
 
 func approvalPath(home, name string) string { return filepath.Join(home, "approved", name+".json") }
@@ -45,7 +46,7 @@ func approvalBytes(compilation installCompilation, name string, files map[string
 		}
 		view[body.Harness+"/static/"+body.Rule+"/"+body.Slot] = []byte("mode: " + body.Mode + "\n" + body.Body)
 	}
-	return json.Marshal(approvedSnapshot{Format: 1, Files: files, Rendered: view})
+	return json.Marshal(approvedSnapshot{Format: 1, Files: files, Rendered: view, Native: compilation.nativeReports(name)})
 }
 
 func loadApproval(home string, item lockPackage) (approvedSnapshot, bool, error) {

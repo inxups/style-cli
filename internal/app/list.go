@@ -4,6 +4,8 @@ import (
 	"context"
 	"path/filepath"
 	"sort"
+
+	"github.com/inxups/style-cli/core/spec"
 )
 
 // ListRequest selects the local installation store without probing providers.
@@ -19,6 +21,7 @@ type InstalledPackage struct {
 	HashMatches  bool     `json:"hash_matches"`
 	ChangedFiles []string `json:"changed_files"`
 	Error        string   `json:"error,omitempty"`
+	NativeCount  int      `json:"native_count"`
 }
 
 type ListResult struct {
@@ -59,6 +62,28 @@ func listLocked(ctx context.Context, home string, lock lockDocument) (ListResult
 		} else {
 			item.ChangedFiles = filesChanged(pkg, files)
 			item.HashMatches = len(item.ChangedFiles) == 0
+		}
+		baseline, available, baselineErr := loadApproval(home, pkg)
+		if baselineErr != nil {
+			item.Error = baselineErr.Error()
+		} else if available && baseline.Native != nil {
+			item.NativeCount = len(baseline.Native)
+		} else {
+			if available {
+				files = baseline.Files
+			}
+			if resolved, err := loadNativeSource(pkg, files); err == nil {
+				for _, rule := range resolved.Rules {
+					if rule.Effective["target"] != "native" {
+						continue
+					}
+					for _, native := range spec.NativeRules(rule) {
+						if _, ok := lock.Harnesses[native.Harness]; ok {
+							item.NativeCount++
+						}
+					}
+				}
+			}
 		}
 		result.Packages = append(result.Packages, item)
 	}

@@ -33,6 +33,7 @@ type DoctorResult struct {
 	LegacyStats     int                `json:"legacy_stats_without_estimate"`
 	ExpiredSessions int                `json:"expired_sessions"`
 	StateReset      bool               `json:"state_reset"`
+	Native          []NativeHookCheck  `json:"native_hooks,omitempty"`
 }
 
 // Doctor checks cold-path integrity. Runtime fail-open behavior never turns a
@@ -60,7 +61,7 @@ func (s *Service) Doctor(ctx context.Context, request DoctorRequest) (DoctorResu
 				result.add("package-changed", "error", fmt.Sprintf("%s differs from lock; run sync/trust (%v %s)", pkg.Name, pkg.ChangedFiles, pkg.Error))
 			}
 			if pkg.Link == "dev" {
-				result.add("link-dev", "warning", pkg.Name+" is a development link; subsequent edits are accepted by sync after initial trust")
+				result.add("link-dev", "warning", pkg.Name+" is a development link; ordinary rule edits are accepted by sync after initial trust; native changes require renewed approval")
 			}
 		}
 		for _, pkg := range lock.Packages {
@@ -75,6 +76,18 @@ func (s *Service) Doctor(ctx context.Context, request DoctorRequest) (DoctorResu
 				code = "route-drift"
 			}
 			result.add(code, "error", err.Error())
+		}
+		result.Native, err = s.checkNative(ctx, home, lock, "")
+		if err != nil {
+			result.add("native-config", "warning", err.Error())
+		}
+		for _, native := range result.Native {
+			if native.Status != "ok" {
+				result.add("native-"+native.Status, "warning", native.Harness+" "+native.Rule+": native hook "+native.Status)
+			}
+			if native.TrustStatus != "" && native.TrustStatus != "match" {
+				result.add("native-trust", "warning", native.Harness+" "+native.Rule+": trusted_hash "+native.TrustStatus)
+			}
 		}
 	}
 	inventory, err := s.inspectAdapters(ctx, home, lock)

@@ -57,6 +57,17 @@ type NativeWriter interface {
 	Native(spec.NativeRule) (HookSpec, error)
 }
 
+type NativeStatus struct {
+	Tag   string
+	State string
+	Trust string
+}
+
+// NativeInspector checks commands and user-route trust against approved hooks.
+type NativeInspector interface {
+	InspectNative(context.Context, []HookSpec) ([]NativeStatus, error)
+}
+
 // PlanningFacts composes only the provider facts needed by core/plan.
 // BuildPlanAdapter projects this richer contract onto core/plan's small port.
 type PlanningFacts interface {

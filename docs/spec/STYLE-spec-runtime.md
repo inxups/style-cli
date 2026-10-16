@@ -232,6 +232,7 @@ STYLE 的 hook 输出**只允许**这几样：`additionalContext`、`systemMessa
 - 安装报告逐条列出：harness、规则、原生事件、matcher、实际 timeout、作者命令原文（不含 STYLE 归属前缀），以及该路线的信任方式：`codex-user` 预置 `trusted_hash`，Codex 不再单独提示；`codex-plugin` 走插件信任；Claude 走工作区信任。
 - Codex 用户路线预置 native 条目的信任，前提就是这一步的确认。所以只要本次安装、`sync` 或 `trust` 会新增或改变 native 条目，就必须交互确认或带 `--yes`；非交互又没有 `--yes` 时退出 1，什么都不写。
 - native 条目变化（增、删、事件、matcher、timeout、命令任一改变）时，`sync` 退出 3，`--link` 开发包也不例外（不同于 [CLI 设计 §6](STYLE-cli-design.md) 对 `--link` 包改动只打印差异摘要的约定）。`trust` 的预览单列"native 条目差异"，按 harness/规则给出改前改后的四个字段，确认后才写入。
+- native 执行顺序变化也要求重新信任；timeout 同时保留作者声明与实际生效值（例如 Codex `SessionEnd` 限制为 3 秒），声明值变化即使不改变实际值也要确认。配置中的 native 条目缺失、被改动或用户路线 `trusted_hash` 不匹配时，`sync` 只提示需要信任，以 `trust` 的预览和确认修复。普通 link 规则的自动同步约定不变。
 - `style list` 显示每个包的 native 条目数；`style doctor` 逐条核对 harness 配置里的 native 条目：存在且一致、缺失、被改动（命令或字段与锁文件渲染指纹不符），后两种告警；`codex-user` 另核对对应的 `trusted_hash`。
 
 ### 8.7 信任到底防什么
