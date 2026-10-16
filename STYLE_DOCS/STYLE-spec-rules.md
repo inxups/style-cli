@@ -84,8 +84,8 @@ Codex 只拦截 `Bash`、`apply_patch` 和 MCP（agenthooks quirk #16）。规�
 | `prompt.submitted` | 注入、阻止 | Claude 上定时任务、后台子 agent 回报、别的会话发来的消息也会触发它【方案 N4】 |
 | `tool.pre` | 注入、阻止 | |
 | `tool.post` | 注入 | |
-| `tool.error` | 注入 | 只有 Claude（`PostToolUseFailure`）；Codex 上永不触发 |
-| `subagent.start` | 注入 | Codex 需要 fork 改动 F7 |
+| `tool.error` | 注入 | 只有 Claude（`PostToolUseFailure`）；Codex 无此入口。无条件规则按 fallback 为 skipped / install-error；缺失条件数据可先得到 never-trigger（运行时 §5） |
+| `subagent.start` | 注入 | Codex F7 已实现并经真实 rollout/请求验证；Claude 仅观察，不声明输出能力 |
 
 MCP 名字不在清单里拼。`mcp__<server>__<tool>` 的拆分由适配器做；Claude 上服务名取工具事件里的 `mcp_server.name`，因为插件自带的服务器工具名是 `mcp__plugin_<插件>_<服务>__<工具>`，按名字拆会拆错【文档】。
 

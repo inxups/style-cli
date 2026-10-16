@@ -1165,3 +1165,11 @@ PY
 - Claude 历史会话 `1a0e173f…` 的 130 usage 行按响应身份去重为108，删除22重复快照。input216 + creation25808 + read4878107 = 输入4904131，output11410；creation 全为1h，TTL明细不再加总。STYLE inject4/warn1/dedup10，估算69；主 transcript 不覆盖独立子 agent 或无 usage 的失败/重试。验收工作负载不校准典型会话默认值，也不能将总 usage 归因到每条规则。
 - 2026-10-16 成功打开官方 OpenAI/Claude prompt-caching 指南并核对门槛、前缀、TTL、读写倍率和 usage 字段。具体资料与例外记录于 CACHE 文档；例如当前 Sonnet5.5 读取0.05、1h写入2，与保留公式不完全相符。CLI 文本/golden、教程、设计 §11.3 明确公式是假设1.25写/0.1读的相对比较，不是实际账单；公式、JSON/index/lock/state、60/3和400/1200/600不变。
 - 验证：全部27项 Python 测试（新增4项覆盖 resume累计/追加stats、app-server累计、部分字段覆盖、Claude重复/TTL/隐私）；清理CODEX变量和临时Go缓存的 `go test -count=1 ./internal/app`、`go vet ./internal/app`，golden、汇总断言和 `git diff --check` 全部通过。FINAL-10 `[x]`；FINAL-06/07/08/09 仍按缺证据范围待验。
+
+### 2026-10-16 — M1-FINAL-11 文档、状态与现有 fallback 一致性
+
+- 规范首页不再声称“还没有实现”，设计/教程/任务与矩阵明确 M1 补验收未全部闭合；历史 B/C 原证据保留。总览核对到960dd57：Codex effort 九种真实组合、插件生命周期、scope、raw预览及实际usage已完成；Claude剩余能力与官方计数仍待验，最终程序C9须重采。
+- 统一规则/运行时规范、设计及总览：无条件 Codex tool.error 的degrade/skip=skipped，error=install-error；缺失条件可为never-trigger。工具静态回退要求无任何when；system静态回退单点优先、动态双点可用时双挂载，完全不可用的system保留原fatal例外。degrade仍允许最终跳过，不改代码策略、schema或默认值。unknown映射的approx缺失不再误写为永远false。
+- 另纠正文档中尚未实现的Codex events.yaml按版本裁剪描述：当前Surface固定，示例靠既有requires.harness过滤；plugin manifest版本当前固定0.1.0，bin/style为POSIX启动器。两条路线切换、native追加表保留和不确定信任回退边界已说明。
+- 验证：隔离Go环境 `go test -count=1 ./internal/adapter/... ./internal/runtime ./core/plan ./internal/app` 全通过；`go build -trimpath -o /tmp/style-m1-docs-final11 ./cmd/style` 后在临时HOME/STYLE_HOME/CODEX_HOME/CLAUDE_CONFIG_DIR运行四组 `plan package --harness codex --json`。初次临时fixture漏必填spec/description，仅得到校验诊断，补齐后四组实际退出/状态完全符合文档、无placement且无配置/state写入；fixture全文/二进制哈希/复现方式在 `review/M1-FINAL-11-PLAN-2026-10-16.json`，不作为新的runtime投递证据。
+- 9个当前文档的94个本地文件链接、全部代码围栏、`git diff --check`通过；源码对照入口为core/plan/system.go、events.go、policy.go及Codex HookManifest。FINAL-11 `[x]`，接着执行FINAL-12；M2仍不启动。

@@ -1,6 +1,6 @@
 # STYLE 当前 adapter 实现总览
 
-更新时间：2026-10-16。源码基线：`dd7438ec`。
+更新时间：2026-10-16。源码核对基线：`960dd57`（FINAL-01–10）。
 
 本文总结当前仓库的实现，不代表 Claude Code / Codex 所有版本的完整产品能力。能力声明、安装配置、运行时可接收事件和真实验收结果分别说明；未修改现有 fallback 语义。
 
@@ -59,13 +59,15 @@ STYLE 当前完整接入两个 provider：`codex` 和 `claude-code`。`agenthook
 
 | 路线 | 写入位置与用途 | 信任声明 |
 |---|---|---|
-| `codex-plugin` | 插件默认在 `$STYLE_HOME/adapters/codex/plugin`；包含插件清单、hook 和程序文件；静态指令及 hook 信任配置仍关联 Codex 配置目录 | `user-confirmation`，不会因文件存在就宣称已信任 |
+| `codex-plugin` | 插件默认在 `$STYLE_HOME/adapters/codex/plugin`；包含插件清单、hook 和指向固定程序的 POSIX 启动器；静态指令及 hook 信任配置仍关联 Codex 配置目录 | `user-confirmation`，不会因文件存在就宣称已信任 |
 | `codex-user` | Codex 配置目录的 `hooks.json` 和 `config.toml` | `preseed`，生成 hook 信任状态；配置满足安装检查时可报告 trusted |
 | `claude-user` | Claude 配置目录的 `settings.json` 和 `CLAUDE.md` | `workspace`，`Status.Trusted` 保守返回 false，无法从配置文件推断工作区信任 |
 
 Codex Definition 的声明顺序是 plugin、user；Claude 只有 user。实际选择还受显式路线参数、已安装锁定信息和可用性影响。项目级路线和 Claude 插件路线尚未实现。
 
 Codex 插件的 marketplace 登记/启用尚未由 STYLE 自动完成；已有真实验收采用手动管理命令，不能把生成插件文件等同于 Codex 已加载插件。
+
+示例要求 Codex >=0.159.3、Claude Code >=2.1.300；低/未知版本按既有 schema 跳过且不写配置。自定义包需要自己的版本约束；Codex 固定 Surface 没有独立的按事件版本裁剪表。
 
 ### 3.3 文件生命周期
 
@@ -75,6 +77,7 @@ Codex 插件的 marketplace 登记/启用尚未由 STYLE 自动完成；已有�
 - 复用 `agenthooks/install` 的 owner 合并、过期快照检查和文件写入；保留外部 handler 与托管区外的字节。
 - owner 命名空间为 `style`，静态正文按包分组；卸载一个包后重新编译剩余包，最后一个包卸载时清除 STYLE 路线。
 - Codex 的 `TransitionPlanner` 将旧路线移除和新路线生成合并，处理两条路线共享 `config.toml` 的情况。
+- 原生 Codex TOML 编辑器可能把手动 marketplace/plugin 表追加进 STYLE 标记内；FINAL-04-FIX 的安装合并/移除会保留这些非 trust 表，损坏区域拒绝写入。临时项目 trust 由 native 写入时单独核对，不能归因于 STYLE 卸载。
 - `InstallationBinder` 绑定实际配置目录和版本；`StorageBinder` 绑定选定的 `STYLE_HOME`，使 hook 使用安装时的 index/state。
 - [HookCommand](../internal/adapter/command.go) 将 `./style` 等相对路径转成绝对路径；裸命令 `style` 仍交给 PATH 查找。
 
@@ -158,7 +161,7 @@ Claude Enricher 能构造 `subagent.start` 评估点，但 Facts 不声明输出
 
 源码：[system.go](../core/plan/system.go)。
 
-## 6. fallback：当前代码语义与缺口
+## 6. fallback：当前代码语义
 
 默认值为 `degrade`。这些策略由 `core/plan` 实现，adapter 只返回事实。
 
@@ -204,14 +207,11 @@ Claude Enricher 能构造 `subagent.start` 评估点，但 Facts 不声明输出
 
 `when.harness.name` 排除当前 adapter、`when.provider` 在 M1 不求值、`target: native` 留到 M2、工具盲区等分支，发生在普通 fallback 评估前。它们分别跳过或标记 never/M2；不能承诺 `fallback: error` 会拦住所有未生效规则。缺失条件数据与普通输出能力不足也有不同状态。
 
-### 6.4 尚未统一的语义
+### 6.4 与规范的对应
 
-- **degrade 是否允许丢弃**：现有代码允许，上文列的是当前行为。“降级不成功必须报错”尚未实施，不能当作既定约定。
-- **tool.error 状态措辞**：规则规范写“Codex 上永不触发”，当前普通无条件规则实际是 `skipped`，并非 `never-trigger`。
-- **静态回退条件**：运行时规范阶梯写“没有 `when.conditions`”，代码要求没有任何 `when`，更严格。
-- **动态 system**：规范采用阶梯叙述，代码在两点均可用时双挂载；完全不可用时的静态回退描述也应结合代码重新统一。
+FINAL-11 已将规范同步到上述现有行为：degrade 可最终跳过；Codex 无条件 tool.error 为 skipped；工具静态回退要求没有任何 when；动态 system 两点可用时双挂载，完全不可用时按 §5.2 报告。没有增加“降级不成功一律报错”的新保证，也没有改变规划器。
 
-这些是文档/策略待决点，本次总结没有更改实现或规范。源码：[requirements.go](../core/plan/requirements.go)、[events.go](../core/plan/events.go)、[policy.go](../core/plan/policy.go)、[plan.go](../core/plan/plan.go)；规范：[运行时 §5](../STYLE_DOCS/STYLE-spec-runtime.md)、[规则定义](../STYLE_DOCS/STYLE-spec-rules.md)。
+源码：[requirements.go](../core/plan/requirements.go)、[events.go](../core/plan/events.go)、[policy.go](../core/plan/policy.go)、[plan.go](../core/plan/plan.go)；规范：[运行时 §5](../STYLE_DOCS/STYLE-spec-runtime.md)、[规则定义](../STYLE_DOCS/STYLE-spec-rules.md)。
 
 ## 7. 工具、MCP 和 skill 归一化
 
@@ -266,7 +266,7 @@ Codex 从事件的 model 更新状态。Claude 的 SessionStart model 与 PostMo
 3. `-p` 指定的 `CODEX_HOME/<name>.config.toml`。
 4. 用户 `config.toml` 的顶层值。
 
-以上为实测 Codex 0.159.3 的顺序；缺失 profile 文件继承用户配置，新版拒绝 legacy profile selector/选中 table。旧/未知版本保留表式 profile 兼容解析。本轮真实 CLI 配置请求由本地 sink 记录，不等同远端模型投递。
+以上为实测 Codex 0.159.3 的顺序；缺失 profile 文件继承用户配置，新版拒绝 legacy profile selector/选中 table。旧/未知版本保留表式 profile 兼容解析。FINAL-02 的本地 sink 只证实配置加载；FINAL-04 两条路线各自用九种配置另核对真实请求、rollout、state/stats 与正文摘要。unknown 被服务拒绝不影响 STYLE 保持 unknown 的结论，不宣称服务支持未知档位。
 
 每会话解析一次，即使没有值也标记 resolved；不会每个工具 hook 重读。`plan_mode_reasoning_effort` 不读取，会话中途通过 `/model` 改 effort 的检测未实现。
 
@@ -332,7 +332,7 @@ Claude 的 UserPromptSubmit 阻断可带嵌套 `suppressOriginalPrompt`，其他
 | Codex | 2500 token | approximate=true | file-preview |
 | Claude | 10000 字符 | approximate=false | file-preview |
 
-这里是项目采用的原生限制事实，不是本次重新测得的所有 harness 版本保证。真实超限表现仍有待测项。
+这里是 adapter 采用的限制声明，不是所有版本保证。FINAL-08 已用无 STYLE 的 raw hook 测 Codex SessionStart 12k/50k、PreToolUse 12k 字符：完整正文落盘，模型收到约10,100字符头尾预览和路径，保存文件 bytes/SHA256 与 raw body 一致。首尾均出现不表示完整投递；字符测量不能校准2500 token。Claude 原生行为仍待认证实测。
 
 `core/tokens` 单独计算 per_rule、per_event、always_on 和跨包预算；单位不可混用。运行时按本次事件合并后的模型文本检查输入限制，超限从排序末尾丢弃整条候选并释放去重占位，不从正文中间截断。用户提示不是模型文本预算本身。
 
@@ -370,7 +370,7 @@ env -u CODEX_HOME -u CODEX_SANDBOX \
   go test -count=1 ./internal/adapter/... ./internal/runtime ./core/plan ./internal/app
 ```
 
-这组测试验证当前实现；不表示本次新增了 tool.error 专用回归，也不替代真实 harness 验收。
+这组测试验证当前实现，不替代真实 harness 验收。FINAL-11 另用真实 built CLI 核对 tool.error 的 degrade/skip/error 与缺失条件状态，记录于进度日志。
 
 ### 11.2 已有真实证据的范围
 
@@ -380,7 +380,9 @@ env -u CODEX_HOME -u CODEX_SANDBOX \
 - Codex compact 后 developer_instructions 可见；compact 来源的 SessionStart 延迟到下一回合开始执行。
 - Claude 模型切换和动态补发有真实证据；启动 model/effort unknown 边界保留。
 - Claude systemMessage 只确认 PreToolUse 的用户可见性；其他事件的能力仍属当前声明。
-- Claude 性能验收按整批 hook 样本 p95 口径通过，不能扩大为每类事件均达标。CR-05 的 state 优化已有离线计时，真实 harness 计时尚未复测。
+- Codex CR-05/U5 的200次真实 PreToolUse p95=28.6ms 已复测。Claude 历史 C9 以整批 hook p95=46ms 通过，不能扩大为每类事件达标；最新修复程序尚待重新采集50次串行 Bash与完整 hook 样本。
+- FINAL-07 的无补发探针确认 Codex resume/fork 保留原 context，compact 后两个动态标记消失；三种子 agent 的工具注入/阻断各在独立 scope。Claude 对应补验收未完成。
+- FINAL-10 已统计真实请求、注入/去重与会话 usage，缓存条件已核对官方资料；公式是情景比较，token 官方计数仍待 API 认证。
 
 完整证据见 [测试矩阵](STYLE-M1-TESTS.md)、[进度日志](PROGRESS.md)、[M1b 手册](STYLE-M1B-MANUAL.md)、[设计 §15](../STYLE_DOCS/STYLE-cli-design.md)。
 
@@ -388,15 +390,15 @@ env -u CODEX_HOME -u CODEX_SANDBOX \
 
 | 类别 | 当前边界 |
 |---|---|
-| fallback | degrade 可最终丢弃；tool.error 状态措辞与规范不统一；严格降级语义尚未定案 |
+| fallback | degrade 可最终跳过；规范已同步现有状态和静态回退要求，不增加成功保证 |
 | system prompt | 两家都只追加；不能替换原 agent 底层 system prompt；replace 无槽位 |
 | Codex 工具 | 固定订阅盲区仍存在，不能把 canonical `*` 当成原生全工具覆盖 |
-| Codex effort | 配置请求值、每会话一次；生产未注入项目信任回调；profile/项目信任真实组合覆盖不完整 |
+| Codex effort | 配置请求值、每会话一次；profile/启动覆盖/项目组合已实测；生产未知项目信任继续跳过项目层并由 doctor 解释 |
 | Codex plugin | marketplace 登记/启用须手动执行；完整登记、更新、移除和切换已实测 |
 | Codex skill / 子 agent | 云端 skill 不支持且 plan 提示；原生工具名未采集。FINAL-07 已覆盖 fresh/fork/depth2 子 agent context、工具注入/阻断与独立 scope |
 | Claude | workspace trust 无法自动确认；hook 热更新未测；思考关闭的 effort 表示未测；多数事件的 systemMessage 用户显示未测 |
-| 成本与超限 | token 校准、典型会话成本、真实超限表现和提示词缓存细节仍有未决项 |
+| 成本与超限 | 官方计数未认证；真实会话统计与缓存说明已完成但不代表典型账单；Codex 原生预览已测，Claude 原生超限待测 |
 | 路线与 provider | 项目级路线、Claude 插件路线、其他 STYLE provider adapter 尚未实现 |
 | 未来能力 | native、Claude rules 静态位置、output style replace、provider 条件等按 M2/M3/M4 backlog 规划 |
 
-后续若要改变 degrade 的保证，应先统一规范语义、各 target 的失败收尾、状态报告与测试，再修改规划器；本文件只记录当前状态。
+完整待验列表见 [任务清单 FINAL-06–12](STYLE-M1-TASKS.md)；Claude 界面步骤见 [隔离 runbook](review/M1-FINAL-06-CLAUDE-RUNBOOK.md)，成本与缓存证据见 [FINAL-10](review/M1-FINAL-10-CACHE-2026-10-16.md)。全部补项有证据后再开始 M2 规划。

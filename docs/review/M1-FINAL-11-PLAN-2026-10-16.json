@@ -1,0 +1,55 @@
+{
+  "item": "M1-FINAL-11",
+  "date": "2026-10-16",
+  "binary_sha256": "7b14b764f0ec60b846596d4d49132634acf272d0815a047e64ed2aa87d4dbc1e",
+  "reproduction": "Write each fixture_yaml to a fresh package/STYLE.yaml; with isolated HOME/STYLE_HOME/CODEX_HOME/CLAUDE_CONFIG_DIR run style plan package --harness codex --json and compare exit/status/placements. Clear CODEX_SANDBOX.",
+  "no_config_or_state_writes": true,
+  "cases": [
+    {
+      "fixture_yaml": "spec: style/v0.3\nname: final11\nversion: 1.0.0\ndescription: Check existing fallback documentation\nrules:\n  - id: on-error\n    target: event\n    event: tool.error\n    action: inject\n    fallback: degrade\n    text: Analyze the failure before retrying.\n",
+      "fallback": "degrade",
+      "has_condition": false,
+      "exit": 0,
+      "status": "skipped",
+      "reasons": [
+        "missing add-context at tool.error",
+        "no supported placement"
+      ],
+      "placements": []
+    },
+    {
+      "fixture_yaml": "spec: style/v0.3\nname: final11\nversion: 1.0.0\ndescription: Check existing fallback documentation\nrules:\n  - id: on-error\n    target: event\n    event: tool.error\n    action: inject\n    fallback: skip\n    text: Analyze the failure before retrying.\n",
+      "fallback": "skip",
+      "has_condition": false,
+      "exit": 0,
+      "status": "skipped",
+      "reasons": [
+        "missing add-context at tool.error",
+        "fallback:skip removes the rule because one or more placements are unavailable"
+      ],
+      "placements": []
+    },
+    {
+      "fixture_yaml": "spec: style/v0.3\nname: final11\nversion: 1.0.0\ndescription: Check existing fallback documentation\nrules:\n  - id: on-error\n    target: event\n    event: tool.error\n    action: inject\n    fallback: error\n    text: Analyze the failure before retrying.\n",
+      "fallback": "error",
+      "has_condition": false,
+      "exit": 4,
+      "status": "install-error",
+      "reasons": [
+        "missing add-context at tool.error"
+      ],
+      "placements": []
+    },
+    {
+      "fixture_yaml": "spec: style/v0.3\nname: final11\nversion: 1.0.0\ndescription: Check existing fallback documentation\nrules:\n  - id: on-error\n    target: event\n    event: tool.error\n    action: inject\n    fallback: degrade\n    text: Analyze the failure before retrying.\n    when:\n      conditions:\n        - {field: tool.name, op: equals, pattern: Bash}\n",
+      "fallback": "degrade",
+      "has_condition": true,
+      "exit": 0,
+      "status": "never-trigger",
+      "reasons": [
+        "missing condition data at tool.error: tool.name"
+      ],
+      "placements": []
+    }
+  ]
+}

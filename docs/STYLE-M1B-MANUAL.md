@@ -2,6 +2,8 @@
 
 日期：2026-10-15。配置由用户执行。2026-10-16 起 Codex 部分改由 agent 执行（用户指示），Claude 仍由用户执行；当日 Codex 基线备份在 `$STYLE_HOME/manual-backup-2026-10-16/`，第 7 节的 Codex cmp 以它为准。M1a 已完成；本文的准备验证不代表 M1b 通过。验收编号以 [测试矩阵](STYLE-M1-TESTS.md) 为准。
 
+2026-10-16 补验收采用隔离配置、独立工作区和临时 STYLE_HOME，保留日常安装。下文 §1–8 保留历史日常环境复现步骤；当前新增工作优先使用 [Claude 隔离 runbook](review/M1-FINAL-06-CLAUDE-RUNBOOK.md) 与 [manual 探针说明](../testdata/manual/README.md)。Codex 两条路线各自 B1–B9、切换/登记、effort、scope 及原生超限已有 FINAL-04/05/07/08 证据；Claude UI/继承/原生超限和官方计数仍待验，不把历史 C9 代替最终版本重新采集。
+
 ## 1. 构建与配置根
 
 在新的终端执行。二进制放在固定位置，因为生成的 hook 保存它的绝对路径，不能使用 `go run` 的临时程序。下面默认使用现有 Codex/Claude 用户配置根；如使用自定义根，先修改相应变量。
@@ -281,8 +283,17 @@ done
 
 ## 8. 返回结果
 
-每项记录：编号、CLI 版本、路线、工作区/会话标识、操作、预期、实际、证据片段和耗时数据。先返回两家 `--version`、install 输出、`doctor --json` 及新会话首条注入观察，就可以按结果继续排查。B1–B12、C1–C9 在真实证据返回前保持 `[?]`。
+每项记录：编号、CLI 版本、路线、工作区/会话标识、操作、预期、实际、证据片段和耗时数据。投递以 rollout/请求、hook 结果和 state/stats 交叉核对，模型复述只作辅助。B1–B12、C1–C9 的历史结果按矩阵保留；新增 FINAL 条目独立记录，缺真实证据继续保持 `[?]` / `[~]`，原失败与慢样本不覆盖。
 
 准备验证（2026-10-15）：隔离 HOME/CODEX_HOME/CLAUDE_CONFIG_DIR/STYLE_HOME，真实构建 STYLE CLI；两包 validate、两家 plan/install、sync、卸载后外部配置原文字节往返，以及 Codex 本地 marketplace 注册/安装/移除、路线切换均通过。探针经真实 STYLE 进程确认两家 session/warn/prompt block 与串行重复调用去重；并非真实并行工具验收。Claude 仅使用 `2.1.315` 版本探针做检测，未运行真实 Claude；未启动模型会话、未修改用户真实配置。
 
 官方参考（核对日期 2026-10-15）：[Codex hooks](https://developers.openai.com/codex/hooks)、[插件本地 marketplace](https://developers.openai.com/plugins/build/plugins)、[Claude hooks](https://code.claude.com/docs/en/hooks)。CLI 子命令以用户已安装版本的 help 为准。
+
+## 9. 补验收的剩余条件
+
+- FINAL-06：用户已选择稍后进行 Claude 隔离界面操作。按 runbook 采集每个已声明事件的 USER 可见性、关闭思考、各 hook effort、clear 和热更新；先确认能力边界，再用最终程序采50次严格串行 Bash、全部 hook completion，整体 p95 `<50ms` 并分事件报告及保留全部慢样本。
+- FINAL-07/08：Claude resume/fork、关闭补发专用 compact 探针、子 agent scope 与原生超限待隔离认证。compact 需核对输出次数未增长，不能把补发当历史保留；原生超限须独立 raw hook 绕开 STYLE，比较保存正文、预览及实际请求，不能用 STYLE cap-drop 代替。
+- FINAL-09：两家官方计数接口缺 API key，40条语料真实计数均0；安全凭据环境就绪后按 manual README 重跑，记录模型/哈希/基线/增量。不要在对话中粘贴凭据，不使用代理 token 或另一估算器替代。
+- FINAL-10：已有真实统计与官方缓存核对，见 [缓存与成本记录](review/M1-FINAL-10-CACHE-2026-10-16.md)。规则估算与整个会话 usage 分列，默认公式是情景比较，不等于实际账单。
+
+以上都闭合并通过最终回归后，才开始 M2 规划；不为补验收增加云端 skill、插件自动登记或公开命令。

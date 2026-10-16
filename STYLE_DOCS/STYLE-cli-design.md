@@ -2,7 +2,7 @@
 
 对应规范：[STYLE-spec.md](STYLE-spec.md)（v0.3）。规范定义包格式、运行时语义、token 预算、安全约束和 `index.json`；本文定义命令、本地布局、编译和运行时流程、Claude Code 与 Codex 两个适配器、token 估算器、fork 改动、里程碑、验收和未决项。冲突时，格式和语义以规范为准，实现细节以本文为准。
 
-状态（2026-10-15）：M1a 离线验收已完成，M1b 真实环境验收进行中；逐项证据以 [任务清单](../docs/STYLE-M1-TASKS.md) 和 [测试矩阵](../docs/STYLE-M1-TESTS.md) 为准。M1 只做 **Claude Code** 和 **Codex**。本文接口代码为设计示意；路线名、CLI 信任选项及下列锁文件示例已按当前实现校对。
+状态（2026-10-16）：M1a 离线验收已完成，M1b B/C 历史条目按各自记录范围通过，全部 M1 补验收仍进行中。FINAL-01–05、10 已闭合，Claude 界面/上下文/原生超限、官方计数及最终回归尚未全部闭合；逐项证据以 [任务清单](../docs/STYLE-M1-TASKS.md) 和 [测试矩阵](../docs/STYLE-M1-TESTS.md) 为准。M1 只做 **Claude Code** 和 **Codex**。本文接口代码为设计示意；当前接口与职责见 [adapter 总览](../docs/STYLE-ADAPTERS-CURRENT.md)。
 
 **依据**：
 - agenthooks `3f734c7` 源码，历史整理资料为 `agenthooks-codex.md`（外部资料，本仓库未收录）；
@@ -316,7 +316,7 @@ state/<sid>/
 
 ```
 ~/.style/adapters/codex/plugin/
-├── .codex-plugin/plugin.json    # name: style-runtime，version 跟 style 二进制
+├── .codex-plugin/plugin.json    # name: style-runtime，当前 manifest version 固定为 0.1.0
 ├── hooks/hooks.json
 └── bin/style                    # POSIX sh 启动器
 ```
@@ -362,7 +362,7 @@ exec '/abs/path/to/style' "$@"
 | SubagentStart | 不写 | `subagent.start`（F7） |
 
 - 每个事件只有一组、一个 handler，所以信任键里的序号永远是 `0:0`；订阅面不变，键就不变，用户基本只需要信任一次。
-- **按版本裁剪**：`Detect` 得到版本后，只订阅这个版本认识的事件（例如旧版不认识 SubagentStart 就不订阅），避免一个未知事件让整个文件加载失败。版本到事件的对应表是适配器的数据文件 `adapter/codex/events.yaml`。裁剪结果进 `surface` 指纹。
+- **当前不按事件版本裁剪**：Surface 固定返回上述五类，未实现 events.yaml 版本表。示例通过既有 `requires.harness` 要求 Codex >=0.159.3，低/未知版本按包过滤并保持配置不变（FINAL-01）；不能把这项过滤写成所有自定义包都有自动事件兼容。
 - 指纹 = 规范化后（键排序、紧凑）的 `hooks.json` 内容的 sha256。
 - 这组 matcher 是适配器写死的，不经过 agenthooks 的 `CompileMatcher`，所以 F1 的 matcher bug 不影响这里，但 fork 里仍要修。
 - 代价：每次 Bash、apply_patch、MCP 调用都多起一个进程（经过登录 shell），没命中时不输出、不花 token，只花时间（U5）。
@@ -372,7 +372,7 @@ exec '/abs/path/to/style' "$@"
 | 数据 | 做法 |
 |---|---|
 | model | 每个事件 stdin 的 `model` |
-| effort | 只看配置请求值。实测 0.159.3：祖先进程 `-c` → 明确受信项目配置 → `-p` / `--profile` 指定的 `CODEX_HOME/<name>.config.toml` → 用户配置。缺失 profile 文件继承用户配置；legacy selector/table 与新 profile 同选时原生拒绝。旧/未知版本保留原有表式解析。生产 `runHook` 尚无可靠信任回调，明确跳过项目层；不从模型默认值伪造配置 effort。结果映射并缓存到 session，一会话一次。证据：M1-FINAL-02 |
+| effort | 只看配置请求值。实测 0.159.3：祖先进程 `-c` → 明确受信项目配置 → `-p` / `--profile` 指定的 `CODEX_HOME/<name>.config.toml` → 用户配置。缺失 profile 文件继承用户配置；legacy selector/table 与新 profile 同选时原生拒绝。旧/未知版本保留原有表式解析。生产 `runHook` 尚无可靠信任回调，明确跳过项目层，doctor 报告原因；不从模型默认值伪造 effort。结果映射并缓存到 session，一会话一次；未知 raw 不沿用旧 tier。配置及两条路线真实投递证据：M1-FINAL-02/04 |
 | 回合 | `turn_id`；SessionStart 上没有，用 `prompt_count` |
 | agent | `agent_id`、`agent_type` |
 | `tool.added` | `apply_patch` 的输入是 `{"command": "<补丁文本>"}`【源码】：取以 `+` 开头的行，去掉 `+`，跳过 `+++` |
@@ -706,7 +706,7 @@ F1–F4、F10 是安装和协议层的问题，最好也提给上游。F5–F9 �
 
 ### 14.3 实测项的结局
 
-每个实测项只记三种结局之一：**符合预期**、**回退方案生效**、**阻塞**。对 M1 的影响见第 15 节每一行的最后一栏。只有两种情况会让 M1b 暂停：U5 超出性能预算（要改设计），以及任一路线上 b1–b9 / c1–c8 不通过且没有回退方案。
+每个实测项记录**符合预期**、**回退方案生效**或**阻塞**，并保留实际范围与失败证据。原 M1b 门槛不替代后来批准的全部补验收；任何尚缺证据的 FINAL 条目继续保留 `[~]` / `[!]` / `[?]`，不以脚本准备或历史程序结果标记当前完成。整批 C9 需最终程序重新采集，见 [隔离 runbook](../docs/review/M1-FINAL-06-CLAUDE-RUNBOOK.md)。全部 M1 补项闭合后再规划 M2。
 
 ### 14.4 之后
 
@@ -721,6 +721,8 @@ F1–F4、F10 是安装和协议层的问题，最好也提给上游。F5–F9 �
 ### 15.1 要实测的
 
 保留设计阶段的待测项；已做的准备验证写在对应行，完整验收状态以 [测试矩阵](../docs/STYLE-M1-TESTS.md) 为准。"测之前"一栏记录当前采用的做法；"M1b 结果"一栏按 M1b 真实验收证据回填，B/C 编号指测试矩阵条目，"未测"表示 M1b 没有覆盖、原做法不变。
+
+Claude U9、U-C1/C2/C3/C5 的隔离补验收已准备在 [FINAL-06 runbook](../docs/review/M1-FINAL-06-CLAUDE-RUNBOOK.md)，用户选择稍后操作。准备成功不改变下表真实结果；发现无效能力后须修正声明与回归，再采最终 C9。
 
 | # | 问题 | 为什么重要 | 怎么测 | 测之前 | 结局对 M1 的影响 | M1b 结果（2026-10-16） |
 |---|---|---|---|---|---|---|

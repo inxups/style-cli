@@ -4,6 +4,8 @@
 
 本文件记录测试矩阵和每项当前状态。测试通过必须有命令输出、fixture/golden 文件或真实环境记录作为证据。
 
+当前 M1 补验收未全部闭合；历史 B/C 通过不覆盖 FINAL 新增的环境/程序/能力范围。FINAL-06、07/08 的 Claude 部分与 FINAL-09 仍待真实证据，最终回归单列 FINAL-12；不提前开始 M2。
+
 ## 状态约定
 
 - `[x]` 已通过。
@@ -223,5 +225,5 @@ B1.2 和 B1.4 的历史通过状态表示原有测试套件在声明范围内通
 - [~] **FINAL-08 超限**：两家 built CLI 的 T003 超限安装拒绝、配置未改/STYLE_HOME 未创建；core engine/tokens/app 回归通过。Codex 三个独立 raw hook（SessionStart 12k/50k、PreToolUse 12k）完整输出被 native 落盘，真实模型收到预览，正文未完整出现；保存文件 SHA256/字节与原文一致。首尾标记同时出现不计完整投递，新增回归。Claude 原生行为未测，不能勾整项。证据 `review/M1-FINAL-08-OVERFLOW-2026-10-16.json`。
 - [?] **FINAL-09 校准**：40 条固定中英各半规则，逐条 SHA256、同结构基线/请求摘要、模型和生产 CLI 估算已记录；官方 API key 均缺失，脚本 exit2、两家 0/40，不宣称校准通过。新增语料/请求结构/缺凭据禁止网络回归，修正 plan/doctor 未验证的误差保证及 golden。真实重跑命令见 manual README。
 - [x] **FINAL-10 U-T4/U-T6**：FINAL-04 各 19 调用归并 17 会话，各 31 个真实 HTTP 尝试、16 会话有 usage；Claude 130 行 usage 去重为 108 响应。规则次数/去重/估算、完整会话 native usage 及字段覆盖范围分列。官方缓存门槛/TTL/读写/usage 核对完成，保留公式和默认值但标注 scenario/not billing；4 项采集器语义回归、全部 27 项 Python 测试、app 全量/vet、golden 和 diff 检查通过。见 `review/M1-FINAL-10-CACHE-2026-10-16.md` 与 USAGE JSON。
-- [ ] **FINAL-11 文档**：版本、状态、fallback 和能力说明一致。
+- [x] **FINAL-11 文档**：规范/设计首页、总览、手册、教程与状态表同步；degrade 可跳过、tool.error 条件/无条件状态、静态回退无任何 when、动态 system 双挂载及失败例外一致。built CLI 四组 plan 分别 skipped/0、skipped/0、install-error/4、never-trigger/0，隔离根无写入；9 个文档94本地链接与围栏、adapter/runtime/plan/app 全量回归和 diff 检查通过。见 `review/M1-FINAL-11-PLAN-2026-10-16.json`。
 - [ ] **FINAL-12 回归**：双 module test/vet、必要 race、Python 采集器、构建/冒烟与 CI。

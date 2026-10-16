@@ -1,6 +1,6 @@
 # STYLE CLI 使用教程
 
-更新时间：2026-10-16。适用基线：`04371ef`（M1 / M1b 完成，支持 Claude Code 与 Codex）。
+更新时间：2026-10-16。实现核对基线：`960dd57`，支持 Claude Code 与 Codex。M1a 已完成，M1b 历史结果按各自范围保留；Claude 补验收及两家官方计数尚未全部完成，当前状态见 [任务清单](STYLE-M1-TASKS.md)。
 
 本教程面向第一次使用 `style` 的人，从构建到卸载走完整个生命周期。文中命令输出都是在隔离沙箱里真实运行得到的（路径已缩写），不是手写示例。规则语义的权威定义在 [STYLE_DOCS](../STYLE_DOCS/STYLE-spec.md)，adapter 的实现细节见 [STYLE-ADAPTERS-CURRENT.md](STYLE-ADAPTERS-CURRENT.md)，真实环境验收步骤见 [STYLE-M1B-MANUAL.md](STYLE-M1B-MANUAL.md)。
 
@@ -650,7 +650,7 @@ route-trust-unverified: claude-user: Claude Code workspace trust controls hook e
 style adapters
 ```
 
-列出每个 harness 的检测结果（版本、配置目录）、路线可用性与信任状态、原生输入上限（Codex 2500 token，近似；Claude 10000 字符）、静态槽位，以及每个评估点的能力（`add-context` / `system-message` / `deny`）和可用字段。**写条件规则前先看它**：例如 Codex 的 `tool.error` 全部能力都是 `available=false`，所以依赖它的规则在 Codex 上只能被跳过。单个 harness 检测失败只是报告里的一项，不影响其他 harness。
+列出每个 harness 的检测结果（版本、配置目录）、路线可用性与信任状态、adapter 输入上限（Codex 2500 token，近似；Claude 10000 字符）、静态槽位，以及每个评估点的能力（`add-context` / `system-message` / `deny`）和可用字段。**写条件规则前先看它**：例如 Codex 的 `tool.error` 能力全部不可用，无条件规则的 degrade/skip 为 skipped，error 则阻止安装；缺失条件数据还可能先报告 never-trigger。单个 harness 检测失败只是报告里的一项，不影响其他 harness。
 
 ---
 

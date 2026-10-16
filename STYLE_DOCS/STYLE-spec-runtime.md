@@ -24,7 +24,7 @@ when:
 - **`model`**：glob，不区分大小写，匹配 **harness 报告的模型字符串**（STYLE 分不清别名）。`*` 不跨 `/`；`**/` 前缀匹配零段或多段，所以 `**/claude-*` 既匹配 `claude-opus-5-5`，也匹配 `anthropic/claude-x`。
 - **`provider`**：M1 没有数据来源。validate 接受并警告 `provider-unimplemented`，运行时永不满足。M3 再定。
 - **`thinking_effort`**：写法只有四种：单值（`high`）、列表（`[minimal, low]`）、`>=档位`、`<=档位`，不区分大小写；其他写法报错 `bad-effort-expr`。别名（如 `ultra`）不能写在 `when` 里，只在映射层用。取值和比较规则见 4.2。
-- **`thinking_effort_approx`**：`true` / `false`，要求档位是或不是近似值。M1 的两个适配器都只产出精确档位，所以永远是 `false`；字段留给以后的预算型 harness。
+- **`thinking_effort_approx`**：`true` / `false`，要求档位是或不是近似值。M1 两个适配器的已知映射均为 `false`；未知档位同时清除 approx，不沿用旧值。字段留给以后的预算型 harness。
 - **`harness.name`**：`claude-code`、`codex`（以 agenthooks 的 `Provider` 常量为准）。`harness.permission_mode`：harness 原生的取值。
 - **`agent`**：不写时等于 `[main]`，只在主 agent 里生效；挂在 `subagent.start` 上的规则不写时等于 `any`。`any` 表示主 agent 和所有子 agent；列表里可以写 `main` 和子 agent 的类型名（`agent_type`）。**主 agent 的判断是"事件里没有 `agent_id`"**：Claude 用 `--agent` 启动时，主 agent 的事件里也有 `agent_type`【文档】。
 - **`reads`**：`when` 里用到的 `model`、`thinking_effort`、`harness.<键>` 必须先在 `reads` 里声明（`reads-missing`）。`agent` 不需要声明，它是去重作用域本来就要读的。
@@ -112,16 +112,17 @@ Codex 一列以 agenthooks `capability.go` 为准；Claude 一列来自官方文
 
 **降级阶梯**（`fallback: degrade` 时；每一步写进安装报告，`index.json` 的 `degraded_from` 记下原本的事件）：
 
-1. **`tool` / `mcp` / `skill` 的 `inject` / `warn`**：先试 `at` 指定的事件，再试另一个（`after` ↔ `before`）。都不行时，只有"`inject`、没有 `when.conditions`、正文是静态的"规则可以改成常驻静态 system 一句："使用 X 时：<正文>"，这句算进常驻预算；其他情况丢弃并告警。
-2. **动态 `system`**：先试 `session.start`；不行时改用 `prompt.submitted` + `repeat: session`；还不行时，没有 `when` 且正文静态的写进静态位置，否则报错。
+1. **`tool` / `mcp` / `skill` 的 `inject` / `warn`**：先试 `at` 指定的事件，再试另一个（`after` ↔ `before`）。都不行时，只有 `inject`、没有任何 `when`、正文静态且有可用 append 槽位的规则可退到带目标限定前缀的常驻静态指令（例如 `When using file.edit: <正文>`），计入常驻预算；否则跳过并报告原因。skill 另有显式入口，保留可用部分时报告 partial。
+2. **`system`**：无任何 `when` 的静态 inject 优先用静态槽位；槽位不可用时，degrade 先选 `session.start`，再选 `prompt.submitted` + `repeat: session`，只选一个。带运行时变量、条件或 warn 的动态 system 在两点均可用时双挂载，prompt 设 reevaluate，以正文哈希去重；仅一点可用时 degrade 保留该点。两点都缺条件数据时，非 error 为 never-trigger；无可用点的其他情况，skip 跳过，degrade/error 为 install-error。不将动态条件规则转成无条件静态文字。
 3. **`warn`**：缺一个能力就只发另一个；两个都缺就跳过并告警。
 4. **`block`**：没有 `deny` 时降级为 `warn`，安装报告里标红。`block` 不走第 1 条的静态回退。
 5. **盲区**：工具在这个 harness 上根本看不到（Codex 的 `file.read` 等），报"永不触发"，不降级。
-6. **`mode: replace`**：harness 没有替换位置（M1 的 Claude）时，`degrade` = 跳过并标红；`error` = 拒绝安装。
+6. **`mode: replace`**：harness 没有替换位置（M1 的两家均无）时，`degrade` / `skip` = 跳过；`error` = 拒绝安装。
+7. **`target: event`**：只评估指定事件，不自动换事件或静态回退。Codex 的无条件 `tool.error` 缺输出能力，degrade/skip 为 skipped、error 为 install-error；若先发现条件数据不可用，非 error 可为 never-trigger。
 
-`fallback: skip` 直接跳过并告警；`fallback: error` 时任何一步降级都让安装整体中止。
+`degrade` 允许最终跳过，不保证保留规则。`skip` 在普通能力不足时移除规则，不尝试替代路径；`error` 在普通能力或数据失败时阻止安装。harness 过滤、M1 不求值的 provider、native 留到 M2、固有工具盲区等前置分支仍按各自状态报告，不承诺 error 拦住所有未生效规则。
 
-在 Claude 和 Codex 上，绝大多数规则都是原生支持的。M1 里阶梯主要用在三处：Codex 的工具盲区、Codex 的 `subagent.start`（F7 之前；U7 已验证 F7 的真实投递）、Claude 的 `replace`。
+当前实例与源码入口见 [adapter 总览 §6](../docs/STYLE-ADAPTERS-CURRENT.md#6-fallback当前代码语义)。Codex `subagent.start` 已真实投递，不再作为缺能力的例子。Claude 各事件用户提示可见性仍待 FINAL-06 实测，表中声明不等同完整 UI 验收。
 
 ## 6. 运行时数据（`reads`）
 
@@ -163,7 +164,7 @@ reads:
   | Claude Code | 10,000，每个字段单独算，不能调 | 字符 | 写进会话目录的文件，只给路径和前 2,000 字符预览，**不会叫模型去读**【文档】 |
   | Codex | 约 2,500（`additionalContextLimit` 可调，STYLE 不写这个字段，用默认值当保险） | token | 落盘，只留预览【源码】 |
 
-  两家超限后规则都等于悄悄失效，所以 `T003` 是错误而不是警告。中文大约一字一 token，同一段中文在 Codex 上比在 Claude 上早得多触到上限。
+  超限后无法保证完整正文进入当前上下文，因此保留 T003 错误保护。FINAL-08 绕开 STYLE 的 Codex 12k/50k 字符原生探针证实完整落盘、模型收到约10,100字符头尾预览和路径；不能用首尾标记都出现推断完整投递。Claude 表中为文档依据，原生超限仍待隔离认证实测。上述字符测量不构成官方 token 计数，不能据此承诺语言间的具体 token 比例。
 
 ### 7.2 预算字段
 
