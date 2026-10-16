@@ -134,5 +134,14 @@
       "session": "01a142ff-27ab-7a61-a191-de5c87eaab56: four hooks once each, all source=user, plugin 0"
     },
     "residue": "empty directory ~/.codex/plugins/cache/style left by codex plugin remove (Codex-managed; not removed)"
+  },
+  "B8": {
+    "status": "pass",
+    "authorization": "user chose full uninstall and reinstall, including agent reinstall of Claude configuration",
+    "baseline": "pre-uninstall config.toml with the STYLE header block and the agenthooks owner=style block removed; differs from the 10:48 backup only in the user's own model and model_reasoning_effort lines (credential line hash equal)",
+    "uninstall": "single-line env uninstall m1b-probes then terse-reviewer, both exit 0; list empty",
+    "codex": "config.toml byte-identical to baseline; hooks.json absent",
+    "claude": "settings.json equals pre-uninstall JSON minus hooks; CLAUDE.md absent",
+    "reinstall": "Codex config.toml and hooks.json byte-identical to pre-uninstall; Claude 12 hooks restored"
   }
 }

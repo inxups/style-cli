@@ -813,3 +813,10 @@
 - 插件会话 01a142fe：OTel 中 SessionStart/UserPromptSubmit/PreToolUse/PostToolUse 各 1 次，全部 source=plugin，user 0 次，无错误；rollout 注入 session-info 与 M1B_WARN_MODEL；exec 下无信任提示（STYLE 预置插件摘要）。
 - 切回：`codex plugin remove`、`codex plugin marketplace remove style` 后 config.toml 与注册前逐字节相同；再装 codex-user 后 config.toml、hooks.json 与切换前快照逐字节相同，doctor codex-user installed/trusted、plugin 未安装。新会话 01a142ff 四类 hook 各 1 次全部 source=user。
 - 残留：`~/.codex/plugins/cache/style` 空目录由 Codex 留下，非 STYLE 文件，未删除，记录。证据 R2 JSON 的 B10；仅文档/证据变化。
+
+### 2026-10-16 — CODEX-08/B8 `[x]` 卸载字节往返
+
+- 用户选择“完整卸载后重装”，授权本次卸载同时移除并由 agent 重装 Claude 配置。卸载前保存 Codex config.toml/hooks.json 与 Claude settings.json；Claude 12 条 hook 全为 owner=style。
+- 基线：用户在测试中自行把 model/effort 改为 gpt-6.1-sol/medium，10:48 备份不能直接 cmp。脚本按托管标记去掉 config.toml 头部 STYLE 区与末尾 agenthooks 区得到预期字节，与 10:48 备份逐行比较仅 model、model_reasoning_effort 两行不同（只比较哈希，不输出凭据），凭据行一致。
+- 卸载：手册 §7 单行 env 依次卸载 m1b-probes、terse-reviewer，均退出 0 并更新两条路线，list 无包。config.toml 与预期逐字节相同，hooks.json 不存在，config 中唯一的 “style” 为用户自己的 `[projects."…/style-cli"]`；Claude settings 去掉 hooks 后与卸载前完全相等，CLAUDE.md 不存在。
+- 重装（B1 前半）：`install example/terse-reviewer --harness codex,claude-code --route codex=codex-user --route claude-code=claude-user --set max_findings=10 --yes` 后 Codex 两文件与卸载前逐字节相同（固定订阅面，摘要不变），Claude 恢复 12 条 hook。证据 R2 JSON 的 B8；仅文档/证据变化。
