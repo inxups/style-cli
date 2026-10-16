@@ -908,3 +908,11 @@
 - 复制新 STYLE.yaml 到 `~/.style-m1b/packages/terse-reviewer` → sync 退出 3 → trust 预览退出 1（共 6 段）→ `trust --yes` 退出 0；随后 sync 0、两包 hash_matches、doctor healthy，Codex config.toml/hooks.json 与 Claude settings.json 哈希不变。
 - Codex 真实会话 01a14377（codex-user），临时仓库 ex02-repo 只连本地 bare 远端，事先给远端设 `receive.advertisePushOptions=true`：`sudo -n git -C ex02-repo push --force origin main`、`echo 'git -C ex02-repo push --force origin main' | bash`、`git -C ex02-repo push --mirror origin` 被 PreToolUse 拦截（stats 三条 blocked）；`git -C ex02-repo push -o -f origin main` 运行成功（Everything up-to-date）。远端只有 refs/heads/main 6c88e18，未变。按 EXAMPLE-03 的读取结果和 pattern 复核：前三条旧规则会放行，第四条会误拦。
 - 同一 STYLE_HOME 也服务本 Claude 会话的 claude-user hook，本会话随之使用新程序和新规则；Claude 配置文件未改动。证据 `docs/review/M1B-EXAMPLE-04-REAL-2026-10-16.json`；本项仅文档/证据变化，验证 JSON 语法与 `git diff --check`。
+
+### 2026-10-16 — DOCS-01 任务清单和测试矩阵过时表述修正
+
+- 按用户指示复查两份清单，只改表述和位置，不改任何条目的状态或证据。
+- 任务清单：19 个 `[x]` 条目原先排在“后续 backlog”标题下。5 个 M1a 补项（A13/T52、RV-CONFORMANCE-01/04、RV-CLI-HOOK-01、RV-A20-01）移到回顾跟进项末尾；14 个 M1b 条目移入新的“M1b 跟进项”段，按处理顺序排列；backlog 只留 M2–M4。条目总数 73 不变，所有 `[x]` 条目的标题前后一致。
+- 修正与现状矛盾的表述：M1b Claude 的“Codex M1b 和 M1 仍未完成”；RV-T3X-01 的“A10/A11 保持部分状态”；RV-CONFORMANCE-04、M1B-PREP、M1B-FIX-01、CLAUDE-04-PREP 中仍写“待验收/待用户结果”的部分，改为指向后来的验收条目。
+- 测试矩阵：B1.6、B1.8、B1.21、B1.22、A11、R01–R08 段落、B2、B5、C6 的“仍未完成/待验证/未修复”改为注明由哪个条目完成或修正。新增两处如实说明：Codex 子 agent context 投递（设计 U7）未实测，Claude workspace trust 仍按设计报告为未验证。
+- 两份文件的更新时间改为 2026-10-16。只改文档。
