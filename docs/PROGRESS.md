@@ -1521,3 +1521,11 @@ PY
 - 最终事实和命令列表：docs/review/M2-A9-LOCAL-REGRESSION-2026-10-17.json。M1 归档相对 6ec25f6 未变；runtime stdout golden 未改。M2 整体新增/变更的 golden 限于 native plan、stats、组合 dedup 报告；T40 的 Claude plan 只变静态槽位名，不重写历史原生证据或报告摘要。
 - 更新教程/adapter 基线与规则规范的 Claude 静态载体/compact 验收边界，补采集器 README 的 M2 入口；修正任务/测试摘要，关闭 M2a 和 A9。M2 本轮相对 6ec25f6 修改的 14 份当前 Markdown 共 173 个本地链接/锚点及代码围栏通过；JSON 可解析、固定二进制/准备摘要一致、git diff --check 通过。DOCS-03 只关闭当前实现与离线状态同步，DOCS-01 总项仍等最后真实结果。
 - M2 仍未完成：Claude C1/C4 因订阅额度/OAuth 保存待确认保持 [~]，C2/C3 等用户真实界面；当前提交未推送，Ubuntu/macOS 最终 GitHub Actions 未执行；M2-CARRY-01 官方计数仍缺 API key。M2-FINAL 改部分完成（本地通过、远端 CI 待补）。M2-RV-01 的旧 core/spec harness 名硬编码风险保持既有待决定状态，未混入本次实现。待这些既有验收条件满足后再关闭 M2 并提示 M3 规划，当前不宣称里程碑完成。
+
+
+### 2026-10-17 — M2-C1 Claude 用户级 rules 真实交互验收 `[x]`
+
+- 接 clean eb6ff86。用户报告 Claude 恢复，并在操作方式问题中明确选择“你通过交互终端代跑”；更新当前手册的操作约定。固定 Claude 2.1.301 的路径/二进制摘要与准备时一致，既有设计 scratch 的 auth status 为 loggedIn=true、claude.ai/firstParty；新安装 scratch 尚未登录，未复制或读取凭据。
+- 实际以 launch-default.sh --ax-screen-reader --model sonnet --tools '' --session-id 5f94ea4b-8e82-44c6-94fc-a5e15ea8a50b 启动原生交互终端。界面显示 Sonnet 5.5 / Claude Pro，短请求回复 OK，无工具调用、OAuth 或额度错误；/config 显示 Output style=default，退出 0。既有临时工作目录已经信任，本次未出现首次工作区信任提示，不扩大该范围。
+- InstructionsLoaded 对同一 session 的用户级 rules 文件记录 memory_type=User、load_reason=session_start，一次；同时保留用户 CLAUDE.md 加载事件。以原生事件证明规则发现，不以模型回复证明投递。白名单事件、固定 fixture/原生 transcript 摘要、启动命令和界面观察归档 docs/review/M2-C1-CLAUDE-2026-10-17.json；原始日志/登录数据留在私有 scratch。
+- 验证：从实际会话 transcript 核对 OK 与零工具调用，精确核对规则事件的五个字段/次数及二进制摘要；报告 JSON、文档本地链接/围栏与 git diff --check 通过。没有生产代码变更，沿用已通过的最终本地回归。C1 关闭；D4 仍等 C3，C4、C2/C3、最终 CI 与官方计数继续。

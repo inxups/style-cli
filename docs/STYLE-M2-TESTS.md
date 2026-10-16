@@ -4,7 +4,7 @@
 
 本文件记录 M2 测试矩阵和每项当前状态。测试通过必须有命令输出、fixture/golden 文件或真实环境记录作为证据。任务清单见 [STYLE-M2-TASKS.md](STYLE-M2-TASKS.md)，M1 测试矩阵已只读归档（[STYLE-M1-TESTS.md](STYLE-M1-TESTS.md)）。
 
-当前状态：M2-BASE-01、A1–A9 离线验收全部通过；D4/D5 已批准，T40/A7 迁移、T50/A8 回退及最终本地回归完成。Codex B1–B4 已通过，Claude C1–C4 与远端 CI/官方计数仍待补；界面验收因用户报告订阅额度用尽暂挂，OAuth 保存重试仍未确认。手册和隔离准备完成，不代替真实结果。
+当前状态：M2-BASE-01、A1–A9 离线验收和 Codex B1–B4 已通过。2026-10-17 用户报告 Claude 恢复并授权 agent 通过交互终端代跑；既有隔离目录认证及真实请求成功，C1 的用户级 rules 加载通过。C2–C4 正在继续，远端 CI/官方计数仍待补。
 
 ## 状态约定
 
@@ -103,7 +103,7 @@ Codex 真实配置由 agent 执行，步骤见 M2-PREP 建立的 `docs/STYLE-M2-
 
 Claude Code 界面项由用户执行，agent 提供手册与隔离 runbook。
 
-- [~] **M2-C1 U-C4 实测**（M2-D4）：用户级 `~/.claude/rules/*.md` 是否被加载，以 `InstructionsLoaded` 或原生请求为证；记录结局。本地协议已证实全文一次；首次 OAuth 保存失败的启动器 HOME 问题已修正，但保存成功尚未确认。2026-10-17 用户报告订阅额度用尽，暂停真实请求，额度可用后按手册继续。
+- [x] **M2-C1 U-C4 实测**（M2-D4）：固定 Claude 2.1.301 的 first-party 已认证交互会话成功回复 OK；原生 InstructionsLoaded 记录用户级 rules 文件、memory_type=User、load_reason=session_start，各一次。用户已授权交互终端代跑，OAuth/额度阻塞在本次真实请求中解除；既有工作目录已信任，未声称首次信任提示。证据：[C1 报告](review/M2-C1-CLAUDE-2026-10-17.json)。C3 的安装/卸载另行验收。
 - [?] **M2-C2 native hook 真实触发**：Claude Code 真实会话中 native 命令按事件和 matcher 执行；卸载后 `settings.json` 逐字节还原。
 - [?] **M2-C3 rules 静态位置真实生效**（仅 D4 成立时）：安装后规则文件被加载，卸载后文件移除、`CLAUDE.md` 与安装前一致。
 - [~] **M2-C4 output style 实测**（M2-D5）：output style 能否替代 system prompt、与用户已有 output style 的冲突行为；记录结局。本地完整 prompt 对照与官方资料支持不作为整份替换位置；与 C1 同受首次 OAuth 保存失败和用户报告的订阅额度用尽阻塞，保留启动环境修复结果，额度可用后再登录/切换实测。

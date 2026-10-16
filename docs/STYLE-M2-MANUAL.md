@@ -1,8 +1,8 @@
 # STYLE M2 真实环境手册
 
-更新时间：2026-10-17。提供 D4/D5 的 Claude 设计探针、Codex B1–B4 和 Claude C2/C3 的隔离验收步骤。T40/T50 离线实现已完成；手册/启动器准备通过，Claude 真实界面结果仍待额度恢复后补。
+更新时间：2026-10-17。提供 D4/D5 的 Claude 设计探针、Codex B1–B4 和 Claude C2/C3 的隔离验收步骤。T40/T50 离线实现已完成；手册/启动器准备通过，2026-10-17 用户报告 Claude 恢复并授权 agent 交互终端代跑；C1 已有真实结果，C2–C4 继续。
 
-任务和状态以 [任务清单](STYLE-M2-TASKS.md)、[测试矩阵](STYLE-M2-TESTS.md) 为准。Claude Code 界面项由用户执行；以下准备与本地协议结果不代替 M2-C1/C4。
+任务和状态以 [任务清单](STYLE-M2-TASKS.md)、[测试矩阵](STYLE-M2-TESTS.md) 为准。Claude Code 界面项已获用户授权由 agent 通过交互终端代跑；以下准备与本地协议结果不代替 M2-C1/C4。
 
 ## 1. 已完成的固定版本检查
 
@@ -28,7 +28,7 @@
 
 ## 2. 用户执行的 Claude 界面步骤
 
-当前暂挂：用户于 2026-10-17 报告 Claude 订阅额度用尽，本节真实模型请求等额度可用后再执行；现在无需反复登录或发送测试消息。OAuth 保存重试尚未确认，与额度阻塞分别记录。已有本地协议证据和 scratch 保留，C1/C4 继续 `[~]`；额度不足不作为规则或样式功能失败的证据。
+2026-10-17 用户报告 Claude 已恢复，并明确选择由 agent 通过交互终端代跑。既有设计目录的 auth status 为 loggedIn=true、claude.ai/firstParty；全新交互会话成功回复 OK，rules 的原生 InstructionsLoaded 证据通过 [C1](review/M2-C1-CLAUDE-2026-10-17.json)。本次没有再出现 OAuth/额度错误；C4 继续按以下新会话步骤验收。新安装验收目录仍未登录，与该既有认证目录分别处理。
 
 已准备 `/private/tmp/style-m2-claude-ui-20261016`，`prepared.json` 明确 `acceptance=false`。启动器以 `env -i` 选择环境，保留真实 `HOME`、`USER`、`LOGNAME` 以访问 macOS 登录钥匙串；Claude 配置使用独立 `CLAUDE_CONFIG_DIR`，profile 配置使用临时 `ANTHROPIC_CONFIG_DIR`/`XDG_CONFIG_HOME`，工作目录、三份样式和用户级 rules 都在 scratch 中。没有复制登录凭据或自动启动模型会话。
 
@@ -84,7 +84,7 @@ PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover \
 
 `--prepare-ui` 只运行 `claude --version`，不登录或创建模型会话。七项探针测试覆盖非空目录拒绝、凭据/Codex 检测环境不继承、带空格和引号路径的 shell 语法、0700/0600 权限、三样式 fixture、观察白名单、标记命中不足以通过完整正文检查，以及实际执行五个生成脚本时保留系统身份/隔离配置、仅重写启动器不覆盖既有设置与观察记录。
 
-probe 的退出 0 表示脚本执行结束，实际结果检查 JSON 的 `protocol_status`、各 phase 的 exit/request 和正文匹配；界面验收始终单列。当前 M2-D4/M2-D5 保持 `[~]`，M2-C1/M2-C4 因登录保存待确认及订阅额度用尽记 `[~]`，等待额度可用后的真实登录与界面重试。
+probe 的退出 0 表示脚本执行结束，实际结果检查 JSON 的 `protocol_status`、各 phase 的 exit/request 和正文匹配；界面验收始终单列。当前 M2-C1 已通过真实交互会话；M2-D4/M2-D5 保持 `[~]`，分别等待 C3 安装/卸载和 C4 样式切换的真实结果。
 
 ## 4. Codex B1–B4 独立验收
 

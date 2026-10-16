@@ -1,0 +1,82 @@
+{
+  "item": "M2-C1",
+  "date": "2026-10-17",
+  "result": "符合预期",
+  "passed": true,
+  "scope": "first-party-authenticated-interactive-Claude-terminal-session",
+  "operator": "Codex through interactive PTY; explicitly authorized by user on 2026-10-17",
+  "claude": {
+    "path": "/Users/inxups/.nvm/versions/node/v24.21.0/bin/claude",
+    "version": "2.1.301 (Claude Code)",
+    "sha256": "1f04c69e1c24e4d0a716a863af0aad8fc64d49a499334c29701f073700276b99",
+    "ui_model": "Sonnet 5.5",
+    "auth_status": {
+      "loggedIn": true,
+      "authMethod": "claude.ai",
+      "apiProvider": "firstParty",
+      "subscriptionType": "pro"
+    }
+  },
+  "scratch": "/private/tmp/style-m2-claude-ui-20261016",
+  "session_id": "5f94ea4b-8e82-44c6-94fc-a5e15ea8a50b",
+  "command": [
+    "/private/tmp/style-m2-claude-ui-20261016/launch-default.sh",
+    "--ax-screen-reader",
+    "--model",
+    "sonnet",
+    "--tools",
+    "",
+    "--session-id",
+    "5f94ea4b-8e82-44c6-94fc-a5e15ea8a50b"
+  ],
+  "terminal_exit": 0,
+  "ui_observations": {
+    "response": "OK",
+    "tool_calls": 0,
+    "config_output_style": "default",
+    "workspace_trust_prompt": "not shown; existing isolated work directory already trusted",
+    "oauth_or_quota_error": false
+  },
+  "instructions_loaded": [
+    {
+      "at": "2026-10-16T16:27:57.846558+00:00",
+      "phase": "ui",
+      "fields": {
+        "hook_event_name": "InstructionsLoaded",
+        "session_id": "5f94ea4b-8e82-44c6-94fc-a5e15ea8a50b",
+        "file_path": "/private/tmp/style-m2-claude-ui-20261016/claude/rules/style-m2-user-probe.md",
+        "memory_type": "User",
+        "load_reason": "session_start"
+      }
+    },
+    {
+      "at": "2026-10-16T16:27:57.846450+00:00",
+      "phase": "ui",
+      "fields": {
+        "hook_event_name": "InstructionsLoaded",
+        "session_id": "5f94ea4b-8e82-44c6-94fc-a5e15ea8a50b",
+        "file_path": "/private/tmp/style-m2-claude-ui-20261016/claude/CLAUDE.md",
+        "memory_type": "User",
+        "load_reason": "session_start"
+      }
+    }
+  ],
+  "rule_sha256": "c4af952ef58fa2cf2db7b684b5680a6ad12164ddd46d1e94c6bea228813cc9f7",
+  "evidence": [
+    {
+      "kind": "native-transcript",
+      "path": "/private/tmp/style-m2-claude-ui-20261016/claude/projects/-private-tmp-style-m2-claude-ui-20261016-work/5f94ea4b-8e82-44c6-94fc-a5e15ea8a50b.jsonl",
+      "sha256": "46cdf2aee6ae677c5670f07d06a0c12783fa9008fb8d08836432fc884562dfb2"
+    },
+    {
+      "kind": "InstructionsLoaded-append-only-log-at-collection",
+      "path": "/private/tmp/style-m2-claude-ui-20261016/instructions.jsonl",
+      "sha256": "ae00c446a21f3da46ba70f92bfa6563b901629c103b22132a502ade279cb611c"
+    }
+  ],
+  "limitations": [
+    "C1 proves user-level rules discovery; installed package/uninstall acceptance is M2-C3.",
+    "No first-use workspace trust claim because the existing work directory was already trusted.",
+    "No model self-report was used to prove rules delivery."
+  ]
+}

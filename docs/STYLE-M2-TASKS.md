@@ -4,7 +4,7 @@
 
 本文件是 STYLE CLI M2 的持久化任务清单。每项任务完成后必须同时补充证据（命令、fixture、golden 文件或真实运行记录），不能只根据对话上下文标记完成。测试矩阵见 [STYLE-M2-TESTS.md](STYLE-M2-TESTS.md)，执行记录追加到 [PROGRESS.md](PROGRESS.md)。
 
-当前总状态：M2a 离线实现与 A1–A9 验收已完成，包含 native、stats、跨包去重、Claude 每包 rules/旧安装迁移和 replace 回退；Codex B1–B4 在 user/plugin 两路线通过。Claude C1–C4 的界面步骤和隔离启动器已备齐，因用户报告订阅额度用尽待补，OAuth 保存重试仍未确认。最终本地 test/vet/race/53 采集器/构建/40 smoke 通过，远端 Ubuntu/macOS CI、完整文档最终状态与官方 token 计数仍未闭合。M1 已关闭并只读归档（[任务](STYLE-M1-TASKS.md)、[测试](STYLE-M1-TESTS.md)）；M2 未宣布完成。
+当前总状态：M2a 离线实现与 A1–A9 验收已完成，包含 native、stats、跨包去重、Claude 每包 rules/旧安装迁移和 replace 回退；Codex B1–B4 在 user/plugin 两路线通过。2026-10-17 Claude 恢复，用户授权 agent 通过交互终端代跑；既有隔离目录认证和真实请求成功，C1 已通过，C2–C4 继续。最终本地 test/vet/race/53 采集器/构建/40 smoke 通过，远端 Ubuntu/macOS CI、完整文档最终状态与官方 token 计数仍未闭合。M1 已关闭并只读归档（[任务](STYLE-M1-TASKS.md)、[测试](STYLE-M1-TESTS.md)）；M2 未宣布完成。
 
 ## 范围
 
@@ -18,7 +18,7 @@ M2 只做 [CLI 设计 §14.4](spec/STYLE-cli-design.md) 的五项，不提前拉
 
 M1 中已记录的已知限制（如 force-push 示例规则对 `--push-option` 后单独 `-f` 的保守误拦）不属于 M2。
 
-真实环境约定沿用 M1：Codex 真实配置由 agent 执行；Claude Code 界面项由用户执行，agent 提供手册和隔离 runbook。
+真实环境约定：Codex 真实配置由 agent 执行。2026-10-17 用户明确授权 Claude Code 界面项改由 agent 通过交互终端代跑；保留隔离 runbook 与原生证据，登录/钥匙串需要用户交互时单列。
 
 ## 状态约定
 
@@ -57,7 +57,7 @@ M1 中已记录的已知限制（如 force-push 示例规则对 `--push-option` 
   回写：`spec/STYLE-spec-rules.md` §3.3、`spec/STYLE-spec-runtime.md` 信任一节、`spec/STYLE-cli-design.md` §3 `Native()`。依赖：M2-01。
 - [x] **M2-D2 `style stats` 输出**：用户在上一轮草案评审请求后回复“继续”（2026-10-16），按该契约进入 T20。设计已回写 CLI 设计 §4、§11.5.2：默认 rule/最近 168h，`--by session` 合并 main 与子 agent，`--since` 接受正 duration 或 RFC3339；只读留存日志，六个计数字段明确 output/blocked/去重/容量丢弃与缺估算；JSON format 1、稳定排序，坏行/超长行跳过计数、I/O 错误退出 1。doctor 复用读取器但保留 top3/旧记录/清理职责，坏行改为继续统计并告警。草案中的用户可见决策按此定稿。依赖：M2-01。证据：`docs/PROGRESS.md` M2-D2 评审通过。
 - [x] **M2-D3 跨包去重（T8）**：用户在草案评审请求后回复“继续”（2026-10-16），按运行时 §7.5、编译产物 §9.6、CLI 设计 §7.1 契约进入 T30。比较静态变量替换后的完整正文及全部执行语义，按现有 order 保留一份；native 与运行时偶然同文不合并；同一类内任一包多条等价声明时保守保留。单包 plan/源级预算继续独立，组合报告标 `deduplicated_into`、有效成本和 T003 只计一次。沿用 rule 状态键，卸载保留方后接替规则可在旧会话再次注入。依赖：M2-01。证据：`docs/PROGRESS.md` M2-D3 评审通过。
-- [~] **M2-D4 U-C4 实测与静态位置决策**：设计于 2026-10-17 获用户“同意”。[定稿](review/M2-D4-D5-DESIGN-2026-10-17.md) 明确每包 `rules/style-<名字>.md`、首次路线重建自动迁移且单纯迁移不额外 trust、文件归属/冲突与外部字节还原。用户批准以四份真实 CLI 请求的 rules 全文证据及设计评审作为 T40 实现前提，C1/C3 界面验收额度可用后补；任务保持 `[~]` 表示该实测未闭合，不阻止 T40。回写：CLI 设计 §10.4 与编译规范静态位置。证据：`review/M2-D4-D5-PROTOCOL-2026-10-16.json`、`docs/PROGRESS.md` M2-D4/D5 评审通过。
+- [~] **M2-D4 U-C4 实测与静态位置决策**：设计于 2026-10-17 获用户“同意”。[定稿](review/M2-D4-D5-DESIGN-2026-10-17.md) 明确每包 `rules/style-<名字>.md`、首次路线重建自动迁移且单纯迁移不额外 trust、文件归属/冲突与外部字节还原。用户批准以四份真实 CLI 请求的 rules 全文证据及设计评审作为 T40 实现前提，C1 已通过真实交互会话，C3 安装/卸载继续验收；任务保持 `[~]` 表示该实测未闭合，不阻止 T40。回写：CLI 设计 §10.4 与编译规范静态位置。证据：`review/M2-D4-D5-PROTOCOL-2026-10-16.json`、`docs/PROGRESS.md` M2-D4/D5 评审通过。
 - [~] **M2-D5 output style 做 replace 评估**：设计于 2026-10-17 获用户“同意”。完整请求对照中仍保留 20,615 字符公共 system 片段，选中候选样式替换了既有样式选择，不能提供整份内置指令替换语义。[定稿](review/M2-D4-D5-DESIGN-2026-10-17.md) 采用“回退方案”：不提供 output style replace 槽位，保留现有 fallback、不修改用户样式；允许 T50/A8 用真实 CLI 补齐回退验证后关闭实现。C4 界面切换仍受额度/OAuth 阻塞，故总状态保持 `[~]`。回写：CLI 设计 §10.4、编译规范静态位置表。
 
 ## M2a 离线实现
