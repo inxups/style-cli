@@ -120,5 +120,19 @@
       "tool_result": "STYLE_M1B_MCP_STUB: no pull request was created (04:34:17.821Z)"
     },
     "limits": "Real GitHub MCP server not used to avoid creating an external pull request."
+  },
+  "B10": {
+    "status": "pass",
+    "to_plugin": {
+      "style": "hooks.json removed; trusted_hash keys switched to style-runtime@style:hooks/hooks.json:*; Claude settings unchanged",
+      "codex_register": "codex plugin marketplace add ~/.style-m1b (marketplaceName=style) and codex plugin add style-runtime@style (installedPath ~/.codex/plugins/cache/style/style-runtime/0.1.0); config.toml gained [marketplaces.style] and [plugins.\"style-runtime@style\"] only",
+      "session": "01a142fe-8745-7992-be9a-ee16a216c8a0: OTel SessionStart/UserPromptSubmit/PreToolUse/PostToolUse 1 each, all hook.source=plugin, user 0, 0 errors; rollout hook context session-info and M1B_WARN_MODEL; no trust prompt"
+    },
+    "back_to_user": {
+      "unregister": "codex plugin remove + marketplace remove: config.toml byte-identical to pre-registration",
+      "style": "install --route codex=codex-user: config.toml and hooks.json byte-identical to pre-B10 snapshots; doctor codex-user installed+trusted, plugin not installed",
+      "session": "01a142ff-27ab-7a61-a191-de5c87eaab56: four hooks once each, all source=user, plugin 0"
+    },
+    "residue": "empty directory ~/.codex/plugins/cache/style left by codex plugin remove (Codex-managed; not removed)"
   }
 }

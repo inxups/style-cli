@@ -805,3 +805,11 @@
 - 首次（01a142fc）：Codex 以 `approval policy is never` 拒绝 MCP 调用，但 PreToolUse 已记 `before-create-pr@tool.pre output`，rollout 04:33:41.618Z 有 hook 上下文。
 - 复测（01a142fd）：只对该工具加单次 `-c mcp_servers.github.tools.create_pull_request.approval_mode="approve"`。PreToolUse 04:34:17.790Z output → rollout 04:34:17.791Z 注入 → 04:34:17.821Z 工具成功返回 stub 文字，注入先于调用结果。config.toml 无 github MCP 残留。
 - 局限：未使用真实 GitHub MCP 服务器。证据 R2 JSON 的 B7；验证 stub 实际被 Codex 列出与调用、`git diff --check`。
+
+### 2026-10-16 — CODEX-10/B10 `[x]` 插件/用户级路线切换
+
+- 切换前保存 config.toml、hooks.json 快照。`style install … --route codex=codex-plugin` 删除用户 hooks.json、把 5 个 trusted_hash 换为插件键，生成插件目录（plugin.json、hooks/hooks.json、bin/style launcher）；Claude settings hash 不变。
+- 复用 10-15 建的 `~/.style-m1b/.agents/plugins/marketplace.json`，`codex plugin marketplace add` / `codex plugin add style-runtime@style` 均成功，installedPath 为 Codex 缓存副本，launcher 指向固定 STYLE_BIN；Codex 只追加 `[marketplaces.style]` 与 `[plugins."style-runtime@style"]`。
+- 插件会话 01a142fe：OTel 中 SessionStart/UserPromptSubmit/PreToolUse/PostToolUse 各 1 次，全部 source=plugin，user 0 次，无错误；rollout 注入 session-info 与 M1B_WARN_MODEL；exec 下无信任提示（STYLE 预置插件摘要）。
+- 切回：`codex plugin remove`、`codex plugin marketplace remove style` 后 config.toml 与注册前逐字节相同；再装 codex-user 后 config.toml、hooks.json 与切换前快照逐字节相同，doctor codex-user installed/trusted、plugin 未安装。新会话 01a142ff 四类 hook 各 1 次全部 source=user。
+- 残留：`~/.codex/plugins/cache/style` 空目录由 Codex 留下，非 STYLE 文件，未删除，记录。证据 R2 JSON 的 B10；仅文档/证据变化。
