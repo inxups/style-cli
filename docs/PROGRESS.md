@@ -1230,3 +1230,9 @@ PY
 - native Agent创建style-child，子scope a30d30c5eee9e4968中一次真实printf阻断、一次注入；child真实请求含工具marker，成功result为STYLE_CHILD_SCOPE_OK、拒绝result为固定hook理由，父scope无child条目。子请求不含本次父级两条动态context；Claude SubagentStart仍无注入能力，未扩展能力或路线。
 - a/b原生运行成功但严格采集器分别遇到string→text block归一、fork历史blob改写为system且保留旧hash；原报告保留未标整项通过。修正只按请求hash精确链接已验证原始内容，再完整c重跑。c后从保留native文件补记compact边界和child实际结果断言，无重复推理或观察替换。入库 `review/M1-FINAL-07-CLAUDE-2026-10-16.json`，关联Codex既有证据。
 - 40项采集器回归、脚本语法、报告断言和diff检查通过。FINAL-07关闭；FINAL-09按用户选择等待官方key，M1不扩大全部完成声明。
+
+### 2026-10-16 — M1-FINAL-11 最终证据后的当前文档补充审计
+
+- FINAL-06–08真实补验已经提交，当前adapter总览、设计/规范首页及部分正文仍保留旧“Claude待测”描述。按BOUNDARY/THINKING/C9、CONTEXT和OVERFLOW证据回填：六事件USER与clear显示边界、Read热更新、未实现实际off且不产出none、resume/fork/无补发compact、子scope和ASCII原生预览。教程仍建议新开会话，同时明确所测Read热更新范围；不外推其他事件/版本。
+- 旧失败/原始证据和追加式历史日志保持原样；当前任务与测试表只剩官方计数及本轮远端CI待验。不调整sources、compact补发、预算、公开命令或schema。
+- 11份当前文档的111个本地链接目标存在、代码围栏平衡；记录逐文件SHA256及检查范围到 `review/M1-FINAL-11-DOC-AUDIT-2026-10-16.json`，关联既有四组plan真实输出。仅更新文档，未重复已通过的模型调用或Go回归。`git diff --check`通过。

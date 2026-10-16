@@ -1,0 +1,77 @@
+{
+  "item": "M1-FINAL-11-DOC-AUDIT",
+  "date": "2026-10-16",
+  "source_head": "d276b1741b89119a2f247a4c0a93978cbf9ff33b",
+  "related_plan_evidence": "M1-FINAL-11-PLAN-2026-10-16.json",
+  "files": [
+    {
+      "path": "STYLE_DOCS/STYLE-spec.md",
+      "sha256": "571815129d0fc0518f29c3fa7250a11886fdf9728a97e380a39d2bac201bac08",
+      "local_links_checked": 9,
+      "fences_balanced": true
+    },
+    {
+      "path": "STYLE_DOCS/STYLE-spec-rules.md",
+      "sha256": "e8a1b2bd689e9f0e75a66a7f9491153c4da777aaf1f8f1998cf01eb8df6dd884",
+      "local_links_checked": 3,
+      "fences_balanced": true
+    },
+    {
+      "path": "STYLE_DOCS/STYLE-spec-runtime.md",
+      "sha256": "86ec5f767c7a52d30dd802249214dd8fca290c6d86e96f2b003cb566b8b3ef3f",
+      "local_links_checked": 4,
+      "fences_balanced": true
+    },
+    {
+      "path": "STYLE_DOCS/STYLE-cli-design.md",
+      "sha256": "be81a60bfbe88d9d5c429696e8756fa4fb0a8b201a19a062a8260e0988c1534a",
+      "local_links_checked": 16,
+      "fences_balanced": true
+    },
+    {
+      "path": "docs/STYLE-ADAPTERS-CURRENT.md",
+      "sha256": "661ee3f2d129d033eab5fe4c3c56c868e674709e1964a0318184d6850d0457bf",
+      "local_links_checked": 46,
+      "fences_balanced": true
+    },
+    {
+      "path": "docs/STYLE-TUTORIAL.md",
+      "sha256": "8e63c6dc17b0c97aed178c3dbddaad4ab14106e8bbd3f02ea6f7c07c58e0969f",
+      "local_links_checked": 18,
+      "fences_balanced": true
+    },
+    {
+      "path": "docs/STYLE-M1B-MANUAL.md",
+      "sha256": "cdc83158e19da9d8bf2200564acc2ca34bd4b2f85ab77fb21fe1eaf3fe1edaf9",
+      "local_links_checked": 6,
+      "fences_balanced": true
+    },
+    {
+      "path": "docs/STYLE-M1-TASKS.md",
+      "sha256": "11c25ca974c5b140e92b30431d37dea2279ff446f21786262c2aead245e13586",
+      "local_links_checked": 0,
+      "fences_balanced": true
+    },
+    {
+      "path": "docs/STYLE-M1-TESTS.md",
+      "sha256": "feef992389e84a71ec1070923f93b8fa4de6a04578b1480a0b41f34594d5391a",
+      "local_links_checked": 1,
+      "fences_balanced": true
+    },
+    {
+      "path": "testdata/manual/README.md",
+      "sha256": "14405152a22dbff0589ef12c2c3e6b7792c053891373e6771eaf5d66b6e77be7",
+      "local_links_checked": 4,
+      "fences_balanced": true
+    },
+    {
+      "path": "docs/review/M1-FINAL-06-CLAUDE-RUNBOOK.md",
+      "sha256": "a7c4de57964d1d03124999598d70cb6cd14b3a9253425296c0f462afe75eb9bd",
+      "local_links_checked": 4,
+      "fences_balanced": true
+    }
+  ],
+  "local_links_checked": 111,
+  "passed": true,
+  "limits": "Existence checks cover local Markdown targets outside fenced code, not external URLs or fragment anchors. History/progress and original failed evidence are preserved. Official token counts and current remote CI remain pending."
+}

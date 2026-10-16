@@ -144,14 +144,14 @@ MCP 名字不在清单里拼。`mcp__<server>__<tool>` 的拆分由适配器做�
 | 来源 | 状态怎么变 | 触发哪些 `session.start` 规则 |
 |---|---|---|
 | `startup` | 新作用域，gen = epoch = 0 | `sources` 含 `startup` 的 |
-| `resume` | 不变 | `sources` 含 `resume` 的。**默认不含**：Claude 恢复会话时会回放保存的注入文字【文档】，再注入就是重复付费；Codex 是否回放待测（U-T1） |
+| `resume` | 不变 | `sources` 含 `resume` 的。**默认不含**：两家专用startup-only探针在resume真实请求中均保留原注入文字且没有补发【FINAL-07】，不重复注入 |
 | `clear` | gen +1：历史清空，之前的去重记录作废 | `sources` 含 `clear` 的 |
 | `fork` | 不变（新 `session_id` 时本来就是空状态） | `sources` 含 `fork` 的。默认含；U-T1 如果证明 fork 出来的历史里保留了注入文字，就把 `fork` 从默认里去掉 |
 | `compact` | epoch +1 | 只有 `reinject_on_compact: true` 的 |
 
 - **压缩的意思**：对话太长时 harness 把历史换成摘要，之前注入的文字随之消失。epoch +1 之后，`reinject_on_compact: true` 的规则的去重记录全部作废，在 SessionStart(compact) 上补发一次；之后再命中时按新纪元去重。`reinject_on_compact: false` 的规则不受压缩影响（键里的 E 恒为 0），压缩后不会再出现，这是省 token 的默认。
 - **两家都有这个信号**：Claude 在压缩后触发 SessionStart(`compact`)【文档】；Codex 在压缩完成时把 SessionStart(`compact`) 排进队列，**在下一个回合开始时**执行【源码】。
-- **静态位置不需要补发**：Claude 的 `CLAUDE.md` 压缩后会重新加载（`InstructionsLoaded` 的 `compact` 原因）【文档】；Codex 的 `developer_instructions` 是配置，不在对话历史里【推断，待测 U11】。
+- **静态位置不需要补发**：Claude 的 `CLAUDE.md` 压缩后会重新加载（`InstructionsLoaded` 的 `compact` 原因）【文档】；Codex 的 `developer_instructions` 是配置，B3/U11真实请求已确认compact后仍可见。
 - **子 agent**：Claude 的子 agent 在自动压缩后会重新注入 SubagentStart 的内容【文档】。Codex 的子 agent 被压缩后不会再触发 SubagentStart【源码】，这是已知限制。
 - 回合级（`turn`）的记录压缩时不用清，它本来按回合失效。
 
@@ -190,5 +190,5 @@ MCP 名字不在清单里拼。`mcp__<server>__<tool>` 的拆分由适配器做�
 6. **运行时变量写 `default`**，例如 `{{thinking_effort | default: "未知"}}`。
 7. **`block` 理由不超过 40 token**。
 8. **正文里不要出现 `<system-reminder>` 标签**，Claude 会把它转义【文档】。
-9. **依赖强度的规则**：Codex 上只有配置里写了 `model_reasoning_effort` 才有值，多数默认安装取不到；Claude 上第一次工具调用之前可能没有（待测 U-C1）。
+9. **依赖强度的规则**：Codex 上只有配置里写了 `model_reasoning_effort` 才有值，多数默认安装取不到；Claude FINAL-06的启动/提示/显式技能没有effort，工具前/后/失败有值；缺值保持unknown，后续按既定动态评估补齐。
 10. **中文不一定更省**：中文大约一字一 token。用 `style plan` 看估算，别凭印象。

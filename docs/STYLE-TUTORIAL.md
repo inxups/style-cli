@@ -1,6 +1,6 @@
 # STYLE CLI 使用教程
 
-更新时间：2026-10-16。实现核对基线：`960dd57`，支持 Claude Code 与 Codex。M1a 已完成，M1b 历史结果按各自范围保留；Claude 补验收及两家官方计数尚未全部完成，当前状态见 [任务清单](STYLE-M1-TASKS.md)。
+更新时间：2026-10-16。实现核对基线：`ce912e6`（最终codec/能力修复），支持 Claude Code 与 Codex。M1a 已完成，M1b 历史结果按各自范围保留；Claude补验收已完成，两家官方计数及最终远端CI仍待验，当前状态见 [任务清单](STYLE-M1-TASKS.md)。
 
 本教程面向第一次使用 `style` 的人，从构建到卸载走完整个生命周期。文中命令输出都是在隔离沙箱里真实运行得到的（路径已缩写），不是手写示例。规则语义的权威定义在 [STYLE_DOCS](../STYLE_DOCS/STYLE-spec.md)，adapter 的实现细节见 [STYLE-ADAPTERS-CURRENT.md](STYLE-ADAPTERS-CURRENT.md)，真实环境验收步骤见 [STYLE-M1B-MANUAL.md](STYLE-M1B-MANUAL.md)。
 
@@ -441,7 +441,7 @@ Claude 的 `settings.json` 里出现若干 hook，每条形如：
 
 Claude 按编译结果订阅事件（本例：`PostModelSwitch`、`PostToolUse` 的 `Edit/MultiEdit/NotebookEdit/Write`、`PreToolUse` 的 `Bash`、`SessionStart`、`UserPromptSubmit`）。Codex 则固定订阅五类事件，工具范围为 `Bash`、`apply_patch` 和 MCP；静态文本进入 `config.toml` 的根级 `developer_instructions` 托管区，并写入 `hooks.state` 信任摘要。
 
-**让改动生效：新开 Claude / Codex 会话。** 运行中的会话是否会热加载新订阅尚未验证。Claude 首次在工作区使用时按它自己的流程确认信任，可在会话里用 `/hooks` 查看已加载的 hook。
+**让改动生效：新开 Claude / Codex 会话。** Claude 2.1.300的FINAL-06已实测：当前进程新增Read matcher可直接生效；此观察不保证所有版本、事件或Codex也会热加载。Claude 首次在工作区使用时按它自己的流程确认信任，可在会话里用 `/hooks` 查看已加载的 hook。
 
 ---
 

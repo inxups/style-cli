@@ -1,6 +1,6 @@
 # STYLE 当前 adapter 实现总览
 
-更新时间：2026-10-16。源码核对基线：`960dd57`（FINAL-01–10）。
+更新时间：2026-10-16。源码核对基线：`ce912e6`（最终 codec/能力修复）；真实验收补充至 `d276b17`（FINAL-06–08）。
 
 本文总结当前仓库的实现，不代表 Claude Code / Codex 所有版本的完整产品能力。能力声明、安装配置、运行时可接收事件和真实验收结果分别说明；未修改现有 fallback 语义。
 
@@ -282,7 +282,7 @@ Codex 从事件的 model 更新状态。Claude 的 SessionStart model 与 PostMo
 | Codex | none、minimal、low、medium、high、xhigh、max | ultra → max |
 | Claude | low、medium、high、xhigh、max | 无 |
 
-映射大小写不敏感，保留原始拼写。已知 exact/alias 的 `thinking_effort_approx=false`；未知值没有 canonical tier 和 approx，不伪造强度。Claude 当前不产出 none/minimal；关闭思考如何表示仍待真实验证。
+映射大小写不敏感，保留原始拼写。已知 exact/alias 的 `thinking_effort_approx=false`；未知值没有 canonical tier 和 approx，不伪造强度。Claude 当前不产出 none/minimal。FINAL-06 所测界面没有 off；控制配置仍发送 adaptive，hook/state 仍为 high，不能推断思考已关闭；保留不产出 none 的既定边界，未观测实际 off 原值。
 
 源码：[Codex effort](../internal/adapter/codex/effort.go)、[Claude effort](../internal/adapter/claude/effort.go)、[effortmap](../internal/adapter/effortmap/effortmap.go)。
 
@@ -333,7 +333,7 @@ Claude 的 UserPromptSubmit 阻断可带嵌套 `suppressOriginalPrompt`，其他
 | Codex | 2500 token | approximate=true | file-preview |
 | Claude | 10000 字符 | approximate=false | file-preview |
 
-这里是 adapter 采用的限制声明，不是所有版本保证。FINAL-08 已用无 STYLE 的 raw hook 测 Codex SessionStart 12k/50k、PreToolUse 12k 字符：完整正文落盘，模型收到约10,100字符头尾预览和路径，保存文件 bytes/SHA256 与 raw body 一致。首尾均出现不表示完整投递；字符测量不能校准2500 token。Claude 原生行为仍待认证实测。
+这里是 adapter 采用的限制声明，不是所有版本保证。FINAL-08 已用无 STYLE 的 raw hook 测 Codex SessionStart 12k/50k、PreToolUse 12k 字符：完整正文落盘，模型收到约10,100字符头尾预览和路径，保存文件 bytes/SHA256 与 raw body 一致。首尾均出现不表示完整投递；字符测量不能校准2500 token。Claude 2.1.300 的8组ASCII原生请求已实测：9,999/10,000字符完整，10,001字符及更大正文转为文件预览，六份保存文件与原文逐字节相等。该项使用本地协议stub测原生传输，不涉及远程推理或官方token计数；不外推Unicode计量边界。
 
 `core/tokens` 单独计算 per_rule、per_event、always_on 和跨包预算；单位不可混用。运行时按本次事件合并后的模型文本检查输入限制，超限从排序末尾丢弃整条候选并释放去重占位，不从正文中间截断。用户提示不是模型文本预算本身。
 
@@ -380,9 +380,9 @@ env -u CODEX_HOME -u CODEX_SANDBOX \
 - Codex 上下文投递以 rollout 中 `hooks.additional_context` 为证；U7 验证 spawn_agent 的子线程收到 subagent.start 上下文，父线程没有该注入。
 - Codex compact 后 developer_instructions 可见；compact 来源的 SessionStart 延迟到下一回合开始执行。
 - Claude 模型切换和动态补发有真实证据；启动 model/effort unknown 边界保留。
-- Claude systemMessage 只确认 PreToolUse 的用户可见性；其他事件的能力仍属当前声明。
-- Codex CR-05/U5 的200次真实 PreToolUse p95=28.6ms 已复测。Claude 历史 C9 以整批 hook p95=46ms 通过，不能扩大为每类事件达标；最新修复程序尚待重新采集50次串行 Bash与完整 hook 样本。
-- FINAL-07 的无补发探针确认 Codex resume/fork 保留原 context，compact 后两个动态标记消失；三种子 agent 的工具注入/阻断各在独立 scope。Claude 对应补验收未完成。
+- FINAL-06 已确认启动、提示、工具前/后/失败、显式技能六类事件的 USER 标记可见；clear 来源的启动标记虽输出，界面未显示。新增 Read matcher 在当前进程实际生效。
+- Codex CR-05/U5 的200次真实 PreToolUse p95=28.6ms 已复测。Claude 最终修复程序的 C9 已重新采集50次严格串行 Bash、全部103条hook completion，整体p95=28ms；启动341ms和切换54ms保留，不扩大为每类事件达标。历史失败和复测记录均保留。
+- FINAL-07 的无补发探针确认 Codex resume/fork 保留原 context，compact 后两个动态标记消失；三种子 agent 的工具注入/阻断各在独立 scope。Claude 真实resume/fork也保留，两条关闭补发标记在compact后消失；原生子agent不继承所测父动态标记，工具注入/阻断在独立scope生效。
 - FINAL-10 已统计真实请求、注入/去重与会话 usage，缓存条件已核对官方资料；公式是情景比较，token 官方计数仍待 API 认证。
 
 完整证据见 [测试矩阵](STYLE-M1-TESTS.md)、[进度日志](PROGRESS.md)、[M1b 手册](STYLE-M1B-MANUAL.md)、[设计 §15](../STYLE_DOCS/STYLE-cli-design.md)。
@@ -397,8 +397,8 @@ env -u CODEX_HOME -u CODEX_SANDBOX \
 | Codex effort | 配置请求值、每会话一次；profile/启动覆盖/项目组合已实测；生产未知项目信任继续跳过项目层并由 doctor 解释 |
 | Codex plugin | marketplace 登记/启用须手动执行；完整登记、更新、移除和切换已实测 |
 | Codex skill / 子 agent | 云端 skill 不支持且 plan 提示；原生工具名未采集。FINAL-07 已覆盖 fresh/fork/depth2 子 agent context、工具注入/阻断与独立 scope |
-| Claude | workspace trust 无法自动确认；hook 热更新未测；思考关闭的 effort 表示未测；多数事件的 systemMessage 用户显示未测 |
-| 成本与超限 | 官方计数未认证；真实会话统计与缓存说明已完成但不代表典型账单；Codex 原生预览已测，Claude 原生超限待测 |
+| Claude | workspace trust 无法自动确认；Read新订阅热更新已测。所测环境未实现实际关闭思考，保留不产出none；六事件USER可见，clear来源启动USER未显示；SubagentStart不支持上下文注入 |
+| 成本与超限 | 官方计数待API key；真实会话统计不代表典型账单。两家原生文件预览已测，字符边界不等于token校准，Claude ASCII结果不外推Unicode边界 |
 | 路线与 provider | 项目级路线、Claude 插件路线、其他 STYLE provider adapter 尚未实现 |
 | 未来能力 | native、Claude rules 静态位置、output style replace、provider 条件等按 M2/M3/M4 backlog 规划 |
 
