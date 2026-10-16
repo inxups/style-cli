@@ -1,0 +1,124 @@
+{
+  "item": "M1-FINAL-12",
+  "date": "2026-10-16",
+  "status": "local-regression-passed-current-remote-ci-pending",
+  "source_head_at_audit": "b5caed21c568c16a3802e3c1fc4eb1076b2ece2a",
+  "related_prior_evidence": "M1-FINAL-12-REGRESSION-2026-10-16.json",
+  "environment": {
+    "go_version": "go version go1.27.0 darwin/arm64",
+    "unset_for_go": [
+      "CODEX_HOME",
+      "CODEX_SANDBOX"
+    ],
+    "GOPATH": "/tmp/style-cli-gopath",
+    "GOMODCACHE": "/tmp/style-cli-gomodcache",
+    "GOCACHE": "/tmp/style-cli-gocache",
+    "GOFLAGS": "-mod=readonly"
+  },
+  "verified_after_final_codec_fix": [
+    {
+      "command": "GOFLAGS='-mod=readonly -count=1' make test-go",
+      "exit": 0,
+      "result": "both modules all packages passed, fresh count=1",
+      "record": "PROGRESS.md FINAL-06 U9; completed before ccd02a5"
+    },
+    {
+      "command": "GOFLAGS=-mod=readonly make vet-go",
+      "exit": 0,
+      "result": "both modules passed",
+      "record": "PROGRESS.md FINAL-06 U9; completed before ccd02a5"
+    },
+    {
+      "command": "env -u CODEX_HOME -u CODEX_SANDBOX GOPATH=/tmp/style-cli-gopath GOMODCACHE=/tmp/style-cli-gomodcache GOCACHE=/tmp/style-cli-gocache GOFLAGS=-mod=readonly go test -race -count=1 ./internal/runtime ./internal/adapter/claude",
+      "exit": 0,
+      "result": "both changed paths passed after final codec/facts fixes",
+      "record": "PROGRESS.md FINAL-06 U9; earlier six-package race evidence retained in related_prior_evidence"
+    },
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s testdata/manual -p 'test_*.py'",
+      "exit": 0,
+      "result": "40 tests passed, after completed Claude context collector",
+      "record": "d276b17 FINAL-07 verification; no Python changes since"
+    }
+  ],
+  "new_build_and_static_checks": {
+    "tested_source_head": "d276b1741b89119a2f247a4c0a93978cbf9ff33b",
+    "work": "/tmp/style-m1-final12-i20hx2za",
+    "checks": [
+      {
+        "command": [
+          "go",
+          "build",
+          "-trimpath",
+          "-o",
+          "/tmp/style-m1-final12-i20hx2za/style",
+          "./cmd/style"
+        ],
+        "exit": 0,
+        "log_path": "/tmp/style-m1-final12-i20hx2za/check-0.log",
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "command": [
+          "python3",
+          "scripts/smoke.py",
+          "/tmp/style-m1-final12-i20hx2za/style"
+        ],
+        "exit": 0,
+        "log_path": "/tmp/style-m1-final12-i20hx2za/check-1.log",
+        "log_sha256": "fecd21e0e6d2ef1d8445b159389fb07f02f489876747ed836bdd67dcfc0b3799",
+        "assertions_passed": 32
+      }
+    ],
+    "binary_sha256": "a45ab727ac9046cfeca7e04f5afa116d004527985b5dd7c8cb54d40d7f587be4",
+    "build_info": "/tmp/style-m1-final12-i20hx2za/style: go1.27.0\n\tpath\tgithub.com/inxups/style-cli/cmd/style\n\tmod\tgithub.com/inxups/style-cli\tv0.0.0-20261016112456-d276b1741b89\t\n\tdep\tgithub.com/google/jsonschema-go\tv0.4.3\th1:/DBOLZTfDow7pe2GmaJNhltueGTtDKICi8V8p+DQPd0=\n\tdep\tgithub.com/pelletier/go-toml/v2\tv2.4.2\th1:M2fKKbmyvI+hGId/D0W64qDBMVhJnNR10O5gIbMc//Q=\n\tdep\tgithub.com/speakeasy-api/agenthooks\t(devel)\t\n\tdep\tgolang.org/x/sys\tv0.46.0\th1:noSf2Fq6F8DBgS+LysIkx7rIExoNHJsxOAtPp4rthXw=\n\tdep\tgopkg.in/yaml.v3\tv3.0.1\th1:fxVm/GzAzEWqLHuvctI91KS9hhNmmWOoWu0XTYJS7CA=\n\tbuild\t-buildmode=exe\n\tbuild\t-compiler=gc\n\tbuild\t-trimpath=true\n\tbuild\tDefaultGODEBUG=cryptocustomrand=1,tlssecpmlkem=0,tracebacklabels=0,urlstrictcolons=0,x509sslcertoverrideplatform=0\n\tbuild\tCGO_ENABLED=1\n\tbuild\tGOARCH=arm64\n\tbuild\tGOOS=darwin\n\tbuild\tGOARM64=v8.0\n\tbuild\tvcs=git\n\tbuild\tvcs.revision=d276b1741b89119a2f247a4c0a93978cbf9ff33b\n\tbuild\tvcs.time=2026-10-16T11:24:56Z\n\tbuild\tvcs.modified=false\n",
+    "gofmt_tracked_files": 302,
+    "python_ast_files": 30,
+    "production_go_changes_after_ce912e6": []
+  },
+  "source_consistency": {
+    "last_production_go_change_commit": "ce912e6",
+    "go_or_module_changes_since": [],
+    "tracked_go_and_module_files": 307,
+    "manifest_sha256": "c018f8f25ed8da474da105c29a2c42ac57485520c7cff3c012f3f58d6912ea33",
+    "note": "Final acceptance STYLE binary is the pinned 8d5fbf75 build with the final fixes; the clean d276b17 rebuild has a different VCS stamp. No Go/module edits follow ce912e6. Only docs, evidence, collectors and CI cache environment changed afterward."
+  },
+  "workflow": {
+    "path": ".github/workflows/ci.yml",
+    "sha256": "bc2d4bf4b4dfe61b086aee0992c2395bd2687a375436369331d14a74991f4607",
+    "change": "CI now explicitly uses the same temporary GOPATH/GOMODCACHE/GOCACHE as local checks; existing two-OS matrix and all collector discovery retained.",
+    "validation": "Ruby YAML parse and cache-value assertions passed; go env confirms the exact three temporary directories and readonly flags. Remote execution remains unverified."
+  },
+  "ci": {
+    "query_command": "gh run list --repo inxups/style-cli --workflow ci.yml --commit b5caed21c568c16a3802e3c1fc4eb1076b2ece2a --limit 5 --json databaseId,headSha,status,conclusion,url",
+    "source_head_runs": [],
+    "latest_published": [
+      {
+        "conclusion": "success",
+        "createdAt": "2026-10-16T08:15:09Z",
+        "databaseId": 38872445836,
+        "headSha": "04371efc84de0d849aa6efa989e86ec0698e800d",
+        "status": "completed",
+        "url": "https://github.com/inxups/style-cli/actions/runs/38872445836"
+      }
+    ],
+    "current_source_verified_by_remote_ci": false,
+    "commits_pushed_this_round": false
+  },
+  "item_audit": {
+    "final_entries": 15,
+    "verified_complete": 13,
+    "official_counts_waiting": 1,
+    "final_regression_partial": 1,
+    "note": "FINAL-01–08,10–11 plus 04-FIX/06-FIX/06-C9 have evidence; 09 remains waiting by explicit user choice. Final-12 remains partial for current-source remote CI."
+  },
+  "pending": [
+    "FINAL-09 official OpenAI/Anthropic token counts: user has no keys and explicitly requested keeping this pending",
+    "Publish the reviewed commits if authorized and verify their Ubuntu/macOS CI"
+  ],
+  "limits": [
+    "No new model calls were repeated for regression; successful native acceptance remains linked to its original evidence.",
+    "32 smoke assertions use version stubs, temporary HOME and synthetic hook payloads; no force push or native model inference occurs.",
+    "A green CI run for 04371ef is not a pass for the current source. All M1 completion and M2 planning remain deferred."
+  ]
+}

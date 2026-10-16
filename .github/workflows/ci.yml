@@ -23,6 +23,9 @@ jobs:
     runs-on: ${{ matrix.os }}
     env:
       GOFLAGS: -mod=readonly
+      GOPATH: /tmp/style-cli-gopath
+      GOMODCACHE: /tmp/style-cli-gomodcache
+      GOCACHE: /tmp/style-cli-gocache
     steps:
       - uses: actions/checkout@v6
 

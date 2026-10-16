@@ -1236,3 +1236,12 @@ PY
 - FINAL-06–08真实补验已经提交，当前adapter总览、设计/规范首页及部分正文仍保留旧“Claude待测”描述。按BOUNDARY/THINKING/C9、CONTEXT和OVERFLOW证据回填：六事件USER与clear显示边界、Read热更新、未实现实际off且不产出none、resume/fork/无补发compact、子scope和ASCII原生预览。教程仍建议新开会话，同时明确所测Read热更新范围；不外推其他事件/版本。
 - 旧失败/原始证据和追加式历史日志保持原样；当前任务与测试表只剩官方计数及本轮远端CI待验。不调整sources、compact补发、预算、公开命令或schema。
 - 11份当前文档的111个本地链接目标存在、代码围栏平衡；记录逐文件SHA256及检查范围到 `review/M1-FINAL-11-DOC-AUDIT-2026-10-16.json`，关联既有四组plan真实输出。仅更新文档，未重复已通过的模型调用或Go回归。`git diff --check`通过。
+
+### 2026-10-16 — M1-FINAL-12 最终修复版本地验证汇总，官方计数及远端CI保留待验
+
+- 最后生产Go变更ce912e6之后，已完成 `GOFLAGS='-mod=readonly -count=1' make test-go`、`GOFLAGS=-mod=readonly make vet-go` 及 `go test -race -count=1 ./internal/runtime ./internal/adapter/claude`，双module及改变路径均通过（FINAL-06/U9时执行）；之前六包race证据仍保留。所有Go验证清除CODEX_HOME/CODEX_SANDBOX，使用 `/tmp/style-cli-{gopath,gomodcache,gocache}`。本轮核对ce912e6→HEAD没有Go/module差异，不因文档提交重复整套测试。
+- FINAL-07提交前完整40项Python采集器回归通过；最终检查302份tracked Go无gofmt输出、30份manual/smoke Python语法有效，全部FINAL JSON可解析。11份当前文档111个本地链接/围栏另见FINAL-11审计。15个FINAL主/补条目审计为13项有证据关闭、09官方计数待验、12远端CI待验。
+- 在clean d276b17上 `env -u CODEX_HOME -u CODEX_SANDBOX GOPATH=/tmp/style-cli-gopath GOMODCACHE=/tmp/style-cli-gomodcache GOCACHE=/tmp/style-cli-gocache GOFLAGS=-mod=readonly go build -trimpath -o /tmp/style-m1-final12-i20hx2za/style ./cmd/style` exit0。构建SHA256 a45ab727ac9046cfeca7e04f5afa116d004527985b5dd7c8cb54d40d7f587be4；`PYTHONDONTWRITEBYTECODE=1 python3 scripts/smoke.py /tmp/style-m1-final12-i20hx2za/style` exit0/32项通过。固定C9用8d5fbf75，后续干净构建VCS元数据不同；生产Go修复相同，未替换原C9程序或证据。
+- 工作流补齐与Makefile一致的临时GOPATH/GOMODCACHE/GOCACHE，YAML解析/路径断言和实际 `go env -json GOPATH GOMODCACHE GOCACHE GOFLAGS`一致；原有Ubuntu/macOS、双module、全部采集器和smoke步骤保留。此项只验证配置，未冒充远端执行。
+- 只读 `gh run list --repo inxups/style-cli --workflow ci.yml --commit b5caed2...`结果为空；最新公开run仍38872445836/04371ef success。当前批次未推送，不用旧run替代。汇总追加 `review/M1-FINAL-12-REGRESSION-FINAL-2026-10-16.json`并关联旧REGRESSION，任务/矩阵12保留[~]。
+- 用户明确“暂时没有，保留计数待验”：FINAL-09继续[?]，未用登录态、合成usage或其他估算器代替官方计数。除官方计数和本轮远端CI外的M1补项均已由独立证据关闭；不宣称M1全部完成，不开始M2。
