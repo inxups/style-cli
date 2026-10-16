@@ -1467,3 +1467,12 @@ PY
 - adapter 总览补 native 的规划/渲染/归属职责、与固定订阅面的并存、信任/输出限制、编译等价语义、stats 留存与只读边界，以及 Codex B1–B4 双路线实测范围。当前设计 §14.4 写明 M2 部分进展；编译规范的 Codex replace 表从未实现的 model_instructions_file 方案改为当前无槽位，与 core/plan 和两家 Facts 一致；Claude 仍为 CLAUDE.md，D4/D5 未关闭。静态缓存文字改为条件情景，三处未分发外部设计材料改用明确的历史材料名，避免失效链接。
 - 验证：固定 T30 二进制 SHA256 c35d85bd70c4bd575e5eaf401662870b45867b419995e2747a5917c57952ab8c，在独立 /private/tmp/style-m2-docs-20261017.jdmdko4y 逐字提取教程 §4.4 命令，用真实 CLI 完成 validate、两家 plan、codex-user/claude-user 安装和卸载；均退出 0，原 settings.json/config.toml 字节与 0640 还原、hooks.json 无残留。首次草稿试跑发现缺少包 description，补齐后全流程通过；没有运行 native 事件或远端模型请求。§10.4 三条 stats 命令退出 0、空记录语义正确；7d 退出 1/stdout 空。结果、命令摘要和四份内容文档摘要见 docs/review/M2-DOCS-02-2026-10-17.json。
 - 四份内容文档 116 个本地链接/锚点、围栏成对；任务/测试/追加日志和 git diff --check 另行核对。仅文档与本地证据，不改生产 Go、agenthooks 或 M1 归档，不重复已通过的 Go/模型验收。M2-DOCS 改为部分完成，新增 DOCS-02 独立可验收条目；DOCS-01 保留部分状态，等待 Claude 设计和最终 M2 结果回写。
+
+
+### 2026-10-17 — M2-D4/D5 具体方案待评审 `[~]`
+
+- 接 clean 2ad3f99。在 Claude 订阅额度/OAuth 保存待确认期间，把已有协议事实整理成 docs/review/M2-D4-D5-DESIGN-2026-10-17.md，并在 CLI 设计 §10.4、编译规范静态位置说明、任务/测试和手册关联。此为可评审方案，不是实现或真实界面通过；D4/D5 仍 `[~]`，T40/T50 未开始，当前依赖未擅自改变。
+- D4 建议配置根目录下每包 rules/style-<名字>.md，拟议槽位 claude_rules；首次成功重建 Claude 路线时迁移已批准正文，单纯搬迁无需另加 trust，原有源码/native 批准保持。明确文件归属/生成摘要、外部同名文件不接管、漂移/标记/path 冲突退出 1、旧 CLAUDE.md 外部字节/权限还原、复用现有安装事务与失败回滚；保留加载排序实测和崩溃原子性的实际边界。A7 列出新旧布局、4 种触发路径、文件尾/Unicode、去重接替、多包批准隔离、冲突和回滚候选验收。
+- D5 建议不将 output style 作为 replace、不修改用户样式，维持 degrade/skip 跳过及 error 拒绝。草案区分 --allow-replace 授权检查与实际能力；评审后 T50 可按不实现关闭，A8 仍须补齐 skip 和样式/设置不变的真实 CLI 证据，不能直接标成功。C4 界面切换仍阻塞。
+- 为继续离线实现，单独提出调整 T40 前提为“本设计评审通过 + 已有原生请求证据”，真实用户界面 C1/C3/C4 留待额度可用后补；该依赖调整明确等待用户决定，不用本次“继续”追认尚未展示的方案。任务清单的规范先行约定要求用户评审通过后进入实现，因此在具体方案可审阅后请求设计确认。
+- 验证：从历史原生协议 JSON 独立核对四个 phase 的 exit 0/单请求、rules 全文一次、选中样式互斥且均在 messages、system 长度 26512/23229/23229/26550 和候选公共片段 20615；报告 SHA256 9d23d962b8e3f517ac4015d8778322975a37c7e742832104295a71829d3dcc7e。核对现有 core/plan 的 TestBuildRejectsReplaceWhenStaticLocationIsUnavailable 与 Claude Facts 测试源码、route/ApplyFiles/sync/trust 的事务和批准职责；没有重跑模型请求或把 stub usage 当官方计数。本地文档链接/锚点/围栏、追加日志、git diff --check 通过；无生产代码、agenthooks 或 M1 归档修改，不重复既有 Go 回归。

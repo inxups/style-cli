@@ -81,6 +81,9 @@ env -u CODEX_HOME -u CODEX_SANDBOX \
   - 卸载保留方/被折叠方、trust/link sync 改正文/priority、三条路线切换与重复编译；接替规则按新 rule 身份在已有会话可再注入；doctor 认同重建结果，最终外部字节/权限精确还原。
 - [ ] **M2-A7 Claude rules 静态位置**（M2-T40，仅 D4 成立时）：写入/删除 `~/.claude/rules/style-<名字>.md`；从 `CLAUDE.md` 标记块迁移后再卸载，两处文件逐字节还原。D4 不成立时本条以 D4 证据标注不适用并关闭。
 - [ ] **M2-A8 output style replace**（M2-T50，仅 D5 可行时）：断言随 D5 定稿；不可行时本条以 D5 证据标注不适用并关闭。
+
+A7/A8 的具体候选验收见 [D4/D5 草案](review/M2-D4-D5-DESIGN-2026-10-17.md)；尚未评审，不覆盖上面的现行依赖，也不因此标实现或验收完成。若接受 D5 回退方案，A8 将按该草案验证现有 fallback 与不写样式设置的保证后再关闭。
+
 - [~] **M2-A9 M1 回归**：native、stats 与跨包去重阶段已通过双 module fresh test/vet、app/state/adapter/conformance race、采集器 40 项、构建与 smoke（stats 阶段 36 项，去重阶段扩为 40 项）。T60 的 `TestNativeRulesLeaveRuntimeOutputsAndStatsUnchanged` 在两家共 46 个 payload 上核对原 stdout golden、输出白名单、runtime 条目与统计记录（只排除时间差）；inline 源文件摘要随新增声明改变是预期，其他条目字段不变。T60 未更新任何 golden。M1 的 A1–A22、adapter conformance 在后续 M2 实现后仍需最终复验，见 `docs/PROGRESS.md` M2-T13/T60/T20/T30。
 
 ## M2b：Codex 真实环境
