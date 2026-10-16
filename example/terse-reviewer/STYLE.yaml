@@ -59,7 +59,10 @@ rules:
     when:
       agent: any
       conditions:
-        - {field: tool.input.command, op: regex, pattern: 'git\s+(?:-C\s+\S+\s+)?push\b.*(?:\s--force(?:\s|$)|\s-f(?:\s|$)|\s\+\S)'}
+        # Regex, not a shell parser: git must start a line or follow ; & | ( or `,
+        # and quoted text after it ends the match. Heredoc lines that begin with
+        # git and nested shells such as bash -c "..." are not distinguished.
+        - {field: tool.input.command, op: regex, pattern: '(?m)(?:^|[;&|(`])\s*git\s+(?:-C\s+\S+\s+)?push\b[^''"`\n;&|()]*?(?:\s--force|\s-f|\s\+\S+)(?:[\s;&|)`]|$)'}
     text: Do not force push; create a new commit.
   - id: on-review-prompt
     target: event

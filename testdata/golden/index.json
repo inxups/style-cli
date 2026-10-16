@@ -119,7 +119,7 @@
           "rule": "terse-reviewer/on-review-prompt",
           "entry": "terse-reviewer/on-review-prompt@prompt.submitted",
           "src": "STYLE.yaml#on-review-prompt",
-          "src_sha256": "sha256:522e7a5ca47a3ffa6bf4cf7dc09311f32eb00bf170983a778ae704e3f3201c32",
+          "src_sha256": "sha256:614f7cad9f30cc590210f98f1d5ec5149c6f7d8a3b657dccb1593b4625bbd022",
           "body_sha256": "sha256:d7410546ba0a3fc218c962c96a2526dc2cb381e0a1d7b95047d87b8f70815570",
           "order": [
             50,
@@ -493,7 +493,7 @@
           "rule": "terse-reviewer/no-force-push",
           "entry": "terse-reviewer/no-force-push@tool.pre",
           "src": "STYLE.yaml#no-force-push",
-          "src_sha256": "sha256:522e7a5ca47a3ffa6bf4cf7dc09311f32eb00bf170983a778ae704e3f3201c32",
+          "src_sha256": "sha256:614f7cad9f30cc590210f98f1d5ec5149c6f7d8a3b657dccb1593b4625bbd022",
           "body_sha256": "sha256:fb48a21df69005425af64782ecf5c15b72716d04490b6474f277147569e37f4f",
           "order": [
             50,
@@ -516,7 +516,7 @@
               {
                 "field": "tool.input.command",
                 "op": "regex",
-                "pattern": "git\\s+(?:-C\\s+\\S+\\s+)?push\\b.*(?:\\s--force(?:\\s|$)|\\s-f(?:\\s|$)|\\s\\+\\S)"
+                "pattern": "(?m)(?:^|[;\u0026|(`])\\s*git\\s+(?:-C\\s+\\S+\\s+)?push\\b[^'\"`\\n;\u0026|()]*?(?:\\s--force|\\s-f|\\s\\+\\S+)(?:[\\s;\u0026|)`]|$)"
               }
             ]
           },

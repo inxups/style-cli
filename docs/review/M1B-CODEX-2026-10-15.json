@@ -112,7 +112,8 @@
   },
   "known_issue": {
     "id": "M1B-EXAMPLE-01",
-    "status": "open",
+    "status": "fixed-2026-10-16",
+    "resolution": "Rule now requires git at a line start or after ; & | ( or backtick, and stops at quotes, separators or parentheses. Regression: core/compile/example_force_push_test.go. Still a regex, not a shell parser; see docs/PROGRESS.md 2026-10-16 M1B-EXAMPLE-01.",
     "scope": "example/terse-reviewer no-force-push condition",
     "observed": "A Python heredoc intended only to write test documentation was blocked because its text contained the force push example command.",
     "cause": "The example rule searches the entire shell command string with a regular expression, without distinguishing executed commands from quoted text.",

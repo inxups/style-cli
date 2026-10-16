@@ -740,3 +740,13 @@
 - 原样 102 条 completion 入库 `docs/review/M1B-CLAUDE-C9-RETEST-HOOKS-2026-10-15.txt`；全部样本、50 组调用/结果、程序 build info/摘要、状态变化和限制入库对应 RETEST-TIMING JSON。复算：`python3 testdata/manual/measure_claude_hooks.py docs/review/M1B-CLAUDE-C9-RETEST-HOOKS-2026-10-15.txt --binary /Users/inxups/.local/lib/style-m1b/style`，status=within-budget、102 条、p95=46ms。
 - 验证：`PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s testdata/manual -p 'test_measure_claude_hooks.py' -v` 六项通过；留存 excerpt 与 JSON 样本逐项精确复算、程序 revision/hash、50 组实际调用/结果和 resume 状态核对通过。本次只有验收记录变化，不重复无关 Go 测试；优化提交的双 module test/vet 和定向 race 证据保留。
 - 任务、测试、手册、Claude JSON 与既有 review 已确认 M1B-PERF-01 和 C9 在上述口径完成，原失败作为历史保留。按用户要求到此停止，等待新指令；Codex M1b 和 M1 尚未完成。
+
+### 2026-10-16 — M1B-EXAMPLE-01 `[x]` 示例 force push 规则精度
+
+- 约定变更：用户 2026-10-16 指示“codex配置你来，继续任务”，Codex 真实配置改由 agent 执行；Claude 真实配置仍按原约定由用户执行。改动前已把当时的 `~/.codex/config.toml` 备份到 `~/.style-m1b/manual-backup-2026-10-16/`（700 权限，含凭据，不入库）。
+- 复现：本 Claude 会话装有 STYLE claude-user hook。agent 用 Python heredoc 修改测试文件，heredoc 只在引号字符串中出现 force push 示例，03:03:30Z 被 `terse-reviewer/no-force-push` 真实拦截（stats `result=blocked`），与 2026-10-15 Codex 误报同因。
+- 回归先行：新增 `core/compile/example_force_push_test.go`，编译真实示例 index 后用 `when.Compile` 评估 18 例。旧规则失败 8 例：heredoc/单引号/双引号/提交信息/普通 push 后的引号文本共 5 例误拦；子 shell、`$(...)`、反引号中 flag 后紧跟 `)` 或反引号的 3 例漏拦。lease、普通 push 不拦截。
+- 修复：`example/terse-reviewer/STYLE.yaml` 改为 `(?m)` 下 git 位于行首或 `; & | ( \`` 之后，git 与 flag 之间不得出现引号、换行、分隔符或括号，flag 后以空白、分隔符、`)`、反引号或行尾结束。规则注释说明仍是正则：以 git 开头的 heredoc 行和 `bash -c "..."` 嵌套 shell 不区分。`UPDATE_GOLDEN=1` 后 `testdata/golden/index.json` 只有两处 src_sha256 和 pattern 变化，plan golden 不变；同步 `STYLE_DOCS/STYLE-spec-compiled.md` 的示例 pattern。
+- 验证：清理 CODEX_HOME/CODEX_SANDBOX，临时 Go 缓存、GOPROXY=off/GOSUMDB=off；新测试 18 例通过，双 module `make test-go`、`make vet-go`、gofmt、`git diff --check` 通过。
+- 真实环境：已安装副本替换为新 STYLE.yaml 后，`style sync` 退出 3 且 index 不变；`style trust terse-reviewer` 只展示源/渲染 diff、退出 1、index 不变；`trust --yes` 退出 0 并加载新 pattern，两家用户配置字节 hash 不变。随后本 Claude 会话中：同类 heredoc 放行；scratch 仓库接本地 bare remote，真实 force push 于 03:05:42Z 被 hook 拒绝、remote 保持 e7109f3；force-with-lease 放行并推送到 3967cbd。
+- 观察：trust 的 rendered diff 按首尾差异整段替换输出，未变行也显示为 -/+，内容正确但冗长；记录，不在本项修改。

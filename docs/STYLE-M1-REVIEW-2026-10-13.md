@@ -410,7 +410,7 @@ fail-closed 的范围收窄为 `Manifest.Fail == FailClosed`、`Blocking` 且 `K
 
 - [x] **CDEX-05/B5**：用户配置的 codex-plugin 路线已在真实工作会话完成 force push 拦截和 force-with-lease 放行；仅使用临时 Git 仓库和本地 bare remote。真实工具错误和 no-force-push/blocked stats 对应，放行命令退出 0。
 - [~] **CDEX-02/B2**：待测模型按用户选择的 gpt-6-sol/low 记录。新会话 SessionStart 输出、后续 prompt 去重和另一会话 prompt 注入有真实 stats，截图回答与 state 一致。工作对话的 gpt-6.1-sol/low 工具测试独立记录，不混作用户模型读数；minimal/high 与其余模型场景未验收。
-- [!] **M1B-EXAMPLE-01**：写测试文档的 Python heredoc 被误拦，因 no-force-push 正则匹配了被引用的示例命令。属于示例规则精度问题，需补引用文本边界；本轮记录证据，未修复。
+- [!] **M1B-EXAMPLE-01**：写测试文档的 Python heredoc 被误拦，因 no-force-push 正则匹配了被引用的示例命令。属于示例规则精度问题，需补引用文本边界；本轮记录证据，未修复。2026-10-16 已修复，见任务清单 M1B-EXAMPLE-01 与进度日志。
 
 证据：`docs/review/M1B-CODEX-2026-10-15.json`，包含命令、结果、状态行、会话范围和复现方法。没有更改真实配置或 Go 实现。M1b 尚未完成，Claude 暂不验收。
 
