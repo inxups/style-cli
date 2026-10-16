@@ -108,6 +108,18 @@ func (s *Service) Plan(ctx context.Context, request PlanRequest) (PlanResult, er
 	}
 	for _, provider := range providers {
 		definition := s.definitions[provider]
+		installation, detected, err := definition.Detect(ctx)
+		if err != nil {
+			return result, err
+		}
+		// An explicitly requested, undetected provider still supports offline
+		// planning. Installation must establish its version before writing.
+		if detected {
+			if finding := harnessRequirement(metadata, provider, installation.Version); finding != nil {
+				result.Diagnostics = append(result.Diagnostics, *finding)
+				continue
+			}
+		}
 		planner, err := adapter.BuildPlanAdapter(provider, definition.Facts)
 		if err != nil {
 			return result, err

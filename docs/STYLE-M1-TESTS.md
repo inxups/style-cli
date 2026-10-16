@@ -209,3 +209,18 @@ B1.2 和 B1.4 的历史通过状态表示原有测试套件在声明范围内通
 ## 持续集成
 
 - [x] **CI-01** GitHub Actions（`.github/workflows/ci.yml`）在 ubuntu-latest 与 macos-latest 上运行 gofmt、vet、两个 module 的 go test、计时收集器单测、构建和 `scripts/smoke.py`。冒烟用 codex/claude 版本桩在临时 HOME 中走完 validate → plan → install → list/doctor → 两家 PreToolUse hook（6 条 force push deny、4 条对照放行）→ sync → uninstall 无残留。本地全部通过，修复前程序会失败 6 项；GitHub 首次运行（d7105f0，https://github.com/inxups/style-cli/actions/runs/38872171780）两个 runner 都通过，日志有 `smoke passed`。
+
+## M1 全部未闭合项补验收
+
+- [x] **FINAL-01 版本门槛**：旧版/未知版本跳过且不写入，混合版本只安装兼容目标，已有旧包及路线保留，sync 不重新引入不兼容条目；示例 compile golden 仅来源摘要更新。证据：`internal/app/harness_requirement_test.go`，app/compile/spec 测试和 app/compile vet 通过。
+- [ ] **FINAL-02 effort**：独立/表式 profile、启动覆盖、项目层/信任、unknown 的单测与目标 CLI 对照。
+- [ ] **FINAL-03 link**：源码改动的 list 漂移、sync/trust 文件差异与批准快照。
+- [?] **FINAL-04 B2/B10**：两条 Codex 路线各 B1–B9 及双向切换，unknown 分支独立留证。
+- [?] **FINAL-05 U2/U6**：真实插件登记往返、云端能力边界。
+- [?] **FINAL-06 Claude**：U9、U-C1/C2/C3/C5 和最终程序 C9；界面不能由模拟 payload 验收。
+- [?] **FINAL-07 继承**：resume/fork/compact、子 agent scope，compact 探针禁补发。
+- [?] **FINAL-08 超限**：STYLE guard 与原生绕开 STYLE 的独立超限探针。
+- [?] **FINAL-09 校准**：40 条中英各半，两家真实计数接口，固定基线和正文摘要。
+- [ ] **FINAL-10 成本**：实际 stats/usage 分层统计、缓存官方资料核对。
+- [ ] **FINAL-11 文档**：版本、状态、fallback 和能力说明一致。
+- [ ] **FINAL-12 回归**：双 module test/vet、必要 race、Python 采集器、构建/冒烟与 CI。

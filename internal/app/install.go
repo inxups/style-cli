@@ -178,6 +178,26 @@ func (s *Service) Install(ctx context.Context, request InstallRequest) (InstallR
 	if err != nil {
 		return InstallResult{}, err
 	}
+	var versionDiagnostics []Diagnostic
+	compatible := false
+	activeAdapters := make([]installAdapter, 0, len(adapters))
+	for _, target := range adapters {
+		if finding := harnessRequirement(parsed.Metadata, target.provider, target.installation.Version); finding != nil {
+			versionDiagnostics = append(versionDiagnostics, *finding)
+			// Keep existing routes for other installed packages. Compilation
+			// checks requirements separately for each package below.
+			if lock.Harnesses[string(target.provider)].Route == "" {
+				continue
+			}
+		} else {
+			compatible = true
+		}
+		activeAdapters = append(activeAdapters, target)
+	}
+	if !compatible && len(versionDiagnostics) > 0 {
+		return InstallResult{Package: name, Version: version, Diagnostics: versionDiagnostics}, nil
+	}
+	adapters = activeAdapters
 	newLock := lockPackage{
 		Name: name, Version: version, Seq: nextSequence(lock),
 		Source: lockSource{Kind: sourceKind(single), Path: sourcePath, Link: request.Link},
@@ -200,6 +220,11 @@ func (s *Service) Install(ctx context.Context, request InstallRequest) (InstallR
 		return InstallResult{}, err
 	}
 	result.Reports, result.Diagnostics = compilation.reports, compilation.diagnostics
+	for _, finding := range versionDiagnostics {
+		if lock.Harnesses[finding.Provider].Route == "" {
+			result.Diagnostics = append(result.Diagnostics, finding)
+		}
+	}
 	indexBytes := compilation.indexBytes
 	updatedLock := lockDocument{Format: lockFormat, Packages: append([]lockPackage(nil), lock.Packages...)}
 	if existingLock == nil {
@@ -302,6 +327,10 @@ func (s *Service) compileInstalled(ctx context.Context, packages []installPackag
 			return installCompilation{}, err
 		}
 		for index := range packages {
+			if finding := harnessRequirement(packages[index].pkg.Metadata, target.provider, target.installation.Version); finding != nil {
+				result.diagnostics = append(result.diagnostics, *finding)
+				continue
+			}
 			planned, err := plan.Build(packages[index].resolved, planner)
 			if err != nil {
 				return installCompilation{}, fmt.Errorf("plan %s/%s: %w", packages[index].lock.Name, target.provider, err)

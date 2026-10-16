@@ -1063,3 +1063,12 @@ PY
 - 观察到的现象（未修改实现，教程里已如实标注）：`--link` 包源码变化后，`sync` / `trust` 输出 “0 changed files” 且 `Source diff:` 为空，但 `sync` 退出码 3，`trust --yes` 后 `CLAUDE.md` 确实更新；`list` 在源码已变、未 trust 时仍显示 `hash_matches=true`。这是 diff 展示/漂移检测的缺口，不属于本任务范围，待单独评估。
 - 验证：文档 30 个本地链接目标全部存在，代码围栏成对，TOC 锚点与标题一致；从文档抽出的 `team-style` 四个文件用真实二进制 `style validate` 输出 `valid`；教程中 13.x 的 YAML 片段合并成包后 `validate` 通过；`git diff --check` 通过。
 - 未覆盖：真实 Claude Code / Codex 会话里的加载与投递（沿用 M1b 结论）；Codex 一侧的手工 payload 示例没有重跑；交互式确认提示没有在真实终端里演示。
+
+### 2026-10-16 — M1-FINAL-01 / FINAL-01 示例版本门槛与实际过滤
+
+- 用户批准全部 M1 未闭合项修复/验收；任务清单与测试矩阵新增 12 组补项，保留旧验收范围与历史证据。隔离配置优先，Claude 界面仍由用户操作；缺少真实环境证据保持待验证。
+- 不只是补元数据：发现 `requires.harness` 原先仅在 schema 验证，没有安装过滤。新增共享门槛检查；已检测的 plan、install 及 sync/trust/uninstall 重编译按每包/每 provider 检查。未检测 provider 的显式 plan 仍可离线运行；安装遇到未知版本不能视为兼容。
+- 全部目标不兼容时返回 skipped/warning，不创建 STYLE_HOME、不写 provider 配置；混合目标只安装兼容路线。已有兼容旧包和路线继续保留，重编译不会将新包误加到不兼容 harness。无新命令、锁文件或 index 格式变化。
+- 示例 requires.harness 回填 Codex >=0.159.3 / Claude >=2.1.300；index golden 只有两个 inline 规则来源 SHA256 变化。
+- 回归：`TestExampleRequirementsSkipOldAndUnknownHarnessesWithoutMutation`、`TestExampleRequirementsInstallOnlyCompatibleHarnessAndRebuildPerPackage`。
+- 验证通过（GOPATH=/tmp/style-cli-gopath、GOMODCACHE=/tmp/style-cli-gomodcache、GOCACHE=/tmp/style-cli-gocache，清除 CODEX_HOME/CODEX_SANDBOX，GOFLAGS=-mod=readonly）：`go test -count=1 ./internal/app ./core/compile ./core/spec`、`go vet ./internal/app ./core/compile`、gofmt、`git diff --check`。黄金文件按明确元数据变更用 UPDATE_GOLDEN=1 重建，再无更新重跑通过。

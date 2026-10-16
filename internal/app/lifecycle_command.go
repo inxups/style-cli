@@ -61,7 +61,11 @@ func runInstall(ctx context.Context, service *Service, workDir string, args []st
 	if len(result.Reports) > 0 {
 		writePlanText(out, PlanResult{Package: result.Package, Version: result.Version, Diagnostics: result.Diagnostics, Reports: result.Reports})
 	}
-	fmt.Fprintf(out, "installed %s %s\n", result.Package, result.Version)
+	if len(result.Reports) == 0 && len(result.Routes) == 0 && len(result.Diagnostics) > 0 && !result.Changed {
+		fmt.Fprintf(out, "skipped %s %s (no compatible harness)\n", result.Package, result.Version)
+	} else {
+		fmt.Fprintf(out, "installed %s %s\n", result.Package, result.Version)
+	}
 	if result.Replace {
 		fmt.Fprintln(out, "warning: replace mode is active")
 	}

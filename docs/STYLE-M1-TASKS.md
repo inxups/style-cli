@@ -163,6 +163,23 @@ M1b 准备、真实验收中发现的问题及示例规则修正，按处理顺�
   - GitHub：d7105f0 的首次运行 https://github.com/inxups/style-cli/actions/runs/38872171780 两个 job 都通过（ubuntu 47s、macOS 1m17s），日志中都有 `smoke passed`。
   - 不覆盖：真实 Codex/Claude 是否接受配置、上下文投递和计时；这些仍以 M1b 手动验收为准。
 
+## M1 全部未闭合项收尾（2026-10-16）
+
+用户批准全部 M1 未闭合项修复与验收：隔离配置优先，Claude 界面项由用户执行；验证成立的既定回退可关闭，不扩展 M2–M4。历史验收结论按原记录范围保留，以下补项独立验收，不能用离线准备替代真实运行。
+
+- [x] **M1-FINAL-01 版本约束**：示例回填 Codex >=0.159.3 / Claude >=2.1.300；补齐 requires.harness 安装、重编译与 plan 过滤，验证旧版/未知版本跳过且无写入。证据：`internal/app/harness_requirement_test.go`、`testdata/golden/index.json`；app/compile/spec 全量测试与 app/compile vet 通过，命令见进度日志。
+- [ ] **M1-FINAL-02 Codex effort 解析**：核对目标 CLI 的 profile、启动覆盖、项目层/信任及 unknown，修复并固化真实配置对照。
+- [ ] **M1-FINAL-03 link 漂移**：核查 DOCS-04 记录的源码变化 diff/hash_matches 不准确现象，若复现则修复并回归。
+- [?] **M1-FINAL-04 B2/B10 路线验收**：两条 Codex 路线独立完整 B1–B9，补 unknown 分支，验证双向切换和配置还原。
+- [?] **M1-FINAL-05 U2/U6 能力边界**：插件手动登记往返与云端 skill 可观测性；不新增自动登记或云端路线。
+- [?] **M1-FINAL-06 Claude 边界及 C9**：U9、U-C1/C2/C3/C5 与最终程序 50 次 Bash 性能；界面项等待用户操作。
+- [?] **M1-FINAL-07 上下文继承**：U-T1/T2 和 U7 补充；区分历史保留、补发和 agent scope，不调整既有默认值。
+- [?] **M1-FINAL-08 真实超限**：U-T5；分别检验 STYLE cap 与独立原生探针超限，不能提前裁剪后宣称已测原生上限。
+- [?] **M1-FINAL-09 token 校准**：U-T3；40 条中英各半的固定语料，通过两家真实计数接口记录误差，不把估算器当真实计数。
+- [ ] **M1-FINAL-10 成本与缓存**：U-T4/U-T6；统计真实 stats/usage，核对官方缓存资料，明确情景假设，保留估算公式与预算默认值。
+- [ ] **M1-FINAL-11 文档一致性**：同步设计、adapter 总览、手册、教程与边界表，保留 degrade 最终可跳过的策略和历史证据。
+- [ ] **M1-FINAL-12 最终验证**：双 module test/vet、必要 race、采集器、构建/冒烟与 CI；无证据条目不得勾选，完成后规划 M2。
+
 ## 后续 backlog
 
 - [ ] **M2**：`target: native`、`style stats`、跨包去重、Claude `~/.claude/rules/` 静态位置和 replace 评估。
