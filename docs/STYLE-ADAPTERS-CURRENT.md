@@ -1,6 +1,6 @@
 # STYLE 当前 adapter 实现总览
 
-更新时间：2026-10-17。源码核对基线：`74a473d`（M2 native、stats、跨包去重）；Codex M2 B1–B4 双路线证据归档至 `e6dd778`。Claude D4/D5 设计和界面验收仍待完成，M2 最终回归/CI 尚未关闭。
+更新时间：2026-10-17。生产源码核对基线：`16d5c1c`（M2 native、stats、跨包去重、Claude rules/迁移），replace 回退验收 `4976713`，Claude 最终隔离准备 `5dd6742`。Codex M2 B1–B4 双路线证据归档至 `e6dd778`；D4/D5 设计已批准，Claude 真实界面和远端 CI 仍待补。
 
 本文总结当前仓库的实现，不代表 Claude Code / Codex 所有版本的完整产品能力。能力声明、安装配置、运行时可接收事件和真实验收结果分别说明；未修改现有 fallback 语义。
 

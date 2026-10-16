@@ -1,6 +1,6 @@
 # STYLE CLI 使用教程
 
-更新时间：2026-10-17。实现核对基线：`74a473d`（M2 native、stats、跨包去重），支持 Claude Code 与 Codex。Codex M2 B1–B4 已在两条路线通过；Claude rules 迁移与 output style 仍待设计定稿，真实界面步骤受订阅额度阻塞。当前状态见 [M2 任务清单](STYLE-M2-TASKS.md)；M1 结果只作为历史证据，M2 最终回归和 CI 尚未关闭。
+更新时间：2026-10-17。生产源码核对基线：`16d5c1c`（M2 native、stats、跨包去重、Claude rules/迁移），replace 回退验收 `4976713`，支持 Claude Code 与 Codex。Codex M2 B1–B4 已在两条路线通过；Claude D4/D5 设计已批准，最终界面步骤受订阅额度阻塞。当前状态见 [M2 任务清单](STYLE-M2-TASKS.md)；M1 结果只作为历史证据，远端 CI 与完整 M2 验收尚未关闭。
 
 本教程面向第一次使用 `style` 的人，从构建到卸载走完整个生命周期。文中命令输出是在隔离沙箱里运行得到的（路径已缩写）；新增 M2 示例只有命令和配置，其验证见 M2 进度日志。规则语义的权威定义在 [docs/spec](spec/STYLE-spec.md)，adapter 的实现细节见 [STYLE-ADAPTERS-CURRENT.md](STYLE-ADAPTERS-CURRENT.md)，当前真实环境验收步骤见 [STYLE-M2-MANUAL.md](STYLE-M2-MANUAL.md)。
 

@@ -4,7 +4,7 @@
 
 本文件记录 M2 测试矩阵和每项当前状态。测试通过必须有命令输出、fixture/golden 文件或真实环境记录作为证据。任务清单见 [STYLE-M2-TASKS.md](STYLE-M2-TASKS.md)，M1 测试矩阵已只读归档（[STYLE-M1-TESTS.md](STYLE-M1-TESTS.md)）。
 
-当前状态：M2-BASE-01、M2-A1–A7 已通过，M2-A9 已完成截至 rules 迁移的阶段回归、等待 T50 后最终复验。D4/D5 设计已于 2026-10-17 经用户批准，T40/A7 已实现并验证；A8 按已批准 replace 回退方案继续。真实界面验收因用户报告 Claude 订阅额度用尽暂挂，OAuth 保存重试仍未确认，离线成功不关闭 C1/C3/C4。
+当前状态：M2-BASE-01、A1–A9 离线验收全部通过；D4/D5 已批准，T40/A7 迁移、T50/A8 回退及最终本地回归完成。Codex B1–B4 已通过，Claude C1–C4 与远端 CI/官方计数仍待补；界面验收因用户报告订阅额度用尽暂挂，OAuth 保存重试仍未确认。手册和隔离准备完成，不代替真实结果。
 
 ## 状态约定
 
@@ -82,7 +82,7 @@ env -u CODEX_HOME -u CODEX_SANDBOX \
 - [x] **M2-A7 Claude rules 静态位置**（M2-T40，D4 已批准）：`internal/app/claude_rules_test.go` 的 `TestA7*` 覆盖自定义根目录两个静态/一个动态包、等价保留方接替、20 个旧布局入口/文件尾场景、普通/link 包跨包批准与 native 隔离、整事务冲突与陈旧计划；Claude `rules_test.go` 覆盖精确格式/摘要/权限、空正文、外部文件不接管和中断回滚；agenthooks `path_test.go` 覆盖 symlink/非普通路径及应用中路径变化回滚。[实际二进制报告](review/M2-A7-RULES-MIGRATION-2026-10-17.json) 的 16 组旧安装升级核对五个只读命令、四个重建入口、字节/权限、index format 不变、重复 sync、doctor 与最终卸载。双 module fresh test/vet、相关 race、50 项采集器、构建与 40 项 smoke 通过，见 `docs/PROGRESS.md` M2-T40。详细契约：[D4 设计](review/M2-D4-D5-DESIGN-2026-10-17.md)。C1/C3 真实界面另行验收。
 - [x] **M2-A8 output style replace 回退**（M2-T50，D5 已批准）：`scripts/check_m2_replace.py` 实际构建 CLI 的两家 × degrade/skip/error × 文本/JSON 共 12 场景通过：degrade/skip 为 skipped 且无 placement；error 为 blocked/退出 4、整配置/index/lock/批准树的字节/权限/mtime 不变；缺 replace 授权退出 1、无写入，--allow-replace 不创造槽位。用户 output-styles 文件树和 outputStyle 设置在安装中/卸载后保持，成功往返的两家外部配置字节/权限精确还原；没有动态追加替代品。证据：[A8 报告](review/M2-A8-REPLACE-FALLBACK-2026-10-17.json)，CI 新增同一脚本。C4 界面观察仍单列阻塞。
 
-- [~] **M2-A9 M1 回归**：native、stats 与跨包去重阶段已通过双 module fresh test/vet、app/state/adapter/conformance race、采集器 40 项、构建与 smoke（stats 阶段 36 项，去重阶段扩为 40 项）。T60 的 `TestNativeRulesLeaveRuntimeOutputsAndStatsUnchanged` 在两家共 46 个 payload 上核对原 stdout golden、输出白名单、runtime 条目与统计记录（只排除时间差）；inline 源文件摘要随新增声明改变是预期，其他条目字段不变。T60 未更新任何 golden。M1 的 A1–A22、adapter conformance 在后续 M2 实现后仍需最终复验，见 `docs/PROGRESS.md` M2-T13/T60/T20/T30。
+- [x] **M2-A9 M1 回归**：最终实现 16d5c1c、回退验收 4976713、准备 5dd6742 后，双 module fresh test/vet、compile/engine/state/tokens/app/全部 adapter/conformance 与 agenthooks install race、53 项采集器、固定构建/重建逐字节一致、40 smoke、16 组实际旧二进制升级和 12 组回退全部通过。[最终本地报告](review/M2-A9-LOCAL-REGRESSION-2026-10-17.json)。M1 A1–A22 对应现有测试与共享 conformance 均在全量运行中通过，M1 文档只读；runtime stdout golden 未改，T40 只改 Claude plan 的静态槽位名。T60 两家 46 payload 的 stdout/白名单/runtime/stats 核对仍通过；不据离线回归关闭 Claude 真实验收、远端 CI 或官方计数。
 
 ## M2b：Codex 真实环境
 
@@ -111,5 +111,6 @@ Claude Code 界面项由用户执行，agent 提供手册与隔离 runbook。
 ## 持续集成与文档核对
 
 - [ ] **M2-CI-01**：M2 最终提交的 GitHub Actions 在 Ubuntu/macOS 上 format、vet、双 module test、采集器测试、build、smoke 全部 success。
-- [~] **M2-DOCS-01**：已实现功能文档检查通过（M2-DOCS-02）；D4/D5 与最终结果回写后，再核对 M2 修改过的全部当前文档本地链接、代码围栏和 `git diff --check`。
+- [~] **M2-DOCS-01**：已实现功能和 D4/D5、最终离线结果检查通过（DOCS-02/03），M2 修改过的当前文档链接/锚点/围栏已核对；Claude/CI/官方计数最终结果尚缺，补齐后再关闭总项。
+- [x] **M2-DOCS-03**：当前 rules/回退规范、教程/总览、C2/C3 手册、A1–A9 状态与证据 JSON 同步；全部本轮 M2 当前 Markdown 的本地链接/锚点/围栏和 diff-check 通过，M1 归档未改。见 `docs/PROGRESS.md` M2-A9/DOCS-03。
 - [x] **M2-DOCS-02**：教程 §4.4 新包 validate/两家 native-hook plan/install/uninstall 退出 0，原有配置字节与 0640 权限还原、Codex hooks 无残留；§10.4 三个 stats 示例为空记录成功，`--since 7d` 退出 1 且 stdout 为空。四份内容文档的 116 个本地链接/锚点和围栏通过；原有三处仓库未分发材料的失效链接改为明确的历史材料名。证据：[文档示例报告](review/M2-DOCS-02-2026-10-17.json)。仅本地 CLI 示例，不代替真实 harness 触发或 M2 最终回归。

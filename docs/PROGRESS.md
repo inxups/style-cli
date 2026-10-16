@@ -1512,3 +1512,12 @@ PY
 - 实际 CLI 干跑：固定 -trimpath -buildvcs=false 构建 /tmp/style-m2-final.Vi9x9bcm/style，SHA256 32aef36dcb67d8cd0c57e123016094e1f82e5cce8adca37a9b6ae56c990cf81d；标准临时 Go 三缓存，清理 CODEX_HOME/CODEX_SANDBOX。准备两个包、1 个静态入口/折叠文件不存在、list native_count 为 3/0、doctor healthy；生产 uninstall 后 verify-restored 校验四份外部 bytes/mode 还原、管理 rules/lock/index 删除。首次干跑汇总误读 list 的 native_hooks 键，改为现有 native_count 后全部通过，未把字段错误当成功。
 - Claude 只执行固定路径的 --version，仍为 2.1.301；不查询额度、不重试 OAuth、不改日常配置/凭据。另生成未启动会话的 /private/tmp/style-m2-claude-acceptance-20261017.d30zgr28，prepared.json acceptance=false；版本/二进制/观察器源摘要、干跑结果与 53 项测试记录在 docs/review/M2-PREP-03-CLAUDE-2026-10-17.json。没有手工注入 observer 的结果被用于 C2/C3 真实验收。
 - 手册明确额度恢复后登录保存确认、C2 真实 native 事件/matcher、C3 InstructionsLoaded 或请求完整正文与顺序证据、卸载恢复和新会话不再触发的步骤。只关闭 M2-PREP/PREP-03，C1/C4 仍 [~]、C2/C3 仍 [?]；原设计探针现场不覆盖，最终 CI 与官方计数继续等待。
+
+
+### 2026-10-17 — M2-A9 / M2-DOCS-03 最终本地回归与状态同步 `[x]`
+
+- 起点 clean 5dd6742，生产实现仍为 16d5c1c、replace 验收 4976713。最终标准环境（清理 CODEX_HOME/CODEX_SANDBOX；临时 GOPATH/GOMODCACHE/GOCACHE 同前）下，go test -count=1 ./...、go test -C agenthooks -count=1 ./...、make vet-go 全部退出 0；go test -race -count=1 ./core/compile ./core/engine ./core/state ./core/tokens ./internal/app ./internal/adapter/... 与 go test -C agenthooks -race -count=1 ./install 均通过，覆盖现有 M1 回归及三路线 conformance。tracked Go 文件 gofmt -l 无输出。
+- PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s testdata/manual -p 'test_*.py'：53 项 OK。go build -trimpath -buildvcs=false 重建 /tmp/style-m2-final.Vi9x9bcm/style-rebuilt，与已准备 UI 的 style 二进制 cmp 相同，SHA256 均为 32aef36dcb67d8cd0c57e123016094e1f82e5cce8adca37a9b6ae56c990cf81d。scripts/smoke.py 40 项、scripts/check_m2_replace.py 12 场景、scripts/check_m2_rules_migration.py 16 组实际旧安装升级全部通过。最终运行没有远端模型/登录/计数调用。
+- 最终事实和命令列表：docs/review/M2-A9-LOCAL-REGRESSION-2026-10-17.json。M1 归档相对 6ec25f6 未变；runtime stdout golden 未改。M2 整体新增/变更的 golden 限于 native plan、stats、组合 dedup 报告；T40 的 Claude plan 只变静态槽位名，不重写历史原生证据或报告摘要。
+- 更新教程/adapter 基线与规则规范的 Claude 静态载体/compact 验收边界，补采集器 README 的 M2 入口；修正任务/测试摘要，关闭 M2a 和 A9。M2 本轮相对 6ec25f6 修改的 14 份当前 Markdown 共 173 个本地链接/锚点及代码围栏通过；JSON 可解析、固定二进制/准备摘要一致、git diff --check 通过。DOCS-03 只关闭当前实现与离线状态同步，DOCS-01 总项仍等最后真实结果。
+- M2 仍未完成：Claude C1/C4 因订阅额度/OAuth 保存待确认保持 [~]，C2/C3 等用户真实界面；当前提交未推送，Ubuntu/macOS 最终 GitHub Actions 未执行；M2-CARRY-01 官方计数仍缺 API key。M2-FINAL 改部分完成（本地通过、远端 CI 待补）。M2-RV-01 的旧 core/spec harness 名硬编码风险保持既有待决定状态，未混入本次实现。待这些既有验收条件满足后再关闭 M2 并提示 M3 规划，当前不宣称里程碑完成。

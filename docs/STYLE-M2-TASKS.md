@@ -4,7 +4,7 @@
 
 本文件是 STYLE CLI M2 的持久化任务清单。每项任务完成后必须同时补充证据（命令、fixture、golden 文件或真实运行记录），不能只根据对话上下文标记完成。测试矩阵见 [STYLE-M2-TESTS.md](STYLE-M2-TESTS.md)，执行记录追加到 [PROGRESS.md](PROGRESS.md)。
 
-当前总状态：M2 已开始，文档建立（M2-00）与基线回归（M2-01）完成；M2-T10–T13、T20、T30、T40、T60 与 A1–A7 已完成；Codex B1–B4 独立真实验收已在 user/plugin 两路线通过；D4/D5 设计已批准，T40 的每包 rules/旧安装迁移已通过离线验收，接下来验证 T50 的 replace 回退。因用户报告 Claude 订阅额度用尽，真实界面步骤留待额度可用后补；OAuth 保存重试仍未确认。M1 已关闭并只读归档（[任务](STYLE-M1-TASKS.md)、[测试](STYLE-M1-TESTS.md)），唯一遗留为 M2-CARRY-01。
+当前总状态：M2a 离线实现与 A1–A9 验收已完成，包含 native、stats、跨包去重、Claude 每包 rules/旧安装迁移和 replace 回退；Codex B1–B4 在 user/plugin 两路线通过。Claude C1–C4 的界面步骤和隔离启动器已备齐，因用户报告订阅额度用尽待补，OAuth 保存重试仍未确认。最终本地 test/vet/race/53 采集器/构建/40 smoke 通过，远端 Ubuntu/macOS CI、完整文档最终状态与官方 token 计数仍未闭合。M1 已关闭并只读归档（[任务](STYLE-M1-TASKS.md)、[测试](STYLE-M1-TESTS.md)）；M2 未宣布完成。
 
 ## 范围
 
@@ -88,12 +88,13 @@ M1 中已记录的已知限制（如 force-push 示例规则对 `--push-option` 
 
 ## 里程碑验收
 
-- [ ] **M2a 离线验收**：测试矩阵 M2-A1–A9 全部有可重复证据。
+- [x] **M2a 离线验收**：M2-A1–A9 全部有可重复证据；最终双 module fresh test/vet、相关 race、53 项采集器、固定构建/重建一致、40 smoke、16 组升级与 12 组回退通过。证据：[A9 本地最终回归](review/M2-A9-LOCAL-REGRESSION-2026-10-17.json)。
 - [x] **M2b Codex 真实环境**：M2-B1–B4，codex-user/plugin 两路线真实服务、原生观察/OTel/rollout/stats 证据均通过，见测试矩阵和 `docs/review/M2-B*-CODEX-2026-10-17.json`。
 - [ ] **M2b Claude Code 真实环境**：M2-C1–C4。
-- [ ] **M2-FINAL 最终回归**：双 module fresh test/vet、相关 race、构建、smoke，以及最终提交的 Ubuntu/macOS CI（M2-CI-01）。
-- [~] **M2-DOCS 文档同步**：已完成功能的同步见 M2-DOCS-02；D4/D5 定稿与最终验收后再同步完整 M2 结果并关闭 M2-DOCS-01。
+- [~] **M2-FINAL 最终回归**：最终本地双 module fresh test/vet、相关 race、53 项采集器、固定构建/重建一致、40 smoke、迁移/回退 CLI 通过；当前提交未推送，最终 Ubuntu/macOS CI（M2-CI-01）仍待执行。
+- [~] **M2-DOCS 文档同步**：当前实现/设计/离线结果已同步（DOCS-02/03），本地链接/围栏通过；Claude/CI/计数的最终事实尚缺，补齐后再关闭总文档验收 DOCS-01。
 - [x] **M2-DOCS-02 已实现功能文档同步**：[教程](STYLE-TUTORIAL.md) 和 [adapter 总览](STYLE-ADAPTERS-CURRENT.md) 补 native、stats、跨包等价去重，移除 M1 过时支持状态；CLI 设计 §14.4 与编译规范静态位置表反映当前实现，明确 Claude 待定与最终验收边界。真实固定二进制跑通教程新增 native 包的 validate/双 harness plan/install/uninstall 和三个 stats 命令；配置字节/0640 还原，文档链接/锚点/围栏检查通过。证据：`docs/review/M2-DOCS-02-2026-10-17.json`、`docs/PROGRESS.md` M2-DOCS-02。本项不关闭 D4/D5、Claude 真实验收或最终文档总验收。
+- [x] **M2-DOCS-03 rules/回退与离线最终状态**：教程、adapter 总览、CLI/编译/规则规范同步 claude_rules、旧迁移/归属/冲突和真实界面边界；C2/C3 最终手册与采集器入口完成。核对本轮 M2 改过的全部当前 Markdown 本地链接/锚点、围栏、证据 JSON、M1 归档未变和 diff-check；未完成的 Claude/CI/计数仍明确保留。证据：`docs/PROGRESS.md` M2-A9/DOCS-03。
 
 M2 全部闭合后提示用户进行 M3 规划。
 

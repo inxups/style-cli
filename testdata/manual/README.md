@@ -114,3 +114,9 @@ PYTHONDONTWRITEBYTECODE=1 python3 testdata/manual/probe_claude_context.py \
 ```
 
 原生请求由已核对canonical hash的api-request-blob/shape、assistant/user记录及keep/tail重放。fork旧system别名必须有已验证源transcript匹配，否则拒绝；采集的只是marker路径/参数/哈希，不复制提示词或思考正文。结果见 [FINAL-07](../../docs/review/M1-FINAL-07-CLAUDE-2026-10-16.json)；压缩必须另核对native boundary、epoch及输出次数，不能将补发当历史保留。
+
+## M2 验收入口
+
+当前步骤和阻塞统一见 [M2 手册](../../docs/STYLE-M2-MANUAL.md)。`probe_codex_m2.py` 检查 B1–B4 的两条真实路线；`probe_claude_m2_design.py` 保留 D4/D5 的协议/界面探针；`prepare_claude_m2_acceptance.py` 在新私有目录准备 C2/C3 的 native、每包 rules、跨包去重与卸载恢复。
+
+Claude 准备程序只执行 `--version` 和 STYLE 安装，生成 `acceptance=false` 的 prepared.json；不登录或启动模型。用户报告额度用尽期间只保留准备，恢复后按手册操作。三个新增测试验证最小环境/系统身份、凭据排除、原生日志白名单和恢复校验；统一运行 `PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s testdata/manual -p 'test_*.py'`，当前共 53 项。
