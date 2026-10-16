@@ -124,6 +124,12 @@ M1b 准备、真实验收中发现的问题及示例规则修正，按处理顺�
 - [x] **M1B-EXAMPLE-04 force push 规则剩余漏洞**：EXAMPLE-03 后 `git push -o -f`（`-f` 是 push option 的值）会误拦，`--mirror` 和路径带空格的 git 拦不到。pattern 改为逐词读 push 之后的参数：`-o`（含 `-uo` 这类以 o 结尾的簇）把簇里剩下的字符或下一个词当作值，`-of`、`-o -f`、`-uo --force` 不算 force；其他短选项簇里出现 f、`--force`、`--mirror`、`+refspec` 算 force；命令名可以是带引号的含空格路径。配合 M1B-SHELL-01，`sudo`/`nice`/`timeout`/`xargs`/`find -exec`、`echo … | bash`、`cat <<EOF | sh`、`bash <<<` 里的 force push 也被拦。golden 与 compiled 规范示例同步更新。证据：`core/compile/example_force_push_test.go` 由 45 例增至 61 例（新增 11 拦截、5 放行）。仍不覆盖：长选项 `--push-option`/`--repo`/`--receive-pack` 后单独一个词形如 `-f` 会被当成 force（保守误拦）；git alias 和脚本文件内容无法从命令文本判断。2026-10-16 已用 88b25b3 重建固定程序并经 sync 退出 3 → trust --yes 更新真实安装；Codex 真实会话中 `sudo -n git … push --force`、`echo '…push --force…' | bash`、`push --mirror` 被拦，`push -o -f` 放行（EXAMPLE-03 规则对这四条的判断全部相反），见 `docs/review/M1B-EXAMPLE-04-REAL-2026-10-16.json`。
 - [x] **M1B-U7 Codex 子 agent 投递实测**：设计 U7 原先未在 M1b 实测，F7 和 `event: subagent.start` 的投递只有离线 Runner/conformance 证据。`testdata/manual/m1b-probes/STYLE.yaml` 新增 `subagent-marker`（README 同步说明），复制到真实安装后经 sync/trust 生效。Codex 0.159.3 真实 `spawn_agent` 子线程的 rollout 收到逐字相同的 hook 上下文，stats 记在子 agent scope，父线程没有这条注入。验证后已安装副本还原，配置与 lock 哈希不变。证据：测试矩阵 CDEX-U7、`docs/review/M1B-CODEX-U7-2026-10-16.json`；设计 §15.1 U7 与运行时规范 §4 的事件表同步。
 
+## 代码审查修复（2026-10-16 起）
+
+只看代码的审查发现以下问题，按用户指示逐项修复，每项单独提交。
+
+- [x] **M1B-CR-01 shell_regex 跳过 shell 选项的值**：`shellScriptArgument` 只把 `-o`/`+o` 当成带值选项，`bash --rcfile /dev/null -c '…'`、`bash -O extglob -c '…'` 会把选项值当成脚本参数，读不到 `-c` 脚本；示例 force-push 规则以 `^git` 锚定，这类命令因此放行。`readsScriptFromStdin` 同样漏了 `-O`。新增 `shellOptionValues`：`--rcfile`、`--init-file` 取一个值，短选项簇里每个 `o`/`O` 各取一个值（与 bash 5.3 实测一致：`-eo pipefail`、`-oe pipefail`、`-cO extglob` 都把下一个词当值）。运行时规范 §4 的 `shell_regex` 说明同步。证据：`core/when/shell_test.go` 新增 3 例（选项值后的 `-c`、选项簇里的值、带选项值的 shell 从管道读脚本），`core/compile/example_force_push_test.go` 新增 3 个拦截例；修复前这 6 例都失败。仍不读：`fish` 等未列出的 shell。
+
 ## 后续 backlog
 
 - [ ] **M2**：`target: native`、`style stats`、跨包去重、Claude `~/.claude/rules/` 静态位置和 replace 评估。

@@ -185,3 +185,7 @@ B1.2 和 B1.4 的历史通过状态表示原有测试套件在声明范围内通
 - [x] 报告：同一示例包的 Codex/Claude plan/token CLI stdout golden，见 A2 与 `internal/app/plan_golden_test.go`。
 - [x] 输出白名单：46 个存储 stdout golden 与实际 wire 输出均检查规范允许的顶层/嵌套字段、deny 值和 Claude prompt-only suppression。证据：`internal/adapter/conformance/whitelist_test.go`。
 - [x] e2e：真实 CLI 注入到达模型，block 真正生效。Codex：B2/B3/B4/B7/B9 的 rollout 显示 hook 上下文进入模型输入，U7 的子线程 rollout 显示 subagent.start 上下文进入子 agent，B5 真实 force push 被拒绝、lease 放行；Claude：C1–C7 的真实会话注入与 C6 prompt/工具阻断。证据见 M1b 两节及各 review JSON。
+
+## 代码审查修复
+
+- [x] **CR-01** `shell_regex` 跳过 shell 取值选项后再读 `-c` 脚本和管道脚本：`bash --rcfile /dev/null --init-file x -O extglob +O nullglob -c '…'`、`bash -eo pipefail -cO extglob '…'`、`echo '…' | bash --rcfile /dev/null -O extglob` 都拆出内层命令；示例 force-push 规则拦截 `--rcfile`、`-O extglob`、`-eo pipefail` 三种写法。证据：`core/when/shell_test.go:TestShellCommandsSplitsSimpleCommands`、`core/compile/example_force_push_test.go`，修复前 6 例失败、修复后通过。

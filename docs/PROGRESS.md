@@ -940,3 +940,10 @@
 - 附带核对：子 agent 通过 code-mode `exec` 工具运行命令。今天的主会话 rollout 也都走这个工具（861 次），不是新的工具路径。
 - 还原：已安装副本恢复原字节，sync 3 → trust --yes 0 → sync 0，两包 hash_matches，index 无 subagent 条目，lock 与四个配置文件哈希和探针前一致。仓库 fixture 保留新规则，README 注明它会进入每个 Codex 子 agent。
 - 文档：测试矩阵新增 CDEX-U7，B1.21、A11、e2e 同步；任务清单新增 M1B-U7；设计 §15.1 U7 与运行时规范事件表、阶梯说明同步。不覆盖嵌套子 agent、fork 启动、子 agent 内的工具规则。
+
+### 2026-10-16 — M1B-CR-01 shell_regex 跳过 shell 选项的值
+
+- 来源：只看代码的审查。`core/when/shell.go` 的 `shellScriptArgument` 只把 `-o`/`+o` 当带值选项，`bash --rcfile /dev/null -c 'git push --force origin main'` 只拆出外层一条命令，示例规则的 `^git` 锚定匹配不到，force push 放行；`-O extglob` 同理。`readsScriptFromStdin` 认 `--rcfile` 但漏了 `-O`。
+- 修复：新增 `shellOptionValues`，两处共用。`--rcfile`、`--init-file` 取一个值；`-`/`+` 开头的短选项簇中每个 `o`/`O` 取一个值。本机 bash 5.3.15 实测 `-eo pipefail -c`、`-oe pipefail -c`、`-co pipefail '…'`、`-cO extglob '…'`、`+O extglob -c`、`-c -O extglob '…'` 都执行了脚本，与该规则一致。
+- 测试：`shell_test.go` 新增 3 例，`example_force_push_test.go` 新增 3 个拦截例；修复前 6 例失败。`go test ./core/...`、`go vet ./core/when ./core/compile`、gofmt 通过（临时 GOPATH/GOMODCACHE/GOCACHE，去掉 CODEX_HOME/CODEX_SANDBOX）。
+- 文档：运行时规范 §4 `shell_regex` 说明补充选项值的跳过规则，并在不展开列表中写明 `fish` 等未列出的 shell。未改 agenthooks。真实安装未更新（固定程序未重建）。

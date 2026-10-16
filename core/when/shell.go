@@ -513,11 +513,10 @@ func readsScriptFromStdin(args []string) bool {
 		switch {
 		case arg == "--":
 			return i+1 == len(args)
-		case arg == "-o" || arg == "+o" || arg == "--rcfile" || arg == "--init-file":
-			i++
 		case len(arg) > 1 && arg[0] == '-' && arg[1] != '-' && strings.IndexByte(arg[1:], 's') >= 0:
 			return true
 		case len(arg) > 1 && (arg[0] == '-' || arg[0] == '+'):
+			i += shellOptionValues(arg)
 		default:
 			return false
 		}
@@ -600,15 +599,25 @@ func shellScriptArgument(args []string) (string, bool) {
 			}
 			return "", false
 		}
-		if arg == "-o" || arg == "+o" {
-			i++
-			continue
-		}
 		if arg[0] == '-' && arg[1] != '-' && strings.IndexByte(arg[1:], 'c') >= 0 {
 			command = true
 		}
+		i += shellOptionValues(arg)
 	}
 	return "", false
+}
+
+// shellOptionValues returns how many following arguments a shell option
+// consumes: one for --rcfile and --init-file, and one for each o or O in a
+// short-option cluster, as in bash -eo pipefail or bash -O extglob.
+func shellOptionValues(arg string) int {
+	if arg == "--rcfile" || arg == "--init-file" {
+		return 1
+	}
+	if len(arg) < 2 || arg[0] != '-' && arg[0] != '+' || arg[1] == '-' {
+		return 0
+	}
+	return strings.Count(arg[1:], "o") + strings.Count(arg[1:], "O")
 }
 
 // renderShellWords joins words with single spaces. Words with characters
