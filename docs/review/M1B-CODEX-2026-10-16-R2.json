@@ -173,5 +173,47 @@
     },
     "second_package": "install, sync, uninstall, sync, install: Codex config.toml and hooks.json hashes unchanged at every step (4e6c0fb14ffe / 955314d819c0)",
     "claude": "settings.json byte-identical to pre-B8 after final reinstall"
+  },
+  "U5": {
+    "status": "partial: 731 consecutive real PreToolUse, below the design's 1000; user stopped the run at 06:00Z ('停了吧，够多了')",
+    "design": "STYLE_DOCS/STYLE-cli-design.md:729 U5 benchmark: 1000 consecutive PreToolUse, fixed subscription surface, budget p95 <150ms",
+    "method": "8 serial codex exec sessions in codex-b (codex-user route, gpt-6.1-sol/medium), each asked for 100 serial shell calls of printf STYLE_M1B_U5; OTel otlp-http json to a local sink on 127.0.0.1:4318 per run; no other Codex sessions exported to that sink",
+    "window": "2026-10-16T04:58:53Z to 06:00:12Z",
+    "sessions": [
+      "01a14313-cc50-73a1-9ea1-a20de5d5573d",
+      "01a1431a-0859-78b1-962a-2bdfc1317e99",
+      "01a1431f-d99a-7b61-890f-2fcd1d3460f9",
+      "01a14325-d8bd-7ce1-9611-4f6f987ec3a0",
+      "01a1432b-9d99-7620-a7ab-d2c245238548",
+      "01a14331-9c52-71b2-8c8e-a61e582a51ff",
+      "01a14338-eda8-7a41-8ca4-9849d9aa13cd",
+      "01a14347-3776-7842-b515-2444cec247fb"
+    ],
+    "per_session_pretooluse": "runs 1-7: 100 each, p95 40.1-42.9ms, max <=44.9ms; run 8 stopped after 32 calls, 31 spans exported (the span of the in-flight call was lost when the process was stopped)",
+    "result": {
+      "PreToolUse": {
+        "count": 731,
+        "median_ms": 36.83,
+        "p95_ms": 41.56,
+        "max_ms": 44.87
+      },
+      "PostToolUse": {
+        "count": 731,
+        "p95_ms": 28.4
+      },
+      "all_hooks": {
+        "count": 1478,
+        "p95_ms": 40.26
+      },
+      "hook_errors": 0,
+      "overlapping_pairs": 0
+    },
+    "trend": "no growth with session state: first 50 calls per session p95 42.0ms, last 30 calls of runs 1-7 p95 41.45ms",
+    "excerpt": "docs/review/M1B-CODEX-U5-SPANS-2026-10-16.jsonl (1478 hook spans, hook attributes only)",
+    "recompute": "python3 testdata/manual/measure_codex_hooks.py docs/review/M1B-CODEX-U5-SPANS-2026-10-16.jsonl --min-samples 1000 -> insufficient-samples (731); without --min-samples -> within-budget",
+    "notes": [
+      "run 7 saw several model-service reconnects between calls; hook spans unaffected",
+      "driver's per-run count used python3 -I, which broke the collector's sibling import; counting was done separately, no samples affected"
+    ]
   }
 }

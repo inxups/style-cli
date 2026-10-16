@@ -841,3 +841,10 @@
 - 单次挂载 GitHub 远程 MCP：`-c mcp_servers.github.url="https://api.githubcopilot.com/mcp/"`、`bearer_token_env_var="GITHUB_PAT"`（值取自 `gh auth token`，未打印、未写入配置），并只对 `create_pull_request` 设 `approval_mode="approve"`。
 - 会话 01a14310：stats 04:55:27.280Z `before-create-pr@tool.pre output`，rollout 04:55:27.281Z 注入“Before creating a pull request, confirm the branch and test status.”，04:55:28.807Z MCP 调用完成；GitHub 显示 inxups/style-cli#1 创建于 04:55:28Z，注入在真实调用之前。
 - 清理：`gh pr close 1` 附评论，closedAt 04:55:53Z、未合并；删除远端与本地临时分支及 worktree，远端只剩 main。已关闭的 PR 记录会留在 GitHub 上，无法删除。证据 R2 JSON 的 `B7.real_run`；仅文档/证据变化。
+
+### 2026-10-16 — CODEX-11/B11 补测设计 U5 基准（731 次，用户叫停）
+
+- 用户要求补 U5（设计 §15.1：固定订阅面连续 1000 次 PreToolUse）。codex-user 路线、gpt-6.1-sol/medium，在 codex-b 串行运行 `codex exec`，每个会话要求逐次调用 shell 100 次 `printf STYLE_M1B_U5`；每次运行单独加 OTel otlp-http json 导出到本地 sink，期间无其他会话导出到该 sink。
+- 04:58:53Z–06:00:12Z 共 8 个会话：前 7 个各 100 次，第 8 个第 32 次时按用户“停了吧，够多了”停止（进行中那次的 span 未导出）。PreToolUse 731 条 median=36.8ms、p95=41.6ms、max=44.9ms；PostToolUse p95=28.4ms；全部 1478 条 hook p95=40.3ms；0 错误、0 重叠。各会话 p95 40.1–42.9ms，每会话前 50 次 p95 42.0ms、前 7 个会话最后 30 次 p95 41.45ms，未见随 state 增长变慢。
+- 结论：未满 1000 次，U5 记为部分完成；已有样本 p95 远低于 150ms 预算，没有要改设计（按规则生成 matcher）的迹象。第 7 个会话期间模型服务多次重连，发生在调用之间，不影响 hook span。驱动脚本的每轮计数用了 `python3 -I`，破坏收集器同目录导入而为空，改由单独进程计数，不影响样本。
+- 入库 `docs/review/M1B-CODEX-U5-SPANS-2026-10-16.jsonl`（1478 个 hook span，只保留 hook 属性，已查无主机/账号字段）；R2 JSON 新增 `U5`。复算命令见 TESTS 的 B11；仅文档/证据变化。
