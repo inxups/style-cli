@@ -478,7 +478,7 @@ Codex 用 `shell -lc` 跑 hook 命令，登录 shell 会读用户的 profile：�
 | SubagentStart | 有 `subagent.start` 条目 | 不写 | `subagent.start` |
 | PostModelSwitch | 有条目的 `needs` 含 `model`（v2.1.251 起【文档】） | 不写 | 无，只同步更新状态；等写入完成再处理下一条提示 |
 
-订阅面变了就重写 `settings.json` 里 STYLE 的条目。运行中的会话会不会马上生效没核实（U-C2），报告先写"新会话生效"。
+订阅面变了就重写 `settings.json` 里 STYLE 的条目。FINAL-06实测在未重启当前进程时新增Read matcher，实际调用收到新USER/MODEL标记，热更新成立；此结论限于该2.1.300环境。
 
 ### 10.4 静态位置
 
@@ -512,7 +512,7 @@ Codex 用 `shell -lc` 跑 hook 命令，登录 shell 会读用户的 profile：�
 
 - 没意见：退出码 0、stdout 为空。
 - 注入：`hookSpecificOutput.additionalContext`（带 `hookEventName`），包成 system-reminder 放在事件发生的位置【文档】。每个字段上限 10,000 字符。
-- `warn`：顶层 `systemMessage` + `additionalContext`。各事件上 `systemMessage` 是否显示给用户待测（U-C5）。
+- `warn`：顶层 `systemMessage` + `additionalContext`。FINAL-06六事件的USER标记可见；clear虽然输出SessionStart标记，界面未显示，保留来源边界。
 - 拒绝工具调用：`hookSpecificOutput.permissionDecision: "deny"` + `permissionDecisionReason`。
 - 拒绝提示词：顶层 `decision: "block"` + `reason`，并在 `hookSpecificOutput` 里带 `suppressOriginalPrompt: true`【文档】。拒绝显式 skill：UserPromptExpansion 的 `decision: "block"` + `reason`。
 - 绝不输出 `permissionDecision: "allow"`（会跳过权限提示）、`ask`、`updatedInput`、`updatedToolOutput`、`continue`、`initialUserMessage` 等（规范 8.1）。
@@ -734,11 +734,11 @@ Claude U9、U-C1/C2/C3/C5 的隔离补验收已准备在 [FINAL-06 runbook](../d
 | U9 | Claude 的 hook 里能否知道思考被关闭 | Claude 能否产出 `none` | 关掉思考后看 payload 和环境变量 | 不产出 `none` | 不影响通过 | 未测 |
 | U10 | Codex 配置层的优先级、项目信任的判断方法、`-c` 能否从祖先进程恢复 | Codex effort 准不准 | 多种组合启动，对比 `doctor` 的 effort 来源和 Codex 实际用的值 | 按 9.4 的顺序实现；判断不了项目信任就不读项目层 | 不影响通过，结论写回 9.4 | 配置解析已实测：M1-FINAL-02 用真实 0.159.3 与本地请求 sink 核对 11 组配置，修复独立 profile 和项目优先级；legacy 新版拒绝、缺失 profile 继承用户。生产未知信任仍跳过项目层；M1-FINAL-04 两条路线各自用 9 种配置核对原生真实请求、STYLE state/stats、rollout 与正文摘要。受信项目原生 high / STYLE 用户 low 的差异按既定回退保留，doctor 明确报告原因；unknown 不伪造档位。两条路线独立各完成 B1–B9，非跨路线拼接 |
 | U11 | Codex `/compact` 之后 `developer_instructions` 是否仍对模型可见；SessionStart(`compact`) 的时机 | 静态规则压缩后是否安全 | `/compact` 后让模型复述 | 认为可见 | 不可见 → Codex 上静态 system 规则同时挂一个只在 `compact` 来源触发的 `session.start` 条目补发 | 可见：B3 经 app-server compact 后 developer_instructions 仍在模型输入；SessionStart(compact) 排到下一回合开始时执行，compact 后进程退出则排队的事件丢失 |
-| U-C1 | `$CLAUDE_EFFORT` 在 SessionStart、UserPromptSubmit 的 hook 进程里是否存在 | 第一次工具调用之前能否拿到强度 | 探针 hook 打印环境变量 | 认为存在；不存在就等工具事件，靠 3.7 的重新评估补上 | 不影响通过 | 部分：C1 启动时 effort 为 unknown，Bash 读到 CLAUDE_EFFORT=high，首次工具后的下一条提示补上 high（按 3.7 补发）；未直接采集各 hook 进程环境 |
-| U-C2 | 改了 `settings.json` 的 hooks 后，运行中的会话是否马上生效 | 报告怎么写 | 会话运行中装一个包 | 报告写"新会话生效" | 不影响通过 | 未测 |
-| U-C3 | `/clear` 后 `session_id` 是否变化、`model` 是否缺失 | 状态和去重 | 探针 | gen +1 兼容两种情况；model 缺失时保留旧值 | 不影响通过 | 部分：C7 中 /clear 后 session_id 变化、scope gen=1；model 是否缺失未单独记录 |
+| U-C1 | `$CLAUDE_EFFORT` 在 SessionStart、UserPromptSubmit 的 hook 进程里是否存在 | 第一次工具调用之前能否拿到强度 | 探针 hook 打印环境变量 | 认为存在；不存在就等工具事件，靠 3.7 的重新评估补上 | 不影响通过 | FINAL-06逐事件采集：启动/提示/显式技能无effort及环境值，工具前/后/失败含effort.level与CLAUDE_EFFORT；观察high→medium，启动缺值保持unknown，后续按既定动态重新评估补齐 |
+| U-C2 | 改了 `settings.json` 的 hooks 后，运行中的会话是否马上生效 | 报告怎么写 | 会话运行中装一个包 | 报告写"新会话生效" | 不影响通过 | FINAL-06当前进程新增Read matcher，实际Read调用、原生hook输出、stats和用户HOT_READ可见性一致；原Glob尝试实际Bash，未计通过 |
+| U-C3 | `/clear` 后 `session_id` 是否变化、`model` 是否缺失 | 状态和去重 | 探针 | gen +1 兼容两种情况；model 缺失时保留旧值 | 不影响通过 | FINAL-06：clear创建新session，原生无model、effort和环境值，新state不沿用旧model；后续工具补medium。SessionStart USER已输出但用户未见 |
 | U-C4 | 用户级 `~/.claude/rules/*.md` 是否生效 | 静态位置选哪个 | 放一个文件，看 `InstructionsLoaded` | 用 `CLAUDE.md` | 生效 → M2 切换 | 未测（M2） |
-| U-C5 | Claude 各事件上的 `systemMessage` 是否显示给用户 | `warn` 给用户的那份 | 每个事件返回一条 | 认为 PreToolUse、PostToolUse、UserPromptSubmit、UserPromptExpansion 都显示 | 不显示的事件在适配器里去掉 `system-message` 能力，`warn` 只剩模型那句 | 部分：C5 只确认 PreToolUse 的 systemMessage 在工具界面可见，其余事件未测，适配器能力未改 |
+| U-C5 | Claude 各事件上的 `systemMessage` 是否显示给用户 | `warn` 给用户的那份 | 每个事件返回一条 | 认为 PreToolUse、PostToolUse、UserPromptSubmit、UserPromptExpansion 都显示 | 不显示的事件在适配器里去掉 `system-message` 能力，`warn` 只剩模型那句 | FINAL-06六类事件USER标记均可见；clear来源的SessionStart标记虽输出但用户未见，文档明确边界，不宣称所有来源均可见 |
 | U-T1 | resume、fork 之后，之前注入的文字是否还在上下文里（两家） | `sources` 的默认值 | 恢复后让模型复述 | resume 不注入、fork 注入 | fork 也保留 → 默认去掉 `fork`；Codex resume 不保留 → Codex 适配器把 `resume` 当 `startup` 处理 | Codex FINAL-07：resume/fork 的真实请求保留原 context；startup-only 探针没有补发，默认 sources 的 fork 条目按既定策略仍投递一次。Claude 新补测待用户环境；不改 sources 默认值 |
 | U-T2 | 压缩后 hook 注入的文字是否被摘要保留 | `reinject_on_compact` 的默认值 | `/compact` 后复述 | 认为丢失（`system` 默认补发） | 保留 → 默认值是否改成 false 由用户决定 | Codex FINAL-07 实测：关闭 reinject 且 startup-only 的专用探针，compact 后 epoch=1、输出仍各一次，真实请求中两条动态标记均消失；支持保留补发默认值。Claude 专用探针未测 |
 | U-T3 | 估算器校准 | 误差范围、系数 | 固定 40 条中英各半规则，两家官方接口相同结构基线增量 | 不承诺误差范围 | 保留现有系数，真实校准后再议 | FINAL-09：语料/正文哈希、模型和请求摘要已固定，生产 CLI 估算已记录；两家官方 API key 缺失，真实计数均 0/40，保持待验；删除 CLI ±25% 未验证保证 |

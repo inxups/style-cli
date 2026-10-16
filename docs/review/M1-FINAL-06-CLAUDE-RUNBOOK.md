@@ -33,3 +33,5 @@ python3 testdata/manual/measure_claude_hooks.py \
 准备程序会拒绝非空 scratch，避免覆盖历史证据。热更新安装和 `/clear` 只影响此探针环境。认证不可用时 FINAL-06 继续保持 `[?]`，不以准备成功代替真实通过。
 
 2026-10-16 边界观察：六类事件的 USER 标记可见；clear 的启动标记虽已输出，用户未看到。clear 创建新 session，原生不含 model，state 保持 unknown；后续工具 hook 给 effort=medium。启动/提示/显式技能未提供 effort，工具前/后/失败提供 effort.level 和 CLAUDE_EFFORT。用户所见 Opus5.5 只有强度档位，无关闭选项，未采到 off 的原生表示。不能将 medium 当作 off。C9 仍须本修复版重新采集。
+
+本次C9已完成，见 [C9结果](M1-FINAL-06-C9-2026-10-16.json)：50次真实串行Bash，完整103样本整体p95=28ms，保留全部慢样本。原生全量debug日志留在私有目录，提交的HOOKS仅摘录全部匹配STYLE完成行；可用原measure_claude_hooks.py直接复算。

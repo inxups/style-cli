@@ -297,3 +297,5 @@ done
 - FINAL-10：已有真实统计与官方缓存核对，见 [缓存与成本记录](review/M1-FINAL-10-CACHE-2026-10-16.md)。规则估算与整个会话 usage 分列，默认公式是情景比较，不等于实际账单。
 
 以上都闭合并通过最终回归后，才开始 M2 规划；不为补验收增加云端 skill、插件自动登记或公开命令。
+
+2026-10-16 最终修复版 C9：2.1.300、STYLE8d5fbf75、Haiku5.5，50次固定printf均成功，50个独立带工具assistant消息，实际返回后才发起下一次，无重叠。103条STYLE command completion整体median15ms/p95=28ms/max341ms；PreToolUse p95=29ms、PostToolUse=13ms，启动341ms/模型切换54ms保留，零hook错误。完整原样片段见 [FINAL-06 C9 HOOKS](review/M1-FINAL-06-C9-HOOKS-2026-10-16.txt)，元数据与复算见 [C9 JSON](review/M1-FINAL-06-C9-2026-10-16.json)。模型/原生输入快照无timestamp的46条工具结果不算额外执行。

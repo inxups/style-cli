@@ -1202,3 +1202,12 @@ PY
 - 八组ASCII正文：SessionStart9,999和10,000字符精确完整进入请求；10,001、12,000、50,000及UserPromptSubmit/PreToolUse/PostToolUse各12,000均由native生成persisted-output预览。六份native保存文件与原文bytes/SHA256完全相等；pre/post包含真实Bash printf成功返回。只收marker或首尾相同不算完整，采集器回归覆盖该误判及错误落盘内容。
 - 第一轮a探针所有原生运行已结束，采集器最初只判断fullbody，故把预览暂记not-full；原报告不覆盖，从保留请求和文件补判的新报告关联sourceSHA。第二轮b以修正后的完整脚本重跑八组，全通过，无意外HTTP路径。原scratch均保留，入库b报告 `review/M1-FINAL-08-CLAUDE-2026-10-16.json` 并关联既有两家STYLE保护/Codex原生证据。
 - 当前file-preview/10k adapter声明与ASCII原生边界一致，预算、来源和策略不改。30项Python采集器回归、脚本语法/报告断言/diff检查通过。FINAL-08关闭；不把本地脚本响应表述成真实模型推理或官方token计数。
+
+
+### 2026-10-16 — M1-FINAL-06-C9 最终修复版真实串行性能通过
+
+- 用户通过固定launcher完成C9；原生2.1.300、STYLE SHA2568d5fbf758cbe7920a9cc978f7715abcf3c00461f9d2289e6f90c2c92501db5d1。会话f9d73552，用户切换Haiku5.5，实际51个主请求（含最后回答）。原本继承环境与仅allowlist环境的auth status不同，仅后者未读到认证；实际用户会话有成功推理，不能用早先headless未登录覆盖真实通过证据。
+- `collect_claude_c9.py --log /private/tmp/style-m1-claude-ui-c-20261016/c9-final06-debug.log --transcript /private/tmp/style-m1-claude-ui-c-20261016/claude/projects/-private-tmp-style-m1-claude-ui-c-20261016-work/f9d73552-edb9-46d2-8c27-59364f9b9b02.jsonl --binary /private/tmp/style-m1-claude-ui-c-20261016/bin/style --output docs/review/M1-FINAL-06-C9-2026-10-16.json --completion-output docs/review/M1-FINAL-06-C9-HOOKS-2026-10-16.txt` exit0。
+- 50个Bash tool id、50个timestamped成功结果、50个含工具assistant消息；固定单次printf，无循环合并，逐次结果后才发起下一次，0重叠。46条无timestamp API输入快照中的结果不重复算工具执行；原生命令的转义拼写在报告保留。
+- 全部103条STYLE completion：整体median15ms/p95=28ms/max341ms；PreToolUse50条p95=29ms，PostToolUse50条p95=13ms，启动341ms、模型切换54ms、prompt15ms各一。所有慢样本保留，0hook错误/0无法解析完成行。按既定整体p95<50ms通过，不将启动或模型切换单类宣称小于50ms。
+- 33项Python测试全部通过，新增计数/快照去重、重叠和循环/缺结果/错误拒绝回归。C9单项关闭；FINAL-06整体仍补U9控制配置观测，界面无off不能当medium=off，预算/能力默认值未更改。
