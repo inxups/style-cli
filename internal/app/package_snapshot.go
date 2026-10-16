@@ -29,7 +29,7 @@ func installedSnapshot(home string, item lockPackage) (map[string][]byte, error)
 	return files, nil
 }
 
-func parseInstalledSnapshot(ctx context.Context, home string, item lockPackage, files map[string][]byte) (installPackage, error) {
+func (s *Service) parseInstalledSnapshot(ctx context.Context, home string, item lockPackage, files map[string][]byte) (installPackage, error) {
 	if err := checkContext(ctx); err != nil {
 		return installPackage{}, err
 	}
@@ -41,7 +41,7 @@ func parseInstalledSnapshot(ctx context.Context, home string, item lockPackage, 
 	if err != nil {
 		return installPackage{}, fmt.Errorf("load %s: %w", item.Name, err)
 	}
-	if diagnostics := spec.Validate(pkg); hasSpecErrors(diagnostics) {
+	if diagnostics := s.validateSpec(pkg); hasSpecErrors(diagnostics) {
 		return installPackage{}, &ValidationError{Diagnostics: convertDiagnostics(diagnostics)}
 	}
 	if pkg.Metadata["name"] != item.Name {

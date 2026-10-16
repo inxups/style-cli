@@ -58,7 +58,7 @@ func (s *Service) Validate(ctx context.Context, request ValidateRequest) (Valida
 	if err != nil {
 		return Validation{Diagnostics: []Diagnostic{parseDiagnostic(err)}}, nil
 	}
-	source := spec.Validate(pkg)
+	source := s.validateSpec(pkg)
 	result := Validation{Package: pkg, Diagnostics: convertDiagnostics(source)}
 	if hasErrors(result.Diagnostics) {
 		return result, nil

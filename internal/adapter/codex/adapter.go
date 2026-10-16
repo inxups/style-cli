@@ -281,6 +281,7 @@ func DefinitionForInstallation(installation adapter.Installation) adapter.Defini
 		Routes:          []adapter.Route{NewPluginRouteForCommand("", installation.ConfigDir, "", &facts), NewUserRouteForCommand(installation.ConfigDir, "", &facts)},
 		Limits:          adapter.Limits{Input: tokens.InputLimit{Value: DefaultInputTokens, Unit: tokens.TokensUnit}, Approximate: true, Source: "Codex additionalContext default", Overflow: adapter.OverflowFilePreview},
 		Compact:         adapter.CompactSignal{Event: agenthooks.KindSessionStart, SessionSource: "compact", Deferred: true},
+		Native:          NativeSurface{},
 	}
 }
 

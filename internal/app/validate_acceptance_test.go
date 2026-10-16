@@ -33,7 +33,7 @@ func TestA1ValidateExampleAndEveryInvalidFixture(t *testing.T) {
 	}
 	// Keep the acceptance contract explicit so deleting a fixture cannot make
 	// this suite green by silently reducing its scope.
-	want := strings.Fields("dup-id from-and-inline inline-missing-id file-and-text file-into-rules body-has-frontmatter rule-file-pkg-field empty-body override-target defaults-field undeclared-var reads-missing event-var-in-template sensitive-reserved condition-field-wrong-event bad-regex bad-effort-expr action-target block-after replace-non-system bad-name bad-id path-escape symlink file-too-large bad-encoding marker-in-body")
+	want := strings.Fields("dup-id from-and-inline inline-missing-id file-and-text file-into-rules body-has-frontmatter rule-file-pkg-field empty-body override-target defaults-field undeclared-var reads-missing event-var-in-template sensitive-reserved condition-field-wrong-event bad-regex bad-effort-expr action-target block-after replace-non-system bad-name bad-id path-escape symlink file-too-large bad-encoding marker-in-body native-mapping native-field native-event native-matcher native-command native-timeout")
 	paths, err := filepath.Glob(filepath.Join(root, "testdata", "invalid", "*.yaml"))
 	if err != nil {
 		t.Fatal(err)

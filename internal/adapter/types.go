@@ -235,6 +235,9 @@ type Definition struct {
 	Routes          []Route
 	Limits          Limits
 	Compact         CompactSignal
+	// Native lists the events target: native rules may write. Nil means the
+	// provider accepts no native hooks.
+	Native spec.NativeHarness
 }
 
 // Detect applies this provider's detector and normalizes its result. A

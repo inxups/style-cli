@@ -91,7 +91,7 @@ func (s *Service) prepareSync(ctx context.Context, request TrustRequest) (syncPr
 	updated := lockDocument{Format: lockFormat, Packages: []lockPackage{}, Harnesses: cloneHarnesses(lock.Harnesses)}
 	replaceOwner := ""
 	for _, item := range lock.Packages {
-		parsed, err := parseInstalledSnapshot(ctx, home, item, snapshots[item.Name])
+		parsed, err := s.parseInstalledSnapshot(ctx, home, item, snapshots[item.Name])
 		if err != nil {
 			return prepared, err
 		}

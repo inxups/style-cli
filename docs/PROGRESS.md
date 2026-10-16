@@ -1290,3 +1290,11 @@ PY
 - 用户明确“M2-D1 评审通过，标 [x]，细化 M2-A1/A2/A4 后开始 M2-T10”。上一条记录中自行定的点（`--link` 也阻塞、matcher 只开放工具类事件、timeout 默认 60、正文可选、`defaults` 不作用于 native、Windows 随 M3）一并按规范定稿。
 - 测试矩阵：M2-A1 列出六个新 invalid fixture、各码子情况、合法用例、单文件/目录一致与注册表注入单测；M2-A2 列出两家 golden 期望、token 单列、fallback 三种结果与报告不含命令；M2-A4 列出披露字段、非交互退出 1、`sync` 退出 3（含 `--link`）、trust 预览差异与 list/doctor 三态。
 - 验证：仅文档，`git diff --check` 通过。下一步 M2-T10。
+
+### 2026-10-16 — M2-T10 native schema 与 validate `[x]`
+
+- 实现：新增 `core/spec/native.go`。`Validate` 对 native 规则做与 harness 无关的检查：规则引擎字段报 `native-field`，非 STYLE 字段的顶层键都当 harness 映射（无映射或非映射报 `native-mapping`），映射内只接受 `event`/`matcher`/`command`/`timeout`，`command` 按规则 3.10 的 POSIX 词法约束检查，`timeout` 必须是 1–600 的整数。native 规则跳过 `empty-body`、内联 file/text 必填、模板、lint 和 target/action 组合检查，包级 `defaults` 不再作用于它。`ValidateNative(pkg, catalog)` 按注册表检查 harness 键（未注册报 `native-field` 并列出已注册名）、事件（`native-event`）和 matcher（`native-matcher`）。`NativeRules` 解析映射供 T11/T12 使用。
+- 注册表：`adapter.Definition` 新增 `Native spec.NativeHarness`，`Registry.NativeCatalog()` 汇总；`internal/adapter/codex/native.go`、`claude/native.go` 给出 CLI 设计 §9.3/§10.2 的事件表与 matcher 方言（Codex 正则；Claude `*` 或正则）。`internal/app` 的 validate、install、已装包快照与 sync 准备统一走 `Service.validateSpec`（`Validate` + `ValidateNative`）；删除写死的 `isNativeProviderField` 和 `validRuleFieldValue` 里的 harness 分支。`core` 仍不导入具体 adapter。
+- 测试：`core/spec/validate_native_test.go` 替换旧的 `validate_native_single_file_test.go`，49 例在目录包与单文件包上逐例比对错误码，另有默认值、`from` 整体覆盖、非 native 规则写 `codex:` 报 `invalid-schema`、假注册表注入、`NativeRules` 解析；`testdata/invalid/` 新增 `native-mapping`/`native-field`/`native-event`/`native-matcher`/`native-command`/`native-timeout` 并加入 A1 清单；`internal/app/native_catalog_test.go` 核对注册表接线与两家事件/matcher 表。变异检查：令 `nativeCommandProblem` 恒返回空，13 个命令用例转红，已还原。
+- 验证：`gofmt -l` 无输出；`GOFLAGS='-mod=readonly -count=1' make test-go` exit 0（30 个包 ok）；`GOFLAGS=-mod=readonly make vet-go` exit 0；`go build -trimpath` 后 `scripts/smoke.py` 32 项通过。plan/compile golden 未变（native 仍为 `skipped-m2`，由 T11 改）。
+- 审查发现：`when.harness.name`、`requires.harness`、`recommends` 仍写死 harness 名，记为 M2-RV-01 `[!]`，待用户决定是否纳入 M2。下一步 M2-T11。

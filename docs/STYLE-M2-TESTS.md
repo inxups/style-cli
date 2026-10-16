@@ -4,7 +4,7 @@
 
 本文件记录 M2 测试矩阵和每项当前状态。测试通过必须有命令输出、fixture/golden 文件或真实环境记录作为证据。任务清单见 [STYLE-M2-TASKS.md](STYLE-M2-TASKS.md)，M1 测试矩阵已只读归档（[STYLE-M1-TESTS.md](STYLE-M1-TESTS.md)）。
 
-当前状态：M2-BASE-01 已通过，其余条目尚未执行。M2a 断言为初稿，标“D* 定稿后细化”的条目在对应设计项通过评审时补全具体 fixture、golden 和退出码。
+当前状态：M2-BASE-01、M2-A1 已通过，其余条目尚未执行。M2a 断言为初稿，标“D* 定稿后细化”的条目在对应设计项通过评审时补全具体 fixture、golden 和退出码。
 
 ## 状态约定
 
@@ -48,7 +48,7 @@ env -u CODEX_HOME -u CODEX_SANDBOX \
 
 ## M2a：离线验收
 
-- [ ] **M2-A1 native validate**（M2-T10，按规则 3.10）：
+- [x] **M2-A1 native validate**（M2-T10，按规则 3.10）：结果：`core/spec` 的 `TestNativeRuleValidationMatchesAcrossPackageFormats`（49 例，目录/单文件逐例比对）及默认值、`from` 覆盖、非 native 键、注册表注入、`NativeRules` 解析测试；`TestA1ValidateExampleAndEveryInvalidFixture` 含六个新 fixture；`internal/app` 的 `TestNativeCatalogComesFromRegisteredAdapters`；双 module test/vet 通过，见 `docs/PROGRESS.md` M2-T10。示例 `codex-only-notify` 已符合 3.10，正文说明随 T11 的 golden 一起更新。
   - 验收清单：`testdata/invalid/` 新增 `native-mapping`、`native-field`、`native-event`、`native-matcher`、`native-command`、`native-timeout` 六个 fixture，纳入 `TestA1ValidateExampleAndEveryInvalidFixture` 的清单；每个在文本/JSON 两种模式下退出 1、stderr 为空、输出含对应码。
   - `core/spec` 表驱动用例覆盖各码的子情况：没有 harness 键、harness 值是列表或标量（`native-mapping`）；规则上写 `action`/`when`/`repeat`/`event`、顶层写 `gemini:`、映射里写 `async`/`onFailure`/`type`/`args`（`native-field`）；缺 `event`、非字符串、Codex 写 `UserPromptExpansion`、Claude 写 `PostModelSwitch`（`native-event`）；空串、首尾空白、写在 `Stop`/`UserPromptSubmit` 上、Codex 非法正则、Claude `*` 合法（`native-matcher`）；缺失、非字符串、含换行/回车/NUL、首尾空白、以 `;`/`&`/`|`/`)`/`#` 开头、未转义 `\` 结尾、引号不成对（`native-command`）；`0`、`601`、`1.5`、字符串（`native-timeout`）。
   - 合法用例退出 0：示例包（`codex-only-notify` 更新为 3.10 写法）；同时写两家映射、只写一家、带 matcher 与 timeout、正文为空的 native 规则；包级 `defaults.action: warn` 不使 native 报错；`from:` 整体覆盖某个 harness 映射。

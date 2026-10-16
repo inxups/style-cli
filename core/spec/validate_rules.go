@@ -30,6 +30,13 @@ func (v *validator) validateRules() {
 		if bodySource == "" {
 			bodySource = source
 		}
+		if isNativeRule(rule, v.pkg) {
+			// Native bodies are author notes: never rendered, injected or estimated.
+			if strings.Contains(rule.Body, "<!-- style:") {
+				v.add("marker-in-body", bodySource, "body contains a reserved STYLE marker")
+			}
+			continue
+		}
 		if strings.TrimSpace(rule.Body) == "" {
 			v.add("empty-body", bodySource, "rule body must not be empty")
 		}
@@ -58,8 +65,10 @@ func (v *validator) validateRuleFields(rule Rule, source string) {
 		v.add("invalid-schema", source, "YAML mappings must use string keys")
 	}
 	isRuleFile := strings.HasPrefix(filepath.ToSlash(source), "rules/")
+	native := isNativeRule(rule, v.pkg)
 	for _, key := range sortedMapKeys(fields) {
-		if !ruleFields[key] && !(fields["target"] == "native" && isNativeProviderField(key)) {
+		// On native rules other keys are harness mappings (validateNativeRule).
+		if !ruleFields[key] && (!native || isPackageField(key)) {
 			v.add("invalid-schema", source, fmt.Sprintf("unknown rule field %q", key))
 		}
 		if isRuleFile && isPackageField(key) && key != "priority" && key != "reads" {
@@ -88,13 +97,19 @@ func (v *validator) validateRuleFields(rule Rule, source string) {
 		_, hasText := fields["text"]
 		if hasFile && hasText {
 			v.add("file-and-text", source, "file and text are mutually exclusive")
-		} else if !hasFile && !hasText {
+		} else if !hasFile && !hasText && !native {
 			v.add("invalid-schema", source, "inline rules require file or text")
 		}
 	}
 	for _, key := range sortedMapKeys(rule.Overrides) {
 		if !ruleFields[key] {
-			v.add("invalid-schema", source, fmt.Sprintf("unknown from override field %q", key))
+			if !native || isPackageField(key) {
+				v.add("invalid-schema", source, fmt.Sprintf("unknown from override field %q", key))
+			}
+			continue
+		}
+		if native && nativeEngineFields[key] {
+			continue // Reported once as native-field.
 		}
 		if !validRuleFieldValue(key, rule.Overrides[key]) {
 			v.add("invalid-schema", source, fmt.Sprintf("invalid value type for from override %s", key))
@@ -102,16 +117,16 @@ func (v *validator) validateRuleFields(rule Rule, source string) {
 	}
 	for _, key := range sortedMapKeys(fields) {
 		value := fields[key]
+		if native && (!ruleFields[key] || nativeEngineFields[key]) {
+			continue // Harness mappings and native-field are checked by validateNativeRule.
+		}
 		if !validRuleFieldValue(key, value) {
 			v.add("invalid-schema", source, fmt.Sprintf("invalid value type for rule field %s", key))
 		}
-		switch key {
-		case "when":
+		if key == "when" {
 			if _, overridden := rule.Overrides["when"]; !overridden {
 				v.validateWhen(value, rule, source)
 			}
-		case "reads", "codex", "claude-code":
-			// Validated elsewhere or harness-specific native data.
 		}
 	}
 	defaults := asStringMap(v.pkg.Metadata["defaults"])
@@ -139,7 +154,7 @@ func (v *validator) validateRuleFields(rule Rule, source string) {
 			v.add("invalid-schema", source, fmt.Sprintf("invalid %s value %q", key, value))
 		}
 	}
-	if when, exists := rule.Overrides["when"]; exists {
+	if when, exists := rule.Overrides["when"]; exists && !native {
 		v.validateWhen(when, rule, source)
 	}
 	if target, exists := fields["target"]; !exists || target == "" {
@@ -150,6 +165,15 @@ func (v *validator) validateRuleFields(rule Rule, source string) {
 	}
 	if v.pkg.SingleFile && (hasKey(fields, "from") || hasKey(fields, "file") || hasKey(fields, "text")) {
 		v.add("invalid-schema", source, "single-file packages cannot set from, file, or text")
+	}
+	if isRuleFile && hasKey(fields, "from") {
+		v.add("invalid-schema", source, "from is only valid in STYLE.yaml")
+	}
+	if native {
+		// Native rules bypass the rule engine, so target, action and event
+		// combinations (and inherited defaults) do not apply.
+		v.validateNativeRule(rule, source)
+		return
 	}
 	if target := v.effectiveRuleString(rule, "target", ""); target == "event" {
 		event := v.effectiveRuleString(rule, "event", "")
@@ -168,12 +192,6 @@ func (v *validator) validateRuleFields(rule Rule, source string) {
 		v.add("invalid-schema", source, "skill target requires skill")
 	}
 	v.validateTargetSelectors(rule, target, source)
-	if target := v.effectiveRuleString(rule, "target", ""); target == "native" && !ruleHasField(rule, "codex") && !ruleHasField(rule, "claude-code") {
-		v.add("invalid-schema", source, "native target requires a harness hook mapping")
-	}
-	if isRuleFile && hasKey(fields, "from") {
-		v.add("invalid-schema", source, "from is only valid in STYLE.yaml")
-	}
 	if event := v.effectiveRuleString(rule, "event", ""); event != "" && !validEvents[event] {
 		v.add("invalid-schema", source, fmt.Sprintf("unknown event %q", event))
 	}
@@ -264,7 +282,7 @@ func validRuleFieldValue(key string, value any) bool {
 		return ok
 	case "priority", "max_tokens":
 		return isNumber(value) && toFloat64(value) >= 0
-	case "reads", "when", "codex", "claude-code":
+	case "reads", "when":
 		return asStringMap(value) != nil
 	default:
 		return false

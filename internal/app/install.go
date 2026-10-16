@@ -161,7 +161,7 @@ func (s *Service) Install(ctx context.Context, request InstallRequest) (InstallR
 
 	parsed := original
 	parsed.Files = cloneFileMap(files)
-	diagnostics := spec.Validate(parsed)
+	diagnostics := s.validateSpec(parsed)
 	if hasSpecErrors(diagnostics) {
 		return InstallResult{}, &ValidationError{Diagnostics: convertDiagnostics(diagnostics)}
 	}
@@ -591,7 +591,7 @@ func (s *Service) loadInstalledPackages(ctx context.Context, home string, lock l
 		if !reflectStringMap(currentHashes, item.Files) {
 			return nil, &ConflictError{Message: fmt.Sprintf("installed package %q changed; run sync/trust before installing another package", item.Name)}
 		}
-		parsed, err := parseInstalledSnapshot(ctx, home, item, files)
+		parsed, err := s.parseInstalledSnapshot(ctx, home, item, files)
 		if err != nil {
 			return nil, err
 		}

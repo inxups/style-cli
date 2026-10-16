@@ -58,6 +58,21 @@ func (r *Registry) Providers() []ProviderID {
 	return providers
 }
 
+// NativeCatalog returns the native hook surface of every provider that
+// accepts target: native rules, keyed by provider ID (rules §3.10).
+func (r *Registry) NativeCatalog() spec.NativeCatalog {
+	catalog := make(spec.NativeCatalog)
+	if r == nil {
+		return catalog
+	}
+	for provider, definition := range r.providers {
+		if definition.Native != nil {
+			catalog[string(provider)] = definition.Native
+		}
+	}
+	return catalog
+}
+
 // BuildPlanAdapter adapts a provider's richer planning facts to core/plan.
 func BuildPlanAdapter(provider ProviderID, facts PlanningFacts) (plan.Adapter, error) {
 	if strings.TrimSpace(string(provider)) == "" {

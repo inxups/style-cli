@@ -1,0 +1,15 @@
+manifest: |
+  spec: style/v0.3
+  name: invalid-fixture
+  version: 0.1.0
+  description: invalid fixture
+  rules:
+    - from: rules/notify.md
+files:
+  "rules/notify.md": |
+    ---
+    target: native
+    codex:
+      event: UserPromptExpansion
+      command: notify
+    ---

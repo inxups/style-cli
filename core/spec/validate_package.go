@@ -32,7 +32,9 @@ func (v *validator) validatePackage() {
 		v.add("invalid-schema", v.packageSource(), "single-file packages contain exactly one rule and cannot declare rules")
 	}
 	for _, key := range sortedMapKeys(manifest) {
-		singleFileRuleField := ruleFields[key] || (manifest["target"] == "native" && isNativeProviderField(key))
+		// A native single-file rule may carry harness mappings; the rule
+		// checks report keys that are not registered harnesses.
+		singleFileRuleField := ruleFields[key] || manifest["target"] == "native"
 		if !packageFields[key] && (!v.pkg.SingleFile || !singleFileRuleField) {
 			v.add("invalid-schema", v.packageSource(), fmt.Sprintf("unknown package field %q", key))
 		}
@@ -81,10 +83,6 @@ func (v *validator) validatePackage() {
 	if !v.pkg.SingleFile && len(v.pkg.Rules) == 0 {
 		v.add("invalid-schema", v.packageSource(), "rules must contain at least one rule")
 	}
-}
-
-func isNativeProviderField(key string) bool {
-	return key == "codex" || key == "claude-code"
 }
 
 func (v *validator) validateRequires(value any) {

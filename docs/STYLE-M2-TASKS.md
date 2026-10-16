@@ -4,7 +4,7 @@
 
 本文件是 STYLE CLI M2 的持久化任务清单。每项任务完成后必须同时补充证据（命令、fixture、golden 文件或真实运行记录），不能只根据对话上下文标记完成。测试矩阵见 [STYLE-M2-TESTS.md](STYLE-M2-TESTS.md)，执行记录追加到 [PROGRESS.md](PROGRESS.md)。
 
-当前总状态：M2 已开始，文档建立（M2-00）与基线回归（M2-01）完成；M2-D1 native 规则格式设计评审通过，进行中 M2-T10 native schema 与 validate。M1 已关闭并只读归档（[任务](STYLE-M1-TASKS.md)、[测试](STYLE-M1-TESTS.md)），唯一遗留为 M2-CARRY-01。
+当前总状态：M2 已开始，文档建立（M2-00）与基线回归（M2-01）完成；M2-D1 native 规则格式设计评审通过，M2-T10 native schema 与 validate 完成，下一步 M2-T11 native plan 与 token 报告。M1 已关闭并只读归档（[任务](STYLE-M1-TASKS.md)、[测试](STYLE-M1-TESTS.md)），唯一遗留为 M2-CARRY-01。
 
 ## 范围
 
@@ -64,7 +64,7 @@ M1 中已记录的已知限制（如 force-push 示例规则对 `--push-option` 
 
 每条依赖对应设计项定稿；实现前后都检查工作树，保留 agenthooks 职责边界，`core` 仍不导入具体 adapter。
 
-- [ ] **M2-T10 native schema 与 validate**：`core/spec` 按 D1 校验 native 字段与诊断码，目录包与单文件包一致。依赖：M2-D1。测试：M2-A1。
+- [x] **M2-T10 native schema 与 validate**：`core/spec` 按 D1 校验 native 字段与诊断码，目录包与单文件包一致。依赖：M2-D1。测试：M2-A1。实现：`core/spec/native.go`（`Validate` 做与 harness 无关的形状检查，`ValidateNative` 按注册表查 harness 键、事件和 matcher；`NativeRules` 解析映射），adapter `Definition.Native` 与 `Registry.NativeCatalog()`，app 层所有入包路径改用 `Service.validateSpec`；删除写死的 `isNativeProviderField`。证据见 `docs/PROGRESS.md` M2-T10。
 - [ ] **M2-T11 native plan 与 token 报告**：`core/plan`、`core/tokens` 输出 native 状态和报告，更新两家 plan golden。依赖：M2-T10。测试：M2-A2。
 - [ ] **M2-T12 adapter `Native()` 与路线**：Codex/Claude adapter 把 native 规则转为 HookSpec，经 `agenthooks/install` 合并、owner 标记和卸载。依赖：M2-T11。测试：M2-A3。
 - [ ] **M2-T13 CLI native 生命周期**：install 披露、sync/trust 差异、list/doctor 展示 native 条目。依赖：M2-T12。测试：M2-A4。
@@ -73,6 +73,10 @@ M1 中已记录的已知限制（如 force-push 示例规则对 `--push-option` 
 - [ ] **M2-T40 Claude rules 静态位置与迁移**：仅 D4 成立时实现；否则标注“按 D4 结论不实现”并以 D4 证据关闭。依赖：M2-D4。测试：M2-A7。
 - [ ] **M2-T50 output style replace**：仅 D5 可行时实现；否则同上关闭。依赖：M2-D5。测试：M2-A8。
 - [ ] **M2-T60 conformance 扩展**：native 安装往返、输出白名单不受 native 影响，纳入 `internal/adapter/conformance`。依赖：M2-T12。测试：M2-A3、M2-A9。
+
+## 审查发现
+
+- [!] **M2-RV-01 core/spec 仍写死 harness 名**：T10 只把 native 的 harness 键改成注册表提供；`when.harness.name`（`core/spec/validate_conditions.go:14`）、`requires.harness`（`validate_package.go:115`）、`recommends`（`validate_package.go:235`）仍写死 `codex`/`claude-code`，与 CLI 设计 §1“核心不硬编码字符串”不符。M1 起就存在，不影响 M2 功能；是否在 M2 内改为同一注册表由用户决定。
 
 ## M2b 真实环境
 
