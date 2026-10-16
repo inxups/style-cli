@@ -4,7 +4,7 @@
 
 本文件记录 M2 测试矩阵和每项当前状态。测试通过必须有命令输出、fixture/golden 文件或真实环境记录作为证据。任务清单见 [STYLE-M2-TASKS.md](STYLE-M2-TASKS.md)，M1 测试矩阵已只读归档（[STYLE-M1-TESTS.md](STYLE-M1-TESTS.md)）。
 
-当前状态：M2-BASE-01、M2-A1–A4 已通过，其余条目尚未执行。M2a 断言为初稿，标“D* 定稿后细化”的条目在对应设计项通过评审时补全具体 fixture、golden 和退出码。
+当前状态：M2-BASE-01、M2-A1–A4 已通过，M2-A9 已完成 native 阶段回归、等待后续 M2 功能完成后复验，其余条目尚未执行。M2a 断言为初稿，标“D* 定稿后细化”的条目在对应设计项通过评审时补全具体 fixture、golden 和退出码。
 
 ## 状态约定
 
@@ -60,7 +60,7 @@ env -u CODEX_HOME -u CODEX_SANDBOX \
   - token 一节单列"native hook 输出不估算"及规则/事件；常驻、单条、按原生事件合计与 M2-01 起点相比不含 native，`T001`/`T003` 不计 native。
   - `fallback`：用假适配器让 `Native()` 返回错误，`skip`/`degrade` 得 `skipped`，`error` 得 `install-error` 且 install 退出 4、不写任何文件。
   - plan 报告（文本/JSON）不含 native 规则正文，也不含命令；命令只在 install 披露、trust 预览和 doctor 里出现。
-- [x] **M2-A3 native 安装往返**（M2-T12/T60）：`internal/app` 的 `TestA3NativeInstallRoundTripAndRouteSwitch` 覆盖三条路线 install → uninstall 的配置字节/权限还原、他人条目保留、重复安装幂等、Codex 路线往返无残留、多包按 priority/包序号排序及单包卸载后重编译；核对 native owner、matcher、默认/指定 timeout、原生命令不入 runtime index，并逐条核对含 foreign 组的 Codex 最终组序号与 `trusted_hash`。`agenthooks/install` 的 `TestRawNativeCommandsBypassRunnerAndPreserveShellContract` 实际用 `sh` 核对 stdin 原样和 exit 7、引号 tag、无 runner/async/filter/fail-closed 参数；`TestCodexRawNativeEventsAndSessionEndTimeout` 覆盖全部 Codex native 事件和 SessionEnd 3 秒限制。双 module fresh test/vet 通过，见 `docs/PROGRESS.md` M2-T12；共享 conformance 扩展仍由 T60 跟踪。
+- [x] **M2-A3 native 安装往返**（M2-T12/T60）：`internal/app` 的 `TestA3NativeInstallRoundTripAndRouteSwitch` 覆盖三条路线 install → uninstall 的配置字节/权限还原、他人条目保留、重复安装幂等、Codex 路线往返无残留、多包按 priority/包序号排序及单包卸载后重编译；核对 native owner、matcher、默认/指定 timeout、原生命令不入 runtime index，并逐条核对含 foreign 组的 Codex 最终组序号与 `trusted_hash`。`agenthooks/install` 的 `TestRawNativeCommandsBypassRunnerAndPreserveShellContract` 实际用 `sh` 核对 stdin 原样和 exit 7、引号 tag、无 runner/async/filter/fail-closed 参数；`TestCodexRawNativeEventsAndSessionEndTimeout` 覆盖全部 Codex native 事件和 SessionEnd 3 秒限制。T60 的共享 `TestNativeRouteLifecycleRestoresForeignBytes` 另覆盖三路线 × 三种文件尾的 9 次安装往返、逐条状态与信任、幂等及零残留。双 module fresh test/vet、共享 conformance race/vet 通过，见 `docs/PROGRESS.md` M2-T12/T60。
 - [x] **M2-A4 native 披露与信任**（M2-T13，按运行时 8.6）：`internal/app/native_lifecycle_test.go` 的 `TestA4*` 已覆盖下列断言：6 个三路线文本/JSON 安装确认场景；48 个三路线普通/link 包的命令、事件、matcher、timeout、增删、priority 和显式默认 timeout 变化场景；22 个 doctor 一致/缺失/字段改动/重复条目/信任哈希与确认修复场景；另覆盖捕获快照与回调隔离、T12 批准基线兼容、另一个 link 包不被连带批准、普通 link 规则仍自动 sync、SessionEnd 声明 timeout 改变而实际仍 3 秒仍需确认。双 module fresh test/vet、app 与两家 adapter race、采集器 40 项通过，见 `docs/PROGRESS.md` M2-T13。
   - 安装报告逐条列出 harness、规则、事件、matcher、实际 timeout、作者命令原文（不含 `: --owner=style --native=…;` 前缀），并写明路线信任方式（`codex-user` 预置、`codex-plugin` 插件信任、`claude-user` 工作区信任）。
   - 非交互、无 `--yes`、本次会新增 native 条目时退出 1，harness 配置、锁文件、index 逐字节不变；带 `--yes` 成功。
@@ -70,7 +70,7 @@ env -u CODEX_HOME -u CODEX_SANDBOX \
 - [ ] **M2-A6 跨包去重**（M2-T30，D3 定稿后细化）：两个包含正文完全相同的规则时，index 只保留一份、plan 与 T003 只计一次；运行时只注入一次；卸载保留方后重编译使另一份生效；正文不同的规则不受影响。
 - [ ] **M2-A7 Claude rules 静态位置**（M2-T40，仅 D4 成立时）：写入/删除 `~/.claude/rules/style-<名字>.md`；从 `CLAUDE.md` 标记块迁移后再卸载，两处文件逐字节还原。D4 不成立时本条以 D4 证据标注不适用并关闭。
 - [ ] **M2-A8 output style replace**（M2-T50，仅 D5 可行时）：断言随 D5 定稿；不可行时本条以 D5 证据标注不适用并关闭。
-- [ ] **M2-A9 M1 回归**：M1 的 A1–A22、adapter conformance（解析、effort、往返、安装、报告、输出白名单）在 M2 改动后全部仍通过；任何 golden 更新逐项说明原因。
+- [~] **M2-A9 M1 回归**：native 阶段已通过双 module fresh test/vet、app/adapter/conformance race、采集器 40 项、构建与 smoke 32 项。T60 的 `TestNativeRulesLeaveRuntimeOutputsAndStatsUnchanged` 在两家共 46 个 payload 上核对原 stdout golden、输出白名单、runtime 条目与统计记录（只排除时间差）；inline 源文件摘要随新增声明改变是预期，其他条目字段不变。T60 未更新任何 golden。M1 的 A1–A22、adapter conformance 在后续 M2 实现后仍需最终复验，见 `docs/PROGRESS.md` M2-T13/T60。
 
 ## M2b：Codex 真实环境
 

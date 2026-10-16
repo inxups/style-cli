@@ -1326,3 +1326,11 @@ PY
 - 可重复证据：`internal/app/native_lifecycle_test.go` 的 `TestA4*` 共 6 个安装预览、48 个源变更、22 个 doctor/修复场景及 4 个边界用例。验证未确认时整个安装树字节不变；确认期间二次改源只安装已确认命令、回调不能篡改 transaction；T12 基线兼容；另一 link 的命令/lock 哈希未被连带批准；SessionEnd 10→20 秒仍实际 3 秒时必须重新信任且预览显示两种 timeout。`go test ./internal/app -run '^TestA4' -count=1` exit 0。
 - 验证：所有 Go 命令清除 CODEX_HOME/CODEX_SANDBOX，使用临时 GOPATH/GOMODCACHE/GOCACHE。最终字段补齐后 `GOFLAGS='-mod=readonly -count=1' make test-go`、`GOFLAGS=-mod=readonly make vet-go` 双 module exit 0；`go test -race -count=1 ./internal/app` exit 0；两家 adapter 的 race 在本条路线实现后已通过，最后只增加 app 报告的声明 timeout 字段。Python 采集器 40 项 OK。此前本条实现的 `-trimpath` 构建与 smoke 32 项通过（/tmp/style-m2-native.xD9rcb/style，SHA256 df30b7fc…85bcc）；最终 native 批次构建由 T60 再记录。gofmt、当前文档本地链接/围栏和 `git diff --check` 通过，plan/compile golden 无改动。
 - M2-T13 / M2-A4 改 `[x]`；真实 Codex/Claude 验收仍未执行。下一步 T60 shared conformance 扩展，然后 D2 `style stats` 设计评审。
+
+### 2026-10-16 — M2-T60 native 共享 conformance `[x]`
+
+- `internal/adapter/conformance/routes_test.go` 保留原路线测试，另复用同一往返流程加入两个同事件 native 命令：codex-plugin/codex-user/claude-user × 无尾换行/一个/两个尾换行，共 9 次。验证只读 plan、条目不合并、native 状态、Codex 用户路线哈希、重复安装/卸载幂等，最终外部配置字节与 0640 权限还原、零额外文件。
+- 新增 `native_test.go`，给现有 payload 包追加 native 声明，对两家共 46 个 payload 经真实 codec/runtime 检查：stdout 与原 golden 相同且通过白名单；runtime index 不增加 native 条目；统计记录除运行时间外与无 native 基线逐字段相同。初次完整 index 比较失败，定位为 inline 规则的 `src_sha256` 认证整个 STYLE.yaml，追加声明必然改变摘要；测试改为先核对并替换这一可计算摘要，其他字段仍严格比较，未改生产代码、未更新 golden。
+- 验证：清除 CODEX_HOME/CODEX_SANDBOX，临时 GOPATH/GOMODCACHE/GOCACHE；`GOFLAGS=-mod=readonly go test -race -count=1 ./internal/adapter/conformance` exit 0（8.022s），`go vet ./internal/adapter/conformance` exit 0。生产代码为 6c30d35，本条仅新增测试；双 module fresh test/vet、app/两家 adapter race 与采集器 40 项沿用紧接之前的 T13 证据。
+- 最终 native 批次：同一隔离 Go 环境执行 `go build -trimpath -buildvcs=false -o /tmp/style-m2-native-final.W5m9T5/style ./cmd/style` exit 0；显式禁用 VCS 元数据以免本条未提交的测试影响构建摘要。SHA256 `5ab3ad8efebf0cd08fa37728d921224fd71bc13e74e6ffb042bf9e9818ba2316`；`PYTHONDONTWRITEBYTECODE=1 python3 scripts/smoke.py /tmp/style-m2-native-final.W5m9T5/style` 32 项通过。二进制只留 /tmp，不入库。gofmt、本地文档链接/围栏、`git diff --check` 通过。
+- M2-T60 改 `[x]`，A3 补共享证据，A9 记 native 阶段通过但保持 `[~]` 等后续 M2 实现后最终复验。真实 native 投递不由本条离线测试替代。下一步 D2 stats 输出设计，按任务清单在用户评审后进入 T20。
