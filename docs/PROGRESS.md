@@ -1139,3 +1139,12 @@ PY
 - 77c6990 提交前附加的 shell 退出码检查使用了错误的输出类型/文本格式而失败；该检查失败后 shell 仍继续提交。现已核对原始 rollout：本机 code mode 使用 custom_tool_call_output，input_text 中嵌套 JSON 的 exit_code=0，而不是普通 function_call_output 的 “Process exited” 文本。
 - 增强采集器同时读取两种输出，且只把精确 output=STYLE_CHILD_SCOPE_OK 的结构化结果算作允许命令；单纯函数参数包含标记不计通过。三个子线程均确认一条真实 block 结果和一条 exit_code=0 的允许 printf。原证据不覆盖，追加 `review/M1-FINAL-07-CHILD-TOOLS-2026-10-16.json` 与原报告关联。
 - 验证：新增 code mode 结果回归，全部 18 项 Python 测试、原始三线程结果提取断言及 diff 检查通过。后续提交命令明确 set -e，避免检查失败后继续提交。
+
+
+### 2026-10-16 — M1-FINAL-08 STYLE 保护与 Codex 原生超限分别测量
+
+- 真实命令：`PYTHONDONTWRITEBYTECODE=1 python3 testdata/manual/probe_codex_overflow.py --style /tmp/style-m1-final.rxdYyj/style-final05 --scratch /tmp/style-m1-overflow-a-20261016 --output /tmp/style-m1-overflow-a.json`，exit0。程序 23cf8caa、Codex 0.159.3；全新私有配置/工作区。
+- STYLE：两家同一 14k 字符 event 规则均触发 T003，exit4，harness 配置字节不变、STYLE_HOME 未创建。`go test -count=1 ./core/engine ./core/tokens ./internal/app` 在隔离 Go 缓存、清除 CODEX_HOME/CODEX_SANDBOX 后通过，包括 cap 丢最高 order 与释放 reservation 回归。
+- Codex 原生：没有安装 STYLE 包，直接生成 raw Python hook 并预置信任；SessionStart 12,064/50,064 字符、PreToolUse 12,056 字符三次均真的输出完整正文，模型运行成功。native 保存完整原文，模型收到约 10,100 字符头尾预览和 Full hook output saved to 路径；保存文件 bytes/SHA256 与输入正文一致，原文未完整出现在 hook context。首尾标记在预览中仍同时出现，因此新增回归防止错误推断“完整接受”。字符数明确为字符，不冒充官方 token 计数。
+- 报告：`review/M1-FINAL-08-OVERFLOW-2026-10-16.json`，保存所有请求/rollout 与实际结果；采集后对现有原生落盘文件做精确比较，无再次推理或结果替换。Codex file-preview 声明与实测一致。Claude 原生超限仍因隔离认证缺失待测，FINAL-08 `[~]`，不改变预算默认值。
+- Python 全部 20 项测试、语法/diff 检查通过，报告按真实 provider URL/token 扫描无泄漏。

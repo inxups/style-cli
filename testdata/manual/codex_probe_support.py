@@ -40,7 +40,7 @@ def marker_locations(body, markers):
         for marker in markers:
             if marker in text:
                 locations[marker].append({"input_index": index, "role": item.get("role"), "type": item.get("type"),
-                                          "occurrences": text.count(marker), "item_sha256": digest(text.encode())})
+                                          "occurrences": text.count(marker), "item_sha256": digest(text.encode()), "item_chars": len(text)})
     return locations
 
 

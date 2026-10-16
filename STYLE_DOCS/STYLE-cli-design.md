@@ -741,7 +741,7 @@ F1–F4、F10 是安装和协议层的问题，最好也提给上游。F5–F9 �
 | U-T2 | 压缩后 hook 注入的文字是否被摘要保留 | `reinject_on_compact` 的默认值 | `/compact` 后复述 | 认为丢失（`system` 默认补发） | 保留 → 默认值是否改成 false 由用户决定 | Codex FINAL-07 实测：关闭 reinject 且 startup-only 的专用探针，compact 后 epoch=1、输出仍各一次，真实请求中两条动态标记均消失；支持保留补发默认值。Claude 专用探针未测 |
 | U-T3 | 估算器校准 | 误差范围、系数 | 30–50 条真实规则（中英各半）对比两家实际计数 | ±25% | 调系数，不影响通过 | 未测 |
 | U-T4 | 典型会话里各规则的注入次数和真实 token | 成本模型参数、预算默认值 | 用 `stats.jsonl` 记录真实会话 | 60 次请求、3 次触发；预算 400 / 1,200 / 600 | 调默认值 | 未测：真实 stats.jsonl 已有，尚未统计 |
-| U-T5 | 超限时两家是否真的静默 | `T003` 的严重程度 | 注入 12,000 字符 / 3,000 token | 静默（文档说不提示模型） | 不影响通过 | 未测 |
+| U-T5 | 超限时两家如何处理 | `T003` 的严重程度 | 原生 raw hook 绕开 STYLE，分别记录完整/预览/丢弃/报错 | 保留 STYLE 保护 | 不影响通过 | FINAL-08：两家 STYLE T003 写入前拒绝；Codex SessionStart 12k/50k 与 PreToolUse 12k 实际落盘并传头尾预览及路径，文件逐字节等于 raw body；不等于静默丢弃。Claude 原生待隔离认证，无官方 token 计数结论 |
 | U-T6 | OpenAI / Codex 的提示词缓存细节（最小长度、保留时间、折扣） | Codex 的成本模型 | 查官方文档，看 usage 里的缓存字段 | 不依赖具体数字 | 不影响通过 | 未测 |
 | U-V | 目标 Codex 版本和 `main` 在 hook 上的差异；Claude 的最低版本（`PostModelSwitch` v2.1.251、`mcp_server` v2.1.274、`onFailure` v2.1.295） | `requires.harness` 的取值 | 对目标版本重读源码并实测 | Claude ≥ 2.1.274；Codex 写实测版本 | 写回示例包 | 已回填：示例包要求 Codex >=0.159.3、Claude Code >=2.1.300；M1-FINAL-01 同时修复安装/重编译未执行版本过滤的问题，旧版及未知版本跳过且不修改配置 |
 | U-F9 | agenthooks `3f734c7` 的 Claude codec 已经有哪些字段和事件 | F9 的工作量 | 读 `codec_claudecode.go` | 按缺失处理 | 不影响通过 | 已关闭：T42 读取并补齐 Claude codec 字段与事件 |

@@ -71,3 +71,13 @@ PYTHONDONTWRITEBYTECODE=1 python3 testdata/manual/probe_codex_context.py \
 ```
 
 若仅采集器断言失败，原始报告保留；`--verify-report <original.json> --output <new.json>` 只能对已有真实结果续验，不运行模型，并记录原报告摘要。真实运行未成功时不能用它把失败改为通过。
+
+`probe_codex_overflow.py` 先对两家调用真实 STYLE 安装，验证 T003 拒绝且不写配置；然后直接用独立 Python hook 向真实 Codex 返回 12k/50k 字符的完整字段，绕开 STYLE runtime，不将 STYLE 的 cap-drop 当作原生处理。比较真实请求/rollout 中的预览与原生落盘文件，不能仅以首尾标记均出现判断完整投递。
+
+```sh
+PYTHONDONTWRITEBYTECODE=1 python3 testdata/manual/probe_codex_overflow.py \
+  --style /absolute/path/to/style --scratch "$(mktemp -d)" \
+  --output /tmp/codex-overflow-result.json
+```
+
+此脚本对 Claude 只验证 STYLE 自身保护；Claude 的原生大字段仍需已认证的隔离会话，不得据此关闭该部分。

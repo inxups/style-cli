@@ -175,7 +175,7 @@ M1b 准备、真实验收中发现的问题及示例规则修正，按处理顺�
 - [x] **M1-FINAL-05 U2/U6 能力边界**：U2 复用 FINAL-04 独立插件全流程及双向切换的真实证据。U6 按既定“不支持，plan 说明”边界关闭：skill plan 保留本地显式/隐式挂载并提示云端读取不受支持；固定订阅与未知读取工具回归通过。云端原生工具名仍未采集，不宣称真实云端投递通过；不新增自动登记或云端路线。
 - [?] **M1-FINAL-06 Claude 边界及 C9**：U9、U-C1/C2/C3/C5 与最终程序 50 次 Bash 性能。隔离环境未认证，界面项等待用户操作；三包安装、观察器字段白名单与热更新 fixture 准备检查通过，不能替代真实通过。步骤见 `review/M1-FINAL-06-CLAUDE-RUNBOOK.md`。
 - [~] **M1-FINAL-07 上下文继承**：Codex 真实 resume/fork 保留原上下文；关闭补发的 compact 探针中两条标记消失。fresh/fork/嵌套三个子 agent 各自收到 context，工具 inject/block 与 stats 均在各自 scope，父级无污染。Claude resume/fork/compact 补测仍待用户环境，默认值不变。证据：`review/M1-FINAL-07-CODEX-2026-10-16.json`。
-- [?] **M1-FINAL-08 真实超限**：U-T5；分别检验 STYLE cap 与独立原生探针超限，不能提前裁剪后宣称已测原生上限。
+- [~] **M1-FINAL-08 真实超限**：两家 STYLE T003 对 14,040 字符规则在写入前拒绝；engine cap/release 回归通过。绕开 STYLE 的 Codex SessionStart 12,064/50,064 字符与 PreToolUse 12,056 字符均落盘并给约 10,100 字符预览，保存文件与原文逐字节一致，完整正文未投递。Claude 原生 12,000 字符探针待隔离认证。证据 `review/M1-FINAL-08-OVERFLOW-2026-10-16.json`。
 - [?] **M1-FINAL-09 token 校准**：U-T3；40 条中英各半的固定语料，通过两家真实计数接口记录误差，不把估算器当真实计数。
 - [ ] **M1-FINAL-10 成本与缓存**：U-T4/U-T6；统计真实 stats/usage，核对官方缓存资料，明确情景假设，保留估算公式与预算默认值。
 - [ ] **M1-FINAL-11 文档一致性**：同步设计、adapter 总览、手册、教程与边界表，保留 degrade 最终可跳过的策略和历史证据。
