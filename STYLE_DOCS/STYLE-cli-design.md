@@ -726,7 +726,7 @@ F1–F4、F10 是安装和协议层的问题，最好也提给上游。F5–F9 �
 |---|---|---|---|---|---|---|
 | U2 | Codex 个人 marketplace 登记和启用插件能否自动化 | `install` 能不能全自动 | 装一次，看 Codex 是否加载插件 | 当前由用户按 M1b 手册手动登记/启用；0.159.3 本地管理命令准备验证已通过，STYLE 尚未实现自动化 | 不能自动化不算失败，b1 按手动步骤做 | 未自动化：B10 由 agent 手动执行 `codex plugin marketplace add` 与 `codex plugin add`，Codex 0.159.3 加载插件，只新增 marketplaces/plugins 两段；取消注册后 config.toml 逐字节还原 |
 | U3 | 已生成的插件 hook `trusted_hash` 是否被真实 Codex 接受 | 生成摘要与实际信任是否一致 | 新会话记录是否仍有信任提示 | 渲染器默认生成摘要；插件路线仍报告 user-confirmation，不假定已信任，无额外 CLI 开关 | 不影响通过 | 接受：B10 插件路线新会话四类 hook 全部 `hook.source=plugin`，无 hook 信任提示（`codex exec`）；B1 用户级路线的预置摘要在 exec 与 TUI 下也无 hook 信任提示。报告仍写 user-confirmation，未改 |
-| U5 | 每次工具调用多起一个进程的开销（Codex 含登录 shell） | 固定订阅面是否可接受 | 基准：连续 1000 次 PreToolUse | 先按固定订阅面实现 | 超出预算 → 改成按规则生成 matcher（每次变化要重新信任），属于设计变更，M1b 暂停评审 | 部分：连续 731 次真实 PreToolUse（用户叫停，未满 1000），p95=41.6ms、max=44.9ms，0 错误，远低于 150ms；不需改设计，见 B11 |
+| U5 | 每次工具调用多起一个进程的开销（Codex 含登录 shell） | 固定订阅面是否可接受 | 基准：连续 1000 次 PreToolUse | 先按固定订阅面实现 | 超出预算 → 改成按规则生成 matcher（每次变化要重新信任），属于设计变更，M1b 暂停评审 | 成立（用户决定以 200 次为准）：先测连续 731 次真实 PreToolUse（用户叫停，未满 1000），p95=41.6ms、max=44.9ms；CR-05 后用 d7438ec 复测 200 次，p95=28.6ms、max=74.2ms；两轮均 0 错误，远低于 150ms，不需改设计，见 B11 |
 | U6 | Codex 云端 skill 的读取工具在 hook 里叫什么 | 云端 skill 能否识别 | 探针 hook 把 stdin 写日志 | 不支持，plan 里说明 | 不影响通过 | 未测 |
 | U7 | Codex SubagentStart 返回的 context 是否真的进入子 agent | F7、`event: subagent.start` | 让子 agent 复述 | 按源码实现 | 不成立 → Codex 上 `subagent.start` 规则降级为丢弃，F7 移出 M1 | 成立：CDEX-U7 中 spawn_agent 启动的子线程 rollout 有逐字相同的 `hooks.additional_context`，stats 记在子 agent scope，父线程没有；F7 保留在 M1。嵌套子 agent 与 fork 未测 |
 | U9 | Claude 的 hook 里能否知道思考被关闭 | Claude 能否产出 `none` | 关掉思考后看 payload 和环境变量 | 不产出 `none` | 不影响通过 | 未测 |

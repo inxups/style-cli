@@ -142,11 +142,16 @@ M1b 准备、真实验收中发现的问题及示例规则修正，按处理顺�
   - Update 在进程内的中位数：没有变化时 14ms → 0.16ms，prompt 时为 0.33ms。
   - 隔离 HOME 下真实 hook 进程（Codex payload，各 200/50 次）：PreToolUse p50 18.7 → 7.0ms，p95 21.4 → 8.2ms；UserPromptSubmit p50 19.1 → 8.1ms。
   - 双 module 测试、vet，以及 state/engine/runtime 的 race 测试都通过。
-  - 真实 harness 的 U5/C9 计时尚未复测。
+  - 真实 Codex 计时（U5）已在 M1B-CR-REAL 复测；Claude C9 未复测。
 
 ## Adapter 文档整理（2026-10-16）
 
 - [x] **DOCS-03 当前 adapter 实现总览**：新增 `docs/STYLE-ADAPTERS-CURRENT.md`，汇总分层/公共接口、检测与三条路线、事件/能力、静态与动态 system、replace、fallback、工具/MCP/skill、字段与 effort、运行时/输出/限制、真实证据和未决项。明确 degrade 可最终跳过、Codex tool.error 状态措辞与规范的差异、生产未设置 ProjectTrusted 回调；未修改实现或确定新的降级语义。证据：文档全部 38 个本地链接与代码围栏检查、`git diff --check`、隔离环境 `go test -count=1 ./internal/adapter/... ./internal/runtime ./core/plan ./internal/app` 全部通过；命令见 `docs/PROGRESS.md` DOCS-03。
+- [x] **M1B-CR-REAL 代码审查修复进入真实安装**：按手册 §1 用 d7438ec 重建 `~/.local/lib/style-m1b/style`（1f2b1691 → 695aff85），sync 0、doctor 0，配置文件与 lock/index 哈希不变。
+  - CR-01：Codex 真实会话中 `bash --rcfile /dev/null -c`、`-O extglob -c`、`-eo pipefail -c` 三种 force push 被拦截，对照命令放行；同一 index 下旧程序会全部放行。
+  - CR-05 / U5：用户把 U5 的样本量定为 200 次。复测 200 次 PreToolUse，p95 从 41.6ms（旧程序 731 次）降到 28.6ms，median 从 36.8ms 降到 25.3ms，设计 §15.1 U5 记为成立。
+  - 证据：`docs/review/M1B-CR-REAL-2026-10-16.json`、`docs/review/M1B-CODEX-U5B-SPANS-2026-10-16.jsonl`，测试矩阵 CR-REAL 与 B11。
+  - 未覆盖：Claude C9 计时未复测。
 
 ## 后续 backlog
 

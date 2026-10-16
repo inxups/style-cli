@@ -1023,3 +1023,19 @@ PY
 ```
 
 - Markdown 检查结果：400 行，38 个本地链接目标全部存在，代码围栏成对；`git diff --check` 通过。
+
+### 2026-10-16 — M1B-CR-REAL 代码审查修复进入真实安装，Codex 实测与 U5 复测
+
+- 重建：按用户指示，用 d7438ec 按手册 §1 重建 `~/.local/lib/style-m1b/style`（隔离 Go 缓存，GOPROXY=off，先写 style.new 再 mv）。sha256 1f2b1691… → 695aff85…，build info 为 vcs.revision=d7438ec、vcs.modified=false。旧程序备份在本会话 scratchpad 的 `style.pre-cr`。
+  - 之后 sync 退出 0（changed=false），doctor 退出 0（只有设计内的 claude-user route-trust-unverified），两包 hash_matches。
+  - Codex config.toml/hooks.json、Claude settings.json/CLAUDE.md、lock、index 哈希都没变。同一 STYLE_HOME 也服务本 Claude 会话的 hook。
+- CR-01 实测：Codex 会话 01a143a5（codex-user，0.159.3，gpt-6.1-sol/medium，codex-b，07:37Z）。ex02-repo 只连本地 bare 远端，refs/heads/main 6c88e18 前后不变。
+  - 拦截：`bash --rcfile /dev/null -c 'git -C ex02-repo push --force origin main'`、`bash -O extglob -c '… push -f …'`、`bash -eo pipefail -c '… push --force …'` 都被 PreToolUse 拦截。stats 有 3 条 `terse-reviewer/no-force-push@tool.pre` blocked；rollout 的工具输出为 "Command blocked by PreToolUse hook"。
+  - 对照：`bash --rcfile /dev/null -c 'git -C ex02-repo status --short'` 退出 0。
+  - 离线对比：把同一 index 复制到临时 STYLE_HOME，用相同 payload 测试。旧程序 1f2b1691 四条都放行，新程序拦截前三条。
+- U5 复测：用户在运行前把目标改为 200 次（“1000次就别了，200次就ok了”），原计划 10 个会话改为 2 个。
+  - 方法同上一轮：每个会话串行 100 次 `printf STYLE_M1B_U5`，只用 `-c` 把 OTel otlp-http json 导出到本地 sink，07:39:06Z–08:03:23Z，会话 01a143a6、01a143b4，无其他会话导出。
+  - 结果：PreToolUse 200 条，median 25.3ms，p95 28.6ms，max 74.2ms（07:45:59Z 一次，保留；另有 44.7ms、41.6ms 两次）。各会话 p95 分别为 29.6ms 和 26.8ms。PostToolUse p95 17.3ms。全部 404 条 hook 的 p95 27.3ms，0 错误，0 重叠。
+  - 对比：上一轮旧程序 731 次的 median 36.8ms、p95 41.6ms，median 约降 11ms，与 CR-05 去掉的 state.Update 开销一致。两轮的时间段和机器负载不同，不是 A/B 对照。
+- 入库：`docs/review/M1B-CODEX-U5B-SPANS-2026-10-16.jsonl`（404 个 hook span，只保留名称、trace id、起止时间和 hook.* 属性；核对后没有主机或账号字段）和 `docs/review/M1B-CR-REAL-2026-10-16.json`。同一命令复算 within-budget（`--min-samples 200` 也是）。
+- 文档：设计 §15.1 U5 改为成立（以 200 次为准）；测试矩阵 B11 补上复测，新增 CR-REAL；任务清单新增 M1B-CR-REAL，CR-05 的未复测说明同步更新。Claude C9 未复测。本项只改文档和证据。
