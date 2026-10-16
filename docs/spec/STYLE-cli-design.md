@@ -515,11 +515,11 @@ Codex 用 `shell -lc` 跑 hook 命令，登录 shell 会读用户的 profile：�
   <!-- /style-rules:v1 terse-reviewer -->
   ```
 
-  跨包去重后只生成保留方的文件；正文顺序沿用编译结果，不生成 paths frontmatter。新文件 0644，已有管理文件保留权限；安装记录的布局/整文件摘要及正确头尾共同确认归属。外部同名文件（即使字节相同）、管理文件漂移、symlink 和损坏旧标记均阻止事务并退出 1。卸载只删除已确认归属且未漂移的文件。静态规则不走 hook 补发，真实界面加载/排序仍在 C1/C3 验收。
+  跨包去重后只生成保留方的文件；正文顺序沿用编译结果，不生成 paths frontmatter。新文件 0644，已有管理文件保留权限；安装记录的布局/整文件摘要及正确头尾共同确认归属。外部同名文件（即使字节相同）、管理文件漂移、symlink 和损坏旧标记均阻止事务并退出 1。卸载只删除已确认归属且未漂移的文件。静态规则不走 hook 补发；[C1/C3 真实交互验收](../STYLE-M2-TESTS.md#m2bclaude-code-真实环境) 已记录加载/去重/卸载及实际附件顺序，不承诺高于用户规则的优先级。
   旧 `claude_md` index 与锁保持兼容，升级和只读命令不写入；doctor 提示待迁移但认同有效旧安装。首次成功的 install/sync/trust/uninstall 路线重建，将仍有效的批准正文写入 rules 并删除对应旧块；卸载目标直接删除。单纯搬迁不增加 trust，不批准其他包的新源码/native；外部字节与权限保持。
 - **replace**：没有槽位（规范第 5 节阶梯第 6 条）。D5 决定不将 output style 用作整份内置指令替换，保留 degrade/skip/error 回退，不改用户 outputStyle 设置或样式文件。
-- **M2-D4/D5 原生请求证据**：2.1.301 本地协议四模式均收到用户 rules 全文一次；output style false/keep 对照只改变部分内置编码指令，仍保留大量 system 内容，候选正文进入 messages。见[补充协议报告](../review/M2-D4-D5-PROTOCOL-2026-10-16.json)与[用户界面手册](../STYLE-M2-MANUAL.md)。C1/C4 界面步骤仍待执行，设计批准见下一条，实际实现状态见任务清单。
-- **2026-10-17 设计已批准**：用户对 [D4/D5 具体契约](../review/M2-D4-D5-DESIGN-2026-10-17.md) 回复“同意”，T40 按以上契约实现。D5 的 A8 回退验收与 C1/C3/C4 真实界面状态以 M2 任务清单为准，界面验收仍需后补。
+- **M2-D4/D5 原生请求证据**：2.1.301 本地协议四模式均收到用户 rules 全文一次；output style false/keep 对照只改变部分内置编码指令，仍保留大量 system 内容，候选正文进入 messages。见[补充协议报告](../review/M2-D4-D5-PROTOCOL-2026-10-16.json)与[用户界面手册](../STYLE-M2-MANUAL.md)。C1/C4 已在 2026-10-17 的 first-party 已认证交互会话通过，真实证据与复现步骤见手册；界面样式选择不被当成整个 system 替换的证明。
+- **2026-10-17 设计已批准**：用户对 [D4/D5 具体契约](../review/M2-D4-D5-DESIGN-2026-10-17.md) 回复“同意”，T40 按以上契约实现。D4 的 A7 迁移与 C1/C3 界面、D5 的 A8 回退与 C4 样式界面均已通过；详细范围以 M2 任务清单为准。
 
 ### 10.5 数据和 `Enrich`
 
@@ -813,7 +813,7 @@ F1–F4、F10 是安装和协议层的问题，最好也提给上游。F5–F9 �
 | M3 | `explain`、`probe`、`update`、git 来源、`--frozen`、项目级路线（含 Claude 云端会话）、Claude 插件路线、`--count=exact`、`refresh`（token 设计 T4）、事件内容带围栏进模板、`provider`、规则级 `fail: closed`、用户自定义 effort 映射、`unknown` 匹配、Windows |
 | M4 | 其他 harness（Gemini、OpenCode、Cursor、Copilot、Kimi…），每家一个适配器；资料见规范附录 A |
 
-M2 当前进展（2026-10-17）：native、stats、跨包语义去重与 Claude 每包 rules/旧布局迁移已实现，Codex B1–B4 在 user/plugin 两路线通过。output style 未开放 replace，D5 保留现有 fallback；Claude 界面验收受用户报告的订阅额度阻塞，额度可用后补。M2 最终回归、CI 与完整文档验收尚未关闭，状态以 [M2 任务清单](../STYLE-M2-TASKS.md) 和 [测试矩阵](../STYLE-M2-TESTS.md) 为准。
+M2 当前进展（2026-10-17）：native、stats、跨包语义去重与 Claude 每包 rules/旧布局迁移已实现，Codex B1–B4 在 user/plugin 两路线通过。output style 未开放 replace，D5 保留现有 fallback；Claude C1–C4 真实交互验收已通过，D4 符合预期、D5 回退方案生效。M2 本地最终回归已通过，远端 Ubuntu/macOS CI、官方计数遗留及总文档状态仍未闭合，状态以 [M2 任务清单](../STYLE-M2-TASKS.md) 和 [测试矩阵](../STYLE-M2-TESTS.md) 为准。
 
 ## 15. 未决项
 

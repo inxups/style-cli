@@ -119,4 +119,4 @@ PYTHONDONTWRITEBYTECODE=1 python3 testdata/manual/probe_claude_context.py \
 
 当前步骤和阻塞统一见 [M2 手册](../../docs/STYLE-M2-MANUAL.md)。`probe_codex_m2.py` 检查 B1–B4 的两条真实路线；`probe_claude_m2_design.py` 保留 D4/D5 的协议/界面探针；`prepare_claude_m2_acceptance.py` 在新私有目录准备 C2/C3 的 native、每包 rules、跨包去重与卸载恢复。
 
-Claude 准备程序只执行 `--version` 和 STYLE 安装，生成 `acceptance=false` 的 prepared.json；不登录或启动模型。用户报告额度用尽期间只保留准备，恢复后按手册操作。三个新增测试验证最小环境/系统身份、凭据排除、原生日志白名单和恢复校验；统一运行 `PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s testdata/manual -p 'test_*.py'`，当前共 53 项。
+Claude 准备程序只执行 `--version` 和 STYLE 安装，生成 `acceptance=false` 的 prepared.json；不登录或启动模型。2026-10-17 用户报告恢复并授权 agent 交互终端代跑，C1–C4 已按手册通过；最终安装验收复用已认证隔离配置并另建 STYLE_HOME/工作目录，不读取或复制凭据。原 PREP-03 未登录目录保留，新的准备程序仍只负责准备。三个新增测试验证最小环境/系统身份、凭据排除、原生日志白名单和恢复校验；统一运行 `PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s testdata/manual -p 'test_*.py'`，当前共 53 项。

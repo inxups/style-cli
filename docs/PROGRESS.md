@@ -1555,3 +1555,11 @@ PY
 - 卸载后两个管理路径、lock/index 均删除，CLAUDE.md 等六份用户文件逐字节/权限还原；全新 session 2e4e01f7-0a27-4b5f-a9e7-5c347937156b 只加载原用户 memory/rules，实际 Bash 工具和 DONE 证明新会话正常完成。报告 docs/review/M2-C3-CLAUDE-2026-10-17.json 仅白名单/摘要，无原始 prompt 或鉴权。附加 API 重放的既有哈希校验失败继续明确为未采用，不绕过校验。
 - C3/D4 结局“符合预期”；与 C1/C2/C4 合并，M2b Claude 真实环境改 [x]，D4/D5 实测闭合。没有把 M1 的 CLAUDE.md compact 事实外推到新 rules。M2 全里程碑仍等远端 Ubuntu/macOS CI、最终文档状态和官方 token 计数遗留说明；既有 RV-01 风险状态不改。
 - 验证：从已固定的安装态事实及卸载态 transcript/事件重新交叉断言两包、一文件、全文/加载次数、真实顺序和恢复；C2 同轮 53 项采集器通过，所有报告 JSON/摘要、当前文档本地链接/围栏、M1 只读归档与 git diff --check 通过。无生产代码变更。
+
+
+### 2026-10-17 — M2-DOCS-04 Claude 真实验收与当前文档同步 `[x]`
+
+- 接 clean 02d57c2。教程、adapter 总览、CLI/编译/规则规范、当前手册、采集器 README 和任务/测试摘要同步 C1–C4 与 D4/D5 真实结果，移除已过期的当前额度/OAuth 阻塞说明。设计评审第 1–4 节及历史协议/准备 JSON 保留原事实，另追加真实验收补记；PROGRESS 只追加，M1 档案不改。
+- 核对四份 Claude 验收报告引用的 42 处实际私有文件摘要：41 处与当前文件精确相同，C1 InstructionsLoaded 全日志摘要匹配后续追加前的完整行前缀。再次确认固定 STYLE/Claude 摘要、六份用户文件还原、六个独立真实交互会话均已正常退出；C1/C4 设计目录与 C2/C3 新工作目录的信任范围分别记录。
+- 未采用的附加请求重放明确保留 native message content hash mismatch，不把模型回复或绕过哈希的重放用于投递证明。C2/C3 按矩阵采用原生 hook 完成/完整上下文、加载事件/附件和卸载恢复；新 rules compact 未声称。官方计数仍缺独立 API key，远端 Ubuntu/macOS CI 未执行，RV-01 仍为既有风险；M2 不提前关闭或转入 M3。
+- 验证：本轮 53 项采集器已通过；四报告 JSON/证据摘要和所有 M2 变更当前 Markdown 的本地链接/锚点/围栏、M1 归档未变、PROGRESS 追加前缀、git diff --check 均核对。仅文档/真实证据归档，无生产代码、agenthooks 或依赖变更，不重复已通过的 Go 回归和模型请求。

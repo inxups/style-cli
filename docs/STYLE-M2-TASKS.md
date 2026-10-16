@@ -13,7 +13,7 @@ M2 只做 [CLI 设计 §14.4](spec/STYLE-cli-design.md) 的五项，不提前拉
 1. `target: native`（规则写原生 hook，不经过规则引擎）。
 2. `style stats`（按规则和会话汇总注入次数与估算 token）。
 3. 跨包去重（CLI 设计 T8：正文完全相同的规则只留一份）。
-4. Claude 静态位置改用用户级 `~/.claude/rules/`（用户已批准依据原生请求证据先实现，C1/C3 界面验收后补）。
+4. Claude 静态位置改用用户级 `~/.claude/rules/`（用户已批准依据原生请求证据先实现，C1/C3 真实交互验收已补齐）。
 5. 评估 Claude output style 能否做 `replace`。
 
 M1 中已记录的已知限制（如 force-push 示例规则对 `--push-option` 后单独 `-f` 的保守误拦）不属于 M2。
@@ -70,8 +70,8 @@ M1 中已记录的已知限制（如 force-push 示例规则对 `--push-option` 
 - [x] **M2-T13 CLI native 生命周期**：install 在写入前提供完整 capability/native 预览与确认回调，文本/JSON 披露命令和路线信任；批准快照保存 native 渲染字段，sync 对普通包/link 的 native 字段、增删、声明 timeout 和顺序变化均退出 3，配置/信任修复也必须 trust 确认。trust 单列 native 前后差异，保留其他包的未批准 link native 字节；list 显示条目数，doctor 以批准快照核对一致/缺失/改动及 codex-user 信任哈希。依赖：M2-T12。测试：M2-A4；双 module fresh test/vet、相关 race、采集器通过，见 `docs/PROGRESS.md` M2-T13。
 - [x] **M2-T20 `style stats` 命令**：实现默认 168h 的 rule/session 文本与 JSON format 1，六字段计数、稳定排序与质量报告；`core/state.ScanStats` 固定两层目录、有界逐行严格解码并跳过坏行/超长行/symlink，全程只读，I/O/取消/溢出退出 1 且不输出成功报告。doctor 复用扫描器，保持正常 top3/legacy/repeated_body，坏行继续有效聚合并告警。依赖：M2-D2。测试：M2-A5；固定 fixture/四份 golden、双 module fresh test/vet、state/app race、采集器 40 项与扩展 smoke 36 项通过，见 `docs/PROGRESS.md` M2-T20。
 - [x] **M2-T30 跨包去重实现**：compile 在静态替换、规范化与排序后按整条规则的全部 placement/执行语义等价折叠，保留最小 order；同包多重声明类和 native 保留，关系仅用于冷路径报告，index format 1 与 runtime 状态键不变。组合 install/trust 展示参与包的 `deduplicated_into`、原单条估算和零新增成本；源级预算独立，有效 events/always_on/session/T003 重算。依赖：M2-D3。测试：M2-A6；两份组合报告 golden、双 module fresh test/vet、compile/tokens/engine/state/app/conformance race、采集器 40 项、扩展 smoke 40 项通过，见 `docs/PROGRESS.md` M2-T30。
-- [x] **M2-T40 Claude rules 静态位置与迁移**：已实现 `claude_rules`、每包 rules、安装记录布局/摘要、首次路线重建迁移、迁移报告与旧 doctor 兼容；冲突/漂移拒绝、外部字节/权限还原、批准隔离和回滚通过。A7 的 20 个旧布局生命周期场景与实际旧/新二进制 16 组升级、双 module fresh test/vet、相关 race、50 项采集器与 40 项 smoke 通过，见 `docs/PROGRESS.md` M2-T40 和 [升级报告](review/M2-A7-RULES-MIGRATION-2026-10-17.json)。依赖：M2-D4 设计批准与已有原生请求证据；C1/C3 界面验收后补，不据此关闭。
-- [x] **M2-T50 output style replace**：按已批准 D5 不新增槽位，保留 replace 回退。实际构建 CLI 的两家 × degrade/skip/error × 文本/JSON 共 12 场景验证 plan 状态/退出码、无 placement、缺授权退出 1、授权不创造能力、error 退出 4 且无写入；完整用户样式树/outputStyle 设置及安装卸载外部字节/权限保持。脚本加入 CI；仅本地已通过，不宣称远端 CI 通过。证据：[A8 报告](review/M2-A8-REPLACE-FALLBACK-2026-10-17.json)、`docs/PROGRESS.md` M2-T50。C4 界面观察继续 `[~]`。
+- [x] **M2-T40 Claude rules 静态位置与迁移**：已实现 `claude_rules`、每包 rules、安装记录布局/摘要、首次路线重建迁移、迁移报告与旧 doctor 兼容；冲突/漂移拒绝、外部字节/权限还原、批准隔离和回滚通过。A7 的 20 个旧布局生命周期场景与实际旧/新二进制 16 组升级、双 module fresh test/vet、相关 race、50 项采集器与 40 项 smoke 通过，见 `docs/PROGRESS.md` M2-T40 和 [升级报告](review/M2-A7-RULES-MIGRATION-2026-10-17.json)。依赖：M2-D4 设计批准与已有原生请求证据；实现时未关闭 C1/C3；后续真实交互已分别验收并归档。
+- [x] **M2-T50 output style replace**：按已批准 D5 不新增槽位，保留 replace 回退。实际构建 CLI 的两家 × degrade/skip/error × 文本/JSON 共 12 场景验证 plan 状态/退出码、无 placement、缺授权退出 1、授权不创造能力、error 退出 4 且无写入；完整用户样式树/outputStyle 设置及安装卸载外部字节/权限保持。脚本加入 CI；仅本地已通过，不宣称远端 CI 通过。证据：[A8 报告](review/M2-A8-REPLACE-FALLBACK-2026-10-17.json)、`docs/PROGRESS.md` M2-T50。C4 界面观察后续已通过，D5 以回退方案生效闭合。
 - [x] **M2-T60 conformance 扩展**：共享路线测试新增三路线 × 三种文件尾的 9 次 native 安装往返，核对状态、独立命令、用户路线信任、幂等、卸载无残留、外部字节与权限还原；46 个真实 codec payload 在附加 native 声明后仍匹配原 stdout golden/白名单，runtime index 只有源文件摘要变化，统计记录除时间外与基线相同。依赖：M2-T12。测试：M2-A3、M2-A9；conformance race/vet、最终 native 构建与 smoke 32 项通过，见 `docs/PROGRESS.md` M2-T60。
 
 ## 审查发现
@@ -81,7 +81,7 @@ M1 中已记录的已知限制（如 force-push 示例规则对 `--push-option` 
 ## M2b 真实环境
 
 - [x] **M2-PREP 真实环境手册**：D4/D5 设计探针（PREP-01）、Codex B1–B4（PREP-02）及 T40/T50 后的 Claude C2/C3 最终安装验收（PREP-03）已备齐。手册包含固定构建、私有基线、登录/界面启动、白名单加载/native 证据、卸载后新会话和恢复校验；采集器测试及实际 CLI 准备/卸载干跑通过。此项只关闭准备，不将 Claude 真实结果标成功。
-- [x] **M2-PREP-01 Claude 设计探针准备**：用户界面隔离启动器、白名单 InstructionsLoaded 观察器、四模式本地协议补充证据和手册；探针七项、全部采集器 47 项通过，真实 CLI 四请求 exit 0 且全文核对通过。首次 OAuth 保存失败后，修正临时 HOME 导致找不到默认钥匙串的问题，保留系统身份并隔离 Claude/profile 配置；现有五脚本已备份并更新，实际 OAuth 保存仍待用户重试，C1/C4 记环境阻塞 `[~]`。它不关闭 C1/C4 或 D4/D5，不提前实现 T40/T50。证据：`docs/review/M2-D4-D5-PROTOCOL-2026-10-16.json`、`docs/review/M2-PREP-01-AUTH-2026-10-17.json`、`docs/PROGRESS.md` M2-PREP-01。
+- [x] **M2-PREP-01 Claude 设计探针准备**：用户界面隔离启动器、白名单 InstructionsLoaded 观察器、四模式本地协议补充证据和手册；探针七项、全部采集器 47 项通过，真实 CLI 四请求 exit 0 且全文核对通过。首次 OAuth 保存失败后，修正临时 HOME 导致找不到默认钥匙串的问题，保留系统身份并隔离 Claude/profile 配置；现有五脚本已备份并更新，当时实际 OAuth 保存待重试；后续 auth status/真实请求确认可用，C1/C4 已分别通过。它不关闭 C1/C4 或 D4/D5，不提前实现 T40/T50。证据：`docs/review/M2-D4-D5-PROTOCOL-2026-10-16.json`、`docs/review/M2-PREP-01-AUTH-2026-10-17.json`、`docs/PROGRESS.md` M2-PREP-01。
 - [x] **M2-PREP-02 Codex 独立验收准备**：新增 `probe_codex_m2.py`，复用既有隔离配置/真实服务转发，覆盖 user/plugin 两路线的 B1–B4，并补手册 §4；三项新增采集器断言测试、全部 50 项通过。只标脚本/手册准备，不因此标真实验收通过；无 STYLE/agenthooks 生产代码修改。证据：`docs/PROGRESS.md` M2-PREP-02。
 - [x] **M2-PREP-03 Claude C2/C3 最终验收准备**：`prepare_claude_m2_acceptance.py` 固定私有 STYLE/观察器、隔离配置并保留系统身份，生成两包/三 native/一份去重静态文件及登录/界面/STYLE/还原检查启动器；三个新增测试通过，实际 CLI 干跑的 doctor/折叠/3 native/四文件恢复通过。独立待用户目录已生成，未登录或启动模型会话。证据：[准备报告](review/M2-PREP-03-CLAUDE-2026-10-17.json)、手册 §5；C2/C3 不据此关闭。
 - 真实验收条目见测试矩阵的 M2-B*（Codex）与 M2-C*（Claude Code）。
@@ -92,9 +92,11 @@ M1 中已记录的已知限制（如 force-push 示例规则对 `--push-option` 
 - [x] **M2b Codex 真实环境**：M2-B1–B4，codex-user/plugin 两路线真实服务、原生观察/OTel/rollout/stats 证据均通过，见测试矩阵和 `docs/review/M2-B*-CODEX-2026-10-17.json`。
 - [x] **M2b Claude Code 真实环境**：固定 Claude 2.1.301 的 M2-C1–C4 真实交互终端验收通过：用户 rules、native/matcher、生产静态去重/加载/卸载及 output style 切换；证据见测试矩阵与 docs/review/M2-C*-CLAUDE-2026-10-17.json。
 - [~] **M2-FINAL 最终回归**：最终本地双 module fresh test/vet、相关 race、53 项采集器、固定构建/重建一致、40 smoke、迁移/回退 CLI 通过；当前提交未推送，最终 Ubuntu/macOS CI（M2-CI-01）仍待执行。
-- [~] **M2-DOCS 文档同步**：当前实现/设计/离线结果已同步（DOCS-02/03），本地链接/围栏通过；Claude C1–C4 最终事实已归档；CI/计数状态与相关内容文档继续同步，补齐后再关闭总文档验收 DOCS-01。
+- [~] **M2-DOCS 文档同步**：当前实现/设计/离线结果已同步（DOCS-02/03），本地链接/围栏通过；Claude C1–C4 最终事实已归档；DOCS-04 已同步相关内容文档并核对证据；最终 CI/计数状态仍待补齐，再关闭总文档验收 DOCS-01。
 - [x] **M2-DOCS-02 已实现功能文档同步**：[教程](STYLE-TUTORIAL.md) 和 [adapter 总览](STYLE-ADAPTERS-CURRENT.md) 补 native、stats、跨包等价去重，移除 M1 过时支持状态；CLI 设计 §14.4 与编译规范静态位置表反映当前实现，明确 Claude 待定与最终验收边界。真实固定二进制跑通教程新增 native 包的 validate/双 harness plan/install/uninstall 和三个 stats 命令；配置字节/0640 还原，文档链接/锚点/围栏检查通过。证据：`docs/review/M2-DOCS-02-2026-10-17.json`、`docs/PROGRESS.md` M2-DOCS-02。本项不关闭 D4/D5、Claude 真实验收或最终文档总验收。
-- [x] **M2-DOCS-03 rules/回退与离线最终状态**：教程、adapter 总览、CLI/编译/规则规范同步 claude_rules、旧迁移/归属/冲突和真实界面边界；C2/C3 最终手册与采集器入口完成。核对本轮 M2 改过的全部当前 Markdown 本地链接/锚点、围栏、证据 JSON、M1 归档未变和 diff-check；未完成的 Claude/CI/计数仍明确保留。证据：`docs/PROGRESS.md` M2-A9/DOCS-03。
+- [x] **M2-DOCS-03 rules/回退与离线最终状态**：教程、adapter 总览、CLI/编译/规则规范同步 claude_rules、旧迁移/归属/冲突和真实界面边界；C2/C3 最终手册与采集器入口完成。核对本轮 M2 改过的全部当前 Markdown 本地链接/锚点、围栏、证据 JSON、M1 归档未变和 diff-check；当时未完成的 Claude/CI/计数明确保留；Claude 后续结果见 DOCS-04。证据：`docs/PROGRESS.md` M2-A9/DOCS-03。
+
+- [x] **M2-DOCS-04 Claude 真实验收状态同步**：C1–C4/D4/D5 的最终原生证据回写教程、adapter 总览、CLI/编译/规则规范、手册与采集器 README；设计评审历史以追加验收补记保留。核对四报告 42 处实际私有证据摘要（41 精确、1 追加日志前缀）、所有本地链接/锚点/围栏及 M1 归档；API 重放未采用与新 rules compact 范围明确，CI/官方计数保持待验。证据：docs/PROGRESS.md M2-DOCS-04。
 
 M2 全部闭合后提示用户进行 M3 规划。
 

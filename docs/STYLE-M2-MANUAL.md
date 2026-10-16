@@ -22,17 +22,17 @@
 
 最终短生命周期 headless 运行的 `InstructionsLoaded` 异步日志为空，但四份请求均包含 rules 全文；不将空日志判为规则未加载。此前短 prompt 对照曾记录 `memory_type=User`、`load_reason=session_start`，最终保留报告以可核对的完整请求为证。界面会话需要保持打开直到观察器写出记录。
 
-官方资料复核日期为 2026-10-16，页面 URL/内容摘要见协议报告的 `official_references`：memory 说明用户级 rules，hooks 说明 `InstructionsLoaded` 的异步观察性质，output-styles 说明 `keep-coding-instructions` 只控制完整 prompt 中的编码指令部分。设计已于 2026-10-17 经用户批准，T40/T50 按任务清单依次推进，真实界面验收继续待补。
+官方资料复核日期为 2026-10-16，页面 URL/内容摘要见协议报告的 `official_references`：memory 说明用户级 rules，hooks 说明 `InstructionsLoaded` 的异步观察性质，output-styles 说明 `keep-coding-instructions` 只控制完整 prompt 中的编码指令部分。设计已于 2026-10-17 经用户批准，T40/T50 按任务清单依次推进，后续 C1–C4 已按本手册通过真实交互验收，见对应归档报告。
 
-额度阻塞期间已整理 [D4/D5 具体设计](review/M2-D4-D5-DESIGN-2026-10-17.md)：rules 迁移时机/归属/冲突/往返、replace 回退和候选验收均已列明。用户已批准先凭现有原生请求证据开发 T40、界面验收后补；实现状态以任务清单为准，当前不重复调用 Claude。
+额度阻塞期间已整理 [D4/D5 具体设计](review/M2-D4-D5-DESIGN-2026-10-17.md)：rules 迁移时机/归属/冲突/往返、replace 回退和候选验收均已列明。用户批准先凭已有原生请求证据开发 T40；额度恢复后已补齐 C1–C4，当前结论以任务清单及真实归档为准。
 
-## 2. 用户执行的 Claude 界面步骤
+## 2. Claude 界面验收与复现
 
 2026-10-17 用户报告 Claude 已恢复，并明确选择由 agent 通过交互终端代跑。既有设计目录的 auth status 为 loggedIn=true、claude.ai/firstParty；全新交互会话成功回复 OK，rules 的原生 InstructionsLoaded 证据通过 [C1](review/M2-C1-CLAUDE-2026-10-17.json)。本次没有再出现 OAuth/额度错误；C4 已按以下新会话步骤通过，结局为回退方案生效，见 [C4 报告](review/M2-C4-CLAUDE-2026-10-17.json)。新安装验收目录仍未登录，与该既有认证目录分别处理。
 
-已准备 `/private/tmp/style-m2-claude-ui-20261016`，`prepared.json` 明确 `acceptance=false`。启动器以 `env -i` 选择环境，保留真实 `HOME`、`USER`、`LOGNAME` 以访问 macOS 登录钥匙串；Claude 配置使用独立 `CLAUDE_CONFIG_DIR`，profile 配置使用临时 `ANTHROPIC_CONFIG_DIR`/`XDG_CONFIG_HOME`，工作目录、三份样式和用户级 rules 都在 scratch 中。没有复制登录凭据或自动启动模型会话。
+已准备 `/private/tmp/style-m2-claude-ui-20261016`，`prepared.json` 明确 `acceptance=false`。启动器以 `env -i` 选择环境，保留真实 `HOME`、`USER`、`LOGNAME` 以访问 macOS 登录钥匙串；Claude 配置使用独立 `CLAUDE_CONFIG_DIR`，profile 配置使用临时 `ANTHROPIC_CONFIG_DIR`/`XDG_CONFIG_HOME`，工作目录、三份样式和用户级 rules 都在 scratch 中。该准备过程没有复制登录凭据或自动启动模型会话。
 
-首次登录报告 `Couldn't save your login`。原启动器把 `HOME` 指向临时空目录，实测该环境中 `security default-keychain -d user` 退出 1（找不到默认钥匙串），保留真实 HOME 后退出 0。这不能证明钥匙串是否锁定或 OAuth 已保存成功。五个现有脚本已修正，原脚本备份在 `auth-home-fix-before-20261016/`，已有设置与日志摘要保持相同；[修复证据](review/M2-PREP-01-AUTH-2026-10-17.json) 单列登录重试待确认。额度可用后，需要登录时从下面第 1 步继续。
+首次登录报告 `Couldn't save your login`。原启动器把 `HOME` 指向临时空目录，实测该环境中 `security default-keychain -d user` 退出 1（找不到默认钥匙串），保留真实 HOME 后退出 0。该只读修复检查本身不能证明钥匙串是否锁定或 OAuth 已保存成功；本轮另以 auth status 和真实请求确认既有隔离配置认证可用。五个现有脚本已修正，原脚本备份在 `auth-home-fix-before-20261016/`，已有设置与日志摘要保持相同；[修复证据](review/M2-PREP-01-AUTH-2026-10-17.json) 保留当时登录重试待确认的历史事实。以下步骤用于复现；本轮已完成，不要求用户重跑。新空配置需要登录时从第 1 步继续。
 
 1. 需要登录时，在自己的终端运行：
 
@@ -40,7 +40,7 @@
    /private/tmp/style-m2-claude-ui-20261016/login.sh
    ```
 
-   看到 `Login successful` 后再进入第 2 步。若仍有同样错误，打开“钥匙串访问”，确认 `login` 钥匙串已解锁，再运行同一登录脚本。若已解锁仍失败，保留终端错误并回报，此时 C1/C4 继续记环境阻塞。
+   看到 `Login successful` 后再进入第 2 步。若仍有同样错误，打开“钥匙串访问”，确认 `login` 钥匙串已解锁，再运行同一登录脚本。若已解锁仍失败，保留终端错误并回报，复现运行应单列环境阻塞，不改写已完成运行的证据。
 
 2. 启动默认样式的全新界面会话，接受这个临时目录的工作区信任后，发送 `只回复 OK，不调用工具。`：
 
@@ -60,7 +60,7 @@
 
    预设名称分别是 `M2Existing`、`M2Replace`、`M2Keep`。启动参数显式覆盖本次会话的选择；磁盘用户设置原来选择 `M2Existing`。这组检查测量已有样式与候选样式如何切换，不能把“样式已选中”当成“整个系统提示已替换”。不要 resume 前一个会话，避免 system prompt 快照影响比较。
 
-4. 完成后在当前对话回复“已跑完”，并附上三次显示的 style 名称、任何异常或工作区信任提示。agent 会读取这个已知 scratch 的 `instructions.jsonl`、`prepared.json` 与分模式 debug 日志，整理 C1/C4 证据和 D4/D5 设计结论，再提交用户评审。
+4. 复现完成后记录三次显示的 style 名称、任何异常或工作区信任提示，并核对已知 scratch 的 `instructions.jsonl`、`prepared.json` 与分模式日志。归档 C1/C4 的白名单证据和 D4/D5 结论；本次结果已分别通过，设计无需重新批准。
 
 日志位于私有 scratch；不要把整个目录加入 Git。归档只写必要的白名单摘录、摘要、会话 ID 和用户界面观察。需要重跑时使用新空目录，不覆盖历史证据。
 
@@ -116,13 +116,13 @@ PYTHONDONTWRITEBYTECODE=1 python3 testdata/manual/probe_codex_m2.py \
 
 脚本不修改日常安装；插件使用隔离 marketplace 登记，卸载前由原生命令移除登记。`passed` 和四个 `checks` 都为 true 才可标通过。失败报告保留错误类型和已收集事实，原始日志仍在 scratch；不将 exec 对哈希/插件信任的接受等同于首次 TUI 工作区信任提示。三项新增采集器测试覆盖全文/角色/重复/失败拒绝、stats 行与总量/折叠行核对、原生观察器白名单，全部采集器共 50 项。
 
-2026-10-17 实际结果：固定 codex-cli 0.159.3、T30 STYLE SHA256 `c35d85bd…ab8c`，codex-user/plugin 两路线各运行三次真实模型会话，B1–B4 全部通过；每路线共存场景两份 STYLE 输出与 26 估算 token，native 两份注入单列。完整证据分别为 [B1](review/M2-B1-CODEX-2026-10-17.json)、[B2](review/M2-B2-CODEX-2026-10-17.json)、[B3](review/M2-B3-CODEX-2026-10-17.json)、[B4](review/M2-B4-CODEX-2026-10-17.json)。原始日志和连接配置保留在 `/private/tmp/style-m2-codex-user-20261017`、`/private/tmp/style-m2-codex-plugin-20261017`，不入库。Claude 实测仍受额度阻塞，M2 尚未关闭。
+2026-10-17 实际结果：固定 codex-cli 0.159.3、T30 STYLE SHA256 `c35d85bd…ab8c`，codex-user/plugin 两路线各运行三次真实模型会话，B1–B4 全部通过；每路线共存场景两份 STYLE 输出与 26 估算 token，native 两份注入单列。完整证据分别为 [B1](review/M2-B1-CODEX-2026-10-17.json)、[B2](review/M2-B2-CODEX-2026-10-17.json)、[B3](review/M2-B3-CODEX-2026-10-17.json)、[B4](review/M2-B4-CODEX-2026-10-17.json)。原始日志和连接配置保留在 `/private/tmp/style-m2-codex-user-20261017`、`/private/tmp/style-m2-codex-plugin-20261017`，不入库。Claude C1–C4 后续已通过真实交互，M2 仍待最终远端 CI 与官方计数遗留状态闭合。
 
 ## 5. Claude C2/C3 最终安装验收
 
 2026-10-17 C2 实际采用已认证的 `/private/tmp/style-m2-claude-ui-20261016/claude`，没有读取/复制凭据。将 PREP-03 固定 STYLE/observer 和等价包复制到新证据目录 `/private/tmp/style-m2-claude-live-20261017.5fzqcx0b`，STYLE_HOME/工作目录独立，安装前保存既有六份用户文件基线；原待登录 PREP-03 目录保留。实际命令为该目录 `style.sh install <包> --harness claude-code --yes --json`、`launch.sh --ax-screen-reader --model sonnet --permission-mode manual --tools Bash,Read --session-id <新 ID>`；真实新工作区信任提示已确认。安装/卸载后两个真实会话及逐字节恢复通过 [C2](review/M2-C2-CLAUDE-2026-10-17.json)；每包规则加载、完整正文、去重和原生附件顺序通过 [C3](review/M2-C3-CLAUDE-2026-10-17.json)。下列新配置登录步骤仍是独立复现方案；无需为了本次验收再次登录。
 
-本节在额度可用后由用户操作。准备程序只执行 STYLE install 与固定 Claude 的 `--version`，不登录、不启动模型会话。它创建独立配置/工作目录，保留真实 HOME/USER/LOGNAME 以便 macOS 钥匙串工作，并清除调用者的凭据与检测变量；需要登录时由用户运行隔离的 login.sh。不会复制日常凭据。
+本轮已由用户授权的 agent 通过交互终端完成。以下保留新配置的复现步骤。准备程序只执行 STYLE install 与固定 Claude 的 `--version`，不登录、不启动模型会话。它创建独立配置/工作目录，保留真实 HOME/USER/LOGNAME 以便 macOS 钥匙串工作，并清除调用者的凭据与检测变量；需要登录时由用户运行隔离的 login.sh。不会复制日常凭据。
 
 准备新的空目录（已有证据目录会被拒绝）：
 
@@ -147,6 +147,13 @@ PYTHONDONTWRITEBYTECODE=1 python3 testdata/manual/prepare_claude_m2_acceptance.p
 5. 退出 Claude，在独立终端运行 `<scratch>/style.sh uninstall --all --yes --json`，然后 `<scratch>/verify-restored.sh`。后者逐字节/权限核对四份外部基线、两份 STYLE rules 不存在、lock/index 删除；校验失败保留全部现场。
 6. 再运行 `<scratch>/launch.sh` 开一个全新会话，发送相同 Bash 指令。该新 session 不应新增任何 native fixture 行，也不应再观察到 STYLE rules 加载。外部 InstructionsLoaded 观察器仍在，这是为核对卸载后状态而保留的用户条目。
 
-回传时只提供版本/摘要、真实 session ID、白名单观察行、实际命令与退出码、卸载校验 JSON 和必要的加载/顺序结论。原始 debug/请求与登录数据留在私有 scratch；不要把凭据、完整用户提示或连接配置提交到仓库。C1/C4 的样式切换仍按 §2 的独立设计探针执行，不能由本节离线安装或 A8 回退通过代替。
+回传时只提供版本/摘要、真实 session ID、白名单观察行、实际命令与退出码、卸载校验 JSON 和必要的加载/顺序结论。原始 debug/请求与登录数据留在私有 scratch；不要把凭据、完整用户提示或连接配置提交到仓库。C1/C4 的真实结果来自 §2 的独立设计探针，不能由本节离线安装或 A8 回退通过代替。
 
-准备验证：[M2-PREP-03](review/M2-PREP-03-CLAUDE-2026-10-17.json)。三个新增测试实际执行生成启动器/观察器并验证系统身份、凭据排除、非空目录保护和恢复校验拒绝漂移；实际 STYLE CLI 的独立干跑验证两包/一份静态、3 个 native、doctor 健康及四份外部基线还原。干跑没有执行真实模型会话，不关闭 C2/C3。已有待用户运行的目录见该报告的 `ready_scratch`。
+准备验证：[M2-PREP-03](review/M2-PREP-03-CLAUDE-2026-10-17.json)。三个新增测试实际执行生成启动器/观察器并验证系统身份、凭据排除、非空目录保护和恢复校验拒绝漂移；实际 STYLE CLI 的独立干跑验证两包/一份静态、3 个 native、doctor 健康及四份外部基线还原。干跑没有执行真实模型会话，不关闭 C2/C3。原始未登录准备目录见该报告的 `ready_scratch`；本次复用认证的真实目录、六份用户文件基线和结果见本节开头及 C2/C3 报告。
+
+
+## 6. 本轮真实结果与证据边界
+
+Claude 2.1.301 的 C1–C4 已通过。C1/D4 确认用户级 rules 发现，C2 核对真实原生 hook/matcher 和卸载后零触发，C3 核对生产每包规则/去重/加载顺序/六文件还原，C4/D5 核对样式切换并以回退方案生效关闭。六个独立交互会话均实际调用 first-party 模型，原始终端/会话在私有目录保留；四份白名单报告见测试矩阵。
+
+附加 `replay_requests` 未通过本次 native API blob 的哈希校验，未绕过校验，也未用作 C2/C3 的请求正文证据。C2/C3 按矩阵使用 `hook_success`、完整 fixture 的 `hook_additional_context`、`InstructionsLoaded`、原生 `instructions` 附件和卸载恢复。新 rules 的 compact 行为未在本轮声明。官方 token 计数需要独立 API key，订阅认证恢复不关闭该遗留；远端 CI 亦单列，M2 尚未整体完成。

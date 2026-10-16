@@ -152,7 +152,7 @@ MCP 名字不在清单里拼。`mcp__<server>__<tool>` 的拆分由适配器做�
 
 - **压缩的意思**：对话太长时 harness 把历史换成摘要，之前注入的文字随之消失。epoch +1 之后，`reinject_on_compact: true` 的规则的去重记录全部作废，在 SessionStart(compact) 上补发一次；之后再命中时按新纪元去重。`reinject_on_compact: false` 的规则不受压缩影响（键里的 E 恒为 0），压缩后不会再出现，这是省 token 的默认。
 - **两家都有这个信号**：Claude 在压缩后触发 SessionStart(`compact`)【文档】；Codex 在压缩完成时把 SessionStart(`compact`) 排进队列，**在下一个回合开始时**执行【源码】。
-- **静态位置不走 hook 补发**：Claude M2 使用每包 `rules/style-<名字>.md`，兼容迁移旧 `CLAUDE.md`；既有 `CLAUDE.md` 的 compact 加载事实不自动证明新 rules 的真实界面行为，C1/C3 另验。Codex 的 `developer_instructions` 是配置，B3/U11 真实请求已确认 compact 后仍可见。
+- **静态位置不走 hook 补发**：Claude M2 使用每包 `rules/style-<名字>.md`，兼容迁移旧 `CLAUDE.md`；C1/C3 已确认新会话中每包 rules 的加载和卸载还原；既有 `CLAUDE.md` 的 compact 加载事实不自动证明新 rules 的 compact 行为，本次不作该声明。Codex 的 `developer_instructions` 是配置，B3/U11 真实请求已确认 compact 后仍可见。
 - **子 agent**：Claude 的子 agent 在自动压缩后会重新注入 SubagentStart 的内容【文档】。Codex 的子 agent 被压缩后不会再触发 SubagentStart【源码】，这是已知限制。
 - 回合级（`turn`）的记录压缩时不用清，它本来按回合失效。
 

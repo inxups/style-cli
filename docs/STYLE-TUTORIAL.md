@@ -1,6 +1,6 @@
 # STYLE CLI 使用教程
 
-更新时间：2026-10-17。生产源码核对基线：`16d5c1c`（M2 native、stats、跨包去重、Claude rules/迁移），replace 回退验收 `4976713`，支持 Claude Code 与 Codex。Codex M2 B1–B4 已在两条路线通过；Claude D4/D5 设计已批准，最终界面步骤受订阅额度阻塞。当前状态见 [M2 任务清单](STYLE-M2-TASKS.md)；M1 结果只作为历史证据，远端 CI 与完整 M2 验收尚未关闭。
+更新时间：2026-10-17。生产源码核对基线：`16d5c1c`（M2 native、stats、跨包去重、Claude rules/迁移），replace 回退验收 `4976713`，支持 Claude Code 与 Codex。Codex M2 B1–B4 已在两条路线通过；Claude 2.1.301 的 C1–C4 真实交互验收已通过，D4 符合预期、D5 回退方案生效。当前状态见 [M2 任务清单](STYLE-M2-TASKS.md)；M1 结果只作为历史证据，远端 CI 与完整 M2 验收尚未关闭。
 
 本教程面向第一次使用 `style` 的人，从构建到卸载走完整个生命周期。文中命令输出是在隔离沙箱里运行得到的（路径已缩写）；新增 M2 示例只有命令和配置，其验证见 M2 进度日志。规则语义的权威定义在 [docs/spec](spec/STYLE-spec.md)，adapter 的实现细节见 [STYLE-ADAPTERS-CURRENT.md](STYLE-ADAPTERS-CURRENT.md)，当前真实环境验收步骤见 [STYLE-M2-MANUAL.md](STYLE-M2-MANUAL.md)。
 
@@ -873,7 +873,7 @@ style plan ./pkg --harness codex,claude-code --json
 - 安装来源只有本地包目录或 `*.style.md` 文件；git 来源、`update`、`--frozen`、`explain`、`probe` 命令未实现。
 - 只支持 Claude Code 与 Codex；Gemini、OpenCode、Cursor 等 provider 未接入。
 - 只有用户级路线；项目级路线、Claude 插件路线未实现。
-- Claude 静态指令已迁到用户级每包 rules；旧布局兼容与离线迁移已验证，真实界面加载验收仍受订阅额度/OAuth 阻塞。
+- Claude 静态指令已迁到用户级每包 rules；旧布局兼容与离线迁移已验证，[真实交互 C1–C4](STYLE-M2-TESTS.md#m2bclaude-code-真实环境) 已确认加载、native/matcher、去重和卸载恢复。新 rules 的 compact 行为未在本次验收中声明。
 - `mode: replace`：两家都没有替换槽位，规则会被跳过或拒绝，STYLE 只能**追加**，不能替换 harness 自带的 system prompt。
 - Codex 的插件路线不会自动登记到 marketplace；Codex 云端 skill 未验证。
 - Windows 未适配（hook 依赖 POSIX shell 的场景）。
