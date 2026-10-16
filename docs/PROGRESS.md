@@ -773,3 +773,10 @@
 - 采样：两个新会话各要求串行 50 次 `printf`，模型实际 52、50 次，全部成功。PreToolUse 102 条 median=40.34ms、p95=46.96ms、max=64.2ms；PostToolUse 102 条 p95=30.1ms；SessionStart/UserPromptSubmit 各 2 条约 24–26ms。0 hook 错误、0 重叠，未剔除样本。第二轮期间另有 B4/B12 Codex 会话并发运行（未导出到该 sink），如实记录。
 - 入库 `docs/review/M1B-CODEX-B11-SPANS-2026-10-16.jsonl`（只保留 208 个 hook span 与必要属性，已确认无主机/账号字段），同一命令复算 within-budget。不宣称完成设计 U5 的 1000 次基准。
 - 验证：`PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s testdata/manual -p 'test_measure_*.py'` 12 项通过；摘录复算与原始 sink 结果一致；`git diff --check` 通过。
+
+### 2026-10-16 — CODEX-04/B4 `[x]` skill 显式与读取去重
+
+- Codex 本机没有 code-review skill。按 Claude C4 做法，在验收工作区 `.agents/skills/code-review/` 放置现有 fixture（cp -n 后 cmp 一致），不改用户级 skill。
+- 显式在前（会话 01a142e8-8fba）：`$code-review` 使 UserPromptSubmit 产生 `review-skill@skill.explicit output`，rollout 的 hook 上下文含 findings 上限文字，模型回复 M1B_SKILL_LOADED（随后拒绝复述）；resume 后让模型只执行 `cat .agents/skills/code-review/SKILL.md`，PostToolUse 记 `review-skill@tool.post dedup`。
+- 读取在前（会话 01a142e9-dbe0）：`sed -n 1,20p` → `@tool.post output`，rollout 新增同一段 hook 上下文；`head -n 5` → dedup；resume 后 `$code-review` → `@skill.explicit dedup`，模型仍按 skill 回复并引用已有上下文。
+- 三种读取形式和显式入口均被识别，同 session 仅首个入口输出。证据 R2 JSON 的 B4；仅文档/证据变化。

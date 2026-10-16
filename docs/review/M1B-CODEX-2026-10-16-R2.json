@@ -29,5 +29,42 @@
     ],
     "earlier": "gpt-6-sol/low from 2026-10-15 (M1B-CODEX-2026-10-15.json) and gpt-6.1-sol/low state from M1B-CODEX-2026-10-16.json",
     "limits": "Model self-report was refused, so delivery is proven by the harness rollout, not by model recitation."
+  },
+  "B4": {
+    "status": "pass",
+    "fixture": "workspace .agents/skills/code-review/SKILL.md, byte-identical to testdata/manual/claude-skills/code-review/SKILL.md",
+    "explicit_first": {
+      "thread": "01a142e8-8fba-7c83-a487-edaf5758f297",
+      "steps": [
+        {
+          "prompt": "$code-review ...",
+          "stats": "terse-reviewer/review-skill@skill.explicit output",
+          "rollout_hook_context": "When using the code-review skill, report at most 10 findings.",
+          "model": "M1B_SKILL_LOADED"
+        },
+        {
+          "command": "cat .agents/skills/code-review/SKILL.md",
+          "stats": "terse-reviewer/review-skill@tool.post dedup"
+        }
+      ]
+    },
+    "read_first": {
+      "thread": "01a142e9-dbe0-7f22-8557-93cc459ca80c",
+      "steps": [
+        {
+          "command": "sed -n 1,20p .agents/skills/code-review/SKILL.md",
+          "stats": "review-skill@tool.post output",
+          "rollout": "hook context added once"
+        },
+        {
+          "command": "head -n 5 .agents/skills/code-review/SKILL.md",
+          "stats": "review-skill@tool.post dedup"
+        },
+        {
+          "prompt": "$code-review ...",
+          "stats": "review-skill@skill.explicit dedup"
+        }
+      ]
+    }
   }
 }
