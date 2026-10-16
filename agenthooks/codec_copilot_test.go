@@ -381,6 +381,14 @@ func TestCopilotDetection(t *testing.T) {
 	if err != nil || inv.provider != ProviderCopilotCLI {
 		t.Fatalf("--provider=copilot-cli → %q (%v)", inv.provider, err)
 	}
+	// detectFromEnv checks these providers before Copilot; a host shell that
+	// sets one (Codex sets CODEX_SANDBOX for its own children) would win.
+	for _, v := range []string{
+		"CURSOR_VERSION", "CURSOR_TRACE_ID", "CURSOR_AGENT", "CODEX_HOME", "CODEX_SANDBOX",
+		"GEMINI_CWD", "GEMINI_CLI", "OPENCODE_SERVER", "OPENCODE",
+	} {
+		t.Setenv(v, "")
+	}
 	t.Setenv("COPILOT_CLI", "1")
 	t.Setenv("CLAUDE_PLUGIN_ROOT", "/tmp/plugin")
 	if p, ok := detectFromEnv(); !ok || p != ProviderCopilotCLI {

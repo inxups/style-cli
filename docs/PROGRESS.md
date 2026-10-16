@@ -882,3 +882,9 @@
 - 更新前 sync 0；复制后 sync 退出 3（1 个文件变化）→ trust 预览退出 1（共 6 段：source `@@ -60,8 +60,10 @@`，两个 harness 的 no-force-push 各有 src_sha256 与 pattern 小段，codex on-review-prompt 一段 src_sha256）→ `trust --yes` 退出 0；随后 sync 0、两包 hash_matches、doctor healthy，Codex config.toml/hooks.json 与 Claude settings.json 哈希不变。
 - Codex 真实会话 01a14364（codex-user），临时仓库 ex02-repo 只连本地 bare 远端：`git -C ex02-repo push -fu origin main`、`git --no-pager -C ex02-repo push -f origin main`、`git --git-dir=ex02-repo/.git push --force origin main`、`/usr/bin/git -C ex02-repo push --force origin main` 均被 PreToolUse 拦截（stats 四条 blocked）；`push -u` 与 `push --follow-tags` 运行成功（Everything up-to-date，`-u` 在临时仓库设置了上游跟踪）。远端 main 仍为 6c88e18。用 EXAMPLE-02 pattern 对同样命令复核：四条拦截命令旧规则全部会放行。
 - 同一 STYLE_HOME 也服务本 Claude 会话的 claude-user hook，本会话随之使用 EXAMPLE-03 规则；Claude 配置文件未改动。证据 `docs/review/M1B-EXAMPLE-03-REAL-2026-10-16.json`；本项仅文档/证据变化，验证 JSON 语法与 `git diff --check`。
+
+### 2026-10-16 — B0.6 继承宿主环境的全量测试
+
+- 复现：继承本 Claude 会话环境，加 `CODEX_SANDBOX=seatbelt`、`CODEX_HOME=<临时目录>` 或二者同时，`go test -C agenthooks -count=1 ./...` 都只有 `TestCopilotDetection` 失败（`codec_copilot_test.go:387: env detection = "codex"`），根 module 不受影响。原因：`agenthooks/detect.go` 的 `detectFromEnv` 先查 Cursor/Codex/Gemini/OpenCode 变量，再查 Copilot，测试只设置了 `COPILOT_CLI` 和 `CLAUDE_PLUGIN_ROOT`。
+- 修改 agenthooks（用户指示完成 B0.6，取代原先“只记录不修改”的策略）：只改测试，在 `TestCopilotDetection` 开头清空优先于 Copilot 的变量，做法与同仓库 `TestDetectClaudeCodeMarker`、`TestUndetectableProviderNoOps` 相同。检测顺序和生产代码不变，职责边界不受影响。
+- 验证：上述三种 Codex 变量组合，以及 `CURSOR_AGENT=1 GEMINI_CLI=1 OPENCODE=1`，两个 module 全量 `go test -count=1 ./...` 都无失败。清理环境的双 module `make test-go`（30 个包 ok）、`make vet-go`、`git diff --check` 通过。

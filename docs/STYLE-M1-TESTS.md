@@ -41,7 +41,7 @@ env -u CODEX_HOME -u CODEX_SANDBOX \
 - [x] **B0.3 Claude/Codex codec 定向测试**：解码、编码、round-trip 和 no-op 行为通过。
 - [x] **B0.4 能力降级定向测试**：Codex 不支持 ask 时按策略降级；Claude deny 输出通过。
 - [x] **B0.5 安装渲染定向测试**：Codex async/trust、定义哈希、幂等合并和外部条目保留通过。
-- [~] **B0.6 继承宿主环境的全量测试**：`TestCopilotDetection` 会因外部 `CODEX_SANDBOX` 优先于测试设置的 `COPILOT_CLI` 而失败；清理变量后通过。按当前策略只记录，不修改 agenthooks。
+- [x] **B0.6 继承宿主环境的全量测试**：原先 `TestCopilotDetection` 在宿主设置 `CODEX_SANDBOX` 或 `CODEX_HOME` 时失败（`detectFromEnv` 先查 Codex 变量，返回 codex），清理变量后通过。2026-10-16 按用户指示修复：只改 `agenthooks/codec_copilot_test.go`，测试开头按 `detect_test.go`/`runner_test.go` 的做法清空优先于 Copilot 的 Cursor/Codex/Gemini/OpenCode 变量；检测逻辑与生产代码不变。在继承本 Claude 会话环境的前提下，分别加 `CODEX_SANDBOX=seatbelt`、`CODEX_HOME=<临时目录>`、二者同时、`CURSOR_AGENT=1 GEMINI_CLI=1 OPENCODE=1` 跑两个 module 的 `go test -count=1 ./...`，均无失败；修复前前三种组合都复现该失败。清理环境的 `make test-go`（30 个包 ok）、`make vet-go` 通过。
 
 ## 顶层构建和模块
 
