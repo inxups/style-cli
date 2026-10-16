@@ -169,7 +169,7 @@ M1b 准备、真实验收中发现的问题及示例规则修正，按处理顺�
 
 - [x] **M1-FINAL-01 版本约束**：示例回填 Codex >=0.159.3 / Claude >=2.1.300；补齐 requires.harness 安装、重编译与 plan 过滤，验证旧版/未知版本跳过且无写入。证据：`internal/app/harness_requirement_test.go`、`testdata/golden/index.json`；app/compile/spec 全量测试与 app/compile vet 通过，命令见进度日志。
 - [x] **M1-FINAL-02 Codex effort 解析**：实测 0.159.3 的独立 profile 文件、项目覆盖、启动覆盖、unknown、缺失文件和 legacy 拒绝；按版本修复 resolver，runtime/doctor 传入版本，旧版表式兼容保留。生产未知信任继续跳过项目层。证据：`internal/adapter/codex/effort_test.go`、runtime 版本接线测试、`testdata/manual/probe_codex_config.py`、`docs/review/M1-FINAL-02-CODEX-CONFIG-2026-10-16.json`（11 例通过）；本地 sink 不宣称模型投递。
-- [ ] **M1-FINAL-03 link 漂移**：核查 DOCS-04 记录的源码变化 diff/hash_matches 不准确现象，若复现则修复并回归。
+- [x] **M1-FINAL-03 link 漂移**：真实 CLI 11 步及 app 回归未复现漂移缺口；改动前后 list/hash、sync 文件清单、Source/Rendered diff 正确，预览不写入，批准后自动同步，卸载字节还原。修正教程混淆首次链接授权与源码变化的描述，保留 DOCS-04 原记录。证据：`TestLinkDriftIsVisibleBeforeFirstTrustAndAfterApproval`、`docs/review/M1-FINAL-03-LINK-2026-10-16.json`。
 - [?] **M1-FINAL-04 B2/B10 路线验收**：两条 Codex 路线独立完整 B1–B9，补 unknown 分支，验证双向切换和配置还原。
 - [?] **M1-FINAL-05 U2/U6 能力边界**：插件手动登记往返与云端 skill 可观测性；不新增自动登记或云端路线。
 - [?] **M1-FINAL-06 Claude 边界及 C9**：U9、U-C1/C2/C3/C5 与最终程序 50 次 Bash 性能；界面项等待用户操作。

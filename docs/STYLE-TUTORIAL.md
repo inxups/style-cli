@@ -531,7 +531,7 @@ level=INFO msg="STYLE rule evaluated" provider=claude-code event=PreToolUse poin
 | | 复制安装（默认） | 链接安装（`--link`） |
 |---|---|---|
 | 规则来源 | 安装时复制一份到 `$STYLE_HOME/packages/<name>/` | 引用你的源目录 |
-| 改源码后 | **不影响**已安装内容；`sync` 报 `changed=false` | `sync` 会发现变化并要求你批准 |
+| 改源码后 | **不影响**已安装内容；`sync` 报 `changed=false` | 首次需 `trust` 授权开发链接；之后 `sync` 校验并自动应用变化 |
 | 适合 | 稳定使用、分发给他人的包 | 编写和调试规则 |
 | `list` 显示 | `link=no` | `link=dev` |
 
@@ -541,8 +541,7 @@ level=INFO msg="STYLE rule evaluated" provider=claude-code event=PreToolUse poin
 
 ```bash
 style install team-style --harness claude-code --link --set max_findings=5 --yes
-# 编辑 team-style/prompts/style.md …
-style sync
+style sync   # 还没编辑：首次开发链接授权
 ```
 
 ```
@@ -550,7 +549,7 @@ team-style (link=true): 0 changed files
 approval required: style trust team-style
 ```
 
-`sync` 的退出码是 **3**（有变化需要批准）。批准前先预览 diff（不带 `--yes` 时只预览、不应用，退出码 1）：
+此时文件未变，`0 changed files` 是预期结果；首次开发链接授权仍使 `sync` 退出 **3**。如果先编辑 `prompts/style.md`，则会列出 `1 changed files`，`list` 显示 `hash_matches=false`。批准前先预览 diff（不带 `--yes` 时只预览、不应用，退出码 1）：
 
 ```bash
 style trust team-style         # 预览 Source diff / Rendered diff + 新的 plan
@@ -561,15 +560,15 @@ style trust team-style --yes   # 批准并应用
 trust complete (changed=true, expired sessions=0)
 ```
 
-此时 `CLAUDE.md` 已更新为新正文，再 `style sync` 得到 `sync complete (changed=false, expired sessions=0)`，退出码 0。
+首次批准完成后，编辑 `team-style/prompts/style.md`，再运行 `style sync`：它会列出变化并直接更新 `CLAUDE.md`，退出码 0；无需每次重新 `trust`。再运行一次得到 `sync complete (changed=false, expired sessions=0)`。每次同步仍会校验规则，新增 replace 等策略变更仍需显式授权。
 
-> 已知现象（实测）：上面输出里的 “0 changed files” 和空的 `Source diff:` 与实际有变化的情况不一致，这是目前 diff 展示的缺口；以 `sync` 退出码 3 和 `trust` 之后配置内容真的更新为准。多个包同时需要批准时，`trust <name>` 只批准指定的那个包，其余包保持之前批准的快照。
+M1-FINAL-03 用真实 CLI 重测：源码改动会正确出现在 `list`、changed files 和 Source diff 中；旧教程记录的漂移缺口未复现。首次未改源码的链接也要授权，应与真实文件变化区分。完整结果见 [link 生命周期证据](review/M1-FINAL-03-LINK-2026-10-16.json)。多个包同时需要批准时，`trust <name>` 只批准指定的那个包，其余未批准包保持之前批准的快照。
 
-**为什么要批准？** `trust` 是“这些改动是我审过的”的显式确认。`--allow-replace` 在这里同样只是授权检查。
+**为什么要批准？** `trust` 是对当前快照的显式确认；对开发链接，它还授权后续 `sync` 使用变化后的源码。`--allow-replace` 在这里同样只是授权检查。
 
 ### 8.3 只想同步状态
 
-`style sync` 检查源码和已安装状态是否一致：一致时输出 `sync complete (changed=false, …)` 并退出 0；有链接包的源码变化时列出需要批准的包并退出 3，由你用 `style trust` 决定是否应用。`expired sessions=N` 是应用变更后被判为过期的会话状态数。
+`style sync` 检查源码和已安装状态是否一致：一致时输出 `sync complete (changed=false, …)` 并退出 0；普通安装副本有变化或开发链接尚未首次授权时退出 3，由你用 `style trust` 决定是否应用；已授权开发链接的变化会直接同步。`expired sessions=N` 是应用变更后被判为过期的会话状态数。
 
 ---
 

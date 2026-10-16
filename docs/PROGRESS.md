@@ -1080,3 +1080,10 @@ PY
 - 新增 `testdata/manual/probe_codex_config.py`：仅用临时配置和本地 HTTP sink，真实 CLI 构建请求后 sink 故意返回 400；11 例均通过。此记录证明配置加载，不能替代 B2/B10 的真实模型、工具或上下文验收。只保存合成 fixture 与安全字段，不读取凭据。早期探索发现缺失文件可回退后修正实现/断言，未把失败结果标完成。
 - 单测保留旧版表式解析，并覆盖独立文件、项目优先级、启动覆盖、ignore-user-config、未知 raw、缺失/损坏文件、legacy 拒绝、路径逃逸，以及 Enricher 使用固定 harness 版本选择解析器。
 - 验证：隔离缓存并去掉 CODEX_HOME/CODEX_SANDBOX，`go test -count=1 ./internal/adapter/codex ./internal/app ./internal/runtime`，`go vet ./internal/adapter/codex ./internal/app`；原生对照脚本、gofmt、`git diff --check`。证据 `docs/review/M1-FINAL-02-CODEX-CONFIG-2026-10-16.json`。
+
+### 2026-10-16 — M1-FINAL-03 / FINAL-03 link 漂移复核
+
+- 对应 DOCS-04 的疑似漂移记录，新增 `TestLinkDriftIsVisibleBeforeFirstTrustAndAfterApproval`，覆盖首次未改源码、首次授权前改动、list/hash、sync 阻塞、Source/Rendered diff、预览只读、批准快照及批准后自动同步。代码实现未改动，agenthooks 边界不变。
+- 实际构建 CLI，在临时 STYLE_HOME / CLAUDE_CONFIG_DIR / CODEX_HOME 中执行 11 步：link install → 未改源码 sync/list → 修改正文 → list/sync/trust preview → trust --yes/list → 再修改/list/sync → uninstall。真实漂移正确检出；首个未改源码 sync 的 0 changed files 及退出 3 是首次开发链接授权。卸载后 settings.json、CLAUDE.md 字节还原。证据 `review/M1-FINAL-03-LINK-2026-10-16.json`。
+- 旧记录缺口未复现，不能据此断言旧操作的具体原因；教程改为区分首次授权和实际改动，准确说明授权后自动同步。历史证据未覆盖。
+- 验证（临时 GOPATH/GOMODCACHE/GOCACHE，去掉 CODEX_HOME/CODEX_SANDBOX）：`go test -count=1 ./internal/app`、`go vet ./internal/app`；实际 CLI 构建与隔离运行；gofmt、`git diff --check`。

@@ -193,6 +193,51 @@ func TestLinkRequiresFirstTrustAndThenSyncsChanges(t *testing.T) {
 	}
 }
 
+func TestLinkDriftIsVisibleBeforeFirstTrustAndAfterApproval(t *testing.T) {
+	service, home, source, config := syncFixture(t, true)
+	ctx := context.Background()
+	// An unchanged development link still needs its one-time approval. The
+	// empty file diff in this case does not indicate an undetected source edit.
+	initial, err := service.Sync(ctx, SyncRequest{Home: home})
+	if err != nil || len(initial.Changes) != 1 || len(initial.Changes[0].Files) != 0 || len(initial.NeedsTrust) != 1 {
+		t.Fatalf("unchanged untrusted link = %+v, %v", initial, err)
+	}
+	manifest := filepath.Join(source, "STYLE.yaml")
+	writeSyncFile(t, manifest, strings.ReplaceAll(syncManifest, "original static", "changed static"))
+	before := installedTree(t, home, config)
+	listed, err := service.List(ctx, ListRequest{Home: home})
+	if err != nil || listed.Packages[0].HashMatches || !reflect.DeepEqual(listed.Packages[0].ChangedFiles, []string{"STYLE.yaml"}) {
+		t.Fatalf("untrusted link drift = %+v, %v", listed, err)
+	}
+	blocked, err := service.Sync(ctx, SyncRequest{Home: home})
+	if err != nil || len(blocked.Changes) != 1 || !reflect.DeepEqual(blocked.Changes[0].Files, []string{"STYLE.yaml"}) || len(blocked.NeedsTrust) != 1 {
+		t.Fatalf("changed untrusted link = %+v, %v", blocked, err)
+	}
+	preview, err := service.Trust(ctx, TrustRequest{Home: home, Name: "editable"})
+	if err != nil || len(preview.Changes) != 1 || len(preview.Changes[0].SourceDiff) != 1 || !strings.Contains(preview.Changes[0].SourceDiff[0].Diff, "+    text: 'Use {{settings.voice}} changed static.'") || len(preview.Changes[0].RenderedDiff) == 0 {
+		t.Fatalf("link preview = %+v, %v", preview, err)
+	}
+	if !reflect.DeepEqual(before, installedTree(t, home, config)) {
+		t.Fatal("blocked sync or trust preview wrote files")
+	}
+	if _, err := service.Trust(ctx, TrustRequest{Home: home, Name: "editable", Yes: true}); err != nil {
+		t.Fatal(err)
+	}
+	listed, err = service.List(ctx, ListRequest{Home: home})
+	if err != nil || !listed.Packages[0].HashMatches {
+		t.Fatalf("approved link = %+v, %v", listed, err)
+	}
+	writeSyncFile(t, manifest, strings.ReplaceAll(syncManifest, "original static", "next static"))
+	listed, err = service.List(ctx, ListRequest{Home: home})
+	if err != nil || listed.Packages[0].HashMatches {
+		t.Fatalf("trusted link drift = %+v, %v", listed, err)
+	}
+	synced, err := service.Sync(ctx, SyncRequest{Home: home})
+	if err != nil || !synced.Changed || len(synced.NeedsTrust) != 0 || !bytes.Contains(readSyncFile(t, filepath.Join(config, "config.toml")), []byte("next static")) {
+		t.Fatalf("trusted link auto sync = %+v, %v", synced, err)
+	}
+}
+
 func TestTrustWithoutLegacyBaselineDisclosesUnavailableOldBytes(t *testing.T) {
 	service, home, source, _ := syncFixture(t, false)
 	lock, err := loadLock(home)
