@@ -4,7 +4,7 @@
 
 本文件记录 M2 测试矩阵和每项当前状态。测试通过必须有命令输出、fixture/golden 文件或真实环境记录作为证据。任务清单见 [STYLE-M2-TASKS.md](STYLE-M2-TASKS.md)，M1 测试矩阵已只读归档（[STYLE-M1-TESTS.md](STYLE-M1-TESTS.md)）。
 
-当前状态：M2-BASE-01、A1–A9 离线验收和 Codex B1–B4 已通过。2026-10-17 用户报告 Claude 恢复并授权 agent 通过交互终端代跑；既有隔离目录认证及真实请求成功，C1 的用户级 rules 加载通过。C2–C4 正在继续，远端 CI/官方计数仍待补。
+当前状态：M2-BASE-01、A1–A9 离线验收和 Codex B1–B4 已通过。2026-10-17 用户报告 Claude 恢复并授权 agent 通过交互终端代跑；既有隔离目录认证及真实请求成功，C1 的用户级 rules 加载通过。C4 样式界面通过，结论为回退方案生效；C2/C3 正在继续，远端 CI/官方计数仍待补。
 
 ## 状态约定
 
@@ -101,12 +101,12 @@ Codex 真实配置由 agent 执行，步骤见 M2-PREP 建立的 `docs/STYLE-M2-
 
 - [x] **M2-PREP-01 设计探针准备**：`test_probe_claude_m2_design.py` 七项通过，全部采集器 47 项通过；新增实际执行五个生成脚本核对真实 HOME/系统身份、独立配置、凭据变量排除，以及重写脚本时保留既有证据。首次 OAuth 保存失败的只读复现：原临时 HOME 下默认钥匙串查询退出 1，修正后退出 0；不据此推断解锁或 OAuth 保存成功，见 `review/M2-PREP-01-AUTH-2026-10-17.json`。此前固定 2.1.301 CLI loopback 四模式均 exit 0、各一份请求、rules 全文各一次，替换/keep 和既有 style 互斥全文命中。只有准备/补充检查通过，C1/C4 不因此标通过。
 
-Claude Code 界面项由用户执行，agent 提供手册与隔离 runbook。
+用户于 2026-10-17 明确授权 agent 通过交互终端代跑 Claude Code 界面项，沿用隔离 runbook 并记录真实原生证据。
 
 - [x] **M2-C1 U-C4 实测**（M2-D4）：固定 Claude 2.1.301 的 first-party 已认证交互会话成功回复 OK；原生 InstructionsLoaded 记录用户级 rules 文件、memory_type=User、load_reason=session_start，各一次。用户已授权交互终端代跑，OAuth/额度阻塞在本次真实请求中解除；既有工作目录已信任，未声称首次信任提示。证据：[C1 报告](review/M2-C1-CLAUDE-2026-10-17.json)。C3 的安装/卸载另行验收。
 - [?] **M2-C2 native hook 真实触发**：Claude Code 真实会话中 native 命令按事件和 matcher 执行；卸载后 `settings.json` 逐字节还原。
 - [?] **M2-C3 rules 静态位置真实生效**（仅 D4 成立时）：安装后规则文件被加载，卸载后文件移除、`CLAUDE.md` 与安装前一致。
-- [~] **M2-C4 output style 实测**（M2-D5）：output style 能否替代 system prompt、与用户已有 output style 的冲突行为；记录结局。本地完整 prompt 对照与官方资料支持不作为整份替换位置；与 C1 同受首次 OAuth 保存失败和用户报告的订阅额度用尽阻塞，保留启动环境修复结果，额度可用后再登录/切换实测。
+- [x] **M2-C4 output style 实测**（M2-D5）：四个独立真实交互会话显示 default/M2Existing/M2Replace/M2Keep；三种自定义样式均成功回复、无冲突或额外样式确认。六份用户配置/规则/样式 bytes/mode 不变，磁盘 outputStyle 仍为 M2Existing。结合已有完整原生请求保留 20,615 字符公共 system 片段，结局为“回退方案生效”：不提供整份 system replace 槽位，沿用 A8 已验证的 fallback。证据：[C4 报告](review/M2-C4-CLAUDE-2026-10-17.json)。
 
 ## 持续集成与文档核对
 

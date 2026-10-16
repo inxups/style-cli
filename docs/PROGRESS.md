@@ -1529,3 +1529,11 @@ PY
 - 实际以 launch-default.sh --ax-screen-reader --model sonnet --tools '' --session-id 5f94ea4b-8e82-44c6-94fc-a5e15ea8a50b 启动原生交互终端。界面显示 Sonnet 5.5 / Claude Pro，短请求回复 OK，无工具调用、OAuth 或额度错误；/config 显示 Output style=default，退出 0。既有临时工作目录已经信任，本次未出现首次工作区信任提示，不扩大该范围。
 - InstructionsLoaded 对同一 session 的用户级 rules 文件记录 memory_type=User、load_reason=session_start，一次；同时保留用户 CLAUDE.md 加载事件。以原生事件证明规则发现，不以模型回复证明投递。白名单事件、固定 fixture/原生 transcript 摘要、启动命令和界面观察归档 docs/review/M2-C1-CLAUDE-2026-10-17.json；原始日志/登录数据留在私有 scratch。
 - 验证：从实际会话 transcript 核对 OK 与零工具调用，精确核对规则事件的五个字段/次数及二进制摘要；报告 JSON、文档本地链接/围栏与 git diff --check 通过。没有生产代码变更，沿用已通过的最终本地回归。C1 关闭；D4 仍等 C3，C4、C2/C3、最终 CI 与官方计数继续。
+
+
+### 2026-10-17 — M2-C4 / M2-D5 output style 真实交互验收 `[x]`
+
+- 接 clean 8a9d219。继 C1 的 default 会话，依次用 launch-existing.sh、launch-replace.sh、launch-keep.sh 启动三个全新 first-party 已认证交互终端，不 resume；固定 Claude 2.1.301 与 Sonnet 5.5。每次 /config 分别显示 M2Existing、M2Replace、M2Keep，真实短请求均回复 OK、零工具、退出 0；未出现样式冲突或额外样式确认。
+- 三份原始终端记录和 native transcript 保存在 /private/tmp/style-m2-claude-live-20261017.5fzqcx0b 与原隔离配置中；逐一核对实际 style 行、OK、session ID/正常退出。六份用户 settings/CLAUDE.md/rules/三样式的 bytes/mode 与启动前私有 baseline 精确相同；磁盘 outputStyle 始终 M2Existing。没有复制/读取凭据或改日常配置。
+- C4 结局为“回退方案生效”。界面仅证明样式切换/冲突行为；整份 system replace 仍依据已有实际 CLI 完整请求对照：候选仍保留 20,615 字符公共 system 片段。结合 A8 的真实 CLI fallback 验证，D5 关闭，保持已批准的不提供 replace 槽位方案。报告 docs/review/M2-C4-CLAUDE-2026-10-17.json 不归档原始 prompt/登录/连接数据。
+- 验证：三会话终端与 transcript、六文件 bytes/mode、固定二进制/历史协议报告摘要、JSON 可解析、文档本地链接/围栏、git diff --check 通过；无 Go 生产变更，未重复已通过的离线回归。C2/C3、D4、最终 CI 与官方计数继续。
