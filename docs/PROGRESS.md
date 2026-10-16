@@ -827,3 +827,10 @@
 - 用户发送“只回复 B1_TUI…”：会话 01a14304 的 rollout 含静态 developer_instructions 与 SessionStart hook 上下文（只装第一包时仅 terse-reviewer），stats 为 session.start output + prompt dedup，模型回复 B1_TUI。
 - 第二包 install → sync → uninstall → sync → install 五步后 Codex config.toml/hooks.json 哈希始终不变，无需重新信任；最终两包均 hash_matches，Claude settings 与 B8 前逐字节相同。
 - Terminal 标签 c2 因用户已输入，agent 不能代为关闭，请用户自行关闭。证据 R2 JSON 的 B1；仅文档/证据变化。
+
+### 2026-10-16 — M1b Codex `[x]`，M1 完成
+
+- Codex B1–B12 全部 `[x]`；e2e 条目以两家真实 rollout/会话注入与阻断证据标为 `[x]`。M1a、M1b Codex、M1b Claude、M1B-PERF-01 均已完成。
+- 最终验证：清理 CODEX_HOME/CODEX_SANDBOX、临时 Go 缓存、GOPROXY=off/GOSUMDB=off，双 module `make test-go`（30 个包 ok）与 `make vet-go` 通过；`test_measure_*.py` 12 项通过；`git diff --check` 通过。
+- 保留项：B0.6 继承宿主 `CODEX_SANDBOX` 时 agenthooks 的 `TestCopilotDetection` 失败，按既定策略只记录（清理后通过），不属于里程碑验收。已知限制：示例 force push 规则仍是正则；B7 用本地 stub；B11 不等于 U5 的 1000 次基准；trust 的 rendered diff 冗长；Codex 留下空插件缓存目录。
+- 环境现状：两包仍以 codex-user / claude-user 安装在 `~/.style-m1b`，Codex 工作区 codex-b 已被用户信任；本地 OTLP sink 为临时进程。

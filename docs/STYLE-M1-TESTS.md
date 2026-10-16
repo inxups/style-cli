@@ -141,7 +141,7 @@ B1.2 和 B1.4 的历史通过状态表示原有测试套件在声明范围内通
 
 用户约定（2026-10-15）：Codex 与 Claude Code 的真实配置由用户手动执行。进入 M1b 时先提供完整配置命令和验证步骤，不代为改动真实配置；运行结果返回后再更新验收状态。
 
-约定变更（2026-10-16）：用户指示 Codex 真实配置由 agent 执行；Claude 真实配置仍由用户执行。第二轮 Codex 证据见 `docs/review/M1B-CODEX-2026-10-16.json`。当前环境阻塞：配置的自定义模型服务对所有请求返回 `502 Upstream access forbidden`；用户修复后又返回 `Upstream rate limit exceeded`。hook 能真实触发，但模型回合无法完成，按用户要求暂停，等用户修复服务后继续。
+约定变更（2026-10-16）：用户指示 Codex 真实配置由 agent 执行；Claude 真实配置仍由用户执行。第二轮 Codex 证据见 `docs/review/M1B-CODEX-2026-10-16.json`。期间曾有环境阻塞：配置的自定义模型服务先返回 `502 Upstream access forbidden`，再返回 `Upstream rate limit exceeded`；用户修复后恢复，后续证据见 `docs/review/M1B-CODEX-2026-10-16-R2.json`。B1–B12 已全部真实通过。
 
 配置命令和逐项观察见 [M1b 手动验收手册](STYLE-M1B-MANUAL.md)，专用第二包见 `testdata/manual/m1b-probes/STYLE.yaml`。M1B-PREP 隔离准备检查已通过；Claude 仅模拟版本检测。Codex 首轮真实证据见 `docs/review/M1B-CODEX-2026-10-15.json`，各条按实际范围更新。
 
@@ -183,4 +183,4 @@ B1.2 和 B1.4 的历史通过状态表示原有测试套件在声明范围内通
 - [x] 安装：共用 `TestRouteLifecycleRestoresForeignBytes` 对 Codex plugin/user 与 Claude user 三条路线，在无/单/双末尾换行的配置上验证 Plan 无写入、Apply/Status、幂等和 Remove 后全文件字节/权限还原，无新增文件残留。命令级双向换路线验证见 `internal/app/install_routes_test.go`，最终 hooks.json 也逐字节比较。
 - [x] 报告：同一示例包的 Codex/Claude plan/token CLI stdout golden，见 A2 与 `internal/app/plan_golden_test.go`。
 - [x] 输出白名单：46 个存储 stdout golden 与实际 wire 输出均检查规范允许的顶层/嵌套字段、deny 值和 Claude prompt-only suppression。证据：`internal/adapter/conformance/whitelist_test.go`。
-- [?] e2e：真实 CLI 注入到达模型，block 真正生效。
+- [x] e2e：真实 CLI 注入到达模型，block 真正生效。Codex：B2/B3/B4/B7/B9 的 rollout 显示 hook 上下文进入模型输入，B5 真实 force push 被拒绝、lease 放行；Claude：C1–C7 的真实会话注入与 C6 prompt/工具阻断。证据见 M1b 两节及各 review JSON。
