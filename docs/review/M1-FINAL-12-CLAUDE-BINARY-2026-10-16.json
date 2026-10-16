@@ -1,0 +1,15 @@
+{
+  "item": "M1-FINAL-12",
+  "date": "2026-10-16",
+  "scratch": "/private/tmp/style-m1-claude-ui-c-20261016",
+  "previous_sha256": "23cf8caae7d447fc1e621f569b17fb5fd9db0584132bf116bcccff68ccb0cde3",
+  "current_sha256": "8edcb3ce48e2402ee3ac8f788890c1a25f03956a720f0f852fb47e79b771f636",
+  "prior_binary_retained_as": "/private/tmp/style-m1-claude-ui-c-20261016/bin/style.before-final12-23cf8caa",
+  "prior_prepared_json_unchanged": true,
+  "before_any_ui_hook_observation": true,
+  "claude_config_sha256_before_and_after": {
+    "settings.json": "13a7841dc78e0eecd08c960f4402290c5b3b5cecd4fb880e401dce59c2b060a6",
+    "CLAUDE.md": "a24477461f66bf1c53fd217d9fa62688aebdb953dbed710fd240579703306d59"
+  },
+  "runtime_acceptance_status": "pending; binary refresh does not constitute UI/C9/context/overflow validation"
+}

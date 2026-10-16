@@ -2,7 +2,7 @@
 
 此页是待执行步骤，不能作为通过证据。日常配置不变；`prepare_claude_acceptance.py` 生成私有 scratch、固定二进制、两个原包与一个可见性探针包。观察器与 STYLE hook 分开，保留每个 hook 的字段名、session/model/effort/source 以及指定环境变量；不保存 prompt、工具正文或凭据。
 
-本次已准备 `/private/tmp/style-m1-claude-ui-c-20261016`，Claude 2.1.300，程序 SHA256 `23cf8caae7d447fc1e621f569b17fb5fd9db0584132bf116bcccff68ccb0cde3`。新配置尚未登录。重新准备的命令：
+本次已准备 `/private/tmp/style-m1-claude-ui-c-20261016`，Claude 2.1.300。FINAL-12 在尚无 UI hook 日志/state 时将固定程序更新为本轮修复构建，SHA256 `8edcb3ce48e2402ee3ac8f788890c1a25f03956a720f0f852fb47e79b771f636`，配置字节不变。原始23cf8caa程序与prepared.json保留，更新记录见 [FINAL-12 binary 证据](M1-FINAL-12-CLAUDE-BINARY-2026-10-16.json)；它不代表真实验收通过。新配置尚未登录。重新准备的命令：
 
 ```sh
 PYTHONDONTWRITEBYTECODE=1 python3 testdata/manual/prepare_claude_acceptance.py \

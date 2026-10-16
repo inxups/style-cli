@@ -1173,3 +1173,13 @@ PY
 - 另纠正文档中尚未实现的Codex events.yaml按版本裁剪描述：当前Surface固定，示例靠既有requires.harness过滤；plugin manifest版本当前固定0.1.0，bin/style为POSIX启动器。两条路线切换、native追加表保留和不确定信任回退边界已说明。
 - 验证：隔离Go环境 `go test -count=1 ./internal/adapter/... ./internal/runtime ./core/plan ./internal/app` 全通过；`go build -trimpath -o /tmp/style-m1-docs-final11 ./cmd/style` 后在临时HOME/STYLE_HOME/CODEX_HOME/CLAUDE_CONFIG_DIR运行四组 `plan package --harness codex --json`。初次临时fixture漏必填spec/description，仅得到校验诊断，补齐后四组实际退出/状态完全符合文档、无placement且无配置/state写入；fixture全文/二进制哈希/复现方式在 `review/M1-FINAL-11-PLAN-2026-10-16.json`，不作为新的runtime投递证据。
 - 9个当前文档的94个本地文件链接、全部代码围栏、`git diff --check`通过；源码对照入口为core/plan/system.go、events.go、policy.go及Codex HookManifest。FINAL-11 `[x]`，接着执行FINAL-12；M2仍不启动。
+
+### 2026-10-16 — M1-FINAL-12 本地最终回归通过，远端CI及环境项保持待验
+
+- 当前源码2f6426b，Go1.27.0 darwin/arm64。清除CODEX_HOME/CODEX_SANDBOX，GOPATH=/tmp/style-cli-gopath、GOMODCACHE=/tmp/style-cli-gomodcache、GOCACHE=/tmp/style-cli-gocache。`GOFLAGS='-mod=readonly -count=1' make test-go`双module全通过；`GOFLAGS=-mod=readonly make vet-go`全通过。
+- 定向race：同样环境的 `go test -race -count=1 ./core/state ./core/engine ./internal/adapter/codex ./internal/runtime ./internal/app` 以及 `go -C agenthooks test -race -count=1 ./install` 全部通过。覆盖去重/状态、runtime、effort、CLI安装与native表保留；没有因缓存复用省略新运行。
+- `PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s testdata/manual -p 'test_*.py' -v` 27项全通过；20个Python文件ast.parse有效，302个跟踪Go文件gofmt干净。CI改为同一发现命令，补上路线、上下文、超限、官方计数准备和usage回归；此前CI只跑两个计时收集器。
+- 同一Go环境 `go build -trimpath -o /tmp/style-m1-regression.xUgaiQ/style ./cmd/style` 成功；SHA256=8edcb3ce48e2402ee3ac8f788890c1a25f03956a720f0f852fb47e79b771f636。`python3 scripts/smoke.py /tmp/style-m1-regression.xUgaiQ/style` 全32项通过，包含两家版本桩下安装/hook拒绝与放行/sync/卸载；无真实模型/远程push操作。
+- Claude用户已选择稍后操作。隔离scratch尚无hook-facts/debug/state，原23cf程序先存bin/style.before-final12-23cf8caa，再原子更新bin/style到本轮构建；prepared.json与配置字节不变，入口launch.sh路径不变。`review/M1-FINAL-12-CLAUDE-BINARY-2026-10-16.json`单独记录更新，不冒充UI/C9通过。日常安装未改。
+- 只读检查 `gh run list --repo inxups/style-cli --workflow ci.yml --limit 5` 和 `gh run view 38872445836 ... --json headSha,status,conclusion,jobs,url`：远端最新04371ef成功，Ubuntu/macOS均success；此前d7105f0成功仍保留。当前2f6426b无对应run，本轮提交尚未发布，不把旧CI当新源码验收。全部结果/复现命令汇总在 `review/M1-FINAL-12-REGRESSION-2026-10-16.json`。
+- FINAL-12 `[~]`：本地验证完成，远端本轮CI和FINAL-06/07/08/09真实补验收仍缺证据；剩余能力修复若更改代码需重跑相关检查。当前不声明M1全部完成、不开始M2；全部闭合后再提示下一步规划。

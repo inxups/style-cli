@@ -52,12 +52,11 @@ jobs:
           env -u CODEX_HOME -u CODEX_SANDBOX go test ./...
           env -u CODEX_HOME -u CODEX_SANDBOX go test -C agenthooks ./...
 
-      - name: Test timing collectors
+      - name: Test acceptance collectors
         env:
           PYTHONDONTWRITEBYTECODE: "1"
         run: |
-          python3 -m unittest discover -s testdata/manual -p 'test_measure_claude_hooks.py'
-          python3 -m unittest discover -s testdata/manual -p 'test_measure_codex_hooks.py'
+          python3 -m unittest discover -s testdata/manual -p 'test_*.py'
 
       - name: Build
         run: env -u CODEX_HOME -u CODEX_SANDBOX go build -trimpath -o "$RUNNER_TEMP/style" ./cmd/style

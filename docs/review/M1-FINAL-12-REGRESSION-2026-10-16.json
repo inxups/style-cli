@@ -1,0 +1,107 @@
+{
+  "item": "M1-FINAL-12",
+  "date": "2026-10-16",
+  "status": "partial-local-regression-passed-ci-and-environment-acceptance-pending",
+  "tested_source_head": "2f6426be86d31d204fe1a0f42289bec844d9f7d5",
+  "environment": {
+    "go_version": "go version go1.27.0 darwin/arm64",
+    "unset_for_go": [
+      "CODEX_HOME",
+      "CODEX_SANDBOX"
+    ],
+    "GOPATH": "/tmp/style-cli-gopath",
+    "GOMODCACHE": "/tmp/style-cli-gomodcache",
+    "GOCACHE": "/tmp/style-cli-gocache",
+    "GOFLAGS": "-mod=readonly"
+  },
+  "binary": {
+    "path": "/tmp/style-m1-regression.xUgaiQ/style",
+    "sha256": "8edcb3ce48e2402ee3ac8f788890c1a25f03956a720f0f852fb47e79b771f636"
+  },
+  "checks": [
+    {
+      "command": "GOFLAGS='-mod=readonly -count=1' make test-go",
+      "exit": 0,
+      "result": "root module and nested agenthooks all packages passed; fresh count=1"
+    },
+    {
+      "command": "GOFLAGS=-mod=readonly make vet-go",
+      "exit": 0,
+      "result": "both modules passed"
+    },
+    {
+      "command": "go test -race -count=1 ./core/state ./core/engine ./internal/adapter/codex ./internal/runtime ./internal/app",
+      "exit": 0,
+      "result": "all 5 packages passed"
+    },
+    {
+      "command": "go -C agenthooks test -race -count=1 ./install",
+      "exit": 0,
+      "result": "install passed"
+    },
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s testdata/manual -p 'test_*.py' -v",
+      "exit": 0,
+      "result": "27 tests passed"
+    },
+    {
+      "command": "gofmt -l (all git tracked *.go files)",
+      "exit": 0,
+      "result": "302 tracked files clean"
+    },
+    {
+      "command": "ast.parse (all testdata/manual/*.py and scripts/smoke.py)",
+      "exit": 0,
+      "result": "20 files valid"
+    },
+    {
+      "command": "go build -trimpath -o /tmp/style-m1-regression.xUgaiQ/style ./cmd/style",
+      "exit": 0,
+      "result": "built"
+    },
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 python3 scripts/smoke.py /tmp/style-m1-regression.xUgaiQ/style",
+      "exit": 0,
+      "result": "32 assertions passed; smoke passed; temporary HOME and version stubs, no real model or remote force push"
+    },
+    {
+      "command": "git diff --check",
+      "exit": 0,
+      "result": "passed before commit"
+    }
+  ],
+  "ci": {
+    "query_command": "gh run list --repo inxups/style-cli --workflow ci.yml --limit 5 --json databaseId,headSha,status,conclusion,url,createdAt",
+    "current_tested_head_runs": [],
+    "latest_published": {
+      "headSha": "04371efc84de0d849aa6efa989e86ec0698e800d",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/inxups/style-cli/actions/runs/38872445836"
+    },
+    "jobs": [
+      {
+        "name": "Test (ubuntu-latest)",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/inxups/style-cli/actions/runs/38872445836/job/116879489260"
+      },
+      {
+        "name": "Test (macos-latest)",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/inxups/style-cli/actions/runs/38872445836/job/116879489651"
+      }
+    ],
+    "workflow_change": "Test acceptance collectors now discovers all test_*.py, including calibration, context, overflow, routes and usage regressions. Local exact command passed; this workflow revision is not yet published/run.",
+    "current_head_verified_by_remote_ci": false
+  },
+  "pending": [
+    "FINAL-06 Claude UI capabilities and final binary C9",
+    "FINAL-07 Claude resume/fork/no-reinject compact and subagent scopes",
+    "FINAL-08 Claude raw native overflow",
+    "FINAL-09 official token counting credentials and actual results",
+    "Publish current commits and verify their Ubuntu/macOS CI; rerun relevant local checks if remaining acceptance changes code"
+  ],
+  "limits": "Local verification is complete for this source. No claim that all M1 acceptance is closed. No M2 work started. Daily installation untouched; only the unused private Claude fixture binary was refreshed, with original binary/preparation retained."
+}
