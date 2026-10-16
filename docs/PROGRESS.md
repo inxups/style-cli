@@ -1114,3 +1114,11 @@ PY
 - U6：原设计默认“不支持，plan 里说明”，本轮按此边界关闭，不扩展云端路线。现有 matcher 仅 Bash/apply_patch/mcp；runtime 识别本地 shell 读取，prompt 解析 `$name`。云端实际原生工具名尚未采集，候选名回归并非真实云端测量。
 - 修复 plan 遗漏边界说明：`BlindSpot` 返回非 fatal reason 时保留为现有 RulePlan.Reasons，继续计算可用挂载。Codex skill 规则明确提示 cloud skill reads unsupported，本地 tool.post/skill.explicit 两个 native placement 不变。不改 index、lock、state 格式、公开命令或订阅面；agenthooks 无变更。
 - 验证：隔离 `GOPATH/GOMODCACHE/GOCACHE`、清除 CODEX_HOME/CODEX_SANDBOX，`go test -count=1 ./core/plan ./internal/adapter/codex ./internal/app` 通过；同包 vet、gofmt 与 diff 检查通过。新增 plan/固定 matcher/未知读取工具 runtime 回归，更新 Codex plan golden，Claude golden 不变。
+
+
+### 2026-10-16 — M1-FINAL-06 Claude 隔离准备，真实界面验收待执行
+
+- 本机 Claude 2.1.300 的日常认证存在；新建私有 CLAUDE_CONFIG_DIR 后 `claude auth status --json` 返回 exit 1 / loggedIn=false / authMethod=none。未读取或复制密钥，未修改日常配置；准备环境不能直接借用日常认证。
+- 新增 `prepare_claude_acceptance.py`：拒绝非空 scratch，复制固定二进制，在独立 STYLE_HOME/工作区安装两个原包和六类用户提示探针；独立 observer 记录原生字段和 effort 环境，不包裹 STYLE 的计时命令。另备运行中安装的 Glob 新订阅以区分热更新/新会话加载。
+- 已运行：`PYTHONDONTWRITEBYTECODE=1 python3 testdata/manual/prepare_claude_acceptance.py --style /tmp/style-m1-final.rxdYyj/style-final05 --scratch /tmp/style-m1-claude-ui-c-20261016`，三个包真实 install 成功；热更新包 validate、observer 白名单检查通过。固定程序 SHA256 `23cf8caae7d447fc1e621f569b17fb5fd9db0584132bf116bcccff68ccb0cde3`。准备中首次 fixture 校验报缺 description/非法 event，已修正为 skill target 后在全新目录重跑，失败目录未覆盖。
+- 用户执行入口与步骤：`review/M1-FINAL-06-CLAUDE-RUNBOOK.md`，包含隔离登录、思考关闭、各 hook effort、clear、六类 systemMessage、运行中配置变更和最终 C9。当前没有新真实模型/UI/C9 通过结论，FINAL-06 保持 `[?]`。可继续不依赖该认证的 Codex/成本项。
