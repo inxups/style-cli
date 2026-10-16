@@ -518,6 +518,7 @@ Codex 用 `shell -lc` 跑 hook 命令，登录 shell 会读用户的 profile：�
   文件不存在就创建；卸载后如果文件是 STYLE 创建的且只剩空白，就删掉，保证和安装前一致。`CLAUDE.md` 在会话开始时加载，压缩后会重新加载【文档】，所以静态规则不需要 hook 补发。
   U-C4 证实用户级 `~/.claude/rules/*.md` 生效后，M2 改成每包一个文件 `~/.claude/rules/style-<名字>.md`。
 - **replace**：M1 不支持（规范第 5 节阶梯第 6 条）。output style 能不能当替换位置，M2 评估。
+- **M2-D4/D5 当前证据（未定稿）**：2.1.301 本地协议四模式均收到用户 rules 全文一次；output style false/keep 对照只改变部分内置编码指令，仍保留大量 system 内容，候选正文进入 messages。见[补充协议报告](../review/M2-D4-D5-PROTOCOL-2026-10-16.json)与[用户界面手册](../STYLE-M2-MANUAL.md)。C1/C4 与设计评审仍待执行，当前生产静态位置/replace 行为保持。
 
 ### 10.5 数据和 `Enrich`
 

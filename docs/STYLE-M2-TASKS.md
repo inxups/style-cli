@@ -4,7 +4,7 @@
 
 本文件是 STYLE CLI M2 的持久化任务清单。每项任务完成后必须同时补充证据（命令、fixture、golden 文件或真实运行记录），不能只根据对话上下文标记完成。测试矩阵见 [STYLE-M2-TESTS.md](STYLE-M2-TESTS.md)，执行记录追加到 [PROGRESS.md](PROGRESS.md)。
 
-当前总状态：M2 已开始，文档建立（M2-00）与基线回归（M2-01）完成；M2-D1 native 规则格式设计评审通过，M2-T10–T13、M2-T60 完成；M2-D2 stats 输出设计与 M2-T20 实现完成；M2-D3 跨包去重设计与 M2-T30 实现完成；下一步 D4/D5 的 Claude 真实环境结论。M1 已关闭并只读归档（[任务](STYLE-M1-TASKS.md)、[测试](STYLE-M1-TESTS.md)），唯一遗留为 M2-CARRY-01。
+当前总状态：M2 已开始，文档建立（M2-00）与基线回归（M2-01）完成；M2-D1 native 规则格式设计评审通过，M2-T10–T13、M2-T60 完成；M2-D2 stats 输出设计与 M2-T20 实现完成；M2-D3 跨包去重设计与 M2-T30 实现完成；D4/D5 已有本地协议补充证据和隔离界面探针，等待用户界面实测与设计评审。M1 已关闭并只读归档（[任务](STYLE-M1-TASKS.md)、[测试](STYLE-M1-TESTS.md)），唯一遗留为 M2-CARRY-01。
 
 ## 范围
 
@@ -57,8 +57,8 @@ M1 中已记录的已知限制（如 force-push 示例规则对 `--push-option` 
   回写：`spec/STYLE-spec-rules.md` §3.3、`spec/STYLE-spec-runtime.md` 信任一节、`spec/STYLE-cli-design.md` §3 `Native()`。依赖：M2-01。
 - [x] **M2-D2 `style stats` 输出**：用户在上一轮草案评审请求后回复“继续”（2026-10-16），按该契约进入 T20。设计已回写 CLI 设计 §4、§11.5.2：默认 rule/最近 168h，`--by session` 合并 main 与子 agent，`--since` 接受正 duration 或 RFC3339；只读留存日志，六个计数字段明确 output/blocked/去重/容量丢弃与缺估算；JSON format 1、稳定排序，坏行/超长行跳过计数、I/O 错误退出 1。doctor 复用读取器但保留 top3/旧记录/清理职责，坏行改为继续统计并告警。草案中的用户可见决策按此定稿。依赖：M2-01。证据：`docs/PROGRESS.md` M2-D2 评审通过。
 - [x] **M2-D3 跨包去重（T8）**：用户在草案评审请求后回复“继续”（2026-10-16），按运行时 §7.5、编译产物 §9.6、CLI 设计 §7.1 契约进入 T30。比较静态变量替换后的完整正文及全部执行语义，按现有 order 保留一份；native 与运行时偶然同文不合并；同一类内任一包多条等价声明时保守保留。单包 plan/源级预算继续独立，组合报告标 `deduplicated_into`、有效成本和 T003 只计一次。沿用 rule 状态键，卸载保留方后接替规则可在旧会话再次注入。依赖：M2-01。证据：`docs/PROGRESS.md` M2-D3 评审通过。
-- [ ] **M2-D4 U-C4 实测与静态位置决策**：用户在 Claude Code 中验证用户级 `~/.claude/rules/*.md` 是否加载（看 `InstructionsLoaded`）。成立则定迁移方案：已装包从 `CLAUDE.md` 标记块迁到 `style-<名字>.md` 的时机、sync/trust 是否需要重新批准、往返字节保证；不成立则记录“保持 `CLAUDE.md`”回退并关闭。回写：CLI 设计 §10.4、§15.1 U-C4。依赖：M2-01。测试：M2-C1。
-- [ ] **M2-D5 output style 做 replace 评估**：核对官方文档并实测 output style 能否替代 system prompt、与用户已有 output style 冲突时的处理。结局只有两种：可行 → 定位置与 `--allow-replace` 规则；不可行 → 维持规范第 5 节阶梯第 6 条，plan 说明。回写：CLI 设计 §10.4、`spec/STYLE-spec-compiled.md` 静态位置表。依赖：M2-01。测试：M2-C4。
+- [~] **M2-D4 U-C4 实测与静态位置决策**：本机 Claude 2.1.301 的四份原生 loopback 请求均含用户 rules 完整正文一次；补充证据已归档，用户界面步骤已准备在 `docs/STYLE-M2-MANUAL.md`。C1、迁移决策与评审仍未关闭。用户在 Claude Code 中验证用户级 `~/.claude/rules/*.md` 是否加载（看 `InstructionsLoaded`）。成立则定迁移方案：已装包从 `CLAUDE.md` 标记块迁到 `style-<名字>.md` 的时机、sync/trust 是否需要重新批准、往返字节保证；不成立则记录“保持 `CLAUDE.md`”回退并关闭。回写：CLI 设计 §10.4、§15.1 U-C4。依赖：M2-01。测试：M2-C1。
+- [~] **M2-D5 output style 做 replace 评估**：官方资料与本机完整 prompt 对照显示只切换部分编码指令，仍保留超过 20k 的公共 system 片段，候选正文在 messages，不能当作整份 system 替换；暂不实现，待 C4 界面切换证据与最终设计评审。核对官方文档并实测 output style 能否替代 system prompt、与用户已有 output style 冲突时的处理。结局只有两种：可行 → 定位置与 `--allow-replace` 规则；不可行 → 维持规范第 5 节阶梯第 6 条，plan 说明。回写：CLI 设计 §10.4、`spec/STYLE-spec-compiled.md` 静态位置表。依赖：M2-01。测试：M2-C4。
 
 ## M2a 离线实现
 
@@ -80,7 +80,8 @@ M1 中已记录的已知限制（如 force-push 示例规则对 `--push-option` 
 
 ## M2b 真实环境
 
-- [ ] **M2-PREP 真实环境手册**：新建 `docs/STYLE-M2-MANUAL.md`，包括固定二进制构建、备份、Codex（agent 执行）与 Claude Code（用户执行）的步骤和证据回传格式；探针包与脚本沿用 `testdata/manual/`，证据写入 `docs/review/`。依赖：M2a 相关实现完成。
+- [~] **M2-PREP 真实环境手册**：已新建 `docs/STYLE-M2-MANUAL.md` 并完成 D4/D5 设计探针准备（M2-PREP-01），其余最终验收 runbook 等 T40/T50 结论。完整手册包括固定二进制构建、备份、Codex（agent 执行）与 Claude Code（用户执行）的步骤和证据回传格式；探针包与脚本沿用 `testdata/manual/`，证据写入 `docs/review/`。依赖：M2a 相关实现完成。
+- [x] **M2-PREP-01 Claude 设计探针准备**：用户界面隔离启动器、白名单 InstructionsLoaded 观察器、四模式本地协议补充证据和手册；五个新增采集器测试、总计 45 项通过，真实 CLI 四请求 exit 0 且全文核对通过。它不关闭 C1/C4 或 D4/D5，不提前实现 T40/T50。证据：`docs/review/M2-D4-D5-PROTOCOL-2026-10-16.json`、`docs/PROGRESS.md` M2-PREP-01。
 - 真实验收条目见测试矩阵的 M2-B*（Codex）与 M2-C*（Claude Code）。
 
 ## 里程碑验收

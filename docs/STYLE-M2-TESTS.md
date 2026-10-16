@@ -4,7 +4,7 @@
 
 本文件记录 M2 测试矩阵和每项当前状态。测试通过必须有命令输出、fixture/golden 文件或真实环境记录作为证据。任务清单见 [STYLE-M2-TASKS.md](STYLE-M2-TASKS.md)，M1 测试矩阵已只读归档（[STYLE-M1-TESTS.md](STYLE-M1-TESTS.md)）。
 
-当前状态：M2-BASE-01、M2-A1–A6 已通过，M2-A9 已完成 native 阶段回归、等待后续 M2 功能完成后复验，其余条目尚未执行。M2a 断言为初稿，标“D* 定稿后细化”的条目在对应设计项通过评审时补全具体 fixture、golden 和退出码。
+当前状态：M2-BASE-01、M2-A1–A6 已通过，M2-A9 已完成 native/stats/跨包去重阶段回归、等待后续 M2 功能完成后复验，D4/D5 已完成设计探针准备和本地协议补充检查（M2-PREP-01），真实界面验收仍待执行。M2a 断言为初稿，标“D* 定稿后细化”的条目在对应设计项通过评审时补全具体 fixture、golden 和退出码。
 
 ## 状态约定
 
@@ -94,12 +94,14 @@ Codex 真实配置由 agent 执行，步骤见 M2-PREP 建立的 `docs/STYLE-M2-
 
 ## M2b：Claude Code 真实环境
 
+- [x] **M2-PREP-01 设计探针准备**：`test_probe_claude_m2_design.py` 五项通过（白名单、完整正文/标记区分、fixture、隔离权限/特殊路径、拒绝覆盖），全部采集器 45 项通过；本机固定 2.1.301 CLI 在 loopback 四模式均 exit 0、各一份原生请求、rules 全文各一次，替换/keep 和既有 style 的互斥全文命中已核对。手册和隔离 UI 启动器已生成。只有准备/补充检查通过，C1/C4 不因此标通过。
+
 Claude Code 界面项由用户执行，agent 提供手册与隔离 runbook。
 
-- [?] **M2-C1 U-C4 实测**（M2-D4）：用户级 `~/.claude/rules/*.md` 是否被加载，以 `InstructionsLoaded` 或原生请求为证；记录结局。
+- [?] **M2-C1 U-C4 实测**（M2-D4）：用户级 `~/.claude/rules/*.md` 是否被加载，以 `InstructionsLoaded` 或原生请求为证；记录结局。本地协议已证实全文一次，用户界面待按手册执行。
 - [?] **M2-C2 native hook 真实触发**：Claude Code 真实会话中 native 命令按事件和 matcher 执行；卸载后 `settings.json` 逐字节还原。
 - [?] **M2-C3 rules 静态位置真实生效**（仅 D4 成立时）：安装后规则文件被加载，卸载后文件移除、`CLAUDE.md` 与安装前一致。
-- [?] **M2-C4 output style 实测**（M2-D5）：output style 能否替代 system prompt、与用户已有 output style 的冲突行为；记录结局。
+- [?] **M2-C4 output style 实测**（M2-D5）：output style 能否替代 system prompt、与用户已有 output style 的冲突行为；记录结局。本地完整 prompt 对照与官方资料支持不作为整份替换位置，用户界面切换仍待执行。
 
 ## 持续集成与文档核对
 
