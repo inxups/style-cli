@@ -1359,3 +1359,11 @@ PY
 - 边界证据：`TestScanStats*`/`TestReadStatsLines*` 覆盖未知字段、非法元数据/JSON/截断、511/512/513/1MiB 行、旧成本字段、深度与 5 处 symlink、消失文件、权限/I/O、扫描中取消与质量计数溢出。`TestA5Stats*` 覆盖 duration/RFC3339/UTC/窗口、非法参数 stdout 空、空报告不建目录、坏行隐私标记不泄露、标识符转义、真实 component 哈希会话键、聚合溢出、全树字节/权限/mtime 不变和过期会话未清理；doctor 用同一 fixture 验证 top3 与三条旧记录，并验证坏行后继续统计/告警。
 - 验证：所有 Go 命令清除 CODEX_HOME/CODEX_SANDBOX，临时 GOPATH/GOMODCACHE/GOCACHE。`GOFLAGS='-mod=readonly -count=1' make test-go`、`GOFLAGS=-mod=readonly make vet-go` 双 module exit 0；`go test -race -count=1 ./core/state ./internal/app` exit 0（state 1.774s / app 21.528s）；Python 采集器 40 项 OK。`go build -trimpath -buildvcs=false` 成功，二进制 `/var/folders/m5/gv7_10k149l3j4l02mt548zr0000gp/T/style-m2-stats.xy26oody/style` SHA256 `63984423c125e04326864407f3074362a6f1b8c84bc8f39cc29f75e53f3fbe80`；扩展 `scripts/smoke.py` 36 项通过，新增空 home 只读、真实 hook 日志的 rule/session 汇总与卸载后历史仍可读。临时产物不入库，既有 plan/index/stdout golden 未改。
 - gofmt、本地文档链接/围栏、四份新 golden JSON 结构与 `git diff --check` 通过。T20/A5 改 `[x]`；A9 保持 `[~]` 等剩余 M2 功能完成后复验。下一步 D3 跨包去重设计，评审通过前不进入 T30。
+
+
+### 2026-10-16 — M2-D3 跨包去重草案 `[~]`，待用户评审
+
+- 接 T20 clean 08aaa61 读取现有实现：`core/compile/build.go`/`entries.go` 在所有包里逐 placement 构造并按 order 排序，`body_sha256` 认证渲染前模板，静态变量在 compileBody 中替换；`core/tokens/installed.go` 当前直接合并包级桶和分隔符；`internal/app/plan.go` 仅做单包 plan；`core/state/dedup.go` 以 rule+渲染正文抢占，block/every/subagent.start 不抢占。仅按模板哈希或某次输出同文折叠，会丢失条件、selector、warn 用户文字或动态变量变化。
+- 草案回写运行时 §7.5、编译产物 §9.6、CLI 设计 §7.1，native 规则段与 A6 同步。拟采用编译阶段、静态变量替换后全文+全部执行语义等价，按 order 保留；native、不同语义、运行时偶然同文与同包多重声明类保持。保留 index format 1 和 agenthooks 边界；组合报告标 deduplicated_into，全局预算及有效成本只计一次，单包源级校验独立。
+- 明确待用户确认的权衡：不引入跨包持久 repeat 键，卸载保留方后接替规则可能在旧会话再注入一次；跨包比较只在组合安装规划中进行，独立 plan 不读已装包。所有这些边界均为建议，未擅自进入 T30。
+- 验证：仅文档；6 份当前文档的围栏、43 个存在的本地目标及新增标题锚点、`git diff --check` 通过；编译产物文档原有 3 个缺失的外部资料路径（style-gen 两项、style-review 一项）与 HEAD 一致，未纳入本条改动。未修改 schema/Go/测试产物，代码仍为 T20 已验证版本。D3 保持 `[~]`，T30/A6 未标完成。

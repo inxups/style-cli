@@ -293,6 +293,12 @@ state/<sid>/
 7. **估算和 lint**：每个条目算 `est`（第 11 节）；本包的 `T001`、`T002`、`T004`–`T007`；全部已装包的 `T003`。
 8. **排序和输出**：按 harness → 评估点分组，组内按 `order` 排好；写 `static` 列表；"写临时文件再改名"。
 
+### 7.1 M2-D3 跨包去重草案（待用户评审）
+
+T8 的拟实施契约见 [运行时 §7.5](STYLE-spec-runtime.md#75-m2-d3-跨包去重草案待用户评审t30-尚未实现) 与 [编译产物 §9.6](STYLE-spec-compiled.md#96-m2-d3-编译去重草案待用户评审)。T30 尚未实现。
+
+建议在上述步骤 6 之后，以静态变量替换后的完整正文和执行语义判定跨包等价，按 order 保留一条；native 保留，动态运行时偶然同文保留。全局 T003 与组合规划的有效成本按去重后产物计算，单包 plan 与源级预算检查继续独立；install/trust 的折叠行显示 `deduplicated_into`。不改变 agenthooks 职责或 index format，不新增持久跨包 repeat 键；卸载保留方后接替规则可能在已有会话再注入一次。这些边界仍待 D3 评审。
+
 ## 8. 运行时（hook 热路径）
 
 `style agenthooks run --provider=<h>` 每次 hook 调用起一个进程：

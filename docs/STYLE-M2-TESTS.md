@@ -72,7 +72,12 @@ env -u CODEX_HOME -u CODEX_SANDBOX \
   - 缺估算/摘要的旧记录保留次数、增加 unestimated，不读取当前 index 或重新估算；静态/native 无日志时不杜撰成本。与 doctor 的正常 top3/legacy/repeated_body 结果兼容。
   - 坏 JSON、截断尾行、空行、非法字段/时间/摘要/负估算/未知字段及 >=512 字节行逐项 fixture；跳过后下一行仍计入，quality 精确、partial=true、退出 0。根/后代 symlink、权限/I/O、数值溢出与取消覆盖；致命错误退出 1、stdout 无成功报告。
   - 整树字节/权限/mtime 对照证明 stats 只读且不触发 state 清理；坏行里的正文/提示词/native 命令标记不出现在 stdout/stderr，标识符控制字符转义。doctor 坏行继续有效聚合并给 stats-invalid warning。
-- [ ] **M2-A6 跨包去重**（M2-T30，D3 定稿后细化）：两个包含正文完全相同的规则时，index 只保留一份、plan 与 T003 只计一次；运行时只注入一次；卸载保留方后重编译使另一份生效；正文不同的规则不受影响。
+- [ ] **M2-A6 跨包去重**（M2-T30，以下随 D3 草案待评审，尚未实现/执行）：
+  - 两个/三个包的等价静态/动态规则；priority（含小数）、包安装序号、包内序号与输入遍历顺序测试，index/StaticBodies 仅保留选定规则全部入口、packages 仍完整，组合 plan 文本/JSON 标 deduplicated_into，单包 plan 原 golden 保持。
+  - settings/包名静态替换、空白/换行/Unicode、warn 两份正文/首句标志、不同变量名/默认值、action/条件/工具/MCP/skill/repeat/sources/reinject/reevaluate/能力差异逐项排除误合并；同包多条等价声明时整个类保留；相同 native 命令仍全部安装。
+  - 源级 T001/T002/T004 检查保留；组合有效 events/always_on/session 情景与 T003 只计一次并重算分隔符；不同语义或仅运行时偶然同文不降预算；去重前超 80% 而去重后合法时可安装，真实超限仍退出 4 且无写入。
+  - runtime 条件/重复/并发/compact/gen/epoch/block/warn/subagent.start/cap-drop 回归；等价组仅保留方产生日志，stats 不虚构折叠行。无去重组的现有黄金输出保持。
+  - 卸载保留方/被折叠方、trust/link sync 改正文/priority、三条路线切换与重复编译；接替规则按新 rule 身份在已有会话可再注入；doctor 认同重建结果，最终外部字节/权限精确还原。
 - [ ] **M2-A7 Claude rules 静态位置**（M2-T40，仅 D4 成立时）：写入/删除 `~/.claude/rules/style-<名字>.md`；从 `CLAUDE.md` 标记块迁移后再卸载，两处文件逐字节还原。D4 不成立时本条以 D4 证据标注不适用并关闭。
 - [ ] **M2-A8 output style replace**（M2-T50，仅 D5 可行时）：断言随 D5 定稿；不可行时本条以 D5 证据标注不适用并关闭。
 - [~] **M2-A9 M1 回归**：native 与 stats 阶段已通过双 module fresh test/vet、app/state/adapter/conformance race、采集器 40 项、构建与 smoke（stats 阶段扩为 36 项）。T60 的 `TestNativeRulesLeaveRuntimeOutputsAndStatsUnchanged` 在两家共 46 个 payload 上核对原 stdout golden、输出白名单、runtime 条目与统计记录（只排除时间差）；inline 源文件摘要随新增声明改变是预期，其他条目字段不变。T60 未更新任何 golden。M1 的 A1–A22、adapter conformance 在后续 M2 实现后仍需最终复验，见 `docs/PROGRESS.md` M2-T13/T60/T20。
