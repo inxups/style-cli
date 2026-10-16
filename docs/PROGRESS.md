@@ -888,3 +888,9 @@
 - 复现：继承本 Claude 会话环境，加 `CODEX_SANDBOX=seatbelt`、`CODEX_HOME=<临时目录>` 或二者同时，`go test -C agenthooks -count=1 ./...` 都只有 `TestCopilotDetection` 失败（`codec_copilot_test.go:387: env detection = "codex"`），根 module 不受影响。原因：`agenthooks/detect.go` 的 `detectFromEnv` 先查 Cursor/Codex/Gemini/OpenCode 变量，再查 Copilot，测试只设置了 `COPILOT_CLI` 和 `CLAUDE_PLUGIN_ROOT`。
 - 修改 agenthooks（用户指示完成 B0.6，取代原先“只记录不修改”的策略）：只改测试，在 `TestCopilotDetection` 开头清空优先于 Copilot 的变量，做法与同仓库 `TestDetectClaudeCodeMarker`、`TestUndetectableProviderNoOps` 相同。检测顺序和生产代码不变，职责边界不受影响。
 - 验证：上述三种 Codex 变量组合，以及 `CURSOR_AGENT=1 GEMINI_CLI=1 OPENCODE=1`，两个 module 全量 `go test -count=1 ./...` 都无失败。清理环境的双 module `make test-go`（30 个包 ok）、`make vet-go`、`git diff --check` 通过。
+
+### 2026-10-16 — M1B-SHELL-01 shell_regex 展开包装命令和管道脚本
+
+- 起因：用户要求处理 force push 规则的剩余漏洞，其中 `sudo`、`xargs`、`find -exec`、管道喂给 shell 属于 shell_regex 的读取范围，先在 `core/when/shell.go` 补上，规则 pattern 另作 EXAMPLE-04。
+- 修改：带选项的 `sudo`/`doas`/`env`/`nice`/`timeout`/`stdbuf`/`xargs`/`time`/`exec` 跳过自身选项（短选项簇里取值的字母可带附着值或下一个词；列出的长选项可带独立值；`timeout` 再跳过时长）后另作一条命令读，结果再走同一流程，所以嵌套包装和 `sudo bash -c` 都能读到；`env -S` 的值按空白拆开。`find` 的 `-exec`/`-execdir`/`-ok`/`-okdir` 读到 `;` 或 `+`。解析时记录单个 `|`/`|&` 的上游命令，shell 没有脚本文件参数（或带 `-s`）时读上游 `echo`/`printf`（展开 `%s`、`%%`、`\n`、`\t`、`\\`）的输出和只读 heredoc/here-string 的 `cat`。here-string 改为挂在命令上，喂给 shell 时当脚本读。不带选项的简单包装仍直接去掉，`time` 从保留字移到包装命令。规范 `STYLE_DOCS/STYLE-spec-runtime.md` §4.3 同步。
+- 验证：`core/when/shell_test.go` 拆分用例 25 → 43 例，原 25 例输出不变；FuzzShellCommands 30 秒约 722 万次输入无崩溃；双 module `make test-go`（30 个包 ok）、`make vet-go`、`git diff --check` 通过。
