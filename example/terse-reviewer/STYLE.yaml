@@ -61,9 +61,11 @@ rules:
       conditions:
         # shell_regex matches each simple command the shell would run, with quotes
         # removed, so quoted text, comments and heredoc data do not match. The
-        # pattern accepts git by path, git global options before push, and -f
-        # inside a short-option cluster unless an earlier -o takes it as a value.
-        - {field: tool.input.command, op: shell_regex, pattern: '^(?:\S*/)?git(?:\s+(?:-[cC]|--(?:git-dir|work-tree|namespace|attr-source))\s+\S+|\s+-\S+)*\s+push\b.*\s(?:--force|-[0-9A-Za-np-z]*f\S*|\+\S+)(?:\s|$)'}
+        # pattern accepts git by path (quoted when it has spaces) and git global
+        # options before push. After push, -o takes the rest of its cluster or
+        # the next word as a value; any other -f in a short-option cluster,
+        # --force, --mirror or a +refspec is a force push.
+        - {field: tool.input.command, op: shell_regex, pattern: '^(?:(?:\S*/)?git|''[^'']*/git'')(?:\s+(?:-[cC]|--(?:git-dir|work-tree|namespace|attr-source))\s+\S+|\s+-\S+)*\s+push(?:\s+(?:-(?:[^\s\-o][^\so]*)?o(?:\s+|)\S+|-(?:[^\s\-o][^\so]*)?|--\S*|[^\s-]\S*))*\s+(?:--force|--mirror|-[^\s\-o]*f\S*|\+\S+)(?:\s|$)'}
     text: Do not force push; create a new commit.
   - id: on-review-prompt
     target: event

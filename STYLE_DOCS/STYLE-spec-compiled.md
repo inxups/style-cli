@@ -121,7 +121,7 @@
         {"rule": "terse-reviewer/no-force-push", "entry": "terse-reviewer/no-force-push@tool.pre",
          "src": "STYLE.yaml#no-force-push", "order": [50, 1, 7], "action": "block", "match": {"canonical": ["shell"]},
          "when": {"agent": ["*"], "conditions": [{"field": "tool.input.command", "op": "shell_regex",
-                  "pattern": "^(?:\\S*/)?git(?:\\s+(?:-[cC]|--(?:git-dir|work-tree|namespace|attr-source))\\s+\\S+|\\s+-\\S+)*\\s+push\\b.*\\s(?:--force|-[0-9A-Za-np-z]*f\\S*|\\+\\S+)(?:\\s|$)"}]},
+                  "pattern": "^(?:(?:\\S*/)?git|'[^']*/git')(?:\\s+(?:-[cC]|--(?:git-dir|work-tree|namespace|attr-source))\\s+\\S+|\\s+-\\S+)*\\s+push(?:\\s+(?:-(?:[^\\s\\-o][^\\so]*)?o(?:\\s+|)\\S+|-(?:[^\\s\\-o][^\\so]*)?|--\\S*|[^\\s-]\\S*))*\\s+(?:--force|--mirror|-[^\\s\\-o]*f\\S*|\\+\\S+)(?:\\s|$)"}]},
          "repeat": "every", "reinject_on_compact": false, "needs": [],
          "body": {"static": "评审风格下不允许 force push，请改用新提交。"},
          "est": {"tokens": 18, "chars": 22}, "degraded_from": null}

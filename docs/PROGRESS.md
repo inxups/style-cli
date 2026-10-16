@@ -894,3 +894,10 @@
 - 起因：用户要求处理 force push 规则的剩余漏洞，其中 `sudo`、`xargs`、`find -exec`、管道喂给 shell 属于 shell_regex 的读取范围，先在 `core/when/shell.go` 补上，规则 pattern 另作 EXAMPLE-04。
 - 修改：带选项的 `sudo`/`doas`/`env`/`nice`/`timeout`/`stdbuf`/`xargs`/`time`/`exec` 跳过自身选项（短选项簇里取值的字母可带附着值或下一个词；列出的长选项可带独立值；`timeout` 再跳过时长）后另作一条命令读，结果再走同一流程，所以嵌套包装和 `sudo bash -c` 都能读到；`env -S` 的值按空白拆开。`find` 的 `-exec`/`-execdir`/`-ok`/`-okdir` 读到 `;` 或 `+`。解析时记录单个 `|`/`|&` 的上游命令，shell 没有脚本文件参数（或带 `-s`）时读上游 `echo`/`printf`（展开 `%s`、`%%`、`\n`、`\t`、`\\`）的输出和只读 heredoc/here-string 的 `cat`。here-string 改为挂在命令上，喂给 shell 时当脚本读。不带选项的简单包装仍直接去掉，`time` 从保留字移到包装命令。规范 `STYLE_DOCS/STYLE-spec-runtime.md` §4.3 同步。
 - 验证：`core/when/shell_test.go` 拆分用例 25 → 43 例，原 25 例输出不变；FuzzShellCommands 30 秒约 722 万次输入无崩溃；双 module `make test-go`（30 个包 ok）、`make vet-go`、`git diff --check` 通过。
+
+### 2026-10-16 — M1B-EXAMPLE-04 force push 规则剩余漏洞
+
+- 修改：`example/terse-reviewer/STYLE.yaml` 的 no-force-push pattern 在 push 之后逐词读参数。`-o` 及以 o 结尾的短选项簇只能和它的值一起被跳过，所以 `-o -f`、`-uo --force`、`-of` 不再算 force；其他含 f 的短选项簇、`--force`、新增的 `--mirror`、`+refspec` 算 force。命令名另接受带引号的含空格路径 `'…/git'`。`UPDATE_GOLDEN=1` 重生成 golden，`STYLE_DOCS/STYLE-spec-compiled.md` 示例同步。
+- 验证：`core/compile/example_force_push_test.go` 新增 11 个拦截例（`--mirror`、push option 值之后的 `-f`、`-fo`、带空格路径、sudo、嵌套 nice/timeout、xargs、find -exec、echo 管道进 bash、cat heredoc 管道进 sh、here-string 喂给 bash）与 5 个放行例（`-o -f`、`-uo --force`、`--mirrors`、带空格路径无 force、echo 管道进 tee），共 61 例。双 module `make test-go`、`make vet-go`、`git diff --check` 通过。
+- 更正：此前记录的用例数有误，EXAMPLE-02 实为 29 例（记为 30），EXAMPLE-03 实为 45 例（记为 46）。本次重新计数并改正了 TASKS 中的数字，旧 PROGRESS 条目保持不变。
+- 未做：长选项 `--push-option`/`--repo`/`--receive-pack` 后单独一个形如 `-f` 的词仍会被当成 force（保守误拦）；git alias、脚本文件内容不覆盖；真实安装尚未 sync/trust 到此版本。

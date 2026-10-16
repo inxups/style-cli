@@ -6,7 +6,7 @@ import (
 	"github.com/inxups/style-cli/core/when"
 )
 
-// M1B-EXAMPLE-01/02/03: the example block rule must treat only commands the shell
+// M1B-EXAMPLE-01/02/03/04: the example block rule must treat only commands the shell
 // would run as git invocations. Quoted text such as heredoc bodies or commit
 // messages that merely mention a force push must not be blocked.
 func TestExampleNoForcePushMatchesCommandPositionsOnly(t *testing.T) {
@@ -57,7 +57,23 @@ func TestExampleNoForcePushMatchesCommandPositionsOnly(t *testing.T) {
 		{"absolute path", "/usr/bin/git push --force origin main", true},
 		{"relative path", "./bin/git push -f", true},
 		{"env and path", "env /usr/local/bin/git push -f", true},
+		{"mirror", "git push --mirror backup", true},
+		{"f after a push option value", "git push -o ci.skip -f origin main", true},
+		{"f clustered before o", "git push -fo ci.skip origin", true},
+		{"quoted path with spaces", "'/opt/my tools/git' push --force origin main", true},
+		{"sudo", "sudo -u deploy git push -f origin main", true},
+		{"nested wrappers", "nice -n 5 timeout 30 git push --force", true},
+		{"xargs", "printf '%s\\n' origin | xargs -I{} git push -f {} main", true},
+		{"find exec", "find . -maxdepth 1 -name repo -exec git -C {} push --force \\;", true},
+		{"echo piped into a shell", "echo 'git push --force origin main' | bash", true},
+		{"cat heredoc piped into a shell", "cat <<'EOF' | sh\ngit push -f origin main\nEOF", true},
+		{"here string fed to a shell", "bash <<< 'git push --force'", true},
 		{"short cluster without f", "git push -u origin main", false},
+		{"f as a separate push option value", "git push -o -f origin main", false},
+		{"force as a push option value", "git push -uo --force origin main", false},
+		{"mirror-like word", "git push --mirrors backup", false},
+		{"quoted path without force", "'/opt/my tools/git' push origin main", false},
+		{"echo piped into a non-shell", "echo 'git push --force' | tee notes.md", false},
 		{"f as push option value", "git push -of origin main", false},
 		{"f as clustered push option value", "git push -uof origin main", false},
 		{"long option starting with f", "git push --follow-tags origin main", false},
