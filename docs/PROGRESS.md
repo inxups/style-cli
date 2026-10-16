@@ -991,3 +991,35 @@
     - 修复前：PreToolUse p50 18.7ms / p95 21.4ms；UserPromptSubmit p50 19.1ms / p95 21.6ms。
     - 修复后：PreToolUse p50 7.0ms / p95 8.2ms；UserPromptSubmit p50 8.1ms / p95 10.5ms。
   - 这是离线进程计时，不替代真实 harness 的 U5/C9 测量；固定程序和真实安装未更新。
+
+### 2026-10-16 — DOCS-03 当前 adapter 实现总览
+
+- 用户要求将当前 adapter 全部内容整理为 Markdown。新增 `docs/STYLE-ADAPTERS-CURRENT.md`（源码基线 dd7438ec），按分层、公共接口、检测/安装路线、事件/能力、system/replace、fallback、工具/MCP/skill、字段/effort、运行时、输出/限制、验证和未决项组织。
+- 逐项区分 Facts 声明、codec 可接收、实际安装订阅和已有真实证据。明确 Codex 固定 surface、Claude 动态 surface；PermissionRequest 虽有 runtime 映射但未默认订阅；Claude SubagentStart 不提供注入能力；Codex 生产 runHook 未设置 ProjectTrusted 回调，默认不读取项目 effort 配置。
+- 记录当前策略而不修改语义：degrade 允许最终跳过，tool.error 在 Codex 下普通无条件规则为 skipped；规范“永不触发”措辞和代码状态存在差异；静态回退的 HasWhen 检查比规范“无 when.conditions”严格；replace 在两家均无槽位。严格降级失败即报错尚未决定或实现。
+- 同步任务清单和测试矩阵，仅新增 DOCS-03 完成记录，不改变既有实现/验收状态。既有未跟踪文件 `docs/review/M1B-CR-REAL-2026-10-16.json` 未改动、未纳入提交。
+- 验证：以下命令退出 0，adapter、Claude、Codex、conformance、effortmap、runtime、plan、app 八个包全部通过。未重跑真实 harness 验收。
+
+```sh
+env -u CODEX_HOME -u CODEX_SANDBOX \
+  GOPATH=/tmp/style-cli-gopath \
+  GOMODCACHE=/tmp/style-cli-gomodcache \
+  GOCACHE=/tmp/style-cli-gocache \
+  go test -count=1 ./internal/adapter/... ./internal/runtime ./core/plan ./internal/app
+git diff --check
+python3 - <<'PY'
+from pathlib import Path
+import re
+p = Path('docs/STYLE-ADAPTERS-CURRENT.md')
+s = p.read_text()
+links = re.findall(r'\]\(([^)]+)\)', s)
+bad = [link for link in links
+       if '://' not in link and not link.startswith('#')
+       and not (p.parent / link.split('#')[0]).exists()]
+assert not bad, bad
+assert s.count('```') % 2 == 0
+print(f'Markdown checks passed: {len(s.splitlines())} lines, {len(links)} local links, paired code fences')
+PY
+```
+
+- Markdown 检查结果：400 行，38 个本地链接目标全部存在，代码围栏成对；`git diff --check` 通过。

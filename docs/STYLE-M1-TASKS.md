@@ -144,6 +144,10 @@ M1b 准备、真实验收中发现的问题及示例规则修正，按处理顺�
   - 双 module 测试、vet，以及 state/engine/runtime 的 race 测试都通过。
   - 真实 harness 的 U5/C9 计时尚未复测。
 
+## Adapter 文档整理（2026-10-16）
+
+- [x] **DOCS-03 当前 adapter 实现总览**：新增 `docs/STYLE-ADAPTERS-CURRENT.md`，汇总分层/公共接口、检测与三条路线、事件/能力、静态与动态 system、replace、fallback、工具/MCP/skill、字段与 effort、运行时/输出/限制、真实证据和未决项。明确 degrade 可最终跳过、Codex tool.error 状态措辞与规范的差异、生产未设置 ProjectTrusted 回调；未修改实现或确定新的降级语义。证据：文档全部 38 个本地链接与代码围栏检查、`git diff --check`、隔离环境 `go test -count=1 ./internal/adapter/... ./internal/runtime ./core/plan ./internal/app` 全部通过；命令见 `docs/PROGRESS.md` DOCS-03。
+
 ## 后续 backlog
 
 - [ ] **M2**：`target: native`、`style stats`、跨包去重、Claude `~/.claude/rules/` 静态位置和 replace 评估。
