@@ -172,7 +172,7 @@ M1b 准备、真实验收中发现的问题及示例规则修正，按处理顺�
 - [x] **M1-FINAL-03 link 漂移**：真实 CLI 11 步及 app 回归未复现漂移缺口；改动前后 list/hash、sync 文件清单、Source/Rendered diff 正确，预览不写入，批准后自动同步，卸载字节还原。修正教程混淆首次链接授权与源码变化的描述，保留 DOCS-04 原记录。证据：`TestLinkDriftIsVisibleBeforeFirstTrustAndAfterApproval`、`docs/review/M1-FINAL-03-LINK-2026-10-16.json`。
 - [x] **M1-FINAL-04 B2/B10 路线验收**：修复程序（48ae3f39）上 codex-user、codex-plugin 各自独立完成 B1–B9，各 19 次真实调用；B2 九种配置与正文摘要核对，unknown 不命中旧 tier，项目未知信任回退明确报告。双向切换两轮，原生 span 各事件一次且来源正确，最终配置字节还原。app-server 自行新增的临时项目 trust 表单独记录并由探针清理，未归因于 STYLE 卸载；原始比较观察保留。证据：`docs/review/M1-FINAL-04-CODEX-{USER,PLUGIN}-2026-10-16.json`、`M1-FINAL-04-SWITCHES-2026-10-16.json`；可重复命令与限制见 manual README。
 - [x] **M1-FINAL-04-FIX 插件登记保留**：修复 Codex 原生 TOML 编辑器把 marketplace/plugin 表追加到 STYLE 标记内后，被 install/sync 误删的问题。仅 Codex 合并/卸载识别并保留非 trust 表；损坏区域拒绝写入，Kimi 逻辑不变。真实登记→第二包 install/sync/uninstall/sync 配置字节不变，取消登记及最后卸载逐字节还原；证据为 `agenthooks/install/codex_foreign_toml_test.go`、`docs/review/M1-FINAL-04-PLUGIN-REGISTRATION-2026-10-16.json`。
-- [?] **M1-FINAL-05 U2/U6 能力边界**：插件手动登记往返与云端 skill 可观测性；不新增自动登记或云端路线。
+- [x] **M1-FINAL-05 U2/U6 能力边界**：U2 复用 FINAL-04 独立插件全流程及双向切换的真实证据。U6 按既定“不支持，plan 说明”边界关闭：skill plan 保留本地显式/隐式挂载并提示云端读取不受支持；固定订阅与未知读取工具回归通过。云端原生工具名仍未采集，不宣称真实云端投递通过；不新增自动登记或云端路线。
 - [?] **M1-FINAL-06 Claude 边界及 C9**：U9、U-C1/C2/C3/C5 与最终程序 50 次 Bash 性能；界面项等待用户操作。
 - [?] **M1-FINAL-07 上下文继承**：U-T1/T2 和 U7 补充；区分历史保留、补发和 agent scope，不调整既有默认值。
 - [?] **M1-FINAL-08 真实超限**：U-T5；分别检验 STYLE cap 与独立原生探针超限，不能提前裁剪后宣称已测原生上限。

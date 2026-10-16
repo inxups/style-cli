@@ -22,6 +22,7 @@ Adapter: codex
   needs: agent
   -> tool.post inject (native); capabilities: add-context
   -> skill.explicit inject (native); capabilities: add-context
+  ! Codex skill hooks observe explicit $name and local SKILL.md reads; cloud skill reads are unsupported by this route
 - after-git-diff: native (inject tool)
   needs: agent, tool.input.command
   -> tool.post inject (native); capabilities: add-context

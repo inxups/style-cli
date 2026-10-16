@@ -35,7 +35,8 @@ type DataSourceProvider interface {
 	DataSource(point, field string) DataAvailability
 }
 
-// BlindSpotProvider identifies targets the provider can never observe.
+// BlindSpotProvider identifies unobservable targets and partial visibility
+// boundaries. A nonfatal reason is retained in the plan without removing slots.
 type BlindSpotProvider interface {
 	BlindSpot(rule spec.Rule) (reason string, unobservable bool)
 }

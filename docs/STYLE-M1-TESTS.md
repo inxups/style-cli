@@ -217,7 +217,7 @@ B1.2 和 B1.4 的历史通过状态表示原有测试套件在声明范围内通
 - [x] **FINAL-03 link**：首次未改源码的 link 需要授权但 diff 为空；真实改动的 list/hash、sync/trust 差异正确，批准快照和随后自动同步、卸载字节还原均通过。证据：app link 回归、真实 CLI 11 步 `review/M1-FINAL-03-LINK-2026-10-16.json`；DOCS-04 疑似缺陷未复现，修正教程。
 - [x] **FINAL-04 B2/B10**：最终程序两条路线各 B1–B9 独立通过，各 19 次真实调用；九种 effort 配置、rollout/请求/state/stats 与正文 SHA256 核对。minimal 用 gpt-6-sol，未知 raw 可被服务拒绝但 STYLE 保持 unknown、条件不命中；不宣称远端支持未知档位。两轮双向切换的四类原生 hook 各一次、来源单一，无重复注入；STYLE 外部字节保留，临时 native 项目信任独立清理后最终字节还原。证据 `review/M1-FINAL-04-CODEX-{USER,PLUGIN}-2026-10-16.json`、SWITCHES 及 BASELINE-OBSERVATION；15 项 Python 测试通过。
 - [x] **FINAL-04-FIX 登记保留**：修复前 user/plugin 两个生命周期回归均失败，修复后 install 全量、app/Codex adapter 测试及 install vet 通过；解析器覆盖 quoted/array table、multiline string 内伪表头与损坏区域。真实 native plugin 管理后四步配置字节不变，取消登记及最后卸载字节还原，见 `review/M1-FINAL-04-PLUGIN-REGISTRATION-2026-10-16.json`。
-- [?] **FINAL-05 U2/U6**：真实插件登记往返、云端能力边界。
+- [x] **FINAL-05 U2/U6**：U2 的手动登记、真实 plugin hook 来源、第二包变更保留登记、取消/切换/配置字节往返由 FINAL-04 三组报告支撑。U6 按不支持边界关闭：Codex skill plan 明确只覆盖显式 `$name` 和本地 SKILL.md 读取；plan golden、固定 matcher 和未知读取工具 runtime 回归通过。此项未测云端实际工具名或投递。core/plan、Codex adapter、app 测试及 vet 通过。
 - [?] **FINAL-06 Claude**：U9、U-C1/C2/C3/C5 和最终程序 C9；界面不能由模拟 payload 验收。
 - [?] **FINAL-07 继承**：resume/fork/compact、子 agent scope，compact 探针禁补发。
 - [?] **FINAL-08 超限**：STYLE guard 与原生绕开 STYLE 的独立超限探针。

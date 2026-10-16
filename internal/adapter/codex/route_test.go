@@ -4,6 +4,7 @@ import (
 	"context"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"testing"
 
@@ -11,6 +12,42 @@ import (
 	"github.com/inxups/style-cli/core/spec"
 	"github.com/inxups/style-cli/internal/adapter"
 )
+
+func TestSkillPlanReportsLocalBoundaryWithoutRemovingSupportedPlacements(t *testing.T) {
+	planner, err := adapter.BuildPlanAdapter(ProviderName, DefaultFacts())
+	if err != nil {
+		t.Fatal(err)
+	}
+	pkg := &spec.ResolvedPackage{
+		Package: &spec.Package{Metadata: map[string]any{"name": "skill-boundary"}},
+		Rules: []spec.Rule{{Effective: map[string]any{
+			"id": "review", "target": "skill", "action": "inject", "skill": "review", "fallback": "degrade",
+		}, Body: "Review the patch."}},
+	}
+	report, err := plan.Build(pkg, planner)
+	if err != nil {
+		t.Fatal(err)
+	}
+	rule := report.Rules[0]
+	if report.Blocked || rule.Status != plan.Native || len(rule.Placements) != 2 ||
+		rule.Placements[0].Event != plan.ToolPost || rule.Placements[1].Event != plan.SkillExplicit {
+		t.Fatalf("local skill placements changed: %#v", report)
+	}
+	if len(rule.Reasons) != 1 || !strings.Contains(report.String(), "cloud skill reads are unsupported") {
+		t.Fatalf("plan omitted the skill visibility boundary: %s", report.String())
+	}
+	for _, hook := range Surface() {
+		if hook.NativeEvent != "PreToolUse" && hook.NativeEvent != "PostToolUse" {
+			continue
+		}
+		matcher := regexp.MustCompile(hook.Matcher)
+		for _, name := range []string{"skills.read", "skills_read"} {
+			if matcher.MatchString(name) {
+				t.Fatalf("fixed hook unexpectedly subscribes to %q: %#v", name, hook)
+			}
+		}
+	}
+}
 
 func TestCodexSurfaceAndManifestStayFixed(t *testing.T) {
 	surface := Surface()

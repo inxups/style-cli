@@ -19,6 +19,7 @@ type Adapter interface {
 	Supports(event string, capability Capability) bool
 	DataSource(event, field string) bool
 	// BlindSpot reports whether the entire rule can never match on this adapter.
+	// A reason with unobservable=false documents a partial visibility boundary.
 	BlindSpot(rule spec.Rule) (reason string, unobservable bool)
 	// StaticLocation reports the slot available for a system mode such as append
 	// or replace.

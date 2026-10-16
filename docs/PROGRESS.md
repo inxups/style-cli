@@ -1106,3 +1106,11 @@ PY
 - B10 另外在独立根执行 user→plugin→user→plugin→user：4 个真实会话，每次原生 codex.hooks.command span 的 SessionStart/UserPromptSubmit/PreToolUse/PostToolUse 各一条且 source 全为当前路线，动态正文仅一次 output；用户路线配置/hooks 与初始安装字节相同，最后卸载字节还原。证据 `review/M1-FINAL-04-SWITCHES-2026-10-16.json`。
 - 重复命令：`PYTHONDONTWRITEBYTECODE=1 python3 testdata/manual/probe_codex_routes.py --style /absolute/path/style --route codex-user --scratch "$(mktemp -d)" --output /tmp/codex-user.json`；plugin 在另一个空根独立运行；切换另加 `--switches-only`。真实服务失败会非零并留证。临时项目 trust 清理现已在重复脚本中明确分开。
 - 验证：`PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s testdata/manual -p 'test_*.py'`（15 项）、Python AST、两条路线 B2 全部正文摘要复核、证据凭据/服务 URL 扫描、`git diff --check`。Go 实现验证沿用同一构建的 FINAL-04-FIX 记录；最终双 module 总回归仍在 FINAL-12。
+
+
+### 2026-10-16 — M1-FINAL-05 U2 手动插件生命周期与 U6 支持边界
+
+- U2：复用 FINAL-04 已独立完成的真实插件 B1–B9、登记保留修复及两轮双向切换。native `hook.source=plugin`、第二包 install/sync/uninstall/sync 保留登记、取消登记与最终配置字节还原均有原始结果，不重复用准备脚本代替真实运行。证据：`review/M1-FINAL-04-CODEX-PLUGIN-2026-10-16.json`、`review/M1-FINAL-04-PLUGIN-REGISTRATION-2026-10-16.json`、`review/M1-FINAL-04-SWITCHES-2026-10-16.json`。
+- U6：原设计默认“不支持，plan 里说明”，本轮按此边界关闭，不扩展云端路线。现有 matcher 仅 Bash/apply_patch/mcp；runtime 识别本地 shell 读取，prompt 解析 `$name`。云端实际原生工具名尚未采集，候选名回归并非真实云端测量。
+- 修复 plan 遗漏边界说明：`BlindSpot` 返回非 fatal reason 时保留为现有 RulePlan.Reasons，继续计算可用挂载。Codex skill 规则明确提示 cloud skill reads unsupported，本地 tool.post/skill.explicit 两个 native placement 不变。不改 index、lock、state 格式、公开命令或订阅面；agenthooks 无变更。
+- 验证：隔离 `GOPATH/GOMODCACHE/GOCACHE`、清除 CODEX_HOME/CODEX_SANDBOX，`go test -count=1 ./core/plan ./internal/adapter/codex ./internal/app` 通过；同包 vet、gofmt 与 diff 检查通过。新增 plan/固定 matcher/未知读取工具 runtime 回归，更新 Codex plan golden，Claude golden 不变。

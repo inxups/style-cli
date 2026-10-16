@@ -248,6 +248,8 @@ codex plugin marketplace remove style
 
 新会话确认只执行用户级 hook。插件注册/取消会由 Codex 自身修改配置，字节往返检查应区分 STYLE 的变更与 Codex marketplace/plugin 管理变更，记录差异。
 
+2026-10-16 补验收：FINAL-04 对两条路线分别执行 B1–B9，并完成两轮双向切换；插件登记、第二包更新时保留登记、取消登记及字节往返均通过。证据见 `review/M1-FINAL-04-PLUGIN-REGISTRATION-2026-10-16.json`、`review/M1-FINAL-04-CODEX-PLUGIN-2026-10-16.json` 和 `review/M1-FINAL-04-SWITCHES-2026-10-16.json`。云端 skill 不在 M1 当前路线支持范围，skill plan 会提示此边界；本地 `$name` / SKILL.md 通过不代表云端通过。
+
 ## 7. 卸载与原文比较
 
 在第一次用户级验收结束、开始插件注册之前执行一次；最后结束时再执行一次。先关闭两家会话。若当前是已注册的插件路线，先执行上一节的插件移除命令。

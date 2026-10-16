@@ -345,7 +345,7 @@ exec '/abs/path/to/style' "$@"
 ```
 
 - Codex 把 hook 命令交给 shell 的 `-lc` 执行，并设置 `PLUGIN_ROOT`【源码】，所以 `$PLUGIN_ROOT` 会被展开。命令字符串固定不变；`style` 二进制换位置时只重写 `bin/style`，它不在信任哈希里，不用重新信任。
-- 当前 STYLE 仅生成插件目录，不自动登记 marketplace 或启用插件。手动注册、缓存副本以及切回用户路线前的取消步骤见 [M1b 手册第 6 节](../docs/STYLE-M1B-MANUAL.md#6-codex-插件路线与手动注册)；本机 Codex CLI 0.159.3 的本地注册/移除准备验证已通过，真实会话验收另行记录（U2）。
+- 当前 STYLE 仅生成插件目录，不自动登记 marketplace 或启用插件。手动注册、缓存副本以及切回用户路线前的取消步骤见 [M1b 手册第 6 节](../docs/STYLE-M1B-MANUAL.md#6-codex-插件路线与手动注册)；本机 Codex CLI 0.159.3 的完整手动登记、第二包变更、真实 plugin hook、取消登记及双向切换已通过（FINAL-04/05）。
 - **不写 `additionalContextLimit`**：2,500 token 的默认值正好当保险，STYLE 自己的预算更严；不写也避开了"这个字段是否参与信任哈希"的问题（规范 7.1）。
 - 不写 `async`（Codex 解析但不执行，quirk #10）。
 
@@ -377,7 +377,7 @@ exec '/abs/path/to/style' "$@"
 | agent | `agent_id`、`agent_type` |
 | `tool.added` | `apply_patch` 的输入是 `{"command": "<补丁文本>"}`【源码】：取以 `+` 开头的行，去掉 `+`，跳过 `+++` |
 | MCP | agenthooks `ParseMCPName` 拆 `mcp__<server>__<tool>` |
-| 隐式 skill | agenthooks `SkillActivationOf` 的 shell 分支，F8 放宽到 `cat`、`sed -n`、`head`、`tail`、`bat`、`cd <dir> && cat SKILL.md`；路径必须以 `skills/<名字>/SKILL.md` 或 `skills/.system/<名字>/SKILL.md` 结尾（`cd` 的写法要求目录以 `skills/<名字>` 结尾）。云端 skill 的 `skills.read` 工具不在订阅面里，工具名确认前（U6）识别不到 |
+| 隐式 skill | agenthooks `SkillActivationOf` 的 shell 分支，F8 放宽到 `cat`、`sed -n`、`head`、`tail`、`bat`、`cd <dir> && cat SKILL.md`；路径必须以 `skills/<名字>/SKILL.md` 或 `skills/.system/<名字>/SKILL.md` 结尾（`cd` 的写法要求目录以 `skills/<名字>` 结尾）。云端 skill 不在当前路线支持范围，plan 明确提示；真实原生工具名尚未采集（U6 按边界关闭） |
 | 显式 skill | UserPromptSubmit 的提示文字里按规范 3.3 的正则找 `$名字`，每个不同的名字一个 `skill.explicit` 评估点 |
 | harness 版本 | `Detect` 时取得，写进锁文件和 `session.json` |
 
@@ -628,7 +628,7 @@ terse-reviewer 0.3.0 → codex（路线：plugin）
 | F5 | `SessionInfo` 加 `Effort`、`EffortRaw`、`EffortApprox`、`HarnessVersion`；`adapter/effortmap`；Codex 的配置解析（9.4）；Claude 的 `effort.level` / `$CLAUDE_EFFORT` | 规范 4.2、第 6 节 | M1a |
 | F6 | 按会话保存的状态（5.3） | 规范 3.5–3.7 | M1a |
 | F7 | Codex `subagent.start` 的 add-context：新增 `SubagentStartDecision.WithContext`，改能力矩阵和编码 | 现在 `OnSubagentStart` 只返回 `error`（`agenthooks.go:187`），而 Codex 的 SubagentStart 支持 `additionalContext`【源码】 | M1b（U7） |
-| F8 | Codex skill 识别放宽（`head`、`tail`、`bat`、`cd … && cat SKILL.md`、`skills.read`），以及提示里的 `$名字` → `skill.explicit` | 现在只认 `cat` 和 `sed -n`（`claude_skill.go:153-170`），不认 `$名字` | 解析 M1a，实测 M1b（`skills.read` 等 U6） |
+| F8 | Codex skill 识别放宽（`head`、`tail`、`bat`、`cd … && cat SKILL.md`、`skills.read`），以及提示里的 `$名字` → `skill.explicit` | 现在只认 `cat` 和 `sed -n`（`claude_skill.go:153-170`），不认 `$名字` | 本地解析和真实投递已完成；云端读取按 U6 不支持边界关闭 |
 | F9 | Claude codec 补齐：`prompt_id` → `TurnID`；`effort.level`；`mcp_server{name, source}`；`UserPromptExpansion`；`PostModelSwitch`（`to_model`）；SessionStart 的 `fork`；编码 `suppressOriginalPrompt` | 这些都是 v0.3 要用的；agenthooks `3f734c7` 里已有哪些没核对（U-F9），先核对再补 | M1a |
 | F10 | Claude 安装渲染支持 exec 形式（`command` + `args`）、`timeout`、可选 `onFailure: "block"` | agenthooks 的 `hookCommand` 生成的是一条 shell 命令字符串（`install.go:338-352`） | M1a |
 
@@ -727,7 +727,7 @@ F1–F4、F10 是安装和协议层的问题，最好也提给上游。F5–F9 �
 | U2 | Codex 个人 marketplace 登记和启用插件能否自动化 | `install` 能不能全自动 | 装一次，看 Codex 是否加载插件 | 当前由用户按 M1b 手册手动登记/启用；0.159.3 本地管理命令准备验证已通过，STYLE 尚未实现自动化 | 不能自动化不算失败，b1 按手动步骤做 | 未自动化：B10 由 agent 手动执行 `codex plugin marketplace add` 与 `codex plugin add`，Codex 0.159.3 加载插件，只新增 marketplaces/plugins 两段；取消注册后 config.toml 逐字节还原 |
 | U3 | 已生成的插件 hook `trusted_hash` 是否被真实 Codex 接受 | 生成摘要与实际信任是否一致 | 新会话记录是否仍有信任提示 | 渲染器默认生成摘要；插件路线仍报告 user-confirmation，不假定已信任，无额外 CLI 开关 | 不影响通过 | 接受：B10 插件路线新会话四类 hook 全部 `hook.source=plugin`，无 hook 信任提示（`codex exec`）；B1 用户级路线的预置摘要在 exec 与 TUI 下也无 hook 信任提示。报告仍写 user-confirmation，未改 |
 | U5 | 每次工具调用多起一个进程的开销（Codex 含登录 shell） | 固定订阅面是否可接受 | 基准：连续 1000 次 PreToolUse | 先按固定订阅面实现 | 超出预算 → 改成按规则生成 matcher（每次变化要重新信任），属于设计变更，M1b 暂停评审 | 成立（用户决定以 200 次为准）：先测连续 731 次真实 PreToolUse（用户叫停，未满 1000），p95=41.6ms、max=44.9ms；CR-05 后用 d7438ec 复测 200 次，p95=28.6ms、max=74.2ms；两轮均 0 错误，远低于 150ms，不需改设计，见 B11 |
-| U6 | Codex 云端 skill 的读取工具在 hook 里叫什么 | 云端 skill 能否识别 | 探针 hook 把 stdin 写日志 | 不支持，plan 里说明 | 不影响通过 | 未测 |
+| U6 | Codex 云端 skill 的读取工具在 hook 里叫什么 | 云端 skill 能否识别 | 核查固定订阅、runtime 与 plan；实际云端工具名需未来环境另测 | 不支持，plan 里说明 | 不影响通过 | FINAL-05 按不支持边界关闭：plan 明确说明，仅支持本地显式/隐式路径；原生云端工具名和投递未实测 |
 | U7 | Codex SubagentStart 返回的 context 是否真的进入子 agent | F7、`event: subagent.start` | 让子 agent 复述 | 按源码实现 | 不成立 → Codex 上 `subagent.start` 规则降级为丢弃，F7 移出 M1 | 成立：CDEX-U7 中 spawn_agent 启动的子线程 rollout 有逐字相同的 `hooks.additional_context`，stats 记在子 agent scope，父线程没有；F7 保留在 M1。嵌套子 agent 与 fork 未测 |
 | U9 | Claude 的 hook 里能否知道思考被关闭 | Claude 能否产出 `none` | 关掉思考后看 payload 和环境变量 | 不产出 `none` | 不影响通过 | 未测 |
 | U10 | Codex 配置层的优先级、项目信任的判断方法、`-c` 能否从祖先进程恢复 | Codex effort 准不准 | 多种组合启动，对比 `doctor` 的 effort 来源和 Codex 实际用的值 | 按 9.4 的顺序实现；判断不了项目信任就不读项目层 | 不影响通过，结论写回 9.4 | 配置解析已实测：M1-FINAL-02 用真实 0.159.3 与本地请求 sink 核对 11 组配置，修复独立 profile 和项目优先级；legacy 新版拒绝、缺失 profile 继承用户。生产未知信任仍跳过项目层；M1-FINAL-04 两条路线各自用 9 种配置核对原生真实请求、STYLE state/stats、rollout 与正文摘要。受信项目原生 high / STYLE 用户 low 的差异按既定回退保留，doctor 明确报告原因；unknown 不伪造档位。两条路线独立各完成 B1–B9，非跨路线拼接 |

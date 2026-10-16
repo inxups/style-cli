@@ -55,13 +55,19 @@ func planRule(rule spec.Rule, adapterName string, adapter Adapter) (RulePlan, er
 		result.Status = Never
 		result.Reasons = []string{"when.provider is not evaluated in M1"}
 	default:
-		if reason, blind := adapter.BlindSpot(rule); blind {
+		reason, blind := adapter.BlindSpot(rule)
+		if blind {
 			result.Status = Never
 			result.Reasons = []string{nonEmpty(reason, "the adapter cannot observe this target")}
-		} else if req.Target == "system" {
-			result = planSystem(req, result, adapter)
 		} else {
-			result = planEvents(req, result, adapter)
+			if reason != "" {
+				result.Reasons = append(result.Reasons, reason)
+			}
+			if req.Target == "system" {
+				result = planSystem(req, result, adapter)
+			} else {
+				result = planEvents(req, result, adapter)
+			}
 		}
 	}
 	return result, nil

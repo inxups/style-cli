@@ -29,7 +29,7 @@ STYLE 当前完整接入两个 provider：`codex` 和 `claude-code`。`agenthook
 | `Detector.Detect` | 只读检测安装、版本与配置目录，返回 `Installation` |
 | `PlanningFacts.Capability` | 某评估点是否支持 `add-context`、`system-message`、`deny` |
 | `PlanningFacts.DataSource` | 某评估点能否提供条件/模板所需字段，记录来源与近似标记 |
-| `PlanningFacts.BlindSpot` | 整条规则是否落入不可观测工具范围 |
+| `PlanningFacts.BlindSpot` | 整条规则是否不可观测；非 fatal reason 说明部分可见性边界 |
 | `PlanningFacts.StaticLocation` | `append` / `replace` 是否有可用静态槽位 |
 | `StaticPositionProvider` | 列出具体安装的静态位置，供报告使用 |
 | `Routes` | 安装路线及其优先级，声明顺序保留 |
@@ -234,7 +234,7 @@ MCP 复用工具 pre/post/error 入口，不增加独立原生事件。adapter �
 
 隐式识别由 `agenthooks.SkillActivationOf` 提供，Enricher 把 skill 名放进工具评估点，engine 再按 skill selector 匹配。Codex 的本地读取识别覆盖 cat、sed -n、head、tail、bat 及带 cd 的支持形式，不是任意 shell 程序分析。
 
-Codex 云端 skill 的真实工具路径尚未验证，不能把本地文件读取识别扩大为全部云端 skill 支持。源码：[Codex skill](../internal/adapter/codex/skill.go)、两家 `runtime.go`。
+Codex 云端 skill 不在当前路线的支持范围，plan 会对 skill 规则给出这一提示，同时保留本地显式/隐式挂载。云端真实原生工具名尚未采集；固定订阅排除 `skills.read` / `skills_read` 等候选名的回归仅说明实现边界，不能视为云端实测。源码：[Codex skill](../internal/adapter/codex/skill.go)、两家 `runtime.go`。
 
 ## 8. 运行时字段、model 和 effort
 
@@ -392,8 +392,8 @@ env -u CODEX_HOME -u CODEX_SANDBOX \
 | system prompt | 两家都只追加；不能替换原 agent 底层 system prompt；replace 无槽位 |
 | Codex 工具 | 固定订阅盲区仍存在，不能把 canonical `*` 当成原生全工具覆盖 |
 | Codex effort | 配置请求值、每会话一次；生产未注入项目信任回调；profile/项目信任真实组合覆盖不完整 |
-| Codex plugin | marketplace 登记/启用没有自动化 |
-| Codex skill / 子 agent | 云端 skill 未测；U7 未覆盖嵌套子 agent、fork 启动和子 agent 内工具规则 |
+| Codex plugin | marketplace 登记/启用须手动执行；完整登记、更新、移除和切换已实测 |
+| Codex skill / 子 agent | 云端 skill 不支持且 plan 提示；原生工具名未采集。U7 未覆盖嵌套子 agent、fork 启动和子 agent 内工具规则 |
 | Claude | workspace trust 无法自动确认；hook 热更新未测；思考关闭的 effort 表示未测；多数事件的 systemMessage 用户显示未测 |
 | 成本与超限 | token 校准、典型会话成本、真实超限表现和提示词缓存细节仍有未决项 |
 | 路线与 provider | 项目级路线、Claude 插件路线、其他 STYLE provider adapter 尚未实现 |

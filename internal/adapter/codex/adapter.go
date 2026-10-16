@@ -122,6 +122,9 @@ func toolFieldAvailable(field string, post bool) bool {
 
 func (f Facts) BlindSpot(rule spec.Rule) (string, bool) {
 	target, _ := rule.Effective["target"].(string)
+	if target == "skill" {
+		return "Codex skill hooks observe explicit $name and local SKILL.md reads; cloud skill reads are unsupported by this route", false
+	}
 	if target != "tool" && target != "mcp" {
 		return "", false
 	}

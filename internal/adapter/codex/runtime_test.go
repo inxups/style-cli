@@ -252,6 +252,24 @@ func TestEnricherMapsImplicitSkillAndPostOutput(t *testing.T) {
 	}
 }
 
+func TestEnricherDoesNotInferSkillFromAnUnknownReadTool(t *testing.T) {
+	for _, name := range []string{"skills.read", "skills_read"} {
+		t.Run(name, func(t *testing.T) {
+			event := runtimeEvent(agenthooks.KindToolPost, "PostToolUse", `{}`)
+			post := &agenthooks.ToolPostEvent{Event: *event, Tool: agenthooks.ToolCall{
+				Name: name, Input: json.RawMessage(`{"name":"review","path":"skills/review/SKILL.md"}`),
+			}, Output: json.RawMessage(`"manifest body"`)}
+			input, _, err := NewEnricher().Enrich(event, post, state.Session{}, state.Scope{SessionID: "unknown-read", AgentID: "main"})
+			if err != nil {
+				t.Fatal(err)
+			}
+			if len(input.Points) != 1 || input.Points[0].SkillName != "" || input.Points[0].Values["skill.name"] != "" {
+				t.Fatalf("unknown tool was inferred as an activated skill: %#v", input.Points)
+			}
+		})
+	}
+}
+
 func TestEnricherProjectsSubagentScope(t *testing.T) {
 	event := runtimeEvent(agenthooks.KindSubagentStart, "SubagentStart", `{"session_id":"s5","agent_id":"child-7","agent_type":"reviewer"}`)
 	event.Agent = &agenthooks.AgentInfo{ID: "child-7", Type: "reviewer"}
