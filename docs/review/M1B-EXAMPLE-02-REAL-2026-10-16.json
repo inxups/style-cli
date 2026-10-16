@@ -1,0 +1,57 @@
+{
+  "date": "2026-10-16",
+  "items": [
+    "M1B-EXAMPLE-02",
+    "M1B-TRUST-01"
+  ],
+  "harness": "codex 0.159.3",
+  "route": "codex-user",
+  "authorization": "user instruction 2026-10-16: rebuild ~/.local/lib/style-m1b/style, sync/trust the packages in ~/.style-m1b, then test the new rule with Codex",
+  "binary": {
+    "commit": "819147a",
+    "sha256_before": "9c137245d5f240d5c67af020464704e5fe92f09855ced7b1320432e86411975f",
+    "sha256_after": "3982860d860f84114fc253d8f37236a9211a928aa15931c89c9d8117935e48db",
+    "build": "manual §1 go build with temporary GOPATH/GOMODCACHE/GOCACHE, CODEX_HOME/CODEX_SANDBOX unset; built to style.new then mv"
+  },
+  "package_update": {
+    "note": "terse-reviewer is a copied install (link=no); install of an installed package is refused ('use sync/trust'), so the updated STYLE.yaml was copied into ~/.style-m1b/packages/terse-reviewer, as in B9",
+    "sync": "exit 3, 1 changed file STYLE.yaml, approval required",
+    "trust_preview": "exit 1; new context-hunk diff: source diff one hunk @@ -59,10 +59,9 @@; rendered diff 3 entries (claude-code and codex no-force-push@tool.pre, codex on-review-prompt) with src_sha256 and op/pattern as separate 7- and 8-line hunks instead of one block per file; 6 hunks in total",
+    "trust_yes": "exit 0 changed=true; sync 0; list hash_matches=true for both packages; doctor healthy=true; build/index.json contains shell_regex",
+    "configs": "~/.codex/config.toml, ~/.codex/hooks.json, ~/.claude/settings.json sha256 unchanged (4e6c0fb14ffe / 955314d819c0 / f37ebe6c5e69)"
+  },
+  "real_codex_run": {
+    "thread": "01a1435b-05ba-7b61-8356-fbe577763817",
+    "model": "gpt-6.1-sol/medium (default config)",
+    "repo": "codex-b/ex02-repo whose only remote is the local bare codex-b/ex02-remote.git (main 6c88e18)",
+    "results": [
+      {
+        "n": 1,
+        "command": "cd ex02-repo; bash -c 'git push --force origin main'",
+        "result": "blocked by PreToolUse 06:16:45.864Z (stats no-force-push@tool.pre blocked)",
+        "old_rule": "would allow (git follows a quote)"
+      },
+      {
+        "n": 2,
+        "command": "cat > ex02-repo/NOTES.md <<'EOF' ... a line starting with git push --force origin main ... EOF",
+        "result": "ran, exit 0, NOTES.md written with both lines",
+        "old_rule": "would block (line-start git in heredoc data)"
+      },
+      {
+        "n": 3,
+        "command": "git -C ex02-repo push --force-with-lease origin main",
+        "result": "ran, exit 0, Everything up-to-date",
+        "old_rule": "would allow"
+      },
+      {
+        "n": 4,
+        "command": "git -C ex02-repo push --force origin main",
+        "result": "blocked by PreToolUse 06:16:56.938Z",
+        "old_rule": "would block"
+      }
+    ],
+    "remote_after": "ex02-remote.git main still 6c88e18",
+    "old_rule_check": "old EXAMPLE-01 pattern evaluated with Python re on the same four commands (pattern uses no RE2-specific syntax)"
+  },
+  "side_effect": "the same STYLE_HOME serves this Claude Code session's claude-user hooks, so they now use the new rule; before the update they blocked two of this session's Bash commands whose test strings or heredocs contained force push text"
+}

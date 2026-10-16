@@ -861,3 +861,10 @@
 - 原因：B9 记录 trust 的 diff 只去掉首尾相同行，中间整段 -/+，一个文件里有两处改动时（如 rendered entry 的 src_sha256 与正文）中间未变行全部重复显示，内容正确但冗长。
 - 修改：`internal/app/trust_diff.go` 在去掉公共首尾后按行做 LCS 对齐，输出带 3 行上下文的统一 diff，多处改动分成多个 `@@` 段，间隔不超过 6 行的改动合并为一段。改动区域的比较表超过 4M 格（约 2048×2048 行）时退回原来的整段替换，避免大文件或重复行导致工作量失控。头部 `--- approved/` / `+++ current/`、Binary、Empty file、无末尾换行提示保持不变；JSON 输出的 `source_diff`/`rendered_diff` 字段结构不变，只是 diff 文本更短。
 - 验证：新增 `internal/app/trust_diff_test.go`：两处分离改动得到两段且中间行不重复；相邻改动合并并正确对齐插入行；新增/删除文件的行号为 0,0；无末尾换行；2100 行全改退回整段。既有 `sync_command_test` 的 trust 预览、Binary/Empty file 断言通过。双 module `make test-go`（30 个包 ok）、`make vet-go` 通过，`git diff --check` 通过。未在真实 trust 流程中重放 B9。
+
+### 2026-10-16 — M1B-EXAMPLE-02 / M1B-TRUST-01 真实环境更新与 Codex 实测
+
+- 按用户指示用 819147a 按手册 §1 重建 `~/.local/lib/style-m1b/style`（先写 style.new 再 mv），sha256 9c137245… → 3982860d…。terse-reviewer 是复制安装（link=no），对已安装包再次 install 被拒（提示用 sync/trust），因此同 B9 把新 STYLE.yaml 复制到 `~/.style-m1b/packages/terse-reviewer`。
+- sync 退出 3（1 个文件变化）→ trust 预览退出 1：新 diff 中 source 为一段 `@@ -59,10 +59,9 @@`，rendered 三个 entry 的 src_sha256 与 op/pattern 各成独立小段（共 6 段），不再整段 -/+ → `trust --yes` 退出 0；随后 sync 0、两包 hash_matches、doctor healthy，Codex config.toml/hooks.json 与 Claude settings.json 哈希不变。
+- Codex 真实会话 01a1435b（codex-user，gpt-6.1-sol/medium），临时仓库 ex02-repo 只连本地 bare 远端：`cd ex02-repo; bash -c 'git push --force origin main'` 被 PreToolUse 拦截；写入含以 git 开头 force push 行的引号 heredoc 文档运行成功；`--force-with-lease` 运行成功（Everything up-to-date）；直接 `git -C ex02-repo push --force origin main` 被拦截。stats 两条 blocked，远端 main 仍为 6c88e18。用旧 EXAMPLE-01 pattern 对同样四条命令复核：第 1 条旧规则会放行、第 2 条会误拦，新规则两处都改正。
+- 同一 STYLE_HOME 也服务本 Claude 会话的 claude-user hook，更新后本会话随之使用新规则；Claude 配置文件未改动。证据 `docs/review/M1B-EXAMPLE-02-REAL-2026-10-16.json`；本项仅文档/证据变化，验证 JSON 语法与 `git diff --check`。
