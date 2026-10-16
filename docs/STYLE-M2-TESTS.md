@@ -89,7 +89,7 @@ Codex 真实配置由 agent 执行，步骤见 M2-PREP 建立的 `docs/STYLE-M2-
 
 - [x] **M2-PREP-02 Codex 独立探针准备**：`test_probe_codex_m2.py` 三项通过（完整正文/角色/重复/失败拒绝、stats 行与总量和折叠行拒绝、原生观察白名单），全部采集器 50 项 OK。仅准备通过，B1–B4 仍需真实运行结果。
 
-- [?] **M2-B1 native hook 真实触发**：安装含 native 规则的包后，真实 Codex 会话中原生命令按配置的事件和 matcher 执行，rollout/OTel 可见；卸载后不再执行且配置字节还原。
+- [x] **M2-B1 native hook 真实触发**：codex-user/plugin 两路线的 SessionStart、Bash PreToolUse 各一次，Read matcher 不触发；白名单观察、OTel、rollout 和请求全文相符。卸载后额外真实会话无 hook/span/正文，配置字节与权限还原。只声明 exec 对用户哈希/插件登记的接受，不声明首次 TUI 工作区信任。证据：[M2-B1 双路线报告](review/M2-B1-CODEX-2026-10-17.json)；见 `docs/PROGRESS.md` M2-B1。
 - [?] **M2-B2 native 与 STYLE hook 共存**：同一事件上 native 条目与 STYLE 自身 hook 各执行一次，不重复、不互相覆盖；信任提示行为与 M1 B1 一致或按 D1 记录差异。
 - [?] **M2-B3 stats 真实汇总**：真实会话产生的 `stats.jsonl` 经 `style stats` 汇总后，注入次数与 rollout 中 hook 上下文条数一致。
 - [?] **M2-B4 跨包去重真实投递**：两个包含相同正文规则时，真实会话只注入一次。

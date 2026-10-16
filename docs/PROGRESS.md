@@ -1426,3 +1426,11 @@ PY
 - 手册 §4 补构建/两路线命令、证据边界和失败保留。脚本不覆盖旧 scratch；不会把 exec 的哈希/插件接受等同于 TUI 工作区信任。没有调用 Claude、提前关闭 D4/D5 或 T40/T50。
 - 复核：已读取 OpenAI Docs 的 hooks/config-reference 原生接口说明，使用已固定的本机 codex-cli 0.159.3，而非依据官网当前默认覆盖旧版本；本机已配置 Responses provider，未探查/输出其连接值。STYLE 固定 T30 构建仍存在，SHA256 `c35d85bd70c4bd575e5eaf401662870b45867b419995e2747a5917c57952ab8c`。
 - 验证：`PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s testdata/manual -p 'test_*.py'` 50 项 OK，新增三项验证 marker 不等于完整正文、用户/工具角色不算 developer 投递、重复/失败回合拒绝；stats 合计/每行/额外折叠行/partial 拒绝；真实执行原生 observer，确认只保存 fixture/event/session_id 和 0600。源码 AST、当前文档本地链接/围栏与 `git diff --check` 通过。此提交只标准备通过，B1–B4 未宣称真实运行成功。
+
+
+### 2026-10-17 — M2-B1 native hook 真实触发 `[x]`
+
+- 真实结果：codex-user/plugin 两路线的 SessionStart、Bash PreToolUse 各一次，Read matcher 不触发；白名单观察、OTel、rollout 和请求全文相符。卸载后额外真实会话无 hook/span/正文，配置字节与权限还原。只声明 exec 对用户哈希/插件登记的接受，不声明首次 TUI 工作区信任。
+- 原生命令与证据：`probe_codex_m2.py --style <固定 T30 构建> --route codex-user|codex-plugin --scratch <各自空目录> --output <私有报告>`，两路线脚本均 exit 0、四项 check 均 true。源码提交 f76b37e，固定 codex-cli 0.159.3；STYLE SHA256 `c35d85bd70c4bd575e5eaf401662870b45867b419995e2747a5917c57952ab8c`。实际参数、时间、源码/原始报告摘要和本条事实见 `docs/review/M2-B1-CODEX-2026-10-17.json`。
+- 归档仅提取本条白名单结果，不写连接配置、provider 地址、鉴权信息或原始 prompt；真实推理使用用户已有 Responses 服务，未调用 Claude 或改变额度相关状态。原始日志在两份私有 scratch 中保留；未修改日常安装。
+- 验证：重算两份原始报告的 SHA256，核对源码/固定二进制摘要与本条双路线 passed=true、抽取结果逐字段相同；JSON 可解析、当前文档链接/围栏、追加式日志和 `git diff --check` 通过。源码/采集器沿用 f76b37e 已通过的 50 项，无 Go 生产代码改动，不重复已通过的 Go 回归。
