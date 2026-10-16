@@ -834,3 +834,10 @@
 - 最终验证：清理 CODEX_HOME/CODEX_SANDBOX、临时 Go 缓存、GOPROXY=off/GOSUMDB=off，双 module `make test-go`（30 个包 ok）与 `make vet-go` 通过；`test_measure_*.py` 12 项通过；`git diff --check` 通过。
 - 保留项：B0.6 继承宿主 `CODEX_SANDBOX` 时 agenthooks 的 `TestCopilotDetection` 失败，按既定策略只记录（清理后通过），不属于里程碑验收。已知限制：示例 force push 规则仍是正则；B7 用本地 stub；B11 不等于 U5 的 1000 次基准；trust 的 rendered diff 冗长；Codex 留下空插件缓存目录。
 - 环境现状：两包仍以 codex-user / claude-user 安装在 `~/.style-m1b`，Codex 工作区 codex-b 已被用户信任；本地 OTLP sink 为临时进程。
+
+### 2026-10-16 — CODEX-07/B7 补做真实 GitHub MCP 调用
+
+- 用户指示“B7 做一次真实的，创建个简单 PR，用完关闭”。从 origin/main（d3c0874）建临时分支 `style-m1b-b7-probe-20261016`，只加一个说明文件后推送；本地 main 的 79 个未推送提交未推送。
+- 单次挂载 GitHub 远程 MCP：`-c mcp_servers.github.url="https://api.githubcopilot.com/mcp/"`、`bearer_token_env_var="GITHUB_PAT"`（值取自 `gh auth token`，未打印、未写入配置），并只对 `create_pull_request` 设 `approval_mode="approve"`。
+- 会话 01a14310：stats 04:55:27.280Z `before-create-pr@tool.pre output`，rollout 04:55:27.281Z 注入“Before creating a pull request, confirm the branch and test status.”，04:55:28.807Z MCP 调用完成；GitHub 显示 inxups/style-cli#1 创建于 04:55:28Z，注入在真实调用之前。
+- 清理：`gh pr close 1` 附评论，closedAt 04:55:53Z、未合并；删除远端与本地临时分支及 worktree，远端只剩 main。已关闭的 PR 记录会留在 GitHub 上，无法删除。证据 R2 JSON 的 `B7.real_run`；仅文档/证据变化。

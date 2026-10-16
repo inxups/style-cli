@@ -104,7 +104,7 @@
     "restore": "original copied back, sync exit 3, trust --yes, sync 0, list hash_matches=true"
   },
   "B7": {
-    "status": "pass (local stub MCP)",
+    "status": "pass (local stub, then real GitHub MCP)",
     "stub": "testdata/manual/github_mcp_stub.py mounted per run with -c mcp_servers.github.command/args; no network",
     "denied_attempt": {
       "thread": "01a142fc-8e37-7541-824f-dfb0b2d34164",
@@ -119,7 +119,19 @@
       "rollout_hook_context": "Before creating a pull request, confirm the branch and test status. (04:34:17.791Z)",
       "tool_result": "STYLE_M1B_MCP_STUB: no pull request was created (04:34:17.821Z)"
     },
-    "limits": "Real GitHub MCP server not used to avoid creating an external pull request."
+    "limits": "Stub run covers the approval-denied path; the real run covers the GitHub remote MCP server. The local GitHub MCP server binary/docker image was not tested.",
+    "real_run": {
+      "authorization": "user instruction 2026-10-16: do one real B7, create a simple PR, close it after use",
+      "server": "GitHub remote MCP https://api.githubcopilot.com/mcp/ mounted per run with -c mcp_servers.github.url and bearer_token_env_var=GITHUB_PAT (value from gh auth token, never printed or stored)",
+      "extra_config": "-c mcp_servers.github.tools.create_pull_request.approval_mode=\"approve\"",
+      "branch": "style-m1b-b7-probe-20261016 from origin/main d3c0874 with one throwaway file docs/review/B7-PROBE.txt (commit b0c3eb3); local main's unpushed commits not pushed",
+      "thread": "01a14310-731c-7ff1-bfaf-524e98f26224",
+      "stats": "terse-reviewer/before-create-pr@tool.pre output 04:55:27.280489Z",
+      "rollout_hook_context": "Before creating a pull request, confirm the branch and test status. (04:55:27.281Z)",
+      "tool_result": "McpToolCall github/create_pull_request completed 04:55:28.807Z; model replied https://github.com/inxups/style-cli/pull/1",
+      "github": "inxups/style-cli#1 createdAt 04:55:28Z (after the injection)",
+      "cleanup": "gh pr close 1 with comment, closedAt 04:55:53Z, mergedAt null; remote and local probe branch and worktree deleted; remote heads only main. A closed PR record stays on GitHub (cannot be deleted)."
+    }
   },
   "B10": {
     "status": "pass",
