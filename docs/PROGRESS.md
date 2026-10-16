@@ -820,3 +820,10 @@
 - 基线：用户在测试中自行把 model/effort 改为 gpt-6.1-sol/medium，10:48 备份不能直接 cmp。脚本按托管标记去掉 config.toml 头部 STYLE 区与末尾 agenthooks 区得到预期字节，与 10:48 备份逐行比较仅 model、model_reasoning_effort 两行不同（只比较哈希，不输出凭据），凭据行一致。
 - 卸载：手册 §7 单行 env 依次卸载 m1b-probes、terse-reviewer，均退出 0 并更新两条路线，list 无包。config.toml 与预期逐字节相同，hooks.json 不存在，config 中唯一的 “style” 为用户自己的 `[projects."…/style-cli"]`；Claude settings 去掉 hooks 后与卸载前完全相等，CLAUDE.md 不存在。
 - 重装（B1 前半）：`install example/terse-reviewer --harness codex,claude-code --route codex=codex-user --route claude-code=claude-user --set max_findings=10 --yes` 后 Codex 两文件与卸载前逐字节相同（固定订阅面，摘要不变），Claude 恢复 12 条 hook。证据 R2 JSON 的 B8；仅文档/证据变化。
+
+### 2026-10-16 — CODEX-01/B1 `[x]` 全新安装与信任次数
+
+- B8 卸载后全新重装第一包，在 Terminal 面板启动 `codex -c check_for_update_on_startup=false`。用户确认一次工作区“Trust this folder?”，Codex 在 config.toml 写入 `[projects."…/codex-b"] trust_level = "trusted"`；随后直接进入输入框，没有 hook 信任提示。用户按 F2 查看的两条警告：priority 服务档位不受支持、`-c` 覆盖需嵌入模式，均与 hook 无关。
+- 用户发送“只回复 B1_TUI…”：会话 01a14304 的 rollout 含静态 developer_instructions 与 SessionStart hook 上下文（只装第一包时仅 terse-reviewer），stats 为 session.start output + prompt dedup，模型回复 B1_TUI。
+- 第二包 install → sync → uninstall → sync → install 五步后 Codex config.toml/hooks.json 哈希始终不变，无需重新信任；最终两包均 hash_matches，Claude settings 与 B8 前逐字节相同。
+- Terminal 标签 c2 因用户已输入，agent 不能代为关闭，请用户自行关闭。证据 R2 JSON 的 B1；仅文档/证据变化。

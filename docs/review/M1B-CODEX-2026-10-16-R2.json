@@ -143,5 +143,23 @@
     "codex": "config.toml byte-identical to baseline; hooks.json absent",
     "claude": "settings.json equals pre-uninstall JSON minus hooks; CLAUDE.md absent",
     "reinstall": "Codex config.toml and hooks.json byte-identical to pre-uninstall; Claude 12 hooks restored"
+  },
+  "B1": {
+    "status": "pass",
+    "exec": "4 real codex exec sessions (M1B-CODEX-2026-10-16.json) ran preseeded hooks without a hook trust prompt",
+    "tui_fresh_install": {
+      "after": "B8 uninstall, fresh install of terse-reviewer",
+      "prompts": [
+        "Folder access 'Trust this folder?' confirmed once by the user; Codex added [projects.\"/Users/inxups/.style-m1b/manual-workspace/codex-b\"] trust_level = \"trusted\""
+      ],
+      "hook_trust_prompt": "none",
+      "warnings": [
+        "service tier priority not supported for gpt-6.1-sol",
+        "-c overrides require embedded mode"
+      ],
+      "session": "01a14304-71de-7c11-a6b7-b7b955828284: rollout has static developer_instructions and SessionStart hook context; stats session.start output then prompt dedup; model replied B1_TUI"
+    },
+    "second_package": "install, sync, uninstall, sync, install: Codex config.toml and hooks.json hashes unchanged at every step (4e6c0fb14ffe / 955314d819c0)",
+    "claude": "settings.json byte-identical to pre-B8 after final reinstall"
   }
 }
