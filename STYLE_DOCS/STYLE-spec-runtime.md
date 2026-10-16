@@ -106,7 +106,7 @@ when:
 | `tool.pre` | PreToolUse | PreToolUse | ✓ / ✓ | ✓ / ✓（U-C5） | ✓ / ✓ |
 | `tool.post` | PostToolUse | PostToolUse | ✓ / ✓ | ✓ / ✓（U-C5） | — / — |
 | `tool.error` | 无 | PostToolUseFailure | — / ✓ | — / ✓（U-C5） | — / — |
-| `subagent.start` | SubagentStart | SubagentStart | ✓（Codex F7；真实 context 投递待 U7） / — | — / — | — / — |
+| `subagent.start` | SubagentStart | SubagentStart | ✓（Codex F7；真实 context 投递经 U7 验证） / — | — / — | — / — |
 
 Codex 一列以 agenthooks `capability.go` 为准；Claude 一列来自官方文档，其中 `systemMessage` 在各事件上是否真的显示给用户待测（U-C5）。`tool.post` 上 STYLE 不用 `decision: block`（工具已经执行，不是"阻止"）。
 
@@ -121,7 +121,7 @@ Codex 一列以 agenthooks `capability.go` 为准；Claude 一列来自官方文
 
 `fallback: skip` 直接跳过并告警；`fallback: error` 时任何一步降级都让安装整体中止。
 
-在 Claude 和 Codex 上，绝大多数规则都是原生支持的。M1 里阶梯主要用在三处：Codex 的工具盲区、Codex 的 `subagent.start`（F7 和 U7 之前）、Claude 的 `replace`。
+在 Claude 和 Codex 上，绝大多数规则都是原生支持的。M1 里阶梯主要用在三处：Codex 的工具盲区、Codex 的 `subagent.start`（F7 之前；U7 已验证 F7 的真实投递）、Claude 的 `replace`。
 
 ## 6. 运行时数据（`reads`）
 

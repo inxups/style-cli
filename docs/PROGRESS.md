@@ -927,3 +927,16 @@
   - 部分验证：U2（手动登记可用，但没有自动化）、U5（731/1000 次，p95 41.6ms）、U10（只验证了 `-c`/`-m`）、U-C1、U-C3、U-C5（只验证了 PreToolUse）、U-T1（只验证了 resume）、U-V（实测版本未写入示例包的 requires）。
   - 未测：U6、U7、U9、U-C2、U-C4、U-T2–U-T6。
 - 原有各列与做法不变，适配器能力、默认值和报告都没有因此修改。只改文档。
+
+### 2026-10-16 — M1B-U7 Codex 子 agent context 投递实测
+
+- 用户指示开始 U7。探针规则 `subagent-marker` 加入 `testdata/manual/m1b-probes/STYLE.yaml`（`target: event`、`event: subagent.start`，正文无条件）。plan 中 Codex 为 native，Claude 为 skipped。
+- 真实安装：固定程序 1f2b1691（88b25b3）未重建。复制到 `~/.style-m1b/packages/m1b-probes` 后 sync 3 → trust 预览 1 → `trust --yes` 0 → sync 0，doctor healthy，index 有 codex subagent.start 条目；Codex config.toml/hooks.json、Claude settings.json/CLAUDE.md 哈希不变。
+- 会话 01a1438b-9ee2（codex-user，gpt-6.1-sol/medium）用 `spawn_agent` 启动子线程 01a1438b-b9ea。
+  - 子 agent scope 的 stats 07:09:53.101Z 记 `subagent-marker@subagent.start output`，摘要与正文一致。
+  - 子线程 rollout 07:09:53.102Z 有内容逐字相同的 `hooks.additional_context` developer 消息。
+  - 父线程 main scope 与 rollout 中没有这条注入。
+  - 结论：U7 成立，F7 留在 M1。
+- 附带核对：子 agent 通过 code-mode `exec` 工具运行命令。今天的主会话 rollout 也都走这个工具（861 次），不是新的工具路径。
+- 还原：已安装副本恢复原字节，sync 3 → trust --yes 0 → sync 0，两包 hash_matches，index 无 subagent 条目，lock 与四个配置文件哈希和探针前一致。仓库 fixture 保留新规则，README 注明它会进入每个 Codex 子 agent。
+- 文档：测试矩阵新增 CDEX-U7，B1.21、A11、e2e 同步；任务清单新增 M1B-U7；设计 §15.1 U7 与运行时规范事件表、阶梯说明同步。不覆盖嵌套子 agent、fork 启动、子 agent 内的工具规则。

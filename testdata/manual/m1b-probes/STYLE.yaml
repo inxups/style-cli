@@ -39,3 +39,7 @@ rules:
     when:
       conditions:
         - {field: tool.input.command, op: contains, pattern: STYLE_M1B_PARALLEL}
+  - id: subagent-marker
+    target: event
+    event: subagent.start
+    text: 'M1B_SUBAGENT_CONTEXT. If asked for the subagent marker, answer with the token M1B_SUBAGENT_U7_OK.'

@@ -2,12 +2,13 @@
 
 配置步骤和验收标准见 [手动验收手册](../../docs/STYLE-M1B-MANUAL.md)。本目录提供测试包、最小 skill fixture 和只读计时收集器；不会自动注册 hook、原生 skill 或 MCP。
 
-`m1b-probes` 为第二个包，包含四条规则：
+`m1b-probes` 为第二个包，包含五条规则：
 
 - `session-info`：输出模型/effort，允许 compact 后补发，也可用于 model switch 观察。
 - `warn-shell`：仅匹配命令中的 `STYLE_M1B_WARN`，分别输出用户/模型标记。
 - `block-prompt`：仅阻断含 `STYLE_M1B_BLOCK_PROMPT` 的 prompt，提示不含原 prompt。
 - `parallel-once`：仅匹配命令中的 `STYLE_M1B_PARALLEL`，按 session 去重。
+- `subagent-marker`：在 Codex `subagent.start` 无条件注入 `M1B_SUBAGENT_CONTEXT` 标记，用于 U7 子 agent 投递验证；Claude 上 plan 为 skipped。它会进入该安装下每个 Codex 子 agent，验证完可从已安装副本中删去。
 
 从仓库根复现离线准备检查：
 
