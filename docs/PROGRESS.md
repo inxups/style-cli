@@ -848,3 +848,10 @@
 - 04:58:53Z–06:00:12Z 共 8 个会话：前 7 个各 100 次，第 8 个第 32 次时按用户“停了吧，够多了”停止（进行中那次的 span 未导出）。PreToolUse 731 条 median=36.8ms、p95=41.6ms、max=44.9ms；PostToolUse p95=28.4ms；全部 1478 条 hook p95=40.3ms；0 错误、0 重叠。各会话 p95 40.1–42.9ms，每会话前 50 次 p95 42.0ms、前 7 个会话最后 30 次 p95 41.45ms，未见随 state 增长变慢。
 - 结论：未满 1000 次，U5 记为部分完成；已有样本 p95 远低于 150ms 预算，没有要改设计（按规则生成 matcher）的迹象。第 7 个会话期间模型服务多次重连，发生在调用之间，不影响 hook span。驱动脚本的每轮计数用了 `python3 -I`，破坏收集器同目录导入而为空，改由单独进程计数，不影响样本。
 - 入库 `docs/review/M1B-CODEX-U5-SPANS-2026-10-16.jsonl`（1478 个 hook span，只保留 hook 属性，已查无主机/账号字段）；R2 JSON 新增 `U5`。复算命令见 TESTS 的 B11；仅文档/证据变化。
+
+### 2026-10-16 — M1B-EXAMPLE-02 `[x]` force push 规则改为 shell 解析
+
+- 原因：EXAMPLE-01 的正则只看“行首或分隔符后的 git”，看不到引号，以 git 开头的 heredoc 行、引号里出现在 `&&` 之后的 git 仍误拦；`bash -c "…"`、`eval`、`bash <<EOF` 漏拦。本次改动中，本会话尚未更新的 Claude hook 两次把 Bash 命令里测试字符串中的 force push 文字当成真实命令拦截（真实复现），改用编辑工具。
+- 方案：新增条件操作 `shell_regex`，不引入外部依赖。`core/when/shell.go` 尽力按 POSIX shell 拆出会执行的简单命令：去引号、续行，分隔符、子 shell、`$(...)`、反引号，`sh|bash|zsh|dash|ksh -c` 脚本与喂给它们的 heredoc，`eval` 参数，未加引号 heredoc 的命令替换；注释、重定向目标、加引号 heredoc、here-string 是数据；去掉前导赋值、保留字和 `command/builtin/exec/nohup/env`。参数按单个空格连接，含空白或特殊字符的参数重新加单引号，引号内的 `--force` 不构成独立参数。嵌套上限 8 层；输入不完整不报错。
+- 示例规则改为 `shell_regex`，pattern 锚定单条命令：`^git(?:\s+-[cC]\s+\S+)*\s+push\b.*\s(?:--force|-f|\+\S+)(?:\s|$)`。`core/spec` 接受该操作并同样做 RE2 校验，`schema/index.schema.json` 加入枚举，`STYLE-spec-runtime.md` §4.3 写明读取范围与限制（`sudo`、`xargs`、管道喂给 shell、脚本文件不展开），`STYLE-spec-compiled.md` 示例与 golden 同步（只有 src_sha256、op、pattern 变化）。
+- 验证：`shell_test.go` 25 例拆分、嵌套上限、操作语义；`FuzzShellCommands` 30 秒约 779 万次无崩溃或卡死；示例规则 30 例（新增 bash -c、eval、喂给 bash 的 heredoc、未加引号 heredoc 的命令替换、赋值加重定向、续行、引号内 +refspec 均拦截；以 git 开头的 heredoc 行、注释、单个参数内的 --force、echo 均放行）；新增 `bad shell regex` 校验例。双 module `make test-go`、`make vet-go` 通过，`git diff --check` 通过。未在真实 harness 重装复测。

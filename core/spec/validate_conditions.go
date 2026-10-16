@@ -9,7 +9,7 @@ import (
 )
 
 var effortLevels = stringSet("none", "minimal", "low", "medium", "high", "xhigh", "max")
-var conditionOperators = stringSet("regex", "contains", "equals", "not_contains", "starts_with", "ends_with")
+var conditionOperators = stringSet("regex", "shell_regex", "contains", "equals", "not_contains", "starts_with", "ends_with")
 var validEvents = stringSet("session.start", "prompt.submitted", "tool.pre", "tool.post", "tool.error", "subagent.start")
 var validHarnessNames = stringSet("codex", "claude-code")
 
@@ -157,7 +157,7 @@ func (v *validator) validateConditions(value any, rule Rule, source string) {
 		if !conditionOperators[op] {
 			v.add("invalid-schema", conditionSource, fmt.Sprintf("unknown condition op %q", op))
 		}
-		if op == "regex" {
+		if op == "regex" || op == "shell_regex" {
 			if _, err := regexp.Compile(pattern); err != nil {
 				v.add("bad-regex", conditionSource, "condition pattern is not a valid RE2 regular expression")
 			}

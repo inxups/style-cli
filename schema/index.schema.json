@@ -99,7 +99,7 @@
       "additionalProperties": false,
       "properties": {
         "field": {"type": "string", "minLength": 1},
-        "op": {"enum": ["regex", "contains", "equals", "not_contains", "starts_with", "ends_with"]},
+        "op": {"enum": ["regex", "shell_regex", "contains", "equals", "not_contains", "starts_with", "ends_with"]},
         "pattern": {"type": "string"}
       }
     },

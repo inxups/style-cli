@@ -14,7 +14,7 @@ type predicate struct {
 func compilePredicate(condition Condition) (predicate, error) {
 	compiled := predicate{Condition: condition}
 	switch condition.Op {
-	case "regex":
+	case "regex", "shell_regex":
 		regex, err := regexp.Compile(condition.Pattern)
 		if err != nil {
 			return predicate{}, err
@@ -31,6 +31,13 @@ func (p predicate) match(actual string) bool {
 	switch p.Op {
 	case "regex":
 		return p.regex.MatchString(actual)
+	case "shell_regex":
+		for _, command := range shellCommands(actual) {
+			if p.regex.MatchString(command) {
+				return true
+			}
+		}
+		return false
 	case "contains":
 		return strings.Contains(actual, p.Pattern)
 	case "equals":

@@ -79,9 +79,10 @@ when:
 
 `tool.added` 的意义：删掉一行 TODO 的补丁里也有 "TODO"，用 `tool.input` 判断会误报；`tool.added` 只看新增的行。
 
-**操作**：`regex`、`contains`、`equals`、`not_contains`、`starts_with`、`ends_with`。
+**操作**：`regex`、`shell_regex`、`contains`、`equals`、`not_contains`、`starts_with`、`ends_with`。
 
 - `regex` 用 Go RE2：**搜索语义**（不要求整串匹配），可以用 `(?i)`，不支持前后查找和反向引用，不会有回溯爆炸。在 YAML 里建议用单引号写 `pattern`。
+- `shell_regex` 把字段值当作 shell 命令读，拆成 shell 会执行的各条简单命令，**任一条**匹配 RE2 `pattern` 就满足；`^`、`$` 锚定的是单条命令。每条命令去掉引号后按单个空格连接参数，含空白或特殊字符的参数重新加单引号，所以引号里的 `--force` 不会被当成独立参数。会继续读：`;`、`&&`、`||`、`|`、`&`、换行分隔的命令，子 shell，`$(...)` 和反引号，`sh`/`bash`/`zsh`/`dash`/`ksh` 的 `-c` 脚本和喂给它们的 heredoc，`eval` 参数，未加引号 heredoc 里的命令替换。当作数据：注释、重定向目标、加引号的 heredoc 正文、here-string。命令名前的变量赋值、保留字（`if`、`then`、`do`、`!` 等）和 `command`、`builtin`、`exec`、`nohup`、`env` 会被去掉；`sudo`、`xargs`、`find -exec`、管道喂给 shell、脚本文件内容不展开。这是尽力而为的读取，不是完整 shell：输入不完整时不报错，读到结尾为止；嵌套最多 8 层。
 - 其余操作区分大小写。
 - 否定操作（`not_contains`）在字段取不到时同样算**不满足**。在可能取不到的字段上用否定操作，validate 给警告 `negated-optional-field`。
 

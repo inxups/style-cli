@@ -23,6 +23,7 @@ func TestValidateRequiredCodes(t *testing.T) {
 		{"sensitive reserved", "settings:\n  - name: token\n    sensitive: true\n", "  - id: base\n    target: system\n    text: body\n", "sensitive-reserved", nil},
 		{"condition wrong event", "", "  - id: base\n    target: event\n    event: session.start\n    text: body\n    when:\n      conditions:\n        - field: tool.name\n          op: equals\n          pattern: Bash\n", "condition-field-wrong-event", nil},
 		{"bad regex", "", "  - id: base\n    target: tool\n    tool: shell\n    text: body\n    when:\n      conditions:\n        - field: tool.input.command\n          op: regex\n          pattern: '['\n", "bad-regex", nil},
+		{"bad shell regex", "", "  - id: base\n    target: tool\n    tool: shell\n    text: body\n    when:\n      conditions:\n        - field: tool.input.command\n          op: shell_regex\n          pattern: '['\n", "bad-regex", nil},
 		{"bad effort", "", "  - id: base\n    target: system\n    text: body\n    when:\n      thinking_effort: extreme\n", "bad-effort-expr", nil},
 		{"block target", "", "  - id: base\n    target: system\n    action: block\n    text: reason\n", "action-target", nil},
 		{"block after", "", "  - id: base\n    target: tool\n    tool: shell\n    action: block\n    at: after\n    text: reason\n", "block-after", nil},
