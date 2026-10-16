@@ -1537,3 +1537,12 @@ PY
 - 三份原始终端记录和 native transcript 保存在 /private/tmp/style-m2-claude-live-20261017.5fzqcx0b 与原隔离配置中；逐一核对实际 style 行、OK、session ID/正常退出。六份用户 settings/CLAUDE.md/rules/三样式的 bytes/mode 与启动前私有 baseline 精确相同；磁盘 outputStyle 始终 M2Existing。没有复制/读取凭据或改日常配置。
 - C4 结局为“回退方案生效”。界面仅证明样式切换/冲突行为；整份 system replace 仍依据已有实际 CLI 完整请求对照：候选仍保留 20,615 字符公共 system 片段。结合 A8 的真实 CLI fallback 验证，D5 关闭，保持已批准的不提供 replace 槽位方案。报告 docs/review/M2-C4-CLAUDE-2026-10-17.json 不归档原始 prompt/登录/连接数据。
 - 验证：三会话终端与 transcript、六文件 bytes/mode、固定二进制/历史协议报告摘要、JSON 可解析、文档本地链接/围栏、git diff --check 通过；无 Go 生产变更，未重复已通过的离线回归。C2/C3、D4、最终 CI 与官方计数继续。
+
+
+### 2026-10-17 — M2-C2 Claude native 真实交互/卸载验收 `[x]`
+
+- 接 clean 7b16584。复用已认证的设计隔离配置，不读/复制凭据；在 /private/tmp/style-m2-claude-live-20261017.5fzqcx0b 创建独立 STYLE_HOME/工作目录，复制 PREP-03 固定 SHA256 32aef36d…cf81d 的 STYLE 与观察器导入闭包，安装两份等价静态包/三 native。保存既有六份文件的私有 bytes/mode 基线；list 为 3/0 native、doctor healthy。初次终端记录实际显示该新工作目录的信任确认，agent 在用户明确授权下接受，没有 bypassPermissions。
+- 安装态 session b9e583ed-805b-4a34-bcb2-6a31b932ff92：实际一次 Bash printf，工具成功输出固定文本、最终 DONE。native 观察 start/SessionStart 与 shell/PreToolUse 各一次，tool_name=Bash，Read 为零；原生 hook_success 各退出 0，hook_additional_context 各含对应完整 fixture 正文一次。无手工 observer 注入替代真实触发。
+- style.sh uninstall --all --yes --json 退出 0；六份用户配置/规则/样式 bytes/mode 精确还原，管理 rules/lock/index 删除。全新 session 2e4e01f7-0a27-4b5f-a9e7-5c347937156b 再执行一次 Bash 并 DONE，native 日志仍 2 行且摘要不变、该 session 的 hook 完成/上下文附件为零。白名单证据、启动器/固定程序摘要和恢复事实见 docs/review/M2-C2-CLAUDE-2026-10-17.json。
+- 附加请求重放：既有 replay_requests 对本次 native API blob 报 native message content hash mismatch，因此不作为通过证据；本项按矩阵以原生 hook 完成/上下文、事件及卸载恢复验收。一次私有 post 检查把 scratch 根目录中的 style-m2-claude- 也当成管理文件名，改为检查 basename 后与真实两条用户加载事件相符；未改变生产代码或模型结果。
+- 验证：重新从两个原生 transcript/终端/观察日志提取并严格断言实际事件、工具、上下文和恢复；53 项采集器单测通过，JSON、文档链接/围栏和 git diff --check 通过。无 Go 生产变更；C3 的静态去重/加载与顺序证据单独归档，D4、最终 CI/官方计数尚未关闭。

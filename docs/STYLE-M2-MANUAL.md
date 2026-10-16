@@ -1,6 +1,6 @@
 # STYLE M2 真实环境手册
 
-更新时间：2026-10-17。提供 D4/D5 的 Claude 设计探针、Codex B1–B4 和 Claude C2/C3 的隔离验收步骤。T40/T50 离线实现已完成；手册/启动器准备通过，2026-10-17 用户报告 Claude 恢复并授权 agent 交互终端代跑；C1/C4 已有真实结果，C2/C3 继续。
+更新时间：2026-10-17。提供 D4/D5 的 Claude 设计探针、Codex B1–B4 和 Claude C2/C3 的隔离验收步骤。T40/T50 离线实现已完成；手册/启动器准备通过，2026-10-17 用户报告 Claude 恢复并授权 agent 交互终端代跑；C1/C2/C4 已有真实结果，C3 证据继续归档。
 
 任务和状态以 [任务清单](STYLE-M2-TASKS.md)、[测试矩阵](STYLE-M2-TESTS.md) 为准。Claude Code 界面项已获用户授权由 agent 通过交互终端代跑；以下准备与本地协议结果不代替 M2-C1/C4。
 
@@ -119,6 +119,8 @@ PYTHONDONTWRITEBYTECODE=1 python3 testdata/manual/probe_codex_m2.py \
 2026-10-17 实际结果：固定 codex-cli 0.159.3、T30 STYLE SHA256 `c35d85bd…ab8c`，codex-user/plugin 两路线各运行三次真实模型会话，B1–B4 全部通过；每路线共存场景两份 STYLE 输出与 26 估算 token，native 两份注入单列。完整证据分别为 [B1](review/M2-B1-CODEX-2026-10-17.json)、[B2](review/M2-B2-CODEX-2026-10-17.json)、[B3](review/M2-B3-CODEX-2026-10-17.json)、[B4](review/M2-B4-CODEX-2026-10-17.json)。原始日志和连接配置保留在 `/private/tmp/style-m2-codex-user-20261017`、`/private/tmp/style-m2-codex-plugin-20261017`，不入库。Claude 实测仍受额度阻塞，M2 尚未关闭。
 
 ## 5. Claude C2/C3 最终安装验收
+
+2026-10-17 C2 实际采用已认证的 `/private/tmp/style-m2-claude-ui-20261016/claude`，没有读取/复制凭据。将 PREP-03 固定 STYLE/observer 和等价包复制到新证据目录 `/private/tmp/style-m2-claude-live-20261017.5fzqcx0b`，STYLE_HOME/工作目录独立，安装前保存既有六份用户文件基线；原待登录 PREP-03 目录保留。实际命令为该目录 `style.sh install <包> --harness claude-code --yes --json`、`launch.sh --ax-screen-reader --model sonnet --permission-mode manual --tools Bash,Read --session-id <新 ID>`；真实新工作区信任提示已确认。安装/卸载后两个真实会话及逐字节恢复通过 [C2](review/M2-C2-CLAUDE-2026-10-17.json)。下列新配置登录步骤仍是独立复现方案；无需为了本次验收再次登录。
 
 本节在额度可用后由用户操作。准备程序只执行 STYLE install 与固定 Claude 的 `--version`，不登录、不启动模型会话。它创建独立配置/工作目录，保留真实 HOME/USER/LOGNAME 以便 macOS 钥匙串工作，并清除调用者的凭据与检测变量；需要登录时由用户运行隔离的 login.sh。不会复制日常凭据。
 

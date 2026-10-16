@@ -4,7 +4,7 @@
 
 本文件是 STYLE CLI M2 的持久化任务清单。每项任务完成后必须同时补充证据（命令、fixture、golden 文件或真实运行记录），不能只根据对话上下文标记完成。测试矩阵见 [STYLE-M2-TESTS.md](STYLE-M2-TESTS.md)，执行记录追加到 [PROGRESS.md](PROGRESS.md)。
 
-当前总状态：M2a 离线实现与 A1–A9 验收已完成，包含 native、stats、跨包去重、Claude 每包 rules/旧安装迁移和 replace 回退；Codex B1–B4 在 user/plugin 两路线通过。2026-10-17 Claude 恢复，用户授权 agent 通过交互终端代跑；既有隔离目录认证和真实请求成功，C1/C4 已通过，C2/C3 继续。最终本地 test/vet/race/53 采集器/构建/40 smoke 通过，远端 Ubuntu/macOS CI、完整文档最终状态与官方 token 计数仍未闭合。M1 已关闭并只读归档（[任务](STYLE-M1-TASKS.md)、[测试](STYLE-M1-TESTS.md)）；M2 未宣布完成。
+当前总状态：M2a 离线实现与 A1–A9 验收已完成，包含 native、stats、跨包去重、Claude 每包 rules/旧安装迁移和 replace 回退；Codex B1–B4 在 user/plugin 两路线通过。2026-10-17 Claude 恢复，用户授权 agent 通过交互终端代跑；既有隔离目录认证和真实请求成功，C1/C2/C4 已通过，C3 静态安装证据继续归档。最终本地 test/vet/race/53 采集器/构建/40 smoke 通过，远端 Ubuntu/macOS CI、完整文档最终状态与官方 token 计数仍未闭合。M1 已关闭并只读归档（[任务](STYLE-M1-TASKS.md)、[测试](STYLE-M1-TESTS.md)）；M2 未宣布完成。
 
 ## 范围
 
