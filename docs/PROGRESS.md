@@ -901,3 +901,10 @@
 - 验证：`core/compile/example_force_push_test.go` 新增 11 个拦截例（`--mirror`、push option 值之后的 `-f`、`-fo`、带空格路径、sudo、嵌套 nice/timeout、xargs、find -exec、echo 管道进 bash、cat heredoc 管道进 sh、here-string 喂给 bash）与 5 个放行例（`-o -f`、`-uo --force`、`--mirrors`、带空格路径无 force、echo 管道进 tee），共 61 例。双 module `make test-go`、`make vet-go`、`git diff --check` 通过。
 - 更正：此前记录的用例数有误，EXAMPLE-02 实为 29 例（记为 30），EXAMPLE-03 实为 45 例（记为 46）。本次重新计数并改正了 TASKS 中的数字，旧 PROGRESS 条目保持不变。
 - 未做：长选项 `--push-option`/`--repo`/`--receive-pack` 后单独一个形如 `-f` 的词仍会被当成 force（保守误拦）；git alias、脚本文件内容不覆盖；真实安装尚未 sync/trust 到此版本。
+
+### 2026-10-16 — M1B-SHELL-01 / M1B-EXAMPLE-04 真实环境更新与 Codex 实测
+
+- 按用户指示用 88b25b3 按手册 §1 重建 `~/.local/lib/style-m1b/style`（先写 style.new 再 mv），sha256 3982860d… → 1f2b1691…，重建后 sync 0。旧程序备份在本会话 scratchpad `style.pre-example04`。
+- 复制新 STYLE.yaml 到 `~/.style-m1b/packages/terse-reviewer` → sync 退出 3 → trust 预览退出 1（共 6 段）→ `trust --yes` 退出 0；随后 sync 0、两包 hash_matches、doctor healthy，Codex config.toml/hooks.json 与 Claude settings.json 哈希不变。
+- Codex 真实会话 01a14377（codex-user），临时仓库 ex02-repo 只连本地 bare 远端，事先给远端设 `receive.advertisePushOptions=true`：`sudo -n git -C ex02-repo push --force origin main`、`echo 'git -C ex02-repo push --force origin main' | bash`、`git -C ex02-repo push --mirror origin` 被 PreToolUse 拦截（stats 三条 blocked）；`git -C ex02-repo push -o -f origin main` 运行成功（Everything up-to-date）。远端只有 refs/heads/main 6c88e18，未变。按 EXAMPLE-03 的读取结果和 pattern 复核：前三条旧规则会放行，第四条会误拦。
+- 同一 STYLE_HOME 也服务本 Claude 会话的 claude-user hook，本会话随之使用新程序和新规则；Claude 配置文件未改动。证据 `docs/review/M1B-EXAMPLE-04-REAL-2026-10-16.json`；本项仅文档/证据变化，验证 JSON 语法与 `git diff --check`。
