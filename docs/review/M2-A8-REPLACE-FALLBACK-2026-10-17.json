@@ -1,0 +1,153 @@
+{
+  "test": "M2-A8 replace fallback",
+  "scope": "offline built CLI with version stubs; C4 UI acceptance remains pending",
+  "binary_sha256": "38573d25583cb105dae11adf49ae55009c14487a501007399c8ec1513bae7184",
+  "source_revision": "16d5c1cdc706cbda79e98ba6d599c90b0d6eb780",
+  "cases": [
+    {
+      "provider": "codex",
+      "fallback": "degrade",
+      "format": "text",
+      "plan_status": "skipped",
+      "plan_exit": 0,
+      "unauthorized_install_exit": 1,
+      "authorized_install_exit": 0,
+      "placements": 0,
+      "user_style_tree_preserved": true,
+      "passed": true
+    },
+    {
+      "provider": "codex",
+      "fallback": "degrade",
+      "format": "json",
+      "plan_status": "skipped",
+      "plan_exit": 0,
+      "unauthorized_install_exit": 1,
+      "authorized_install_exit": 0,
+      "placements": 0,
+      "user_style_tree_preserved": true,
+      "passed": true
+    },
+    {
+      "provider": "codex",
+      "fallback": "skip",
+      "format": "text",
+      "plan_status": "skipped",
+      "plan_exit": 0,
+      "unauthorized_install_exit": 1,
+      "authorized_install_exit": 0,
+      "placements": 0,
+      "user_style_tree_preserved": true,
+      "passed": true
+    },
+    {
+      "provider": "codex",
+      "fallback": "skip",
+      "format": "json",
+      "plan_status": "skipped",
+      "plan_exit": 0,
+      "unauthorized_install_exit": 1,
+      "authorized_install_exit": 0,
+      "placements": 0,
+      "user_style_tree_preserved": true,
+      "passed": true
+    },
+    {
+      "provider": "codex",
+      "fallback": "error",
+      "format": "text",
+      "plan_status": "install-error",
+      "plan_exit": 4,
+      "unauthorized_install_exit": 1,
+      "authorized_install_exit": 4,
+      "placements": 0,
+      "user_style_tree_preserved": true,
+      "passed": true
+    },
+    {
+      "provider": "codex",
+      "fallback": "error",
+      "format": "json",
+      "plan_status": "install-error",
+      "plan_exit": 4,
+      "unauthorized_install_exit": 1,
+      "authorized_install_exit": 4,
+      "placements": 0,
+      "user_style_tree_preserved": true,
+      "passed": true
+    },
+    {
+      "provider": "claude-code",
+      "fallback": "degrade",
+      "format": "text",
+      "plan_status": "skipped",
+      "plan_exit": 0,
+      "unauthorized_install_exit": 1,
+      "authorized_install_exit": 0,
+      "placements": 0,
+      "user_style_tree_preserved": true,
+      "passed": true
+    },
+    {
+      "provider": "claude-code",
+      "fallback": "degrade",
+      "format": "json",
+      "plan_status": "skipped",
+      "plan_exit": 0,
+      "unauthorized_install_exit": 1,
+      "authorized_install_exit": 0,
+      "placements": 0,
+      "user_style_tree_preserved": true,
+      "passed": true
+    },
+    {
+      "provider": "claude-code",
+      "fallback": "skip",
+      "format": "text",
+      "plan_status": "skipped",
+      "plan_exit": 0,
+      "unauthorized_install_exit": 1,
+      "authorized_install_exit": 0,
+      "placements": 0,
+      "user_style_tree_preserved": true,
+      "passed": true
+    },
+    {
+      "provider": "claude-code",
+      "fallback": "skip",
+      "format": "json",
+      "plan_status": "skipped",
+      "plan_exit": 0,
+      "unauthorized_install_exit": 1,
+      "authorized_install_exit": 0,
+      "placements": 0,
+      "user_style_tree_preserved": true,
+      "passed": true
+    },
+    {
+      "provider": "claude-code",
+      "fallback": "error",
+      "format": "text",
+      "plan_status": "install-error",
+      "plan_exit": 4,
+      "unauthorized_install_exit": 1,
+      "authorized_install_exit": 4,
+      "placements": 0,
+      "user_style_tree_preserved": true,
+      "passed": true
+    },
+    {
+      "provider": "claude-code",
+      "fallback": "error",
+      "format": "json",
+      "plan_status": "install-error",
+      "plan_exit": 4,
+      "unauthorized_install_exit": 1,
+      "authorized_install_exit": 4,
+      "placements": 0,
+      "user_style_tree_preserved": true,
+      "passed": true
+    }
+  ],
+  "passed": 12
+}

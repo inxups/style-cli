@@ -68,3 +68,8 @@ jobs:
         env:
           PYTHONDONTWRITEBYTECODE: "1"
         run: python3 scripts/smoke.py "$RUNNER_TEMP/style"
+
+      - name: Check replace fallback and user style preservation
+        env:
+          PYTHONDONTWRITEBYTECODE: "1"
+        run: python3 scripts/check_m2_replace.py "$RUNNER_TEMP/style"
