@@ -87,6 +87,8 @@ env -u CODEX_HOME -u CODEX_SANDBOX \
 
 Codex 真实配置由 agent 执行，步骤见 M2-PREP 建立的 `docs/STYLE-M2-MANUAL.md`。投递以 Codex rollout / OTel span 为证，不以模型自述为据。
 
+- [x] **M2-PREP-02 Codex 独立探针准备**：`test_probe_codex_m2.py` 三项通过（完整正文/角色/重复/失败拒绝、stats 行与总量和折叠行拒绝、原生观察白名单），全部采集器 50 项 OK。仅准备通过，B1–B4 仍需真实运行结果。
+
 - [?] **M2-B1 native hook 真实触发**：安装含 native 规则的包后，真实 Codex 会话中原生命令按配置的事件和 matcher 执行，rollout/OTel 可见；卸载后不再执行且配置字节还原。
 - [?] **M2-B2 native 与 STYLE hook 共存**：同一事件上 native 条目与 STYLE 自身 hook 各执行一次，不重复、不互相覆盖；信任提示行为与 M1 B1 一致或按 D1 记录差异。
 - [?] **M2-B3 stats 真实汇总**：真实会话产生的 `stats.jsonl` 经 `style stats` 汇总后，注入次数与 rollout 中 hook 上下文条数一致。

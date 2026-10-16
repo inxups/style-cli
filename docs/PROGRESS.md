@@ -1417,3 +1417,12 @@ PY
 - 恢复步骤：额度可用后，若隔离登录仍需完成，执行 `/private/tmp/style-m2-claude-ui-20261016/login.sh`，再按手册依次运行 `launch-default.sh`、`launch-existing.sh`、`launch-replace.sh`、`launch-keep.sh`。现在不重复登录/发测试消息；已有 scratch、日志、协议报告与失败证据保留。没有创建轮询或自动重试任务。
 - 独立推进范围：Codex B1–B4 所需 T10–T13/T20/T30/T60 已完成，可以先准备和执行这部分独立验收，不把尚未评审的 Claude 迁移/replace 纳入。
 - 验证：仅任务/测试/手册状态与追加日志改动；当前文档本地链接、围栏和 `git diff --check` 检查，无代码/fixture/通过状态变化，不重复 Go/模型测试。
+
+
+### 2026-10-17 — M2-PREP-02 Codex 独立验收准备 `[x]`
+
+- Claude 订阅额度阻塞后，只推进依赖已完成 T10–T13/T20/T30/T60 的 Codex B1–B4。新增 `testdata/manual/probe_codex_m2.py`，复用 NativeProbe 的私有 CODEX_HOME/STYLE_HOME/work、loopback 转发与已配置的真实 Responses 服务；配置/日志不进入 Git，报告仅含白名单原生观察、完整正文摘要与次数、rollout 摘要、OTel span 和 STYLE stats。未修改 NativeProbe、STYLE 或 agenthooks 的生产边界。
+- 探针分别支持 codex-user 和 codex-plugin：SessionStart 与 Bash PreToolUse native 各一次，Read matcher 不命中；同事件 STYLE 与 native handler 各一次；生产 stats 按规则/会话逐行与日志对账，native 输出不混入 STYLE 计数；两包等价声明只编译/投递保留方一次，stats 不虚构折叠行。卸载核对配置字节/权限、hooks 文件无残留，并以额外真实会话验证 native 不再执行；插件登记使用隔离本地 marketplace，并单独由原生命令移除。
+- 手册 §4 补构建/两路线命令、证据边界和失败保留。脚本不覆盖旧 scratch；不会把 exec 的哈希/插件接受等同于 TUI 工作区信任。没有调用 Claude、提前关闭 D4/D5 或 T40/T50。
+- 复核：已读取 OpenAI Docs 的 hooks/config-reference 原生接口说明，使用已固定的本机 codex-cli 0.159.3，而非依据官网当前默认覆盖旧版本；本机已配置 Responses provider，未探查/输出其连接值。STYLE 固定 T30 构建仍存在，SHA256 `c35d85bd70c4bd575e5eaf401662870b45867b419995e2747a5917c57952ab8c`。
+- 验证：`PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s testdata/manual -p 'test_*.py'` 50 项 OK，新增三项验证 marker 不等于完整正文、用户/工具角色不算 developer 投递、重复/失败回合拒绝；stats 合计/每行/额外折叠行/partial 拒绝；真实执行原生 observer，确认只保存 fixture/event/session_id 和 0600。源码 AST、当前文档本地链接/围栏与 `git diff --check` 通过。此提交只标准备通过，B1–B4 未宣称真实运行成功。

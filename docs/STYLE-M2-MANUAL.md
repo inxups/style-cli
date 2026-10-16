@@ -1,6 +1,6 @@
 # STYLE M2 真实环境手册
 
-更新时间：2026-10-17。当前先提供 D4/D5 的 Claude 设计探针；M2-PREP 仍为部分完成。Codex B1–B4、Claude C2/C3 的最终安装验收步骤在 D4/D5 定稿及 T40/T50 闭合后补齐。
+更新时间：2026-10-17。当前提供 D4/D5 的 Claude 设计探针和 Codex B1–B4 的独立验收步骤；M2-PREP 仍为部分完成。Claude C2/C3 的最终安装验收步骤在 D4/D5 定稿及 T40/T50 闭合后补齐。
 
 任务和状态以 [任务清单](STYLE-M2-TASKS.md)、[测试矩阵](STYLE-M2-TESTS.md) 为准。Claude Code 界面项由用户执行；以下准备与本地协议结果不代替 M2-C1/C4。
 
@@ -83,3 +83,33 @@ PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover \
 `--prepare-ui` 只运行 `claude --version`，不登录或创建模型会话。七项探针测试覆盖非空目录拒绝、凭据/Codex 检测环境不继承、带空格和引号路径的 shell 语法、0700/0600 权限、三样式 fixture、观察白名单、标记命中不足以通过完整正文检查，以及实际执行五个生成脚本时保留系统身份/隔离配置、仅重写启动器不覆盖既有设置与观察记录。
 
 probe 的退出 0 表示脚本执行结束，实际结果检查 JSON 的 `protocol_status`、各 phase 的 exit/request 和正文匹配；界面验收始终单列。当前 M2-D4/M2-D5 保持 `[~]`，M2-C1/M2-C4 因登录保存待确认及订阅额度用尽记 `[~]`，等待额度可用后的真实登录与界面重试。
+
+## 4. Codex B1–B4 独立验收
+
+本部分依赖的 native/stats/跨包去重实现均已完成，可以在 Claude 额度阻塞时独立执行。由 agent 执行，不关闭任何 Claude 条目。[probe_codex_m2.py](../testdata/manual/probe_codex_m2.py) 复用既有 `NativeProbe` 的隔离 CODEX_HOME、STYLE_HOME、工作目录和只监听 loopback 的转发器，沿用日常已配置的 Responses 服务进行真实推理；连接配置仅保留在私有 scratch，不写进报告。
+
+固定当前 STYLE 源码构建；两条路线各使用新空目录：
+
+```sh
+env -u CODEX_HOME -u CODEX_SANDBOX \
+  GOPATH=/tmp/style-cli-gopath GOMODCACHE=/tmp/style-cli-gomodcache \
+  GOCACHE=/tmp/style-cli-gocache \
+  go build -trimpath -buildvcs=false -o /tmp/style-m2-codex ./cmd/style
+
+PYTHONDONTWRITEBYTECODE=1 python3 testdata/manual/probe_codex_m2.py \
+  --style /tmp/style-m2-codex --route codex-user \
+  --scratch "$(mktemp -d /tmp/style-m2-codex-user.XXXXXX)" \
+  --output /tmp/style-m2-codex-user.json
+
+PYTHONDONTWRITEBYTECODE=1 python3 testdata/manual/probe_codex_m2.py \
+  --style /tmp/style-m2-codex --route codex-plugin \
+  --scratch "$(mktemp -d /tmp/style-m2-codex-plugin.XXXXXX)" \
+  --output /tmp/style-m2-codex-plugin.json
+```
+
+- B1：原生 SessionStart 和匹配 Bash 的 PreToolUse 各运行一次，Read matcher 不运行；白名单观察、OTel span、rollout 和请求中的完整正文分别核对。卸载后再启动真实会话，观察文件不新增、没有 hook span 或正文，配置字节与权限还原。
+- B2：同一 SessionStart/PreToolUse 上 native 与 STYLE handler 各一次，来自所选 user/plugin 路线；原生命令不进入 STYLE stats。
+- B3：生产 `style stats --by rule/session` 的每行及合计与真实 runtime 记录逐项核对，STYLE 的两次 output 对应两份 rollout 全文，native 的两次注入单列，不计为 STYLE 规则输出。
+- B4：两包保留在 index，等价规则只有保留方入口；组合报告标折叠关系，真实请求和 rollout 正文均只有一份，stats 只有保留方一次 output；卸载后配置字节与权限还原。
+
+脚本不修改日常安装；插件使用隔离 marketplace 登记，卸载前由原生命令移除登记。`passed` 和四个 `checks` 都为 true 才可标通过。失败报告保留错误类型和已收集事实，原始日志仍在 scratch；不将 exec 对哈希/插件信任的接受等同于首次 TUI 工作区信任提示。三项新增采集器测试覆盖全文/角色/重复/失败拒绝、stats 行与总量/折叠行核对、原生观察器白名单，全部采集器共 50 项。
