@@ -780,3 +780,9 @@
 - 显式在前（会话 01a142e8-8fba）：`$code-review` 使 UserPromptSubmit 产生 `review-skill@skill.explicit output`，rollout 的 hook 上下文含 findings 上限文字，模型回复 M1B_SKILL_LOADED（随后拒绝复述）；resume 后让模型只执行 `cat .agents/skills/code-review/SKILL.md`，PostToolUse 记 `review-skill@tool.post dedup`。
 - 读取在前（会话 01a142e9-dbe0）：`sed -n 1,20p` → `@tool.post output`，rollout 新增同一段 hook 上下文；`head -n 5` → dedup；resume 后 `$code-review` → `@skill.explicit dedup`，模型仍按 skill 回复并引用已有上下文。
 - 三种读取形式和显式入口均被识别，同 session 仅首个入口输出。证据 R2 JSON 的 B4；仅文档/证据变化。
+
+### 2026-10-16 — CODEX-12/B12 `[x]` resume
+
+- 会话 01a142ca-fa6d（gpt-6-sol/high）以 `codex exec resume <id>` 恢复三次，均带原 model/effort。第三次加单次 OTel 导出到独立 sink（4319，与 B11 样本隔离）：SessionStart span completed 26.434ms，随后 UserPromptSubmit 23.117ms，证明 Codex 在 resume 时确实调用 hook。
+- STYLE 状态：gen/epoch 0/0，两个 seen 文件不变，prompt_count 1→2→3→4；stats 每次仅新增两条 session-info prompt dedup，没有 session.start 输出，符合设计 a8 的 `resume` 默认不触发。
+- 历史：rollout 仍是同一文件，四条用户消息按序保留；hook 上下文仅最初 03:39:21Z 一条。`RUST_LOG=debug` 只显示 hook 指标注册，不作为证据。证据 R2 JSON 的 B12；仅文档/证据变化。

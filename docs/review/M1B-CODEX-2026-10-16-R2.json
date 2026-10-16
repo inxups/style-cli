@@ -66,5 +66,15 @@
         }
       ]
     }
+  },
+  "B12": {
+    "status": "pass",
+    "thread": "01a142ca-fa6d-7440-b4b5-58099048bf6a",
+    "method": "codex exec resume <thread> with the original model/effort, three times (03:40:19Z, 03:41:10Z, 04:14:23Z)",
+    "harness_hook_run": "OTel span codex.hooks.command SessionStart outcome=completed 26.434ms at 04:14:23.773Z, followed by UserPromptSubmit 23.117ms",
+    "state": "gen/epoch 0/0 throughout; seen files unchanged; prompt_count 1->2->3->4",
+    "stats": "each resume added only terse-reviewer and m1b-probes session-info prompt.submitted dedup; no session.start output",
+    "rollout": "same rollout file appended; all four user prompts retained in order; only the original 03:39:21Z hook context exists",
+    "conclusion": "resume runs SessionStart, STYLE treats source=resume as non-triggering per design a8, history is retained"
   }
 }
