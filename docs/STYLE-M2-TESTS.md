@@ -72,7 +72,7 @@ env -u CODEX_HOME -u CODEX_SANDBOX \
   - 缺估算/摘要的旧记录保留次数、增加 unestimated，不读取当前 index 或重新估算；静态/native 无日志时不杜撰成本。与 doctor 的正常 top3/legacy/repeated_body 结果兼容。
   - 坏 JSON、截断尾行、空行、非法字段/时间/摘要/负估算/未知字段及 >=512 字节行逐项 fixture；跳过后下一行仍计入，quality 精确、partial=true、退出 0。根/后代 symlink、权限/I/O、数值溢出与取消覆盖；致命错误退出 1、stdout 无成功报告。
   - 整树字节/权限/mtime 对照证明 stats 只读且不触发 state 清理；坏行里的正文/提示词/native 命令标记不出现在 stdout/stderr，标识符控制字符转义。doctor 坏行继续有效聚合并给 stats-invalid warning。
-- [ ] **M2-A6 跨包去重**（M2-T30，以下随 D3 草案待评审，尚未实现/执行）：
+- [ ] **M2-A6 跨包去重**（M2-T30，D3 已评审，以下为实施验收清单，尚未实现/执行）：
   - 两个/三个包的等价静态/动态规则；priority（含小数）、包安装序号、包内序号与输入遍历顺序测试，index/StaticBodies 仅保留选定规则全部入口、packages 仍完整，组合 plan 文本/JSON 标 deduplicated_into，单包 plan 原 golden 保持。
   - settings/包名静态替换、空白/换行/Unicode、warn 两份正文/首句标志、不同变量名/默认值、action/条件/工具/MCP/skill/repeat/sources/reinject/reevaluate/能力差异逐项排除误合并；同包多条等价声明时整个类保留；相同 native 命令仍全部安装。
   - 源级 T001/T002/T004 检查保留；组合有效 events/always_on/session 情景与 T003 只计一次并重算分隔符；不同语义或仅运行时偶然同文不降预算；去重前超 80% 而去重后合法时可安装，真实超限仍退出 4 且无写入。
