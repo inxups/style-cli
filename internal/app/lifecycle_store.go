@@ -47,13 +47,15 @@ type lockSource struct {
 }
 
 type lockHarness struct {
-	Route      string `yaml:"route"`
-	Version    string `yaml:"version,omitempty"`
-	ConfigDir  string `yaml:"config_dir,omitempty"`
-	Surface    string `yaml:"surface,omitempty"`
-	Rendered   string `yaml:"rendered,omitempty"`
-	Trust      string `yaml:"trust,omitempty"`
-	FailClosed bool   `yaml:"fail_closed,omitempty"`
+	Route        string            `yaml:"route"`
+	Version      string            `yaml:"version,omitempty"`
+	ConfigDir    string            `yaml:"config_dir,omitempty"`
+	Surface      string            `yaml:"surface,omitempty"`
+	Rendered     string            `yaml:"rendered,omitempty"`
+	Trust        string            `yaml:"trust,omitempty"`
+	FailClosed   bool              `yaml:"fail_closed,omitempty"`
+	StaticLayout string            `yaml:"static_layout,omitempty"`
+	StaticFiles  map[string]string `yaml:"static_files,omitempty"`
 }
 
 func resolveStyleHome(explicit string) (string, error) {

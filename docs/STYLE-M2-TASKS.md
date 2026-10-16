@@ -4,7 +4,7 @@
 
 本文件是 STYLE CLI M2 的持久化任务清单。每项任务完成后必须同时补充证据（命令、fixture、golden 文件或真实运行记录），不能只根据对话上下文标记完成。测试矩阵见 [STYLE-M2-TESTS.md](STYLE-M2-TESTS.md)，执行记录追加到 [PROGRESS.md](PROGRESS.md)。
 
-当前总状态：M2 已开始，文档建立（M2-00）与基线回归（M2-01）完成；M2-D1 native 规则格式设计评审通过，M2-T10–T13、M2-T60 完成；M2-D2 stats 输出设计与 M2-T20 实现完成；M2-D3 跨包去重设计与 M2-T30 实现完成；Codex B1–B4 独立真实验收已在 user/plugin 两路线通过；D4/D5 已有本地协议补充证据和隔离界面探针，因用户报告 Claude 订阅额度用尽暂挂真实界面步骤，用户已批准迁移与回退设计并允许依据原生请求先实现 T40/T50，界面验收留待额度可用后补。OAuth 保存重试仍未确认。M1 已关闭并只读归档（[任务](STYLE-M1-TASKS.md)、[测试](STYLE-M1-TESTS.md)），唯一遗留为 M2-CARRY-01。
+当前总状态：M2 已开始，文档建立（M2-00）与基线回归（M2-01）完成；M2-T10–T13、T20、T30、T40、T60 与 A1–A7 已完成；Codex B1–B4 独立真实验收已在 user/plugin 两路线通过；D4/D5 设计已批准，T40 的每包 rules/旧安装迁移已通过离线验收，接下来验证 T50 的 replace 回退。因用户报告 Claude 订阅额度用尽，真实界面步骤留待额度可用后补；OAuth 保存重试仍未确认。M1 已关闭并只读归档（[任务](STYLE-M1-TASKS.md)、[测试](STYLE-M1-TESTS.md)），唯一遗留为 M2-CARRY-01。
 
 ## 范围
 
@@ -70,7 +70,7 @@ M1 中已记录的已知限制（如 force-push 示例规则对 `--push-option` 
 - [x] **M2-T13 CLI native 生命周期**：install 在写入前提供完整 capability/native 预览与确认回调，文本/JSON 披露命令和路线信任；批准快照保存 native 渲染字段，sync 对普通包/link 的 native 字段、增删、声明 timeout 和顺序变化均退出 3，配置/信任修复也必须 trust 确认。trust 单列 native 前后差异，保留其他包的未批准 link native 字节；list 显示条目数，doctor 以批准快照核对一致/缺失/改动及 codex-user 信任哈希。依赖：M2-T12。测试：M2-A4；双 module fresh test/vet、相关 race、采集器通过，见 `docs/PROGRESS.md` M2-T13。
 - [x] **M2-T20 `style stats` 命令**：实现默认 168h 的 rule/session 文本与 JSON format 1，六字段计数、稳定排序与质量报告；`core/state.ScanStats` 固定两层目录、有界逐行严格解码并跳过坏行/超长行/symlink，全程只读，I/O/取消/溢出退出 1 且不输出成功报告。doctor 复用扫描器，保持正常 top3/legacy/repeated_body，坏行继续有效聚合并告警。依赖：M2-D2。测试：M2-A5；固定 fixture/四份 golden、双 module fresh test/vet、state/app race、采集器 40 项与扩展 smoke 36 项通过，见 `docs/PROGRESS.md` M2-T20。
 - [x] **M2-T30 跨包去重实现**：compile 在静态替换、规范化与排序后按整条规则的全部 placement/执行语义等价折叠，保留最小 order；同包多重声明类和 native 保留，关系仅用于冷路径报告，index format 1 与 runtime 状态键不变。组合 install/trust 展示参与包的 `deduplicated_into`、原单条估算和零新增成本；源级预算独立，有效 events/always_on/session/T003 重算。依赖：M2-D3。测试：M2-A6；两份组合报告 golden、双 module fresh test/vet、compile/tokens/engine/state/app/conformance race、采集器 40 项、扩展 smoke 40 项通过，见 `docs/PROGRESS.md` M2-T30。
-- [ ] **M2-T40 Claude rules 静态位置与迁移**：按已批准 D4 契约实现每包 rules、旧安装迁移和冲突/还原。依赖：M2-D4 设计批准与已有原生请求证据（用户批准先实现、界面后补）。测试：M2-A7。
+- [x] **M2-T40 Claude rules 静态位置与迁移**：已实现 `claude_rules`、每包 rules、安装记录布局/摘要、首次路线重建迁移、迁移报告与旧 doctor 兼容；冲突/漂移拒绝、外部字节/权限还原、批准隔离和回滚通过。A7 的 20 个旧布局生命周期场景与实际旧/新二进制 16 组升级、双 module fresh test/vet、相关 race、50 项采集器与 40 项 smoke 通过，见 `docs/PROGRESS.md` M2-T40 和 [升级报告](review/M2-A7-RULES-MIGRATION-2026-10-17.json)。依赖：M2-D4 设计批准与已有原生请求证据；C1/C3 界面验收后补，不据此关闭。
 - [ ] **M2-T50 output style replace**：按已批准 D5 回退方案不实现新槽位，完成 A8 fallback 与用户样式不变的真实 CLI 验证后关闭。依赖：M2-D5 设计批准。测试：M2-A8。
 - [x] **M2-T60 conformance 扩展**：共享路线测试新增三路线 × 三种文件尾的 9 次 native 安装往返，核对状态、独立命令、用户路线信任、幂等、卸载无残留、外部字节与权限还原；46 个真实 codec payload 在附加 native 声明后仍匹配原 stdout golden/白名单，runtime index 只有源文件摘要变化，统计记录除时间外与基线相同。依赖：M2-T12。测试：M2-A3、M2-A9；conformance race/vet、最终 native 构建与 smoke 32 项通过，见 `docs/PROGRESS.md` M2-T60。
 

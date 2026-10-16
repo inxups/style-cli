@@ -98,6 +98,7 @@ func writeInstallPreview(out io.Writer, result InstallResult) {
 	if len(result.Reports) > 0 {
 		writePlanText(out, PlanResult{Package: result.Package, Version: result.Version, Diagnostics: result.Diagnostics, Reports: result.Reports})
 	}
+	writeStaticMigrations(out, result.StaticMigrations)
 	writeNativeHooks(out, result.Native)
 }
 
@@ -218,6 +219,7 @@ func runUninstall(ctx context.Context, service *Service, args []string, out, err
 	for _, name := range result.Removed {
 		fmt.Fprintf(out, "uninstalled %s\n", name)
 	}
+	writeStaticMigrations(out, result.StaticMigrations)
 	for _, route := range result.Routes {
 		fmt.Fprintf(out, "route updated: %s\n", route)
 	}

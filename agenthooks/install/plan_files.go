@@ -262,6 +262,10 @@ func ApplyFiles(ctx context.Context, changes []PlannedFile) error {
 			cleanup()
 			return err
 		}
+		if err := validatePlannedPath(change); err != nil {
+			cleanup()
+			return err
+		}
 		if change.Remove && change.Before == nil {
 			continue
 		}
@@ -346,6 +350,9 @@ func ApplyFiles(ctx context.Context, changes []PlannedFile) error {
 			return fail(err)
 		}
 		change := item.change
+		if err := validatePlannedPath(change); err != nil {
+			return fail(err)
+		}
 		current, err := os.ReadFile(change.Path)
 		exists := err == nil
 		if err != nil && !errors.Is(err, os.ErrNotExist) {
@@ -389,12 +396,41 @@ func Uninstall(ctx context.Context, m Manifest, t Target) error {
 }
 
 func validatePlannedPath(change PlannedFile) error {
-	if change.Root == "" {
+	return CheckPath(change.Root, change.Path)
+}
+
+// CheckPath checks containment and existing path components before a managed
+// file is read or written. It rejects symlinks, including dangling links.
+func CheckPath(root, path string) error {
+	if root == "" {
 		return nil
 	}
-	rel, err := filepath.Rel(change.Root, change.Path)
+	rel, err := filepath.Rel(root, path)
 	if err != nil || filepath.IsAbs(rel) || rel == ".." || strings.HasPrefix(rel, ".."+string(filepath.Separator)) {
-		return fmt.Errorf("install: planned file %q escapes target root %q", change.Path, change.Root)
+		return fmt.Errorf("install: planned file %q escapes target root %q", path, root)
+	}
+	current := filepath.Clean(root)
+	parts := strings.Split(rel, string(filepath.Separator))
+	for i := -1; i < len(parts); i++ {
+		if i >= 0 {
+			current = filepath.Join(current, parts[i])
+		}
+		info, err := os.Lstat(current)
+		if errors.Is(err, os.ErrNotExist) {
+			return nil
+		}
+		if err != nil {
+			return fmt.Errorf("install: inspect %s: %w", current, err)
+		}
+		if info.Mode()&os.ModeSymlink != 0 {
+			return fmt.Errorf("install: symbolic link in managed path: %s", current)
+		}
+		if i < len(parts)-1 && !info.IsDir() {
+			return fmt.Errorf("install: managed parent is not a directory: %s", current)
+		}
+		if i == len(parts)-1 && !info.Mode().IsRegular() {
+			return fmt.Errorf("install: managed file is not regular: %s", current)
+		}
 	}
 	return nil
 }

@@ -85,7 +85,7 @@ func knownEvent(event string) bool {
 
 func knownStaticSlot(slot string) bool {
 	switch slot {
-	case "developer_instructions", "model_instructions_file", "claude_md":
+	case "developer_instructions", "model_instructions_file", "claude_md", "claude_rules":
 		return true
 	default:
 		return false

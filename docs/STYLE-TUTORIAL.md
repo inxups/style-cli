@@ -68,7 +68,7 @@ go build -o ~/.local/bin/style ./cmd/style
 | `CLAUDE_CONFIG_DIR` | Claude Code 配置目录 | `~/.claude` |
 | `CODEX_HOME` | Codex 配置目录 | `~/.codex` |
 
-`style` 是否“检测到”某个 harness，取决于它的可执行文件在 `PATH` 中，或者配置目录里已有它的配置文件（Codex：`config.toml` / `hooks.json`；Claude：`settings.json` / `CLAUDE.md`）。
+`style` 是否“检测到”某个 harness，取决于它的可执行文件在 `PATH` 中，或者配置目录里已有它的配置文件（Codex：`config.toml` / `hooks.json`；Claude：`settings.json` / `CLAUDE.md` / `rules/`）。
 
 ---
 
@@ -197,7 +197,7 @@ when:
 
 | target | 含义 | 常用字段 |
 |---|---|---|
-| `system` | 常驻指令。无 `when` 且正文静态 → 写进静态位置（Claude 的 `CLAUDE.md`、Codex 的 `developer_instructions`），不走 hook；否则走动态评估 | — |
+| `system` | 常驻指令。无 `when` 且正文静态 → 写进静态位置（Claude 的每包 rules 文件、Codex 的 `developer_instructions`），不走 hook；否则走动态评估 | — |
 | `tool` | 某类工具调用前/后 | `tool:`（分类，如 `shell`、`file.edit`、`file.write`）或 `names:`（原生工具名）、`at: before\|after` |
 | `mcp` | 某个 MCP 工具 | `mcp: "server/tool"`，支持 `server/*` |
 | `skill` | 某个 skill 被使用 | `skill: <名字>`，同时覆盖隐式（模型自己用）和显式（用户点名） |
@@ -316,7 +316,7 @@ Package: team-style
 Adapter: claude-code
 - style: native (inject system)
   needs: agent
-  -> static:claude_md inject (native)
+  -> static:claude_rules inject (native)
 - model-info: native (inject system)
   needs: agent, model
   -> session.start inject (native); capabilities: add-context
@@ -347,7 +347,7 @@ Token (estimated; calibration pending):
 
 怎么读：
 
-- **每条规则一行状态 + 若干 `->` 投递位置。** `static:claude_md` 表示写进 `CLAUDE.md`，不走 hook；`session.start` / `prompt.submitted` / `tool.pre` / `tool.post` 是 hook 评估点。`model-info` 因为带运行时变量，同时挂在 `session.start` 和 `prompt.submitted`（模型切换后会补发一次）。
+- **每条规则一行状态 + 若干 `->` 投递位置。** `static:claude_rules` 表示写进每包 `rules/style-<名字>.md`，不走 hook；`session.start` / `prompt.submitted` / `tool.pre` / `tool.post` 是 hook 评估点。`model-info` 因为带运行时变量，同时挂在 `session.start` 和 `prompt.submitted`（模型切换后会补发一次）。
 - **状态含义：**
 
   | 状态 | 意思 |
@@ -393,6 +393,7 @@ Adapter: codex
 
 ```bash
 cp -p ~/.claude/settings.json ~/.claude/CLAUDE.md /safe/place/ 2>/dev/null
+cp -Rp ~/.claude/rules /safe/place/ 2>/dev/null
 cp -p ~/.codex/config.toml ~/.codex/hooks.json /safe/place/ 2>/dev/null
 ```
 
@@ -440,7 +441,7 @@ style install: package "team-style" is already installed; use sync/trust or unin
 
 | 路线 | 写到哪里 | 说明 |
 |---|---|---|
-| `claude-user` | `$CLAUDE_CONFIG_DIR/settings.json` 的 hooks + `CLAUDE.md` 托管块 | Claude 的唯一路线；是否信任工作区由 Claude 自己决定，`doctor` 会提示 `route-trust-unverified`，这是预期的 |
+| `claude-user` | `$CLAUDE_CONFIG_DIR/settings.json` 的 hooks + `rules/style-<名字>.md` | Claude 的唯一路线；是否信任工作区由 Claude 自己决定，`doctor` 会提示 `route-trust-unverified`，这是预期的 |
 | `codex-user` | `$CODEX_HOME/hooks.json` + `config.toml` | 随安装预置 hook 信任摘要；**推荐** |
 | `codex-plugin` | 插件目录 `$STYLE_HOME/adapters/codex/plugin` | Codex 的默认首选，但插件的 marketplace 登记/启用 STYLE 不会自动完成，需要手动管理 |
 
@@ -448,12 +449,12 @@ style install: package "team-style" is already installed; use sync/trust or unin
 
 ### 6.4 安装后写入了什么
 
-Claude 的 `CLAUDE.md` 里出现托管块（`max_findings=5` 已代入）：
+Claude 的 `rules/style-team-style.md` 内容如下（`max_findings=5` 已代入）：
 
 ```
-<!-- style:team-style -->
+<!-- style-rules:v1 team-style -->
 本仓库评审先给结论，每条问题带 file:line，最多 5 条。
-<!-- /style:team-style -->
+<!-- /style-rules:v1 team-style -->
 ```
 
 Claude 的 `settings.json` 里出现若干 hook，每条形如：
@@ -474,6 +475,8 @@ Claude 的 `settings.json` 里出现若干 hook，每条形如：
 
 Claude 按编译结果订阅事件（本例：`PostModelSwitch`、`PostToolUse` 的 `Edit/MultiEdit/NotebookEdit/Write`、`PreToolUse` 的 `Bash`、`SessionStart`、`UserPromptSubmit`）。Codex 则固定订阅五类事件，工具范围为 `Bash`、`apply_patch` 和 MCP；静态文本进入 `config.toml` 的根级 `developer_instructions` 托管区，并写入 `hooks.state` 信任摘要。
 
+升级旧安装不会立即改文件。首次成功的 `install`、`sync`、`trust` 或 `uninstall` 会把仍有效的旧 `CLAUDE.md` 托管块迁到 rules，并报告包名和新旧路径；卸载目标直接删除，不生成新文件。单纯搬迁无需额外 trust，其他包的未批准源码仍使用批准基线。`doctor` 对有效旧安装提示 `static-migration-pending`。同名外部文件、管理文件漂移、symlink 或损坏旧标记会使操作退出 1；先恢复批准版本或解决冲突，再重试。STYLE 保留旧块外的字节与权限。
+
 **让改动生效：新开 Claude / Codex 会话。** Claude 2.1.300的FINAL-06已实测：当前进程新增Read matcher可直接生效；此观察不保证所有版本、事件或Codex也会热加载。Claude 首次在工作区使用时按它自己的流程确认信任，可在会话里用 `/hooks` 查看已加载的 hook。
 
 ---
@@ -484,7 +487,7 @@ Claude 按编译结果订阅事件（本例：`PostModelSwitch`、`PostToolUse` 
 
 新开会话后依次观察：
 
-1. **静态规则**：问一句“你看到哪些评审约定？”，应能复述 `CLAUDE.md` / `developer_instructions` 里的内容。
+1. **静态规则**：核对 Claude rules / Codex `developer_instructions` 的加载证据；模型复述只能作为辅助，不能代替请求或原生加载观察。
 2. **动态规则**：本例的 `model-info` 应让模型知道当前模型名。
 3. **阻断**：让它执行 `git push --force`，应看到被拒绝并带上规则里的理由。
 4. **警告**：让它写入一行 `// TODO`，用户界面应看到警告全文。
@@ -594,7 +597,7 @@ style trust team-style --yes   # 批准并应用
 trust complete (changed=true, expired sessions=0)
 ```
 
-首次批准完成后，编辑 `team-style/prompts/style.md`，再运行 `style sync`：它会列出变化并直接更新 `CLAUDE.md`，退出码 0；无需每次重新 `trust`。再运行一次得到 `sync complete (changed=false, expired sessions=0)`。每次同步仍会校验规则；native 定义和顺序变化需重新 `trust`，replace 等策略变更也需显式授权。
+首次批准完成后，编辑 `team-style/prompts/style.md`，再运行 `style sync`：它会列出变化并直接更新 `rules/style-team-style.md`，退出码 0；无需每次重新 `trust`。再运行一次得到 `sync complete (changed=false, expired sessions=0)`。每次同步仍会校验规则；native 定义和顺序变化需重新 `trust`，replace 等策略变更也需显式授权。
 
 M1-FINAL-03 用真实 CLI 重测：源码改动会正确出现在 `list`、changed files 和 Source diff 中；旧教程记录的漂移缺口未复现。首次未改源码的链接也要授权，应与真实文件变化区分。完整结果见 [link 生命周期证据](review/M1-FINAL-03-LINK-2026-10-16.json)。多个包同时需要批准时，`trust <name>` 只批准指定的那个包，其余未批准包保持之前批准的快照。
 
@@ -629,7 +632,7 @@ route updated: codex=codex-user
 
 - 也需要确认：非交互环境不加 `--yes` 报 `uninstall requires confirmation; pass --yes in non-interactive mode`。
 - 卸载一个包会**重新编译剩余的包**并更新各 harness 路线；最后一个包卸载时，STYLE 在 harness 配置里的托管区被清掉。你自己写的配置、其他工具的 hook 保持不变。
-- 卸载后不再有内容的文件会被删除。沙箱实测：`CLAUDE.md`、`hooks.json` 和原本为空的 `config.toml` 在卸载最后一个包后消失，而原有内容为 `{}` 的 `settings.json` 保留。
+- 卸载最后一个包会删除未漂移的 STYLE rules 文件、仅含旧 STYLE 块的 `CLAUDE.md`、`hooks.json` 和原本为空的 `config.toml`；用户 rules 和旧块外的正文保留，原有内容为 `{}` 的 `settings.json` 也保留。
 - 卸载后 `style list` 显示 `No packages installed.`
 
 ---
@@ -759,7 +762,7 @@ $STYLE_HOME/                       默认 ~/.style
 
 $CLAUDE_CONFIG_DIR/                默认 ~/.claude
 ├── settings.json                  合并了 owner=style 的 hooks
-└── CLAUDE.md                      <!-- style:<包名> --> 托管块
+└── rules/style-<name>.md           每个有效静态包一份，整文件受摘要保护
 
 $CODEX_HOME/                       默认 ~/.codex
 ├── hooks.json                     STYLE 固定五类事件的 hook + 包声明的 native hook
@@ -870,7 +873,7 @@ style plan ./pkg --harness codex,claude-code --json
 - 安装来源只有本地包目录或 `*.style.md` 文件；git 来源、`update`、`--frozen`、`explain`、`probe` 命令未实现。
 - 只支持 Claude Code 与 Codex；Gemini、OpenCode、Cursor 等 provider 未接入。
 - 只有用户级路线；项目级路线、Claude 插件路线未实现。
-- Claude 静态指令当前仍写 `CLAUDE.md` 托管块；迁移到用户级 `rules/` 尚未实现，等待 D4 实测与评审。
+- Claude 静态指令已迁到用户级每包 rules；旧布局兼容与离线迁移已验证，真实界面加载验收仍受订阅额度/OAuth 阻塞。
 - `mode: replace`：两家都没有替换槽位，规则会被跳过或拒绝，STYLE 只能**追加**，不能替换 harness 自带的 system prompt。
 - Codex 的插件路线不会自动登记到 marketplace；Codex 云端 skill 未验证。
 - Windows 未适配（hook 依赖 POSIX shell 的场景）。

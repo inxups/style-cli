@@ -9,7 +9,7 @@ Adapter: claude-code
   -> tool.post warn (native); capabilities: add-context, system-message
 - style: native (inject system)
   needs: agent
-  -> static:claude_md inject (native)
+  -> static:claude_rules inject (native)
 - session-info: native (inject system)
   needs: agent, model, thinking_effort
   -> session.start inject (native); capabilities: add-context

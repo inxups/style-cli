@@ -1483,3 +1483,15 @@ PY
 - 用户对 61413eb 展示的三项具体决定回复“同意”：每包 rules 文件、首次重建自动迁移且单纯迁移无需额外 trust；output style 不做 replace、保留现有 fallback；以设计评审和已有四份原生请求证据先实现，Claude 界面验收后补。
 - 先回写设计定稿、CLI/编译规范与任务依赖；细化 A7 的新旧布局/迁移入口/字节权限/冲突回滚/批准隔离验收，A8 的 degrade/skip/error、授权和样式设置不变验收。D4/D5 总条目保留 [~] 明确真实界面尚未闭合；C1/C3/C4、M2 最终回归/CI 和官方计数均未因此关闭。
 - 验证：设计的用户批准记录与历史协议证据对应，文档本地链接/锚点/围栏与 git diff --check 通过。仅设计/验收文档修改，未改生产代码或 M1 归档。本提交完成后进入 T40，不再重复请求已授予的批准。
+
+
+### 2026-10-17 — M2-T40 / M2-A7 Claude rules 与旧安装迁移 `[x]`
+
+- 接 3b1295b 用户批准的 D4。Claude append 新槽位为 claude_rules，每个有效静态包写 rules/style-<名字>.md；空有效正文/纯动态/折叠包不生成文件，保留方卸载后接替。确定性版本/包名头尾；新文件 0644、更新保留权限；锁文件以可选 static_layout/static_files 保存布局和整文件摘要，批准快照沿用源字节与编译表示。index format、runtime/repeat 状态键不变，schema 同时接受 claude_md/claude_rules。
+- 首次成功 install/sync/trust/uninstall 重建时迁移旧块，报告包名和新旧路径，卸载目标直接移除。只读命令不迁移；doctor 按锁的旧布局重编译，认同有效旧安装并提示 static-migration-pending。只含 rules 的配置也可被 detector 识别。单纯搬迁无需额外 trust；trust 指定包时其他未批准普通/link 包只使用批准基线，源码哈希和 native 命令未连带批准。
+- adapter 先检查完整 rules/旧块集合：安装归属、版本/包名头尾、整文件摘要、同名外部占用、缺失/漂移、symlink、旧标记和路径/权限冲突。文件名/相同正文/伪造头尾不构成归属，不新增 force-adopt。失败保留旧载体与其他配置、index、lock、批准记录；旧块外的 LF/CRLF/无尾换行/Unicode 字节与权限还原，STYLE-only 旧文件删除。
+- agenthooks 变更原因/边界：nested rules 路径需要在读取和应用前检查根/各现有组件。仅把原 containment 检查扩展并导出 CheckPath，拒绝 symlink/非普通组件，在暂存和最终替换前重查；沿用 ApplyFiles 的 snapshot、单文件 rename 和失败回滚。adapter 仍负责静态归属/渲染，app 仍组合配置/index/lock/批准事务，未移动 codec/engine 或 native owner 职责。不声明进程崩溃时数据库式原子性。
+- 可重复 Go 证据：internal/app/claude_rules_test.go 的 TestA7*（新装/去重接替、5 入口 × 4 文件尾共 20 场景、普通/link 批准隔离、冲突、漂移、陈旧快照）；internal/adapter/claude/rules_test.go（格式/摘要/字节/权限、空正文、指定 owner 删除、取消回滚）；agenthooks/install/path_test.go（7 类不安全路径、应用中引入 symlink 后回滚先前变更）。首次测试发现编译器白名单/index schema 未接受新槽位及旧用例仍读取 CLAUDE.md，均修正；陈旧事务用例的权限预期改为读取实际保留权限后通过。
+- 实际升级命令：python3 scripts/check_m2_rules_migration.py --old-binary <T30 固定二进制> --binary /tmp/style-m2-rules.wG0JrxQX/style --report docs/review/M2-A7-RULES-MIGRATION-2026-10-17.json。旧 SHA256 c35d85bd70c4bd575e5eaf401662870b45867b419995e2747a5917c57952ab8c；新 SHA256 38573d25583cb105dae11adf49ae55009c14487a501007399c8ec1513bae7184。16/16（4 写入入口 × 4 文件尾）通过，plan/list/adapters/doctor/stats 五个只读命令不迁移、doctor 前后健康、重复 sync changed=false、外部 bytes/mode 与最终卸载一致。脚本只执行 STYLE 与版本 stub，不启动真实 harness、不访问日常配置/凭据。旧版本可用 git archive 74a473d 到临时目录后按下述环境构建；报告保留当时源码 HEAD/未提交实现事实，不改写旧证据摘要。
+- 标准环境均 env -u CODEX_HOME -u CODEX_SANDBOX GOPATH=/tmp/style-cli-gopath GOMODCACHE=/tmp/style-cli-gomodcache GOCACHE=/tmp/style-cli-gocache：go test -count=1 ./...；go test -C agenthooks -count=1 ./...；go vet ./...；go vet -C agenthooks ./...；go test -race -count=1 ./internal/app ./internal/adapter/claude ./internal/adapter/conformance ./core/compile ./core/engine；go test -C agenthooks -race -count=1 ./install 均通过。最后 detector/空正文补充后相关 Claude/app/conformance 重跑通过。一次 agenthooks race 命令误将 -C 放在 -race 后被 Go 拒绝，改为 -C 首参数后通过；不把误用当成功。python3 -m unittest discover -s testdata/manual -p 'test_*.py' 50 项 OK；-trimpath 最终构建、scripts/smoke.py 40 项通过。
+- 教程、adapter 总览、CLI/编译规范同步新槽位、归属、迁移、回退与真实验收边界；golden 仅将 Claude plan 的 static:claude_md 改为 static:claude_rules，未修改既有 runtime stdout golden。任务 T40/A7 关闭；D4/C1/C3 仍保留界面待补，T50/A8、最终回归/CI 与官方计数不因本条关闭。

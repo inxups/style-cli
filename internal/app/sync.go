@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"path/filepath"
 
+	"github.com/inxups/style-cli/internal/adapter"
 	"github.com/speakeasy-api/agenthooks/install"
 )
 
@@ -23,16 +24,17 @@ type PackageChange struct {
 }
 
 type SyncResult struct {
-	ApprovalTarget       string             `json:"approval_target,omitempty"`
-	Changed              bool               `json:"changed"`
-	Changes              []PackageChange    `json:"changes"`
-	NeedsTrust           []string           `json:"needs_trust"`
-	AwaitingConfirmation bool               `json:"awaiting_confirmation"`
-	Routes               []string           `json:"routes"`
-	Reports              []PlanReport       `json:"reports,omitempty"`
-	Diagnostics          []Diagnostic       `json:"diagnostics,omitempty"`
-	ExpiredSessions      int                `json:"expired_sessions"`
-	Native               []NativeHookReport `json:"native_hooks,omitempty"`
+	StaticMigrations     []adapter.StaticMigration `json:"static_migrations,omitempty"`
+	ApprovalTarget       string                    `json:"approval_target,omitempty"`
+	Changed              bool                      `json:"changed"`
+	Changes              []PackageChange           `json:"changes"`
+	NeedsTrust           []string                  `json:"needs_trust"`
+	AwaitingConfirmation bool                      `json:"awaiting_confirmation"`
+	Routes               []string                  `json:"routes"`
+	Reports              []PlanReport              `json:"reports,omitempty"`
+	Diagnostics          []Diagnostic              `json:"diagnostics,omitempty"`
+	ExpiredSessions      int                       `json:"expired_sessions"`
+	Native               []NativeHookReport        `json:"native_hooks,omitempty"`
 }
 
 type syncPreparation struct {

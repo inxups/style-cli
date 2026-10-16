@@ -47,9 +47,9 @@ func TestClaudeRoutePlansDynamicSettingsAndStaticBlocks(t *testing.T) {
 	if settingsChange == nil || settingsChange.Before == nil || !strings.Contains(string(settingsChange.After), "other --owner=other") || !strings.Contains(string(settingsChange.After), "PostModelSwitch") {
 		t.Fatalf("settings plan did not preserve foreign hook or native event: %#v", changes)
 	}
-	staticChange := findChange(changes, staticPath)
-	if staticChange == nil || !strings.Contains(string(staticChange.After), "# User instructions") || !strings.Contains(string(staticChange.After), "style:other") || !strings.Contains(string(staticChange.After), "Review every change.") {
-		t.Fatalf("static plan did not preserve/append managed blocks: %#v", changes)
+	staticChange := findChange(changes, filepath.Join(dir, "rules", "style-pkg-a.md"))
+	if findChange(changes, staticPath) != nil || staticChange == nil || !strings.Contains(string(staticChange.After), "Review every change.") {
+		t.Fatal("static plan must create a package rules file and preserve foreign CLAUDE.md")
 	}
 	if err := route.Apply(context.Background(), changes); err != nil {
 		t.Fatal(err)
@@ -87,8 +87,8 @@ func TestClaudeRouteRemovePreservesForeignSettingsAndStaticOwners(t *testing.T) 
 	if err != nil {
 		t.Fatal(err)
 	}
-	if findChange(remove, settingsPath) == nil || findChange(remove, filepath.Join(dir, "CLAUDE.md")) == nil {
-		t.Fatalf("remove plan omitted owner files: %#v", remove)
+	if findChange(remove, settingsPath) == nil || findChange(remove, filepath.Join(dir, "rules", "style-pkg-a.md")) == nil || findChange(remove, filepath.Join(dir, "rules", "style-pkg-b.md")) == nil {
+		t.Fatal("remove plan omitted owner files")
 	}
 	if err := route.Apply(context.Background(), remove); err != nil {
 		t.Fatal(err)
@@ -96,8 +96,10 @@ func TestClaudeRouteRemovePreservesForeignSettingsAndStaticOwners(t *testing.T) 
 	if got, err := os.ReadFile(settingsPath); err != nil || strings.Contains(string(got), "--owner=style") || !strings.Contains(string(got), "foreign") {
 		t.Fatalf("settings owner removal = %q, err=%v", got, err)
 	}
-	if _, err := os.Stat(filepath.Join(dir, "CLAUDE.md")); !os.IsNotExist(err) {
-		t.Fatalf("STYLE-only CLAUDE.md should be removed, err=%v", err)
+	for _, name := range []string{"style-pkg-a.md", "style-pkg-b.md"} {
+		if _, err := os.Stat(filepath.Join(dir, "rules", name)); !os.IsNotExist(err) {
+			t.Fatalf("owned rules file should be removed, err=%v", err)
+		}
 	}
 }
 

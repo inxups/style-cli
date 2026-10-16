@@ -43,8 +43,8 @@ func TestTrustRebuildsClaudeSurfaceAndRetainsExternalConfigAndFailClosed(t *test
 	if bytes.Contains(settings, []byte(`"matcher": "^(Bash)$"`)) {
 		t.Fatalf("stale Claude surface: %s", settings)
 	}
-	static := readSyncFile(t, filepath.Join(config, "CLAUDE.md"))
-	if !bytes.Contains(static, []byte("External instructions.")) || !bytes.Contains(static, []byte("Use direct updated static.")) || bytes.Contains(static, []byte("original static")) {
+	static := readSyncFile(t, filepath.Join(config, "rules", "style-editable.md"))
+	if string(readSyncFile(t, filepath.Join(config, "CLAUDE.md"))) != "External instructions.\n" || !bytes.Contains(static, []byte("Use direct updated static.")) || bytes.Contains(static, []byte("original static")) {
 		t.Fatalf("Claude static = %s", static)
 	}
 	lock, _ := loadLock(home)

@@ -57,7 +57,7 @@
       "additionalProperties": false,
       "properties": {
         "rule": {"type": "string", "minLength": 1},
-        "slot": {"enum": ["developer_instructions", "model_instructions_file", "claude_md"]},
+        "slot": {"enum": ["developer_instructions", "model_instructions_file", "claude_md", "claude_rules"]},
         "src": {"type": "string", "minLength": 1},
         "body_sha256": {"$ref": "#/$defs/sha256"},
         "est": {"$ref": "#/$defs/estimate"}

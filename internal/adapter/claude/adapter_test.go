@@ -128,3 +128,15 @@ func TestClaudeDetectorUsesConfigOverrideAndReportsVersion(t *testing.T) {
 		t.Fatalf("missing Claude installation = installed %v, err %v", installed, err)
 	}
 }
+
+func TestClaudeDetectorRecognizesRulesOnlyConfiguration(t *testing.T) {
+	dir := t.TempDir()
+	if err := os.Mkdir(filepath.Join(dir, "rules"), 0o700); err != nil {
+		t.Fatal(err)
+	}
+	detector := Detector{Home: dir, LookPath: func(string) (string, error) { return "", os.ErrNotExist }}
+	installation, detected, err := detector.Detect(context.Background())
+	if err != nil || !detected || installation.ConfigDir != dir {
+		t.Fatalf("rules-only detection: %+v %v %v", installation, detected, err)
+	}
+}

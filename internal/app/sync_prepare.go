@@ -142,7 +142,7 @@ func (s *Service) prepareSync(ctx context.Context, request TrustRequest) (syncPr
 	if request.Name != "" {
 		prepared.result.Native = compilation.nativeReports("")
 	}
-	prepared.files, updated.Harnesses, prepared.result.Routes, err = planInstallRoutes(ctx, home, adapters, compilation, lock, nil)
+	prepared.files, updated.Harnesses, prepared.result.Routes, prepared.result.StaticMigrations, err = planInstallRoutes(ctx, home, adapters, compilation, lock, nil)
 	if err != nil {
 		return prepared, err
 	}

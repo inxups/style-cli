@@ -179,6 +179,30 @@ type StorageBinder interface {
 	BindStorage(home string) Route
 }
 
+// StaticState contains cold-path ownership, never runtime rule state. Files
+// map route-relative names to hashes; LegacyOwners come from installed packages.
+type StaticState struct {
+	Layout       string
+	Files        map[string]string
+	LegacyOwners []Owner
+}
+
+type StaticStateBinder interface {
+	BindStaticState(StaticState) Route
+}
+
+// StaticLayoutFacts lets read-only integrity checks compile an older layout.
+type StaticLayoutFacts interface {
+	WithStaticLayout(string) PlanningFacts
+}
+
+type StaticMigration struct {
+	Harness string `json:"harness"`
+	Package Owner  `json:"package"`
+	From    string `json:"from"`
+	To      string `json:"to"`
+}
+
 // TransitionPlanner composes removal and installation when routes share
 // files. Implementations retain ownership-aware merging in agenthooks.
 type TransitionPlanner interface {
@@ -237,7 +261,9 @@ type FileChange struct {
 
 // Changeset is an ordered, reviewable set of file updates.
 type Changeset struct {
-	Files []FileChange
+	Files      []FileChange
+	Static     *StaticState
+	Migrations []StaticMigration
 }
 
 // RouteStatus is the public installation/trust status of one route.

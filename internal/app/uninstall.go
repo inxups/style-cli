@@ -22,10 +22,11 @@ type UninstallRequest struct {
 }
 
 type UninstallResult struct {
-	Removed   []string `json:"removed"`
-	Remaining []string `json:"remaining"`
-	Routes    []string `json:"routes"`
-	Changed   bool     `json:"changed"`
+	StaticMigrations []adapter.StaticMigration `json:"static_migrations,omitempty"`
+	Removed          []string                  `json:"removed"`
+	Remaining        []string                  `json:"remaining"`
+	Routes           []string                  `json:"routes"`
+	Changed          bool                      `json:"changed"`
 }
 
 // Uninstall removes selected packages and rebuilds each managed adapter route
@@ -99,6 +100,7 @@ func (s *Service) Uninstall(ctx context.Context, request UninstallRequest) (Unin
 				return UninstallResult{}, fmt.Errorf("plan route removal %s: %w", target.route.Name(), err)
 			}
 			changes = append(changes, routePlannedFiles(removed)...)
+			result.StaticMigrations = append(result.StaticMigrations, removed.Migrations...)
 			result.Routes = append(result.Routes, string(target.provider)+"="+target.route.Name())
 			delete(remainingLock.Harnesses, string(target.provider))
 		}
@@ -135,6 +137,8 @@ func (s *Service) Uninstall(ctx context.Context, request UninstallRequest) (Unin
 			changes = append(changes, routePlannedFiles(planned)...)
 			remainingLock.Harnesses[string(target.provider)] = lockHarness{Route: target.route.Name(), Version: harness.Version, ConfigDir: harness.ConfigDir,
 				Surface: hashSurface(target.hooks), Rendered: hashChangeset(planned), Trust: trustState(target.route.Trust()), FailClosed: harness.FailClosed}
+			remainingLock.Harnesses[string(target.provider)] = withStaticState(remainingLock.Harnesses[string(target.provider)], planned)
+			result.StaticMigrations = append(result.StaticMigrations, planned.Migrations...)
 			result.Routes = append(result.Routes, string(target.provider)+"="+target.route.Name())
 		}
 		for i, item := range packages {
@@ -239,7 +243,7 @@ func (s *Service) lockedAdapters(ctx context.Context, home string, lock lockDocu
 			return nil, &ConflictError{Message: fmt.Sprintf("installed route %q for %s is unavailable", name, provider)}
 		}
 		installation := adapter.Installation{Provider: provider, Version: lock.Harnesses[raw].Version, ConfigDir: lock.Harnesses[raw].ConfigDir}
-		route = bindRoute(route, installation, home)
+		route = bindRoute(route, installation, home, staticStateFor(lock, provider))
 		result = append(result, installAdapter{provider: provider, definition: definition, installation: installation, route: route})
 	}
 	return result, nil

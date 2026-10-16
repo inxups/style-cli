@@ -146,6 +146,7 @@ func writeSyncChanges(out io.Writer, result SyncResult, full bool) {
 			}
 		}
 	}
+	writeStaticMigrations(out, result.StaticMigrations)
 	for _, name := range result.NeedsTrust {
 		fmt.Fprintf(out, "approval required: style trust %s\n", name)
 	}

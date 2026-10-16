@@ -14,6 +14,7 @@ import (
 
 	"github.com/inxups/style-cli/core/engine"
 	"github.com/inxups/style-cli/core/state"
+	"github.com/inxups/style-cli/internal/adapter"
 )
 
 type DoctorRequest struct {
@@ -76,6 +77,13 @@ func (s *Service) Doctor(ctx context.Context, request DoctorRequest) (DoctorResu
 				code = "route-drift"
 			}
 			result.add(code, "error", err.Error())
+		}
+		for provider, harness := range lock.Harnesses {
+			if definition, ok := s.definitions[adapter.ProviderID(provider)]; ok && harness.StaticLayout == "" {
+				if _, ok := definition.Facts.(adapter.StaticLayoutFacts); ok {
+					result.add("static-migration-pending", "warning", provider+": legacy static layout; next successful route rebuild migrates it")
+				}
+			}
 		}
 		result.Native, err = s.checkNative(ctx, home, lock, "")
 		if err != nil {
@@ -215,6 +223,11 @@ func (s *Service) checkIndex(ctx context.Context, home string, lock lockDocument
 	adapters, err := s.lockedAdapters(ctx, home, lock)
 	if err != nil {
 		return err
+	}
+	for i := range adapters {
+		if facts, ok := adapters[i].definition.Facts.(adapter.StaticLayoutFacts); ok {
+			adapters[i].definition.Facts = facts.WithStaticLayout(lock.Harnesses[string(adapters[i].provider)].StaticLayout)
+		}
 	}
 	expected, err := s.compileInstalled(ctx, packages, adapters, "")
 	if err != nil {

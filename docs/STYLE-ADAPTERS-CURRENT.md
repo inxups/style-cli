@@ -52,7 +52,7 @@ STYLE 当前完整接入两个 provider：`codex` 和 `claude-code`。`agenthook
 | 默认配置目录 | `$CODEX_HOME`，否则 `~/.codex` | `$CLAUDE_CONFIG_DIR`，否则 `~/.claude` |
 | 可执行文件 | PATH 中的 `codex` | PATH 中的 `claude` |
 | 版本读取 | `codex --version` | `claude --version` |
-| 配置存在也可作为检测依据 | `config.toml` / `hooks.json` | `settings.json` / `CLAUDE.md` |
+| 配置存在也可作为检测依据 | `config.toml` / `hooks.json` | `settings.json` / `CLAUDE.md` / `rules/` |
 
 检测到配置不等于可执行文件可运行，版本也可能为空。`Installation` 只保存 provider、version、config dir，不保存凭据。
 
@@ -62,7 +62,7 @@ STYLE 当前完整接入两个 provider：`codex` 和 `claude-code`。`agenthook
 |---|---|---|
 | `codex-plugin` | 插件默认在 `$STYLE_HOME/adapters/codex/plugin`；包含插件清单、hook 和指向固定程序的 POSIX 启动器；静态指令及 hook 信任配置仍关联 Codex 配置目录 | `user-confirmation`，不会因文件存在就宣称已信任 |
 | `codex-user` | Codex 配置目录的 `hooks.json` 和 `config.toml` | `preseed`，生成 hook 信任状态；配置满足安装检查时可报告 trusted |
-| `claude-user` | Claude 配置目录的 `settings.json` 和 `CLAUDE.md` | `workspace`，`Status.Trusted` 保守返回 false，无法从配置文件推断工作区信任 |
+| `claude-user` | Claude 配置目录的 `settings.json` 和每包 `rules/style-<名字>.md`；重建时迁移旧 `CLAUDE.md` 块 | `workspace`，`Status.Trusted` 保守返回 false，无法从配置文件推断工作区信任 |
 
 Codex Definition 的声明顺序是 plugin、user；Claude 只有 user。实际选择还受显式路线参数、已安装锁定信息和可用性影响。项目级路线和 Claude 插件路线尚未实现。
 
@@ -145,8 +145,8 @@ adapter 渲染作者命令，agenthooks 负责加归属前缀 `: --owner=style -
 
 | 项目 | Codex | Claude Code |
 |---|---|---|
-| 静态槽位名 | `developer_instructions` | `claude_md` |
-| 实际载体 | 用户 `config.toml` 的根级 `developer_instructions` | 用户 `CLAUDE.md` 的 STYLE 托管块 |
+| 静态槽位名 | `developer_instructions` | `claude_rules`；兼容读取旧 `claude_md` |
+| 实际载体 | 用户 `config.toml` 的根级 `developer_instructions` | 用户配置目录的 `rules/style-<名字>.md` |
 | 支持模式 | `append` | `append` |
 | `replace` 槽位 | 无 | 无 |
 
@@ -157,7 +157,8 @@ adapter 渲染作者命令，agenthooks 负责加归属前缀 `: --owner=style -
 `action: inject`、正文静态、没有任何 `when` 的 system 规则，优先进入静态槽位。
 
 - Codex 已有用户自有根级 `developer_instructions` 时，不声明可用静态槽位；不会覆盖或接管用户值。`fallback: degrade` 可改用动态投递。
-- Claude 托管块标记损坏、重复、嵌套或文件不可读时，静态位置不可用；正常托管块更新保留用户正文。
+- Claude 每个有效静态包生成一份 rules 文件；跨包去重后只生成保留方的文件。安装记录保存布局和整文件摘要，文件名或 STYLE 注释不足以证明归属。同名外部文件、管理文件漂移、symlink、旧标记损坏等冲突使写入操作退出 1，不覆盖或退回旧载体。
+- 旧 `CLAUDE.md` 安装在首次成功 `install/sync/trust/uninstall` 重建时迁移；只读命令不迁移，doctor 识别有效旧布局并提示待迁移。单纯搬迁不需额外 trust；原有源码/native 批准规则继续生效。外部字节与权限保留，最终卸载移除已确认归属的文件。
 - 静态位置不可用的 append 降级，先试 `session.start`，再试 `prompt.submitted` + session 去重，选一个位置。
 
 ### 5.2 动态 system
@@ -423,10 +424,10 @@ M1b 实测版本为 Codex 0.159.3、Claude Code 2.1.300。M1b 的 B/C 条目已�
 | Claude | workspace trust 无法自动确认；Read新订阅热更新已测。所测环境未实现实际关闭思考，保留不产出none；六事件USER可见，clear来源启动USER未显示；SubagentStart不支持上下文注入 |
 | 成本与超限 | 官方计数待API key；真实会话统计不代表典型账单。两家原生文件预览已测，字符边界不等于token校准，Claude ASCII结果不外推Unicode边界 |
 | 路线与 provider | 项目级路线、Claude 插件路线、其他 STYLE provider adapter 尚未实现 |
-| M2 Claude | rules 迁移与 output style 设计尚未定稿；用户报告订阅额度用尽，C1/C4 暂挂；OAuth 保存重试仍未确认 |
+| M2 Claude | rules 迁移已实现，D5 保留 replace 回退；用户报告订阅额度用尽，C1/C3/C4 真实界面验收待补；OAuth 保存重试仍未确认 |
 | 未来能力 | provider 条件等按 M3/M4 backlog 规划 |
 
-当前 M2 剩余设计、Claude 验收、最终回归/CI 与官方计数遗留见 [M2 任务清单](STYLE-M2-TASKS.md)；Claude 恢复步骤见 [M2 手册](STYLE-M2-MANUAL.md)，M1 界面历史见 [隔离 runbook](review/M1-FINAL-06-CLAUDE-RUNBOOK.md)，成本与缓存证据见 [FINAL-10](review/M1-FINAL-10-CACHE-2026-10-16.md)。
+当前 M2 剩余验收、最终回归/CI 与官方计数遗留见 [M2 任务清单](STYLE-M2-TASKS.md)；Claude 恢复步骤见 [M2 手册](STYLE-M2-MANUAL.md)，M1 界面历史见 [隔离 runbook](review/M1-FINAL-06-CLAUDE-RUNBOOK.md)，成本与缓存证据见 [FINAL-10](review/M1-FINAL-10-CACHE-2026-10-16.md)。
 
 FINAL-06 补验收（2026-10-16）：六类已声明事件的 USER 标记在界面可见；clear 虽输出启动标记，界面未显示。启动/提示/显式技能没有 effort，工具前/后/失败带 effort.level 与 CLAUDE_EFFORT；观察到 high→medium，所测 Opus5.5 界面无关闭思考选项，未验证 off 原值。新增 Read matcher 在未重启进程中实际触发，热更新成立。原 Glob 探针没有原生调用，不能计通过。Native failure 使用 `error`，codec 已补归一化并保留 `tool_error` 兼容；公开 M1 `tool.output` 仍只用于 tool.post。证据见 [FINAL-06](review/M1-FINAL-06-BOUNDARY-2026-10-16.json)，最终 C9 已通过，见追加证据。
 

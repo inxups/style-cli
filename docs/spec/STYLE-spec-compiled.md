@@ -16,7 +16,7 @@
 | `static` | object | `{<harness>: StaticEntry[]}`：写进静态位置的规则，只给 `doctor` 和 `explain` 用，运行时不读 |
 | `harnesses` | object | `{<harness>: {<评估点>: Entry[]}}`，评估点是 `session.start`、`prompt.submitted`、`skill.explicit`、`tool.pre`、`tool.post`、`tool.error`、`subagent.start` 之一。每个列表已按 `order` 排好 |
 
-`StaticEntry`：`{rule, slot, src, body_sha256, est}`，`slot` 是 `developer_instructions`、`model_instructions_file`、`claude_md` 之一。
+`StaticEntry`：`{rule, slot, src, body_sha256, est}`，`slot` 是 `developer_instructions`、`model_instructions_file`、`claude_rules` 或兼容旧产物的 `claude_md`。index format 不变。
 
 ### 9.2 Entry
 
@@ -167,10 +167,10 @@
    | harness | `append` | `replace` |
    |---|---|---|
    | Codex | `config.toml` 的 `developer_instructions`，每个包一段，用 `<!-- style:<名字> -->` … `<!-- /style:<名字> -->` 包住。**只在用户自己没设 `developer_instructions` 时由 STYLE 管理这个键**；用户已经设了就不碰，这些规则改走动态路径（`session.start` + `reinject_on_compact`），报告里说明 | 当前 adapter 无 replace 槽位；`--allow-replace` 仅授权，不会启用替换（第 5 节阶梯第 6 条） |
-   | Claude Code | 当前为 `~/.claude/CLAUDE.md` 每包一段标记块；M2-D4 设计已批准、T40 待实现，尚未迁到 `rules/style-<名字>.md` | 当前无槽位；M2-D5 已决定不提供 output style replace，保持回退（第 5 节阶梯第 6 条） |
+   | Claude Code | 配置目录下 `rules/style-<名字>.md`，每个有效静态包一份，槽位 `claude_rules` | 当前无槽位；M2-D5 已决定不提供 output style replace，保持回退（第 5 节阶梯第 6 条） |
 
    静态指令仍消耗输入上下文，只有满足模型缓存门槛、前缀一致和有效期等条件时才可能命中缓存；具体情景与费用边界见 CLI 设计 §11.3。只有"几乎每个请求都要生效、而且很短"的规则才适合放这里，常驻预算（7.2）管着它。
-   M2-D4/D5 的 [迁移与回退契约](../review/M2-D4-D5-DESIGN-2026-10-17.md) 已于 2026-10-17 获用户批准；`claude_rules` 是 T40 的新槽位，旧产物 `claude_md` 继续按旧布局解释，迁移在成功重建路线时进行；真实界面验收仍待补。
+   M2-D4/D5 的 [迁移与回退契约](../review/M2-D4-D5-DESIGN-2026-10-17.md) 已于 2026-10-17 获用户批准；T40 已实现 `claude_rules`。旧产物 `claude_md` 继续按旧布局解释，首次成功重建路线时迁移，单纯搬迁不需额外 trust。锁文件的可选 `static_layout` / `static_files` 保存冷路径布局和生成文件摘要；批准快照仍保留源字节和静态编译表示。没有安装归属的同名文件不接管；缺失、摘要/格式漂移、symlink 或损坏旧标记阻止事务。真实界面验收仍待补。
 5. 改过的 md 不会自动生效：要 `style sync` 重新编译，并经 `style trust <名字>` 确认。这补上了 Codex 信任哈希不覆盖 md 内容的缺口。`--link` 开发包第一次 `trust` 之后，后续改动只在 `sync` 时显示差异摘要，不阻塞。
 
 ## 11. 依赖的 fork 改动

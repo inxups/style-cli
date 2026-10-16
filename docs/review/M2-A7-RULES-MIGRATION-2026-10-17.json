@@ -1,0 +1,171 @@
+{
+  "test": "M2-A7 actual binary upgrade",
+  "scope": "offline CLI, harness version stubs; no real Claude session",
+  "old_binary_sha256": "c35d85bd70c4bd575e5eaf401662870b45867b419995e2747a5917c57952ab8c",
+  "binary_sha256": "38573d25583cb105dae11adf49ae55009c14487a501007399c8ec1513bae7184",
+  "cases": [
+    {
+      "entrypoint": "install",
+      "legacy_fixture": "lf",
+      "passed": true,
+      "read_only_commands": 5,
+      "migrated_owners": 2,
+      "repeat_sync_changed": false,
+      "doctor_healthy_before_and_after": true,
+      "external_bytes_and_mode_restored": true
+    },
+    {
+      "entrypoint": "install",
+      "legacy_fixture": "crlf",
+      "passed": true,
+      "read_only_commands": 5,
+      "migrated_owners": 2,
+      "repeat_sync_changed": false,
+      "doctor_healthy_before_and_after": true,
+      "external_bytes_and_mode_restored": true
+    },
+    {
+      "entrypoint": "install",
+      "legacy_fixture": "no-newline",
+      "passed": true,
+      "read_only_commands": 5,
+      "migrated_owners": 2,
+      "repeat_sync_changed": false,
+      "doctor_healthy_before_and_after": true,
+      "external_bytes_and_mode_restored": true
+    },
+    {
+      "entrypoint": "install",
+      "legacy_fixture": "absent",
+      "passed": true,
+      "read_only_commands": 5,
+      "migrated_owners": 2,
+      "repeat_sync_changed": false,
+      "doctor_healthy_before_and_after": true,
+      "external_bytes_and_mode_restored": true
+    },
+    {
+      "entrypoint": "sync",
+      "legacy_fixture": "lf",
+      "passed": true,
+      "read_only_commands": 5,
+      "migrated_owners": 2,
+      "repeat_sync_changed": false,
+      "doctor_healthy_before_and_after": true,
+      "external_bytes_and_mode_restored": true
+    },
+    {
+      "entrypoint": "sync",
+      "legacy_fixture": "crlf",
+      "passed": true,
+      "read_only_commands": 5,
+      "migrated_owners": 2,
+      "repeat_sync_changed": false,
+      "doctor_healthy_before_and_after": true,
+      "external_bytes_and_mode_restored": true
+    },
+    {
+      "entrypoint": "sync",
+      "legacy_fixture": "no-newline",
+      "passed": true,
+      "read_only_commands": 5,
+      "migrated_owners": 2,
+      "repeat_sync_changed": false,
+      "doctor_healthy_before_and_after": true,
+      "external_bytes_and_mode_restored": true
+    },
+    {
+      "entrypoint": "sync",
+      "legacy_fixture": "absent",
+      "passed": true,
+      "read_only_commands": 5,
+      "migrated_owners": 2,
+      "repeat_sync_changed": false,
+      "doctor_healthy_before_and_after": true,
+      "external_bytes_and_mode_restored": true
+    },
+    {
+      "entrypoint": "trust",
+      "legacy_fixture": "lf",
+      "passed": true,
+      "read_only_commands": 5,
+      "migrated_owners": 2,
+      "repeat_sync_changed": false,
+      "doctor_healthy_before_and_after": true,
+      "external_bytes_and_mode_restored": true
+    },
+    {
+      "entrypoint": "trust",
+      "legacy_fixture": "crlf",
+      "passed": true,
+      "read_only_commands": 5,
+      "migrated_owners": 2,
+      "repeat_sync_changed": false,
+      "doctor_healthy_before_and_after": true,
+      "external_bytes_and_mode_restored": true
+    },
+    {
+      "entrypoint": "trust",
+      "legacy_fixture": "no-newline",
+      "passed": true,
+      "read_only_commands": 5,
+      "migrated_owners": 2,
+      "repeat_sync_changed": false,
+      "doctor_healthy_before_and_after": true,
+      "external_bytes_and_mode_restored": true
+    },
+    {
+      "entrypoint": "trust",
+      "legacy_fixture": "absent",
+      "passed": true,
+      "read_only_commands": 5,
+      "migrated_owners": 2,
+      "repeat_sync_changed": false,
+      "doctor_healthy_before_and_after": true,
+      "external_bytes_and_mode_restored": true
+    },
+    {
+      "entrypoint": "uninstall",
+      "legacy_fixture": "lf",
+      "passed": true,
+      "read_only_commands": 5,
+      "migrated_owners": 2,
+      "repeat_sync_changed": false,
+      "doctor_healthy_before_and_after": true,
+      "external_bytes_and_mode_restored": true
+    },
+    {
+      "entrypoint": "uninstall",
+      "legacy_fixture": "crlf",
+      "passed": true,
+      "read_only_commands": 5,
+      "migrated_owners": 2,
+      "repeat_sync_changed": false,
+      "doctor_healthy_before_and_after": true,
+      "external_bytes_and_mode_restored": true
+    },
+    {
+      "entrypoint": "uninstall",
+      "legacy_fixture": "no-newline",
+      "passed": true,
+      "read_only_commands": 5,
+      "migrated_owners": 2,
+      "repeat_sync_changed": false,
+      "doctor_healthy_before_and_after": true,
+      "external_bytes_and_mode_restored": true
+    },
+    {
+      "entrypoint": "uninstall",
+      "legacy_fixture": "absent",
+      "passed": true,
+      "read_only_commands": 5,
+      "migrated_owners": 2,
+      "repeat_sync_changed": false,
+      "doctor_healthy_before_and_after": true,
+      "external_bytes_and_mode_restored": true
+    }
+  ],
+  "passed": 16,
+  "source_revision": "3b1295b3cdb0c985b39fd82f57fcbf8592f7ee98",
+  "source_includes_uncommitted_T40": true
+}

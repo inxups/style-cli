@@ -23,7 +23,8 @@ const (
 	ProviderName      = agenthooks.ProviderClaudeCode
 	Owner             = "style"
 	UserRouteName     = "claude-user"
-	StaticSlotAppend  = "claude_md"
+	StaticSlotAppend  = "claude_rules"
+	LegacyStaticSlot  = "claude_md"
 	DefaultInputChars = 10000
 )
 
@@ -143,6 +144,22 @@ func cloneExtra(extra map[string]any) map[string]any {
 type Facts struct {
 	StaticAppendAvailable bool
 	StaticPath            string
+	staticLayout          string
+}
+
+func (f Facts) WithStaticLayout(layout string) adapter.PlanningFacts {
+	if layout == "" {
+		layout = LegacyStaticSlot
+	}
+	f.staticLayout = layout
+	return f
+}
+
+func (f Facts) staticSlot() string {
+	if f.staticLayout != "" {
+		return f.staticLayout
+	}
+	return StaticSlotAppend
 }
 
 func DefaultFacts() Facts { return Facts{StaticAppendAvailable: true} }
@@ -163,7 +180,7 @@ func NewFacts(installation adapter.Installation) Facts {
 	} else if !errors.Is(err, os.ErrNotExist) {
 		available = false
 	}
-	return Facts{StaticAppendAvailable: available, StaticPath: path}
+	return Facts{StaticAppendAvailable: available, StaticPath: filepath.Join(dir, "rules")}
 }
 
 func (f Facts) Capability(point string, capability plan.Capability) adapter.CapabilitySupport {
@@ -239,9 +256,9 @@ func (f Facts) BlindSpot(_ spec.Rule) (string, bool) { return "", false }
 
 func (f Facts) StaticLocation(mode string) (adapter.StaticLocation, bool) {
 	if mode != "append" || !f.StaticAppendAvailable {
-		return adapter.StaticLocation{Mode: mode, Name: StaticSlotAppend, Reason: "CLAUDE.md is unavailable or contains malformed managed markers"}, false
+		return adapter.StaticLocation{Mode: mode, Name: f.staticSlot(), Reason: "static instructions are unavailable or contain malformed managed markers"}, false
 	}
-	return adapter.StaticLocation{Name: StaticSlotAppend, Mode: mode, Supported: true}, true
+	return adapter.StaticLocation{Name: f.staticSlot(), Mode: mode, Supported: true}, true
 }
 
 func (f Facts) StaticPositions(installation adapter.Installation) []adapter.StaticLocation {
@@ -283,7 +300,9 @@ func (d Detector) Detect(ctx context.Context) (adapter.Installation, bool, error
 	path, pathErr := lookPath("claude")
 	_, settingsErr := os.Stat(filepath.Join(home, "settings.json"))
 	_, staticErr := os.Stat(filepath.Join(home, "CLAUDE.md"))
-	if pathErr != nil && settingsErr != nil && staticErr != nil {
+	rulesInfo, rulesErr := os.Stat(filepath.Join(home, "rules"))
+	hasRules := rulesErr == nil && rulesInfo.IsDir()
+	if pathErr != nil && settingsErr != nil && staticErr != nil && !hasRules {
 		return adapter.Installation{}, false, nil
 	}
 	version := ""

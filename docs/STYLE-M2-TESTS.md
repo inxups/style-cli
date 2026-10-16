@@ -4,7 +4,7 @@
 
 本文件记录 M2 测试矩阵和每项当前状态。测试通过必须有命令输出、fixture/golden 文件或真实环境记录作为证据。任务清单见 [STYLE-M2-TASKS.md](STYLE-M2-TASKS.md)，M1 测试矩阵已只读归档（[STYLE-M1-TESTS.md](STYLE-M1-TESTS.md)）。
 
-当前状态：M2-BASE-01、M2-A1–A6 已通过，M2-A9 已完成 native/stats/跨包去重阶段回归、等待后续 M2 功能完成后复验，D4/D5 已完成设计探针准备和本地协议补充检查（M2-PREP-01），真实界面验收因用户报告 Claude 订阅额度用尽暂挂，OAuth 保存重试仍未确认。D4/D5 设计已于 2026-10-17 经用户批准，允许先按原生请求证据实施迁移/回退，界面验收后补；A7/A8 已据此细化。
+当前状态：M2-BASE-01、M2-A1–A7 已通过，M2-A9 已完成截至 rules 迁移的阶段回归、等待 T50 后最终复验。D4/D5 设计已于 2026-10-17 经用户批准，T40/A7 已实现并验证；A8 按已批准 replace 回退方案继续。真实界面验收因用户报告 Claude 订阅额度用尽暂挂，OAuth 保存重试仍未确认，离线成功不关闭 C1/C3/C4。
 
 ## 状态约定
 
@@ -79,7 +79,7 @@ env -u CODEX_HOME -u CODEX_SANDBOX \
   - 源级 T001/T002/T004 检查保留（静态 T001 在 validate 阶段退出 1，T002/T004 安装预算退出 4）；组合有效 events/always_on/session 情景与 T003 只计一次并重算分隔符；不同语义或仅运行时偶然同文不降预算；去重前超 80% 而去重后合法时可安装，真实超限仍退出 4 且无写入。
   - runtime 条件/重复/并发/compact/gen/epoch/block/warn/subagent.start/cap-drop 回归；等价组仅保留方产生日志，stats 不虚构折叠行。无去重组的现有黄金输出保持。
   - 卸载保留方/被折叠方、trust/link sync 改正文/priority、三条路线切换与重复编译；接替规则按新 rule 身份在已有会话可再注入；doctor 认同重建结果，最终外部字节/权限精确还原。
-- [ ] **M2-A7 Claude rules 静态位置**（M2-T40，D4 已批准）：新装两个静态包/一个动态包与自定义配置目录；旧安装经 install/sync/trust/uninstall 迁移、重复 sync 幂等、旧锁兼容、单纯搬迁不额外批准；CLAUDE.md LF/CRLF/无末尾换行/Unicode 外部字节和权限还原；等价包保留方/接替、混合未批准源码隔离；同名外部文件/伪造头尾/漂移/symlink/损坏旧块/陈旧计划/写入失败不损坏配置、index、lock 或批准记录；list/doctor 识别新旧布局；三路线 conformance、双 module test/vet、相关 race、build/smoke 通过。详细契约：[D4 设计](review/M2-D4-D5-DESIGN-2026-10-17.md)。C1/C3 真实界面另行验收。
+- [x] **M2-A7 Claude rules 静态位置**（M2-T40，D4 已批准）：`internal/app/claude_rules_test.go` 的 `TestA7*` 覆盖自定义根目录两个静态/一个动态包、等价保留方接替、20 个旧布局入口/文件尾场景、普通/link 包跨包批准与 native 隔离、整事务冲突与陈旧计划；Claude `rules_test.go` 覆盖精确格式/摘要/权限、空正文、外部文件不接管和中断回滚；agenthooks `path_test.go` 覆盖 symlink/非普通路径及应用中路径变化回滚。[实际二进制报告](review/M2-A7-RULES-MIGRATION-2026-10-17.json) 的 16 组旧安装升级核对五个只读命令、四个重建入口、字节/权限、index format 不变、重复 sync、doctor 与最终卸载。双 module fresh test/vet、相关 race、50 项采集器、构建与 40 项 smoke 通过，见 `docs/PROGRESS.md` M2-T40。详细契约：[D4 设计](review/M2-D4-D5-DESIGN-2026-10-17.md)。C1/C3 真实界面另行验收。
 - [ ] **M2-A8 output style replace 回退**（M2-T50，D5 已批准）：真实 CLI 两家 plan/install 的 degrade/skip 为 skipped 且无 placement；error 为 blocked/退出 4、无写入；缺 replace 授权仍退出 1，--allow-replace 不创造槽位。完整文件树核对用户 output-style 文件及 outputStyle 设置无变化，安装卸载往返保持；C4 界面观察仍单列阻塞，不据本项成功关闭。
 
 - [~] **M2-A9 M1 回归**：native、stats 与跨包去重阶段已通过双 module fresh test/vet、app/state/adapter/conformance race、采集器 40 项、构建与 smoke（stats 阶段 36 项，去重阶段扩为 40 项）。T60 的 `TestNativeRulesLeaveRuntimeOutputsAndStatsUnchanged` 在两家共 46 个 payload 上核对原 stdout golden、输出白名单、runtime 条目与统计记录（只排除时间差）；inline 源文件摘要随新增声明改变是预期，其他条目字段不变。T60 未更新任何 golden。M1 的 A1–A22、adapter conformance 在后续 M2 实现后仍需最终复验，见 `docs/PROGRESS.md` M2-T13/T60/T20/T30。

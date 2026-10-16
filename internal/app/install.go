@@ -45,16 +45,17 @@ type InstallRequest struct {
 
 // InstallResult is the stable summary written after an install transaction.
 type InstallResult struct {
-	Package              string             `json:"package"`
-	Version              string             `json:"version"`
-	Changed              bool               `json:"changed"`
-	Link                 bool               `json:"link"`
-	Replace              bool               `json:"replace"`
-	Routes               []string           `json:"routes"`
-	Reports              []PlanReport       `json:"reports"`
-	Diagnostics          []Diagnostic       `json:"diagnostics,omitempty"`
-	Native               []NativeHookReport `json:"native_hooks,omitempty"`
-	AwaitingConfirmation bool               `json:"awaiting_confirmation,omitempty"`
+	StaticMigrations     []adapter.StaticMigration `json:"static_migrations,omitempty"`
+	Package              string                    `json:"package"`
+	Version              string                    `json:"version"`
+	Changed              bool                      `json:"changed"`
+	Link                 bool                      `json:"link"`
+	Replace              bool                      `json:"replace"`
+	Routes               []string                  `json:"routes"`
+	Reports              []PlanReport              `json:"reports"`
+	Diagnostics          []Diagnostic              `json:"diagnostics,omitempty"`
+	Native               []NativeHookReport        `json:"native_hooks,omitempty"`
+	AwaitingConfirmation bool                      `json:"awaiting_confirmation,omitempty"`
 }
 
 type installPackage struct {
@@ -234,11 +235,11 @@ func (s *Service) Install(ctx context.Context, request InstallRequest) (InstallR
 	if existingLock == nil {
 		updatedLock.Packages = append(updatedLock.Packages, newLock)
 	}
-	plannedChanges, harnesses, routes, err := planInstallRoutes(ctx, home, adapters, compilation, lock, request.FailClosed)
+	plannedChanges, harnesses, routes, migrations, err := planInstallRoutes(ctx, home, adapters, compilation, lock, request.FailClosed)
 	if err != nil {
 		return InstallResult{}, err
 	}
-	updatedLock.Harnesses, result.Routes = harnesses, routes
+	updatedLock.Harnesses, result.Routes, result.StaticMigrations = harnesses, routes, migrations
 	for _, item := range packages {
 		approval, err := approvalBytes(compilation, item.lock.Name, item.pkg.Files)
 		if err != nil {
@@ -739,7 +740,7 @@ func (s *Service) installAdapters(ctx context.Context, request InstallRequest, l
 		if err != nil {
 			return nil, err
 		}
-		chosen = bindRoute(chosen, installation, home)
+		chosen = bindRoute(chosen, installation, home, staticStateFor(lock, provider))
 		result = append(result, installAdapter{provider: provider, definition: definition, installation: installation, route: chosen})
 	}
 	return result, nil

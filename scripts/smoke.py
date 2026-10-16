@@ -146,8 +146,8 @@ def main():
         check(result.returncode == 0 and json.loads(result.stdout)["healthy"] is True, "doctor healthy")
         check("Review code concisely" in (home / ".codex" / "config.toml").read_text(),
               "codex developer_instructions written")
-        check("Review code concisely" in (home / ".claude" / "CLAUDE.md").read_text(),
-              "claude CLAUDE.md written")
+        check("Review code concisely" in (home / ".claude" / "rules" / "style-terse-reviewer.md").read_text(),
+              "claude package rules written")
 
         baseline_index = json.loads((home / ".style" / "build" / "index.json").read_text())
         duplicate = work / "duplicate"
@@ -170,7 +170,7 @@ def main():
               combined_index["static"] == baseline_index["static"] and
               combined_index["harnesses"] == baseline_index["harnesses"] and
               all((home / directory / filename).read_text().count("Review code concisely") == 1
-                  for directory, filename in ((".codex", "config.toml"), (".claude", "CLAUDE.md"))),
+                  for directory, filename in ((".codex", "config.toml"), (".claude", "rules/style-terse-reviewer.md"))),
               "two installed packages keep one set of static and runtime placements")
         result = style(binary, env, "doctor", "--json")
         check(result.returncode == 0 and json.loads(result.stdout)["healthy"] is True,
@@ -212,7 +212,8 @@ def main():
         result = style(binary, env, "uninstall", "--all", "--yes")
         check(result.returncode == 0, "uninstall --all")
         leftovers = [path for path in (home / ".codex" / "hooks.json", home / ".claude" / "settings.json",
-                                       home / ".codex" / "config.toml", home / ".claude" / "CLAUDE.md")
+                                       home / ".codex" / "config.toml", home / ".claude" / "CLAUDE.md",
+                                       home / ".claude" / "rules" / "style-terse-reviewer.md")
                      if path.exists() and ("agenthooks" in path.read_text() or "style:terse-reviewer" in path.read_text())]
         check(not leftovers, "uninstall removes STYLE hooks and static text" +
               ("" if not leftovers else ": " + ", ".join(shlex.quote(str(p)) for p in leftovers)))

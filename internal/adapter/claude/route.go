@@ -22,6 +22,7 @@ type route struct {
 	harnessVersion string
 	facts          Facts
 	storageHome    string
+	static         adapter.StaticState
 }
 
 func (r *route) Name() string { return r.name }
@@ -95,7 +96,7 @@ func (r *route) Status(ctx context.Context, installation adapter.Installation) (
 	}
 	return adapter.RouteStatus{
 		Available: true,
-		Installed: settingsOwned || staticOwned,
+		Installed: settingsOwned || staticOwned || len(r.static.Files) > 0,
 		// Workspace trust is external state and cannot be inferred safely from
 		// the presence of settings.json.
 		Trusted: false,
@@ -105,7 +106,7 @@ func (r *route) Status(ctx context.Context, installation adapter.Installation) (
 
 func (r *route) Plan(_ context.Context, hooks []adapter.HookSpec, blocks []adapter.StaticBlock) (adapter.Changeset, error) {
 	if len(blocks) > 0 && !r.facts.StaticAppendAvailable {
-		return adapter.Changeset{}, errors.New("claude route: CLAUDE.md static slot is unavailable")
+		return adapter.Changeset{}, errors.New("claude route: static instructions are unavailable")
 	}
 	changes := make([]adapter.FileChange, 0, 2)
 	settingsOwned, err := claudeSettingsOwned(filepath.Join(r.dir, "settings.json"))
@@ -121,17 +122,27 @@ func (r *route) Plan(_ context.Context, hooks []adapter.HookSpec, blocks []adapt
 			changes = append(changes, fileChange(file))
 		}
 	}
-	change, changed, err := r.staticChange(func(existing []byte) ([]byte, error) {
-		return mergeClaudeMD(existing, blocks)
-	})
-	if err != nil {
-		return adapter.Changeset{}, err
+	var static adapter.Changeset
+	if len(blocks) > 0 && blocks[0].Slot == LegacyStaticSlot {
+		// Only read-only integrity inspection compiles the legacy slot.
+		change, changed, err := r.staticChange(func(existing []byte) ([]byte, error) { return mergeClaudeMD(existing, blocks) })
+		if err != nil {
+			return adapter.Changeset{}, err
+		}
+		if changed {
+			static.Files = append(static.Files, change)
+		}
+	} else {
+		var err error
+		static, err = r.rulesChanges(blocks)
+		if err != nil {
+			return adapter.Changeset{}, err
+		}
 	}
-	if changed {
-		changes = append(changes, change)
-	}
+	changes = append(changes, static.Files...)
+
 	sort.Slice(changes, func(i, j int) bool { return changes[i].Path < changes[j].Path })
-	return adapter.Changeset{Files: changes}, nil
+	return adapter.Changeset{Files: changes, Static: static.Static, Migrations: static.Migrations}, nil
 }
 
 func (r *route) Apply(ctx context.Context, changes adapter.Changeset) error {
@@ -143,7 +154,13 @@ func (r *route) Apply(ctx context.Context, changes adapter.Changeset) error {
 		}
 		planned = append(planned, install.PlannedFile{Root: r.dir, Path: change.Path, Before: change.Before, After: change.After, Mode: change.Mode, Remove: change.Remove})
 	}
-	return install.ApplyFiles(ctx, planned)
+	if err := install.ApplyFiles(ctx, planned); err != nil {
+		return err
+	}
+	if changes.Static != nil {
+		r.static = *changes.Static
+	}
+	return nil
 }
 
 func (r *route) Remove(_ context.Context, owner adapter.Owner) (adapter.Changeset, error) {
@@ -155,23 +172,34 @@ func (r *route) Remove(_ context.Context, owner adapter.Owner) (adapter.Changese
 	for _, file := range planned {
 		changes = append(changes, fileChange(file))
 	}
-	// A route owner represents the STYLE namespace. A specific package owner
-	// can still be removed independently when callers pass one.
-	removeAll := owner == "" || owner == adapter.Owner(Owner)
-	change, changed, err := r.staticChange(func(existing []byte) ([]byte, error) {
-		if removeAll {
-			return removeClaudeMD(existing, "")
+	bound := *r
+	if owner != "" && owner != adapter.Owner(Owner) {
+		bound.static.LegacyOwners = []adapter.Owner{owner}
+		bound.static.Files = map[string]string{}
+		name, err := rulesName(owner)
+		if err != nil {
+			return adapter.Changeset{}, err
 		}
-		return removeClaudeMD(existing, string(owner))
-	})
+		if hash, ok := r.static.Files[name]; ok {
+			bound.static.Files[name] = hash
+		}
+	}
+	static, err := bound.rulesChanges(nil)
 	if err != nil {
 		return adapter.Changeset{}, err
 	}
-	if changed {
-		changes = append(changes, change)
+	if owner != "" && owner != adapter.Owner(Owner) {
+		name, _ := rulesName(owner)
+		for path, hash := range r.static.Files {
+			if path != name {
+				static.Static.Files[path] = hash
+			}
+		}
 	}
+	changes = append(changes, static.Files...)
+
 	sort.Slice(changes, func(i, j int) bool { return changes[i].Path < changes[j].Path })
-	return adapter.Changeset{Files: changes}, nil
+	return adapter.Changeset{Files: changes, Static: static.Static, Migrations: static.Migrations}, nil
 }
 
 func fileChange(file install.PlannedFile) adapter.FileChange {
@@ -180,7 +208,7 @@ func fileChange(file install.PlannedFile) adapter.FileChange {
 
 func (r *route) staticChange(transform func([]byte) ([]byte, error)) (adapter.FileChange, bool, error) {
 	path := filepath.Join(r.dir, "CLAUDE.md")
-	before, mode, err := readOptional(path)
+	before, mode, err := r.readStatic(path)
 	if err != nil {
 		return adapter.FileChange{}, false, err
 	}
@@ -317,7 +345,7 @@ func staticBlocksText(blocks []adapter.StaticBlock) (string, error) {
 			return "", fmt.Errorf("claude route: duplicate static block owner %q", owner)
 		}
 		seen[owner] = true
-		if block.Slot != "" && block.Slot != StaticSlotAppend {
+		if block.Slot != "" && block.Slot != StaticSlotAppend && block.Slot != LegacyStaticSlot {
 			return "", fmt.Errorf("claude route: unsupported static slot %q", block.Slot)
 		}
 		if strings.Contains(block.Body, "<!-- style:") || strings.Contains(block.Body, "<!-- /style:") {
