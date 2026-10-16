@@ -4,7 +4,7 @@
 
 本文件记录测试矩阵和每项当前状态。测试通过必须有命令输出、fixture/golden 文件或真实环境记录作为证据。
 
-当前 M1 补验收未全部闭合；历史 B/C 通过不覆盖 FINAL 新增的环境/程序/能力范围。FINAL-06、07 的 Claude 部分与 FINAL-09 仍待真实证据，最终回归单列 FINAL-12；不提前开始 M2。
+当前 M1 补验收未全部闭合；历史 B/C 通过不覆盖 FINAL 新增的环境/程序/能力范围。FINAL-07 的 Claude 部分与 FINAL-09 仍待真实证据，最终回归单列 FINAL-12；不提前开始 M2。
 
 ## 状态约定
 
@@ -220,7 +220,7 @@ B1.2 和 B1.4 的历史通过状态表示原有测试套件在声明范围内通
 - [x] **FINAL-04 B2/B10**：最终程序两条路线各 B1–B9 独立通过，各 19 次真实调用；九种 effort 配置、rollout/请求/state/stats 与正文 SHA256 核对。minimal 用 gpt-6-sol，未知 raw 可被服务拒绝但 STYLE 保持 unknown、条件不命中；不宣称远端支持未知档位。两轮双向切换的四类原生 hook 各一次、来源单一，无重复注入；STYLE 外部字节保留，临时 native 项目信任独立清理后最终字节还原。证据 `review/M1-FINAL-04-CODEX-{USER,PLUGIN}-2026-10-16.json`、SWITCHES 及 BASELINE-OBSERVATION；15 项 Python 测试通过。
 - [x] **FINAL-04-FIX 登记保留**：修复前 user/plugin 两个生命周期回归均失败，修复后 install 全量、app/Codex adapter 测试及 install vet 通过；解析器覆盖 quoted/array table、multiline string 内伪表头与损坏区域。真实 native plugin 管理后四步配置字节不变，取消登记及最后卸载字节还原，见 `review/M1-FINAL-04-PLUGIN-REGISTRATION-2026-10-16.json`。
 - [x] **FINAL-05 U2/U6**：U2 的手动登记、真实 plugin hook 来源、第二包变更保留登记、取消/切换/配置字节往返由 FINAL-04 三组报告支撑。U6 按不支持边界关闭：Codex skill plan 明确只覆盖显式 `$name` 和本地 SKILL.md 读取；plan golden、固定 matcher 和未知读取工具 runtime 回归通过。此项未测云端实际工具名或投递。core/plan、Codex adapter、app 测试及 vet 通过。
-- [~] **FINAL-06 Claude 边界及 C9**：六事件 USER 可见、Read 热更新和clear原生/state已核对；clear启动USER未见且新session无model，保留边界。最终程序C9已通过（103条，整体p95=28ms，50次串行且零错误）；U9界面无off选项，仍补控制配置下的off可观测性，保持不产出none。证据 `review/M1-FINAL-06-BOUNDARY-2026-10-16.json`、C9 JSON。
+- [x] **FINAL-06 Claude 边界及 C9**：六事件USER可见、Read热更新、clear原生/state及最终C9已验。U9按既定能力边界关闭：界面无off选项，控制配置false/预算0的真实请求仍adaptive，hook/state仍high，不产出none、不宣称已关闭思考；clear启动USER虽输出未显示，新session无model。证据 `review/M1-FINAL-06-{BOUNDARY,THINKING,C9}-2026-10-16.json`。
 - [x] **FINAL-06-C9 最终性能**：原生2.1.300、程序8d5fbf75，真实Haiku5.5会话，50次固定printf/50结果/50含工具assistant消息、无重叠；全部103条STYLE completion整体p95=28ms，Pre=29ms/Post=13ms；启动341ms和模型切换54ms完整保留。33项采集器测试通过，证据 `review/M1-FINAL-06-C9-2026-10-16.json` 和对应原样HOOKS。
 - [x] **FINAL-06-FIX native failure 与探针修复**：Claude 的 `error` 归一为 ToolPostEvent.Error，保留旧 tool_error；收窄 M1 tool.error 字段声明，与既有公开校验一致，不扩大 DSL。修复 user-only 来源下技能 fixture 位置；固定原生2.1.300和修复二进制。codec/runtime 回归先失败后通过，原生 CLI→Bash exit7→hook→请求→stats 对照通过；agenthooks全量、root五包、vet和30项采集器测试通过。
 - [~] **FINAL-07 继承**：Codex 真实 exec/app-server 请求、rollout、state/stats 核对通过。resume/fork 保留；compact 无补发且两条标记均消失；fresh/fork=all/嵌套 depth2 的三个子 agent 各有一次 context、tool inject 和 block，独立 scope，父 scope 无子事件。采集器末尾路径字段错误及从原始结果续验分别记录。Claude 仍待测，不能标记整项完成。证据 `review/M1-FINAL-07-CODEX-2026-10-16.json`、COLLECTOR-OBSERVATION。

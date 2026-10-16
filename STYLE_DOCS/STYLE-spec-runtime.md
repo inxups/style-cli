@@ -54,7 +54,7 @@ when:
 | harness | 原生值 → 档位 | 来源和备注 |
 |---|---|---|
 | Codex | `none` `minimal` `low` `medium` `high` `xhigh` `max` 同名；`ultra` → `max`；`persistent`、自定义值 → 取不到 | 配置里的 `model_reasoning_effort`，解析顺序见第 6 节。没写就取不到，**多数默认安装都是这样**。原生取值见 codex-rs `protocol/src/openai_models.rs` |
-| Claude Code | `low` `medium` `high` `xhigh` `max` 同名；没有 `minimal` | 工具类事件的 `effort.level`，或环境变量 `$CLAUDE_EFFORT`【文档】。当前模型不支持 effort 参数时不报，取不到。思考被关闭能不能检测到待测（U9）；检测不到之前，Claude 上不会出现 `none` |
+| Claude Code | `low` `medium` `high` `xhigh` `max` 同名；没有 `minimal` | 工具类事件的 `effort.level`，或环境变量 `$CLAUDE_EFFORT`【文档】。当前模型不支持 effort 参数时不报，取不到。FINAL-06 U9：所测界面无off选项，控制配置的关闭尝试仍发adaptive请求，hook仍high；没有可用off信号，Claude上不产出`none`，档位仅反映原生effort参数，不能据此断言思考开关 |
 
 **映射表归谁**：规范拥有档位定义、映射规则和这张表；核心只认七档和 `open`，不认识任何原生值。每个适配器把自己那一行写成嵌入的数据文件 `adapter/<harness>/effort.yaml`（格式见 CLI 设计第 3 节），由共用的 `adapter/effortmap` 解析。一致性测试检查表里每一行都有 fixture。
 

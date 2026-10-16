@@ -156,12 +156,14 @@ class ClaudeProbe:
                         DISABLE_TELEMETRY="1", DISABLE_ERROR_REPORTING="1")
         self.version = subprocess.run([self.claude, "--version"], env=self.env, text=True, capture_output=True, check=True).stdout.strip()
 
-    def invoke(self, name, prompt, extra=(), tools="", timeout=90):
+    def invoke(self, name, prompt, extra=(), tools="", timeout=90, setting_sources="user", settings=None, model="claude-sonnet-5-5"):
         start = len(self.requests)
         command = [self.claude, "-p", "--verbose", "--output-format", "stream-json", "--include-hook-events",
-                   "--setting-sources", "user", "--strict-mcp-config", "--mcp-config", '{"mcpServers":{}}',
-                   "--model", "claude-sonnet-5-5", "--effort", "high", "--tools", tools,
+                   "--setting-sources", setting_sources, "--strict-mcp-config", "--mcp-config", '{"mcpServers":{}}',
+                   "--model", model, "--effort", "high", "--tools", tools,
                    "--debug-file", str(self.root / (name + "-debug.log")), *extra, prompt]
+        if settings:
+            command[-1:-1] = ["--settings", str(settings)]
         at = time.monotonic()
         result = subprocess.run(command, cwd=self.work, env=self.env, capture_output=True, text=True, timeout=timeout)
         stdout, stderr = self.root / (name + "-stdout.jsonl"), self.root / (name + "-stderr.txt")

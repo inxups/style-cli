@@ -404,6 +404,8 @@ env -u CODEX_HOME -u CODEX_SANDBOX \
 
 完整待验列表见 [任务清单 FINAL-06–12](STYLE-M1-TASKS.md)；Claude 界面步骤见 [隔离 runbook](review/M1-FINAL-06-CLAUDE-RUNBOOK.md)，成本与缓存证据见 [FINAL-10](review/M1-FINAL-10-CACHE-2026-10-16.md)。全部补项有证据后再开始 M2 规划。
 
-FINAL-06 补验收（2026-10-16）：六类已声明事件的 USER 标记在界面可见；clear 虽输出启动标记，界面未显示。启动/提示/显式技能没有 effort，工具前/后/失败带 effort.level 与 CLAUDE_EFFORT；观察到 high→medium，所测 Opus5.5 界面无关闭思考选项，未验证 off 原值。新增 Read matcher 在未重启进程中实际触发，热更新成立。原 Glob 探针没有原生调用，不能计通过。Native failure 使用 `error`，codec 已补归一化并保留 `tool_error` 兼容；公开 M1 `tool.output` 仍只用于 tool.post。证据见 [FINAL-06](review/M1-FINAL-06-BOUNDARY-2026-10-16.json)，最终 C9 仍待采集。
+FINAL-06 补验收（2026-10-16）：六类已声明事件的 USER 标记在界面可见；clear 虽输出启动标记，界面未显示。启动/提示/显式技能没有 effort，工具前/后/失败带 effort.level 与 CLAUDE_EFFORT；观察到 high→medium，所测 Opus5.5 界面无关闭思考选项，未验证 off 原值。新增 Read matcher 在未重启进程中实际触发，热更新成立。原 Glob 探针没有原生调用，不能计通过。Native failure 使用 `error`，codec 已补归一化并保留 `tool_error` 兼容；公开 M1 `tool.output` 仍只用于 tool.post。证据见 [FINAL-06](review/M1-FINAL-06-BOUNDARY-2026-10-16.json)，最终 C9 已通过，见追加证据。
 
 FINAL-08 的 [Claude 原生超限](review/M1-FINAL-08-CLAUDE-2026-10-16.json) 已完成：8组ASCII正文验证10,000字符边界和单字段file-preview，六份完整文件与原文逐字节一致。该结论来自真实原生CLI的请求，不是合成hook输入的STYLE预算测试。
+
+U9控制配置补测已完成，见 [THINKING](review/M1-FINAL-06-THINKING-2026-10-16.json)：真实Haiku5.5请求在alwaysThinkingEnabled=false和MAX_THINKING_TOKENS=0下仍为adaptive，hook/state仍high，不能当作关闭成功。所测环境缺少off原值，按既定边界不产出none，档位描述原生effort参数而非思考开关。最终[C9](review/M1-FINAL-06-C9-2026-10-16.json)已通过，整体p95=28ms。

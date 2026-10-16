@@ -1211,3 +1211,12 @@ PY
 - 50个Bash tool id、50个timestamped成功结果、50个含工具assistant消息；固定单次printf，无循环合并，逐次结果后才发起下一次，0重叠。46条无timestamp API输入快照中的结果不重复算工具执行；原生命令的转义拼写在报告保留。
 - 全部103条STYLE completion：整体median15ms/p95=28ms/max341ms；PreToolUse50条p95=29ms，PostToolUse50条p95=13ms，启动341ms、模型切换54ms、prompt15ms各一。所有慢样本保留，0hook错误/0无法解析完成行。按既定整体p95<50ms通过，不将启动或模型切换单类宣称小于50ms。
 - 33项Python测试全部通过，新增计数/快照去重、重叠和循环/缺结果/错误拒绝回归。C9单项关闭；FINAL-06整体仍补U9控制配置观测，界面无off不能当medium=off，预算/能力默认值未更改。
+
+
+### 2026-10-16 — M1-FINAL-06 U9 控制配置与既定回退验收
+
+- 用户确认官方API key暂时没有，FINAL-09继续待验。本轮未将Claude登录态用于官方计数。
+- 使用真实认证的原生2.1.300/Haiku5.5，在独立work/STYLE_HOME/显式settings下比较正常配置与alwaysThinkingEnabled=false且MAX_THINKING_TOKENS=0；不加载用户hooks，认证只由CLI使用现有隔离M1配置，不读/复制凭据。两次Bash均成功，实际4个Messages请求均为thinking.type=adaptive/output_config.effort=high，工具hook含effort.level=high和CLAUDE_EFFORT=high，state保持high/approx=false。不能把配置请求当作实际关闭，更不伪造none；结合界面无off选项，按原计划既定“不产出none”能力边界关闭U9。没有宣称已验证实际关闭后的原值。
+- 复现 `probe_claude_thinking.py --style /private/tmp/style-m1-claude-ui-c-20261016/bin/style --claude /private/tmp/style-m1-claude-cli-2.1.300/claude --auth-config /private/tmp/style-m1-claude-ui-c-20261016/claude --scratch /tmp/style-m1-claude-thinking-b-20261016 --output /tmp/style-m1-claude-thinking-b.json` exit0。首个a准备fixture的reads/template格式错误未进入模型调用，原目录保留；修正为现有schema后才计验。
+- 新增原生请求重放采集器：验证canonical内容hash，按keep/tail还原输入；原生流式assistant分块和复用user结果由精确hash引用关联，不把snapshot当额外执行。fork会把部分历史blob改写为system但保留旧hash，仅在已验证原始来源可提供相同hash正文时解析；没有原始内容时拒绝，绝不忽略缺失。C9全51请求成功校验；string/block、缺hash、损坏内容、prefix越界、stream、原生fork别名回归均通过。
+- 40项Python回归及证据断言通过。双module test/vet、runtime/Claude race已在最终修复代码上重跑通过，最终汇总另记FINAL-12。FINAL-06整项按已验证回退/能力边界及C9关闭，预算、sources、compact和公开schema保持不变。

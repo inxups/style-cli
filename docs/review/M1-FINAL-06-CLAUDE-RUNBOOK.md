@@ -1,6 +1,6 @@
 # FINAL-06 Claude 隔离补验收
 
-此页是待执行步骤，不能作为通过证据。日常配置不变；`prepare_claude_acceptance.py` 生成私有 scratch、固定二进制、两个原包与一个可见性探针包。观察器与 STYLE hook 分开，保留每个 hook 的字段名、session/model/effort/source 以及指定环境变量；不保存 prompt、工具正文或凭据。
+此页保留操作步骤；真实验收结论以关联JSON和原始完成记录为证。日常配置不变；`prepare_claude_acceptance.py` 生成私有 scratch、固定二进制、两个原包与一个可见性探针包。观察器与 STYLE hook 分开，保留每个 hook 的字段名、session/model/effort/source 以及指定环境变量；不保存 prompt、工具正文或凭据。
 
 本次已准备 `/private/tmp/style-m1-claude-ui-c-20261016`，Claude 2.1.300，现已登录。FINAL-06 修复版 SHA256 为 `8d5fbf758cbe7920a9cc978f7715abcf3c00461f9d2289e6f90c2c92501db5d1`；旧程序、prepared.json、旧 launcher 均保留。全局 CLI 在验收期间变为2.1.301，隔离 launcher 已固定到从官方 npm 包核对 integrity 的2.1.300，日常安装不变。更新和边界实测见 [FINAL-06 证据](M1-FINAL-06-BOUNDARY-2026-10-16.json)，前一次更新仍见 [FINAL-12 binary 证据](M1-FINAL-12-CLAUDE-BINARY-2026-10-16.json)。重新准备的命令：
 
@@ -32,6 +32,8 @@ python3 testdata/manual/measure_claude_hooks.py \
 
 准备程序会拒绝非空 scratch，避免覆盖历史证据。热更新安装和 `/clear` 只影响此探针环境。认证不可用时 FINAL-06 继续保持 `[?]`，不以准备成功代替真实通过。
 
-2026-10-16 边界观察：六类事件的 USER 标记可见；clear 的启动标记虽已输出，用户未看到。clear 创建新 session，原生不含 model，state 保持 unknown；后续工具 hook 给 effort=medium。启动/提示/显式技能未提供 effort，工具前/后/失败提供 effort.level 和 CLAUDE_EFFORT。用户所见 Opus5.5 只有强度档位，无关闭选项，未采到 off 的原生表示。不能将 medium 当作 off。C9 仍须本修复版重新采集。
+2026-10-16 边界观察：六类事件的 USER 标记可见；clear 的启动标记虽已输出，用户未看到。clear 创建新 session，原生不含 model，state 保持 unknown；后续工具 hook 给 effort=medium。启动/提示/显式技能未提供 effort，工具前/后/失败提供 effort.level 和 CLAUDE_EFFORT。用户所见 Opus5.5 只有强度档位，无关闭选项，未采到 off 的原生表示。不能将 medium 当作 off。C9 已用本修复版重新采集，见下方追加证据。
 
 本次C9已完成，见 [C9结果](M1-FINAL-06-C9-2026-10-16.json)：50次真实串行Bash，完整103样本整体p95=28ms，保留全部慢样本。原生全量debug日志留在私有目录，提交的HOOKS仅摘录全部匹配STYLE完成行；可用原measure_claude_hooks.py直接复算。
+
+U9控制配置补测见 [THINKING](M1-FINAL-06-THINKING-2026-10-16.json)：真实请求仍adaptive、hook/state仍high，设置关闭不等于实际关闭。该版本/模型缺少可观测off路径，保留不产出none的既定回退；FINAL-06按此能力边界和最终C9关闭。

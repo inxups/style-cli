@@ -4,7 +4,7 @@
 
 本文件是 STYLE CLI 的持久化任务清单。每项任务完成后必须同时补充证据（命令、fixture、golden 文件或真实运行记录），不能只根据对话上下文标记完成。
 
-当前总状态：M1a 完成，M1b 历史 B/C 条目按各自范围保留；全部 M1 补验收尚未完成。下方 FINAL 条目覆盖旧实现记录的后续修正：FINAL-06 Claude 界面/C9、FINAL-07 的 Claude 部分和 FINAL-09 官方计数仍待验证，最终回归状态另见 FINAL-12。全部闭合后再提示下一步 M2 规划。
+当前总状态：M1a 完成，M1b 历史 B/C 条目按各自范围保留；全部 M1 补验收尚未完成。下方 FINAL 条目覆盖旧实现记录的后续修正：FINAL-07 的 Claude 部分和 FINAL-09 官方计数仍待验证，最终回归状态另见 FINAL-12。全部闭合后再提示下一步 M2 规划。
 
 ## 状态约定
 
@@ -175,7 +175,7 @@ M1b 准备、真实验收中发现的问题及示例规则修正，按处理顺�
 - [x] **M1-FINAL-04 B2/B10 路线验收**：修复程序（48ae3f39）上 codex-user、codex-plugin 各自独立完成 B1–B9，各 19 次真实调用；B2 九种配置与正文摘要核对，unknown 不命中旧 tier，项目未知信任回退明确报告。双向切换两轮，原生 span 各事件一次且来源正确，最终配置字节还原。app-server 自行新增的临时项目 trust 表单独记录并由探针清理，未归因于 STYLE 卸载；原始比较观察保留。证据：`docs/review/M1-FINAL-04-CODEX-{USER,PLUGIN}-2026-10-16.json`、`M1-FINAL-04-SWITCHES-2026-10-16.json`；可重复命令与限制见 manual README。
 - [x] **M1-FINAL-04-FIX 插件登记保留**：修复 Codex 原生 TOML 编辑器把 marketplace/plugin 表追加到 STYLE 标记内后，被 install/sync 误删的问题。仅 Codex 合并/卸载识别并保留非 trust 表；损坏区域拒绝写入，Kimi 逻辑不变。真实登记→第二包 install/sync/uninstall/sync 配置字节不变，取消登记及最后卸载逐字节还原；证据为 `agenthooks/install/codex_foreign_toml_test.go`、`docs/review/M1-FINAL-04-PLUGIN-REGISTRATION-2026-10-16.json`。
 - [x] **M1-FINAL-05 U2/U6 能力边界**：U2 复用 FINAL-04 独立插件全流程及双向切换的真实证据。U6 按既定“不支持，plan 说明”边界关闭：skill plan 保留本地显式/隐式挂载并提示云端读取不受支持；固定订阅与未知读取工具回归通过。云端原生工具名仍未采集，不宣称真实云端投递通过；不新增自动登记或云端路线。
-- [~] **M1-FINAL-06 Claude 边界及 C9**：六事件 USER 可见、Read 热更新和clear原生/state已核对；clear启动USER未见且新session无model，保留边界。最终程序C9已通过（103条，整体p95=28ms，50次串行且零错误）；U9界面无off选项，仍补控制配置下的off可观测性，保持不产出none。证据 `review/M1-FINAL-06-BOUNDARY-2026-10-16.json`、C9 JSON。
+- [x] **M1-FINAL-06 Claude 边界及 C9**：六事件USER可见、Read热更新、clear原生/state及最终C9已验。U9按既定能力边界关闭：界面无off选项，控制配置false/预算0的真实请求仍adaptive，hook/state仍high，不产出none、不宣称已关闭思考；clear启动USER虽输出未显示，新session无model。证据 `review/M1-FINAL-06-{BOUNDARY,THINKING,C9}-2026-10-16.json`。
 - [x] **M1-FINAL-06-C9 最终性能**：原生2.1.300、程序8d5fbf75，真实Haiku5.5会话，50次固定printf/50结果/50含工具assistant消息、无重叠；全部103条STYLE completion整体p95=28ms，Pre=29ms/Post=13ms；启动341ms和模型切换54ms完整保留。33项采集器测试通过，证据 `review/M1-FINAL-06-C9-2026-10-16.json` 和对应原样HOOKS。
 - [x] **M1-FINAL-06-FIX native failure 与探针修复**：Claude 的 `error` 归一为 ToolPostEvent.Error，保留旧 tool_error；收窄 M1 tool.error 字段声明，与既有公开校验一致，不扩大 DSL。修复 user-only 来源下技能 fixture 位置；固定原生2.1.300和修复二进制。codec/runtime 回归先失败后通过，原生 CLI→Bash exit7→hook→请求→stats 对照通过；agenthooks全量、root五包、vet和30项采集器测试通过。
 - [~] **M1-FINAL-07 上下文继承**：Codex 真实 resume/fork 保留原上下文；关闭补发的 compact 探针中两条标记消失。fresh/fork/嵌套三个子 agent 各自收到 context，工具 inject/block 与 stats 均在各自 scope，父级无污染。Claude resume/fork/compact 补测仍待用户环境，默认值不变。证据：`review/M1-FINAL-07-CODEX-2026-10-16.json`。
