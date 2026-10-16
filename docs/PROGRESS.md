@@ -1054,3 +1054,12 @@ PY
 - 推送 origin/main d3c0874..d7105f0（101 个提交）。推送前扫描了新增内容：没有令牌、私钥或邮箱；证据文档里有 238 行本机路径 `/Users/inxups/...`。仓库是公开的。
 - 运行 https://github.com/inxups/style-cli/actions/runs/38872171780（push 触发）：Test (ubuntu-latest) 47s 通过，Test (macos-latest) 1m17s 通过。两个 job 日志都有 `smoke passed`，两家 `bash --rcfile /dev/null -c` force push 都是 deny。
 - 注意：GitHub 提示 ubuntu-latest 将在 2026-10-19 起迁到 Ubuntu 26，届时需要关注首次运行。
+
+### 2026-10-16 — DOCS-04 CLI 完整使用教程
+
+- 用户要求设计这个 CLI 的完整使用教程。读取 `internal/app/*command*.go`、规范文档（包/规则）、`docs/STYLE-ADAPTERS-CURRENT.md`、M1b 手册和 `example/terse-reviewer`，再用 `go build ./cmd/style` 的二进制在隔离沙箱里实际运行：临时 `STYLE_HOME`、`CLAUDE_CONFIG_DIR`、`CODEX_HOME`，仅放空 `config.toml` / `{}` 的 `settings.json` 让 adapters 检测到两家。
+- 实测并写入教程的行为：init（目录/单文件/冲突退出 1）、validate（文本/JSON/bad-name）、plan（native、`mode: replace` 跳过、Codex `tool.error` + `fallback: error` 退出 4）、install（无 `--yes` 非交互报错、`--set` 未知名称、重复安装拒绝、`--fail-closed` 版本不足拒绝、不指定路线时 Codex 选 `codex-plugin`）、生成的 `CLAUDE.md` / `settings.json` / `config.toml` / lock 内容、手工 payload 喂 hook（SessionStart 注入、force push 拒绝、普通 push 放行、Edit 新增 TODO 的 warn、同模型 prompt 去重、换模型补发）、复制安装改源码后 sync 无变化、`--link` 改源码后 sync 退出 3 / trust 预览退出 1 / trust --yes 退出 0 并更新 `CLAUDE.md`、uninstall 需 `--yes` 及配置文件清理、doctor / list / adapters 输出、未知命令退出 1。
+- 校对中修正了教程初稿的两处不准确：快速上手的 `install` 在检测到 Codex 时默认走 `codex-plugin`（需要 `--route codex=codex-user`）；`when.harness` 必须在 `reads.harness` 声明（否则 `reads-missing`）。
+- 观察到的现象（未修改实现，教程里已如实标注）：`--link` 包源码变化后，`sync` / `trust` 输出 “0 changed files” 且 `Source diff:` 为空，但 `sync` 退出码 3，`trust --yes` 后 `CLAUDE.md` 确实更新；`list` 在源码已变、未 trust 时仍显示 `hash_matches=true`。这是 diff 展示/漂移检测的缺口，不属于本任务范围，待单独评估。
+- 验证：文档 30 个本地链接目标全部存在，代码围栏成对，TOC 锚点与标题一致；从文档抽出的 `team-style` 四个文件用真实二进制 `style validate` 输出 `valid`；教程中 13.x 的 YAML 片段合并成包后 `validate` 通过；`git diff --check` 通过。
+- 未覆盖：真实 Claude Code / Codex 会话里的加载与投递（沿用 M1b 结论）；Codex 一侧的手工 payload 示例没有重跑；交互式确认提示没有在真实终端里演示。

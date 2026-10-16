@@ -153,6 +153,8 @@ M1b 准备、真实验收中发现的问题及示例规则修正，按处理顺�
   - 证据：`docs/review/M1B-CR-REAL-2026-10-16.json`、`docs/review/M1B-CODEX-U5B-SPANS-2026-10-16.jsonl`，测试矩阵 CR-REAL 与 B11。
   - 未覆盖：Claude C9 计时未复测。
 
+- [x] **DOCS-04 CLI 完整使用教程**：新增 `docs/STYLE-TUTORIAL.md`，按 构建 → 沙箱试用 → 写包 → validate/plan → install → 验证 hook → 修改/sync/trust → uninstall → list/doctor/adapters 的顺序覆盖全部 10 个命令、退出码、目录布局、常见场景、排错和未实现功能。文中输出均来自隔离沙箱（临时 STYLE_HOME / CLAUDE_CONFIG_DIR / CODEX_HOME）的真实运行；教程中的 `team-style` 包从文档里抽出后用真实二进制 `style validate` 通过。证据：命令与结果见 `docs/PROGRESS.md` DOCS-04。未修改实现。
+
 ## 持续集成（2026-10-16 起）
 
 - [x] **CI-01 GitHub Actions 验证程序可用**：新增 `.github/workflows/ci.yml`，push 到 main、PR 和手动触发时在 ubuntu-latest 与 macos-latest 上依次运行 gofmt 检查、两个 module 的 vet 与 test（清除 CODEX_HOME/CODEX_SANDBOX）、两个计时收集器的 Python 单测、`-trimpath` 构建，以及 `scripts/smoke.py` 端到端冒烟。
