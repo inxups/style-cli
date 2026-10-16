@@ -4,7 +4,7 @@
 
 本文件是 STYLE CLI 的持久化任务清单。每项任务完成后必须同时补充证据（命令、fixture、golden 文件或真实运行记录），不能只根据对话上下文标记完成。
 
-当前总状态：M1a 完成，M1b 历史 B/C 条目按各自范围保留；全部 M1 补验收尚未完成。下方 FINAL 条目覆盖旧实现记录的后续修正：FINAL-07 的 Claude 部分和 FINAL-09 官方计数仍待验证，最终回归状态另见 FINAL-12。全部闭合后再提示下一步 M2 规划。
+当前总状态：M1a 完成，M1b 历史 B/C 条目按各自范围保留；全部 M1 补验收尚未完成。下方 FINAL 条目覆盖旧实现记录的后续修正：FINAL-09 官方计数仍待验证，最终回归状态另见 FINAL-12。全部闭合后再提示下一步 M2 规划。
 
 ## 状态约定
 
@@ -178,7 +178,7 @@ M1b 准备、真实验收中发现的问题及示例规则修正，按处理顺�
 - [x] **M1-FINAL-06 Claude 边界及 C9**：六事件USER可见、Read热更新、clear原生/state及最终C9已验。U9按既定能力边界关闭：界面无off选项，控制配置false/预算0的真实请求仍adaptive，hook/state仍high，不产出none、不宣称已关闭思考；clear启动USER虽输出未显示，新session无model。证据 `review/M1-FINAL-06-{BOUNDARY,THINKING,C9}-2026-10-16.json`。
 - [x] **M1-FINAL-06-C9 最终性能**：原生2.1.300、程序8d5fbf75，真实Haiku5.5会话，50次固定printf/50结果/50含工具assistant消息、无重叠；全部103条STYLE completion整体p95=28ms，Pre=29ms/Post=13ms；启动341ms和模型切换54ms完整保留。33项采集器测试通过，证据 `review/M1-FINAL-06-C9-2026-10-16.json` 和对应原样HOOKS。
 - [x] **M1-FINAL-06-FIX native failure 与探针修复**：Claude 的 `error` 归一为 ToolPostEvent.Error，保留旧 tool_error；收窄 M1 tool.error 字段声明，与既有公开校验一致，不扩大 DSL。修复 user-only 来源下技能 fixture 位置；固定原生2.1.300和修复二进制。codec/runtime 回归先失败后通过，原生 CLI→Bash exit7→hook→请求→stats 对照通过；agenthooks全量、root五包、vet和30项采集器测试通过。
-- [~] **M1-FINAL-07 上下文继承**：Codex 真实 resume/fork 保留原上下文；关闭补发的 compact 探针中两条标记消失。fresh/fork/嵌套三个子 agent 各自收到 context，工具 inject/block 与 stats 均在各自 scope，父级无污染。Claude resume/fork/compact 补测仍待用户环境，默认值不变。证据：`review/M1-FINAL-07-CODEX-2026-10-16.json`。
+- [x] **M1-FINAL-07 上下文继承**：Codex既有真实证据保留；Claude2.1.300真实认证CLI resume/fork请求保留startup-only标记且无补发，fork默认规则独立输出一次。专用compact关闭补发，native boundary 3307→775/epoch1，输出各一次、后续请求两标记消失。原生Agent子级不继承所测父动态标记；tool inject/block在独立scope，真实成功/拒绝结果一致，父无子事件。40项采集器回归通过，证据 `review/M1-FINAL-07-CLAUDE-2026-10-16.json`；默认策略不变。
 - [x] **M1-FINAL-08 原生超限与 STYLE 保护**：既有两家 T003/engine 保护和 Codex 三组真实落盘证据保留。Claude2.1.300 原生 CLI 对本地协议 stub 的8组实际请求：SessionStart 9,999/10,000字符完整；10,001/12k/50k及prompt/pre/post 12k转文件预览，六份原生保存文件逐字节相等，无STYLE提前裁剪。仅测原生传输，不宣称远程推理或官方计数。证据 `review/M1-FINAL-08-CLAUDE-2026-10-16.json`；30项采集器回归通过。
 - [?] **M1-FINAL-09 token 校准**：固定 40 条中英各半的真实规则、正文/请求/语料哈希及生产 CLI 估算；官方计数客户端按相同结构请求减固定基线。两家 API key 缺失，实际计数均 0/40，保持待验；CLI/教程/规范删除未验证的 ±25% 保证，系数与预算不变。证据 `review/M1-FINAL-09-COUNTING-BLOCKED-2026-10-16.json`。
 - [x] **M1-FINAL-10 成本与缓存**：U-T4 两条 Codex 路线各 17 会话/31 请求、53 次 inject，Claude 历史主会话 108 个带 usage 响应；累计/重复快照去重，规则估算与总 usage 分列。U-T6 核对官方前缀/门槛/TTL/字段与倍率，CLI、golden 和教程标注公式为情景而非账单，默认值不变。证据 `review/M1-FINAL-10-{USAGE,CACHE}-2026-10-16.*`；27 项 Python 测试、app 测试/vet 通过。

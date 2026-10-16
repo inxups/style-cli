@@ -1,0 +1,1026 @@
+{
+  "date": "2026-10-16",
+  "item": "M1-FINAL-07-CLAUDE",
+  "passed": true,
+  "harness_version": "2.1.300 (Claude Code)",
+  "style_binary_sha256": "8d5fbf758cbe7920a9cc978f7715abcf3c00461f9d2289e6f90c2c92501db5d1",
+  "auth_scope": "Native CLI uses the existing user-approved isolated M1 auth; credentials are not read/copied; user settings/hooks excluded by --setting-sources empty and a separate explicit settings file",
+  "install": {
+    "package": "claude-context",
+    "version": "0.1.0",
+    "changed": true,
+    "link": false,
+    "replace": false,
+    "routes": [
+      "claude-code=claude-user"
+    ],
+    "reports": [
+      {
+        "provider": "claude-code",
+        "route": "claude-user",
+        "native_limit": {
+          "value": 10000,
+          "unit": "chars",
+          "approximate": false,
+          "source": "Claude Code hook input limit",
+          "overflow": "file-preview"
+        },
+        "budget": {
+          "per_rule": 400,
+          "per_event": 1200,
+          "always_on": 600
+        },
+        "plan": {
+          "package": "claude-context",
+          "adapter": "claude-code",
+          "rules": [
+            {
+              "id": "history",
+              "source": "STYLE.yaml#history",
+              "target": "event",
+              "action": "inject",
+              "status": "native",
+              "needs": [
+                "agent"
+              ],
+              "placements": [
+                {
+                  "event": "session.start",
+                  "action": "inject",
+                  "status": "native",
+                  "capabilities": [
+                    "add-context"
+                  ],
+                  "repeat": "session"
+                }
+              ]
+            },
+            {
+              "id": "default",
+              "source": "STYLE.yaml#default",
+              "target": "event",
+              "action": "inject",
+              "status": "native",
+              "needs": [
+                "agent"
+              ],
+              "placements": [
+                {
+                  "event": "session.start",
+                  "action": "inject",
+                  "status": "native",
+                  "capabilities": [
+                    "add-context"
+                  ],
+                  "repeat": "session"
+                }
+              ]
+            },
+            {
+              "id": "child-tool",
+              "source": "STYLE.yaml#child-tool",
+              "target": "tool",
+              "action": "inject",
+              "status": "native",
+              "needs": [
+                "agent",
+                "tool.input.command"
+              ],
+              "placements": [
+                {
+                  "event": "tool.pre",
+                  "action": "inject",
+                  "status": "native",
+                  "capabilities": [
+                    "add-context"
+                  ],
+                  "repeat": "every"
+                }
+              ]
+            },
+            {
+              "id": "child-block",
+              "source": "STYLE.yaml#child-block",
+              "target": "tool",
+              "action": "block",
+              "status": "native",
+              "needs": [
+                "agent",
+                "tool.input.command"
+              ],
+              "placements": [
+                {
+                  "event": "tool.pre",
+                  "action": "block",
+                  "status": "native",
+                  "capabilities": [
+                    "deny"
+                  ]
+                }
+              ]
+            }
+          ],
+          "blocked": false
+        },
+        "tokens": {
+          "rules": [
+            {
+              "rule": "history",
+              "action": "inject",
+              "status": "native",
+              "estimate": {
+                "tokens": 25,
+                "chars": 82
+              },
+              "events": [
+                "session.start"
+              ]
+            },
+            {
+              "rule": "default",
+              "action": "inject",
+              "status": "native",
+              "estimate": {
+                "tokens": 25,
+                "chars": 82
+              },
+              "events": [
+                "session.start"
+              ]
+            },
+            {
+              "rule": "child-tool",
+              "action": "inject",
+              "status": "native",
+              "estimate": {
+                "tokens": 10,
+                "chars": 33
+              },
+              "events": [
+                "tool.pre"
+              ]
+            },
+            {
+              "rule": "child-block",
+              "action": "block",
+              "status": "native",
+              "estimate": {
+                "tokens": 9,
+                "chars": 29
+              },
+              "events": [
+                "tool.pre"
+              ]
+            }
+          ],
+          "events": [
+            {
+              "key": "claude-code\u0000PreToolUse Bash",
+              "label": "PreToolUse Bash",
+              "estimate": {
+                "tokens": 10,
+                "chars": 33
+              },
+              "block": {
+                "tokens": 9,
+                "chars": 29
+              },
+              "other": {
+                "tokens": 10,
+                "chars": 33
+              },
+              "has_block": true,
+              "block_count": 1,
+              "other_count": 1
+            },
+            {
+              "key": "claude-code\u0000SessionStart",
+              "label": "SessionStart",
+              "estimate": {
+                "tokens": 51,
+                "chars": 166
+              },
+              "block": {
+                "tokens": 0,
+                "chars": 0
+              },
+              "other": {
+                "tokens": 50,
+                "chars": 164
+              },
+              "other_count": 2
+            }
+          ],
+          "always_on": {
+            "tokens": 50,
+            "chars": 164
+          },
+          "diagnostics": [
+            {
+              "code": "T007",
+              "rule": "child-tool",
+              "severity": "warning",
+              "message": "inject with repeat every or turn should include reason"
+            }
+          ]
+        },
+        "session_cost": {
+          "requests": 60,
+          "triggers": 3,
+          "always_on": 357.5,
+          "triggered": 165.75,
+          "total": 523.25
+        }
+      }
+    ],
+    "diagnostics": [
+      {
+        "code": "T007",
+        "rule": "child-tool",
+        "provider": "claude-code",
+        "severity": "warning",
+        "message": "inject with repeat every or turn should include reason"
+      }
+    ]
+  },
+  "resume": {
+    "passed": true,
+    "session_id": "956c59bc-18a1-46c5-82f1-98405a98b66c",
+    "history_outputs_total": 1,
+    "history_in_real_request": true
+  },
+  "fork": {
+    "passed": true,
+    "source_session_id": "956c59bc-18a1-46c5-82f1-98405a98b66c",
+    "fork_session_id": "7c5a101f-ed4d-4b7a-8b0c-d62d20313735",
+    "startup_only_outputs_in_fork": 0,
+    "default_outputs_in_fork": 1,
+    "history_in_real_request": true
+  },
+  "compact": {
+    "passed": true,
+    "session_id": "87620189-2418-48ae-a544-088788b9d6bc",
+    "reinject_on_compact": false,
+    "scope": {
+      "gen": 0,
+      "epoch": 1,
+      "prompt_count": 0,
+      "updated_at": "2026-10-16T11:16:38.862741Z"
+    },
+    "history_outputs_total": 1,
+    "default_outputs_total": 1,
+    "history_marker_after": [],
+    "default_marker_after": [],
+    "native_compact_boundaries": [
+      {
+        "subtype": "compact_boundary",
+        "timestamp": "2026-10-16T11:16:38.845Z",
+        "content": "Conversation compacted",
+        "compactMetadata": {
+          "trigger": "manual",
+          "preTokens": 3307,
+          "durationMs": 6100,
+          "postTokens": 775,
+          "cumulativeDroppedTokens": 2532
+        }
+      }
+    ]
+  },
+  "child": {
+    "passed": true,
+    "session_id": "c88ba342-3967-45b7-b36f-45b04eb7489e",
+    "stats": [
+      {
+        "at": "2026-10-16T11:16:47.253819Z",
+        "provider": "claude-code",
+        "event": "PreToolUse",
+        "point": "tool.pre",
+        "entry": "claude-context/child-block@tool.pre",
+        "action": "block",
+        "result": "blocked",
+        "est_tokens": 9,
+        "body_sha256": "sha256:ca7e5dbbeda9b641c22b0727c4aba1bd54fa57d9d75f527a8d66df6b854264b1",
+        "scope": "a30d30c5eee9e4968"
+      },
+      {
+        "at": "2026-10-16T11:16:48.884249Z",
+        "provider": "claude-code",
+        "event": "PreToolUse",
+        "point": "tool.pre",
+        "entry": "claude-context/child-tool@tool.pre",
+        "action": "inject",
+        "result": "output",
+        "est_tokens": 10,
+        "body_sha256": "sha256:fddb941e096db7aef896232f53d58c3ce33a663a1dd8e03003f706771b95213f",
+        "scope": "a30d30c5eee9e4968"
+      }
+    ],
+    "transcripts": [
+      {
+        "path": "/private/tmp/style-m1-claude-ui-c-20261016/claude/projects/-private-tmp-style-m1-claude-context-c-20261016-work/c88ba342-3967-45b7-b36f-45b04eb7489e/subagents/agent-a30d30c5eee9e4968.jsonl",
+        "sha256": "2be7c5d552fa1096e0e18d4e71517cccf5754f9ff4e909b9ce7e1aab557b2c67",
+        "requests": [
+          {
+            "id": "5895a1ce-f9c3-4841-a177-d94b4dbabd35",
+            "session_id": "c88ba342-3967-45b7-b36f-45b04eb7489e",
+            "at": "2026-10-16T11:16:45.186Z",
+            "query_source": "agent:custom:style-child",
+            "native_request_digest": "c48cb4dc0322a09899cc90da326b2326537becf35d177bd15a927ee366ec48e9",
+            "model": "claude-haiku-5-5",
+            "thinking": {
+              "type": "adaptive",
+              "display": "omitted"
+            },
+            "output_config": {
+              "effort": "high"
+            },
+            "marker_locations": {
+              "M1_FINAL_CLAUDE_HISTORY_18E7A2": [],
+              "M1_FINAL_CLAUDE_DEFAULT_A5D4B3": [],
+              "M1_FINAL_CLAUDE_CHILD_TOOL_91C4A6": []
+            }
+          },
+          {
+            "id": "0fca595c-6f72-49c6-acc6-5834924223a9",
+            "session_id": "c88ba342-3967-45b7-b36f-45b04eb7489e",
+            "at": "2026-10-16T11:16:47.263Z",
+            "query_source": "agent:custom:style-child",
+            "native_request_digest": "be5248f6035b5f361b52f39d28fd17c4253dc33d5bdcfa50bcb104210effeadc",
+            "model": "claude-haiku-5-5",
+            "thinking": {
+              "type": "adaptive",
+              "display": "omitted"
+            },
+            "output_config": {
+              "effort": "high"
+            },
+            "marker_locations": {
+              "M1_FINAL_CLAUDE_HISTORY_18E7A2": [],
+              "M1_FINAL_CLAUDE_DEFAULT_A5D4B3": [],
+              "M1_FINAL_CLAUDE_CHILD_TOOL_91C4A6": []
+            }
+          },
+          {
+            "id": "8c194135-50b6-46bf-8e31-f54664666e9d",
+            "session_id": "c88ba342-3967-45b7-b36f-45b04eb7489e",
+            "at": "2026-10-16T11:16:49.371Z",
+            "query_source": "agent:custom:style-child",
+            "native_request_digest": "3ba68f8fa241ecd252af9fc593f1fb4264a3ed1ed6bfc5fbf013d76a15b3beb7",
+            "model": "claude-haiku-5-5",
+            "thinking": {
+              "type": "adaptive",
+              "display": "omitted"
+            },
+            "output_config": {
+              "effort": "high"
+            },
+            "marker_locations": {
+              "M1_FINAL_CLAUDE_HISTORY_18E7A2": [],
+              "M1_FINAL_CLAUDE_DEFAULT_A5D4B3": [],
+              "M1_FINAL_CLAUDE_CHILD_TOOL_91C4A6": [
+                {
+                  "path": "/messages/7/content/0/text",
+                  "text_chars": 125,
+                  "count": 1
+                }
+              ]
+            }
+          }
+        ],
+        "tool_results": [
+          {
+            "type": "tool_result",
+            "content": "PreToolUse:Bash hook error: M1_FINAL_CLAUDE_CHILD_BLOCKED",
+            "is_error": true,
+            "tool_use_id": "toolu_01Jcws2jCXeQfv2AaRwzv9Nr"
+          },
+          {
+            "tool_use_id": "toolu_012UCP17guTxJfHa3WDsD28L",
+            "type": "tool_result",
+            "content": "STYLE_CHILD_SCOPE_OK",
+            "is_error": false
+          }
+        ]
+      }
+    ],
+    "subagent_start_context": "Claude adapter has no AddContext capability here; this test measures real child tool scope and inherited context only",
+    "parent_history_markers_in_child_requests": {
+      "M1_FINAL_CLAUDE_HISTORY_18E7A2": false,
+      "M1_FINAL_CLAUDE_DEFAULT_A5D4B3": false
+    }
+  },
+  "calls": [
+    {
+      "name": "history-start",
+      "command": [
+        "/private/tmp/style-m1-claude-cli-2.1.300/claude",
+        "-p",
+        "--verbose",
+        "--output-format",
+        "stream-json",
+        "--include-hook-events",
+        "--setting-sources",
+        "",
+        "--strict-mcp-config",
+        "--mcp-config",
+        "{\"mcpServers\":{}}",
+        "--model",
+        "claude-haiku-5-5",
+        "--effort",
+        "high",
+        "--tools",
+        "",
+        "--debug-file",
+        "/private/tmp/style-m1-claude-context-c-20261016/history-start-debug.log",
+        "--settings",
+        "/private/tmp/style-m1-claude-context-c-20261016/claude/settings.json",
+        "Reply only OK_START. Do not use tools."
+      ],
+      "exit": 0,
+      "elapsed_seconds": 2.306,
+      "stdout_path": "/private/tmp/style-m1-claude-context-c-20261016/history-start-stdout.jsonl",
+      "stderr_path": "/private/tmp/style-m1-claude-context-c-20261016/history-start-stderr.txt",
+      "result": {
+        "subtype": "success",
+        "is_error": false,
+        "terminal_reason": "completed",
+        "num_turns": 1,
+        "permission_denials": []
+      },
+      "request_indices": [],
+      "session_id": "956c59bc-18a1-46c5-82f1-98405a98b66c",
+      "transcript_path": "/private/tmp/style-m1-claude-ui-c-20261016/claude/projects/-private-tmp-style-m1-claude-context-c-20261016-work/956c59bc-18a1-46c5-82f1-98405a98b66c.jsonl",
+      "transcript_sha256": "a0dfed3a307fe4b431bb55d31c8d1e7fb90fb8c3c4b0b5928d93657d0ed70ed8",
+      "replay_source_transcripts": [],
+      "native_requests": [
+        {
+          "id": "3107349a-55d9-4643-8635-38ca847a4576",
+          "session_id": "956c59bc-18a1-46c5-82f1-98405a98b66c",
+          "at": "2026-10-16T11:16:24.059Z",
+          "query_source": "sdk",
+          "native_request_digest": "4aea0d9672c440f5c79ef9f0f322b8e3aee5856eaede7d1fe8a17a622c786366",
+          "model": "claude-haiku-5-5",
+          "thinking": {
+            "type": "adaptive",
+            "display": "updates"
+          },
+          "output_config": {
+            "effort": "high"
+          },
+          "marker_locations": {
+            "M1_FINAL_CLAUDE_HISTORY_18E7A2": [
+              {
+                "path": "/messages/1/content/0/text",
+                "text_chars": 1132,
+                "count": 1
+              }
+            ],
+            "M1_FINAL_CLAUDE_DEFAULT_A5D4B3": [
+              {
+                "path": "/messages/1/content/0/text",
+                "text_chars": 1132,
+                "count": 1
+              }
+            ],
+            "M1_FINAL_CLAUDE_CHILD_TOOL_91C4A6": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "history-resume",
+      "command": [
+        "/private/tmp/style-m1-claude-cli-2.1.300/claude",
+        "-p",
+        "--verbose",
+        "--output-format",
+        "stream-json",
+        "--include-hook-events",
+        "--setting-sources",
+        "",
+        "--strict-mcp-config",
+        "--mcp-config",
+        "{\"mcpServers\":{}}",
+        "--model",
+        "claude-haiku-5-5",
+        "--effort",
+        "high",
+        "--tools",
+        "",
+        "--debug-file",
+        "/private/tmp/style-m1-claude-context-c-20261016/history-resume-debug.log",
+        "--resume",
+        "956c59bc-18a1-46c5-82f1-98405a98b66c",
+        "--settings",
+        "/private/tmp/style-m1-claude-context-c-20261016/claude/settings.json",
+        "Reply only OK_RESUME. Do not use tools."
+      ],
+      "exit": 0,
+      "elapsed_seconds": 2.381,
+      "stdout_path": "/private/tmp/style-m1-claude-context-c-20261016/history-resume-stdout.jsonl",
+      "stderr_path": "/private/tmp/style-m1-claude-context-c-20261016/history-resume-stderr.txt",
+      "result": {
+        "subtype": "success",
+        "is_error": false,
+        "terminal_reason": "completed",
+        "num_turns": 1,
+        "permission_denials": []
+      },
+      "request_indices": [],
+      "session_id": "956c59bc-18a1-46c5-82f1-98405a98b66c",
+      "transcript_path": "/private/tmp/style-m1-claude-ui-c-20261016/claude/projects/-private-tmp-style-m1-claude-context-c-20261016-work/956c59bc-18a1-46c5-82f1-98405a98b66c.jsonl",
+      "transcript_sha256": "015ed2cb7c9c01844dfa6e54384eea7c6cb06c46e141d32d69fe905ffc27f5c4",
+      "replay_source_transcripts": [],
+      "native_requests": [
+        {
+          "id": "c03cf6c8-4a53-46e4-8572-068e34987f00",
+          "session_id": "956c59bc-18a1-46c5-82f1-98405a98b66c",
+          "at": "2026-10-16T11:16:26.369Z",
+          "query_source": "sdk",
+          "native_request_digest": "f032ab5c2a01fc191518e9bb92b7e5acae9e1b23cbfa2e398fbd41f1717314ba",
+          "model": "claude-haiku-5-5",
+          "thinking": {
+            "type": "adaptive",
+            "display": "updates"
+          },
+          "output_config": {
+            "effort": "high"
+          },
+          "marker_locations": {
+            "M1_FINAL_CLAUDE_HISTORY_18E7A2": [
+              {
+                "path": "/messages/1/content/0/text",
+                "text_chars": 1132,
+                "count": 1
+              }
+            ],
+            "M1_FINAL_CLAUDE_DEFAULT_A5D4B3": [
+              {
+                "path": "/messages/1/content/0/text",
+                "text_chars": 1132,
+                "count": 1
+              }
+            ],
+            "M1_FINAL_CLAUDE_CHILD_TOOL_91C4A6": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "history-fork",
+      "command": [
+        "/private/tmp/style-m1-claude-cli-2.1.300/claude",
+        "-p",
+        "--verbose",
+        "--output-format",
+        "stream-json",
+        "--include-hook-events",
+        "--setting-sources",
+        "",
+        "--strict-mcp-config",
+        "--mcp-config",
+        "{\"mcpServers\":{}}",
+        "--model",
+        "claude-haiku-5-5",
+        "--effort",
+        "high",
+        "--tools",
+        "",
+        "--debug-file",
+        "/private/tmp/style-m1-claude-context-c-20261016/history-fork-debug.log",
+        "--resume",
+        "956c59bc-18a1-46c5-82f1-98405a98b66c",
+        "--fork-session",
+        "--settings",
+        "/private/tmp/style-m1-claude-context-c-20261016/claude/settings.json",
+        "Reply only OK_FORK. Do not use tools."
+      ],
+      "exit": 0,
+      "elapsed_seconds": 2.131,
+      "stdout_path": "/private/tmp/style-m1-claude-context-c-20261016/history-fork-stdout.jsonl",
+      "stderr_path": "/private/tmp/style-m1-claude-context-c-20261016/history-fork-stderr.txt",
+      "result": {
+        "subtype": "success",
+        "is_error": false,
+        "terminal_reason": "completed",
+        "num_turns": 1,
+        "permission_denials": []
+      },
+      "request_indices": [],
+      "session_id": "7c5a101f-ed4d-4b7a-8b0c-d62d20313735",
+      "transcript_path": "/private/tmp/style-m1-claude-ui-c-20261016/claude/projects/-private-tmp-style-m1-claude-context-c-20261016-work/7c5a101f-ed4d-4b7a-8b0c-d62d20313735.jsonl",
+      "transcript_sha256": "14e4d44d49b37193e71ea6af520b6845dc812df6c4f9437f8e080676bd233fa8",
+      "replay_source_transcripts": [
+        {
+          "path": "/private/tmp/style-m1-claude-ui-c-20261016/claude/projects/-private-tmp-style-m1-claude-context-c-20261016-work/956c59bc-18a1-46c5-82f1-98405a98b66c.jsonl",
+          "sha256": "015ed2cb7c9c01844dfa6e54384eea7c6cb06c46e141d32d69fe905ffc27f5c4"
+        }
+      ],
+      "native_requests": [
+        {
+          "id": "85a409f3-7ae5-47c4-b6db-bb81789aabd0",
+          "session_id": "7c5a101f-ed4d-4b7a-8b0c-d62d20313735",
+          "at": "2026-10-16T11:16:28.753Z",
+          "query_source": "sdk",
+          "native_request_digest": "bf1bdc2db373a5d3177d971437df1cdbc011b1818769127ea8071408307faed7",
+          "model": "claude-haiku-5-5",
+          "thinking": {
+            "type": "adaptive",
+            "display": "updates"
+          },
+          "output_config": {
+            "effort": "high"
+          },
+          "marker_locations": {
+            "M1_FINAL_CLAUDE_HISTORY_18E7A2": [
+              {
+                "path": "/messages/1/content/0/text",
+                "text_chars": 1132,
+                "count": 1
+              }
+            ],
+            "M1_FINAL_CLAUDE_DEFAULT_A5D4B3": [
+              {
+                "path": "/messages/1/content/0/text",
+                "text_chars": 1132,
+                "count": 1
+              },
+              {
+                "path": "/messages/7/content/0/text",
+                "text_chars": 171,
+                "count": 1
+              }
+            ],
+            "M1_FINAL_CLAUDE_CHILD_TOOL_91C4A6": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "compact-start",
+      "command": [
+        "/private/tmp/style-m1-claude-cli-2.1.300/claude",
+        "-p",
+        "--verbose",
+        "--output-format",
+        "stream-json",
+        "--include-hook-events",
+        "--setting-sources",
+        "",
+        "--strict-mcp-config",
+        "--mcp-config",
+        "{\"mcpServers\":{}}",
+        "--model",
+        "claude-haiku-5-5",
+        "--effort",
+        "high",
+        "--tools",
+        "",
+        "--debug-file",
+        "/private/tmp/style-m1-claude-context-c-20261016/compact-start-debug.log",
+        "--settings",
+        "/private/tmp/style-m1-claude-context-c-20261016/claude/settings.json",
+        "Reply only OK_BEFORE_COMPACT. Do not use tools."
+      ],
+      "exit": 0,
+      "elapsed_seconds": 1.874,
+      "stdout_path": "/private/tmp/style-m1-claude-context-c-20261016/compact-start-stdout.jsonl",
+      "stderr_path": "/private/tmp/style-m1-claude-context-c-20261016/compact-start-stderr.txt",
+      "result": {
+        "subtype": "success",
+        "is_error": false,
+        "terminal_reason": "completed",
+        "num_turns": 1,
+        "permission_denials": []
+      },
+      "request_indices": [],
+      "session_id": "87620189-2418-48ae-a544-088788b9d6bc",
+      "transcript_path": "/private/tmp/style-m1-claude-ui-c-20261016/claude/projects/-private-tmp-style-m1-claude-context-c-20261016-work/87620189-2418-48ae-a544-088788b9d6bc.jsonl",
+      "transcript_sha256": "2a718f6ca0df936ccaa688c1544a77bedfe6c440da7054839a99a59cf56a2966",
+      "replay_source_transcripts": [
+        {
+          "path": "/private/tmp/style-m1-claude-ui-c-20261016/claude/projects/-private-tmp-style-m1-claude-context-c-20261016-work/7c5a101f-ed4d-4b7a-8b0c-d62d20313735.jsonl",
+          "sha256": "14e4d44d49b37193e71ea6af520b6845dc812df6c4f9437f8e080676bd233fa8"
+        },
+        {
+          "path": "/private/tmp/style-m1-claude-ui-c-20261016/claude/projects/-private-tmp-style-m1-claude-context-c-20261016-work/956c59bc-18a1-46c5-82f1-98405a98b66c.jsonl",
+          "sha256": "015ed2cb7c9c01844dfa6e54384eea7c6cb06c46e141d32d69fe905ffc27f5c4"
+        }
+      ],
+      "native_requests": [
+        {
+          "id": "e8b69603-12a5-40f5-9b38-acb0742520d5",
+          "session_id": "87620189-2418-48ae-a544-088788b9d6bc",
+          "at": "2026-10-16T11:16:30.878Z",
+          "query_source": "sdk",
+          "native_request_digest": "159c01568015265f8ce4eb53b094eac80e85e2411f1c6da3bed7c255ad93b17d",
+          "model": "claude-haiku-5-5",
+          "thinking": {
+            "type": "adaptive",
+            "display": "updates"
+          },
+          "output_config": {
+            "effort": "high"
+          },
+          "marker_locations": {
+            "M1_FINAL_CLAUDE_HISTORY_18E7A2": [
+              {
+                "path": "/messages/1/content/0/text",
+                "text_chars": 1132,
+                "count": 1
+              }
+            ],
+            "M1_FINAL_CLAUDE_DEFAULT_A5D4B3": [
+              {
+                "path": "/messages/1/content/0/text",
+                "text_chars": 1132,
+                "count": 1
+              }
+            ],
+            "M1_FINAL_CLAUDE_CHILD_TOOL_91C4A6": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "compact",
+      "command": [
+        "/private/tmp/style-m1-claude-cli-2.1.300/claude",
+        "-p",
+        "--verbose",
+        "--output-format",
+        "stream-json",
+        "--include-hook-events",
+        "--setting-sources",
+        "",
+        "--strict-mcp-config",
+        "--mcp-config",
+        "{\"mcpServers\":{}}",
+        "--model",
+        "claude-haiku-5-5",
+        "--effort",
+        "high",
+        "--tools",
+        "",
+        "--debug-file",
+        "/private/tmp/style-m1-claude-context-c-20261016/compact-debug.log",
+        "--resume",
+        "87620189-2418-48ae-a544-088788b9d6bc",
+        "--settings",
+        "/private/tmp/style-m1-claude-context-c-20261016/claude/settings.json",
+        "/compact"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 6.377,
+      "stdout_path": "/private/tmp/style-m1-claude-context-c-20261016/compact-stdout.jsonl",
+      "stderr_path": "/private/tmp/style-m1-claude-context-c-20261016/compact-stderr.txt",
+      "result": {
+        "subtype": "success",
+        "is_error": false,
+        "num_turns": 0,
+        "permission_denials": []
+      },
+      "request_indices": [],
+      "session_id": "87620189-2418-48ae-a544-088788b9d6bc",
+      "transcript_path": "/private/tmp/style-m1-claude-ui-c-20261016/claude/projects/-private-tmp-style-m1-claude-context-c-20261016-work/87620189-2418-48ae-a544-088788b9d6bc.jsonl",
+      "transcript_sha256": "4c6904c225bf67f175cff8342a36e66b81888cf886f2661804c43cee94c607e1",
+      "replay_source_transcripts": [
+        {
+          "path": "/private/tmp/style-m1-claude-ui-c-20261016/claude/projects/-private-tmp-style-m1-claude-context-c-20261016-work/7c5a101f-ed4d-4b7a-8b0c-d62d20313735.jsonl",
+          "sha256": "14e4d44d49b37193e71ea6af520b6845dc812df6c4f9437f8e080676bd233fa8"
+        },
+        {
+          "path": "/private/tmp/style-m1-claude-ui-c-20261016/claude/projects/-private-tmp-style-m1-claude-context-c-20261016-work/956c59bc-18a1-46c5-82f1-98405a98b66c.jsonl",
+          "sha256": "015ed2cb7c9c01844dfa6e54384eea7c6cb06c46e141d32d69fe905ffc27f5c4"
+        }
+      ],
+      "native_requests": []
+    },
+    {
+      "name": "compact-after",
+      "command": [
+        "/private/tmp/style-m1-claude-cli-2.1.300/claude",
+        "-p",
+        "--verbose",
+        "--output-format",
+        "stream-json",
+        "--include-hook-events",
+        "--setting-sources",
+        "",
+        "--strict-mcp-config",
+        "--mcp-config",
+        "{\"mcpServers\":{}}",
+        "--model",
+        "claude-haiku-5-5",
+        "--effort",
+        "high",
+        "--tools",
+        "",
+        "--debug-file",
+        "/private/tmp/style-m1-claude-context-c-20261016/compact-after-debug.log",
+        "--resume",
+        "87620189-2418-48ae-a544-088788b9d6bc",
+        "--settings",
+        "/private/tmp/style-m1-claude-context-c-20261016/claude/settings.json",
+        "Reply only OK_AFTER_COMPACT. Do not use tools."
+      ],
+      "exit": 0,
+      "elapsed_seconds": 2.021,
+      "stdout_path": "/private/tmp/style-m1-claude-context-c-20261016/compact-after-stdout.jsonl",
+      "stderr_path": "/private/tmp/style-m1-claude-context-c-20261016/compact-after-stderr.txt",
+      "result": {
+        "subtype": "success",
+        "is_error": false,
+        "terminal_reason": "completed",
+        "num_turns": 1,
+        "permission_denials": []
+      },
+      "request_indices": [],
+      "session_id": "87620189-2418-48ae-a544-088788b9d6bc",
+      "transcript_path": "/private/tmp/style-m1-claude-ui-c-20261016/claude/projects/-private-tmp-style-m1-claude-context-c-20261016-work/87620189-2418-48ae-a544-088788b9d6bc.jsonl",
+      "transcript_sha256": "1c0382a86095be353a52cc6260ecfe8716aeb1c16a86050956e6c0f427affd02",
+      "replay_source_transcripts": [
+        {
+          "path": "/private/tmp/style-m1-claude-ui-c-20261016/claude/projects/-private-tmp-style-m1-claude-context-c-20261016-work/7c5a101f-ed4d-4b7a-8b0c-d62d20313735.jsonl",
+          "sha256": "14e4d44d49b37193e71ea6af520b6845dc812df6c4f9437f8e080676bd233fa8"
+        },
+        {
+          "path": "/private/tmp/style-m1-claude-ui-c-20261016/claude/projects/-private-tmp-style-m1-claude-context-c-20261016-work/956c59bc-18a1-46c5-82f1-98405a98b66c.jsonl",
+          "sha256": "015ed2cb7c9c01844dfa6e54384eea7c6cb06c46e141d32d69fe905ffc27f5c4"
+        }
+      ],
+      "native_requests": [
+        {
+          "id": "02fc26fc-98be-4dfb-996c-94a8bc49dfd2",
+          "session_id": "87620189-2418-48ae-a544-088788b9d6bc",
+          "at": "2026-10-16T11:16:39.152Z",
+          "query_source": "sdk",
+          "native_request_digest": "327d856a586107514f40b2565b6cc63225eb9a857d73daf84934e1fc731e5fca",
+          "model": "claude-haiku-5-5",
+          "thinking": {
+            "type": "adaptive",
+            "display": "updates"
+          },
+          "output_config": {
+            "effort": "high"
+          },
+          "marker_locations": {
+            "M1_FINAL_CLAUDE_HISTORY_18E7A2": [],
+            "M1_FINAL_CLAUDE_DEFAULT_A5D4B3": [],
+            "M1_FINAL_CLAUDE_CHILD_TOOL_91C4A6": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "child-scope",
+      "command": [
+        "/private/tmp/style-m1-claude-cli-2.1.300/claude",
+        "-p",
+        "--verbose",
+        "--output-format",
+        "stream-json",
+        "--include-hook-events",
+        "--setting-sources",
+        "",
+        "--strict-mcp-config",
+        "--mcp-config",
+        "{\"mcpServers\":{}}",
+        "--model",
+        "claude-haiku-5-5",
+        "--effort",
+        "high",
+        "--tools",
+        "Agent,Bash",
+        "--debug-file",
+        "/private/tmp/style-m1-claude-context-c-20261016/child-scope-debug.log",
+        "--agents",
+        "{\"style-child\": {\"description\": \"Isolated M1 native child scope fixture\", \"prompt\": \"Run `printf STYLE_SCOPE_BLOCK` exactly once, expect a test hook denial and do not retry. Then run `printf STYLE_CHILD_SCOPE_OK` exactly once. Do not use any other tools. Answer only DONE.\", \"tools\": [\"Bash\"], \"model\": \"haiku\"}}",
+        "--allowedTools",
+        "Agent,Bash",
+        "--permission-mode",
+        "dontAsk",
+        "--settings",
+        "/private/tmp/style-m1-claude-context-c-20261016/claude/settings.json",
+        "Use the Agent tool to launch exactly one style-child agent with this task: Run `printf STYLE_SCOPE_BLOCK` exactly once, expect a test hook denial and do not retry. Then run `printf STYLE_CHILD_SCOPE_OK` exactly once. Do not use any other tools. Answer only DONE. Wait for it. Do not run Bash yourself."
+      ],
+      "exit": 0,
+      "elapsed_seconds": 11.293,
+      "stdout_path": "/private/tmp/style-m1-claude-context-c-20261016/child-scope-stdout.jsonl",
+      "stderr_path": "/private/tmp/style-m1-claude-context-c-20261016/child-scope-stderr.txt",
+      "result": {
+        "subtype": "success",
+        "is_error": false,
+        "terminal_reason": "completed",
+        "num_turns": 2,
+        "permission_denials": [
+          {
+            "tool_name": "Bash",
+            "tool_use_id": "toolu_01Jcws2jCXeQfv2AaRwzv9Nr",
+            "tool_input": {
+              "command": "printf STYLE_SCOPE_BLOCK",
+              "description": "Print STYLE_SCOPE_BLOCK via printf"
+            }
+          }
+        ]
+      },
+      "request_indices": [],
+      "session_id": "c88ba342-3967-45b7-b36f-45b04eb7489e",
+      "transcript_path": "/private/tmp/style-m1-claude-ui-c-20261016/claude/projects/-private-tmp-style-m1-claude-context-c-20261016-work/c88ba342-3967-45b7-b36f-45b04eb7489e.jsonl",
+      "transcript_sha256": "81ef8f0f2f5c3d782dd6e41fc944873af61c89598d1209f68ac2527a6b5495c6",
+      "replay_source_transcripts": [
+        {
+          "path": "/private/tmp/style-m1-claude-ui-c-20261016/claude/projects/-private-tmp-style-m1-claude-context-c-20261016-work/7c5a101f-ed4d-4b7a-8b0c-d62d20313735.jsonl",
+          "sha256": "14e4d44d49b37193e71ea6af520b6845dc812df6c4f9437f8e080676bd233fa8"
+        },
+        {
+          "path": "/private/tmp/style-m1-claude-ui-c-20261016/claude/projects/-private-tmp-style-m1-claude-context-c-20261016-work/87620189-2418-48ae-a544-088788b9d6bc.jsonl",
+          "sha256": "1c0382a86095be353a52cc6260ecfe8716aeb1c16a86050956e6c0f427affd02"
+        },
+        {
+          "path": "/private/tmp/style-m1-claude-ui-c-20261016/claude/projects/-private-tmp-style-m1-claude-context-c-20261016-work/956c59bc-18a1-46c5-82f1-98405a98b66c.jsonl",
+          "sha256": "015ed2cb7c9c01844dfa6e54384eea7c6cb06c46e141d32d69fe905ffc27f5c4"
+        }
+      ],
+      "native_requests": [
+        {
+          "id": "972d07c4-06bc-49a2-863c-76e22bc4b50b",
+          "session_id": "c88ba342-3967-45b7-b36f-45b04eb7489e",
+          "at": "2026-10-16T11:16:41.168Z",
+          "query_source": "sdk",
+          "native_request_digest": "c7088c185d2f195b7283d57c01969902fa52e4d22af898bb490fc90823e60146",
+          "model": "claude-haiku-5-5",
+          "thinking": {
+            "type": "adaptive",
+            "display": "updates"
+          },
+          "output_config": {
+            "effort": "high"
+          },
+          "marker_locations": {
+            "M1_FINAL_CLAUDE_HISTORY_18E7A2": [
+              {
+                "path": "/messages/1/content/0/text",
+                "text_chars": 2591,
+                "count": 1
+              }
+            ],
+            "M1_FINAL_CLAUDE_DEFAULT_A5D4B3": [
+              {
+                "path": "/messages/1/content/0/text",
+                "text_chars": 2591,
+                "count": 1
+              }
+            ],
+            "M1_FINAL_CLAUDE_CHILD_TOOL_91C4A6": []
+          }
+        },
+        {
+          "id": "40d38605-9ede-4410-8e01-76ece4b0c3fd",
+          "session_id": "c88ba342-3967-45b7-b36f-45b04eb7489e",
+          "at": "2026-10-16T11:16:50.617Z",
+          "query_source": "sdk",
+          "native_request_digest": "4d7441e8d0cb1d7b5e1700909ab6c9960f74c7bafe155ca41b867f6ecbaa832f",
+          "model": "claude-haiku-5-5",
+          "thinking": {
+            "type": "adaptive",
+            "display": "updates"
+          },
+          "output_config": {
+            "effort": "high"
+          },
+          "marker_locations": {
+            "M1_FINAL_CLAUDE_HISTORY_18E7A2": [
+              {
+                "path": "/messages/1/content/0/text",
+                "text_chars": 2591,
+                "count": 1
+              }
+            ],
+            "M1_FINAL_CLAUDE_DEFAULT_A5D4B3": [
+              {
+                "path": "/messages/1/content/0/text",
+                "text_chars": 2591,
+                "count": 1
+              }
+            ],
+            "M1_FINAL_CLAUDE_CHILD_TOOL_91C4A6": []
+          }
+        }
+      ]
+    }
+  ],
+  "related_codex_evidence": "M1-FINAL-07-CODEX-2026-10-16.json",
+  "retained_source_sha256": "d64cf798db9635f760186c1ba695a71f6681338a35361f1cf4e2bcfc4bda2bdc",
+  "collector_observation": {
+    "earlier_a": "Successful native start/resume, collector lacked string-to-text-block canonical lookup; raw report retained and not counted as whole acceptance.",
+    "earlier_b": "Successful native resume/fork; native fork rewrites historical system blobs while retaining original request hashes. Strict collector rejected until source hashes were linked. Original report retained.",
+    "final_c": "Complete script exit0; boundary metadata and actual child tool-result assertions appended from retained transcript, no native operations repeated or changed."
+  },
+  "reproduce_command": "PYTHONDONTWRITEBYTECODE=1 python3 testdata/manual/probe_claude_context.py --style /private/tmp/style-m1-claude-ui-c-20261016/bin/style --claude /private/tmp/style-m1-claude-cli-2.1.300/claude --auth-config /private/tmp/style-m1-claude-ui-c-20261016/claude --scratch /tmp/style-m1-claude-context-new --output /tmp/style-m1-claude-context-new.json",
+  "limits": [
+    "Native compact command reports zero chat turns/usage and no ordinary Messages request in its command output; compact_boundary separately records manual compaction and pre/post tokens. Do not use this to infer zero service usage.",
+    "Claude child does not inherit the two tested parent dynamic context markers. SubagentStart AddContext remains unsupported, while tool injection and block work in the child scope.",
+    "Marker loss in this dedicated no-reinject short session is an observation, not a guarantee for every summary or rule. Default sources and reinjection are unchanged."
+  ]
+}

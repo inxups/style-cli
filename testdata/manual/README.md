@@ -103,3 +103,14 @@ PYTHONDONTWRITEBYTECODE=1 python3 testdata/manual/probe_claude_overflow.py \
 ```
 
 八组原生传输结果见 [FINAL-08 Claude](../../docs/review/M1-FINAL-08-CLAUDE-2026-10-16.json)。`probe_claude_failure.py` 使用同一本地协议支撑核对真实error字段、tool.error投递及stats；M1公开条件仍不开放tool.error上的tool.output。完整请求仅留私有scratch，提交报告排除合成usage和认证信息。
+
+Claude真实认证补测使用 `probe_claude_context.py`（resume/fork/关闭补发compact/原生Agent scope）及 `probe_claude_thinking.py`（控制配置与原生effort）。两者的认证仅由原生CLI从用户已登录的M1隔离配置消费，程序不读取或复制凭据；用户settings/hooks被空setting-sources排除，运行自己的显式settings和独立STYLE_HOME。执行要求已登录的原生目标版本，失败仍留原报告。
+
+```sh
+PYTHONDONTWRITEBYTECODE=1 python3 testdata/manual/probe_claude_context.py \
+  --style /absolute/path/to/style --claude /absolute/path/to/claude-2.1.300 \
+  --auth-config /absolute/path/to/isolated-auth-config \
+  --scratch "$(mktemp -d)" --output /tmp/claude-context.json
+```
+
+原生请求由已核对canonical hash的api-request-blob/shape、assistant/user记录及keep/tail重放。fork旧system别名必须有已验证源transcript匹配，否则拒绝；采集的只是marker路径/参数/哈希，不复制提示词或思考正文。结果见 [FINAL-07](../../docs/review/M1-FINAL-07-CLAUDE-2026-10-16.json)；压缩必须另核对native boundary、epoch及输出次数，不能将补发当历史保留。

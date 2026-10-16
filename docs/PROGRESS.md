@@ -1220,3 +1220,13 @@ PY
 - 复现 `probe_claude_thinking.py --style /private/tmp/style-m1-claude-ui-c-20261016/bin/style --claude /private/tmp/style-m1-claude-cli-2.1.300/claude --auth-config /private/tmp/style-m1-claude-ui-c-20261016/claude --scratch /tmp/style-m1-claude-thinking-b-20261016 --output /tmp/style-m1-claude-thinking-b.json` exit0。首个a准备fixture的reads/template格式错误未进入模型调用，原目录保留；修正为现有schema后才计验。
 - 新增原生请求重放采集器：验证canonical内容hash，按keep/tail还原输入；原生流式assistant分块和复用user结果由精确hash引用关联，不把snapshot当额外执行。fork会把部分历史blob改写为system但保留旧hash，仅在已验证原始来源可提供相同hash正文时解析；没有原始内容时拒绝，绝不忽略缺失。C9全51请求成功校验；string/block、缺hash、损坏内容、prefix越界、stream、原生fork别名回归均通过。
 - 40项Python回归及证据断言通过。双module test/vet、runtime/Claude race已在最终修复代码上重跑通过，最终汇总另记FINAL-12。FINAL-06整项按已验证回退/能力边界及C9关闭，预算、sources、compact和公开schema保持不变。
+
+
+### 2026-10-16 — M1-FINAL-07 Claude 真实继承、无补发压缩与子scope通过
+
+- 使用8d5fbf75固定程序、原生2.1.300和用户已登录M1隔离认证，独立work/STYLE_HOME和显式settings，排除用户hooks；未复制凭据、未修改日常安装。`probe_claude_context.py --style /private/tmp/style-m1-claude-ui-c-20261016/bin/style --claude /private/tmp/style-m1-claude-cli-2.1.300/claude --auth-config /private/tmp/style-m1-claude-ui-c-20261016/claude --scratch /tmp/style-m1-claude-context-c-20261016 --output /tmp/style-m1-claude-context-c.json` exit0。
+- resume源956c59bc真实请求保留原startup-only marker，history总输出一次；fork新7c5a101f也保留，startup-only无新输出、默认sources规则输出一次。请求内容hash与保留源transcript精确关联；模型只回答OK，不以复述判通过。
+- compact专用87620189两条规则关闭reinject，native手动compact_boundary记preTokens3307/postTokens775/6100ms，scope epoch1，history/default总输出仍各一次，后续真实请求两marker均空。compact命令本身num_turns/usage为0且无普通Messages请求记录，不能据此宣称压缩服务没有usage。仅本短会话结论，补发默认值不变。
+- native Agent创建style-child，子scope a30d30c5eee9e4968中一次真实printf阻断、一次注入；child真实请求含工具marker，成功result为STYLE_CHILD_SCOPE_OK、拒绝result为固定hook理由，父scope无child条目。子请求不含本次父级两条动态context；Claude SubagentStart仍无注入能力，未扩展能力或路线。
+- a/b原生运行成功但严格采集器分别遇到string→text block归一、fork历史blob改写为system且保留旧hash；原报告保留未标整项通过。修正只按请求hash精确链接已验证原始内容，再完整c重跑。c后从保留native文件补记compact边界和child实际结果断言，无重复推理或观察替换。入库 `review/M1-FINAL-07-CLAUDE-2026-10-16.json`，关联Codex既有证据。
+- 40项采集器回归、脚本语法、报告断言和diff检查通过。FINAL-07关闭；FINAL-09按用户选择等待官方key，M1不扩大全部完成声明。

@@ -2,7 +2,7 @@
 
 日期：2026-10-15。配置由用户执行。2026-10-16 起 Codex 部分改由 agent 执行（用户指示），Claude 仍由用户执行；当日 Codex 基线备份在 `$STYLE_HOME/manual-backup-2026-10-16/`，第 7 节的 Codex cmp 以它为准。M1a 已完成；本文的准备验证不代表 M1b 通过。验收编号以 [测试矩阵](STYLE-M1-TESTS.md) 为准。
 
-2026-10-16 补验收采用隔离配置、独立工作区和临时 STYLE_HOME，保留日常安装。下文 §1–8 保留历史日常环境复现步骤；当前新增工作优先使用 [Claude 隔离 runbook](review/M1-FINAL-06-CLAUDE-RUNBOOK.md) 与 [manual 探针说明](../testdata/manual/README.md)。Codex 两条路线各自 B1–B9、切换/登记、effort、scope 及原生超限已有 FINAL-04/05/07/08 证据；Claude C9/继承和官方计数仍待验，不把历史 C9 代替最终版本重新采集。
+2026-10-16 补验收采用隔离配置、独立工作区和临时 STYLE_HOME，保留日常安装。下文 §1–8 保留历史日常环境复现步骤；当前新增工作优先使用 [Claude 隔离 runbook](review/M1-FINAL-06-CLAUDE-RUNBOOK.md) 与 [manual 探针说明](../testdata/manual/README.md)。Codex 两条路线各自 B1–B9、切换/登记、effort、scope 及原生超限已有 FINAL-04/05/07/08 证据；Claude C9/继承已由FINAL-06/07补验，官方计数仍待验，不把历史 C9 代替最终版本重新采集。
 
 ## 1. 构建与配置根
 
@@ -291,8 +291,8 @@ done
 
 ## 9. 补验收的剩余条件
 
-- FINAL-06：用户已选择稍后进行 Claude 隔离界面操作。按 runbook 采集每个已声明事件的 USER 可见性、关闭思考、各 hook effort、clear 和热更新；先确认能力边界，再用最终程序采50次严格串行 Bash、全部 hook completion，整体 p95 `<50ms` 并分事件报告及保留全部慢样本。
-- FINAL-07：Claude resume/fork、关闭补发专用 compact 探针、子 agent scope 仍待补测。compact需核对输出次数未增长，不能把补发当历史保留。FINAL-08 Claude原生超限已用真实CLI/本地协议stub实际请求独立关闭，八组结果与完整文件精确比较见对应证据；不宣称远程推理或官方计数。
+- FINAL-06：界面六事件USER可见、Read热更新、clear和原生effort已核对。所测UI及控制配置未实现关闭思考，按不产出none的既定能力边界关闭；最终修复版50次严格串行Bash、全部103条hook completion整体p95=28ms，启动341ms和切换54ms仍保留，详见BOUNDARY/THINKING/C9证据。
+- FINAL-07：Claude真实resume/fork、关闭补发compact和原生Agent scope已补测；与Codex一起关闭。专用compact核对输出次数未增长，native边界、state和真实请求一致。FINAL-08原生超限已独立关闭，八组Claude原生CLI/本地协议stub实际请求及保存文件精确比较见对应证据；不宣称远程推理或官方计数。
 - FINAL-09：两家官方计数接口缺 API key，40条语料真实计数均0；安全凭据环境就绪后按 manual README 重跑，记录模型/哈希/基线/增量。不要在对话中粘贴凭据，不使用代理 token 或另一估算器替代。
 - FINAL-10：已有真实统计与官方缓存核对，见 [缓存与成本记录](review/M1-FINAL-10-CACHE-2026-10-16.md)。规则估算与整个会话 usage 分列，默认公式是情景比较，不等于实际账单。
 

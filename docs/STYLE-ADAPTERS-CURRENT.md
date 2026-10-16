@@ -409,3 +409,5 @@ FINAL-06 补验收（2026-10-16）：六类已声明事件的 USER 标记在界�
 FINAL-08 的 [Claude 原生超限](review/M1-FINAL-08-CLAUDE-2026-10-16.json) 已完成：8组ASCII正文验证10,000字符边界和单字段file-preview，六份完整文件与原文逐字节一致。该结论来自真实原生CLI的请求，不是合成hook输入的STYLE预算测试。
 
 U9控制配置补测已完成，见 [THINKING](review/M1-FINAL-06-THINKING-2026-10-16.json)：真实Haiku5.5请求在alwaysThinkingEnabled=false和MAX_THINKING_TOKENS=0下仍为adaptive，hook/state仍high，不能当作关闭成功。所测环境缺少off原值，按既定边界不产出none，档位描述原生effort参数而非思考开关。最终[C9](review/M1-FINAL-06-C9-2026-10-16.json)已通过，整体p95=28ms。
+
+[FINAL-07 Claude](review/M1-FINAL-07-CLAUDE-2026-10-16.json)：真实resume/fork保留原动态context且startup-only没有补发；关闭reinject专用compact后两标记消失。原生Agent子级不继承本例父动态标记，工具上下文和阻断在独立child scope生效，父scope无子事件；不据此增加SubagentStart注入能力。

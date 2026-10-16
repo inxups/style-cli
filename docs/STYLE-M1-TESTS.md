@@ -4,7 +4,7 @@
 
 本文件记录测试矩阵和每项当前状态。测试通过必须有命令输出、fixture/golden 文件或真实环境记录作为证据。
 
-当前 M1 补验收未全部闭合；历史 B/C 通过不覆盖 FINAL 新增的环境/程序/能力范围。FINAL-07 的 Claude 部分与 FINAL-09 仍待真实证据，最终回归单列 FINAL-12；不提前开始 M2。
+当前 M1 补验收未全部闭合；历史 B/C 通过不覆盖 FINAL 新增的环境/程序/能力范围。FINAL-09 仍待官方计数证据，最终回归单列 FINAL-12；不提前开始 M2。
 
 ## 状态约定
 
@@ -223,7 +223,7 @@ B1.2 和 B1.4 的历史通过状态表示原有测试套件在声明范围内通
 - [x] **FINAL-06 Claude 边界及 C9**：六事件USER可见、Read热更新、clear原生/state及最终C9已验。U9按既定能力边界关闭：界面无off选项，控制配置false/预算0的真实请求仍adaptive，hook/state仍high，不产出none、不宣称已关闭思考；clear启动USER虽输出未显示，新session无model。证据 `review/M1-FINAL-06-{BOUNDARY,THINKING,C9}-2026-10-16.json`。
 - [x] **FINAL-06-C9 最终性能**：原生2.1.300、程序8d5fbf75，真实Haiku5.5会话，50次固定printf/50结果/50含工具assistant消息、无重叠；全部103条STYLE completion整体p95=28ms，Pre=29ms/Post=13ms；启动341ms和模型切换54ms完整保留。33项采集器测试通过，证据 `review/M1-FINAL-06-C9-2026-10-16.json` 和对应原样HOOKS。
 - [x] **FINAL-06-FIX native failure 与探针修复**：Claude 的 `error` 归一为 ToolPostEvent.Error，保留旧 tool_error；收窄 M1 tool.error 字段声明，与既有公开校验一致，不扩大 DSL。修复 user-only 来源下技能 fixture 位置；固定原生2.1.300和修复二进制。codec/runtime 回归先失败后通过，原生 CLI→Bash exit7→hook→请求→stats 对照通过；agenthooks全量、root五包、vet和30项采集器测试通过。
-- [~] **FINAL-07 继承**：Codex 真实 exec/app-server 请求、rollout、state/stats 核对通过。resume/fork 保留；compact 无补发且两条标记均消失；fresh/fork=all/嵌套 depth2 的三个子 agent 各有一次 context、tool inject 和 block，独立 scope，父 scope 无子事件。采集器末尾路径字段错误及从原始结果续验分别记录。Claude 仍待测，不能标记整项完成。证据 `review/M1-FINAL-07-CODEX-2026-10-16.json`、COLLECTOR-OBSERVATION。
+- [x] **FINAL-07 上下文继承**：Codex既有真实证据保留；Claude2.1.300真实认证CLI resume/fork请求保留startup-only标记且无补发，fork默认规则独立输出一次。专用compact关闭补发，native boundary 3307→775/epoch1，输出各一次、后续请求两标记消失。原生Agent子级不继承所测父动态标记；tool inject/block在独立scope，真实成功/拒绝结果一致，父无子事件。40项采集器回归通过，证据 `review/M1-FINAL-07-CLAUDE-2026-10-16.json`；默认策略不变。
 - [x] **FINAL-08 原生超限与 STYLE 保护**：既有两家 T003/engine 保护和 Codex 三组真实落盘证据保留。Claude2.1.300 原生 CLI 对本地协议 stub 的8组实际请求：SessionStart 9,999/10,000字符完整；10,001/12k/50k及prompt/pre/post 12k转文件预览，六份原生保存文件逐字节相等，无STYLE提前裁剪。仅测原生传输，不宣称远程推理或官方计数。证据 `review/M1-FINAL-08-CLAUDE-2026-10-16.json`；30项采集器回归通过。
 - [?] **FINAL-09 校准**：40 条固定中英各半规则，逐条 SHA256、同结构基线/请求摘要、模型和生产 CLI 估算已记录；官方 API key 均缺失，脚本 exit2、两家 0/40，不宣称校准通过。新增语料/请求结构/缺凭据禁止网络回归，修正 plan/doctor 未验证的误差保证及 golden。真实重跑命令见 manual README。
 - [x] **FINAL-10 U-T4/U-T6**：FINAL-04 各 19 调用归并 17 会话，各 31 个真实 HTTP 尝试、16 会话有 usage；Claude 130 行 usage 去重为 108 响应。规则次数/去重/估算、完整会话 native usage 及字段覆盖范围分列。官方缓存门槛/TTL/读写/usage 核对完成，保留公式和默认值但标注 scenario/not billing；4 项采集器语义回归、全部 27 项 Python 测试、app 全量/vet、golden 和 diff 检查通过。见 `review/M1-FINAL-10-CACHE-2026-10-16.md` 与 USAGE JSON。
