@@ -1,0 +1,269 @@
+{
+  "date": "2026-10-17",
+  "item": "M2-B3",
+  "passed": true,
+  "scope": "two isolated native Codex routes with the configured real model service",
+  "source_commit": "f76b37e",
+  "source_sha256": "589d168506db60b7667431bd72ca310ecba5ff6fc933bbc1a0de215ec25489c6",
+  "style_binary_sha256": "c35d85bd70c4bd575e5eaf401662870b45867b419995e2747a5917c57952ab8c",
+  "provenance": {
+    "codex-user": {
+      "at_utc": "2026-10-16T15:21:31.051811+00:00",
+      "harness_version": "codex-cli 0.159.3",
+      "raw_report": "/private/tmp/style-m2-codex-user-20261017.json",
+      "raw_report_sha256": "9e838a6b9ce71f2c72e4a6478ed3caf64ed8122cf7eda5efde32d8d1e8890964",
+      "command": [
+        "python3",
+        "testdata/manual/probe_codex_m2.py",
+        "--style",
+        "<fixed T30 binary>",
+        "--route",
+        "codex-user",
+        "--scratch",
+        "/private/tmp/style-m2-codex-user-20261017",
+        "--output",
+        "/private/tmp/style-m2-codex-user-20261017.json"
+      ]
+    },
+    "codex-plugin": {
+      "at_utc": "2026-10-16T15:22:14.000360+00:00",
+      "harness_version": "codex-cli 0.159.3",
+      "raw_report": "/private/tmp/style-m2-codex-plugin-20261017.json",
+      "raw_report_sha256": "fb7ead455ecd2ef68130c32af0460b918f74e220c1b3de5d0b727f656035a79a",
+      "command": [
+        "python3",
+        "testdata/manual/probe_codex_m2.py",
+        "--style",
+        "<fixed T30 binary>",
+        "--route",
+        "codex-plugin",
+        "--scratch",
+        "/private/tmp/style-m2-codex-plugin-20261017",
+        "--output",
+        "/private/tmp/style-m2-codex-plugin-20261017.json"
+      ]
+    }
+  },
+  "routes": {
+    "codex-user": {
+      "passed": true,
+      "session_id": "01a1454d-d6ef-71f0-b054-130e54c43cb2",
+      "runtime_records": [
+        {
+          "at": "2026-10-16T15:21:31.768895Z",
+          "provider": "codex",
+          "event": "SessionStart",
+          "point": "session.start",
+          "entry": "m2-native/style-start@session.start",
+          "action": "inject",
+          "result": "output",
+          "est_tokens": 13,
+          "body_sha256": "sha256:30e885700f7bc2bc7b5b4dbe86c4772c4f84b967f342e26c199c269ddfdafdaf"
+        },
+        {
+          "at": "2026-10-16T15:21:35.266601Z",
+          "provider": "codex",
+          "event": "PreToolUse",
+          "point": "tool.pre",
+          "entry": "m2-native/style-shell@tool.pre",
+          "action": "inject",
+          "result": "output",
+          "est_tokens": 13,
+          "body_sha256": "sha256:07e10e3b79e9f1c7f4800fcab387e8716b12c5b670b0a12e43b4db8f0657e2a9"
+        }
+      ],
+      "style_rollout_injections": 2,
+      "native_injections_excluded_from_style_stats": 2,
+      "reports": {
+        "rule": {
+          "format": 1,
+          "by": "rule",
+          "window": {
+            "since": "2026-10-09T15:21:39.363783Z",
+            "until": "2026-10-16T15:21:39.363783Z"
+          },
+          "totals": {
+            "outputs": 2,
+            "blocks": 0,
+            "dedup": 0,
+            "cap_drops": 0,
+            "estimated_tokens": 26,
+            "unestimated": 0
+          },
+          "rows": [
+            {
+              "provider": "codex",
+              "rule": "m2-native/style-shell",
+              "outputs": 1,
+              "blocks": 0,
+              "dedup": 0,
+              "cap_drops": 0,
+              "estimated_tokens": 13,
+              "unestimated": 0
+            },
+            {
+              "provider": "codex",
+              "rule": "m2-native/style-start",
+              "outputs": 1,
+              "blocks": 0,
+              "dedup": 0,
+              "cap_drops": 0,
+              "estimated_tokens": 13,
+              "unestimated": 0
+            }
+          ],
+          "quality": {
+            "partial": false,
+            "invalid_lines": 0,
+            "oversized_lines": 0,
+            "skipped_symlinks": 0
+          }
+        },
+        "session": {
+          "format": 1,
+          "by": "session",
+          "window": {
+            "since": "2026-10-09T15:21:39.374291Z",
+            "until": "2026-10-16T15:21:39.374291Z"
+          },
+          "totals": {
+            "outputs": 2,
+            "blocks": 0,
+            "dedup": 0,
+            "cap_drops": 0,
+            "estimated_tokens": 26,
+            "unestimated": 0
+          },
+          "rows": [
+            {
+              "provider": "codex",
+              "session": "01a1454d-d6ef-71f0-b054-130e54c43cb2",
+              "outputs": 2,
+              "blocks": 0,
+              "dedup": 0,
+              "cap_drops": 0,
+              "estimated_tokens": 26,
+              "unestimated": 0
+            }
+          ],
+          "quality": {
+            "partial": false,
+            "invalid_lines": 0,
+            "oversized_lines": 0,
+            "skipped_symlinks": 0
+          }
+        }
+      }
+    },
+    "codex-plugin": {
+      "passed": true,
+      "session_id": "01a1454e-7f5d-7f03-b470-bf7652893e1b",
+      "runtime_records": [
+        {
+          "at": "2026-10-16T15:22:15.5307Z",
+          "provider": "codex",
+          "event": "SessionStart",
+          "point": "session.start",
+          "entry": "m2-native/style-start@session.start",
+          "action": "inject",
+          "result": "output",
+          "est_tokens": 13,
+          "body_sha256": "sha256:30e885700f7bc2bc7b5b4dbe86c4772c4f84b967f342e26c199c269ddfdafdaf"
+        },
+        {
+          "at": "2026-10-16T15:22:19.759267Z",
+          "provider": "codex",
+          "event": "PreToolUse",
+          "point": "tool.pre",
+          "entry": "m2-native/style-shell@tool.pre",
+          "action": "inject",
+          "result": "output",
+          "est_tokens": 13,
+          "body_sha256": "sha256:07e10e3b79e9f1c7f4800fcab387e8716b12c5b670b0a12e43b4db8f0657e2a9"
+        }
+      ],
+      "style_rollout_injections": 2,
+      "native_injections_excluded_from_style_stats": 2,
+      "reports": {
+        "rule": {
+          "format": 1,
+          "by": "rule",
+          "window": {
+            "since": "2026-10-09T15:22:26.528968Z",
+            "until": "2026-10-16T15:22:26.528968Z"
+          },
+          "totals": {
+            "outputs": 2,
+            "blocks": 0,
+            "dedup": 0,
+            "cap_drops": 0,
+            "estimated_tokens": 26,
+            "unestimated": 0
+          },
+          "rows": [
+            {
+              "provider": "codex",
+              "rule": "m2-native/style-shell",
+              "outputs": 1,
+              "blocks": 0,
+              "dedup": 0,
+              "cap_drops": 0,
+              "estimated_tokens": 13,
+              "unestimated": 0
+            },
+            {
+              "provider": "codex",
+              "rule": "m2-native/style-start",
+              "outputs": 1,
+              "blocks": 0,
+              "dedup": 0,
+              "cap_drops": 0,
+              "estimated_tokens": 13,
+              "unestimated": 0
+            }
+          ],
+          "quality": {
+            "partial": false,
+            "invalid_lines": 0,
+            "oversized_lines": 0,
+            "skipped_symlinks": 0
+          }
+        },
+        "session": {
+          "format": 1,
+          "by": "session",
+          "window": {
+            "since": "2026-10-09T15:22:26.540394Z",
+            "until": "2026-10-16T15:22:26.540394Z"
+          },
+          "totals": {
+            "outputs": 2,
+            "blocks": 0,
+            "dedup": 0,
+            "cap_drops": 0,
+            "estimated_tokens": 26,
+            "unestimated": 0
+          },
+          "rows": [
+            {
+              "provider": "codex",
+              "session": "01a1454e-7f5d-7f03-b470-bf7652893e1b",
+              "outputs": 2,
+              "blocks": 0,
+              "dedup": 0,
+              "cap_drops": 0,
+              "estimated_tokens": 26,
+              "unestimated": 0
+            }
+          ],
+          "quality": {
+            "partial": false,
+            "invalid_lines": 0,
+            "oversized_lines": 0,
+            "skipped_symlinks": 0
+          }
+        }
+      }
+    }
+  }
+}

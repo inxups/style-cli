@@ -1442,3 +1442,11 @@ PY
 - 原生命令与证据：`probe_codex_m2.py --style <固定 T30 构建> --route codex-user|codex-plugin --scratch <各自空目录> --output <私有报告>`，两路线脚本均 exit 0、四项 check 均 true。源码提交 f76b37e，固定 codex-cli 0.159.3；STYLE SHA256 `c35d85bd70c4bd575e5eaf401662870b45867b419995e2747a5917c57952ab8c`。实际参数、时间、源码/原始报告摘要和本条事实见 `docs/review/M2-B2-CODEX-2026-10-17.json`。
 - 归档仅提取本条白名单结果，不写连接配置、provider 地址、鉴权信息或原始 prompt；真实推理使用用户已有 Responses 服务，未调用 Claude 或改变额度相关状态。原始日志在两份私有 scratch 中保留；未修改日常安装。
 - 验证：重算两份原始报告的 SHA256，核对源码/固定二进制摘要与本条双路线 passed=true、抽取结果逐字段相同；JSON 可解析、当前文档链接/围栏、追加式日志和 `git diff --check` 通过。源码/采集器沿用 f76b37e 已通过的 50 项，无 Go 生产代码改动，不重复已通过的 Go 回归。
+
+
+### 2026-10-17 — M2-B3 stats 真实汇总 `[x]`
+
+- 真实结果：codex-user/plugin 两路线的生产 style stats rule/session 每行及总量与真实 runtime 记录一致：2 outputs、26 estimated_tokens；对应两份 STYLE rollout 全文，另外两份 native 注入单列排除。窗口内 session 身份正确，quality.partial=false。
+- 原生命令与证据：`probe_codex_m2.py --style <固定 T30 构建> --route codex-user|codex-plugin --scratch <各自空目录> --output <私有报告>`，两路线脚本均 exit 0、四项 check 均 true。源码提交 f76b37e，固定 codex-cli 0.159.3；STYLE SHA256 `c35d85bd70c4bd575e5eaf401662870b45867b419995e2747a5917c57952ab8c`。实际参数、时间、源码/原始报告摘要和本条事实见 `docs/review/M2-B3-CODEX-2026-10-17.json`。
+- 归档仅提取本条白名单结果，不写连接配置、provider 地址、鉴权信息或原始 prompt；真实推理使用用户已有 Responses 服务，未调用 Claude 或改变额度相关状态。原始日志在两份私有 scratch 中保留；未修改日常安装。
+- 验证：重算两份原始报告的 SHA256，核对源码/固定二进制摘要与本条双路线 passed=true、抽取结果逐字段相同；JSON 可解析、当前文档链接/围栏、追加式日志和 `git diff --check` 通过。源码/采集器沿用 f76b37e 已通过的 50 项，无 Go 生产代码改动，不重复已通过的 Go 回归。
