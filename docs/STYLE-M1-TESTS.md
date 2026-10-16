@@ -4,7 +4,7 @@
 
 本文件记录测试矩阵和每项当前状态。测试通过必须有命令输出、fixture/golden 文件或真实环境记录作为证据。
 
-当前 M1 补验收未全部闭合；历史 B/C 通过不覆盖 FINAL 新增的环境/程序/能力范围。FINAL-09 仍待官方计数证据，最终回归单列 FINAL-12；不提前开始 M2。
+M1 已关闭（2026-10-16），本文件此后只读归档；历史 B/C 通过不覆盖 FINAL 新增的环境/程序/能力范围。FINAL-09 官方计数作为已知遗留移交 [M2 测试矩阵](STYLE-M2-TESTS.md) 的 M2-CARRY-01 继续 `[?]`；M2 测试见该文件。
 
 ## 状态约定
 
@@ -225,7 +225,7 @@ B1.2 和 B1.4 的历史通过状态表示原有测试套件在声明范围内通
 - [x] **FINAL-06-FIX native failure 与探针修复**：Claude 的 `error` 归一为 ToolPostEvent.Error，保留旧 tool_error；收窄 M1 tool.error 字段声明，与既有公开校验一致，不扩大 DSL。修复 user-only 来源下技能 fixture 位置；固定原生2.1.300和修复二进制。codec/runtime 回归先失败后通过，原生 CLI→Bash exit7→hook→请求→stats 对照通过；agenthooks全量、root五包、vet和30项采集器测试通过。
 - [x] **FINAL-07 上下文继承**：Codex既有真实证据保留；Claude2.1.300真实认证CLI resume/fork请求保留startup-only标记且无补发，fork默认规则独立输出一次。专用compact关闭补发，native boundary 3307→775/epoch1，输出各一次、后续请求两标记消失。原生Agent子级不继承所测父动态标记；tool inject/block在独立scope，真实成功/拒绝结果一致，父无子事件。40项采集器回归通过，证据 `review/M1-FINAL-07-CLAUDE-2026-10-16.json`；默认策略不变。
 - [x] **FINAL-08 原生超限与 STYLE 保护**：既有两家 T003/engine 保护和 Codex 三组真实落盘证据保留。Claude2.1.300 原生 CLI 对本地协议 stub 的8组实际请求：SessionStart 9,999/10,000字符完整；10,001/12k/50k及prompt/pre/post 12k转文件预览，六份原生保存文件逐字节相等，无STYLE提前裁剪。仅测原生传输，不宣称远程推理或官方计数。证据 `review/M1-FINAL-08-CLAUDE-2026-10-16.json`；30项采集器回归通过。
-- [?] **FINAL-09 校准**：40 条固定中英各半规则，逐条 SHA256、同结构基线/请求摘要、模型和生产 CLI 估算已记录；官方 API key 均缺失，脚本 exit2、两家 0/40，不宣称校准通过。新增语料/请求结构/缺凭据禁止网络回归，修正 plan/doctor 未验证的误差保证及 golden。真实重跑命令见 manual README。
+- [?] **FINAL-09 校准**：40 条固定中英各半规则，逐条 SHA256、同结构基线/请求摘要、模型和生产 CLI 估算已记录；官方 API key 均缺失，脚本 exit2、两家 0/40，不宣称校准通过。新增语料/请求结构/缺凭据禁止网络回归，修正 plan/doctor 未验证的误差保证及 golden。真实重跑命令见 manual README。后续状态见 M2 遗留项 M2-CARRY-01。
 - [x] **FINAL-10 U-T4/U-T6**：FINAL-04 各 19 调用归并 17 会话，各 31 个真实 HTTP 尝试、16 会话有 usage；Claude 130 行 usage 去重为 108 响应。规则次数/去重/估算、完整会话 native usage 及字段覆盖范围分列。官方缓存门槛/TTL/读写/usage 核对完成，保留公式和默认值但标注 scenario/not billing；4 项采集器语义回归、全部 27 项 Python 测试、app 全量/vet、golden 和 diff 检查通过。见 `review/M1-FINAL-10-CACHE-2026-10-16.md` 与 USAGE JSON。
 - [x] **FINAL-11 文档**：规范/设计首页、总览、手册、教程与状态表同步；degrade 可跳过、tool.error 条件/无条件状态、静态回退无任何 when、动态 system 双挂载及失败例外一致。built CLI 四组 plan 分别 skipped/0、skipped/0、install-error/4、never-trigger/0，隔离根无写入；9 个文档94本地链接与围栏、adapter/runtime/plan/app 全量回归和 diff 检查通过。见 `review/M1-FINAL-11-PLAN-2026-10-16.json`；最终补验后另审计当前首页、总览、正文与教程，清理Claude旧待测描述，见 `review/M1-FINAL-11-DOC-AUDIT-2026-10-16.json`。
 - [x] **FINAL-12 回归**：最终修复后双module fresh test/vet、runtime/Claude race通过；历史六包race保留。40项采集器回归、30文件语法/302文件gofmt、clean构建与32项smoke通过。62b9346推送后的run38894349556两套真实Ubuntu/macOS job均success，格式/vet/双module test/全部40采集器测试/build/smoke逐步成功；日志各有Ran 40 tests及smoke passed。证据 `review/M1-FINAL-12-CI-2026-10-16.json`，关联最终本地REGRESSION；官方计数单列FINAL-09待验。

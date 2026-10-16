@@ -1,6 +1,6 @@
 # STYLE CLI 工作进度
 
-更新时间：2026-10-15
+更新时间：2026-10-16
 
 本文件采用追加式记录。每条记录包含日期、任务/测试编号、命令或依据、结果和下一步。
 
@@ -1260,3 +1260,11 @@ PY
 - 链接：迁入文档里 `../docs/X` 改为 `../X`，其余仓库根相对路径加一层 `../`；教程、adapter 总览和任务清单改指 `spec/` 或 `docs/spec/`；规范入口增加流程图目录链接。本条以上的日志条目、`review/*.json` 证据和 2026-10-13 两份评审/设计文档里的 `STYLE_DOCS/...` 是历史路径，按原样保留，对应文件现位于 `docs/spec/`。
 - 验证：`docs/**/*.md` 相对链接检查只剩 `STYLE-spec-compiled.md` 指向 `style-gen/`、`style-review/` 的 3 个链接，这三个目标迁移前就不存在（见 `STYLE-M1-REVIEW-2026-10-13.md`），本次未新增断链。清理 CODEX_HOME/CODEX_SANDBOX、使用临时 GOPATH/GOMODCACHE/GOCACHE 的 `go test ./... ./agenthooks/...` 全部通过；`git diff --check` 通过。仅移动文档，未改 Go、采集器、示例或 workflow。
 - CI：用户授权后，确认 origin/main 是祖先，普通快进推送 bf1f92e→9439987，没有使用 force。GitHub Actions run 38895447558（head 94399870b6f667a95b525d33c5beb6c7c262a029）completed/success；Test(ubuntu-latest)、Test(macos-latest) 的 format、vet、test、采集器、build 和 smoke 步骤都是 success。核对命令：`gh run view 38895447558 --repo inxups/style-cli --json databaseId,headSha,status,conclusion,jobs,url`。
+
+### 2026-10-16 — M2-00 建立 M2 任务与测试文档 `[x]`
+
+- 依据：用户确认 M1 完成，M2 范围限定为 CLI 设计 §14.4 五项（`target: native`、`style stats`、跨包去重 T8、Claude `~/.claude/rules/` 静态位置 U-C4、output style 做 replace 评估），不提前拉入 M3；文档沿用 M1 三件套；真实环境沿用当前约定（Codex 由 agent 执行，Claude Code 界面项由用户执行）。
+- M1 关闭：唯一未闭合的 FINAL-09 官方计数按用户决定作为已知遗留移交 M2-CARRY-01，继续 `[?]`，证据仍为 `review/M1-FINAL-09-COUNTING-BLOCKED-2026-10-16.json`。M1 任务/测试首页改为已关闭并只读归档，FINAL-09 条目原状态保留并指向 M2-CARRY-01，backlog 的 M2 行指向新文档。
+- 改动：新建 `docs/STYLE-M2-TASKS.md`（基线、遗留、设计定稿 D1–D5、M2a 实现 T10–T60、M2b 准备、里程碑验收、backlog）与 `docs/STYLE-M2-TESTS.md`（BASE、CARRY、A1–A9、B1–B4、C1–C4、CI、DOCS）；`AGENTS.md` 改为指向当前里程碑文档，完成里程碑时提示下一步规划。`docs/STYLE-M2-MANUAL.md` 留给 M2-PREP。
+- 验证：改动文档的本地相对链接目标全部存在、代码围栏成对，`git diff --check` 通过。仅文档改动，未运行 Go 测试；Go 基线由 M2-01 执行。
+- 下一步：M2-01 基线回归，然后 M2-D1 native 规则格式设计。
