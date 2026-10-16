@@ -21,6 +21,7 @@ type NativeCatalog map[string]NativeHarness
 
 // NativeRule is one harness mapping of a target: native rule.
 type NativeRule struct {
+	Package string
 	RuleID  string
 	Harness string
 	Event   string

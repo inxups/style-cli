@@ -1308,3 +1308,12 @@ PY
 - 测试：`core/plan/native_test.go`（native-hook、无映射、fallback 三态与不支持 native 的适配器、requirement 为空、文本不含命令或正文），`internal/adapter` 委托测试，两家 `native_test.go` 的 timeout 解析，`internal/app/native_plan_test.go`（A2 JSON 契约，fallback error 时 install 退出 4 且不建目录，plan 输出原因；skip/degrade 时 install 退出 0）。
 - 验证：gofmt 无输出；`GOFLAGS='-mod=readonly -count=1' make test-go` exit 0（30 个包 ok）；`GOFLAGS=-mod=readonly make vet-go` exit 0；采集器 40 项 OK；`-trimpath` 构建后 smoke 32 项通过。
 - 过渡状态：T12 之前 native-hook 只在 plan 中出现，install 不写 native 条目。下一步 M2-T12。
+
+### 2026-10-16 — M2-T12 native adapter 与安装路线 `[x]`
+
+- 接手起点为 clean 62605ac（Claude Code 已完成 T10/T11）。两家 `Facts.Native` 实现 `adapter.NativeWriter`，沿用 `NativeHook` 的事件/matcher/实际 timeout，生成作者命令和 `<包>/<id>` tag；安装编译另存 native hook，按 priority（含小数）、包安装序号、包内序号排序，不写入 runtime index。安装、重编译、部分卸载和 doctor 路线核对都使用完整 hook 集合。
+- agenthooks 边界：按已批准 F11 扩展 `install.HookSpec.RawCommand/RawTag`，仅 POSIX Codex/Claude 支持；生成 `: --owner=style --native=<tag>; <作者命令>`，绕过 runner、插件启动器、异步/filter/fail-closed 参数。Claude 原生命令不进动态 `Surface` 合并，不影响 STYLE 自身订阅和 fail-closed；`*` matcher 保留。字段为空时现有 renderer 测试保持通过。
+- 发现并修复已有合并问题：外部 matcher 组先于 STYLE 组时，原先 Codex `trusted_hash` 键仍指向渲染前的序号。新增 agenthooks `rebaseCodexTrust`，在无写入的安装规划中用同一 owner 合并规则计算外部组偏移，含路线切换的虚拟文件视图；哈希内容不变，键对应最终布局。CLI 设计 §9.3 回写实际索引约定。Codex 路线 status 保留盘上 native 命令核对 runner 面与信任，doctor 再与包的批准状态核对，避免合法 native 被误报 route-missing。
+- 可重复证据：`internal/app/native_install_test.go` 的 `TestA3NativeInstallRoundTripAndRouteSwitch` 在 codex-plugin/codex-user/claude-user 上验证 owner、默认 60/指定 19 秒、priority 顺序、同优先级包顺序、两个包安装与单包卸载重编译、幂等、Codex 路线往返无残留、外部配置字节和 0640 权限还原；解析实际 TOML，将各 native 的最终组序号与该命令的 `DefinitionHash` 逐条对应。`agenthooks/install/native_test.go` 实际用 `sh -c` 执行渲染命令，stdin 字节相同且退出 7；覆盖含引号 tag、原生事件全集和 SessionEnd 3 秒限制。
+- 验证：清除 CODEX_HOME/CODEX_SANDBOX，临时 GOPATH/GOMODCACHE/GOCACHE；`GOFLAGS='-mod=readonly -count=1' make test-go` 双 module exit 0；`GOFLAGS=-mod=readonly make vet-go` 双 module exit 0；加强信任键断言后单独重跑 `go test ./internal/app -run '^TestA3Native' -count=1` 通过。gofmt 与 `git diff --check` 通过；plan/compile golden 无改动。M2-A3 改 `[x]`；尚未宣称真实 harness 验收。
+- 下一步：T13 安装披露、native 差异强制信任（含开发 link）、list/doctor 条目状态；共享 conformance 扩展仍由 T60 跟踪。

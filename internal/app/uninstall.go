@@ -113,9 +113,12 @@ func (s *Service) Uninstall(ctx context.Context, request UninstallRequest) (Unin
 		for index := range adapters {
 			target := &adapters[index]
 			harness := lock.Harnesses[string(target.provider)]
-			target.hooks = hooksForProvider(target.provider, compilation.index)
+			target.hooks = compilation.hooksForProvider(target.provider)
 			if harness.FailClosed {
 				for hookIndex := range target.hooks {
+					if target.hooks[hookIndex].Command != "" {
+						continue
+					}
 					extra := cloneExtra(target.hooks[hookIndex].Extra)
 					if extra == nil {
 						extra = make(map[string]any)

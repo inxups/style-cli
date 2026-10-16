@@ -80,6 +80,11 @@ type HookSpec struct {
 	NativeMatcher string
 	Blocking      bool // decision path vs telemetry path
 	Timeout       time.Duration
+	// RawCommand bypasses the agenthooks runner for a consumer-owned native
+	// command hook. RawTag identifies it inside the ownership no-op prefix.
+	// Only the Codex and Claude renderers support these fields.
+	RawCommand string
+	RawTag     string
 }
 
 // Manifest is the single source from which every provider config is
@@ -107,6 +112,17 @@ func Render(m Manifest, t Target) (fs.FS, error) {
 	}
 	if _, err := ownerName(m); err != nil {
 		return nil, err
+	}
+	for _, hook := range m.Hooks {
+		if hook.RawCommand == "" {
+			continue
+		}
+		if runtime.GOOS == "windows" || t.Provider != agenthooks.ProviderCodex && t.Provider != agenthooks.ProviderClaudeCode {
+			return nil, errors.New("install: raw native commands require a POSIX Codex or Claude Code target")
+		}
+		if hook.RawTag == "" {
+			return nil, errors.New("install: raw native commands require RawTag")
+		}
 	}
 	switch t.Provider {
 	case agenthooks.ProviderClaudeCode:
@@ -234,6 +250,11 @@ func planWithReader(m Manifest, t Target, readFile func(string) ([]byte, error))
 	paths, contents, err := flatten(rendered)
 	if err != nil {
 		return nil, err
+	}
+	if t.Provider == agenthooks.ProviderCodex {
+		if err := rebaseCodexTrust(m, t, paths, contents, readFile); err != nil {
+			return nil, err
+		}
 	}
 	var out []plannedFile
 	for i, p := range paths {
@@ -558,6 +579,9 @@ func handlerHasOwner(command string, args []string, owner string) bool {
 // the argv contract (--provider, --timeout) and the in-process --filter for
 // dialects that can't express the matcher.
 func hookCommand(m Manifest, p agenthooks.Provider, spec HookSpec) string {
+	if spec.RawCommand != "" {
+		return rawHookCommand(m, spec)
+	}
 	parts := make([]string, 0, len(m.Command)+5)
 	for _, c := range m.Command {
 		parts = append(parts, shellQuote(c))
@@ -566,6 +590,10 @@ func hookCommand(m Manifest, p agenthooks.Provider, spec HookSpec) string {
 		parts = append(parts, shellQuote(arg))
 	}
 	return strings.Join(parts, " ")
+}
+
+func rawHookCommand(m Manifest, spec HookSpec) string {
+	return ": --owner=" + manifestOwner(m) + " " + shellQuote("--native="+spec.RawTag) + "; " + spec.RawCommand
 }
 
 func hookArgs(m Manifest, p agenthooks.Provider, spec HookSpec) []string {

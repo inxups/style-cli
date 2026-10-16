@@ -52,6 +52,11 @@ type NativePlanningFacts interface {
 	NativeHook(rule spec.NativeRule) (plan.NativeEntry, error)
 }
 
+// NativeWriter translates a validated native rule into a route request.
+type NativeWriter interface {
+	Native(spec.NativeRule) (HookSpec, error)
+}
+
 // PlanningFacts composes only the provider facts needed by core/plan.
 // BuildPlanAdapter projects this richer contract onto core/plan's small port.
 type PlanningFacts interface {
@@ -192,6 +197,8 @@ type HookSpec struct {
 	Matcher     string
 	Points      []string
 	Extra       map[string]any
+	Command     string `json:",omitempty"`
+	NativeTag   string `json:",omitempty"`
 }
 
 // StaticBlock is a STYLE-owned static instruction to place at a provider slot.

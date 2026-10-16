@@ -93,6 +93,10 @@ func renderClaudeConfig(m Manifest, t Target) (fs.FS, error) {
 			onFailure = "block"
 			args = append(args, "--fail-closed")
 		}
+		if spec.RawCommand != "" {
+			command = rawHookCommand(m, spec)
+			args, async, onFailure = nil, false, ""
+		}
 		hooks[event] = append(hooks[event], claudeMatcherEntry{
 			Matcher: matcher,
 			Hooks: []claudeHookCmd{{
@@ -138,7 +142,7 @@ func renderClaudeConfig(m Manifest, t Target) (fs.FS, error) {
 
 func claudeMatcher(spec HookSpec) (string, error) {
 	if spec.NativeMatcher != "" {
-		if _, err := regexp.Compile(spec.NativeMatcher); err != nil {
+		if _, err := regexp.Compile(spec.NativeMatcher); err != nil && spec.NativeMatcher != "*" {
 			return "", errors.New("install: invalid native Claude matcher " + strconv.Quote(spec.NativeMatcher))
 		}
 		return spec.NativeMatcher, nil
@@ -157,7 +161,7 @@ func needsClaudeFailClosed(m Manifest) bool {
 }
 
 func isClaudeFailClosedPreTool(m Manifest, spec HookSpec) bool {
-	return m.Fail == agenthooks.FailClosed && spec.Blocking && spec.Kind == agenthooks.KindToolPre
+	return spec.RawCommand == "" && m.Fail == agenthooks.FailClosed && spec.Blocking && spec.Kind == agenthooks.KindToolPre
 }
 
 func claudeVersionError(version string) error {

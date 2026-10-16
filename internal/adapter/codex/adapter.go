@@ -290,7 +290,7 @@ func NewDefinition() adapter.Definition { return Definition() }
 
 // HookManifest translates the fixed surface into the shared installation
 // manifest. It deliberately keeps hook behavior in agenthooks/install.
-func HookManifest(command []string) install.Manifest {
+func HookManifest(command []string, requests ...[]adapter.HookSpec) install.Manifest {
 	hooks := make([]install.HookSpec, 0, len(Surface()))
 	for _, surface := range Surface() {
 		kind := nativeKind(surface.NativeEvent)
@@ -299,6 +299,16 @@ func HookManifest(command []string) install.Manifest {
 			spec.Tools = agenthooks.ToolMatcher{Names: []string{"Bash", "apply_patch"}, MCP: []string{"*/*"}}
 		}
 		hooks = append(hooks, spec)
+	}
+	if len(requests) > 0 {
+		for _, hook := range requests[0] {
+			if hook.Command == "" {
+				continue
+			}
+			seconds, _ := hook.Extra["timeout_seconds"].(int)
+			hooks = append(hooks, install.HookSpec{NativeEvent: hook.NativeEvent, NativeMatcher: hook.Matcher,
+				Blocking: true, Timeout: time.Duration(seconds) * time.Second, RawCommand: hook.Command, RawTag: hook.NativeTag})
+		}
 	}
 	return install.Manifest{Command: append([]string(nil), command...), Hooks: hooks, Identity: install.Identity{Name: "style-runtime", Version: "0.1.0", Description: "STYLE runtime hooks", PluginID: "style-runtime@style"}, Owner: Owner}
 }

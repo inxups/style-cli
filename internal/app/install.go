@@ -75,6 +75,7 @@ type installCompilation struct {
 	staticBodies []compile.StaticBody
 	reports      []PlanReport
 	diagnostics  []Diagnostic
+	native       map[adapter.ProviderID][]compiledNative
 }
 
 // Install validates, plans, compiles, and applies one package as a single
@@ -311,7 +312,7 @@ type BlockedError struct{ Message string }
 func (err *BlockedError) Error() string { return err.Message }
 
 func (s *Service) compileInstalled(ctx context.Context, packages []installPackage, adapters []installAdapter, reportPackage string) (installCompilation, error) {
-	result := installCompilation{diagnostics: make([]Diagnostic, 0)}
+	result := installCompilation{diagnostics: make([]Diagnostic, 0), native: make(map[adapter.ProviderID][]compiledNative)}
 	compileInputs := make([]compile.PackageInput, 0, len(packages))
 	for _, item := range packages {
 		compileInputs = append(compileInputs, compile.PackageInput{Package: item.resolved, Sequence: item.lock.Seq,
@@ -349,6 +350,9 @@ func (s *Service) compileInstalled(ctx context.Context, packages []installPackag
 				result.diagnostics = append(result.diagnostics, Diagnostic{Code: finding.Code, Rule: finding.RuleID, Provider: string(target.provider), Severity: finding.Severity, Message: finding.Message})
 			}
 			packages[index].report[target.provider] = planned
+			if err := result.appendNative(packages[index], target, planned); err != nil {
+				return installCompilation{}, err
+			}
 			packages[index].tokens[target.provider] = budget
 			allTokenReports[target.provider] = append(allTokenReports[target.provider], budget)
 			compileInputs = appendCompileInput(compileInputs, packages[index], target.provider)
@@ -377,6 +381,7 @@ func (s *Service) compileInstalled(ctx context.Context, packages []installPackag
 	if err != nil {
 		return installCompilation{}, err
 	}
+	result.sortNative()
 	sortDiagnostics(result.diagnostics)
 	return result, nil
 }

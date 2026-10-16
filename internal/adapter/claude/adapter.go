@@ -39,6 +39,9 @@ func Surface(hooks []adapter.HookSpec) []adapter.HookSpec {
 	}
 	groups := make(map[string]*grouped)
 	for i, hook := range hooks {
+		if hook.Command != "" {
+			continue // Native commands never merge with runtime subscriptions.
+		}
 		event := strings.TrimSpace(hook.NativeEvent)
 		if event == "" || len(hook.Points) == 0 {
 			continue
@@ -355,6 +358,14 @@ func HookManifest(command []string, requests ...[]adapter.HookSpec) install.Mani
 			spec.Timeout = time.Duration(value) * time.Second
 		}
 		manifestHooks = append(manifestHooks, spec)
+	}
+	for _, hook := range hooks {
+		if hook.Command == "" {
+			continue
+		}
+		seconds, _ := hook.Extra["timeout_seconds"].(int)
+		manifestHooks = append(manifestHooks, install.HookSpec{NativeEvent: hook.NativeEvent, NativeMatcher: hook.Matcher,
+			Blocking: true, Timeout: time.Duration(seconds) * time.Second, RawCommand: hook.Command, RawTag: hook.NativeTag})
 	}
 	manifest := install.Manifest{Command: append([]string(nil), command...), Hooks: manifestHooks, Identity: install.Identity{Name: "style-runtime", Version: "0.1.0", Description: "STYLE runtime hooks"}, Owner: Owner}
 	if value, ok := firstExtra(normalized, "fail").(agenthooks.FailMode); ok && value == agenthooks.FailClosed {

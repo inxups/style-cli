@@ -382,7 +382,7 @@ exec '/abs/path/to/style' "$@"
 - 指纹 = 规范化后（键排序、紧凑）的 `hooks.json` 内容的 sha256。
 - 这组 matcher 是适配器写死的，不经过 agenthooks 的 `CompileMatcher`，所以 F1 的 matcher bug 不影响这里，但 fork 里仍要修。
 - 代价：每次 Bash、apply_patch、MCP 调用都多起一个进程（经过登录 shell），没命中时不输出、不花 token，只花时间（U5）。
-- **native 条目（M2）**：固定订阅面只指上面这组 STYLE 自身条目。native 条目追加在同一事件的后面，各占一组，信任键序号从 1 起；STYLE 自身条目的 `0:0` 键不变。增删或修改 native 规则会改写 `hooks.json`、订阅面指纹和对应的预置 `trusted_hash`，因此 `sync` 要求重新信任（规范 8.6）。native 可写的事件是 `SessionStart`、`SessionEnd`、`UserPromptSubmit`、`PreToolUse`、`PermissionRequest`、`PostToolUse`、`PreCompact`、`PostCompact`、`Stop`、`SubagentStart`、`SubagentStop`（与 agenthooks `codexEventLabel` 一致）；matcher 只接受 `PreToolUse`、`PostToolUse`、`PermissionRequest`，按正则编译校验。插件路线上 Codex 执行 native 命令时的工作目录与插件信任提示行为，以 M2-B1/B2 实测为准。
+- **native 条目（M2）**：固定订阅面只指上面这组 STYLE 自身条目。native 条目追加在同一事件的后面，各占一组；没有外部 matcher 组时，已有 STYLE 自身条目的 `0:0` 键不变，native 从 1 起（没有 STYLE 自身订阅的事件从 0 起）。有外部组时按合并后的实际组序号生成信任键，保留外部条目。增删或修改 native 规则会改写 `hooks.json`、订阅面指纹和对应的预置 `trusted_hash`，因此 `sync` 要求重新信任（规范 8.6）。native 可写的事件是 `SessionStart`、`SessionEnd`、`UserPromptSubmit`、`PreToolUse`、`PermissionRequest`、`PostToolUse`、`PreCompact`、`PostCompact`、`Stop`、`SubagentStart`、`SubagentStop`（与 agenthooks `codexEventLabel` 一致）；matcher 只接受 `PreToolUse`、`PostToolUse`、`PermissionRequest`，按正则编译校验。插件路线上 Codex 执行 native 命令时的工作目录与插件信任提示行为，以 M2-B1/B2 实测为准。
 
 ### 9.4 数据和 `Enrich`
 

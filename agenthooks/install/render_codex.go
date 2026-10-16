@@ -55,13 +55,11 @@ func renderCodex(m Manifest, t Target) (fs.FS, error) {
 	if dir == "" {
 		return nil, fmt.Errorf("install: Codex plugin scope requires Target.ConfigDir")
 	}
-	dir = canonicalCodexDir(dir)
-	source := filepath.Join(dir, "hooks.json")
-	if plugin {
-		source = filepath.Join("hooks", "hooks.json")
-	}
 	for _, spec := range m.Hooks {
-		event, ok := kindToCodex[spec.Kind]
+		event, ok := spec.NativeEvent, spec.NativeEvent != ""
+		if !ok {
+			event, ok = kindToCodex[spec.Kind]
+		}
 		if !ok {
 			continue
 		}
@@ -70,23 +68,20 @@ func renderCodex(m Manifest, t Target) (fs.FS, error) {
 			return nil, fmt.Errorf("install: Codex %s matcher: %w", event, err)
 		}
 		command := hookCommand(m, agenthooks.ProviderCodex, spec)
-		if plugin {
+		if plugin && spec.RawCommand == "" {
 			command = codexPluginHookCommand(m, spec)
 		}
 		// Codex parses-but-skips async:true (quirk #10): telemetry hooks get
 		// --async, which makes the runner re-exec itself as a detached worker
 		// and return immediately — no shell involved.
-		if !spec.Blocking {
+		if !spec.Blocking && spec.RawCommand == "" {
 			command += " --async"
 		}
 		secs := timeoutSeconds(spec)
 		if event == "SessionEnd" && secs > 3 {
 			secs = 3
 		}
-		key := fmt.Sprintf("%s:%s:%d:0", source, codexEventLabel[event], len(hooks[event]))
-		if plugin {
-			key = fmt.Sprintf("%s:%s:%d:0", m.Identity.PluginID, filepath.ToSlash(source)+":"+codexEventLabel[event], len(hooks[event]))
-		}
+		key := codexTrustKey(m, t, event, len(hooks[event]))
 		trust = append(trust, trustEntry{
 			key:  key,
 			hash: DefinitionHash(event, matcher, command, secs),
@@ -142,6 +137,14 @@ func renderCodex(m Manifest, t Target) (fs.FS, error) {
 		}), nil
 	}
 	return memFS(files), nil
+}
+
+func codexTrustKey(m Manifest, t Target, event string, group int) string {
+	source := filepath.Join(canonicalCodexDir(t.Dir), "hooks.json")
+	if t.Scope == ScopePlugin {
+		source = m.Identity.PluginID + ":hooks/hooks.json"
+	}
+	return fmt.Sprintf("%s:%s:%d:0", source, codexEventLabel[event], group)
 }
 
 func codexMatcher(spec HookSpec) (string, error) {

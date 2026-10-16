@@ -29,9 +29,12 @@ func planInstallRoutes(ctx context.Context, home string, adapters []installAdapt
 		if closed && target.provider != adapter.ProviderID("claude-code") {
 			return nil, nil, nil, &UsageError{Message: "--fail-closed is supported only by claude-code"}
 		}
-		hooks := hooksForProvider(target.provider, compilation.index)
+		hooks := compilation.hooksForProvider(target.provider)
 		if closed {
 			for i := range hooks {
+				if hooks[i].Command != "" {
+					continue
+				}
 				hooks[i].Extra = cloneExtra(hooks[i].Extra)
 				if hooks[i].Extra == nil {
 					hooks[i].Extra = map[string]any{}

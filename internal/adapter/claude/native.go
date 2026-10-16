@@ -6,6 +6,7 @@ import (
 
 	"github.com/inxups/style-cli/core/plan"
 	"github.com/inxups/style-cli/core/spec"
+	"github.com/inxups/style-cli/internal/adapter"
 )
 
 // nativeEvents lists the Claude Code hook events a target: native rule may
@@ -27,6 +28,18 @@ var nativeEvents = map[string]bool{
 	"PostCompact":         false,
 	"Notification":        false,
 	"FileChanged":         false,
+}
+
+// Native retains the author's command and uses the same effective fields as
+// planning. The shared renderer supplies the ownership prefix.
+func (f Facts) Native(rule spec.NativeRule) (adapter.HookSpec, error) {
+	entry, err := f.NativeHook(rule)
+	if err != nil {
+		return adapter.HookSpec{}, err
+	}
+	return adapter.HookSpec{NativeEvent: entry.Event, Matcher: entry.Matcher,
+		Extra:   map[string]any{"timeout_seconds": entry.Timeout},
+		Command: rule.Command, NativeTag: rule.Package + "/" + rule.RuleID}, nil
 }
 
 // NativeSurface describes Claude Code native hooks for core/spec validation.

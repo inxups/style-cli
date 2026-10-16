@@ -78,7 +78,11 @@ func (r *route) Status(ctx context.Context, installation adapter.Installation) (
 	if err != nil || !available {
 		return adapter.RouteStatus{Available: available, Detail: detail}, err
 	}
-	changes, err := install.Diff(r.manifest(), r.target())
+	native, err := r.installedNative()
+	if err != nil {
+		return adapter.RouteStatus{Available: true, Detail: err.Error()}, nil
+	}
+	changes, err := install.Diff(r.manifest(native), r.target())
 	if err != nil {
 		return adapter.RouteStatus{Available: true, Detail: err.Error()}, nil
 	}
@@ -100,16 +104,16 @@ func (r *route) target() install.Target {
 	return install.Target{Provider: ProviderName, Scope: r.scope, Dir: r.dir, ConfigDir: r.configDir}
 }
 
-func (r *route) manifest() install.Manifest {
+func (r *route) manifest(requests ...[]adapter.HookSpec) install.Manifest {
 	argv := []string{adapter.HookCommand(r.command)}
 	if r.storageHome != "" {
 		argv = append(argv, "--style-home="+r.storageHome, "--harness-home="+r.configRoot(), "--harness-version="+r.harnessVersion)
 	}
-	return HookManifest(argv)
+	return HookManifest(argv, requests...)
 }
 
-func (r *route) Plan(_ context.Context, _ []adapter.HookSpec, blocks []adapter.StaticBlock) (adapter.Changeset, error) {
-	manifest := r.manifest()
+func (r *route) Plan(_ context.Context, hooks []adapter.HookSpec, blocks []adapter.StaticBlock) (adapter.Changeset, error) {
+	manifest := r.manifest(hooks)
 	planned, err := install.PlanFiles(manifest, r.target())
 	if err != nil {
 		return adapter.Changeset{}, err
@@ -141,7 +145,7 @@ func (r *route) planStatic(planned []install.PlannedFile, blocks []adapter.Stati
 	return adapter.Changeset{Files: changes}, nil
 }
 
-func (r *route) PlanTransition(ctx context.Context, previous adapter.Route, _ []adapter.HookSpec, blocks []adapter.StaticBlock) (adapter.Changeset, error) {
+func (r *route) PlanTransition(ctx context.Context, previous adapter.Route, hooks []adapter.HookSpec, blocks []adapter.StaticBlock) (adapter.Changeset, error) {
 	if _, ok := previous.(*route); !ok {
 		return adapter.Changeset{}, errors.New("codex route: incompatible previous route")
 	}
@@ -153,7 +157,7 @@ func (r *route) PlanTransition(ctx context.Context, previous adapter.Route, _ []
 	for _, file := range removed.Files {
 		files = append(files, install.PlannedFile{Path: file.Path, Root: file.Root, Before: file.Before, After: file.After, Mode: file.Mode, Remove: file.Remove})
 	}
-	planned, err := install.PlanFilesAfter(r.manifest(), r.target(), files)
+	planned, err := install.PlanFilesAfter(r.manifest(hooks), r.target(), files)
 	if err != nil {
 		return adapter.Changeset{}, err
 	}

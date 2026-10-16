@@ -213,9 +213,12 @@ func (s *Service) checkIndex(ctx context.Context, home string, lock lockDocument
 		return fmt.Errorf("index differs from the locked packages/settings; run sync")
 	}
 	for _, target := range adapters {
-		hooks := hooksForProvider(target.provider, expected.index)
+		hooks := expected.hooksForProvider(target.provider)
 		if lock.Harnesses[string(target.provider)].FailClosed {
 			for i := range hooks {
+				if hooks[i].Command != "" {
+					continue
+				}
 				hooks[i].Extra = cloneExtra(hooks[i].Extra)
 				if hooks[i].Extra == nil {
 					hooks[i].Extra = map[string]any{}

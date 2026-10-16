@@ -4,7 +4,7 @@
 
 本文件记录 M2 测试矩阵和每项当前状态。测试通过必须有命令输出、fixture/golden 文件或真实环境记录作为证据。任务清单见 [STYLE-M2-TASKS.md](STYLE-M2-TASKS.md)，M1 测试矩阵已只读归档（[STYLE-M1-TESTS.md](STYLE-M1-TESTS.md)）。
 
-当前状态：M2-BASE-01、M2-A1、M2-A2 已通过，其余条目尚未执行。M2a 断言为初稿，标“D* 定稿后细化”的条目在对应设计项通过评审时补全具体 fixture、golden 和退出码。
+当前状态：M2-BASE-01、M2-A1–A3 已通过，其余条目尚未执行。M2a 断言为初稿，标“D* 定稿后细化”的条目在对应设计项通过评审时补全具体 fixture、golden 和退出码。
 
 ## 状态约定
 
@@ -60,7 +60,7 @@ env -u CODEX_HOME -u CODEX_SANDBOX \
   - token 一节单列"native hook 输出不估算"及规则/事件；常驻、单条、按原生事件合计与 M2-01 起点相比不含 native，`T001`/`T003` 不计 native。
   - `fallback`：用假适配器让 `Native()` 返回错误，`skip`/`degrade` 得 `skipped`，`error` 得 `install-error` 且 install 退出 4、不写任何文件。
   - plan 报告（文本/JSON）不含 native 规则正文，也不含命令；命令只在 install 披露、trust 预览和 doctor 里出现。
-- [ ] **M2-A3 native 安装往返**（M2-T12/T60）：codex-plugin、codex-user、claude-user 三条路线 install → uninstall 后配置逐字节还原，他人条目保留，重复安装幂等，换路线无残留；native 条目带 STYLE owner 标记。
+- [x] **M2-A3 native 安装往返**（M2-T12/T60）：`internal/app` 的 `TestA3NativeInstallRoundTripAndRouteSwitch` 覆盖三条路线 install → uninstall 的配置字节/权限还原、他人条目保留、重复安装幂等、Codex 路线往返无残留、多包按 priority/包序号排序及单包卸载后重编译；核对 native owner、matcher、默认/指定 timeout、原生命令不入 runtime index，并逐条核对含 foreign 组的 Codex 最终组序号与 `trusted_hash`。`agenthooks/install` 的 `TestRawNativeCommandsBypassRunnerAndPreserveShellContract` 实际用 `sh` 核对 stdin 原样和 exit 7、引号 tag、无 runner/async/filter/fail-closed 参数；`TestCodexRawNativeEventsAndSessionEndTimeout` 覆盖全部 Codex native 事件和 SessionEnd 3 秒限制。双 module fresh test/vet 通过，见 `docs/PROGRESS.md` M2-T12；共享 conformance 扩展仍由 T60 跟踪。
 - [ ] **M2-A4 native 披露与信任**（M2-T13，按运行时 8.6）：
   - 安装报告逐条列出 harness、规则、事件、matcher、实际 timeout、作者命令原文（不含 `: --owner=style --native=…;` 前缀），并写明路线信任方式（`codex-user` 预置、`codex-plugin` 插件信任、`claude-user` 工作区信任）。
   - 非交互、无 `--yes`、本次会新增 native 条目时退出 1，harness 配置、锁文件、index 逐字节不变；带 `--yes` 成功。
