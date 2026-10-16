@@ -73,7 +73,8 @@ type Adapter interface {
     // 安装
     Surface(idx *compile.Index, inst Installation) []HookSpec // 订阅面；Codex 返回固定集合
     Routes() []Route                                          // 按优先顺序排列
-    Native(rule spec.NativeRule) (HookSpec, error)            // M2
+    NativeEvents() []NativeEvent                              // M2：合法原生事件，validate 经注册表使用
+    Native(rule spec.NativeRule) (HookSpec, error)            // M2：规则 3.10
 
     // 运行时（热路径）
     Enrich(ev *agenthooks.Event, st *state.Session) []Point
@@ -85,6 +86,14 @@ type HookSpec struct {
     Matcher     string   // 没有就空
     Points      []string // 例如 Codex UserPromptSubmit → ["prompt.submitted", "skill.explicit"]
     Extra       map[string]any // 例如 Claude 的 onFailure
+    Command     string   // M2：只用于 native，作者命令原文；非空时不写 STYLE 运行时命令
+    NativeTag   string   // M2：只用于 native，"<包名>/<规则 id>"，渲染成归属前缀
+}
+
+// NativeEvent 是 native 规则可写的一个原生事件（M2）。
+type NativeEvent struct {
+    Name    string // "PreToolUse"
+    Matcher bool   // 是否接受 matcher；M2 两家都只对工具类事件为 true
 }
 
 // Point 是一次 hook 调用里的一个评估点。
@@ -107,6 +116,12 @@ type Route interface {
 
 v0.2 的 `Wrap` 去掉了：规范 3.8 规定不加外壳。
 
+**native 规则（M2，规则 3.10）**：
+
+- harness 键和原生事件名由适配器注册表提供：`core/spec` 的 validate 接收注册表（harness 名 → `NativeEvents()` 和 matcher 方言校验），取代 M1 里写死的 `codex`、`claude-code`（`core/spec/validate_package.go` 的 `isNativeProviderField`）；`core` 仍不导入具体适配器。
+- `spec.NativeRule` 是校验后的单条映射：包名、规则 id、`order`、`event`、`matcher`、`command`、`timeout`、`fallback`。`Native()` 返回 `Command` 非空的 `HookSpec`；适配器在本版本或本路线写不了时返回错误，plan 按 `fallback` 处理。
+- agenthooks 侧：`install.HookSpec` 新增可选的 `RawCommand`、`RawTag`。`RawCommand` 非空时，渲染器写 `: --owner=<owner> --native=<RawTag>; <RawCommand>`，不追加 `agenthooks run` 参数、不加 `--async`/`--filter`、不用 exec 形式，按同步 hook 写；`NativeMatcher` 原样写入。字段为空时现有渲染逐字节不变。归属识别、合并、卸载、字节还原和 Codex `DefinitionHash` 都沿用现有实现，不新增删除接口（F11）。
+
 **`effort.yaml` 的格式**（每个适配器一个，必须和规范 4.2 的表一致）：
 
 ```yaml
@@ -128,7 +143,7 @@ map: { low: low, medium: medium, high: high, xhigh: xhigh, max: max }
 
 1. 核心把每条规则换算成 `Requirement{能力, 评估点, 需要的数据}`，例如"`inject` @ `tool.post`，需要 `model`"。
 2. 对每个目标适配器：用 `Supports` 和 `DataSource` 查能不能做；按规范第 5 节的阶梯换事件或改成静态 system 再查；用 `BlindSpots` 给出"永不触发"。
-3. 每条规则一行："原生 / 降级到 X / 丢弃 / 永不触发 / 跳过（M2）"，附原因；再加 token 一节（第 11 节）。
+3. 每条规则一行："原生 / 降级到 X / 丢弃 / 永不触发 / 原生 hook"，附原因；再加 token 一节（第 11 节）。native 规则不走阶梯，状态见规则 3.10。
 
 阶梯只在核心里有一份，所以两家的报告格式完全一样。编译用的是同一个 plan 结果：报告说降级到 X，运行时就真的走 X。
 
@@ -252,6 +267,7 @@ state/<sid>/
    - **换路线**（和锁文件里记的不同）时，先对旧路线 `Remove`，再对新路线 `Apply`，在同一个事务里完成，失败就回滚，避免两处都触发造成重复注入；
    - 依次 `Plan` → `Apply`，同时写静态块。
 8. 打印报告，路线 ID 与锁文件一致。Codex 用户路线报告 preseed，插件路线报告 user-confirmation；固定订阅面避免包变动改写 hook 定义，但实际信任提示及插件注册仍需真实环境确认。Claude 需要工作区信任；新增订阅按实际 UI 重新加载或新开会话。
+   - native 规则（M2）：`Native()` 产出的条目与 `Surface()` 一起交给 `Plan`，排在 STYLE 自身订阅面的组之后；第 5 步的披露逐条列出 native 命令（规范 8.6）。
 9. **卸载**：从锁文件删包，重新执行第 6、7 步。一个包都不剩时，对每条路线执行 `Remove`，并删掉所有静态块。卸载后用户的配置文件要和安装前逐字节相同（除了用户自己期间做的改动）。
 
 **检测不到任何 harness**：仍然编译 index，报告"未安装到任何 harness"，退出码 0。
@@ -366,6 +382,7 @@ exec '/abs/path/to/style' "$@"
 - 指纹 = 规范化后（键排序、紧凑）的 `hooks.json` 内容的 sha256。
 - 这组 matcher 是适配器写死的，不经过 agenthooks 的 `CompileMatcher`，所以 F1 的 matcher bug 不影响这里，但 fork 里仍要修。
 - 代价：每次 Bash、apply_patch、MCP 调用都多起一个进程（经过登录 shell），没命中时不输出、不花 token，只花时间（U5）。
+- **native 条目（M2）**：固定订阅面只指上面这组 STYLE 自身条目。native 条目追加在同一事件的后面，各占一组，信任键序号从 1 起；STYLE 自身条目的 `0:0` 键不变。增删或修改 native 规则会改写 `hooks.json`、订阅面指纹和对应的预置 `trusted_hash`，因此 `sync` 要求重新信任（规范 8.6）。native 可写的事件是 `SessionStart`、`SessionEnd`、`UserPromptSubmit`、`PreToolUse`、`PermissionRequest`、`PostToolUse`、`PreCompact`、`PostCompact`、`Stop`、`SubagentStart`、`SubagentStop`（与 agenthooks `codexEventLabel` 一致）；matcher 只接受 `PreToolUse`、`PostToolUse`、`PermissionRequest`，按正则编译校验。插件路线上 Codex 执行 native 命令时的工作目录与插件信任提示行为，以 M2-B1/B2 实测为准。
 
 ### 9.4 数据和 `Enrich`
 
@@ -462,6 +479,8 @@ Codex 用 `shell -lc` 跑 hook 命令，登录 shell 会读用户的 profile：�
 ```
 
 `style` 二进制换位置时，`sync` 重写这些条目即可（没有哈希信任）。
+
+**native 条目（M2）**：作者命令是 shell 字符串，所以 native 条目不用 exec 形式，只写 `command`（`: --owner=style --native=<包名>/<规则 id>; <作者命令>`）和 `timeout`，不写 `args`、`async`、`onFailure`；`--fail-closed` 只作用于 STYLE 自身的 PreToolUse 条目。native 可写的事件是 `SessionStart`、`SessionEnd`、`UserPromptSubmit`、`UserPromptExpansion`、`PreToolUse`、`PostToolUse`、`PostToolUseFailure`、`PermissionRequest`、`Stop`、`SubagentStart`、`SubagentStop`、`PreCompact`、`PostCompact`、`Notification`、`FileChanged`（与 agenthooks `kindToClaude` 一致）；matcher 只接受 `PreToolUse`、`PostToolUse`、`PostToolUseFailure`、`PermissionRequest`，值为 `*` 或可编译的正则。native 条目不影响 10.3 的订阅面计算。
 
 ### 10.3 订阅面（跟着规则走）
 
@@ -570,7 +589,7 @@ terse-reviewer 0.3.0 → codex（路线：plugin）
   before-create-pr   tool.pre mcp github/create_pull_request          原生
   no-force-push      tool.pre [shell] block                           原生
   on-review-prompt   prompt.submitted                                 原生
-  codex-only-notify  native                                           跳过（M2）
+  codex-only-notify  native Stop                                      原生 hook；timeout 60
 
   Token（离线估算，校准待验；单位 token，数字为示意）
   常驻            style ≈ 45 · session-info ≈ 45（每个会话都付）     合计 ≈ 90 / always_on 600
@@ -582,6 +601,7 @@ terse-reviewer 0.3.0 → codex（路线：plugin）
     PreToolUse  mcp           ≈ 25
     PostToolUse Bash          ≈ 55
     PostToolUse apply_patch   ≈ 26
+  native hook 输出不估算：codex-only-notify（Stop）
   会话成本模型（占位假设：60 次请求，每条触发型规则触发 3 次）
     常驻 ≈ 90 × (1.25 + 0.1 × 59) ≈ 640；触发 ≈ …；合计 ≈ … 单位
   告警
@@ -631,6 +651,8 @@ terse-reviewer 0.3.0 → codex（路线：plugin）
 | F8 | Codex skill 识别放宽（`head`、`tail`、`bat`、`cd … && cat SKILL.md`、`skills.read`），以及提示里的 `$名字` → `skill.explicit` | 现在只认 `cat` 和 `sed -n`（`claude_skill.go:153-170`），不认 `$名字` | 本地解析和真实投递已完成；云端读取按 U6 不支持边界关闭 |
 | F9 | Claude codec 补齐：`prompt_id` → `TurnID`；`effort.level`；`mcp_server{name, source}`；`UserPromptExpansion`；`PostModelSwitch`（`to_model`）；SessionStart 的 `fork`；编码 `suppressOriginalPrompt` | 这些都是 v0.3 要用的；agenthooks `3f734c7` 里已有哪些没核对（U-F9），先核对再补 | M1a |
 | F10 | Claude 安装渲染支持 exec 形式（`command` + `args`）、`timeout`、可选 `onFailure: "block"` | agenthooks 的 `hookCommand` 生成的是一条 shell 命令字符串（`install.go:338-352`） | M1a |
+
+| F11 | `install.HookSpec` 新增 `RawCommand`、`RawTag`：按原样写作者命令并加 `: --owner=<owner> --native=<tag>;` 归属前缀（规则 3.10） | native 规则的命令不是 agenthooks runner，现有 `hookCommand` 只会生成 `agenthooks run …`；加前缀后归属识别、卸载、字节还原和信任哈希都能复用 | M2 |
 
 F1–F4、F10 是安装和协议层的问题，最好也提给上游。F5–F9 是 STYLE 需要的扩展。
 

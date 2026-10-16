@@ -49,7 +49,7 @@
 | `mcp` | `mcp: "server/tool"`，必须恰好一个 `/` 且两侧非空；各分量不得含首尾空白。支持 `server/*`、`*/tool`，可写非空列表 | 同 `tool` |
 | `skill` | `skill: <名字>`，可写非空列表；selector 不得为空、只含空白或含首尾空白；名字不区分大小写，全等比较 | **隐式**（模型自己去用 skill）：按 `at` 挂 `tool.pre` / `tool.post`；**显式**（用户点名）：`skill.explicit` |
 | `event` | `event:` 统一事件名，见下 | 原样 |
-| `native` | 以 harness 名为键，写原生 hook | 不经过规则引擎。**M2 实现**：M1 的 validate 接受，plan 报"跳过（M2）" |
+| `native` | 以 harness 名为键，每个 harness 一个原生 hook 映射（3.10） | 不经过规则引擎，原样写进 harness 的 hook 配置。M2 实现 |
 
 **工具分类**（以 agenthooks 的 `canonicalNames` 为准，下表是两家的摘要）：
 
@@ -104,6 +104,7 @@ MCP 名字不在清单里拼。`mcp__<server>__<tool>` 的拆分由适配器做�
 | `reinject_on_compact: true` | 只对 `repeat: session` 有意义，配别的给警告 |
 | `block` + `repeat` | `block` 不去重，写了 `repeat` 也忽略，给警告 `block-repeat` |
 | `from:` 条目覆盖 `target` 或 `id` | 报错（`override-target`） |
+| `native` + 规则引擎字段 | `action`、`at`、`when`、`repeat` 等不能写在 native 规则上（`native-field`，3.10） |
 
 ### 3.5 去重（`repeat`）
 
@@ -192,3 +193,70 @@ MCP 名字不在清单里拼。`mcp__<server>__<tool>` 的拆分由适配器做�
 8. **正文里不要出现 `<system-reminder>` 标签**，Claude 会把它转义【文档】。
 9. **依赖强度的规则**：Codex 上只有配置里写了 `model_reasoning_effort` 才有值，多数默认安装取不到；Claude FINAL-06的启动/提示/显式技能没有effort，工具前/后/失败有值；缺值保持unknown，后续按既定动态评估补齐。
 10. **中文不一定更省**：中文大约一字一 token。用 `style plan` 看估算，别凭印象。
+
+### 3.10 `target: native`
+
+native 规则把作者给的命令原样写成 harness 的原生 hook。STYLE 不求值、不注入、不去重、不计 token，只负责校验、披露、写入和卸载。M2 只支持 `type: command` 一种 hook。
+
+```yaml
+---
+id: notify-on-stop
+target: native
+codex:
+  event: Stop
+  command: "notify --title codex"
+claude-code:
+  event: PostToolUse
+  matcher: "^Bash$"
+  command: "notify --title claude"
+  timeout: 10
+---
+可选的作者说明。native 规则的正文不注入、不估算，可以为空。
+```
+
+**字段**
+
+| 位置 | 字段 | 规定 |
+|---|---|---|
+| 规则 | `id`、`target`、`enabled`、`priority`、`fallback`、`from` | 含义同 3.1；`priority` 只决定同一事件里 native 条目的先后（见下） |
+| 规则 | 正文（`file`、`text` 或规则文件正文） | 可选，只作说明；不注入、不估算，不触发 `empty-body` |
+| 规则 | harness 键（`codex`、`claude-code`，取自适配器注册表） | 至少写一个；每个值是一个映射，不接受列表。要多个 hook 就写多条规则 |
+| 映射 | `event` | 必填，该 harness 的原生事件名，取自适配器的 `NativeEvents()`（CLI 设计 §3） |
+| 映射 | `matcher` | 可选，原样写入；只能写在该适配器标为接受 matcher 的事件上（M2 两家都只开放工具类事件），按该 harness 的方言校验 |
+| 映射 | `command` | 必填，一行 shell 命令，原样写入（加归属前缀，见下） |
+| 映射 | `timeout` | 可选，整数秒，1–600；不写按适配器默认值（60 秒；Codex `SessionEnd` 仍按 agenthooks 压到 3 秒），报告显示实际值 |
+
+规则引擎字段（`action`、`at`、`when`、`repeat`、`reinject_on_compact`、`sources`、`model_text`、`max_tokens`、`mode`、`reason`、`tool`、`names`、`mcp`、`skill`、`event`）显式写在 native 规则上就报错；从包级 `defaults` 继承来的值对 native 规则不生效，也不报错。harness 映射里的 `async`、`onFailure`、`type`、`args` 等其他键在 M2 一律报错，Claude 的 `async`/`onFailure` 和非 command 类 hook 留到 M3。`from:` 条目可以整体覆盖某个 harness 键的映射，不做逐字段合并。
+
+**`command` 的约束**：非空；不含换行、回车、NUL；没有首尾空白；不以 `;`、`&`、`|`、`)`、`#` 开头；不以未转义的 `\` 结尾；单引号、双引号成对（按 POSIX shell 词法检查）。这些约束保证加上归属前缀后命令语义不变。
+
+**诊断码**（`style validate` 退出 1）：
+
+| 码 | 情况 |
+|---|---|
+| `native-mapping` | native 规则一个 harness 键都没有；harness 键的值不是映射 |
+| `native-field` | native 规则写了规则引擎字段；顶层有既不是 STYLE 字段也不是已注册 harness 的键；映射里有 M2 不支持的键 |
+| `native-event` | `event` 缺失、不是字符串，或不在该适配器的 `NativeEvents()` 里 |
+| `native-matcher` | `matcher` 为空或有首尾空白；写在不接受 matcher 的事件上；不符合该 harness 的方言（Codex 按正则编译，Claude 接受 `*` 或可编译的正则） |
+| `native-command` | `command` 缺失、不是字符串，或违反上面的约束 |
+| `native-timeout` | `timeout` 不是整数，或不在 1–600 |
+
+非 native 规则上出现 harness 键，仍按未知字段报 `invalid-schema`。
+
+**plan**：每个目标 harness 一行。
+
+| 情况 | 状态 | 说明 |
+|---|---|---|
+| 有该 harness 的映射 | `native-hook`（"原生 hook"） | 附事件、matcher、实际 timeout |
+| 没有该 harness 的映射 | `skipped` | 原因"没有该 harness 的 native 映射"，与 `fallback` 无关 |
+| 有映射但适配器在本版本或本路线上无法写入 | 按 `fallback`：`skip`、`degrade` → `skipped`（native 没有降级阶梯）；`error` → `install-error`（退出码 4） | |
+
+M1 的 `skipped-m2` 状态取消。token 一节单列"native hook 输出不估算"，列出规则与事件；native 规则不计入 `always_on`、`per_rule`、`T001`、`T003`。命令输出如果被 harness 送进模型上下文，由作者自己负责。
+
+**写入与归属**：
+
+- 每条 native 规则在对应事件下单独占一个 matcher 组、一个 handler，排在 STYLE 自身订阅面的组之后；多条 native 规则按包结构 1.4 的顺序（`order`）排列。产出逐字节稳定。
+- 写入的 `command` 为 `: --owner=style --native=<包名>/<规则 id>; <作者命令>`。`:` 是 POSIX 的空操作，不读 stdin、不改退出码；harness 的 hook 输入照常交给作者命令。`<包名>/<规则 id>` 含 shell 特殊字符时按 shell 规则加引号。卸载、换路线、重编译都沿用 agenthooks 按 `--owner=style` 识别归属的逻辑，不认这个前缀的条目一律保留。
+- Codex 用户路线（`codex-user`）照常为 native 条目预置 `trusted_hash`；信任关口是 STYLE 的安装披露与确认（运行时 8.6）。
+- Windows 的 cmd.exe 没有 `:` 空操作，native 规则在 Windows 上的写法随 M3 的 Windows 支持再定。
+- native 条目不经过 STYLE 运行时：不写 `stats.jsonl`，`style stats` 不统计；跨包去重（T8）是否覆盖 native 由 M2-D3 定。

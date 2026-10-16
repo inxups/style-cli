@@ -4,7 +4,7 @@
 
 本文件是 STYLE CLI M2 的持久化任务清单。每项任务完成后必须同时补充证据（命令、fixture、golden 文件或真实运行记录），不能只根据对话上下文标记完成。测试矩阵见 [STYLE-M2-TESTS.md](STYLE-M2-TESTS.md)，执行记录追加到 [PROGRESS.md](PROGRESS.md)。
 
-当前总状态：M2 已开始，文档建立（M2-00）与基线回归（M2-01）完成，下一步 M2-D1 native 规则格式设计。M1 已关闭并只读归档（[任务](STYLE-M1-TASKS.md)、[测试](STYLE-M1-TESTS.md)），唯一遗留为 M2-CARRY-01。
+当前总状态：M2 已开始，文档建立（M2-00）与基线回归（M2-01）完成；M2-D1 native 规则格式设计已回写规范，等待用户评审。M1 已关闭并只读归档（[任务](STYLE-M1-TASKS.md)、[测试](STYLE-M1-TESTS.md)），唯一遗留为 M2-CARRY-01。
 
 ## 范围
 
@@ -47,7 +47,7 @@ M1 中已记录的已知限制（如 force-push 示例规则对 `--push-option` 
 
 规范先行：每项先写设计结论并回写 `docs/spec`，用户评审通过后才进入对应实现条目。实测类设计项（D4、D5）的结论按 M1 惯例记录为**符合预期**、**回退方案生效**或**阻塞**。
 
-- [ ] **M2-D1 native 规则格式**：规范目前只写“以 harness 名为键，写原生 hook”。需定：
+- [~] **M2-D1 native 规则格式**：设计已回写规范，待用户评审（评审通过改 `[x]` 并细化 M2-A1/A2/A4）。用户已定：归属用命令前缀 no-op `: --owner=style --native=<包>/<id>;`；`codex-user` 预置 `trusted_hash`；每个 harness 一个映射；M2 只支持 `event`/`matcher`/`command`/`timeout`。结论见 `spec/STYLE-spec-rules.md` §3.10、`spec/STYLE-spec-runtime.md` §8.6、`spec/STYLE-cli-design.md` §3/§6/§9.3/§10.2/§11.3/§13 F11。原始待定项：
   - `codex:` / `claude-code:` 下的字段：原生事件、matcher、command/args、timeout、Claude `onFailure` 等，以及单文件包与目录包的写法。
   - validate 诊断码（缺映射、未知 harness 键、非法原生事件、空命令等）。
   - plan 状态替换 `skipped-m2`；token 报告口径（STYLE 无法估算原生命令输出，如何标注）。

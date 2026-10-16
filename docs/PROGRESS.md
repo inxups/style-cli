@@ -1276,3 +1276,11 @@ PY
 - `env -u CODEX_HOME -u CODEX_SANDBOX GOPATH=/tmp/style-cli-gopath GOMODCACHE=/tmp/style-cli-gomodcache GOCACHE=/tmp/style-cli-gocache GOFLAGS=-mod=readonly go build -trimpath -o <scratch>/style ./cmd/style` exit 0，SHA256 48a86c05f79d7239b0595866e084eee4396377d27407fa900c35ca6a979c0fa5（含 VCS 元数据，换提交后哈希会变，只作本起点对照）；`PYTHONDONTWRITEBYTECODE=1 python3 scripts/smoke.py <scratch>/style` exit 0，32 项 ok，smoke passed。
 - 日志与二进制留在会话 scratch，不入库。M2-01 / M2-BASE-01 改 `[x]`；后续 M2 改动以此为回归对照（M2-A9）。
 - 下一步：M2-D1 native 规则格式设计，设计结论回写 `docs/spec` 后交用户评审，评审通过前不进入 M2-T10。
+
+### 2026-10-16 — M2-D1 native 规则格式设计回写规范 `[~]`
+
+- 依据：读 `core/spec/validate_rules.go:171`、`validate_package.go:86`（M1 写死 `codex`/`claude-code`）、`core/plan/plan.go:48`（`skipped-m2`）、`agenthooks/install/install.go:531-612`（按 `--owner=` 字段识别归属、`hookCommand` 只生成 `agenthooks run …`）、`render_codex.go`/`trust.go`（信任键 `<source>:<event>:<组>:<handler>` 与 `DefinitionHash`）、`render_claude.go`（`kindToClaude`、exec 形式）。关键约束：作者命令原样写入时不带 `--owner=style`，现有卸载认不出。
+- 用户决定（AskUserQuestion，均选推荐项）：归属用命令前缀 no-op `: --owner=style --native=<包>/<id>; <命令>`；`codex-user` 照常预置 `trusted_hash`，信任关口是 STYLE 披露与确认；每个 harness 一个映射；M2 只支持 `event`/`matcher`/`command`/`timeout`，Claude `async`/`onFailure` 与非 command hook 留 M3。
+- 回写：`spec/STYLE-spec-rules.md` 新增 §3.10（字段、`command` 约束、六个诊断码 `native-mapping`/`native-field`/`native-event`/`native-matcher`/`native-command`/`native-timeout`、plan 状态 `native-hook` 取代 `skipped-m2`、token 单列不估算、写入顺序与归属前缀），§3.3/§3.4 表同步；`spec/STYLE-spec-runtime.md` §8.6 增加 native 披露、非交互必须 `--yes`、native 变化 `sync` 退出 3（`--link` 也不例外）、trust 预览单列差异、list/doctor 核对；`spec/STYLE-cli-design.md` §3 增加 `NativeEvents()`、`HookSpec.Command/NativeTag` 和注册表注入 validate，§6 安装流程、§9.3 Codex native 事件与信任键序号、§10.2 Claude native 条目、§11.3 报告示例、§13 新增 F11（agenthooks `install.HookSpec.RawCommand/RawTag`，空值时渲染逐字节不变）。
+- 我自行定的、需评审确认的点：native 变化对 `--link` 包也阻塞；matcher 两家都只开放工具类事件；省略 timeout 按 60 秒；正文可选且豁免 `empty-body`；包级 `defaults` 不作用于 native；Windows 写法随 M3。
+- 验证：仅文档；本地链接与围栏检查、`git diff --check` 通过。未改 Go，M2-T10 在评审通过前不开始。
