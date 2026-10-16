@@ -4,7 +4,7 @@
 
 本文件记录 M2 测试矩阵和每项当前状态。测试通过必须有命令输出、fixture/golden 文件或真实环境记录作为证据。任务清单见 [STYLE-M2-TASKS.md](STYLE-M2-TASKS.md)，M1 测试矩阵已只读归档（[STYLE-M1-TESTS.md](STYLE-M1-TESTS.md)）。
 
-当前状态：M2-BASE-01、A1–A9 离线验收和 Codex B1–B4 已通过。2026-10-17 用户报告 Claude 恢复并授权 agent 通过交互终端代跑；既有隔离目录认证及真实请求成功，C1 的用户级 rules 加载通过。C4 样式界面通过，结论为回退方案生效；C2 的真实 native/卸载通过，C3 静态安装证据继续归档，远端 CI/官方计数仍待补。
+当前状态：M2-BASE-01、A1–A9 离线验收和 Codex B1–B4 已通过。2026-10-17 用户报告 Claude 恢复并授权 agent 通过交互终端代跑；既有隔离目录认证及真实请求成功，C1 的用户级 rules 加载通过。C4 样式界面通过，结论为回退方案生效；C2 native 与 C3 静态安装/卸载均通过，Claude C1–C4 已闭合；远端 CI/官方计数仍待补。
 
 ## 状态约定
 
@@ -97,7 +97,7 @@ Codex 真实配置由 agent 执行，步骤见 M2-PREP 建立的 `docs/STYLE-M2-
 
 ## M2b：Claude Code 真实环境
 
-- [x] **M2-PREP-03 C2/C3 最终验收准备**：三个采集器/启动器测试、实际 CLI 两包去重与三 native 安装、doctor 和四份基线卸载恢复通过；待用户 scratch 已生成，仅运行 Claude --version，无登录/真实模型会话。[准备证据](review/M2-PREP-03-CLAUDE-2026-10-17.json)；真实 C2/C3 保持待验。
+- [x] **M2-PREP-03 C2/C3 最终验收准备**：三个采集器/启动器测试、实际 CLI 两包去重与三 native 安装、doctor 和四份基线卸载恢复通过；待用户 scratch 已生成，仅运行 Claude --version，无登录/真实模型会话。[准备证据](review/M2-PREP-03-CLAUDE-2026-10-17.json)；该原准备目录保留未登录；真实 C2/C3 已在复用认证的独立 STYLE_HOME/工作目录通过，见对应报告。
 
 - [x] **M2-PREP-01 设计探针准备**：`test_probe_claude_m2_design.py` 七项通过，全部采集器 47 项通过；新增实际执行五个生成脚本核对真实 HOME/系统身份、独立配置、凭据变量排除，以及重写脚本时保留既有证据。首次 OAuth 保存失败的只读复现：原临时 HOME 下默认钥匙串查询退出 1，修正后退出 0；不据此推断解锁或 OAuth 保存成功，见 `review/M2-PREP-01-AUTH-2026-10-17.json`。此前固定 2.1.301 CLI loopback 四模式均 exit 0、各一份请求、rules 全文各一次，替换/keep 和既有 style 互斥全文命中。只有准备/补充检查通过，C1/C4 不因此标通过。
 
@@ -105,7 +105,7 @@ Codex 真实配置由 agent 执行，步骤见 M2-PREP 建立的 `docs/STYLE-M2-
 
 - [x] **M2-C1 U-C4 实测**（M2-D4）：固定 Claude 2.1.301 的 first-party 已认证交互会话成功回复 OK；原生 InstructionsLoaded 记录用户级 rules 文件、memory_type=User、load_reason=session_start，各一次。用户已授权交互终端代跑，OAuth/额度阻塞在本次真实请求中解除；既有工作目录已信任，未声称首次信任提示。证据：[C1 报告](review/M2-C1-CLAUDE-2026-10-17.json)。C3 的安装/卸载另行验收。
 - [x] **M2-C2 native hook 真实触发**：固定 Claude 2.1.301 真实交互会话中 SessionStart/Bash PreToolUse 各一次，Read matcher 零次；原生 hook_success 均退出 0，hook_additional_context 含两份对应完整 fixture 正文。新临时工作区的信任提示已实际确认；卸载后 settings.json 等六份用户文件 bytes/mode 还原，新会话仍执行 Bash 但原生日志无新增/hook 附件为零。证据：[C2 报告](review/M2-C2-CLAUDE-2026-10-17.json)。附加 API 请求重放未通过既有采集器哈希校验，未用作本项依据。
-- [?] **M2-C3 rules 静态位置真实生效**（仅 D4 成立时）：安装后规则文件被加载，卸载后文件移除、`CLAUDE.md` 与安装前一致。
+- [x] **M2-C3 rules 静态位置真实生效**（M2-D4）：生产固定 STYLE 安装两包后仅生成保留方 rules/style-m2-claude-first.md；同一真实交互会话的 InstructionsLoaded 记录 User/session_start 一次，原生 instructions 附件含完整静态正文一次。记录的附件顺序为用户 CLAUDE.md、用户 rules、STYLE rules，不扩大为优先级保证。卸载后管理文件/lock/index 删除，CLAUDE.md 等六份用户文件 bytes/mode 还原；新会话只加载原有两份用户 memory/rules。证据：[C3 报告](review/M2-C3-CLAUDE-2026-10-17.json)。不宣称新 rules 的 compact 行为。
 - [x] **M2-C4 output style 实测**（M2-D5）：四个独立真实交互会话显示 default/M2Existing/M2Replace/M2Keep；三种自定义样式均成功回复、无冲突或额外样式确认。六份用户配置/规则/样式 bytes/mode 不变，磁盘 outputStyle 仍为 M2Existing。结合已有完整原生请求保留 20,615 字符公共 system 片段，结局为“回退方案生效”：不提供整份 system replace 槽位，沿用 A8 已验证的 fallback。证据：[C4 报告](review/M2-C4-CLAUDE-2026-10-17.json)。
 
 ## 持续集成与文档核对

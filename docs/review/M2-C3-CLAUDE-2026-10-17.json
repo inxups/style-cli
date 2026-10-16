@@ -1,0 +1,239 @@
+{
+  "item": "M2-C3",
+  "design_item": "M2-D4",
+  "date": "2026-10-17",
+  "passed": true,
+  "result": "符合预期",
+  "scope": "fixed production STYLE install with authenticated interactive Claude rules discovery; uninstall and fresh-session absence",
+  "claude_version": "2.1.301 (Claude Code)",
+  "claude_sha256": "1f04c69e1c24e4d0a716a863af0aad8fc64d49a499334c29701f073700276b99",
+  "style_sha256": "32aef36dcb67d8cd0c57e123016094e1f82e5cce8adca37a9b6ae56c990cf81d",
+  "installed": {
+    "session_id": "b9e583ed-805b-4a34-bcb2-6a31b932ff92",
+    "terminal_exit": 0,
+    "index": {
+      "path": "/private/tmp/style-m2-claude-live-20261017.5fzqcx0b/style/build/index.json",
+      "sha256": "ead5a32b1115df6a20c438a30f208d4cdbe68615b53a339beb68983f6937b168",
+      "package_names": [
+        "m2-claude-first",
+        "m2-claude-second"
+      ],
+      "deduplicated": [
+        {
+          "id": "shared",
+          "status": "native",
+          "deduplicated_into": "m2-claude-first/shared"
+        },
+        {
+          "rule": "shared",
+          "status": "native",
+          "deduplicated_into": "m2-claude-first/shared"
+        }
+      ]
+    },
+    "static_file": {
+      "path": "/private/tmp/style-m2-claude-ui-20261016/claude/rules/style-m2-claude-first.md",
+      "sha256": "8d3136a038bb4a89ded01f2c0ed3cfb66e022d2ce100b3b1a25f150f2ef1edc0",
+      "body_sha256": "adfb48de1d62275f856e0492a5526c59656a7198a02524ac595fd160e21c2f02",
+      "body_occurrences": 1,
+      "alias_file_absent": true
+    },
+    "instructions_loaded": [
+      {
+        "at": "2026-10-16T16:35:36.182434+00:00",
+        "phase": "ui",
+        "fields": {
+          "hook_event_name": "InstructionsLoaded",
+          "session_id": "b9e583ed-805b-4a34-bcb2-6a31b932ff92",
+          "file_path": "/private/tmp/style-m2-claude-ui-20261016/claude/rules/style-m2-user-probe.md",
+          "memory_type": "User",
+          "load_reason": "session_start"
+        }
+      },
+      {
+        "at": "2026-10-16T16:35:36.182434+00:00",
+        "phase": "ui",
+        "fields": {
+          "hook_event_name": "InstructionsLoaded",
+          "session_id": "b9e583ed-805b-4a34-bcb2-6a31b932ff92",
+          "file_path": "/private/tmp/style-m2-claude-ui-20261016/claude/CLAUDE.md",
+          "memory_type": "User",
+          "load_reason": "session_start"
+        }
+      },
+      {
+        "at": "2026-10-16T16:35:36.182485+00:00",
+        "phase": "ui",
+        "fields": {
+          "hook_event_name": "InstructionsLoaded",
+          "session_id": "b9e583ed-805b-4a34-bcb2-6a31b932ff92",
+          "file_path": "/private/tmp/style-m2-claude-ui-20261016/claude/rules/style-m2-claude-first.md",
+          "memory_type": "User",
+          "load_reason": "session_start"
+        }
+      }
+    ],
+    "native_instructions_file_order": [
+      {
+        "path": "/private/tmp/style-m2-claude-ui-20261016/claude/CLAUDE.md",
+        "memory_type": "User",
+        "static_full_body_count": 0
+      },
+      {
+        "path": "/private/tmp/style-m2-claude-ui-20261016/claude/rules/style-m2-user-probe.md",
+        "memory_type": "User",
+        "static_full_body_count": 0
+      },
+      {
+        "path": "/private/tmp/style-m2-claude-ui-20261016/claude/rules/style-m2-claude-first.md",
+        "memory_type": "User",
+        "static_full_body_count": 1
+      }
+    ],
+    "order_scope": "Order recorded by the native instructions attachment for this session; not a documented precedence guarantee and not asynchronous observer completion order.",
+    "evidence": [
+      {
+        "path": "/private/tmp/style-m2-claude-ui-20261016/claude/projects/-private-tmp-style-m2-claude-live-20261017-5fzqcx0b-work/b9e583ed-805b-4a34-bcb2-6a31b932ff92.jsonl",
+        "sha256": "4ddf847ef839f81a22666118b46eb4734f803b9b1da5801511f3f1f9517de0d1"
+      },
+      {
+        "path": "/private/tmp/style-m2-claude-live-20261017.5fzqcx0b/native-observations.jsonl",
+        "sha256": "fb522da6fe5260f15acfa69eb2166c1a21054efb710db78ecfebe53f3bcaf2b5"
+      },
+      {
+        "path": "/private/tmp/style-m2-claude-live-20261017.5fzqcx0b/installed-terminal.txt",
+        "sha256": "8554f7842fb61bb3301dbe29884d6a88ea8de06c360504b8b06171ecbfb9eacc"
+      }
+    ]
+  },
+  "fixture_packages": [
+    {
+      "path": "/private/tmp/style-m2-claude-live-20261017.5fzqcx0b/m2-claude-first/STYLE.yaml",
+      "sha256": "1b669370a540d235a45f982937ab2dbe82937b425c3d0bdcb8d95c3f45382456"
+    },
+    {
+      "path": "/private/tmp/style-m2-claude-live-20261017.5fzqcx0b/m2-claude-second/STYLE.yaml",
+      "sha256": "3bfafa8552d40f1af97a907156f92857ba1cc1520558e43d9a34a171c39bc390"
+    }
+  ],
+  "uninstall": {
+    "command": [
+      "/private/tmp/style-m2-claude-live-20261017.5fzqcx0b/style.sh",
+      "uninstall",
+      "--all",
+      "--yes",
+      "--json"
+    ],
+    "exit": 0,
+    "external_bytes_and_modes_restored": true,
+    "baseline_files": [
+      {
+        "path": "/private/tmp/style-m2-claude-ui-20261016/claude/settings.json",
+        "sha256": "2e7e085cf187f62243363909d2ab5ea410c431cd1b76656b6b2f72daa611a4c7",
+        "mode": 384
+      },
+      {
+        "path": "/private/tmp/style-m2-claude-ui-20261016/claude/CLAUDE.md",
+        "sha256": "7f43194a6f23d888f9aa40bed9660a526e8e33e5d1ba607142c06beaf93c578b",
+        "mode": 384
+      },
+      {
+        "path": "/private/tmp/style-m2-claude-ui-20261016/claude/rules/style-m2-user-probe.md",
+        "sha256": "c4af952ef58fa2cf2db7b684b5680a6ad12164ddd46d1e94c6bea228813cc9f7",
+        "mode": 384
+      },
+      {
+        "path": "/private/tmp/style-m2-claude-ui-20261016/claude/output-styles/M2Existing.md",
+        "sha256": "e64c17ec25b00a3a23fe8ae12d57837c9be2af3b1d6c254674bbbd32ca5a0e41",
+        "mode": 384
+      },
+      {
+        "path": "/private/tmp/style-m2-claude-ui-20261016/claude/output-styles/M2Keep.md",
+        "sha256": "913a3e44117d2ccdf3921672883b1512d9531fb64ed4d9760ec62fe763dee513",
+        "mode": 384
+      },
+      {
+        "path": "/private/tmp/style-m2-claude-ui-20261016/claude/output-styles/M2Replace.md",
+        "sha256": "cdfe1e3ee4536d06264fa7dba95d21a873e31f1a105a26c2b9b8895beb766677",
+        "mode": 384
+      }
+    ],
+    "managed_rules_lock_index_removed": true,
+    "underlying_output_style": "M2Existing"
+  },
+  "after_uninstall": {
+    "session_id": "2e4e01f7-0a27-4b5f-a9e7-5c347937156b",
+    "terminal_exit": 0,
+    "instructions_loaded": [
+      {
+        "at": "2026-10-16T16:37:46.309340+00:00",
+        "phase": "ui",
+        "fields": {
+          "hook_event_name": "InstructionsLoaded",
+          "session_id": "2e4e01f7-0a27-4b5f-a9e7-5c347937156b",
+          "file_path": "/private/tmp/style-m2-claude-ui-20261016/claude/CLAUDE.md",
+          "memory_type": "User",
+          "load_reason": "session_start"
+        }
+      },
+      {
+        "at": "2026-10-16T16:37:46.309345+00:00",
+        "phase": "ui",
+        "fields": {
+          "hook_event_name": "InstructionsLoaded",
+          "session_id": "2e4e01f7-0a27-4b5f-a9e7-5c347937156b",
+          "file_path": "/private/tmp/style-m2-claude-ui-20261016/claude/rules/style-m2-user-probe.md",
+          "memory_type": "User",
+          "load_reason": "session_start"
+        }
+      }
+    ],
+    "native_instructions_file_order": [
+      {
+        "path": "/private/tmp/style-m2-claude-ui-20261016/claude/CLAUDE.md",
+        "memory_type": "User"
+      },
+      {
+        "path": "/private/tmp/style-m2-claude-ui-20261016/claude/rules/style-m2-user-probe.md",
+        "memory_type": "User"
+      }
+    ],
+    "tool": {
+      "name": "Bash",
+      "command": "printf STYLE_M2_TOOL_OK",
+      "calls": 1,
+      "response": "DONE"
+    },
+    "baseline_bytes_and_modes_still_restored": true,
+    "evidence": [
+      {
+        "path": "/private/tmp/style-m2-claude-ui-20261016/claude/projects/-private-tmp-style-m2-claude-live-20261017-5fzqcx0b-work/2e4e01f7-0a27-4b5f-a9e7-5c347937156b.jsonl",
+        "sha256": "bf9ebfccd6428d9109259b45c6be0ce4ced2d48245e49fcd7b3fc7f914c8f936"
+      },
+      {
+        "path": "/private/tmp/style-m2-claude-live-20261017.5fzqcx0b/uninstalled-terminal.txt",
+        "sha256": "171c00b80393c83fafcc6df0454f67d56d13785c8301efc6994ee01e6b7e6e5a"
+      }
+    ]
+  },
+  "checks": {
+    "two_packages_one_static_file": true,
+    "full_static_body_once_in_native_instructions_attachment": true,
+    "managed_rule_loaded_as_user_session_start_once": true,
+    "native_instructions_order_recorded": true,
+    "both_managed_paths_absent_after_uninstall": true,
+    "all_six_user_files_bytes_and_modes_restored": true,
+    "fresh_session_only_loads_original_user_memory_and_rules": true
+  },
+  "supplemental_request_replay": {
+    "status": "not-used-for-acceptance",
+    "error": "native message content hash mismatch",
+    "reason": "C2 uses native hook completion/context attachments; C3 uses InstructionsLoaded and native instructions attachments."
+  },
+  "limitations": [
+    "InstructionsLoaded and native instructions attachments prove loading; no model self-report is used.",
+    "Recorded file order is one session observation, not a general precedence guarantee.",
+    "This run does not claim Claude rules behavior after compaction; prior M1 CLAUDE.md evidence is not generalized to rules.",
+    "Raw transcript/request/prompt/auth data remain in private scratch."
+  ]
+}

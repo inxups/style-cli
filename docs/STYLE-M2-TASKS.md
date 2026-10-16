@@ -4,7 +4,7 @@
 
 本文件是 STYLE CLI M2 的持久化任务清单。每项任务完成后必须同时补充证据（命令、fixture、golden 文件或真实运行记录），不能只根据对话上下文标记完成。测试矩阵见 [STYLE-M2-TESTS.md](STYLE-M2-TESTS.md)，执行记录追加到 [PROGRESS.md](PROGRESS.md)。
 
-当前总状态：M2a 离线实现与 A1–A9 验收已完成，包含 native、stats、跨包去重、Claude 每包 rules/旧安装迁移和 replace 回退；Codex B1–B4 在 user/plugin 两路线通过。2026-10-17 Claude 恢复，用户授权 agent 通过交互终端代跑；既有隔离目录认证和真实请求成功，C1/C2/C4 已通过，C3 静态安装证据继续归档。最终本地 test/vet/race/53 采集器/构建/40 smoke 通过，远端 Ubuntu/macOS CI、完整文档最终状态与官方 token 计数仍未闭合。M1 已关闭并只读归档（[任务](STYLE-M1-TASKS.md)、[测试](STYLE-M1-TESTS.md)）；M2 未宣布完成。
+当前总状态：M2a 离线实现与 A1–A9 验收已完成，包含 native、stats、跨包去重、Claude 每包 rules/旧安装迁移和 replace 回退；Codex B1–B4 在 user/plugin 两路线通过。2026-10-17 Claude 恢复，用户授权 agent 通过交互终端代跑；既有隔离目录认证和真实请求成功，Claude C1–C4 已通过真实交互验收，D4/D5 实测闭合。最终本地 test/vet/race/53 采集器/构建/40 smoke 通过，远端 Ubuntu/macOS CI、完整文档最终状态与官方 token 计数仍未闭合。M1 已关闭并只读归档（[任务](STYLE-M1-TASKS.md)、[测试](STYLE-M1-TESTS.md)）；M2 未宣布完成。
 
 ## 范围
 
@@ -57,7 +57,7 @@ M1 中已记录的已知限制（如 force-push 示例规则对 `--push-option` 
   回写：`spec/STYLE-spec-rules.md` §3.3、`spec/STYLE-spec-runtime.md` 信任一节、`spec/STYLE-cli-design.md` §3 `Native()`。依赖：M2-01。
 - [x] **M2-D2 `style stats` 输出**：用户在上一轮草案评审请求后回复“继续”（2026-10-16），按该契约进入 T20。设计已回写 CLI 设计 §4、§11.5.2：默认 rule/最近 168h，`--by session` 合并 main 与子 agent，`--since` 接受正 duration 或 RFC3339；只读留存日志，六个计数字段明确 output/blocked/去重/容量丢弃与缺估算；JSON format 1、稳定排序，坏行/超长行跳过计数、I/O 错误退出 1。doctor 复用读取器但保留 top3/旧记录/清理职责，坏行改为继续统计并告警。草案中的用户可见决策按此定稿。依赖：M2-01。证据：`docs/PROGRESS.md` M2-D2 评审通过。
 - [x] **M2-D3 跨包去重（T8）**：用户在草案评审请求后回复“继续”（2026-10-16），按运行时 §7.5、编译产物 §9.6、CLI 设计 §7.1 契约进入 T30。比较静态变量替换后的完整正文及全部执行语义，按现有 order 保留一份；native 与运行时偶然同文不合并；同一类内任一包多条等价声明时保守保留。单包 plan/源级预算继续独立，组合报告标 `deduplicated_into`、有效成本和 T003 只计一次。沿用 rule 状态键，卸载保留方后接替规则可在旧会话再次注入。依赖：M2-01。证据：`docs/PROGRESS.md` M2-D3 评审通过。
-- [~] **M2-D4 U-C4 实测与静态位置决策**：设计于 2026-10-17 获用户“同意”。[定稿](review/M2-D4-D5-DESIGN-2026-10-17.md) 明确每包 `rules/style-<名字>.md`、首次路线重建自动迁移且单纯迁移不额外 trust、文件归属/冲突与外部字节还原。用户批准以四份真实 CLI 请求的 rules 全文证据及设计评审作为 T40 实现前提，C1 已通过真实交互会话，C3 安装/卸载继续验收；任务保持 `[~]` 表示该实测未闭合，不阻止 T40。回写：CLI 设计 §10.4 与编译规范静态位置。证据：`review/M2-D4-D5-PROTOCOL-2026-10-16.json`、`docs/PROGRESS.md` M2-D4/D5 评审通过。
+- [x] **M2-D4 U-C4 实测与静态位置决策**：2026-10-17 用户批准的[定稿](review/M2-D4-D5-DESIGN-2026-10-17.md) 已实现。C1 确认用户级 rules 发现；[C3 实测](review/M2-C3-CLAUDE-2026-10-17.json) 确认固定生产 STYLE 的两包/一文件静态去重、真实加载一次、卸载后用户文件 bytes/mode 和新会话还原。原生 instructions 附件顺序为用户 CLAUDE.md、用户 rules、STYLE rules，记录观察而不承诺更高优先级。结局“符合预期”；首次路线重建迁移/归属/冲突沿用 A7，compact 行为未扩大声称。
 - [x] **M2-D5 output style 做 replace 评估**：2026-10-17 真实交互终端完成 default、M2Existing、M2Replace、M2Keep 四个新会话；样式选择正确、请求成功、无冲突/额外样式确认，用户六份文件 bytes/mode 和既有 outputStyle 不变。[C4 证据](review/M2-C4-CLAUDE-2026-10-17.json) 结合已有完整请求中保留的 20,615 字符公共 system 片段，结局为“回退方案生效”。维持已批准[定稿](review/M2-D4-D5-DESIGN-2026-10-17.md)：不提供整份 system replace，不改用户样式，T50/A8 fallback 已通过。
 
 ## M2a 离线实现
@@ -90,9 +90,9 @@ M1 中已记录的已知限制（如 force-push 示例规则对 `--push-option` 
 
 - [x] **M2a 离线验收**：M2-A1–A9 全部有可重复证据；最终双 module fresh test/vet、相关 race、53 项采集器、固定构建/重建一致、40 smoke、16 组升级与 12 组回退通过。证据：[A9 本地最终回归](review/M2-A9-LOCAL-REGRESSION-2026-10-17.json)。
 - [x] **M2b Codex 真实环境**：M2-B1–B4，codex-user/plugin 两路线真实服务、原生观察/OTel/rollout/stats 证据均通过，见测试矩阵和 `docs/review/M2-B*-CODEX-2026-10-17.json`。
-- [ ] **M2b Claude Code 真实环境**：M2-C1–C4。
+- [x] **M2b Claude Code 真实环境**：固定 Claude 2.1.301 的 M2-C1–C4 真实交互终端验收通过：用户 rules、native/matcher、生产静态去重/加载/卸载及 output style 切换；证据见测试矩阵与 docs/review/M2-C*-CLAUDE-2026-10-17.json。
 - [~] **M2-FINAL 最终回归**：最终本地双 module fresh test/vet、相关 race、53 项采集器、固定构建/重建一致、40 smoke、迁移/回退 CLI 通过；当前提交未推送，最终 Ubuntu/macOS CI（M2-CI-01）仍待执行。
-- [~] **M2-DOCS 文档同步**：当前实现/设计/离线结果已同步（DOCS-02/03），本地链接/围栏通过；Claude/CI/计数的最终事实尚缺，补齐后再关闭总文档验收 DOCS-01。
+- [~] **M2-DOCS 文档同步**：当前实现/设计/离线结果已同步（DOCS-02/03），本地链接/围栏通过；Claude C1–C4 最终事实已归档；CI/计数状态与相关内容文档继续同步，补齐后再关闭总文档验收 DOCS-01。
 - [x] **M2-DOCS-02 已实现功能文档同步**：[教程](STYLE-TUTORIAL.md) 和 [adapter 总览](STYLE-ADAPTERS-CURRENT.md) 补 native、stats、跨包等价去重，移除 M1 过时支持状态；CLI 设计 §14.4 与编译规范静态位置表反映当前实现，明确 Claude 待定与最终验收边界。真实固定二进制跑通教程新增 native 包的 validate/双 harness plan/install/uninstall 和三个 stats 命令；配置字节/0640 还原，文档链接/锚点/围栏检查通过。证据：`docs/review/M2-DOCS-02-2026-10-17.json`、`docs/PROGRESS.md` M2-DOCS-02。本项不关闭 D4/D5、Claude 真实验收或最终文档总验收。
 - [x] **M2-DOCS-03 rules/回退与离线最终状态**：教程、adapter 总览、CLI/编译/规则规范同步 claude_rules、旧迁移/归属/冲突和真实界面边界；C2/C3 最终手册与采集器入口完成。核对本轮 M2 改过的全部当前 Markdown 本地链接/锚点、围栏、证据 JSON、M1 归档未变和 diff-check；未完成的 Claude/CI/计数仍明确保留。证据：`docs/PROGRESS.md` M2-A9/DOCS-03。
 

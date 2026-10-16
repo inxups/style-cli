@@ -1546,3 +1546,12 @@ PY
 - style.sh uninstall --all --yes --json 退出 0；六份用户配置/规则/样式 bytes/mode 精确还原，管理 rules/lock/index 删除。全新 session 2e4e01f7-0a27-4b5f-a9e7-5c347937156b 再执行一次 Bash 并 DONE，native 日志仍 2 行且摘要不变、该 session 的 hook 完成/上下文附件为零。白名单证据、启动器/固定程序摘要和恢复事实见 docs/review/M2-C2-CLAUDE-2026-10-17.json。
 - 附加请求重放：既有 replay_requests 对本次 native API blob 报 native message content hash mismatch，因此不作为通过证据；本项按矩阵以原生 hook 完成/上下文、事件及卸载恢复验收。一次私有 post 检查把 scratch 根目录中的 style-m2-claude- 也当成管理文件名，改为检查 basename 后与真实两条用户加载事件相符；未改变生产代码或模型结果。
 - 验证：重新从两个原生 transcript/终端/观察日志提取并严格断言实际事件、工具、上下文和恢复；53 项采集器单测通过，JSON、文档链接/围栏和 git diff --check 通过。无 Go 生产变更；C3 的静态去重/加载与顺序证据单独归档，D4、最终 CI/官方计数尚未关闭。
+
+
+### 2026-10-17 — M2-C3 / M2-D4 Claude 静态规则真实交互验收 `[x]`
+
+- 接 clean c09b117，复用 C2 已完成的真实安装/卸载两个会话；未为文档重复发送模型请求。安装时 index 保留 m2-claude-first/second 两包，组合报告将 second/shared 折叠到 first/shared；仅保留方 rules 文件存在，完整固定静态正文一次。源包/固定 STYLE/静态文件摘要已在删除前采集。
+- 安装态 session b9e583ed-805b-4a34-bcb2-6a31b932ff92 的 InstructionsLoaded 对生产管理规则记录 User/session_start 一次；原生 instructions 附件中完整静态正文一次，实际文件顺序为用户 CLAUDE.md、用户 style-m2-user-probe.md、STYLE style-m2-claude-first.md。按附件记录顺序，不从异步日志完成时间或文件名推断全局优先级。
+- 卸载后两个管理路径、lock/index 均删除，CLAUDE.md 等六份用户文件逐字节/权限还原；全新 session 2e4e01f7-0a27-4b5f-a9e7-5c347937156b 只加载原用户 memory/rules，实际 Bash 工具和 DONE 证明新会话正常完成。报告 docs/review/M2-C3-CLAUDE-2026-10-17.json 仅白名单/摘要，无原始 prompt 或鉴权。附加 API 重放的既有哈希校验失败继续明确为未采用，不绕过校验。
+- C3/D4 结局“符合预期”；与 C1/C2/C4 合并，M2b Claude 真实环境改 [x]，D4/D5 实测闭合。没有把 M1 的 CLAUDE.md compact 事实外推到新 rules。M2 全里程碑仍等远端 Ubuntu/macOS CI、最终文档状态和官方 token 计数遗留说明；既有 RV-01 风险状态不改。
+- 验证：从已固定的安装态事实及卸载态 transcript/事件重新交叉断言两包、一文件、全文/加载次数、真实顺序和恢复；C2 同轮 53 项采集器通过，所有报告 JSON/摘要、当前文档本地链接/围栏、M1 只读归档与 git diff --check 通过。无生产代码变更。
