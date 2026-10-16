@@ -166,7 +166,7 @@ map: { low: low, medium: medium, high: high, xhigh: xhigh, max: max }
 | `style doctor [--reset-state]` | 逐个适配器调 `Detect` 和每条路线的 `Status`；检查 index 和锁文件是否一致、Codex 登录 shell 是否有输出、effort 来源、花得最多的 3 条规则；`--reset-state` 清空所有会话状态 | M1 |
 | `style adapters` | 适配器、检测结果、可用路线、信任方式、能力摘要、上限 | M1 |
 | `style agenthooks run --provider=<h> [--owner=style] [--fail-closed]` | 隐藏，hook 入口（第 8 节） | M1 |
-| `style stats` | 按规则和会话汇总注入次数和估算 token | M2 |
+| `style stats [--by rule\|session] [--since <duration\|RFC3339>] [--json]` | 只读汇总历史运行时记录，默认最近 7 天、按规则；D2 草案待评审（§11.5） | M2 |
 | `style explain --harness h --event e --payload f.json` | 离线模拟一次 hook 调用，打印命中的规则、去重判断和最终输出 | M3 |
 | `style probe [--harness h]` | 自检：确认 harness 真的在调用 hook | M3 |
 | `style update`、git 来源、`install --frozen`、`install --project`、`--count=exact` | | M3 |
@@ -618,10 +618,77 @@ terse-reviewer 0.3.0 → codex（路线：plugin）
 
 ### 11.5 运行时计数
 
-- `stats.jsonl` 每行：`{"ts": …, "entry": "…", "kind": "emit|dedup|cap-drop", "est": N}`。没命中的条件不记（每次工具调用都记会太多）。
-- `style doctor` 列出最近 7 天估算 token 最多的 3 条规则，并标出"注入次数多但正文哈希一直相同"的规则（说明 `repeat` 设错了）。
-- `style stats`（M2）按规则和会话汇总。
-- **只存估算值和计数，不存正文**，避免把规则文字和提示词长期留在磁盘上。
+#### 11.5.1 已有记录与 doctor
+
+记录格式以 [core/state/stats.go](../../core/state/stats.go) 为准，每行小于 512 字节，示意：
+
+```json
+{"at":"2026-10-16T00:00:00Z","provider":"codex","event":"PreToolUse","point":"tool.pre","entry":"reviewer/check@tool.pre","action":"inject","result":"output","est_tokens":12,"body_sha256":"sha256:…"}
+```
+
+- `result` 是 `output`、`blocked`、`dedup` 或 `cap-drop`；条件没命中不记。`est_tokens` 是当次渲染的模型侧文字估算，`body_sha256` 是该文字摘要，不是正文。旧记录可缺这两个字段。示意摘要的 `…` 在真实记录中必须是完整的 64 位十六进制摘要。
+- `style doctor` 维持最近 7 天、按 provider/规则的 top3：仅累加 `output`/`blocked` 中同时带有效估算与摘要的记录，`emits` 也是这部分记录数；缺字段的输出单列 `legacy_stats_without_estimate`。至少 3 次、只有一个正文摘要且总估算大于 0 时标 `repeated_body`，提示检查 `repeat`。
+- **只存估算值、摘要和计数，不存正文、提示词或 native 命令**。静态位置的常驻正文与 native 命令不经过 runtime，不产生这里的计数；缺少日志也不推断为零成本。
+
+#### 11.5.2 M2-D2 `style stats` 草案（待用户评审，尚未实现）
+
+本节是 T20 的拟实施契约；D2 评审通过前不修改 CLI 或日志读取行为。
+
+**命令与窗口**：
+
+```sh
+style stats
+style stats --by session --since 24h
+style stats --by rule --since 2026-10-01T00:00:00Z --json
+```
+
+- `--by rule|session`，默认 `rule`。一次输出一种分组，不截断 topN。
+- `--since` 默认 `168h`；接受正的 Go duration（如 `30m`、`24h`、`168h`）或带时区的 RFC3339/RFC3339Nano。`7d`、`0`、负值、未来时间、未知选项或额外位置参数退出 1，stderr 给用法错误，stdout 为空。支持 `--key value` 与 `--key=value`。
+- 命令开始时只捕获一次 `until=now`，两端都包含，按日志 `at` 过滤；输出窗口统一为 UTC RFC3339Nano。duration 从该 `until` 回推。超出窗口的记录（含未来记录）不参与聚合。
+- 从 `STYLE_HOME/state/<session>/<agent>/stats.jsonl` 读取已有文件，不依赖已装包或当前 index，不重新估算历史文字，不执行 adapter 检测，不创建目录，不清理过期状态，不改权限或文件。并发追加期间读到的完整记录可计入；结果是本次可见记录的汇总，不承诺全目录原子快照。
+- `sync`/`doctor` 仍可清理 7 天未更新的会话；更早的窗口只覆盖尚存日志。文本固定注明“available runtime records; estimated tokens; calibration pending”，不把留存日志称为完整历史或账单。
+
+**分组和计数**：
+
+| 字段 | 口径 |
+|---|---|
+| `provider` | 日志里的 provider，作为分组键；不因对应 adapter 已卸载或未注册而丢弃合法历史记录 |
+| `rule` | `entry` 在第一个 `@` 之前的 `<包>/<id>`；同一规则不同评估点合计，仅 rule 行有此字段 |
+| `session` | state 的会话目录名，可能是现有 `component()` 生成的不可逆键；同一 provider/session 的 main 和全部子 agent 合计，仅 session 行有此字段 |
+| `outputs` | `result=output` 条数，含 inject/warn；是规则输出次数，不是请求数，也不能区分只给用户显示的 warn |
+| `blocks` | `result=blocked` 条数，阻断理由独列，不混入 `outputs` |
+| `dedup` / `cap_drops` | 被去重或运行时容量限制挡掉的条数，不累加其候选 token |
+| `estimated_tokens` | `output`/`blocked` 中同时有有效 `est_tokens` 与 `body_sha256` 的估算之和，与 doctor 一致；不计包裹分隔符、静态常驻成本或 native 输出 |
+| `unestimated` | `output`/`blocked` 中缺估算或摘要的条数；仍计输出/阻断次数，不拿今天的 index 补历史估算，不把缺失成本当作已知的 0 |
+
+每行按 `(provider, rule)` 或 `(provider, session)` 唯一；同名规则跨 provider 分开。`totals` 是全部行的六个数值字段之和。`estimated_tokens` 降序，平手按 provider、rule/session 字典序，保证稳定输出；所有计数/合计用非负 int64，溢出作为读取错误退出 1。
+
+**JSON**：顶层固定 `format`、`by`、`window`、`totals`、`rows`、`quality`；`format=1`。六个数值字段即 `outputs`、`blocks`、`dedup`、`cap_drops`、`estimated_tokens`、`unestimated`。以下仅为契约示例，不是真实采样结果：
+
+```json
+{
+  "format": 1,
+  "by": "rule",
+  "window": {"since": "2026-10-09T00:00:00Z", "until": "2026-10-16T00:00:00Z"},
+  "totals": {"outputs": 3, "blocks": 1, "dedup": 2, "cap_drops": 1, "estimated_tokens": 48, "unestimated": 1},
+  "rows": [
+    {"provider": "codex", "rule": "reviewer/check", "outputs": 3, "blocks": 1, "dedup": 2, "cap_drops": 1, "estimated_tokens": 48, "unestimated": 1}
+  ],
+  "quality": {"partial": false, "invalid_lines": 0, "oversized_lines": 0, "skipped_symlinks": 0}
+}
+```
+
+session 模式只把行上的 `rule` 换为 `session`。无 state/无匹配记录时仍退出 0，`rows=[]`、数值全为 0；JSON 只写 stdout，无附加文本。
+
+**文本**：首行窗口，次行留存/估算说明，然后总计及一张表；表头固定为 `PROVIDER RULE|SESSION OUTPUTS BLOCKS DEDUP CAP_DROPS EST_TOKENS UNESTIMATED`，按上述行排序。无记录显示 `No runtime records in window.`，仍显示总计。有质量问题时末尾列出三种计数与 `partial=true`；不回显坏行原文、未知字段内容或正文，标识符中的控制字符转义后显示。
+
+**坏行、文件与分工**：
+
+- 只扫描上述两层目录结构里的普通 `stats.jsonl`，不跟随目录/文件 symlink。state 根是 symlink 或不是目录时退出 1；后代 symlink 跳过并计 `skipped_symlinks`。缺失根返回空报告；扫描中消失的文件按当时不可见处理，不创建替代文件。
+- 每行按现有 `state.StatsRecord` 严格解码：必填元数据非空，时间合法，action/result 属于现有枚举，entry 能拆出非空包/id 与评估点，估算不得为负，摘要如有必须合法；未知字段也作为坏行。旧记录缺估算或摘要仍有效。
+- 非法 JSON、截断 JSON、无效元数据、空行记 `invalid_lines`；内容长度达到 512 字节的行记 `oversized_lines`，用有界缓冲丢弃该行后继续下一行，不因超长行丢弃后续文件内容。同一行只计一种问题，超长优先。质量计数针对本次扫描，不受时间窗口过滤；不复制原始行到报告。
+- 三种质量计数任一非零则 `partial=true`，有效记录仍汇总、退出 0；读取权限/I/O 错误、无效 state 根、取消或数值溢出退出 1，stderr 给安全错误，stdout 不输出不完整的成功报告。
+- `doctor` 保持健康诊断、最近 7 天 top3、重复正文提示与清理职责；`stats` 提供完整分组报告。T20 提取共享的有界、只读记录读取器，doctor 遇坏行继续统计有效记录并保留 `stats-invalid` warning；正常记录的 top3、旧记录计数及现有 JSON 字段保持兼容。无需改 agenthooks、runtime 写入格式或 state 留存策略。
 
 ## 12. 一致性测试（每个适配器都要过）
 

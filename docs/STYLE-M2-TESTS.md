@@ -66,7 +66,12 @@ env -u CODEX_HOME -u CODEX_SANDBOX \
   - 非交互、无 `--yes`、本次会新增 native 条目时退出 1，harness 配置、锁文件、index 逐字节不变；带 `--yes` 成功。
   - 修改 native 的命令、事件、matcher、timeout 任一项，或增删 native 规则后，`sync` 退出 3；`--link` 包同样退出 3。`trust` 预览单列"native 条目差异"，给出改前改后四个字段；未确认时不写入，确认或 `--yes` 后配置与新渲染一致，`codex-user` 的 `trusted_hash` 同步更新。
   - `style list` 显示每个包的 native 条目数；`style doctor` 对一致、缺失、被手工改动三种状态分别输出正常、告警、告警，`codex-user` 另报 `trusted_hash` 是否匹配。
-- [ ] **M2-A5 stats**（M2-T20，D2 定稿后细化）：固定 `stats.jsonl` fixture 按规则、按会话汇总的文本与 JSON 输出与 golden 逐字节一致；时间窗口过滤正确；坏行、超长行按 D2 处理；输出不含规则正文或提示词。
+- [ ] **M2-A5 stats**（M2-T20，以下随 D2 草案待评审，尚未实现/执行）：
+  - 固定时钟、两家 provider、多规则/评估点、多个会话/main/子 agent 的 `stats.jsonl` fixture；rule/session 文本与 JSON golden 逐字节比较。核对 output/blocked/dedup/cap-drop、六个数值合计、相同规则名跨 provider 分组、估算排序与平手顺序、已卸载包历史仍可读。
+  - 默认 168h、正 duration、带时区 RFC3339、两端边界、过旧/未来记录过滤；非法参数/未来 since/未知参数退出 1 且 stdout 为空。无 state/窗口无记录退出 0、rows 为 []、不建目录。
+  - 缺估算/摘要的旧记录保留次数、增加 unestimated，不读取当前 index 或重新估算；静态/native 无日志时不杜撰成本。与 doctor 的正常 top3/legacy/repeated_body 结果兼容。
+  - 坏 JSON、截断尾行、空行、非法字段/时间/摘要/负估算/未知字段及 >=512 字节行逐项 fixture；跳过后下一行仍计入，quality 精确、partial=true、退出 0。根/后代 symlink、权限/I/O、数值溢出与取消覆盖；致命错误退出 1、stdout 无成功报告。
+  - 整树字节/权限/mtime 对照证明 stats 只读且不触发 state 清理；坏行里的正文/提示词/native 命令标记不出现在 stdout/stderr，标识符控制字符转义。doctor 坏行继续有效聚合并给 stats-invalid warning。
 - [ ] **M2-A6 跨包去重**（M2-T30，D3 定稿后细化）：两个包含正文完全相同的规则时，index 只保留一份、plan 与 T003 只计一次；运行时只注入一次；卸载保留方后重编译使另一份生效；正文不同的规则不受影响。
 - [ ] **M2-A7 Claude rules 静态位置**（M2-T40，仅 D4 成立时）：写入/删除 `~/.claude/rules/style-<名字>.md`；从 `CLAUDE.md` 标记块迁移后再卸载，两处文件逐字节还原。D4 不成立时本条以 D4 证据标注不适用并关闭。
 - [ ] **M2-A8 output style replace**（M2-T50，仅 D5 可行时）：断言随 D5 定稿；不可行时本条以 D5 证据标注不适用并关闭。

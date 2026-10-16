@@ -1334,3 +1334,10 @@ PY
 - 验证：清除 CODEX_HOME/CODEX_SANDBOX，临时 GOPATH/GOMODCACHE/GOCACHE；`GOFLAGS=-mod=readonly go test -race -count=1 ./internal/adapter/conformance` exit 0（8.022s），`go vet ./internal/adapter/conformance` exit 0。生产代码为 6c30d35，本条仅新增测试；双 module fresh test/vet、app/两家 adapter race 与采集器 40 项沿用紧接之前的 T13 证据。
 - 最终 native 批次：同一隔离 Go 环境执行 `go build -trimpath -buildvcs=false -o /tmp/style-m2-native-final.W5m9T5/style ./cmd/style` exit 0；显式禁用 VCS 元数据以免本条未提交的测试影响构建摘要。SHA256 `5ab3ad8efebf0cd08fa37728d921224fd71bc13e74e6ffb042bf9e9818ba2316`；`PYTHONDONTWRITEBYTECODE=1 python3 scripts/smoke.py /tmp/style-m2-native-final.W5m9T5/style` 32 项通过。二进制只留 /tmp，不入库。gofmt、本地文档链接/围栏、`git diff --check` 通过。
 - M2-T60 改 `[x]`，A3 补共享证据，A9 记 native 阶段通过但保持 `[~]` 等后续 M2 实现后最终复验。真实 native 投递不由本条离线测试替代。下一步 D2 stats 输出设计，按任务清单在用户评审后进入 T20。
+
+### 2026-10-16 — M2-D2 stats 输出草案 `[~]`，待用户评审
+
+- 依据：`core/state/stats.go` 的真实字段为 at/provider/event/point/entry/action/result/est_tokens/body_sha256，旧 §11.5 的 ts/kind/est 示意已落后于实现；`internal/runtime/runtime.go` 记录当次模型侧估算，`core/engine/record.go` 不保存正文；`doctor_stats.go` 仅读近 7 天 output/blocked、有估算与摘要的 top3，旧记录计数单列，遇坏行原先提前停止；state 会话目录名来自现有 component，scope 不保存可恢复的原始 ID。
+- 草案回写 CLI 设计 §4/§11.5.2：`--by rule|session` 默认 rule，`--since` 默认 168h、正 duration 或 RFC3339，until 单次捕获且边界包含；按 provider/规则或 provider/目录 session 分组，后者合并全部 agent。区分 outputs/blocks/dedup/cap_drops，历史 token 仅累加已有估算与摘要的实际输出；缺成本记 unestimated。文本/JSON format 1、排序、空报告、质量计数和退出码均给出契约，不把记录条数当作请求数或账单。
+- 拟定坏行/超长行有界跳过继续统计、partial 与计数可见；根 symlink/I/O/取消/溢出退出 1。stats 完全只读，不触发 adapter 检测、index 读取或清理。doctor 提取共享读取器，正常 top3/legacy/repeated_body 保持，坏行继续统计并保留 warning；agenthooks 与 runtime 写入格式不变。M2-A5 写入待评审验收清单，尚无 fixture/golden 或测试通过声明。
+- 验证：仅文档，代码/二进制仍为 T60 的已验证版本；当前文档本地链接、围栏、示例 JSON 结构和 `git diff --check` 通过。D2 保持 `[~]`，依任务清单“用户评审通过后才进入对应实现条目”，T20 未开始。
