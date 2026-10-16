@@ -1087,3 +1087,11 @@ PY
 - 实际构建 CLI，在临时 STYLE_HOME / CLAUDE_CONFIG_DIR / CODEX_HOME 中执行 11 步：link install → 未改源码 sync/list → 修改正文 → list/sync/trust preview → trust --yes/list → 再修改/list/sync → uninstall。真实漂移正确检出；首个未改源码 sync 的 0 changed files 及退出 3 是首次开发链接授权。卸载后 settings.json、CLAUDE.md 字节还原。证据 `review/M1-FINAL-03-LINK-2026-10-16.json`。
 - 旧记录缺口未复现，不能据此断言旧操作的具体原因；教程改为区分首次授权和实际改动，准确说明授权后自动同步。历史证据未覆盖。
 - 验证（临时 GOPATH/GOMODCACHE/GOCACHE，去掉 CODEX_HOME/CODEX_SANDBOX）：`go test -count=1 ./internal/app`、`go vet ./internal/app`；实际 CLI 构建与隔离运行；gofmt、`git diff --check`。
+
+### 2026-10-16 — M1-FINAL-04-FIX / FINAL-04-FIX 插件登记表被误删
+
+- B10 独立插件验收在 B1 即复现：`codex plugin marketplace add` / `plugin add` 用 TOML 编辑器把 `[marketplaces.style]`、`[plugins."style-runtime@style"]` 放到 STYLE 末尾标记之前；第二包 install/sync 的整区替换删除了原生登记。用户级相同布局也存在缺陷；新增生命周期回归在修复前两例均失败。
+- 修改 agenthooks/install 的职责范围内 TOML 合并/卸载：Codex 使用现有 go-toml AST 区分 trust 与外部 table，保留 quoted/array table 和字符串里的伪表头；损坏区域返回错误而不是裁掉配置。Kimi 的现有标记逻辑不变，STYLE 的 index/lock/state 及公开命令不变。
+- 构建隔离程序后，真实 Codex 0.159.3 插件登记→第二包 install→sync→uninstall→sync 四步配置字节不变，取消登记恢复登记前字节，STYLE 最后卸载恢复安装前字节。证据 `review/M1-FINAL-04-PLUGIN-REGISTRATION-2026-10-16.json`；该生命周期检查不代替 hook 模型投递。
+- 验证（临时 GOPATH/GOMODCACHE/GOCACHE，清除 CODEX_HOME/CODEX_SANDBOX）：`go test -C agenthooks -count=1 ./install`、`go vet -C agenthooks ./install`、`go test -count=1 ./internal/app ./internal/adapter/codex`、`go build -o /tmp/style-m1-final.rxdYyj/style ./cmd/style`；gofmt、`git diff --check`。
+- 同轮真实用户路线已观测 B2 的 low/minimal/high/unset/unknown/profile/override/trusted/untrusted，以及 B4/B5/B6/B7/B9；gpt-6.1-sol/minimal 请求返回服务端 502，换历史成功的 gpt-6-sol/minimal 后成功，未将失败算通过。B3 首轮在 compact 的 item/completed 后过早发 turn/start，原生返回 ActiveTurnNotSteerable，属于采集流程无效；将等待完整 turn/completed 后重跑。FINAL-04 保持部分完成，最终程序两条完整路线各自留证。

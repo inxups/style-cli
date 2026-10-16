@@ -1,0 +1,29 @@
+{
+  "date": "2026-10-16",
+  "item": "M1-FINAL-04-FIX",
+  "harness_version": "codex-cli 0.159.3",
+  "style_binary_sha256": "48ae3f39b392b87c829cf8341e1f57d273d5ceabb995995e1309ac7ca6efa33d",
+  "before_fix": "Native plugin registration inserts marketplaces/plugins before the managed end marker; install/sync removed both tables. Regression failed for user and plugin routes.",
+  "passed": true,
+  "steps": [
+    {
+      "command": "install m1b-probes",
+      "bytes_unchanged": true
+    },
+    {
+      "command": "sync",
+      "bytes_unchanged": true
+    },
+    {
+      "command": "uninstall m1b-probes",
+      "bytes_unchanged": true
+    },
+    {
+      "command": "sync",
+      "bytes_unchanged": true
+    }
+  ],
+  "unregister_byte_roundtrip": true,
+  "uninstall_byte_roundtrip": true,
+  "measurement": "Real Codex plugin management commands; no model hook delivery claimed by this lifecycle-only probe."
+}

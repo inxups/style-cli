@@ -272,7 +272,14 @@ func planWithReader(m Manifest, t Target, readFile func(string) ([]byte, error))
 				}
 				final = merged
 			} else if isMergeableTOML(p) {
-				final = mergeManagedTOML(existing, content)
+				if t.Provider == agenthooks.ProviderCodex {
+					final, err = mergeCodexManagedTOML(existing, content, manifestOwner(m))
+					if err != nil {
+						return nil, fmt.Errorf("install: merge %s: %w", p, err)
+					}
+				} else {
+					final = mergeManagedTOML(existing, content)
+				}
 			}
 			state := StateUpdate
 			fileInfo, statErr := os.Stat(dest)

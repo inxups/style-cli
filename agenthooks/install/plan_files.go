@@ -133,7 +133,11 @@ func PlanUninstallFiles(m Manifest, t Target) ([]PlannedFile, error) {
 				}
 			}
 		case isMergeableTOML(path):
-			updated, changed = removeManagedTOML(existing, owner)
+			if t.Provider == agenthooks.ProviderCodex {
+				updated, changed, err = removeCodexManagedTOML(existing, owner)
+			} else {
+				updated, changed = removeManagedTOML(existing, owner)
+			}
 			removeFile = changed && len(bytes.TrimSpace(updated)) == 0
 		default:
 			if bytes.Equal(existing, contents[i]) {
