@@ -62,8 +62,17 @@ func (o *Observer) record(meta Metadata) {
 		return
 	}
 	defer root.Close()
-	held, err := readLease(root, o.harness)
+	pin, err := saferead.Pin(root, leaseName(o.harness), MaxLeaseBytes)
 	if err != nil {
+		return
+	}
+	defer pin.Close()
+	pinned, err := pin.Stat()
+	if err != nil {
+		return
+	}
+	held, err := readLease(root, o.harness)
+	if err != nil || !saferead.Same(pinned, held.info) {
 		return
 	}
 	lease := held.lease
@@ -118,7 +127,7 @@ func (o *Observer) record(meta Metadata) {
 		return
 	}
 	current, err := readLease(root, o.harness)
-	if err != nil || !bytes.Equal(current.data, held.data) || !os.SameFile(current.info, held.info) || !o.now().Before(lease.Expires) || expired() {
+	if err != nil || !bytes.Equal(current.data, held.data) || !saferead.Same(current.info, held.info) || !o.now().Before(lease.Expires) || expired() {
 		return
 	}
 	name := ""
@@ -144,7 +153,7 @@ func (o *Observer) record(meta Metadata) {
 		return
 	}
 	current, err = readLease(root, o.harness)
-	if err != nil || !bytes.Equal(current.data, held.data) || !os.SameFile(current.info, held.info) || !o.now().Before(lease.Expires) || expired() {
+	if err != nil || !bytes.Equal(current.data, held.data) || !saferead.Same(current.info, held.info) || !o.now().Before(lease.Expires) || expired() {
 		receipts.Remove(name)
 	}
 }

@@ -143,3 +143,28 @@ func ReadFile(path string, limit int64) ([]byte, error) {
 	defer root.Close()
 	return File(root, filepath.Base(absolute), limit)
 }
+
+// Pin keeps a bounded regular inode alive until the caller closes it. Rechecks
+// of its path can then detect replacement even on filesystems that reuse IDs.
+func Pin(root *os.Root, name string, limit int64) (*os.File, error) {
+	if err := CheckDirectories(root, name); err != nil {
+		return nil, err
+	}
+	before, err := root.Lstat(name)
+	if err != nil {
+		return nil, err
+	}
+	if !before.Mode().IsRegular() || before.Size() > limit {
+		return nil, fmt.Errorf("bounded regular file required")
+	}
+	file, err := openRegular(root, name)
+	if err != nil {
+		return nil, err
+	}
+	after, err := file.Stat()
+	if err != nil || !Same(before, after) {
+		file.Close()
+		return nil, ErrChanged
+	}
+	return file, nil
+}

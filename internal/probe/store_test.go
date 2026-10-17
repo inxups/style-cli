@@ -425,3 +425,39 @@ func TestM3A2ProbeFilesystemRefusal(t *testing.T) {
 		})
 	}
 }
+
+func TestM3A17LeaseIdentityRemainsPinnedUntilCleanup(t *testing.T) {
+	session, home, _ := a2Session(t, "codex")
+	held := session.leases["codex"]
+	if held.pin == nil {
+		t.Fatal("active lease has no kernel pin")
+	}
+	if _, err := held.pin.Stat(); err != nil {
+		t.Fatal(err)
+	}
+	path := filepath.Join(home, "probes", "codex.lease.json")
+	if err := os.Remove(path); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(path, held.data, 0o600); err != nil {
+		t.Fatal(err)
+	}
+	// Even identical bytes and timestamps must not regain the old file identity.
+	if err := os.Chtimes(path, held.info.ModTime(), held.info.ModTime()); err != nil {
+		t.Fatal(err)
+	}
+	if session.Active("codex") {
+		t.Fatal("replacement became original lease")
+	}
+	result := session.Cleanup()
+	if result.Complete {
+		t.Fatal("replacement cleanup should be conservative")
+	}
+	if _, err := held.pin.Stat(); !errors.Is(err, os.ErrClosed) {
+		t.Fatal("cleanup leaked lease handle", err)
+	}
+	data, err := os.ReadFile(path)
+	if err != nil || !bytes.Equal(data, held.data) {
+		t.Fatal("cleanup removed replacement", err)
+	}
+}

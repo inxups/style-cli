@@ -1944,3 +1944,7 @@ T50/A15 已完成后，固定官方 hooks.md 与 Claude 2.1.301 六组隔离原�
 临时验证分支 `codex/m3-windows` 的 run 39048948213 固定 `1c81d29`；Windows job 117443312689 在 gofmt 阶段失败，日志证明 checkout 的 Go 文件为 CRLF，未执行原生测试。补充 `.gitattributes` LF 约定并保留原有 golden 空白属性；没有更改 M1/M2 归档内容。
 
 启动器改用 GetSystemDirectory 固定绝对系统 PowerShell（不从 cwd/PATH/环境找 shell）及 ProcessStartInfo 的 Windows argv/原始标准句柄，补空参数/引号/伪 owner/伪 shell/Unicode/退出码和长路径用例。首轮 owner 对普通含空白值的误判及 Windows 测试构造返回值错误均已修正并保留失败。[平台修正报告](review/M3-A17-PLATFORM-FIXES-2026-10-18.json)记录专项/race、安装模块与 adapter 回归、双 module Windows 编译/vet；Windows CI 待重跑，A17/T70 仍未关闭。文档检查见[报告](review/M3-A17-PLATFORM-FIXES-DOCS-2026-10-18.json)。
+
+## 2026-10-18 M3-A17 probe 租约身份修复
+
+Ubuntu CI run 39049754503 的 lease-replaced 回归证明删除后立即重建可能复用 inode。控制器在租约存活期间、观察器在读取与写回期间固定原文件句柄，并比较身份/大小/权限/修改时间；清理失败保留外部替换，退出关闭句柄。[修复报告](review/M3-A17-LEASE-PIN-2026-10-18.json)记录专项、连续十轮 race 和全量命令；全量仅在另一项新增 Windows 测试的 core 导入边界失败，未标通过，继续修复。A17/T70 保持未关闭；文档和归档检查见[报告](review/M3-A17-LEASE-PIN-DOCS-2026-10-18.json)。

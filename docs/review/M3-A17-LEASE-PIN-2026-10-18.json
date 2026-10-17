@@ -1,0 +1,87 @@
+{
+  "baseline": "ed8933877e40b50ba5838579163690569b4308ec",
+  "status": "probe inode-reuse regression fixed; A17 remains open",
+  "trigger": {
+    "run": 39049754503,
+    "ubuntu_job": 117445749531,
+    "test": "TestM3A2ObserverBudgetAndLeaseRaces/lease-replaced",
+    "cause": "remove/recreate may reuse inode before path-only comparison"
+  },
+  "changes": [
+    "Retain original lease handles for controller lifetime and observation checks",
+    "Compare stable identity, size, mode and modification time",
+    "Close pins on cleanup and close, preserve foreign replacement on cleanup failure"
+  ],
+  "commands": {
+    "a17-probe-pin-first": {
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "./internal/probe",
+        "./internal/saferead"
+      ],
+      "exit_code": 0,
+      "seconds": 1.209,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "log_sha256": "85f35c8f796406689a2086495ad2e2128579e8eeb75c4c72c98ace5adbba6986"
+    },
+    "a17-probe-pin-race": {
+      "command": [
+        "go",
+        "test",
+        "-race",
+        "-count=10",
+        "-json",
+        "./internal/probe",
+        "./internal/saferead"
+      ],
+      "exit_code": 0,
+      "seconds": 4.26,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "log_sha256": "fa2f45a24785181999548d5d97b74aa02a4b32f155c8e9923a25c644aecef5d7"
+    },
+    "a17-probe-pin-root": {
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "./..."
+      ],
+      "exit_code": 1,
+      "seconds": 113.942,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "log_sha256": "53eaef5ad22f5401cfdf5765931852ed89b281f4b28e887ecc83564fbf1361ad"
+    }
+  },
+  "full_suite_limit": "Root fresh suite failed only the separately identified core Windows test import boundary; no failure is marked passed. Platform repairs continue.",
+  "sources": {
+    "internal/probe/store.go": "b3c796c993338d966727bffdc4279c2526de66321a4f28d857886128145c82f6",
+    "internal/probe/observer.go": "5a11dd2c81baa7e28d31122c0e0208b8668acc76c8ebd96175401880c1a69f2d",
+    "internal/probe/store_test.go": "c554c59ebf6b4fa62ba6a8027a73034f30d3e39d92a3d9bb0a8f68023d645f4c",
+    "internal/saferead/capture.go": "7255190efd219ac5e78de99a7334f91806164cf397979351c5a82067df9d3e0e"
+  }
+}

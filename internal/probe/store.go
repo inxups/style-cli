@@ -27,6 +27,7 @@ type heldLease struct {
 	lease Lease
 	data  []byte
 	info  os.FileInfo
+	pin   *os.File
 }
 type Session struct {
 	root        *os.Root
@@ -145,14 +146,14 @@ func Begin(home string, bindings []Binding, timeout time.Duration, options Optio
 			return nil, err
 		}
 		data, _ := json.Marshal(lease)
-		info, writeErr := writeNew(root, leaseName(binding.Harness), data)
+		info, pin, writeErr := writeNewPinned(root, leaseName(binding.Harness), data)
 		if writeErr != nil {
 			if errors.Is(writeErr, os.ErrExist) {
 				return nil, ErrBusy
 			}
 			return nil, writeErr
 		}
-		s.leases[binding.Harness] = heldLease{lease, data, info}
+		s.leases[binding.Harness] = heldLease{lease: lease, data: data, info: info, pin: pin}
 	}
 	failed = false
 	return s, nil
@@ -181,38 +182,51 @@ func privateDirectory(root *os.Root, name string, create bool) error {
 	return nil
 }
 func writeNew(root *os.Root, name string, data []byte) (os.FileInfo, error) {
-	if err := saferead.CheckDirectories(root, name); err != nil {
-		return nil, err
-	}
-	file, err := root.OpenFile(name, os.O_WRONLY|os.O_CREATE|os.O_EXCL, 0o600)
+	info, file, err := writeNewPinned(root, name, data)
 	if err != nil {
 		return nil, err
 	}
-	if err = privatefs.Prepare(file); err != nil {
-		file.Close()
+	if err = file.Close(); err != nil {
 		root.Remove(name)
 		return nil, err
 	}
-	written, writeErr := file.Write(data)
-	if writeErr == nil && written != len(data) {
-		writeErr = io.ErrShortWrite
-	}
-	info, statErr := file.Stat()
-	closeErr := file.Close()
-	if writeErr != nil {
-		root.Remove(name)
-		return nil, writeErr
-	}
-	if statErr != nil {
-		root.Remove(name)
-		return nil, statErr
-	}
-	if closeErr != nil {
-		root.Remove(name)
-		return nil, closeErr
-	}
 	return info, nil
 }
+
+// Retaining this handle prevents inode/file-ID reuse while the lease is active.
+func writeNewPinned(root *os.Root, name string, data []byte) (os.FileInfo, *os.File, error) {
+	if err := saferead.CheckDirectories(root, name); err != nil {
+		return nil, nil, err
+	}
+	file, err := root.OpenFile(name, os.O_WRONLY|os.O_CREATE|os.O_EXCL, 0o600)
+	if err != nil {
+		return nil, nil, err
+	}
+	failed := true
+	defer func() {
+		if failed {
+			file.Close()
+			root.Remove(name)
+		}
+	}()
+	if err = privatefs.Prepare(file); err != nil {
+		return nil, nil, err
+	}
+	written, err := file.Write(data)
+	if err != nil {
+		return nil, nil, err
+	}
+	if written != len(data) {
+		return nil, nil, io.ErrShortWrite
+	}
+	info, err := file.Stat()
+	if err != nil {
+		return nil, nil, err
+	}
+	failed = false
+	return info, file, nil
+}
+
 func readLease(root *os.Root, harness string) (heldLease, error) {
 	data, err := saferead.File(root, leaseName(harness), MaxLeaseBytes)
 	if err != nil {
@@ -229,7 +243,7 @@ func readLease(root *os.Root, harness string) (heldLease, error) {
 	if privatefs.CheckRoot(root, leaseName(harness)) != nil {
 		return heldLease{}, ErrBusy
 	}
-	return heldLease{lease, data, info}, nil
+	return heldLease{lease: lease, data: data, info: info}, nil
 }
 
 func (s *Session) stopLease(harness string, want heldLease) error {
@@ -240,7 +254,7 @@ func (s *Session) stopLease(harness string, want heldLease) error {
 	if err != nil {
 		return err
 	}
-	if !bytes.Equal(actual.data, want.data) || !os.SameFile(actual.info, want.info) {
+	if !bytes.Equal(actual.data, want.data) || !saferead.Same(actual.info, want.info) {
 		return ErrChanged
 	}
 	stopped := ".stopped-" + want.lease.RunID + "-" + harness + ".json"
@@ -252,7 +266,7 @@ func (s *Session) stopLease(harness string, want heldLease) error {
 	}
 	data, err := saferead.File(s.root, stopped, MaxLeaseBytes)
 	info, statErr := s.root.Lstat(stopped)
-	if err != nil || statErr != nil || !bytes.Equal(data, want.data) || !os.SameFile(info, want.info) {
+	if err != nil || statErr != nil || !bytes.Equal(data, want.data) || !saferead.Same(info, want.info) {
 		// A replacement must be restored without overwriting a concurrently acquired lease.
 		if s.root.Link(stopped, leaseName(harness)) == nil {
 			s.root.Remove(stopped)
@@ -362,6 +376,7 @@ func (s *Session) Cleanup() Cleanup {
 			result.Remaining = append(result.Remaining, filepath.Join(s.home, leaseName(name)))
 		}
 	}
+	s.closeLeasePins()
 	if s.RunID != "" && s.runInfo != nil {
 		var err error
 		if result.Complete {
@@ -389,10 +404,18 @@ func (s *Session) Cleanup() Cleanup {
 	}
 	return result
 }
+func (s *Session) closeLeasePins() {
+	for _, held := range s.leases {
+		if held.pin != nil {
+			_ = held.pin.Close()
+		}
+	}
+}
 func (s *Session) Close() error {
 	if s == nil || s.root == nil {
 		return nil
 	}
+	s.closeLeasePins()
 	return s.root.Close()
 }
 func (s *Session) Lease(harness string) Lease {
@@ -464,5 +487,5 @@ func (s *Session) Active(harness string) bool {
 		return false
 	}
 	current, err := readLease(s.root, harness)
-	return err == nil && bytes.Equal(current.data, want.data) && os.SameFile(current.info, want.info)
+	return err == nil && bytes.Equal(current.data, want.data) && saferead.Same(current.info, want.info)
 }

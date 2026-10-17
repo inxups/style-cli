@@ -1,0 +1,18 @@
+{
+  "baseline": "ed89338",
+  "documents": 1,
+  "local_links_and_anchors": 57,
+  "archives_unchanged": 59,
+  "historical_json_unchanged": 117,
+  "progress_prefix_sha256": "4cbd39f16430d9d083f8fbbfafb13d8f596a381d7b7387738af7342a6d6f3ba3",
+  "changed_files": [
+    "docs/PROGRESS.md",
+    "docs/review/M3-A17-LEASE-PIN-2026-10-18.json",
+    "docs/review/M3-A17-LEASE-PIN-DOCS-2026-10-18.json",
+    "internal/probe/observer.go",
+    "internal/probe/store.go",
+    "internal/probe/store_test.go",
+    "internal/saferead/capture.go"
+  ],
+  "checks": "pass"
+}
