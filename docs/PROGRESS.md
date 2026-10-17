@@ -2048,3 +2048,9 @@ Codex 0.159.3 与实际配置模型服务、固定生产 STYLE 二进制，在�
 - 原生 0.159.3 将本地插件复制到固定 cache；STYLE 更新不会同步该副本。按 [D1 补充](review/M3-D1-CODEX-CACHE-2026-10-18.md) 由 agenthooks 有限核对 config/marketplace/local source、hooks/launcher/descriptor 等字节，adapter 只传已核实根。保留 owner/trust/祖先/不可变绑定；注册缓存失效不可回退源根，漂移回归通过。
 - [离线报告](review/M3-A2-CODEX-CACHE-2026-10-18.json)固定临时三缓存/环境清理、专项 Go、agenthooks fresh、双 vet、78 采集器和构建。原生插件整轮九次 exec/resume 真实验收通过，涵盖 probe/explain 完整正文、refresh/围栏/provider/effort/unknown、正常工具/损坏 state 拒绝/恢复、更新/frozen、卸载恢复与新会话无回调。更新更换 native 正文，原生 add 刷新后仅新正文出现；[白名单报告](review/M3-B-CODEX-PLUGIN-2026-10-18.json)不含原始请求/凭据。
 - 首次本轮命令自动审批超时未启动，获准的一次重试成功；不作为产品失败或验收通过。REAL-01/B 仍等待项目路线；Claude 本地、最终 CI/FINAL 继续。
+
+## 2026-10-18 M3-REAL-01 / B1–B4 全路线完成
+
+- Codex 0.159.3 的 user/plugin/project 三条路线均以同一缓存修复生产二进制完成独立真实验收。最终用户/项目分别九/十次调用、12/13 次请求，插件九次/12 次；原生事件、来源/时间/session、probe/explain 全文与真实请求/state/stats 交叉核对。项目额外验证其他工作区无规则投递、用户存储无会话 state、卸载后原先不存在的配置仍缺席。
+- 三路线均通过 refresh1/2/2、事件围栏、provider、自定义 effort/unknown、正常 shell/仅损坏 state 的拒绝与恢复、新 native 正文更新/旧正文缺席、frozen 锁定字节和卸载后无正文/回调。[三路线报告](review/M3-REAL-01-2026-10-18.json)保留各条完整证据，不跨路线拼接断言。关闭 REAL-01、B1–B4。
+- 缓存修复二进制六路线未触发/SIGINT 12 次预期失败复验全过，见[报告](review/M3-PROBE-NEGATIVE-FINAL-2026-10-18.json)。双 module fresh Go 3,900/550 pass、0 fail、2/23 项明确 skip 单列；其他真实与最终 CI 仍继续。

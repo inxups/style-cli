@@ -1,0 +1,603 @@
+{
+  "format": 1,
+  "passed": true,
+  "binary_sha256": "ca34c0b65a55261791c065a73b870a615af1013a27b080f18f4ab6d16386baaa",
+  "routes": [
+    {
+      "route": "codex-user",
+      "harness_version": "codex-cli 0.159.3",
+      "passed": true,
+      "timeout": {
+        "status": "timed-out",
+        "targets": [
+          {
+            "harness": "codex",
+            "route": "codex-user",
+            "status": "timed-out",
+            "callback_observed": false,
+            "origin": "unverified",
+            "runtime_sha256": "sha256:ca34c0b65a55261791c065a73b870a615af1013a27b080f18f4ab6d16386baaa",
+            "harness_sha256": "sha256:4d210f7c5a18fd0386434df23b5bdbb8c0e7257d3e8a2b30b0769c8bbe99a878",
+            "index_sha256": "sha256:69e8b087247218b4991f594fc0dcf652a100ecc7d7c0cb142a524f44db738983",
+            "index_status": "captured",
+            "execution": "not-assessed",
+            "events": [
+              "PostToolUse",
+              "PreToolUse",
+              "SessionStart",
+              "SubagentStart",
+              "UserPromptSubmit"
+            ]
+          }
+        ],
+        "cleanup": {
+          "complete": true,
+          "remaining": []
+        }
+      },
+      "interrupted": {
+        "status": "interrupted",
+        "targets": [
+          {
+            "harness": "codex",
+            "route": "codex-user",
+            "status": "waiting",
+            "callback_observed": false,
+            "origin": "unverified",
+            "runtime_sha256": "sha256:ca34c0b65a55261791c065a73b870a615af1013a27b080f18f4ab6d16386baaa",
+            "harness_sha256": "sha256:4d210f7c5a18fd0386434df23b5bdbb8c0e7257d3e8a2b30b0769c8bbe99a878",
+            "index_sha256": "sha256:69e8b087247218b4991f594fc0dcf652a100ecc7d7c0cb142a524f44db738983",
+            "index_status": "captured",
+            "execution": "not-assessed",
+            "events": [
+              "PostToolUse",
+              "PreToolUse",
+              "SessionStart",
+              "SubagentStart",
+              "UserPromptSubmit"
+            ]
+          }
+        ],
+        "cleanup": {
+          "complete": true,
+          "remaining": []
+        }
+      },
+      "restoration": {
+        "files": 2,
+        "bytes_and_modes_restored": true
+      },
+      "project_restoration": {
+        "files": 6,
+        "bytes_and_modes_restored": true
+      },
+      "private_report_sha256": "9a3eeb27cc94f2a6970e33ebd28e15342eefdd5a15c98be7a326de4561c2155a",
+      "binding_sha256": "b8d38480cd9851592151d67ca41abab988ccd91026d7692ef0313624d7940d68",
+      "execution": {
+        "command": [
+          "python3",
+          "testdata/manual/probe_m3_negative.py",
+          "--style",
+          "/tmp/style-m3-complete-20261017/style-m3-cache",
+          "--harness-binary",
+          "/Users/inxups/.nvm/versions/node/v24.21.0/lib/node_modules/@openai/codex/node_modules/@openai/codex-darwin-arm64/vendor/aarch64-apple-darwin/bin/codex",
+          "--harness",
+          "codex",
+          "--route",
+          "codex-user",
+          "--scratch",
+          "/tmp/style-m3-complete-20261017/negative-cache03-codex-user",
+          "--output",
+          "/tmp/style-m3-complete-20261017/negative-cache03-codex-user-report.json"
+        ],
+        "exit_code": 0,
+        "seconds": 1.986,
+        "environment": {
+          "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+          "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+          "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+          "GOPROXY": "off",
+          "GOFLAGS": "-mod=readonly",
+          "GOWORK": "off"
+        }
+      },
+      "models_invoked": false,
+      "authentication_profile_read": false
+    },
+    {
+      "route": "codex-plugin",
+      "harness_version": "codex-cli 0.159.3",
+      "passed": true,
+      "timeout": {
+        "status": "timed-out",
+        "targets": [
+          {
+            "harness": "codex",
+            "route": "codex-plugin",
+            "status": "timed-out",
+            "callback_observed": false,
+            "origin": "unverified",
+            "runtime_sha256": "sha256:ca34c0b65a55261791c065a73b870a615af1013a27b080f18f4ab6d16386baaa",
+            "harness_sha256": "sha256:4d210f7c5a18fd0386434df23b5bdbb8c0e7257d3e8a2b30b0769c8bbe99a878",
+            "index_sha256": "sha256:47eb4f83dd8203f2df16057444c4e35d129f7b45b6fdc5ebcba2f13cd079f9ac",
+            "index_status": "captured",
+            "execution": "not-assessed",
+            "events": [
+              "PostToolUse",
+              "PreToolUse",
+              "SessionStart",
+              "SubagentStart",
+              "UserPromptSubmit"
+            ]
+          }
+        ],
+        "cleanup": {
+          "complete": true,
+          "remaining": []
+        }
+      },
+      "interrupted": {
+        "status": "interrupted",
+        "targets": [
+          {
+            "harness": "codex",
+            "route": "codex-plugin",
+            "status": "waiting",
+            "callback_observed": false,
+            "origin": "unverified",
+            "runtime_sha256": "sha256:ca34c0b65a55261791c065a73b870a615af1013a27b080f18f4ab6d16386baaa",
+            "harness_sha256": "sha256:4d210f7c5a18fd0386434df23b5bdbb8c0e7257d3e8a2b30b0769c8bbe99a878",
+            "index_sha256": "sha256:47eb4f83dd8203f2df16057444c4e35d129f7b45b6fdc5ebcba2f13cd079f9ac",
+            "index_status": "captured",
+            "execution": "not-assessed",
+            "events": [
+              "PostToolUse",
+              "PreToolUse",
+              "SessionStart",
+              "SubagentStart",
+              "UserPromptSubmit"
+            ]
+          }
+        ],
+        "cleanup": {
+          "complete": true,
+          "remaining": []
+        }
+      },
+      "restoration": {
+        "files": 2,
+        "bytes_and_modes_restored": true
+      },
+      "project_restoration": {
+        "files": 6,
+        "bytes_and_modes_restored": true
+      },
+      "private_report_sha256": "07ba8783a2c37965aa5c16f7e220bb4c940ef6afb403f5252dbf36b3a08c3002",
+      "binding_sha256": "b8d38480cd9851592151d67ca41abab988ccd91026d7692ef0313624d7940d68",
+      "execution": {
+        "command": [
+          "python3",
+          "testdata/manual/probe_m3_negative.py",
+          "--style",
+          "/tmp/style-m3-complete-20261017/style-m3-cache",
+          "--harness-binary",
+          "/Users/inxups/.nvm/versions/node/v24.21.0/lib/node_modules/@openai/codex/node_modules/@openai/codex-darwin-arm64/vendor/aarch64-apple-darwin/bin/codex",
+          "--harness",
+          "codex",
+          "--route",
+          "codex-plugin",
+          "--scratch",
+          "/tmp/style-m3-complete-20261017/negative-cache03-codex-plugin",
+          "--output",
+          "/tmp/style-m3-complete-20261017/negative-cache03-codex-plugin-report.json"
+        ],
+        "exit_code": 0,
+        "seconds": 2.072,
+        "environment": {
+          "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+          "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+          "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+          "GOPROXY": "off",
+          "GOFLAGS": "-mod=readonly",
+          "GOWORK": "off"
+        }
+      },
+      "models_invoked": false,
+      "authentication_profile_read": false
+    },
+    {
+      "route": "codex-project",
+      "harness_version": "codex-cli 0.159.3",
+      "passed": true,
+      "timeout": {
+        "status": "timed-out",
+        "targets": [
+          {
+            "callback_observed": false,
+            "events": [
+              "PostToolUse",
+              "PreToolUse",
+              "SessionStart",
+              "SubagentStart",
+              "UserPromptSubmit"
+            ],
+            "execution": "not-assessed",
+            "harness": "codex",
+            "harness_sha256": "sha256:4d210f7c5a18fd0386434df23b5bdbb8c0e7257d3e8a2b30b0769c8bbe99a878",
+            "index_sha256": "sha256:1c0dab0a85a4470d0b4b2899583bb0b24b3611420fc77f14f197904156d2ffa8",
+            "index_status": "captured",
+            "origin": "unverified",
+            "route": "codex-project",
+            "runtime_sha256": "sha256:ca34c0b65a55261791c065a73b870a615af1013a27b080f18f4ab6d16386baaa",
+            "status": "timed-out"
+          }
+        ],
+        "cleanup": {
+          "complete": true,
+          "remaining": []
+        }
+      },
+      "interrupted": {
+        "status": "interrupted",
+        "targets": [
+          {
+            "callback_observed": false,
+            "events": [
+              "PostToolUse",
+              "PreToolUse",
+              "SessionStart",
+              "SubagentStart",
+              "UserPromptSubmit"
+            ],
+            "execution": "not-assessed",
+            "harness": "codex",
+            "harness_sha256": "sha256:4d210f7c5a18fd0386434df23b5bdbb8c0e7257d3e8a2b30b0769c8bbe99a878",
+            "index_sha256": "sha256:1c0dab0a85a4470d0b4b2899583bb0b24b3611420fc77f14f197904156d2ffa8",
+            "index_status": "captured",
+            "origin": "unverified",
+            "route": "codex-project",
+            "runtime_sha256": "sha256:ca34c0b65a55261791c065a73b870a615af1013a27b080f18f4ab6d16386baaa",
+            "status": "waiting"
+          }
+        ],
+        "cleanup": {
+          "complete": true,
+          "remaining": []
+        }
+      },
+      "restoration": {
+        "files": 2,
+        "bytes_and_modes_restored": true
+      },
+      "project_restoration": {
+        "files": 6,
+        "bytes_and_modes_restored": true
+      },
+      "private_report_sha256": "9f2580889f43be383995c28b358962cad6b6069e60621b9a055595631a858c12",
+      "binding_sha256": "b8d38480cd9851592151d67ca41abab988ccd91026d7692ef0313624d7940d68",
+      "execution": {
+        "command": [
+          "python3",
+          "testdata/manual/probe_m3_negative.py",
+          "--style",
+          "/tmp/style-m3-complete-20261017/style-m3-cache",
+          "--harness-binary",
+          "/Users/inxups/.nvm/versions/node/v24.21.0/lib/node_modules/@openai/codex/node_modules/@openai/codex-darwin-arm64/vendor/aarch64-apple-darwin/bin/codex",
+          "--harness",
+          "codex",
+          "--route",
+          "codex-project",
+          "--scratch",
+          "/tmp/style-m3-complete-20261017/negative-cache03-codex-project",
+          "--output",
+          "/tmp/style-m3-complete-20261017/negative-cache03-codex-project-report.json"
+        ],
+        "exit_code": 0,
+        "seconds": 2.015,
+        "environment": {
+          "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+          "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+          "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+          "GOPROXY": "off",
+          "GOFLAGS": "-mod=readonly",
+          "GOWORK": "off"
+        }
+      },
+      "models_invoked": false,
+      "authentication_profile_read": false
+    },
+    {
+      "route": "claude-user",
+      "harness_version": "2.1.301 (Claude Code)",
+      "passed": true,
+      "timeout": {
+        "status": "timed-out",
+        "targets": [
+          {
+            "harness": "claude-code",
+            "route": "claude-user",
+            "status": "timed-out",
+            "callback_observed": false,
+            "origin": "unverified",
+            "runtime_sha256": "sha256:ca34c0b65a55261791c065a73b870a615af1013a27b080f18f4ab6d16386baaa",
+            "harness_sha256": "sha256:1f04c69e1c24e4d0a716a863af0aad8fc64d49a499334c29701f073700276b99",
+            "index_sha256": "sha256:f4d56d82463b8eabffa54ddcb51187b91eb0ce9b1509e1843bec8abfebe946ad",
+            "index_status": "captured",
+            "execution": "not-assessed",
+            "events": [
+              "PreToolUse",
+              "SessionStart",
+              "UserPromptSubmit"
+            ]
+          }
+        ],
+        "cleanup": {
+          "complete": true,
+          "remaining": []
+        }
+      },
+      "interrupted": {
+        "status": "interrupted",
+        "targets": [
+          {
+            "harness": "claude-code",
+            "route": "claude-user",
+            "status": "waiting",
+            "callback_observed": false,
+            "origin": "unverified",
+            "runtime_sha256": "sha256:ca34c0b65a55261791c065a73b870a615af1013a27b080f18f4ab6d16386baaa",
+            "harness_sha256": "sha256:1f04c69e1c24e4d0a716a863af0aad8fc64d49a499334c29701f073700276b99",
+            "index_sha256": "sha256:f4d56d82463b8eabffa54ddcb51187b91eb0ce9b1509e1843bec8abfebe946ad",
+            "index_status": "captured",
+            "execution": "not-assessed",
+            "events": [
+              "PreToolUse",
+              "SessionStart",
+              "UserPromptSubmit"
+            ]
+          }
+        ],
+        "cleanup": {
+          "complete": true,
+          "remaining": []
+        }
+      },
+      "restoration": {
+        "files": 4,
+        "bytes_and_modes_restored": true
+      },
+      "project_restoration": {
+        "files": 6,
+        "bytes_and_modes_restored": true
+      },
+      "private_report_sha256": "6bb35f8c3f0f688fe10161b4206afb609583dbdfad7af947e691902d0d3a85c1",
+      "binding_sha256": "93cf4dc1ec5f3b2987b2d614ea5a4e96b8b693c416a6e0dd5eb9afa654a55823",
+      "execution": {
+        "command": [
+          "python3",
+          "testdata/manual/probe_m3_negative.py",
+          "--style",
+          "/tmp/style-m3-complete-20261017/style-m3-cache",
+          "--harness-binary",
+          "/Users/inxups/.nvm/versions/node/v24.21.0/lib/node_modules/@anthropic-ai/claude-code/bin/claude.exe",
+          "--harness",
+          "claude-code",
+          "--route",
+          "claude-user",
+          "--scratch",
+          "/tmp/style-m3-complete-20261017/negative-cache03-claude-user",
+          "--output",
+          "/tmp/style-m3-complete-20261017/negative-cache03-claude-user-report.json"
+        ],
+        "exit_code": 0,
+        "seconds": 2.032,
+        "environment": {
+          "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+          "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+          "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+          "GOPROXY": "off",
+          "GOFLAGS": "-mod=readonly",
+          "GOWORK": "off"
+        }
+      },
+      "models_invoked": false,
+      "authentication_profile_read": false
+    },
+    {
+      "route": "claude-plugin",
+      "harness_version": "2.1.301 (Claude Code)",
+      "passed": true,
+      "timeout": {
+        "status": "timed-out",
+        "targets": [
+          {
+            "harness": "claude-code",
+            "route": "claude-plugin",
+            "status": "timed-out",
+            "callback_observed": false,
+            "origin": "unverified",
+            "runtime_sha256": "sha256:ca34c0b65a55261791c065a73b870a615af1013a27b080f18f4ab6d16386baaa",
+            "harness_sha256": "sha256:1f04c69e1c24e4d0a716a863af0aad8fc64d49a499334c29701f073700276b99",
+            "index_sha256": "sha256:523e4992f06ae7818ac86b54959acec0e5fa98e74ccafe43d0c38e87d34ca80e",
+            "index_status": "captured",
+            "execution": "not-assessed",
+            "events": [
+              "PreToolUse",
+              "SessionStart",
+              "UserPromptSubmit"
+            ]
+          }
+        ],
+        "cleanup": {
+          "complete": true,
+          "remaining": []
+        }
+      },
+      "interrupted": {
+        "status": "interrupted",
+        "targets": [
+          {
+            "harness": "claude-code",
+            "route": "claude-plugin",
+            "status": "waiting",
+            "callback_observed": false,
+            "origin": "unverified",
+            "runtime_sha256": "sha256:ca34c0b65a55261791c065a73b870a615af1013a27b080f18f4ab6d16386baaa",
+            "harness_sha256": "sha256:1f04c69e1c24e4d0a716a863af0aad8fc64d49a499334c29701f073700276b99",
+            "index_sha256": "sha256:523e4992f06ae7818ac86b54959acec0e5fa98e74ccafe43d0c38e87d34ca80e",
+            "index_status": "captured",
+            "execution": "not-assessed",
+            "events": [
+              "PreToolUse",
+              "SessionStart",
+              "UserPromptSubmit"
+            ]
+          }
+        ],
+        "cleanup": {
+          "complete": true,
+          "remaining": []
+        }
+      },
+      "restoration": {
+        "files": 4,
+        "bytes_and_modes_restored": true
+      },
+      "project_restoration": {
+        "files": 6,
+        "bytes_and_modes_restored": true
+      },
+      "private_report_sha256": "66e067eb0a608a5c75d83a35cd155b66fd7b3bac7973fc9bb2e2d09847cc0549",
+      "binding_sha256": "93cf4dc1ec5f3b2987b2d614ea5a4e96b8b693c416a6e0dd5eb9afa654a55823",
+      "execution": {
+        "command": [
+          "python3",
+          "testdata/manual/probe_m3_negative.py",
+          "--style",
+          "/tmp/style-m3-complete-20261017/style-m3-cache",
+          "--harness-binary",
+          "/Users/inxups/.nvm/versions/node/v24.21.0/lib/node_modules/@anthropic-ai/claude-code/bin/claude.exe",
+          "--harness",
+          "claude-code",
+          "--route",
+          "claude-plugin",
+          "--scratch",
+          "/tmp/style-m3-complete-20261017/negative-cache03-claude-plugin",
+          "--output",
+          "/tmp/style-m3-complete-20261017/negative-cache03-claude-plugin-report.json"
+        ],
+        "exit_code": 0,
+        "seconds": 2.57,
+        "environment": {
+          "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+          "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+          "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+          "GOPROXY": "off",
+          "GOFLAGS": "-mod=readonly",
+          "GOWORK": "off"
+        }
+      },
+      "models_invoked": false,
+      "authentication_profile_read": false
+    },
+    {
+      "route": "claude-project",
+      "harness_version": "2.1.301 (Claude Code)",
+      "passed": true,
+      "timeout": {
+        "status": "timed-out",
+        "targets": [
+          {
+            "callback_observed": false,
+            "events": [
+              "PreToolUse",
+              "SessionStart",
+              "UserPromptSubmit"
+            ],
+            "execution": "not-assessed",
+            "harness": "claude-code",
+            "harness_sha256": "sha256:1f04c69e1c24e4d0a716a863af0aad8fc64d49a499334c29701f073700276b99",
+            "index_sha256": "sha256:1bafd90eb7831edfb81f586e9ef771f020d8c6c6268d94e3294ab36278d48b56",
+            "index_status": "captured",
+            "origin": "unverified",
+            "route": "claude-project",
+            "runtime_sha256": "sha256:ca34c0b65a55261791c065a73b870a615af1013a27b080f18f4ab6d16386baaa",
+            "status": "timed-out"
+          }
+        ],
+        "cleanup": {
+          "complete": true,
+          "remaining": []
+        }
+      },
+      "interrupted": {
+        "status": "interrupted",
+        "targets": [
+          {
+            "callback_observed": false,
+            "events": [
+              "PreToolUse",
+              "SessionStart",
+              "UserPromptSubmit"
+            ],
+            "execution": "not-assessed",
+            "harness": "claude-code",
+            "harness_sha256": "sha256:1f04c69e1c24e4d0a716a863af0aad8fc64d49a499334c29701f073700276b99",
+            "index_sha256": "sha256:1bafd90eb7831edfb81f586e9ef771f020d8c6c6268d94e3294ab36278d48b56",
+            "index_status": "captured",
+            "origin": "unverified",
+            "route": "claude-project",
+            "runtime_sha256": "sha256:ca34c0b65a55261791c065a73b870a615af1013a27b080f18f4ab6d16386baaa",
+            "status": "waiting"
+          }
+        ],
+        "cleanup": {
+          "complete": true,
+          "remaining": []
+        }
+      },
+      "restoration": {
+        "files": 4,
+        "bytes_and_modes_restored": true
+      },
+      "project_restoration": {
+        "files": 6,
+        "bytes_and_modes_restored": true
+      },
+      "private_report_sha256": "d89dcb422c78e106a585dc386af4cd02b44e36595a1d808cf2311d950df08c4f",
+      "binding_sha256": "93cf4dc1ec5f3b2987b2d614ea5a4e96b8b693c416a6e0dd5eb9afa654a55823",
+      "execution": {
+        "command": [
+          "python3",
+          "testdata/manual/probe_m3_negative.py",
+          "--style",
+          "/tmp/style-m3-complete-20261017/style-m3-cache",
+          "--harness-binary",
+          "/Users/inxups/.nvm/versions/node/v24.21.0/lib/node_modules/@anthropic-ai/claude-code/bin/claude.exe",
+          "--harness",
+          "claude-code",
+          "--route",
+          "claude-project",
+          "--scratch",
+          "/tmp/style-m3-complete-20261017/negative-cache03-claude-project",
+          "--output",
+          "/tmp/style-m3-complete-20261017/negative-cache03-claude-project-report.json"
+        ],
+        "exit_code": 0,
+        "seconds": 2.038,
+        "environment": {
+          "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+          "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+          "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+          "GOPROXY": "off",
+          "GOFLAGS": "-mod=readonly",
+          "GOWORK": "off"
+        }
+      },
+      "models_invoked": false,
+      "authentication_profile_read": false
+    }
+  ],
+  "expected_failures": 12,
+  "actual_models_invoked": 0
+}

@@ -6,7 +6,7 @@
 
 本文件记录 M3 测试矩阵与当前证据状态，任务及依赖见 [STYLE-M3-TASKS.md](STYLE-M3-TASKS.md)，运行记录追加到 [PROGRESS.md](PROGRESS.md)。[M1 测试](STYLE-M1-TESTS.md)、[M2 测试](STYLE-M2-TESTS.md) 已只读归档；历史通过结果不替代 M3 的新验收。
 
-当前状态：M3-00、M3-BASE-01、A0–A18 与 P1/P2 已通过。Codex 用户路线已有真实证据，本地 exact 必过子项已通过最终二进制；其余本地 B/C、最终 CI 和文档验收继续推进。用户明确延期的 C3、W1/REAL-04 与 Anthropic 独立 API 子项保持待验并退出本次 FINAL 必过集合。M3-CARRY-01 官方校准仍两家各 0/40、非阻塞；硬编码成员校验风险已由 T00/A0 关闭。
+当前状态：M3-00、M3-BASE-01、A0–A18 与 P1/P2 已通过。Codex 三条本地路线 B1–B4 与本地 exact 必过子项均通过同一最终生产源码；Claude 本地、最终 CI 和文档验收继续推进。用户明确延期的 C3、W1/REAL-04 与 Anthropic 独立 API 子项保持待验并退出本次 FINAL 必过集合。M3-CARRY-01 官方校准仍两家各 0/40、非阻塞；硬编码成员校验风险已由 T00/A0 关闭。
 
 ## 状态与验收规则
 
@@ -104,10 +104,10 @@ M3-A2 缓存补充：Codex 0.159.3 原生插件使用独立缓存，三次真实
 
 既有 `codex-user`、`codex-plugin` 两路线独立记录，不拼接为一套通过；项目路线新增单独证据。记录固定版本、二进制和配置基线、原生 hook 来源/回调、完整上下文或请求摘要及卸载恢复；只声明实际观察到的信任范围。
 
-- [~] **M3-B1 probe 与 explain**（M3-T10、M3-T11、M3-REAL-01）：真实会话触发可关联回调，user/plugin 路线分别执行；用独立原生 hook 来源/事件证据关联 probe 收据、时间与 session，不能只依赖进程祖先或手工调用。采集原生 payload、事件前 state、补充事实和固定 index 后按 D1 隔离解释，与实际命中/去重/输出及原生上下文/请求证据核对。未触发、退出、清理与卸载后新会话无残留分别记录；callback-observed 不单独证明模型投递。 用户路线已通过[真实运行](review/M3-B-CODEX-USER-2026-10-18.json)，插件路线也已通过[完整真实验收](review/M3-B-CODEX-PLUGIN-2026-10-18.json)，项目路线继续。 [六路线未触发/中断检查](review/M3-PROBE-NEGATIVE-2026-10-18.json)已通过：有效 index、12 次失败状态/完整清理与显式配置恢复；无模型调用，不据此关闭真实投递。
-- [?] **M3-B2 项目路线与来源生命周期**（M3-T20–T22、M3-T30、M3-REAL-01）：在隔离项目中用锁定来源安装，核对项目配置被真实 harness 接受、实际投递和用户/其他项目隔离；更新/frozen 与 native 变更信任沿定稿执行。多 clone 信任不外推，卸载后配置与原有用户规则还原。
-- [~] **M3-B3 运行时扩展**（M3-T40–T45、M3-REAL-01）：以固定真实事件序列核对 refresh、围栏、provider/unknown、effort 映射和受支持失败策略。原生回调/上下文、state、stats 与 explain 相符；不支持能力按批准设计证明边界，不把模型回复当投递证据。 用户路线已通过[真实运行](review/M3-B-CODEX-USER-2026-10-18.json)，插件路线也已通过[完整真实验收](review/M3-B-CODEX-PLUGIN-2026-10-18.json)，项目路线继续。
-- [~] **M3-B4 native 与既有路线回归**（M3-T60、M3-T80、M3-REAL-01）：真实触发仍受支持的 native 及 STYLE hook，核对来源、matcher/timeout、信任与共存。新 native 能力仅按 D10 的 Codex 支持范围取证；卸载恢复外部文件，后续新会话不再触发。 用户路线已通过[真实运行](review/M3-B-CODEX-USER-2026-10-18.json)，插件路线也已通过[完整真实验收](review/M3-B-CODEX-PLUGIN-2026-10-18.json)，项目路线继续。
+- [x] **M3-B1 probe 与 explain**（M3-T10、M3-T11、M3-REAL-01）：真实会话触发可关联回调，user/plugin 路线分别执行；用独立原生 hook 来源/事件证据关联 probe 收据、时间与 session，不能只依赖进程祖先或手工调用。采集原生 payload、事件前 state、补充事实和固定 index 后按 D1 隔离解释，与实际命中/去重/输出及原生上下文/请求证据核对。未触发、退出、清理与卸载后新会话无残留分别记录；callback-observed 不单独证明模型投递。 用户路线已通过[真实运行](review/M3-B-CODEX-USER-2026-10-18.json)，插件路线也已通过[完整真实验收](review/M3-B-CODEX-PLUGIN-2026-10-18.json)，项目及用户最终复验均通过[三路线验收](review/M3-REAL-01-2026-10-18.json)。 [六路线未触发/中断检查](review/M3-PROBE-NEGATIVE-2026-10-18.json)已通过：有效 index、12 次失败状态/完整清理与显式配置恢复；无模型调用，不据此关闭真实投递。
+- [x] **M3-B2 项目路线与来源生命周期**（M3-T20–T22、M3-T30、M3-REAL-01）：在隔离项目中用锁定来源安装，核对项目配置被真实 harness 接受、实际投递和用户/其他项目隔离；更新/frozen 与 native 变更信任沿定稿执行。多 clone 信任不外推，卸载后配置与原有用户规则还原。 [项目真实报告](review/M3-B-CODEX-PROJECT-2026-10-18.json)覆盖独立项目无投递、完整更新正文/frozen、受保护配置缺席恢复及卸载后新会话无 hook。
+- [x] **M3-B3 运行时扩展**（M3-T40–T45、M3-REAL-01）：以固定真实事件序列核对 refresh、围栏、provider/unknown、effort 映射和受支持失败策略。原生回调/上下文、state、stats 与 explain 相符；不支持能力按批准设计证明边界，不把模型回复当投递证据。 用户路线已通过[真实运行](review/M3-B-CODEX-USER-2026-10-18.json)，插件路线也已通过[完整真实验收](review/M3-B-CODEX-PLUGIN-2026-10-18.json)，项目及用户最终复验均通过[三路线验收](review/M3-REAL-01-2026-10-18.json)。
+- [x] **M3-B4 native 与既有路线回归**（M3-T60、M3-T80、M3-REAL-01）：真实触发仍受支持的 native 及 STYLE hook，核对来源、matcher/timeout、信任与共存。新 native 能力仅按 D10 的 Codex 支持范围取证；卸载恢复外部文件，后续新会话不再触发。 用户路线已通过[真实运行](review/M3-B-CODEX-USER-2026-10-18.json)，插件路线也已通过[完整真实验收](review/M3-B-CODEX-PLUGIN-2026-10-18.json)，项目及用户最终复验均通过[三路线验收](review/M3-REAL-01-2026-10-18.json)。
 
 ## M3b：Claude Code 真实环境
 
@@ -134,3 +134,5 @@ M3-A2 缓存补充：Codex 0.159.3 原生插件使用独立缓存，三次真实
 ## 2026-10-17 用户确认的延期真实验收
 
 用户明确“这些等以后再测试，先排除这些，继续”，指环境请求中 Claude 托管云端、Windows 主机真实运行和 Anthropic 独立计数 API。C3、W1/REAL-04 和 TOKEN-01 的 Anthropic API 子项保持 `[?]`，从本次 FINAL 必过集合排除，后续另测；不以 fixture/交叉编译/替代编码标记通过。其余 A/P/CI 与本地真实 B/C，以及可本地执行的 exact 编码仍需完成。
+
+六路线最终超时/中断复验使用缓存修复后二进制，见[最终报告](review/M3-PROBE-NEGATIVE-FINAL-2026-10-18.json)：12 次预期失败、有效 index 捕获、完整 cleanup 和配置/项目恢复均通过。
