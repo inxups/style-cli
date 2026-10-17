@@ -1,0 +1,1904 @@
+{
+  "format": 1,
+  "task": "M3-T70",
+  "test": "M3-A17",
+  "date": "2026-10-18",
+  "status": "passed-supported-platform-scope",
+  "head_sha": "b481396d457ec4e0811e203415f7c38cbda35a39",
+  "production_equivalent_since": "50c666eddb4a1bdd10a5ef52eb5e209cfc6a71d9",
+  "ci_run_id": 39055736061,
+  "jobs": [
+    {
+      "name": "Test (ubuntu-latest)",
+      "id": 117463216438,
+      "conclusion": "success",
+      "steps": [
+        {
+          "name": "Set up job",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/checkout@v6",
+          "conclusion": "success"
+        },
+        {
+          "name": "Set up Go",
+          "conclusion": "success"
+        },
+        {
+          "name": "Check formatting",
+          "conclusion": "success"
+        },
+        {
+          "name": "Vet",
+          "conclusion": "success"
+        },
+        {
+          "name": "Test",
+          "conclusion": "success"
+        },
+        {
+          "name": "Test acceptance collectors",
+          "conclusion": "success"
+        },
+        {
+          "name": "Build",
+          "conclusion": "success"
+        },
+        {
+          "name": "Smoke test built binary",
+          "conclusion": "success"
+        },
+        {
+          "name": "Check replace fallback and user style preservation",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Set up Go",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/checkout@v6",
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "name": "Test (macos-latest)",
+      "id": 117463216571,
+      "conclusion": "success",
+      "steps": [
+        {
+          "name": "Set up job",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/checkout@v6",
+          "conclusion": "success"
+        },
+        {
+          "name": "Set up Go",
+          "conclusion": "success"
+        },
+        {
+          "name": "Check formatting",
+          "conclusion": "success"
+        },
+        {
+          "name": "Vet",
+          "conclusion": "success"
+        },
+        {
+          "name": "Test",
+          "conclusion": "success"
+        },
+        {
+          "name": "Test acceptance collectors",
+          "conclusion": "success"
+        },
+        {
+          "name": "Build",
+          "conclusion": "success"
+        },
+        {
+          "name": "Smoke test built binary",
+          "conclusion": "success"
+        },
+        {
+          "name": "Check replace fallback and user style preservation",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Set up Go",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/checkout@v6",
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "name": "Test (windows-latest)",
+      "id": 117463216616,
+      "conclusion": "success",
+      "steps": [
+        {
+          "name": "Set up job",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/checkout@v6",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/setup-go@v6",
+          "conclusion": "success"
+        },
+        {
+          "name": "Isolate caches and external environment",
+          "conclusion": "success"
+        },
+        {
+          "name": "Check formatting",
+          "conclusion": "success"
+        },
+        {
+          "name": "Vet both modules",
+          "conclusion": "success"
+        },
+        {
+          "name": "Native Windows fresh tests",
+          "conclusion": "success"
+        },
+        {
+          "name": "Build native and arm64 binaries",
+          "conclusion": "success"
+        },
+        {
+          "name": "Native Windows CLI smoke",
+          "conclusion": "success"
+        },
+        {
+          "name": "Require native Windows tests to pass",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Preserve Windows evidence",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/setup-go@v6",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/checkout@v6",
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "conclusion": "success"
+        }
+      ]
+    }
+  ],
+  "windows_native_modules": {
+    "root": {
+      "counts": {
+        "pass": 3380,
+        "fail": 0,
+        "skip": 280
+      },
+      "raw_log_sha256": "00a3ef555ca3b035dda985792026945e737879e64af97fac812827281f7767e2",
+      "skips_not_counted_as_pass": [
+        {
+          "package": "github.com/inxups/style-cli/internal/adapter/claude",
+          "test": "TestM3A8PluginProbeIdentityAndRegistration",
+          "reason": "plugin_test.go:18: D11: POSIX plugin route unavailable on Windows"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/adapter/codex",
+          "test": "TestCodexPluginStatusDoesNotClaimTrustBeforeConfirmation",
+          "reason": "route_test.go:134: D11: POSIX plugin route unavailable on Windows"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/adapter/codex",
+          "test": "TestCodexPluginRoutePlansStaticAndHookConfigAtomically",
+          "reason": "route_test.go:164: D11: POSIX plugin launcher fixture"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/adapter/codex",
+          "test": "TestCodexPluginApplyUsesNarrowestRoot",
+          "reason": "route_test.go:297: D11: POSIX plugin launcher fixture"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/adapter/conformance",
+          "test": "TestHookProcessLatency",
+          "reason": "performance_test.go:22: set STYLE_PERF=1 for the isolated A20 process benchmark"
+        },
+        {
+          "package": "github.com/inxups/style-cli/core/state",
+          "test": "TestRefreshProcessHelper",
+          "reason": "refresh_test.go:371: subprocess helper"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestA7MigrationTrustKeepsOtherUnapprovedSourceAndNative",
+          "reason": "claude_rules_test.go:224: D11: author native migration fixture requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/adapter/conformance",
+          "test": "TestGeneratedRoutesInvokeBuiltCLIWithPersistedHome/codex-plugin",
+          "reason": "process_test.go:157: D11: POSIX plugin launcher"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A7PreviewDeterminismAndManifest",
+          "reason": "cloud_test.go:18: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A7FreshCloneRemoteRuntimeAndIsolation",
+          "reason": "cloud_test.go:18: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A7InputAndBundleFailures/source",
+          "reason": "cloud_test.go:18: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A7InputAndBundleFailures/settings",
+          "reason": "cloud_test.go:18: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A7InputAndBundleFailures/approval",
+          "reason": "cloud_test.go:18: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A7InputAndBundleFailures/index",
+          "reason": "cloud_test.go:18: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A7InputAndBundleFailures/launcher",
+          "reason": "cloud_test.go:18: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A7InputAndBundleFailures/symlink",
+          "reason": "cloud_test.go:18: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A7InputAndBundleFailures/unknown-file",
+          "reason": "cloud_test.go:18: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A7InputAndBundleFailures/bad-manifest",
+          "reason": "cloud_test.go:18: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A7InputAndBundleFailures/missing-bundle",
+          "reason": "cloud_test.go:18: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A7InputAndBundleFailures/runtime-version",
+          "reason": "cloud_test.go:18: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A7InputAndBundleFailures/path-escape",
+          "reason": "cloud_test.go:18: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A7InputAndBundleFailures/missing-required",
+          "reason": "cloud_test.go:18: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A7RemoteFailuresUseCodecAndNoFallback/digest/open",
+          "reason": "cloud_test.go:18: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A7RemoteFailuresUseCodecAndNoFallback/digest/closed",
+          "reason": "cloud_test.go:18: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A7RemoteFailuresUseCodecAndNoFallback/no-bundle/open",
+          "reason": "cloud_test.go:18: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A7RemoteFailuresUseCodecAndNoFallback/no-bundle/closed",
+          "reason": "cloud_test.go:18: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A7RemoteFailuresUseCodecAndNoFallback/wrong-root/open",
+          "reason": "cloud_test.go:18: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A7RemoteFailuresUseCodecAndNoFallback/wrong-root/closed",
+          "reason": "cloud_test.go:18: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A7RemoteFailuresUseCodecAndNoFallback/home-in-repo/open",
+          "reason": "cloud_test.go:18: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A7RemoteFailuresUseCodecAndNoFallback/home-in-repo/closed",
+          "reason": "cloud_test.go:18: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A7RemoteFailuresUseCodecAndNoFallback/bad-manifest/open",
+          "reason": "cloud_test.go:18: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A7RemoteFailuresUseCodecAndNoFallback/bad-manifest/closed",
+          "reason": "cloud_test.go:18: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A7ReexportStaleAndUninstall",
+          "reason": "cloud_test.go:18: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A7ConfirmationDriftAndCancellation/index",
+          "reason": "cloud_test.go:18: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A7ConfirmationDriftAndCancellation/declaration",
+          "reason": "cloud_test.go:18: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A7ConfirmationDriftAndCancellation/target",
+          "reason": "cloud_test.go:18: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A7ConfirmationDriftAndCancellation/cancel",
+          "reason": "cloud_test.go:18: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A7CLIAndUnsupportedScope",
+          "reason": "cloud_test.go:18: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A7EveryCancellationRestoresFiles",
+          "reason": "cloud_test.go:18: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A7MultiplePackagesAndPartialRemoval",
+          "reason": "cloud_test.go:18: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestDoctorReportsEffortPoliciesAndNoisyLoginShell",
+          "reason": "doctor_test.go:120: POSIX author native/login shell fixture; Windows rejects those capabilities"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A13SixRouteMappingLifecycleFrozenAndRemoval/codex-plugin",
+          "reason": "effort_mapping_test.go:106: D11: Windows supports user routes; POSIX project/plugin launcher fixture"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A13SixRouteMappingLifecycleFrozenAndRemoval/claude-plugin",
+          "reason": "effort_mapping_test.go:106: D11: Windows supports user routes; POSIX project/plugin launcher fixture"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A13SixRouteMappingLifecycleFrozenAndRemoval/codex-project",
+          "reason": "effort_mapping_test.go:106: D11: Windows supports user routes; POSIX project/plugin launcher fixture"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A13SixRouteMappingLifecycleFrozenAndRemoval/claude-project",
+          "reason": "effort_mapping_test.go:106: D11: Windows supports user routes; POSIX project/plugin launcher fixture"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A13CloudCarriesMappingSnapshot",
+          "reason": "cloud_test.go:18: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A10SixRouteLifecycleAndFrozen/codex-plugin",
+          "reason": "event_template_test.go:20: D11: Windows supports user routes; POSIX project/plugin launcher fixture"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/adapter/conformance",
+          "test": "TestRouteLifecycleRestoresForeignBytes/codex-plugin/ending=0",
+          "reason": "routes_test.go:33: D11: POSIX plugin or author native fixture"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/adapter/conformance",
+          "test": "TestRouteLifecycleRestoresForeignBytes/codex-plugin/ending=1",
+          "reason": "routes_test.go:33: D11: POSIX plugin or author native fixture"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/adapter/conformance",
+          "test": "TestRouteLifecycleRestoresForeignBytes/codex-plugin/ending=2",
+          "reason": "routes_test.go:33: D11: POSIX plugin or author native fixture"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A10SixRouteLifecycleAndFrozen/claude-plugin",
+          "reason": "event_template_test.go:20: D11: Windows supports user routes; POSIX project/plugin launcher fixture"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A10SixRouteLifecycleAndFrozen/codex-project",
+          "reason": "event_template_test.go:20: D11: Windows supports user routes; POSIX project/plugin launcher fixture"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A10SixRouteLifecycleAndFrozen/claude-project",
+          "reason": "event_template_test.go:20: D11: Windows supports user routes; POSIX project/plugin launcher fixture"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A10CloudBundleRetainsFencedIndex",
+          "reason": "cloud_test.go:18: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/adapter/conformance",
+          "test": "TestNativeRouteLifecycleRestoresForeignBytes/codex-plugin/ending=0",
+          "reason": "routes_test.go:33: D11: POSIX plugin or author native fixture"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/adapter/conformance",
+          "test": "TestNativeRouteLifecycleRestoresForeignBytes/codex-plugin/ending=1",
+          "reason": "routes_test.go:33: D11: POSIX plugin or author native fixture"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/adapter/conformance",
+          "test": "TestNativeRouteLifecycleRestoresForeignBytes/codex-plugin/ending=2",
+          "reason": "routes_test.go:33: D11: POSIX plugin or author native fixture"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/adapter/conformance",
+          "test": "TestNativeRouteLifecycleRestoresForeignBytes/codex-user/ending=0",
+          "reason": "routes_test.go:33: D11: POSIX plugin or author native fixture"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/adapter/conformance",
+          "test": "TestNativeRouteLifecycleRestoresForeignBytes/codex-user/ending=1",
+          "reason": "routes_test.go:33: D11: POSIX plugin or author native fixture"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/adapter/conformance",
+          "test": "TestNativeRouteLifecycleRestoresForeignBytes/codex-user/ending=2",
+          "reason": "routes_test.go:33: D11: POSIX plugin or author native fixture"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/adapter/conformance",
+          "test": "TestNativeRouteLifecycleRestoresForeignBytes/claude-user/ending=0",
+          "reason": "routes_test.go:33: D11: POSIX plugin or author native fixture"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/adapter/conformance",
+          "test": "TestNativeRouteLifecycleRestoresForeignBytes/claude-user/ending=1",
+          "reason": "routes_test.go:33: D11: POSIX plugin or author native fixture"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/adapter/conformance",
+          "test": "TestNativeRouteLifecycleRestoresForeignBytes/claude-user/ending=2",
+          "reason": "routes_test.go:33: D11: POSIX plugin or author native fixture"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A1ProvenanceDedupAndLifecycle/codex-plugin",
+          "reason": "native_install_test.go:22: D11: Windows supports user routes; POSIX project/plugin launcher fixture"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A1ProvenanceFallbackAndNativeMetadata",
+          "reason": "explain_provenance_test.go:204: D11: author native metadata fixture"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/source",
+          "test": "TestM3A3ExecCancellationStopsProcessGroup",
+          "reason": "transport_test.go:181: POSIX process-group fixture; Windows direct-process cancellation is tested separately"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A14SixRouteFailLifecycleAndMarkerRemoval/codex-plugin",
+          "reason": "fail_test.go:19: D11: Windows supports user routes; POSIX project/plugin launcher fixture"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A14SixRouteFailLifecycleAndMarkerRemoval/claude-plugin",
+          "reason": "fail_test.go:19: D11: Windows supports user routes; POSIX project/plugin launcher fixture"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A14SixRouteFailLifecycleAndMarkerRemoval/codex-project",
+          "reason": "fail_test.go:19: D11: Windows supports user routes; POSIX project/plugin launcher fixture"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A14SixRouteFailLifecycleAndMarkerRemoval/claude-project",
+          "reason": "fail_test.go:19: D11: Windows supports user routes; POSIX project/plugin launcher fixture"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A14CloudCarriesFailurePolicy",
+          "reason": "cloud_test.go:18: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A5CommandGoldenAndSingleJSON/text/POSIX-golden/preview.stdout.txt",
+          "reason": "frozen_command_test.go:20: D11: POSIX native plan and path golden; Windows command semantics asserted by parent and native CLI checks"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A5CommandGoldenAndSingleJSON/text/POSIX-golden/preview.stderr.txt",
+          "reason": "frozen_command_test.go:20: D11: POSIX native plan and path golden; Windows command semantics asserted by parent and native CLI checks"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A5CommandGoldenAndSingleJSON/text/POSIX-golden/apply.stdout.txt",
+          "reason": "frozen_command_test.go:20: D11: POSIX native plan and path golden; Windows command semantics asserted by parent and native CLI checks"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A5CommandGoldenAndSingleJSON/text/POSIX-golden/apply.stderr.txt",
+          "reason": "frozen_command_test.go:20: D11: POSIX native plan and path golden; Windows command semantics asserted by parent and native CLI checks"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A5CommandGoldenAndSingleJSON/text/POSIX-golden/unchanged.stdout.txt",
+          "reason": "frozen_command_test.go:20: D11: POSIX native plan and path golden; Windows command semantics asserted by parent and native CLI checks"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A5CommandGoldenAndSingleJSON/text/POSIX-golden/unchanged.stderr.txt",
+          "reason": "frozen_command_test.go:20: D11: POSIX native plan and path golden; Windows command semantics asserted by parent and native CLI checks"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A5CommandGoldenAndSingleJSON/text/POSIX-golden/error.stdout.txt",
+          "reason": "frozen_command_test.go:20: D11: POSIX native plan and path golden; Windows command semantics asserted by parent and native CLI checks"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A5CommandGoldenAndSingleJSON/text/POSIX-golden/error.stderr.txt",
+          "reason": "frozen_command_test.go:20: D11: POSIX native plan and path golden; Windows command semantics asserted by parent and native CLI checks"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A5CommandGoldenAndSingleJSON/json/POSIX-golden/preview.stdout.json",
+          "reason": "frozen_command_test.go:20: D11: POSIX native plan and path golden; Windows command semantics asserted by parent and native CLI checks"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A5CommandGoldenAndSingleJSON/json/POSIX-golden/preview.stderr.json",
+          "reason": "frozen_command_test.go:20: D11: POSIX native plan and path golden; Windows command semantics asserted by parent and native CLI checks"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A5CommandGoldenAndSingleJSON/json/POSIX-golden/apply.stdout.json",
+          "reason": "frozen_command_test.go:20: D11: POSIX native plan and path golden; Windows command semantics asserted by parent and native CLI checks"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A5CommandGoldenAndSingleJSON/json/POSIX-golden/apply.stderr.json",
+          "reason": "frozen_command_test.go:20: D11: POSIX native plan and path golden; Windows command semantics asserted by parent and native CLI checks"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A5CommandGoldenAndSingleJSON/json/POSIX-golden/unchanged.stdout.json",
+          "reason": "frozen_command_test.go:20: D11: POSIX native plan and path golden; Windows command semantics asserted by parent and native CLI checks"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A5CommandGoldenAndSingleJSON/json/POSIX-golden/unchanged.stderr.json",
+          "reason": "frozen_command_test.go:20: D11: POSIX native plan and path golden; Windows command semantics asserted by parent and native CLI checks"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A5CommandGoldenAndSingleJSON/json/POSIX-golden/error.stdout.json",
+          "reason": "frozen_command_test.go:20: D11: POSIX native plan and path golden; Windows command semantics asserted by parent and native CLI checks"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A5CommandGoldenAndSingleJSON/json/POSIX-golden/error.stderr.json",
+          "reason": "frozen_command_test.go:20: D11: POSIX native plan and path golden; Windows command semantics asserted by parent and native CLI checks"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A5NativeReplaceAndBlockedCLI",
+          "reason": "frozen_command_test.go:114: POSIX author native/login shell fixture; Windows rejects those capabilities"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A5JointDedupAndApprovedBatchRecovery/codex-plugin",
+          "reason": "native_install_test.go:22: D11: Windows supports user routes; POSIX project/plugin launcher fixture"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A5NoopAndBuildRecovery/codex-plugin/none",
+          "reason": "native_install_test.go:22: D11: Windows supports user routes; POSIX project/plugin launcher fixture"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A5NoopAndBuildRecovery/codex-plugin/index",
+          "reason": "native_install_test.go:22: D11: Windows supports user routes; POSIX project/plugin launcher fixture"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A5NoopAndBuildRecovery/codex-plugin/explain",
+          "reason": "native_install_test.go:22: D11: Windows supports user routes; POSIX project/plugin launcher fixture"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A5NoopAndBuildRecovery/codex-plugin/both",
+          "reason": "native_install_test.go:22: D11: Windows supports user routes; POSIX project/plugin launcher fixture"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A5NoopAndBuildRecovery/codex-plugin/corrupt-build",
+          "reason": "native_install_test.go:22: D11: Windows supports user routes; POSIX project/plugin launcher fixture"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A5StrictSettingsAndApprovals/changed-native",
+          "reason": "frozen_test.go:339: D11: author native commands require POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A5StrictSettingsAndApprovals/legacy-native-omitted",
+          "reason": "frozen_test.go:339: D11: author native commands require POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A5EachPackageFailureRestoresBatch/codex-plugin/stage-first",
+          "reason": "native_install_test.go:22: D11: Windows supports user routes; POSIX project/plugin launcher fixture"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A5EachPackageFailureRestoresBatch/codex-plugin/stage-second",
+          "reason": "native_install_test.go:22: D11: Windows supports user routes; POSIX project/plugin launcher fixture"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A5EachPackageFailureRestoresBatch/codex-plugin/apply-first",
+          "reason": "native_install_test.go:22: D11: Windows supports user routes; POSIX project/plugin launcher fixture"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A5EachPackageFailureRestoresBatch/codex-plugin/apply-second",
+          "reason": "native_install_test.go:22: D11: Windows supports user routes; POSIX project/plugin launcher fixture"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A5EachFileFailureRestoresBatch",
+          "reason": "frozen_transaction_test.go:70: D11: Windows supports user routes; POSIX project/plugin launcher fixture"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A5OwnerAuthorizedRecovery/codex-plugin",
+          "reason": "native_install_test.go:22: D11: Windows supports user routes; POSIX project/plugin launcher fixture"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A3GitCLIAndLifecycle/codex-plugin",
+          "reason": "native_install_test.go:22: D11: Windows supports user routes; POSIX project/plugin launcher fixture"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A3GitReinstallIdentityAndCandidateCapture/route",
+          "reason": "git_source_test.go:312: D11: Windows supports user routes; POSIX project/plugin launcher fixture"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestA6DedupInstallReportsAndRouteLifecycle/POSIX-route/codex-plugin",
+          "reason": "platform_test.go:49: D11: Windows supports user routes; POSIX project/plugin launcher fixture"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestA6DedupInstallReportsAndRouteLifecycle/codex-user/remove-first/POSIX-route/codex-plugin",
+          "reason": "platform_test.go:49: D11: Windows supports user routes; POSIX project/plugin launcher fixture"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestA6DedupInstallReportsAndRouteLifecycle/codex-user/remove-second/POSIX-route/codex-plugin",
+          "reason": "platform_test.go:49: D11: Windows supports user routes; POSIX project/plugin launcher fixture"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestA6DedupTrustAndDevelopmentLinkRecomputeCanonical/link=false",
+          "reason": "native_install_test.go:22: D11: Windows supports user routes; POSIX project/plugin launcher fixture"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestA6DedupTrustAndDevelopmentLinkRecomputeCanonical/link=true",
+          "reason": "native_install_test.go:22: D11: Windows supports user routes; POSIX project/plugin launcher fixture"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestA6DedupRuntimeRepeatConcurrencyLifecycleAndCanonicalHandoff",
+          "reason": "native_install_test.go:22: D11: Windows supports user routes; POSIX project/plugin launcher fixture"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestA6DedupTurnAndRenderedBodyClaimsStayIndependent",
+          "reason": "native_install_test.go:22: D11: Windows supports user routes; POSIX project/plugin launcher fixture"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestRunInstallSwitchesRoutesWithoutResidueAndKeepsExternalConfig/POSIX-route/codex-plugin",
+          "reason": "platform_test.go:49: D11: Windows supports user routes; POSIX project/plugin launcher fixture"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestRunInstallSwitchesRoutesWithoutResidueAndKeepsExternalConfig/POSIX-route/codex-plugin#01",
+          "reason": "platform_test.go:49: D11: Windows supports user routes; POSIX project/plugin launcher fixture"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A3GitPackageAndFileTransactionRollback/codex-plugin",
+          "reason": "native_install_test.go:22: D11: Windows supports user routes; POSIX project/plugin launcher fixture"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A16SixRouteNativeExtensionsRejectBeforeWrites/codex-plugin",
+          "reason": "native_extensions_test.go:17: D11: Windows supports user routes; POSIX project/plugin launcher fixture"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A16SixRouteNativeExtensionsRejectBeforeWrites/claude-plugin",
+          "reason": "native_extensions_test.go:17: D11: Windows supports user routes; POSIX project/plugin launcher fixture"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A16SixRouteNativeExtensionsRejectBeforeWrites/codex-project",
+          "reason": "native_extensions_test.go:17: D11: Windows supports user routes; POSIX project/plugin launcher fixture"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A16SixRouteNativeExtensionsRejectBeforeWrites/claude-project",
+          "reason": "native_extensions_test.go:17: D11: Windows supports user routes; POSIX project/plugin launcher fixture"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestA3NativeInstallRoundTripAndRouteSwitch",
+          "reason": "native_install_test.go:181: D11: author native install and POSIX route switch"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestA4NativeInstallDisclosesBeforeConfirmationWithoutWriting",
+          "reason": "native_lifecycle_test.go:33: D11: author native lifecycle requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestA4NativeSourceChangesRequireTrustForOrdinaryAndLinkedPackages",
+          "reason": "native_lifecycle_test.go:88: D11: author native lifecycle requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestA4DoctorNativeStatesAndConfirmedRepairs",
+          "reason": "native_lifecycle_test.go:184: D11: author native lifecycle requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestA4NativeConfirmationUsesCapturedBytesAndDetachedReports",
+          "reason": "native_lifecycle_test.go:302: D11: author native lifecycle requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestA4TrustKeepsOtherLinkedNativeChangesUnapproved",
+          "reason": "native_lifecycle_test.go:366: D11: author native lifecycle requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestA4LinkedNativePackageStillAutoSyncsOrdinaryEdits",
+          "reason": "native_lifecycle_test.go:402: D11: author native lifecycle requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestA4ClampedNativeTimeoutChangeStillRequiresTrust",
+          "reason": "native_lifecycle_test.go:422: D11: author native lifecycle requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A8PluginLifecycleAndRegistration",
+          "reason": "plugin_test.go:18: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A8UserPluginTransitionAndNativeGuard",
+          "reason": "plugin_test.go:18: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A8UnknownRegistrationAndConfirmationDrift/bad-db",
+          "reason": "plugin_test.go:18: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A8UnknownRegistrationAndConfirmationDrift/registration-drift",
+          "reason": "plugin_test.go:18: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A8UnknownRegistrationAndConfirmationDrift/cancel",
+          "reason": "plugin_test.go:18: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A8PluginCLIRegistrationRequired",
+          "reason": "plugin_test.go:18: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A8EachCancellationRestoresPlugin",
+          "reason": "plugin_test.go:18: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A8MultiplePackagesNativeUpdateAndPartialUninstall",
+          "reason": "plugin_test.go:18: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A8FailClosedAndNativeWireMatchesUser",
+          "reason": "plugin_test.go:18: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A2TargetsReadOnlyAndSuccessfulCallbacks/codex-plugin",
+          "reason": "probe_test.go:216: D11: Windows supports user routes; POSIX project/plugin launcher fixture"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A2ProbePreflightRefusals/plugin-disabled",
+          "reason": "probe_test.go:324: D11: Windows supports user routes; POSIX project/plugin launcher fixture"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A2OriginAndReceiptRejections/plugin-root",
+          "reason": "probe_test.go:430: D11: Windows supports user routes; POSIX project/plugin launcher fixture"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A6MultiPackageCloneAdoptionAndPartialUninstall",
+          "reason": "project_test.go:20: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A6CloneRejectsChangedDynamicAndNativeEffects/dynamic",
+          "reason": "project_test.go:20: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A6CloneRejectsChangedDynamicAndNativeEffects/native",
+          "reason": "project_test.go:20: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A6CloneRejectsChangedDynamicAndNativeEffects/missing-hook",
+          "reason": "project_test.go:20: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A6CloneRejectsChangedDynamicAndNativeEffects/foreign-style",
+          "reason": "project_test.go:20: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A6CloneRejectsChangedDynamicAndNativeEffects/another-home",
+          "reason": "project_test.go:20: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A6StaticPlacementAndForeignFilesPreserved",
+          "reason": "project_test.go:20: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A6RegistryAndBindingCorruptionRejectManagement/registry-missing",
+          "reason": "project_test.go:20: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A6RegistryAndBindingCorruptionRejectManagement/registry-trailing",
+          "reason": "project_test.go:20: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A6RegistryAndBindingCorruptionRejectManagement/registry-stale",
+          "reason": "project_test.go:20: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A6RegistryAndBindingCorruptionRejectManagement/lock-root",
+          "reason": "project_test.go:20: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A6RegistryAndBindingCorruptionRejectManagement/lock-format",
+          "reason": "project_test.go:20: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A6RegistryAndBindingCorruptionRejectManagement/lock-harness",
+          "reason": "project_test.go:20: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A6RegistryAndBindingCorruptionRejectManagement/binding-symlink",
+          "reason": "project_test.go:20: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A6RegistryAndBindingCorruptionRejectManagement/declaration-trailing",
+          "reason": "project_test.go:20: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A6RegistryAndBindingCorruptionRejectManagement/declaration-static",
+          "reason": "project_test.go:20: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A6LockRejectsWrongScopeAndOldFormats",
+          "reason": "project_test.go:20: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A6ProjectBatchValidationAndJSONDiagnostics/user",
+          "reason": "project_test.go:20: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A6ProjectBatchValidationAndJSONDiagnostics/linked",
+          "reason": "project_test.go:20: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A6ProjectBatchValidationAndJSONDiagnostics/duplicate",
+          "reason": "project_test.go:20: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A6ProjectBatchValidationAndJSONDiagnostics/invalid-extra",
+          "reason": "project_test.go:20: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A6ProjectBatchValidationAndJSONDiagnostics/unknown-setting",
+          "reason": "project_test.go:20: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A6ProjectBatchValidationAndJSONDiagnostics",
+          "reason": "project_test.go:20: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A6ChangedNativeRequiresExplicitTrust",
+          "reason": "project_test.go:20: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A6ProjectReplaceDoesNotGainUnsupportedStaticSlot",
+          "reason": "project_test.go:20: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A6DifferentNamesCoexistAndForeignUserHomeIsRejected",
+          "reason": "project_test.go:20: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A6CommandGolden/text",
+          "reason": "project_test.go:20: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A6CommandGolden/json",
+          "reason": "project_test.go:20: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A6ProbeUsesProjectBindings",
+          "reason": "project_test.go:20: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A6RuntimeSelectsOnlyProcessProject/codex",
+          "reason": "project_test.go:20: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A6RuntimeSelectsOnlyProcessProject/claude-code",
+          "reason": "project_test.go:20: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A6RuntimeBindingFailuresUseNativePolicy/declaration-open",
+          "reason": "project_test.go:20: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A6RuntimeBindingFailuresUseNativePolicy/declaration-closed",
+          "reason": "project_test.go:20: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A6RuntimeBindingFailuresUseNativePolicy/binding-open",
+          "reason": "project_test.go:20: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A6RuntimeBindingFailuresUseNativePolicy/binding-closed",
+          "reason": "project_test.go:20: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A6RuntimeBindingFailuresUseNativePolicy/wrong-home-open",
+          "reason": "project_test.go:20: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A6RuntimeBindingFailuresUseNativePolicy/wrong-home-closed",
+          "reason": "project_test.go:20: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A6RuntimeBindingFailuresUseNativePolicy/wrong-harness-open",
+          "reason": "project_test.go:20: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A6RuntimeBindingFailuresUseNativePolicy/wrong-harness-closed",
+          "reason": "project_test.go:20: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A6RuntimeBindingFailuresUseNativePolicy/wrong-runner-open",
+          "reason": "project_test.go:20: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A6RuntimeBindingFailuresUseNativePolicy/wrong-runner-closed",
+          "reason": "project_test.go:20: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A6RuntimeBindingFailuresUseNativePolicy/nested-open",
+          "reason": "project_test.go:20: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A6RuntimeBindingFailuresUseNativePolicy/nested-closed",
+          "reason": "project_test.go:20: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A6RuntimeBindingFailuresUseNativePolicy/entry-root-open",
+          "reason": "project_test.go:20: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A6RuntimeBindingFailuresUseNativePolicy/entry-root-closed",
+          "reason": "project_test.go:20: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A6SameSessionAcrossProjectsDoesNotShareRepeatOrStats",
+          "reason": "project_test.go:20: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A6CodexAliasStartupAndModelSwitchFailure",
+          "reason": "project_test.go:20: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A6FrozenRestoresOnlyOriginalBindingOffline",
+          "reason": "project_test.go:20: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A6ProjectLifecycle/codex",
+          "reason": "project_test.go:20: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A6ProjectLifecycle/claude-code",
+          "reason": "project_test.go:20: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A6ScopesAreIndependent",
+          "reason": "project_test.go:20: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A6CrossScopeSameNameRejectedBothDirections/user",
+          "reason": "project_test.go:20: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A6CrossScopeSameNameRejectedBothDirections/project",
+          "reason": "project_test.go:20: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A6ProjectCLIAndZeroWriteFailures/list_--project",
+          "reason": "project_test.go:20: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A6ProjectCLIAndZeroWriteFailures/list_--project=",
+          "reason": "project_test.go:20: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A6ProjectCLIAndZeroWriteFailures/list_--project_--json",
+          "reason": "project_test.go:20: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A6ProjectCLIAndZeroWriteFailures/list_--project=missing_--json",
+          "reason": "project_test.go:20: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A6ProjectCLIAndZeroWriteFailures/init_--project=.",
+          "reason": "project_test.go:20: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A6ProjectCLIAndZeroWriteFailures/validate_--project=.",
+          "reason": "project_test.go:20: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A6ProjectCLIAndZeroWriteFailures/list_--project=._--project=.",
+          "reason": "project_test.go:20: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A6ProjectCLIAndZeroWriteFailures",
+          "reason": "project_test.go:20: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A6NestedAndProtectedRoots",
+          "reason": "project_test.go:20: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A6VersionPrerequisitesAndWrongRoutes/codex",
+          "reason": "project_test.go:20: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A6VersionPrerequisitesAndWrongRoutes/codexunknown",
+          "reason": "project_test.go:20: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A6VersionPrerequisitesAndWrongRoutes/codex0.1.0",
+          "reason": "project_test.go:20: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A6VersionPrerequisitesAndWrongRoutes/claude-code",
+          "reason": "project_test.go:20: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A6VersionPrerequisitesAndWrongRoutes/claude-codeunknown",
+          "reason": "project_test.go:20: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A6VersionPrerequisitesAndWrongRoutes/claude-code0.1.0",
+          "reason": "project_test.go:20: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A6VersionPrerequisitesAndWrongRoutes",
+          "reason": "project_test.go:20: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A6CloneNeedsFreshBindingAndMatchingEffects",
+          "reason": "project_test.go:20: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A6EachFileFailureRestoresAllRoots",
+          "reason": "project_test.go:20: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A6EachPackageFailureAndRecovery/stage-project-rules",
+          "reason": "project_test.go:20: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A6EachPackageFailureAndRecovery/stage-second",
+          "reason": "project_test.go:20: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A6EachPackageFailureAndRecovery/apply-project-rules",
+          "reason": "project_test.go:20: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A6EachPackageFailureAndRecovery/apply-second",
+          "reason": "project_test.go:20: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A6EachPackageFailureAndRecovery/rollback",
+          "reason": "project_test.go:20: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A6FreshBatchCancellationIsAtomic/1",
+          "reason": "project_test.go:20: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A6ConfirmationRejectsCrossScopeDrift/declaration",
+          "reason": "project_test.go:20: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A6ConfirmationRejectsCrossScopeDrift/binding",
+          "reason": "project_test.go:20: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A6ConfirmationRejectsCrossScopeDrift/registry",
+          "reason": "project_test.go:20: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A6ConfirmationRejectsCrossScopeDrift/user-lock",
+          "reason": "project_test.go:20: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A6ConfirmationRejectsCrossScopeDrift/other-project-lock",
+          "reason": "project_test.go:20: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A6ConfirmationRejectsCrossScopeDrift/launcher",
+          "reason": "project_test.go:20: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A6ConfirmationRejectsCrossScopeDrift/user-trust",
+          "reason": "project_test.go:20: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A6ConfirmationRejectsCrossScopeDrift/project-hook",
+          "reason": "project_test.go:20: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A6ConfirmationRejectsCrossScopeDrift/source",
+          "reason": "project_test.go:20: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A6UserAndProjectWritersShareGuard/install",
+          "reason": "project_test.go:20: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A6UserAndProjectWritersShareGuard/update",
+          "reason": "project_test.go:20: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A6UserAndProjectWritersShareGuard/sync",
+          "reason": "project_test.go:20: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A6UserAndProjectWritersShareGuard/trust",
+          "reason": "project_test.go:20: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A6UserAndProjectWritersShareGuard/uninstall",
+          "reason": "project_test.go:20: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A6UserAndProjectWritersShareGuard/user-install",
+          "reason": "project_test.go:20: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A11SixRouteProviderLifecycleAndFrozen/codex-plugin",
+          "reason": "provider_test.go:31: D11: Windows supports user routes; POSIX project/plugin launcher fixture"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A11SixRouteProviderLifecycleAndFrozen/claude-plugin",
+          "reason": "provider_test.go:31: D11: Windows supports user routes; POSIX project/plugin launcher fixture"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A11SixRouteProviderLifecycleAndFrozen/codex-project",
+          "reason": "provider_test.go:31: D11: Windows supports user routes; POSIX project/plugin launcher fixture"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A11SixRouteProviderLifecycleAndFrozen/claude-project",
+          "reason": "provider_test.go:31: D11: Windows supports user routes; POSIX project/plugin launcher fixture"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A11ProviderCloudBundle",
+          "reason": "cloud_test.go:18: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A9FiveRouteLifecycleAndSurface/codex-plugin",
+          "reason": "native_install_test.go:22: D11: Windows supports user routes; POSIX project/plugin launcher fixture"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A9FiveRouteLifecycleAndSurface/codex-project",
+          "reason": "project_test.go:20: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A9FiveRouteLifecycleAndSurface/claude-project",
+          "reason": "project_test.go:20: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A9PolicyChangesApprovalAndTransactionRollback/codex-plugin",
+          "reason": "native_install_test.go:22: D11: Windows supports user routes; POSIX project/plugin launcher fixture"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A9PolicyChangesApprovalAndTransactionRollback/codex-project",
+          "reason": "project_test.go:20: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A9PolicyChangesApprovalAndTransactionRollback/claude-project",
+          "reason": "project_test.go:20: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestUninstallCodexConfigWithoutGeneratedNewlineResidue/POSIX-route/codex-plugin",
+          "reason": "platform_test.go:49: D11: Windows supports user routes; POSIX project/plugin launcher fixture"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestUninstallCodexConfigWithoutGeneratedNewlineResidue/codex-user/absent/POSIX-route/codex-plugin",
+          "reason": "platform_test.go:49: D11: Windows supports user routes; POSIX project/plugin launcher fixture"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestUninstallCodexConfigWithoutGeneratedNewlineResidue/codex-user/user-newline/POSIX-route/codex-plugin",
+          "reason": "platform_test.go:49: D11: Windows supports user routes; POSIX project/plugin launcher fixture"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestUninstallCodexConfigWithoutGeneratedNewlineResidue/codex-user/user-whitespace/POSIX-route/codex-plugin",
+          "reason": "platform_test.go:49: D11: Windows supports user routes; POSIX project/plugin launcher fixture"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestUninstallCodexConfigWithoutGeneratedNewlineResidue/codex-user/user-config/POSIX-route/codex-plugin",
+          "reason": "platform_test.go:49: D11: Windows supports user routes; POSIX project/plugin launcher fixture"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A12SixRouteUnknownLifecycleAndMarkerRemoval/codex-plugin",
+          "reason": "unknown_test.go:23: D11: Windows supports user routes; POSIX project/plugin launcher fixture"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A12SixRouteUnknownLifecycleAndMarkerRemoval/claude-plugin",
+          "reason": "unknown_test.go:23: D11: Windows supports user routes; POSIX project/plugin launcher fixture"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A12SixRouteUnknownLifecycleAndMarkerRemoval/codex-project",
+          "reason": "unknown_test.go:23: D11: Windows supports user routes; POSIX project/plugin launcher fixture"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A12SixRouteUnknownLifecycleAndMarkerRemoval/claude-project",
+          "reason": "unknown_test.go:23: D11: Windows supports user routes; POSIX project/plugin launcher fixture"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A12UnknownCloudBundle",
+          "reason": "cloud_test.go:18: D11: project/plugin delivery requires POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A4LegacyLockAndApprovalCompatibility/codex-plugin/no-approval",
+          "reason": "native_install_test.go:22: D11: Windows supports user routes; POSIX project/plugin launcher fixture"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A4LegacyLockAndApprovalCompatibility/codex-plugin/no-native-field",
+          "reason": "native_install_test.go:22: D11: Windows supports user routes; POSIX project/plugin launcher fixture"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A4LegacyLockAndApprovalCompatibility/codex-plugin/implicit-format",
+          "reason": "native_install_test.go:22: D11: Windows supports user routes; POSIX project/plugin launcher fixture"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A4LegacyLockAndApprovalCompatibility/codex-plugin/format-two-local",
+          "reason": "native_install_test.go:22: D11: Windows supports user routes; POSIX project/plugin launcher fixture"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A4CommandGoldenAndSingleJSON/text/POSIX-golden/preview.stdout.txt",
+          "reason": "update_compat_test.go:265: D11: POSIX native preview and path golden; parent asserts command lifecycle and JSON"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A4CommandGoldenAndSingleJSON/text/POSIX-golden/preview.stderr.txt",
+          "reason": "update_compat_test.go:265: D11: POSIX native preview and path golden; parent asserts command lifecycle and JSON"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A4CommandGoldenAndSingleJSON/text/POSIX-golden/apply.stdout.txt",
+          "reason": "update_compat_test.go:265: D11: POSIX native preview and path golden; parent asserts command lifecycle and JSON"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A4CommandGoldenAndSingleJSON/text/POSIX-golden/apply.stderr.txt",
+          "reason": "update_compat_test.go:265: D11: POSIX native preview and path golden; parent asserts command lifecycle and JSON"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A4CommandGoldenAndSingleJSON/text/POSIX-golden/unchanged.stdout.txt",
+          "reason": "update_compat_test.go:265: D11: POSIX native preview and path golden; parent asserts command lifecycle and JSON"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A4CommandGoldenAndSingleJSON/text/POSIX-golden/unchanged.stderr.txt",
+          "reason": "update_compat_test.go:265: D11: POSIX native preview and path golden; parent asserts command lifecycle and JSON"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A4CommandGoldenAndSingleJSON/text/POSIX-golden/error.stdout.txt",
+          "reason": "update_compat_test.go:265: D11: POSIX native preview and path golden; parent asserts command lifecycle and JSON"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A4CommandGoldenAndSingleJSON/text/POSIX-golden/error.stderr.txt",
+          "reason": "update_compat_test.go:265: D11: POSIX native preview and path golden; parent asserts command lifecycle and JSON"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A4CommandGoldenAndSingleJSON/json/POSIX-golden/preview.stdout.json",
+          "reason": "update_compat_test.go:265: D11: POSIX native preview and path golden; parent asserts command lifecycle and JSON"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A4CommandGoldenAndSingleJSON/json/POSIX-golden/preview.stderr.json",
+          "reason": "update_compat_test.go:265: D11: POSIX native preview and path golden; parent asserts command lifecycle and JSON"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A4CommandGoldenAndSingleJSON/json/POSIX-golden/apply.stdout.json",
+          "reason": "update_compat_test.go:265: D11: POSIX native preview and path golden; parent asserts command lifecycle and JSON"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A4CommandGoldenAndSingleJSON/json/POSIX-golden/apply.stderr.json",
+          "reason": "update_compat_test.go:265: D11: POSIX native preview and path golden; parent asserts command lifecycle and JSON"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A4CommandGoldenAndSingleJSON/json/POSIX-golden/unchanged.stdout.json",
+          "reason": "update_compat_test.go:265: D11: POSIX native preview and path golden; parent asserts command lifecycle and JSON"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A4CommandGoldenAndSingleJSON/json/POSIX-golden/unchanged.stderr.json",
+          "reason": "update_compat_test.go:265: D11: POSIX native preview and path golden; parent asserts command lifecycle and JSON"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A4CommandGoldenAndSingleJSON/json/POSIX-golden/error.stdout.json",
+          "reason": "update_compat_test.go:265: D11: POSIX native preview and path golden; parent asserts command lifecycle and JSON"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A4CommandGoldenAndSingleJSON/json/POSIX-golden/error.stderr.json",
+          "reason": "update_compat_test.go:265: D11: POSIX native preview and path golden; parent asserts command lifecycle and JSON"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A4PreviewNoopAndApply/codex-plugin",
+          "reason": "native_install_test.go:22: D11: Windows supports user routes; POSIX project/plugin launcher fixture"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A4UnselectedEffectsRequireAll/native-configuration",
+          "reason": "update_test.go:543: D11: unselected author native effects require POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A4UnselectedEffectsRequireAll/native-trust",
+          "reason": "update_test.go:543: D11: unselected author native effects require POSIX"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A4NativeChangesAndFirstLinkTrust",
+          "reason": "update_test.go:603: POSIX author native/login shell fixture; Windows rejects those capabilities"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A4EachPackageFailureRestoresBatch/codex-plugin/stage-first",
+          "reason": "native_install_test.go:22: D11: Windows supports user routes; POSIX project/plugin launcher fixture"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A4EachPackageFailureRestoresBatch/codex-plugin/stage-second",
+          "reason": "native_install_test.go:22: D11: Windows supports user routes; POSIX project/plugin launcher fixture"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A4EachPackageFailureRestoresBatch/codex-plugin/apply-first",
+          "reason": "native_install_test.go:22: D11: Windows supports user routes; POSIX project/plugin launcher fixture"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A4EachPackageFailureRestoresBatch/codex-plugin/apply-second",
+          "reason": "native_install_test.go:22: D11: Windows supports user routes; POSIX project/plugin launcher fixture"
+        },
+        {
+          "package": "github.com/inxups/style-cli/internal/app",
+          "test": "TestM3A4EachFileFailureRestoresBatch",
+          "reason": "update_transaction_test.go:111: D11: Windows supports user routes; POSIX project/plugin launcher fixture"
+        }
+      ]
+    },
+    "agenthooks": {
+      "counts": {
+        "pass": 521,
+        "fail": 0,
+        "skip": 35
+      },
+      "raw_log_sha256": "182386eaec7270ac5c8182556930a2000fc0af4bcb6cb0e28418a25355a6ffc4",
+      "skips_not_counted_as_pass": [
+        {
+          "package": "github.com/speakeasy-api/agenthooks/e2e",
+          "test": "TestClaudeEvents",
+          "reason": "claude_test.go:24: set AGENTHOOKS_E2E=1 to run end-to-end agent tests (spends real tokens)"
+        },
+        {
+          "package": "github.com/speakeasy-api/agenthooks/e2e",
+          "test": "TestOpenCodeDeny",
+          "reason": "opencode_test.go:62: set AGENTHOOKS_E2E=1 to run end-to-end agent tests (spends real tokens)"
+        },
+        {
+          "package": "github.com/speakeasy-api/agenthooks/e2e",
+          "test": "TestOpenCodeEvents",
+          "reason": "opencode_test.go:33: set AGENTHOOKS_E2E=1 to run end-to-end agent tests (spends real tokens)"
+        },
+        {
+          "package": "github.com/speakeasy-api/agenthooks/e2e",
+          "test": "TestKimiDeny",
+          "reason": "kimi_test.go:156: set AGENTHOOKS_E2E=1 to run end-to-end agent tests (spends real tokens)"
+        },
+        {
+          "package": "github.com/speakeasy-api/agenthooks/e2e",
+          "test": "TestKimiEventFields",
+          "reason": "kimi_test.go:58: set AGENTHOOKS_E2E=1 to run end-to-end agent tests (spends real tokens)"
+        },
+        {
+          "package": "github.com/speakeasy-api/agenthooks/e2e",
+          "test": "TestGeminiDeny",
+          "reason": "gemini_test.go:53: set AGENTHOOKS_E2E=1 to run end-to-end agent tests (spends real tokens)"
+        },
+        {
+          "package": "github.com/speakeasy-api/agenthooks/e2e",
+          "test": "TestGeminiEvents",
+          "reason": "gemini_test.go:27: set AGENTHOOKS_E2E=1 to run end-to-end agent tests (spends real tokens)"
+        },
+        {
+          "package": "github.com/speakeasy-api/agenthooks/e2e",
+          "test": "TestCursorDeny",
+          "reason": "cursor_test.go:144: set AGENTHOOKS_E2E=1 to run end-to-end agent tests (spends real tokens)"
+        },
+        {
+          "package": "github.com/speakeasy-api/agenthooks/e2e",
+          "test": "TestCursorResumeBackfill",
+          "reason": "cursor_test.go:90: set AGENTHOOKS_E2E=1 to run end-to-end agent tests (spends real tokens)"
+        },
+        {
+          "package": "github.com/speakeasy-api/agenthooks/e2e",
+          "test": "TestCursorEvents",
+          "reason": "cursor_test.go:31: set AGENTHOOKS_E2E=1 to run end-to-end agent tests (spends real tokens)"
+        },
+        {
+          "package": "github.com/speakeasy-api/agenthooks/e2e",
+          "test": "TestCopilotPreCompact",
+          "reason": "copilot_test.go:620: set AGENTHOOKS_E2E=1 to run end-to-end agent tests (spends real tokens)"
+        },
+        {
+          "package": "github.com/speakeasy-api/agenthooks/e2e",
+          "test": "TestCopilotSubagentEvents",
+          "reason": "copilot_test.go:539: set AGENTHOOKS_E2E=1 to run end-to-end agent tests (spends real tokens)"
+        },
+        {
+          "package": "github.com/speakeasy-api/agenthooks/e2e",
+          "test": "TestCopilotStopContinuation",
+          "reason": "copilot_test.go:481: set AGENTHOOKS_E2E=1 to run end-to-end agent tests (spends real tokens)"
+        },
+        {
+          "package": "github.com/speakeasy-api/agenthooks/e2e",
+          "test": "TestCopilotPascalCaseCompat",
+          "reason": "copilot_test.go:403: set AGENTHOOKS_E2E=1 to run end-to-end agent tests (spends real tokens)"
+        },
+        {
+          "package": "github.com/speakeasy-api/agenthooks/e2e",
+          "test": "TestCopilotDeny",
+          "reason": "copilot_test.go:339: set AGENTHOOKS_E2E=1 to run end-to-end agent tests (spends real tokens)"
+        },
+        {
+          "package": "github.com/speakeasy-api/agenthooks/e2e",
+          "test": "TestCopilotPluginScope",
+          "reason": "copilot_test.go:311: set AGENTHOOKS_E2E=1 to run end-to-end agent tests (spends real tokens)"
+        },
+        {
+          "package": "github.com/speakeasy-api/agenthooks/e2e",
+          "test": "TestCopilotModifiedArgs",
+          "reason": "copilot_test.go:275: set AGENTHOOKS_E2E=1 to run end-to-end agent tests (spends real tokens)"
+        },
+        {
+          "package": "github.com/speakeasy-api/agenthooks/e2e",
+          "test": "TestCopilotToolFailure",
+          "reason": "copilot_test.go:231: set AGENTHOOKS_E2E=1 to run end-to-end agent tests (spends real tokens)"
+        },
+        {
+          "package": "github.com/speakeasy-api/agenthooks/e2e",
+          "test": "TestCopilotEventFields",
+          "reason": "copilot_test.go:56: set AGENTHOOKS_E2E=1 to run end-to-end agent tests (spends real tokens)"
+        },
+        {
+          "package": "github.com/speakeasy-api/agenthooks/e2e",
+          "test": "TestCodexDeny",
+          "reason": "codex_test.go:151: set AGENTHOOKS_E2E=1 to run end-to-end agent tests (spends real tokens)"
+        },
+        {
+          "package": "github.com/speakeasy-api/agenthooks/e2e",
+          "test": "TestCodexCanonicalShellMatcher",
+          "reason": "codex_test.go:114: set AGENTHOOKS_E2E=1 to run end-to-end agent tests (spends real tokens)"
+        },
+        {
+          "package": "github.com/speakeasy-api/agenthooks/e2e",
+          "test": "TestCodexTrustPreseeding",
+          "reason": "codex_test.go:68: set AGENTHOOKS_E2E=1 to run end-to-end agent tests (spends real tokens)"
+        },
+        {
+          "package": "github.com/speakeasy-api/agenthooks/e2e",
+          "test": "TestClaudeDeny",
+          "reason": "claude_test.go:56: set AGENTHOOKS_E2E=1 to run end-to-end agent tests (spends real tokens)"
+        },
+        {
+          "package": "github.com/speakeasy-api/agenthooks/install",
+          "test": "TestM3A8ClaudeLocalMarketplaceRenderingAndLifecycle",
+          "reason": "claude_plugin_test.go:27: D11: POSIX plugin/project or author native fixture"
+        },
+        {
+          "package": "github.com/speakeasy-api/agenthooks/install",
+          "test": "TestM3A8ClaudePluginRuntimeRejectsChangedLauncher",
+          "reason": "claude_plugin_test.go:152: D11: POSIX plugin/project or author native fixture"
+        },
+        {
+          "package": "github.com/speakeasy-api/agenthooks/install",
+          "test": "TestCodexNativeRegistrationInsideMarkersSurvivesLifecycle",
+          "reason": "codex_foreign_toml_test.go:15: D11: POSIX plugin/project or author native fixture"
+        },
+        {
+          "package": "github.com/speakeasy-api/agenthooks/install",
+          "test": "TestM3A3ManagementPathsIncludesUnchangedFilesAndRestoreRecords/codex/plugin",
+          "reason": "inputs_test.go:19: D11: POSIX plugin route"
+        },
+        {
+          "package": "github.com/speakeasy-api/agenthooks/install",
+          "test": "TestRenderAndInstallCodexPlugin",
+          "reason": "install_test.go:555: Codex plugin launcher is POSIX shell"
+        },
+        {
+          "package": "github.com/speakeasy-api/agenthooks/install",
+          "test": "TestRawNativeCommandsBypassRunnerAndPreserveShellContract",
+          "reason": "native_test.go:17: native command ownership uses a POSIX no-op"
+        },
+        {
+          "package": "github.com/speakeasy-api/agenthooks/install",
+          "test": "TestCodexRawNativeEventsAndSessionEndTimeout",
+          "reason": "native_test.go:81: D11: POSIX plugin/project or author native fixture"
+        },
+        {
+          "package": "github.com/speakeasy-api/agenthooks/install",
+          "test": "TestProjectCodexTrustIsIsolatedBySource",
+          "reason": "project_test.go:16: D11: POSIX plugin/project or author native fixture"
+        },
+        {
+          "package": "github.com/speakeasy-api/agenthooks/install",
+          "test": "TestM3A2RuntimeOwnedSubscriptionInspection/codex-plugin",
+          "reason": "runtime_status_test.go:17: D11: POSIX plugin route"
+        },
+        {
+          "package": "github.com/speakeasy-api/agenthooks/install",
+          "test": "TestM3A2RuntimeConfigurationDriftAndNativeOnly/plugin-disabled",
+          "reason": "runtime_status_test.go:17: D11: POSIX plugin route"
+        },
+        {
+          "package": "github.com/speakeasy-api/agenthooks/install",
+          "test": "TestM3A2RuntimeConfigurationDriftAndNativeOnly/launcher",
+          "reason": "runtime_status_test.go:17: D11: POSIX plugin route"
+        },
+        {
+          "package": "github.com/speakeasy-api/agenthooks/install",
+          "test": "TestM3A2RuntimeConfigurationDriftAndNativeOnly/descriptor",
+          "reason": "runtime_status_test.go:17: D11: POSIX plugin route"
+        }
+      ]
+    }
+  },
+  "windows_production_cli": {
+    "platform": "win32",
+    "checks": [
+      {
+        "check": "install both user routes: ",
+        "pass": true
+      },
+      {
+        "check": "Codex encoded launcher",
+        "pass": true
+      },
+      {
+        "check": "native hook exit codex: Obj S=\"progress\" RefId=\"0\"><TN RefId=\"0\"><T>System.Management.Automation.PSCustomObject</T><T>System.Object</T></TN><MS><I64 N=\"SourceId\">1</I64><PR N=\"Record\"><AV>Preparing modules for first use.</AV><AI>0</AI><Nil /><PI>-1</PI><PC>-1</PC><T>Completed</T><SR>-1</SR><SD> </SD></PR></MS></Obj></Objs>",
+        "pass": true
+      },
+      {
+        "check": "native hook deny codex",
+        "pass": true
+      },
+      {
+        "check": "Claude exec form",
+        "pass": true
+      },
+      {
+        "check": "native hook exit claude-code: time=2026-10-17T17:58:56.039Z level=INFO msg=\"STYLE rule evaluated\" provider=claude-code event=PreToolUse point=tool.pre entry=terse-reviewer/no-force-push@tool.pre action=block result=blocked\n",
+        "pass": true
+      },
+      {
+        "check": "native hook deny claude-code",
+        "pass": true
+      },
+      {
+        "check": "sync both user routes",
+        "pass": true
+      },
+      {
+        "check": "offline frozen restoration: ",
+        "pass": true
+      },
+      {
+        "check": "frozen restores exact locked package bytes",
+        "pass": true
+      },
+      {
+        "check": "frozen preserves exact lock bytes",
+        "pass": true
+      },
+      {
+        "check": "explicit unsupported Windows route codex-project",
+        "pass": true
+      },
+      {
+        "check": "explicit unsupported Windows route codex-plugin",
+        "pass": true
+      },
+      {
+        "check": "explicit unsupported Windows route claude-project",
+        "pass": true
+      },
+      {
+        "check": "explicit unsupported Windows route claude-plugin",
+        "pass": true
+      },
+      {
+        "check": "unsupported routes preserve lock",
+        "pass": true
+      },
+      {
+        "check": "doctor --json:  point\"\n        }\n      ],\n      \"static\": [\n        {\n          \"name\": \"claude_rules\",\n          \"mode\": \"append\",\n          \"supported\": true,\n          \"reason\": \"\"\n        }\n      ],\n      \"limit\": {\n        \"value\": 10000,\n        \"unit\": \"chars\",\n        \"approximate\": false,\n        \"source\": \"Claude Code hook input limit\",\n        \"overflow\": \"file-preview\"\n      }\n    }\n  ],\n  \"diagnostics\": [\n    {\n      \"code\": \"effort-unknown\",\n      \"severity\": \"warning\",\n      \"message\": \"claude-code: effort is unavailable; conditional effort rules will not match\"\n    },\n    {\n      \"code\": \"effort-unknown\",\n      \"severity\": \"warning\",\n      \"message\": \"codex: effort is unavailable; conditional effort rules will not match\"\n    },\n    {\n      \"code\": \"route-trust-unverified\",\n      \"severity\": \"warning\",\n      \"message\": \"claude-user: Claude Code workspace trust controls hook execution; external confirmation cannot be inferred from generated files\"\n    }\n  ],\n  \"effort\": [\n    {\n      \"provider\": \"codex\",\n      \"source\": \"unknown\",\n      \"raw\": \"\",\n      \"tier\": \"\",\n      \"approximate\": null,\n      \"detail\": \"configuration fallback only; launch overrides/session values are available in hooks; project layer skipped without a trust decision\"\n    },\n    {\n      \"provider\": \"claude-code\",\n      \"source\": \"unknown\",\n      \"raw\": \"\",\n      \"tier\": \"\",\n      \"approximate\": null,\n      \"detail\": \"environment fallback only; event/session values are available in hooks\"\n    }\n  ],\n  \"top_rules\": [\n    {\n      \"provider\": \"claude-code\",\n      \"rule\": \"terse-reviewer/no-force-push\",\n      \"estimated_tokens\": 12,\n      \"emits\": 1,\n      \"distinct_body_hashes\": 1,\n      \"repeated_body\": false\n    },\n    {\n      \"provider\": \"codex\",\n      \"rule\": \"terse-reviewer/no-force-push\",\n      \"estimated_tokens\": 12,\n      \"emits\": 1,\n      \"distinct_body_hashes\": 1,\n      \"repeated_body\": false\n    }\n  ],\n  \"legacy_stats_without_estimate\": 0,\n  \"expired_sessions\": 0,\n  \"state_reset\": false\n}\n",
+        "pass": true
+      },
+      {
+        "check": "list --json: {\n  \"packages\": [\n    {\n      \"name\": \"terse-reviewer\",\n      \"version\": \"0.3.0\",\n      \"seq\": 1,\n      \"source\": \"D:\\\\a\\\\style-cli\\\\style-cli\\\\example\\\\terse-reviewer\",\n      \"source_kind\": \"dir\",\n      \"link\": \"no\",\n      \"hash_matches\": true,\n      \"changed_files\": [],\n      \"native_count\": 0\n    }\n  ]\n}\n",
+        "pass": true
+      },
+      {
+        "check": "stats --json: {\n  \"format\": 1,\n  \"by\": \"rule\",\n  \"window\": {\n    \"since\": \"2026-10-10T17:58:56.5228788Z\",\n    \"until\": \"2026-10-17T17:58:56.5228788Z\"\n  },\n  \"totals\": {\n    \"outputs\": 0,\n    \"blocks\": 2,\n    \"dedup\": 0,\n    \"cap_drops\": 0,\n    \"estimated_tokens\": 24,\n    \"unestimated\": 0\n  },\n  \"rows\": [\n    {\n      \"provider\": \"claude-code\",\n      \"rule\": \"terse-reviewer/no-force-push\",\n      \"outputs\": 0,\n      \"blocks\": 1,\n      \"dedup\": 0,\n      \"cap_drops\": 0,\n      \"estimated_tokens\": 12,\n      \"unestimated\": 0\n    },\n    {\n      \"provider\": \"codex\",\n      \"rule\": \"terse-reviewer/no-force-push\",\n      \"outputs\": 0,\n      \"blocks\": 1,\n      \"dedup\": 0,\n      \"cap_drops\": 0,\n      \"estimated_tokens\": 12,\n      \"unestimated\": 0\n    }\n  ],\n  \"quality\": {\n    \"partial\": false,\n    \"invalid_lines\": 0,\n    \"oversized_lines\": 0,\n    \"skipped_symlinks\": 0\n  }\n}\n",
+        "pass": true
+      },
+      {
+        "check": "exact o200k_base: ",
+        "pass": true
+      },
+      {
+        "check": "exact cl100k_base: ",
+        "pass": true
+      },
+      {
+        "check": "uninstall",
+        "pass": true
+      },
+      {
+        "check": "external config exact restoration config.toml",
+        "pass": true
+      },
+      {
+        "check": "external config exact restoration settings.json",
+        "pass": true
+      },
+      {
+        "check": "remove created Codex hooks after uninstall",
+        "pass": true
+      }
+    ],
+    "passed": 25,
+    "boundary": "Native Windows STYLE CLI with version-only harness stubs; not W1 real harness acceptance."
+  },
+  "supported_scope": [
+    "Native Windows amd64 execution and amd64/arm64 build",
+    "Two user routes with real exe argv/stdin/exit/deny codecs",
+    "DACL/private records/process identity/state locking/cleanup/readonly snapshots",
+    "Frozen managed-source and lock restoration, external configuration bytes, explicit unsupported route rejection"
+  ],
+  "verification_boundary": "Windows CLI uses version-only harness fixtures and real generated commands; it does not close user-deferred W1 real model/harness acceptance. Unsupported POSIX project/plugin/native fixtures and opt-in helpers are listed as skips. Prior six failed CI runs remain in earlier reports. Final CI-01 still requires final milestone source head."
+}

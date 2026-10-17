@@ -1982,3 +1982,9 @@ run 39053520023 固定 `50c666e`：Ubuntu 通过；macOS 仅离线 probe 的 cod
 run 39054681822 固定 `70cdaca`，Ubuntu/macOS 通过；Windows 根模块 3,369 pass/11 条含分组 fail/280 skip，agenthooks 521 pass/0 fail/35 skip，生产 CLI 25 项全过。剩余四个测试函数为三处 POSIX mode 常量比较与 unsupported 插件过滤后同路线重复安装预期。按已有 Windows 文件属性语义修正 mode，对连续同路线明确要求 changed=false；保留所有外部文件字节和重复安装断言。
 
 [修正报告](review/M3-A17-RESTORE-FIXTURES-2026-10-18.json)记录四函数专项、Windows vet 和源码摘要；无生产行为变更，A17/T70 待原生重跑。[文档检查](review/M3-A17-RESTORE-FIXTURES-DOCS-2026-10-18.json)检查归档、追加日志、链接、围栏与 diff。
+
+## 2026-10-18 M3-T70 / M3-A17 Windows 平台验收
+
+第七轮 run 39055736061 固定 `b481396d457ec4e0811e203415f7c38cbda35a39`，Ubuntu/macOS/Windows 全部成功。Windows 原生根模块 3,380 pass/0 fail/280 skip、agenthooks 521 pass/0 fail/35 skip；25 项生产 CLI 全过，含两 user 路线真实生成命令、特殊路径/Unicode、stdin/deny、exact 两编码、frozen 来源/锁恢复、四类不支持路线拒绝与外部配置/卸载。所有 skip 名称和具体前提保留，不计 pass。
+
+[A17 报告](review/M3-A17-2026-10-18.json)固定每 job/step、Windows 全量 JSON 日志摘要和 CLI 结果；前六轮失败仍保留在此前报告。仅关闭 T70/A17 支持范围，W1 实际 harness 已由用户延期；最终 CI-01 后续绑定最终源码。归档/追加日志/链接/围栏/diff 检查见[文档报告](review/M3-A17-DOCS-2026-10-18.json)，按依赖进入 T80/A18。
