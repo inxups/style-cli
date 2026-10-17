@@ -96,7 +96,7 @@ func TestUninstallCodexConfigWithoutGeneratedNewlineResidue(t *testing.T) {
 					}
 				} else if err != nil || !bytes.Equal(got, original.data) {
 					t.Fatalf("original config changed: got=%q want=%q error=%v", got, original.data, err)
-				} else if info, err := os.Stat(path); err != nil || info.Mode().Perm() != 0o640 {
+				} else if info, err := os.Stat(path); err != nil || info.Mode().Perm() != fixtureMode(0o640, false) {
 					t.Fatalf("original config mode changed: %v %v", info, err)
 				}
 			})

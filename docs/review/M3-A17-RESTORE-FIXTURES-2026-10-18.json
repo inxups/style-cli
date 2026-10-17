@@ -1,0 +1,83 @@
+{
+  "baseline": "70cdaca83d368180b1171d31e58f30e73cb3b01a",
+  "status": "partial; A17 remains open pending Windows native rerun",
+  "production_source_changed": false,
+  "ci": {
+    "run_id": 39054681822,
+    "head": "70cdaca83d368180b1171d31e58f30e73cb3b01a",
+    "ubuntu": "success",
+    "macos": "success",
+    "windows": "failure",
+    "root": {
+      "pass": 3369,
+      "fail_including_groups": 11,
+      "skip": 280
+    },
+    "agenthooks": {
+      "pass": 521,
+      "fail": 0,
+      "skip": 35
+    },
+    "production_cli_passed": 25
+  },
+  "changes": [
+    "Compare external file modes using actual Windows read-only attribute semantics while retaining exact bytes",
+    "Retain same-route idempotence when unsupported plugin entries are filtered from the route-switch sequence"
+  ],
+  "commands": {
+    "a17-ci6-target": {
+      "command": [
+        "go",
+        "test",
+        "./internal/app",
+        "-run",
+        "Test(A6DedupInstallReportsAndRouteLifecycle|RunInstallSwitchesRoutesWithoutResidueAndKeepsExternalConfig|UninstallCodexConfigWithoutGeneratedNewlineResidue|M3A0RegistryChangeRecoveryAndRemovedPackageCompatibility)$",
+        "-count=1",
+        "-json"
+      ],
+      "exit_code": 0,
+      "seconds": 5.524,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "log_sha256": "58f7995f53c3b76b62e46d484e33819563606811a7d70dbca49d0b55c7249b46",
+      "tests": {
+        "pass": 18,
+        "fail": 0,
+        "skip": 0
+      }
+    },
+    "a17-ci6-windows-vet": {
+      "command": [
+        "env",
+        "GOOS=windows",
+        "GOARCH=amd64",
+        "go",
+        "vet",
+        "./internal/app"
+      ],
+      "exit_code": 0,
+      "seconds": 0.427,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "sources": {
+    "internal/app/install_dedup_test.go": "f824a4a0f1625ad4e02d52af899457594b47733d3d3ba8d52b6b97c4ce8603a4",
+    "internal/app/install_routes_test.go": "6b795eb56efb95079c67d45bf8f0d6044407fe169d3de833bdcc779548cc6da3",
+    "internal/app/uninstall_test.go": "498889d73e74eb14fd1af8f1fa95b71ef70a1765f2fe8290eec43f97289cdfc7",
+    "internal/app/validation_catalog_test.go": "62c5583eb759bd22c54e2be47a8068b8597dd313991d1e1e06d14b3ce094d29b"
+  }
+}

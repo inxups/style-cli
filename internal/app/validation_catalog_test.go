@@ -331,7 +331,7 @@ func TestM3A0RegistryChangeRecoveryAndRemovedPackageCompatibility(t *testing.T) 
 		t.Fatal(err)
 	}
 	info, err := os.Stat(path)
-	if err != nil || info.Mode().Perm() != 0o640 || string(readSyncFile(t, path)) != original {
+	if err != nil || info.Mode().Perm() != fixtureMode(0o640, false) || string(readSyncFile(t, path)) != original {
 		t.Fatal("uninstall did not restore external bytes/mode")
 	}
 }

@@ -1976,3 +1976,9 @@ run 39053520023 固定 `50c666e`：Ubuntu 通过；macOS 仅离线 probe 的 cod
 修正 .exe 元数据 fixture、编码命令/原生信任路径和实际 drift 注入；普通 user 安装、来源、更新、frozen、dedup 与陈旧输入仍运行，POSIX 作者 native/插件路线有明确单项前提。stats 故障改用真正拒绝读取的 DACL，settings 与恢复记录校验私有 ACL；Windows 对示例 Codex plan 显式核对 native 拒绝，Claude 原 golden 继续比较。
 
 [兼容修正报告](review/M3-A17-COMPAT-2026-10-18.json)记录 app fresh、agenthooks fresh、双 vet、Windows 双模块编译/vet、补充专项和最初测试命令/unused import 失败。新增准备工具仍为另项草稿，不混入本提交。仅完成本阶段 fixture 修正，T70/A17 继续待原生重跑；[文档检查](review/M3-A17-COMPAT-DOCS-2026-10-18.json)通过。
+
+## 2026-10-18 M3-A17 第六轮恢复与幂等 fixture
+
+run 39054681822 固定 `70cdaca`，Ubuntu/macOS 通过；Windows 根模块 3,369 pass/11 条含分组 fail/280 skip，agenthooks 521 pass/0 fail/35 skip，生产 CLI 25 项全过。剩余四个测试函数为三处 POSIX mode 常量比较与 unsupported 插件过滤后同路线重复安装预期。按已有 Windows 文件属性语义修正 mode，对连续同路线明确要求 changed=false；保留所有外部文件字节和重复安装断言。
+
+[修正报告](review/M3-A17-RESTORE-FIXTURES-2026-10-18.json)记录四函数专项、Windows vet 和源码摘要；无生产行为变更，A17/T70 待原生重跑。[文档检查](review/M3-A17-RESTORE-FIXTURES-DOCS-2026-10-18.json)检查归档、追加日志、链接、围栏与 diff。

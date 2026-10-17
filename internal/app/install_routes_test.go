@@ -40,12 +40,13 @@ func TestRunInstallSwitchesRoutesWithoutResidueAndKeepsExternalConfig(t *testing
 	}
 	t.Setenv("STYLE_HOME", home)
 	source := writeInstallPackage(t, filepath.Join(root, "source"), "spec: style/v0.3\nname: route-test\nversion: 0.1.0\ndescription: test\nrules:\n  - id: base\n    target: system\n    text: Keep responses concise.\n")
+	previousRoute := ""
 	for _, route := range fixtureRoutes(t, []string{"codex-plugin", "codex-user", "codex-plugin", "codex-user"}) {
 		var stdout, stderr bytes.Buffer
 		args := []string{"install", source, "--harness=codex", "--route=codex=" + route, "--yes", "--json"}
 		code := RunWithService(context.Background(), service, root, args, &stdout, &stderr)
 		var result InstallResult
-		if err := json.Unmarshal(stdout.Bytes(), &result); err != nil || code != 0 || !result.Changed {
+		if err := json.Unmarshal(stdout.Bytes(), &result); err != nil || code != 0 || result.Changed != (route != previousRoute) {
 			t.Fatalf("%s exit=%d err=%v stdout=%s stderr=%s", route, code, err, stdout.String(), stderr.String())
 		}
 		lock, err := loadLock(home)
@@ -75,6 +76,7 @@ func TestRunInstallSwitchesRoutesWithoutResidueAndKeepsExternalConfig(t *testing
 		if err := json.Unmarshal(stdout.Bytes(), &result); err != nil || result.Changed {
 			t.Fatalf("repeat %s changed: %s %v", route, stdout.String(), err)
 		}
+		previousRoute = route
 	}
 	if _, err := service.Uninstall(context.Background(), UninstallRequest{Home: home, All: true, Yes: true}); err != nil {
 		t.Fatal(err)

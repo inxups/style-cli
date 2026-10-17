@@ -195,7 +195,7 @@ func TestA6DedupInstallReportsAndRouteLifecycle(t *testing.T) {
 				}
 				for path, want := range foreign {
 					info, err := os.Stat(path)
-					if err != nil || info.Mode().Perm() != 0o640 || !bytes.Equal(readSyncFile(t, path), want) {
+					if err != nil || info.Mode().Perm() != fixtureMode(0o640, false) || !bytes.Equal(readSyncFile(t, path), want) {
 						t.Fatalf("foreign file not restored: %s %v", path, err)
 					}
 				}
