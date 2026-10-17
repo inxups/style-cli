@@ -1850,3 +1850,9 @@ PY
 - [验收报告](review/M3-A10-2026-10-17.json)：11 个新函数，最终专项/race 57 pass、0 fail/skip；根 module 全量 3,079 pass/0 fail，2 既有 opt-in/helper skip 单列。全量编译后仅新增 metadata/refresh 测试，最终专项/race 单独重跑，生产源码与 full suite/二进制一致。vet、35 项五路线 CLI、8 云端/8 插件 CLI、40 smoke、50 refresh CLI 通过。六路线生命周期/frozen、cloud bundle、两家原 codec 的十种字段、围栏 golden、逐点来源、隐私、cap/dedup/refresh 恢复均有证据；真旧程序运行/管理拒绝且文件保全。
 - 初期编辑脚本复用错误导致重复声明，恢复原 match.go 后仅加窄 helper；测试类型/Claude fixture 配置/哈希 helper 的错误修正重跑，失败摘要保留。Go 沿临时三缓存和外部环境清理；全量 TLS 来源 fixture 的 localhost 监听按既有授权放行。
 - [文档检查](review/M3-A10-DOCS-2026-10-17.json)通过，规范/说明/任务/测试同步，进度仅追加、历史归档与旧 JSON/golden 不变。仅关闭 T41/A10；后续 D6 provider/unknown 按依赖推进，真实 B3/C5 不以本地 fixture 代替。
+
+## 2026-10-17 M3-D6 provider 与 unknown 定稿
+
+- 按用户全部评审通过授权记录 [D6 契约](review/M3-D6-PROVIDER-UNKNOWN-2026-10-17.md)。provider 是原生配置请求，Codex 使用专属 provider 层级而非 effort 的项目覆盖；Claude 环境白名单、冲突/托管/端点缺值，不读取凭据或推断 URL。配置错误不降级伪造服务，按需缓存、可重放事实及 index 4 明确。
+- 四字段 unknown 显式匹配 canonical 缺值，比较/其他字段/旧规则不扩展；列出六组 A11 与四组 A12 待实施。使用 openai-docs 技能核对官方配置参考及 Claude 环境/网关页，2026-10-17 获取；设计不替代原生投递。
+- 仅关闭 D6，后续依赖 T42 → T43；链接/锚点/围栏、归档和历史 JSON 原样、PROGRESS 追加前缀与 diff 检查见 [设计检查](review/M3-D6-DOCS-2026-10-17.json)。用户延期的 C3/W1/Anthropic 独立 API 仍待验且退出本轮 FINAL 必过集合。

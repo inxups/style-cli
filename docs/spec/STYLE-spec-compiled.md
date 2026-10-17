@@ -269,3 +269,7 @@ M3-T31 已实现 cloud manifest format 1、相对逻辑来源、绑定文件摘�
 ## M3-D5 事件模板 index 3
 
 [D5 定稿](../review/M3-D5-EVENT-CONTENT-2026-10-17.md)要求 event. 动态变量使用整体 format 3；body 仍用既有 var/default 表达，渲染必经截断/转义/围栏，format 1/2 拒绝新变量。format 3 可同时承载 refresh，旧格式与原 golden 保持。T41 已实现并通过 [A10](../review/M3-A10-2026-10-17.json)。
+
+## M3-D6 服务条件与缺值 index 4
+
+[D6 定稿](../review/M3-D6-PROVIDER-UNKNOWN-2026-10-17.md)要求 provider 条件/变量与四字段 unknown 使用整体 format 4；旧 format 的 provider 条件严格拒绝，重新编译原包启用新语义。when/body 结构保持，needs 加 provider；新 runner 兼容原 1/2/3 的合法非 provider 产物。T42/T43 将分别实现并记录证据。
