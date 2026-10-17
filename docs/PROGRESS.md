@@ -1895,3 +1895,10 @@ PY
 ## 2026-10-18 M3-D8 规则级失败策略定稿
 
 按全部评审通过授权记录[D8 契约](review/M3-D8-FAIL-CLOSED-2026-10-18.md)，明确三动作/deny 事件、保守事件范围、正常未命中、index 与宿主终止边界、独立安装开关、adapter 能力和 index 7/严格锁。官方 hooks 原文固定摘要；四组 A14 待实现。仅关闭 D8，文档检查见[报告](review/M3-D8-DOCS-2026-10-18.json)。
+
+## 2026-10-18 M3-T45 / M3-A14 规则级失败策略
+
+- 按 D8 实现普通规则/defaults fail:open|closed、native 禁止、直接 deny 评估点和不可弱化的规划门禁。整个已解码事件范围保守处理故障，正常未命中/去重/cap-drop 继续原行为；混合规则、空 block、状态、enrichment、panic/内部 timeout 和恢复由两家实际 codec 验证。index 不可读/decode/宿主杀进程边界与安装级开关分别测试/披露。
+- index 7、严格 JSON/schema/constructor 和 min_index_format:7；六路线 install/sync/update/frozen/doctor/移除、云端快照、实际旧 T44 运行器和六管理命令零写入拒绝均有证据。adapter 提供故障评估点及 Claude prompt 抑制能力，移除 engine 两处具体 harness 判断；agenthooks 协议/renderer/owner/依赖和旧 testdata 不改。
+- [A14 报告](review/M3-A14-2026-10-18.json)：9 新函数/74 pass，最终 root fresh 3,416 pass/0 fail（2 既有 opt-in/helper skip 单列）；专项 race 74、vet、45 故障策略 CLI、35 映射兼容 CLI、40 smoke 通过。临时三缓存/清理外部环境，全量来源 TLS fixture 使用既有本机监听授权。所有初次失败保留：approx 条件误用、异步日志测试缓冲区 race、旧假 adapter 缺新能力、skill/cloud 夹具假设，修正后最终运行通过。
+- [文档检查](review/M3-A14-DOCS-2026-10-18.json)核对链接/锚点/围栏、追加日志、历史归档/JSON、源码格式与 diff。仅关闭 T45/A14，继续 D9/T50；B3/C5 后续独立，用户延期 C3/W1/Anthropic API 和各 0/40 官方计数保持。

@@ -458,7 +458,8 @@ func (testEnricher) StateUpdate(event *agenthooks.Event, typed any, previous sta
 func (testEnricher) Enrich(event *agenthooks.Event, typed any, session state.Session, scope state.Scope) (engine.Input, tokens.InputLimit, error) {
 	capabilities := engine.Capabilities{
 		AddContext: event.Can(agenthooks.CapAddContext), SystemMessage: event.Can(agenthooks.CapSystemMessage),
-		Deny: event.Can(agenthooks.CapDeny),
+		Deny:                   event.Can(agenthooks.CapDeny),
+		SuppressOriginalPrompt: event.Provider == agenthooks.ProviderClaudeCode && event.Kind == agenthooks.KindPromptSubmitted,
 	}
 	point := engine.Point{Name: string(event.Kind), Capabilities: capabilities}
 	point.When = when.Input{Model: session.Model, ThinkingEffort: session.ThinkingEffort, ThinkingEffortApprox: boolPointer(false)}

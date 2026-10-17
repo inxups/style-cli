@@ -172,7 +172,7 @@ func (e *Engine) process(input Input, limit tokens.InputLimit, trace *Trace) (Ou
 			// ordinary UserPromptSubmit hook. UserPromptExpansion already
 			// represents the expanded slash-command prompt and its codec does
 			// not accept the suppression field.
-			if isPromptPoint(item.point.Name) && input.Harness == "claude-code" {
+			if isPromptPoint(item.point.Name) && item.point.Capabilities.SuppressOriginalPrompt {
 				output.SuppressOriginalPrompt = true
 			}
 		}
@@ -319,13 +319,11 @@ func (output Output) Validate() error {
 	return nil
 }
 
-// ValidateFor checks the output channels and provider-specific prompt field.
+// ValidateFor is the compatibility entry point for the provider-neutral whitelist.
+// Adapters choose prompt capabilities; provider codecs validate native fields.
 func (output Output) ValidateFor(harness string) error {
 	if err := output.Validate(); err != nil {
 		return err
-	}
-	if output.SuppressOriginalPrompt && harness != "claude-code" {
-		return fmt.Errorf("engine: suppressOriginalPrompt is Claude Code only")
 	}
 	return nil
 }

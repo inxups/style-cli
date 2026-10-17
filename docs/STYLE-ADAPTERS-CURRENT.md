@@ -494,3 +494,7 @@ M3-T31 已提供 [Claude 云端 bundle 导出与入口](STYLE-CLOUD.md)，通过
 Claude plugin 的可选 `RegistrationInspector` 给出登记状态/原生命令/残留；`TransitionPlanner` 原子切换 user/plugin，active 或 unknown 登记阻止删除源目录。agenthooks 增加显式本地 marketplace 目标字段、渲染器与只读原生登记检查，零值保留既有 renderer 行为。锁允许仅 Claude plugin 的用户 format 3；项目仍须完整 binding。
 
 M3-T41 通过 [A10](review/M3-A10-2026-10-17.json)：两家 DataSource 对 event. 引用查询原 condition field 的来源；core 从本评估点 FieldReader 读取并进行 512 code point 截断/单行 JSON 围栏，agenthooks 协议与渲染不变。index 3 与 refresh 可组合，旧 index 继续可读；六路线管理/五路线实际配置启动器与云端 bundle 的离线验收通过。
+
+## 规则级故障保护
+
+两家 adapter 提供原生事件到统一故障评估点的保守映射；Claude 普通 prompt 的抑制能力也由 adapter 提供，engine 不再按 harness 名推断。原生错误输出、timeout/panic 处理、配置渲染和 owner 合并仍由 agenthooks 负责。使用与边界见[规则故障说明](STYLE-FAIL-CLOSED.md)。

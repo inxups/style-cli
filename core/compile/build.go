@@ -89,6 +89,15 @@ func Build(request Request) (Result, error) {
 	if len(result.Index.EffortMapping) > 0 {
 		result.Index.Format = EffortMappingFormat
 	}
+	for _, events := range result.Index.Harnesses {
+		for _, entries := range events {
+			for _, entry := range entries {
+				if entry.Fail == "closed" {
+					result.Index.Format = FailClosedFormat
+				}
+			}
+		}
+	}
 	return result, nil
 }
 

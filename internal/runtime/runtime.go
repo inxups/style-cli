@@ -223,9 +223,9 @@ func (r *Runtime) Run(ctx context.Context, args []string, stdin io.Reader, stdou
 	}
 	options := []agenthooks.Option{agenthooks.WithoutBackfill(), agenthooks.WithPolicyFunc(func(event *agenthooks.Event) agenthooks.Policy {
 		policy := agenthooks.Policy{Fail: agenthooks.FailOpen}
-		if r.FailClosed {
+		if r.FailClosed || r.ruleFailClosed(event) {
 			policy.Fail = agenthooks.FailClosed
-			if event != nil && event.Provider == agenthooks.ProviderClaudeCode && event.Kind == agenthooks.KindToolPre {
+			if r.FailClosed && event != nil && event.Provider == agenthooks.ProviderClaudeCode && event.Kind == agenthooks.KindToolPre {
 				policy.FailClosedExitCode = 1
 			}
 		}

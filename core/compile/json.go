@@ -52,7 +52,7 @@ func (index *Index) UnmarshalJSON(data []byte) error {
 	if err := decodeStrict(data, &decoded); err != nil {
 		return err
 	}
-	if decoded.Format != Format && decoded.Format != RefreshFormat && decoded.Format != EventFormat && decoded.Format != ProviderFormat && decoded.Format != UnknownFormat && decoded.Format != EffortMappingFormat {
+	if decoded.Format != Format && decoded.Format != RefreshFormat && decoded.Format != EventFormat && decoded.Format != ProviderFormat && decoded.Format != UnknownFormat && decoded.Format != EffortMappingFormat && decoded.Format != FailClosedFormat {
 		return fmt.Errorf("compile: unsupported index format %d", decoded.Format)
 	}
 	if err := decoded.EffortMapping.Validate(); err != nil {
@@ -79,8 +79,11 @@ func (index *Index) UnmarshalJSON(data []byte) error {
 		}
 	}
 	for _, events := range decoded.Harnesses {
-		for _, entries := range events {
+		for point, entries := range events {
 			for _, entry := range entries {
+				if err := ValidateFail(entry, point, decoded.Format); err != nil {
+					return err
+				}
 				if entry.When.UsesUnknown() && decoded.Format < UnknownFormat {
 					return fmt.Errorf("compile: explicit unknown requires index format 5")
 				}

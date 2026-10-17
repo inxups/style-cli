@@ -2,6 +2,7 @@ package plan
 
 import (
 	"fmt"
+	"slices"
 	"strings"
 
 	"github.com/inxups/style-cli/core/spec"
@@ -44,7 +45,7 @@ func planRule(rule spec.Rule, adapterName string, adapter Adapter) (RulePlan, er
 		return RulePlan{}, err
 	}
 	result := RulePlan{ID: req.RuleID, Source: rule.Source, Target: req.Target,
-		Action: req.Action, Needs: append([]string(nil), req.Needs...)}
+		Action: req.Action, Fail: req.Fail, Needs: append([]string(nil), req.Needs...)}
 	switch {
 	case req.Target == "native":
 		result = planNative(rule, req, result, adapter)
@@ -67,6 +68,23 @@ func planRule(rule spec.Rule, adapterName string, adapter Adapter) (RulePlan, er
 			} else {
 				result = planEvents(req, result, adapter)
 			}
+		}
+	}
+	if req.Fail == "closed" && harnessSelectorMatches(rule, adapterName) {
+		invalid := len(result.Placements) == 0
+		for _, p := range result.Placements {
+			invalid = invalid || p.StaticSlot != "" || p.DegradedFrom != "" || !adapter.Supports(p.Event, Deny) || (p.Event != ToolPre && p.Event != PromptSubmitted && p.Event != SkillExplicit)
+		}
+		if invalid {
+			result.Status, result.Fatal, result.Placements = InstallError, true, nil
+			result.Reasons = append(result.Reasons, "fail-closed-unsupported: original evaluation point must support deny; fallback cannot weaken failure protection")
+		} else {
+			for i := range result.Placements {
+				if !slices.Contains(result.Placements[i].Capabilities, Deny) {
+					result.Placements[i].Capabilities = append(result.Placements[i].Capabilities, Deny)
+				}
+			}
+			result.Reasons = append(result.Reasons, "fail: closed protects handler failures for the entire decoded native event; predicates do not narrow fault scope")
 		}
 	}
 	if req.Refresh > 0 {

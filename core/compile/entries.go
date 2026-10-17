@@ -5,6 +5,7 @@ import (
 	"encoding/hex"
 	"fmt"
 	"path"
+	"slices"
 	"sort"
 	"strings"
 
@@ -36,6 +37,9 @@ func appendPlacement(result *Result, pkg *spec.ResolvedPackage, info PackageInfo
 		return fmt.Errorf("source bytes for %q are unavailable", source)
 	}
 	if placement.StaticSlot != "" {
+		if text(rule.Effective["fail"]) == "closed" {
+			return fmt.Errorf("fail: closed cannot use a static placement")
+		}
 		if n, _ := spec.RefreshInterval(rule.Effective["refresh"]); n > 0 {
 			return fmt.Errorf("refresh cannot use a static placement")
 		}
@@ -120,6 +124,12 @@ func makeEntry(pkg *spec.ResolvedPackage, rule spec.Rule, planned plan.RulePlan,
 		Repeat: repeat, ReinjectOnCompact: boolValue(effective["reinject_on_compact"]),
 		Reevaluate: placement.Reevaluate, Needs: sortedStrings(planned.Needs), Body: body,
 		Estimate: tokens.Estimate{}, DegradedFrom: optionalString(placement.DegradedFrom)}
+	if text(effective["fail"]) == "closed" {
+		if !slices.Contains(placement.Capabilities, plan.Deny) || placement.StaticSlot != "" || (placement.Event != plan.ToolPre && placement.Event != plan.PromptSubmitted && placement.Event != plan.SkillExplicit) {
+			return Entry{}, fmt.Errorf("invalid fail-closed placement")
+		}
+		entry.Fail = "closed"
+	}
 	entry.Refresh, _ = spec.RefreshInterval(effective["refresh"])
 	if entry.Refresh > 0 && (repeat != "session" || placement.Action == "block" || placement.Event == plan.SubagentStart) {
 		return Entry{}, fmt.Errorf("incompatible refresh placement")

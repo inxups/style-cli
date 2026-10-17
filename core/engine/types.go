@@ -8,9 +8,10 @@ import (
 
 // Capabilities are the output channels supported at one evaluation point.
 type Capabilities struct {
-	AddContext    bool
-	SystemMessage bool
-	Deny          bool
+	AddContext             bool
+	SystemMessage          bool
+	Deny                   bool
+	SuppressOriginalPrompt bool
 }
 
 // Point contains one normalized evaluation point and its provider facts.

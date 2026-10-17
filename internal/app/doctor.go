@@ -93,6 +93,9 @@ func (s *Service) Doctor(ctx context.Context, request DoctorRequest) (DoctorResu
 		if data, err := saferead.ReadFile(filepath.Join(home, "build", "index.json"), 16<<20); err == nil {
 			var index compile.Index
 			if json.Unmarshal(data, &index) == nil {
+				if index.Format >= compile.FailClosedFormat {
+					result.add("runtime-index-7", "warning", "rule failure guards require index format 7; unreadable indexes and host termination need installation-level protection")
+				}
 				if index.Format >= compile.EffortMappingFormat {
 					result.add("runtime-index-6", "warning", "user effort mappings require index format 6; upgrade every configured STYLE runner")
 				}

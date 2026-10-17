@@ -261,6 +261,7 @@ func TestClaudePromptBlockSetsOnlyAllowedSuppressField(t *testing.T) {
 	input := testInput("prompt.submitted")
 	input.Harness = "claude-code"
 	input.Points[0].Capabilities.Deny = true
+	input.Points[0].Capabilities.SuppressOriginalPrompt = true
 	output, err := engine.Process(input, tokens.InputLimit{})
 	if err != nil {
 		t.Fatal(err)
@@ -274,8 +275,8 @@ func TestClaudePromptBlockSetsOnlyAllowedSuppressField(t *testing.T) {
 	if err := (Output{Block: true, Reason: "deny", AdditionalContext: "leak"}).Validate(); err == nil {
 		t.Fatal("output whitelist accepted context alongside block")
 	}
-	if err := (Output{Block: true, Reason: "deny", SuppressOriginalPrompt: true}).ValidateFor("codex"); err == nil {
-		t.Fatal("output whitelist accepted Claude-only suppression on Codex")
+	if err := (Output{Block: true, Reason: "deny", SuppressOriginalPrompt: true}).ValidateFor("future-harness"); err != nil {
+		t.Fatal("core output whitelist inferred native capabilities from a harness name")
 	}
 }
 

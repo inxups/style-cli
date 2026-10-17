@@ -13,8 +13,8 @@ var (
 )
 
 var packageFields = stringSet("spec", "name", "version", "description", "authors", "requires", "reads", "vars", "settings", "recommends", "priority", "budget", "defaults", "rules")
-var ruleFields = stringSet("id", "target", "file", "text", "model_text", "action", "at", "when", "repeat", "refresh", "reinject_on_compact", "sources", "fallback", "priority", "max_tokens", "reason", "from", "enabled", "mode", "tool", "names", "mcp", "skill", "event", "reads")
-var defaultsFields = stringSet("action", "at", "repeat", "refresh", "reinject_on_compact", "sources", "fallback", "priority", "max_tokens")
+var ruleFields = stringSet("id", "target", "file", "text", "model_text", "action", "at", "when", "repeat", "fail", "refresh", "reinject_on_compact", "sources", "fallback", "priority", "max_tokens", "reason", "from", "enabled", "mode", "tool", "names", "mcp", "skill", "event", "reads")
+var defaultsFields = stringSet("action", "at", "repeat", "fail", "refresh", "reinject_on_compact", "sources", "fallback", "priority", "max_tokens")
 
 func (v *validator) packageSource() string {
 	if v.pkg.SingleFile && len(v.pkg.Rules) > 0 && v.pkg.Rules[0].Source != "" {

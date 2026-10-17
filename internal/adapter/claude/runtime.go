@@ -280,9 +280,10 @@ func newPoint(event *agenthooks.Event, name string, variables, fields map[string
 		When:      claudeWhenInput(event, variables, conditionValues),
 		Values:    values,
 		Capabilities: engine.Capabilities{
-			AddContext:    event.Can(agenthooks.CapAddContext),
-			SystemMessage: event.Can(agenthooks.CapSystemMessage),
-			Deny:          event.Can(agenthooks.CapDeny),
+			AddContext:             event.Can(agenthooks.CapAddContext),
+			SystemMessage:          event.Can(agenthooks.CapSystemMessage),
+			Deny:                   event.Can(agenthooks.CapDeny),
+			SuppressOriginalPrompt: event.Kind == agenthooks.KindPromptSubmitted && event.Can(agenthooks.CapDeny),
 		},
 	}
 	if tool != nil {

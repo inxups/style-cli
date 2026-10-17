@@ -24,7 +24,9 @@ Codex 和 Claude 采用各自现有 agenthooks CapDeny/typed decision。解析�
 
 | 编号 | 状态 | 断言 |
 |---|---|---|
-| A14-01 | [ ] | 字段/defaults/原生禁止、三动作、事件/能力拒绝、fallback 不弱化、计划披露 |
-| A14-02 | [ ] | 两家正常不匹配/混合规则、状态/空 block/内部 timeout/panic 的安全 deny 与恢复 |
-| A14-03 | [ ] | index/decode/进程失败边界、安装开关独立、prompt suppression 能力及旧默认行为 |
-| A14-04 | [ ] | index7/严格锁/旧程序拒绝、六路线管理/frozen/移除/云端、旧 golden 和兼容回归 |
+| A14-01 | [x] | 字段/defaults/原生禁止、三动作、事件/能力拒绝、fallback 不弱化、计划披露 |
+| A14-02 | [x] | 两家正常不匹配/混合规则、状态/空 block/内部 timeout/panic 的安全 deny 与恢复 |
+| A14-03 | [x] | index/decode/进程失败边界、安装开关独立、prompt suppression 能力及旧默认行为 |
+| A14-04 | [x] | index7/严格锁/旧程序拒绝、六路线管理/frozen/移除/云端、旧 golden 和兼容回归 |
+
+T45/A14 已通过[离线验收](M3-A14-2026-10-18.json)，使用方式见[说明](../STYLE-FAIL-CLOSED.md)。原生 B3/C5 单独执行。

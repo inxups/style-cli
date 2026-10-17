@@ -11,5 +11,5 @@ func minimumIndex(format int) int {
 	return 0
 }
 func validMinimumIndex(format int) bool {
-	return format == compile.UnknownFormat || format == compile.EffortMappingFormat
+	return format == compile.UnknownFormat || format == compile.EffortMappingFormat || format == compile.FailClosedFormat
 }

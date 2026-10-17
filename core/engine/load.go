@@ -83,6 +83,9 @@ func newValidated(index compile.Index, store *state.Store) (*Engine, error) {
 		for point, entries := range events {
 			compiled := make([]compiledEntry, 0, len(entries))
 			for _, entry := range entries {
+				if err := compile.ValidateFail(entry, point, index.Format); err != nil {
+					return nil, err
+				}
 				if entry.Refresh > 0 && (index.Format < compile.RefreshFormat || entry.Repeat != "session" || entry.Action == "block" || point == "subagent.start") {
 					return nil, fmt.Errorf("engine: invalid refresh policy")
 				}

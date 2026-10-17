@@ -51,6 +51,7 @@ type Report struct {
 
 // RulePlan is one user rule and its resulting runtime or static placements.
 type RulePlan struct {
+	Fail             string         `json:"fail,omitempty"`
 	Refresh          *RefreshPolicy `json:"refresh,omitempty"`
 	DeduplicatedInto string         `json:"deduplicated_into,omitempty"`
 	ID               string         `json:"id"`
@@ -98,6 +99,7 @@ const (
 // Requirement is the adapter-independent demand derived from a merged rule.
 // AnyCapabilities is an OR set; AllCapabilities must all be present.
 type Requirement struct {
+	Fail              string
 	Refresh           int
 	RuleID            string
 	Target            string

@@ -16,6 +16,7 @@ const (
 	ProviderFormat      = 4
 	UnknownFormat       = 5
 	EffortMappingFormat = 6
+	FailClosedFormat    = 7
 )
 
 // PackageInfo identifies one installed package in the index. Seq is the
@@ -50,6 +51,7 @@ type StaticEntry struct {
 // Entry is one runtime evaluation point. The body is represented as static
 // text or literal/variable fragments so the hot path never reparses Markdown.
 type Entry struct {
+	Fail                   string          `json:"fail,omitempty"`
 	Refresh                int             `json:"refresh,omitempty"`
 	Rule                   string          `json:"rule"`
 	Entry                  string          `json:"entry"`

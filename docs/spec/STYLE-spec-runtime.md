@@ -285,7 +285,7 @@ STYLE 的 hook 输出**只允许**这几样：`additionalContext`、`systemMessa
 - **默认放行**：运行时任何错误（index 缺失、损坏、格式号不对，状态目录不可写，模板错误，超时）一律退出码 0、输出为空（各家"没意见"的写法），错误写进日志。
 - **代价**：index 损坏时 `block` 规则会静默失效。`style doctor` 必须能发现"index 和锁文件不一致或已损坏"并标红。
 - **Claude 可选 `--fail-closed`**：只给 PreToolUse 那一条加 `onFailure: "block"`（Claude ≥ v2.1.295【文档】），这时运行时在内部出错时退出码改为 1，Claude 就会拦下这次工具调用。**默认关闭**，否则 index 一坏，所有工具调用都被拦，Claude 完全不能用。Codex 不提供这个选项（行为没核实）。
-- 规则级的 `fail: closed` 留到 M3。
+- 规则级 `fail: closed` 已由 M3-T45 实现，见[规则故障说明](../STYLE-FAIL-CLOSED.md)。
 
 ### 8.9 M3-D1 诊断隔离评审稿
 
@@ -327,4 +327,4 @@ D5 模板字段/可用事件沿 §4 条件字段定义；`reads.event` 精确列
 
 ## M3-D8 规则级失败策略
 
-已定稿[规则级失败契约](../review/M3-D8-FAIL-CLOSED-2026-10-18.md)：fail: closed 仅在可 deny 的直接运行时评估点使用；故障保护按整个原生事件范围保守选择，正常未命中不拦。index 7 与严格最低格式锁保护语义；index 不可读/宿主终止需安装级机制，agenthooks 保留协议职责。T45/A14 后续独立验收。
+已定稿[规则级失败契约](../review/M3-D8-FAIL-CLOSED-2026-10-18.md)：fail: closed 仅在可 deny 的直接运行时评估点使用；故障保护按整个原生事件范围保守选择，正常未命中不拦。index 7 与严格最低格式锁保护语义；index 不可读/宿主终止需安装级机制，agenthooks 保留协议职责。T45/A14 已实现并通过[离线验收](../review/M3-A14-2026-10-18.json)，见[使用说明](../STYLE-FAIL-CLOSED.md)；B3/C5 后续独立。

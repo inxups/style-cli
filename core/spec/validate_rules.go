@@ -130,13 +130,15 @@ func (v *validator) validateRuleFields(rule Rule, source string) {
 		}
 	}
 	defaults := asStringMap(v.pkg.Metadata["defaults"])
-	for _, key := range []string{"action", "target", "at", "repeat", "fallback", "mode"} {
+	for _, key := range []string{"action", "target", "at", "repeat", "fallback", "mode", "fail"} {
 		value := v.effectiveRuleString(rule, key, "")
 		if value == "" {
 			continue
 		}
 		valid := true
 		switch key {
+		case "fail":
+			valid = validRuleFieldEnum(key, value)
 		case "action":
 			valid = validRuleFieldEnum(key, value)
 		case "target":
@@ -174,6 +176,17 @@ func (v *validator) validateRuleFields(rule Rule, source string) {
 		// combinations (and inherited defaults) do not apply.
 		v.validateNativeRule(rule, source)
 		return
+	}
+	if v.effectiveRuleString(rule, "fail", "open") == "closed" {
+		target := v.effectiveRuleString(rule, "target", "")
+		event := v.effectiveRuleString(rule, "event", "")
+		defaultAt := "after"
+		if v.effectiveRuleString(rule, "action", "inject") == "block" {
+			defaultAt = "before"
+		}
+		if target == "system" || (target == "event" && event != "tool.pre" && event != "prompt.submitted" && event != "skill.explicit") || ((target == "tool" || target == "mcp" || target == "skill") && v.effectiveRuleString(rule, "at", defaultAt) != "before") {
+			v.add("fail-closed-target", source, "fail: closed requires a directly blocking before/prompt evaluation point")
+		}
 	}
 	v.validateRefresh(rule, source)
 	if target := v.effectiveRuleString(rule, "target", ""); target == "event" {
@@ -273,6 +286,8 @@ func (v *validator) validateTargetSelectors(rule Rule, target, source string) {
 
 func validRuleFieldValue(key string, value any) bool {
 	switch key {
+	case "fail":
+		return validRuleFieldEnum(key, value)
 	case "refresh":
 		_, ok := RefreshInterval(value)
 		return ok
@@ -296,6 +311,8 @@ func validRuleFieldValue(key string, value any) bool {
 func validRuleFieldEnum(key string, value any) bool {
 	text, _ := value.(string)
 	switch key {
+	case "fail":
+		return stringSet("open", "closed")[text]
 	case "action":
 		return stringSet("inject", "warn", "block")[text]
 	case "at":

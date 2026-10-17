@@ -27,6 +27,7 @@ func RequirementFor(rule spec.Rule) (Requirement, error) {
 		return Requirement{}, fmt.Errorf("rule %q has not been merged", rule.Source)
 	}
 	requirement := Requirement{
+		Fail:     stringValue(effective["fail"]),
 		RuleID:   firstString(effective["id"], rule.Fields["id"], rule.Source),
 		Target:   stringValue(effective["target"]),
 		Action:   stringValue(effective["action"]),
