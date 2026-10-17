@@ -72,6 +72,11 @@ jobs:
           PYTHONDONTWRITEBYTECODE: "1"
         run: python3 scripts/smoke.py "$RUNNER_TEMP/style"
 
+      - name: Check isolated M3 acceptance preparation
+        env:
+          PYTHONDONTWRITEBYTECODE: "1"
+        run: python3 scripts/check_m3_acceptance_prep.py --binary "$RUNNER_TEMP/style" --report "$RUNNER_TEMP/m3-preparation.json"
+
       - name: Check replace fallback and user style preservation
         env:
           PYTHONDONTWRITEBYTECODE: "1"

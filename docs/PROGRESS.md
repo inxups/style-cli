@@ -1996,3 +1996,11 @@ run 39054681822 固定 `70cdaca`，Ubuntu/macOS 通过；Windows 根模块 3,369
 [A18 报告](review/M3-A18-2026-10-18.json)固定临时三缓存/清环境及源码/二进制摘要：root fresh 3,881、agenthooks 531 pass，0 fail，2/23 既有 skip；双 vet、16 组真正旧布局迁移、12 组 replace 回退、40 smoke 通过。原 codec/白名单/golden/native/stats 回归全部经过 fresh；未改旧 golden。CI 新增固定历史源码构建及迁移/六路线组合检查，最终远端结果仍由 CI-01 收录。最初 fixture 的优先级方向和旧项目 runtime PATH 绑定错误均保留并修正，没有放宽实现。
 
 [文档检查](review/M3-A18-DOCS-2026-10-18.json)通过，历史归档/报告原样、进度仅追加；仅关闭 T80/A18，继续 PREP 与真实本地验收。
+
+## 2026-10-18 M3-PREP-01 / M3-P1 真实验收准备
+
+建立[M3 手册](STYLE-M3-MANUAL.md)、两家实际发现配置的 driver、共享显式 fixture/独立 author-native 观察器、源码/二进制/副本绑定、私有原始请求与原生 transcript hash 重放、probe 事件/路线/session/时间核对。固定文件集恢复排除认证存储，短写入循环和 symlink 拒绝有自测。Claude 使用既有独立登录 profile 和原生 UI trust；Codex 实际 exe/隔离 provider TLS 转发；不把显式 settings/plugin-dir 或人工回调当路线验收。
+
+[P1 报告](review/M3-P1-2026-10-18.json)记录六路线版本-stub 安装/sync/卸载、index7 与外部 bytes/mode 干跑全过；已有全量采集器 76 项通过，新增 observer/time 两项后的最终 M3 专项 10 项通过，未宣称全量 78 项本地重跑。首次 plugin exit/sync 预期与一次测试块插入 NameError 保留并修正。CI 接入六路线准备检查；源码和报告未存原始请求/工具/prompt/认证信息。
+
+仅关闭 PREP-01/P1，真实 B/C 尚未执行，任何实际差异继续按失败保留修正。[文档检查](review/M3-P1-DOCS-2026-10-18.json)核对手册链接/围栏、源码语法、追加日志、历史归档与 diff；后续 PREP-02 单独记录特殊环境条件。

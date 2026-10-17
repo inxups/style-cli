@@ -95,7 +95,7 @@ PYTHONDONTWRITEBYTECODE=1 python3 scripts/check_m2_rules_migration.py \
 
 ## 准备验证
 
-- [ ] **M3-P1 两家 runbook/采集器**（M3-PREP-01）：固定私有 STYLE/harness/观察器摘要，隔离配置与工作目录，验证启动、关联、脱敏、安装/卸载干跑和 bytes/mode 恢复。采集器用 fixture 证明拒绝来源摘要漂移、缺原生证据与手工伪造回调；仅关闭准备。
+- [x] **M3-P1 两家 runbook/采集器**（M3-PREP-01）：[手册](STYLE-M3-MANUAL.md)与[报告](review/M3-P1-2026-10-18.json)固定私有源码/STYLE/harness/实际观察器副本摘要、原生时序/session/路线关联和完整正文判定；六路线干跑/bytes/mode 恢复、76 项全量和最终 10 项 M3 自测通过。拒绝漂移、缺原生/请求/时间证据、伪造回调单证及 symlink，验证短写入与原始观察器 subprocess。只关闭准备，不计真实 B/C。
 - [ ] **M3-P2 特殊环境 runbook**（M3-PREP-02）：明确 Claude 云端项目运行条件、exact 的 API key/编码模型条件和 Windows 原生 shell/runner 条件。验证证据白名单、失败保留与恢复步骤可执行，环境不具备时记录缺项；准备检查不计入 C3/TOKEN-01/W1 成功。
 
 ## M3b：Codex 真实环境
