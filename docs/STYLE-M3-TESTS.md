@@ -6,7 +6,7 @@
 
 本文件记录 M3 测试矩阵与当前证据状态，任务及依赖见 [STYLE-M3-TASKS.md](STYLE-M3-TASKS.md)，运行记录追加到 [PROGRESS.md](PROGRESS.md)。[M1 测试](STYLE-M1-TESTS.md)、[M2 测试](STYLE-M2-TESTS.md) 已只读归档；历史通过结果不替代 M3 的新验收。
 
-当前状态：M3-00、M3-BASE-01、A0–A18 与 P1/P2 已通过。Codex 三条本地路线 B1–B4 与本地 exact 必过子项均通过同一最终生产源码；Claude 三条本地路线也已通过，最终 CI 和文档验收继续推进。用户明确延期的 C3、W1/REAL-04 与 Anthropic 独立 API 子项保持待验并退出本次 FINAL 必过集合。M3-CARRY-01 官方校准仍两家各 0/40、非阻塞；硬编码成员校验风险已由 T00/A0 关闭。
+当前状态：M3 于 2026-10-18 按用户确认范围完成并关闭。M3-00/BASE、A0–A18、P1/P2、B1–B4、C1/C2/C4/C5/C6、本地 exact、三平台 CI、FINAL 和 DOCS-01 全部通过；见[最终报告](review/M3-FINAL-2026-10-18.json)与[文档关闭核对](review/M3-DOCS-01-2026-10-18.json)。用户延期的 C3、W1/REAL-04 和 Anthropic 独立 API 保持待验，未算通过；M3-CARRY-01 官方校准仍两家各 0/40、非阻塞，RV-01 已关闭。
 
 ## 状态与验收规则
 
@@ -71,6 +71,8 @@ PYTHONDONTWRITEBYTECODE=1 python3 scripts/check_m2_rules_migration.py \
 
 ## M3a：离线验收
 
+本节记录首次离线验收当时的范围。后续真实与平台补验见 M3b 和 CI/FINAL；早期“待验”描述不覆盖当前汇总状态。
+
 - [x] **M3-A0 注册表与架构边界**（M3-D0、M3-T00、M3-RV-01）：用仅注册假 harness、删去某家、两家现有注册表及空目录的 fixture，覆盖 `when.harness.name`、`requires.harness`、`recommends` 及 native 校验。目录/单文件包、所有 app 入包路径给出一致诊断；普通名称全集与 native 子集、快照隔离、结构/完整 API、预算重复路径和 auto 遍历均需证明。core 不导入具体 adapter/agenthooks，旧包/诊断排序及失败后 bytes/mode/mtime 保持兼容。[D0 设计 §6](review/M3-D0-REGISTRY-VALIDATION-2026-10-17.md#6-m3-a0-验收细化) 的 A0-01–A0-10 已逐项通过，见 [本轮报告](review/M3-A0-2026-10-17.json)。macOS 27.0.1 / Go 1.27.0、临时三缓存及清理环境下，新执行双 module fresh test（30 个有测试 package，均非 cached）/vet、core/spec/tokens/adapter/app 四包完整 race；14 个新测试函数、205 个叶子用例，含 144 组目录/单文件/from 的精确名称组合与 33 组无效候选文件保全。与固定基线 CLI 的 32 组文本/JSON 输出和退出码逐字节相同；8 个隔离 import fixture 证明整个 adapter/agenthooks 前缀受限。59 项采集器、40 smoke、16 组 `74a473d` 真实旧版迁移、12 组回退通过；当前二进制 SHA256 `8d4e933ccdc6d79167294b0998e0bfe76668cfbf0a268a64d25dc3f3b5ad6967`。首轮测试中两个 fixture 问题及修正后通过均保留；生产校验未放宽、agenthooks/协议/旧 golden 未改，未调用真实 harness、远端 CI 或官方计数。关闭 M3-RV-01，允许进入 D1。
 - [x] **M3-A1 explain**（M3-D1、M3-T10）：按 [D1 §8 的 A1-01–A1-12](review/M3-D1-DIAGNOSTICS-2026-10-17.md#8-待执行的验收细化)（已获用户确认）固定两家原生 payload/index、空 state/只读 snapshot 和绑定 facts。逐项核对共享短路 trace、缺值、来源/agent、repeat、block 优先、多点评估、cap-drop/释放、编译折叠与 static/native 边界，实际 codec wire 和管理退出码分开。覆盖解码起零外部读取/进程/网络、坏/超限/漂移输入、取消/清理失败、并发隔离和 bytes/mode/mtime；explain.json 与 index 同事务及旧安装 index-only 回退另验。文本/JSON 确定性、协议白名单和兼容回归均以 [本轮报告](review/M3-A1-2026-10-17.json) 验收：26 个新函数、145 个叶子用例（全部无 fail/skip）、29 组生命周期/普通 runtime 对照、两家完整 JSON golden、只读/并发/失败与恢复、编译说明回滚和事务窗口均通过。macOS 27.0.1 / Go 1.27.0、临时三缓存及清理环境下，双 module fresh test（31 个有测试 package，无 cached）/vet、相关八包与 agenthooks 全 module race、59 项采集器、40 smoke、16 真旧迁移、12 回退通过；agenthooks 既有可选真实 e2e 的 skip 单列，不计本次离线通过。当前二进制 SHA256 为 a08d25a1f61c205023c7501d2f67f46a2a4d8684d65eb2f0f3ce0c806ebd3cff，旧 index/lock/state schema、普通 wire golden 与历史归档未改。probe 现已另经 A2 通过；两家真实验收/Windows/CI 保持待验。
 - [x] **M3-A2 probe**（M3-D1、M3-T11）：按 [D1 §8 的 A2-01–A2-12](review/M3-D1-DIAGNOSTICS-2026-10-17.md#8-待执行的验收细化) 验收现有 STYLE hook 的 lease/run ID/根/事件/runtime/原生 executable 和路线来源绑定，见 [完整报告](review/M3-A2-2026-10-17.json) 与 [使用说明](STYLE-PROBE.md)。28 个新函数、181 个叶子用例（201 条含分组 pass，无新 fail/skip），覆盖三路线离线 OS 祖先链、直接/伪造/版本/解码拒绝、index 不可读、部分完成、SIGINT/SIGTERM/SIGKILL、PID 复用、并发 busy/回滚、迟到写入/替换、漂移与 cleanup 失败。白名单/上限/FIFO/隐私、配置/信任/包/lock/index/说明 bytes/mode/mtime 和 15 组普通 runner 对照通过；后者分别以无观察器、无租约、活动/坏租约各运行两次，仅归一化 state 的 updated_at，stats/seen/模式和 wire/原生退出码核对。macOS 27.0.1 / Go 1.27.0、临时三缓存及清理环境下，双 module fresh test（32 个有测试 package，无 cached）/vet、相关六包及 agenthooks 全 module race、59 采集器、40 smoke、16 真旧迁移、12 回退和最终 CLI 均通过。普通 hook 各 200 次进程 p95 为 Codex 9.56ms、Claude 8.71ms，均小于 50ms；最终二进制 SHA256 为 `6461c60459091a63662cc101d7e266ca8cf48cb130e65705a7438376d3ee967f`。十次前期失败及修正/重跑保留，23 项既有 opt-in 真实 e2e skip 单列；不计入新验收。仅关闭 A2，真实 B1/C1、Windows、远端 CI 和官方计数保持待验。 真实验收发现的新版 index 诊断误报已修正，见[补充回归](review/M3-A2-INDEX-FOLLOWUP-2026-10-18.json)：共享 reader 接受 1–7、拒绝未知格式，回调仍不单独证明执行。
@@ -128,8 +130,8 @@ M3-A2 缓存补充：Codex 0.159.3 原生插件使用独立缓存，三次真实
 ## CI 与最终验收
 
 - [x] **M3-CI-01 跨平台 CI**（M3-CI-01）：最终 headSha 在 Ubuntu/macOS/Windows 的适用 format/vet、双 module fresh test/build、采集器、smoke 与旧迁移/回退检查全部通过；平台脚本使用原生临时缓存和环境清理。记录逐 job/步骤结果，跳过项不得算通过，适用时验证 `GOWORK=off` 发布形态。 [最终报告](review/M3-CI-01-2026-10-18.json)固定受验源码 `2c24e5f9`、run `39064157115`：三 job 全过；Windows fresh/双架构构建/25 CLI 完成，skip 与真实 W1 分列；后续文档提交有源码等价性核对。
-- [x] **M3-FINAL 最终回归**（M3-FINAL）：M3-BASE-01、A0–A18、P1/P2、B1–B4、C1/C2/C4/C5/C6、本地 TOKEN-01 与 CI-01 按批准范围全部验收；关联同一最终源码/二进制或说明等价性，无未解释 golden/兼容性差异。C3、W1 与 Anthropic 独立 API 依用户明确决定延期，保持待验；CARRY-01 继续独立非阻塞，其他缺环境项不能自动豁免。 [最终报告](review/M3-FINAL-2026-10-18.json)固定同一生产源码/二进制的完整适用验收、三平台 CI、旧版兼容与延期边界；文档总验收单独收尾。
-- [~] **M3-DOCS-01 总文档验收**（M3-DOCS-01）：规范、命令帮助/示例、教程、adapter 总览和 M3 手册反映最终已验行为；任务/测试/日志证据互相对应，链接/围栏/摘要核对通过，历史归档未改。M3-FINAL 通过后关闭里程碑，并提示用户进行下一步规划。 [指南同步检查](review/M3-DOCS-GUIDES-2026-10-18.json)已覆盖当前实现、计数与失败策略/平台边界；本地真实、最终 CI 和 FINAL 尚待完成，本项不关闭。
+- [x] **M3-FINAL 最终回归**（M3-FINAL）：M3-BASE-01、A0–A18、P1/P2、B1–B4、C1/C2/C4/C5/C6、本地 TOKEN-01 与 CI-01 按批准范围全部验收；关联同一最终源码/二进制或说明等价性，无未解释 golden/兼容性差异。C3、W1 与 Anthropic 独立 API 依用户明确决定延期，保持待验；CARRY-01 继续独立非阻塞，其他缺环境项不能自动豁免。 [最终报告](review/M3-FINAL-2026-10-18.json)固定同一生产源码/二进制的完整适用验收、三平台 CI、旧版兼容与延期边界；文档总验收已由 DOCS-01 独立完成。
+- [x] **M3-DOCS-01 总文档验收**（M3-DOCS-01）：规范、命令帮助/示例、教程、adapter 总览和 M3 手册反映最终已验行为；任务/测试/日志证据互相对应，链接/围栏/摘要核对通过，历史归档未改。M3-FINAL 通过后关闭里程碑，并提示用户进行下一步规划。 [指南同步检查](review/M3-DOCS-GUIDES-2026-10-18.json)已覆盖当前实现、计数与失败策略/平台边界；本地真实、最终 CI 与 FINAL 已完成；[最终文档核对](review/M3-DOCS-01-2026-10-18.json)通过，关闭本项和本轮 M3。
 
 ## 2026-10-17 用户确认的延期真实验收
 

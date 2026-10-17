@@ -1,6 +1,6 @@
 # M3 真实验收手册
 
-本手册对应 P1/P2；准备通过不等于 B/C、TOKEN 或 W1 已通过。范围与状态以[任务清单](STYLE-M3-TASKS.md)和[测试矩阵](STYLE-M3-TESTS.md)为准。用户已延期 Claude 托管云端 C3、Windows 实际 harness W1 和 Anthropic 独立计数 API；这些条目保留 `[?]`，本轮不申请账号或密钥。
+M3 已按用户确认范围关闭，本轮结果见[最终报告](review/M3-FINAL-2026-10-18.json)和[文档核对](review/M3-DOCS-01-2026-10-18.json)。本手册对应 P1/P2；准备通过不等于 B/C、TOKEN 或 W1 已通过。范围与状态以[任务清单](STYLE-M3-TASKS.md)和[测试矩阵](STYLE-M3-TESTS.md)为准。用户已延期 Claude 托管云端 C3、Windows 实际 harness W1 和 Anthropic 独立计数 API；这些条目保留 `[?]`，本轮不申请账号或密钥。
 
 ## 构建与准备
 

@@ -1,6 +1,6 @@
 # STYLE 当前 adapter 实现总览
 
-更新时间：2026-10-18。M3 已完成 D0–D11 和 T00–T80/A0–A18。支持范围的三平台原生 CI 见[A17](review/M3-A17-2026-10-18.json)，双模块 fresh、旧版本迁移及六路线组合见[A18](review/M3-A18-2026-10-18.json)；源码与二进制摘要逐报告固定。当前真实验收和最终 CI 状态见[M3 任务](STYLE-M3-TASKS.md)、[测试矩阵](STYLE-M3-TESTS.md)，隔离步骤见[M3 手册](STYLE-M3-MANUAL.md)。
+更新时间：2026-10-18。M3 已按确认范围完成并关闭，见[最终报告](review/M3-FINAL-2026-10-18.json)及[文档关闭核对](review/M3-DOCS-01-2026-10-18.json)。D0–D11、T00–T80/A0–A18、两家各三条本地真实路线、本地 exact、最终三平台 CI 和旧版本兼容均通过；源码与二进制摘要逐报告固定。用户延期的 C3、W1 和 Anthropic 独立 API 保持待验，官方校准各0/40仍非阻塞。范围、状态和隔离步骤见[M3 任务](STYLE-M3-TASKS.md)、[测试矩阵](STYLE-M3-TESTS.md)、[手册](STYLE-M3-MANUAL.md)。
 
 M1/M2 保持只读历史，M2 native/stats/去重/rules/replace 与真实验收事实继续有效。用户延期 C3 托管云端、W1 实际 Windows harness 和 Anthropic 独立 API；官方校准两家各0/40继续非阻塞。本地 exact 编码不替代官方模型校准。文中历史 provider 字段仍表示 harness，新的 when.provider 则表示模型服务配置请求。
 
@@ -427,7 +427,7 @@ M1b 实测版本为 Codex 0.159.3、Claude Code 2.1.300。M1b 的 B/C 条目已�
 
 agenthooks 新增 `WithOfflineInputs`、`RecognizesNativeEvent` 和 `WithRunObserver`，负责从解码阶段替换 Skill/MCP 等外部依赖并报告阶段/错误类别；默认 Run 行为和配置渲染归属保持。core 的可选 trace 与普通 Match/Process 共用一次短路、渲染、Claim 和 cap 处理。`build/explain.json` 来自同次冷编译的计划与去重结果，绑定 index，随正常安装重建/sync/trust/卸载同事务处理；旧安装缺说明降为 index-only。
 
-M3-A1 的 26 个新函数/145 个叶子用例、两家 JSON golden、29 组普通 runtime 对照和完整兼容回归通过。probe 已由 T11/A2 独立验收，见下一节；真实回调/投递与 Windows 仍由 B1/C1、D11/W1 验收。
+M3-A1 的 26 个新函数/145 个叶子用例、两家 JSON golden、29 组普通 runtime 对照和完整兼容回归通过。probe 已由 T11/A2 独立验收，见下一节；真实回调/投递已由 B1/C1 独立验收，Windows 支持范围已通过 A17；用户延期的实际 harness W1 仍待验。
 
 ### 11.4 M3 probe 离线验收
 
@@ -435,7 +435,7 @@ M3-A1 的 26 个新函数/145 个叶子用例、两家 JSON golden、29 组普�
 
 普通 runtime 在 OnAny 提交不可变安全元数据，活动观察任务按 5ms/六层祖先预算异步记录，不能延长 hook 退出等待。无租约不建文件或后台任务；配置/信任/lock/index/编译说明保持。普通事件继续更新原 state/stats，15 组 runner 对照核对 wire/退出码、repeat/seen 和 stats；仅 state.updated_at 的自然时钟变化归一化。
 
-[M3-A2](review/M3-A2-2026-10-17.json) 的 28 个新函数/181 个叶子用例、三条现有路线的离线 OS 进程链、信号/崩溃恢复、竞争/漂移/清理失败及完整兼容回归通过。两家各 200 次普通 hook 进程 p95 为 9.56ms/8.71ms，低于 50ms 门槛。callback-observed 只提供本机关联，不是认证或模型投递；PATH 包装器、插件根或存活原生 executable 无法核对时保持 unverified。Windows 来源检查后续已由 A17 验收；真实 B1/C1 见当前 M3 矩阵。
+[M3-A2](review/M3-A2-2026-10-17.json) 的 28 个新函数/181 个叶子用例、三条现有路线的离线 OS 进程链、信号/崩溃恢复、竞争/漂移/清理失败及完整兼容回归通过。两家各 200 次普通 hook 进程 p95 为 9.56ms/8.71ms，低于 50ms 门槛。callback-observed 只提供本机关联，不是认证或模型投递；PATH 包装器、插件根或存活原生 executable 无法核对时保持 unverified。Windows 来源检查后续已由 A17 验收；Codex 原生插件缓存绑定补充见 [A2 修复](review/M3-A2-CODEX-CACHE-2026-10-18.json)，真实 B1/C1 已在两家各三条本地路线通过，见当前 M3 矩阵。
 
 ### 11.5 M3 Git 来源离线与受控 TLS 验收
 
@@ -443,7 +443,7 @@ M3-A1 的 26 个新函数/145 个叶子用例、两家 JSON golden、29 组普�
 
 app 在提交时持有共享进程身份 guard，重新核对捕获的包/锁/批准/settings/index/说明和路线输入，协调包交换与 ApplyFiles 回滚。adapter 新增可选 ManagementInputs 路径端口，agenthooks 的 ManagementPaths 枚举 renderer 输入及 owner 恢复路径，包括未改变的文件；配置格式、owner/trust 合并、渲染和文件事务仍归 agenthooks。
 
-[M3-A3](review/M3-A3-2026-10-17.json) 的 30 个新函数/202 个叶子用例、真实 SHA-1/SHA-256 与 loopback TLS、三路线生命周期/回滚、17 项真实新旧二进制门禁/普通 wire 对照及完整兼容回归通过。生产不开放 file/SSH/私有认证/继承 Git 配置；内部 fixture 注入没有 CLI/env 绕过。两家真实投递、Windows 和远端 CI 分开待验。
+[M3-A3](review/M3-A3-2026-10-17.json) 的 30 个新函数/202 个叶子用例、真实 SHA-1/SHA-256 与 loopback TLS、三路线生命周期/回滚、17 项真实新旧二进制门禁/普通 wire 对照及完整兼容回归通过。生产不开放 file/SSH/私有认证/继承 Git 配置；内部 fixture 注入没有 CLI/env 绕过。后续真实投递和平台结果见 [M3 测试矩阵](STYLE-M3-TESTS.md)。
 
 ### 11.6 M3 update 离线验收
 
@@ -451,13 +451,13 @@ app 在提交时持有共享进程身份 guard，重新核对捕获的包/锁/�
 
 agenthooks 继续负责协议、配置渲染、owner/trust 与文件事务；ApplyFiles 新增类型化恢复错误，备份保留原 mode/mtime，恢复失败保留备份及路径。app 包回滚也使用类型化错误；这些变化使多包失败可准确报告恢复不完整，不改变配置格式或 wire。
 
-[A4](review/M3-A4-2026-10-17.json) 的 31 个新函数/244 个叶子用例、逐包/逐文件恢复、三路线 native/旧批准/旧锁、24 项 built CLI 及基线 runtime 对照通过；真实投递、Windows 和远端 CI 保持待验。
+[A4](review/M3-A4-2026-10-17.json) 的 31 个新函数/244 个叶子用例、逐包/逐文件恢复、三路线 native/旧批准/旧锁、24 项 built CLI 及基线 runtime 对照通过；后续真实投递和平台结果见 [M3 测试矩阵](STYLE-M3-TESTS.md)。
 
 ### 11.7 M3 frozen 离线验收
 
 M3-T22/A5 的 [`InstallFrozen`](../internal/app/frozen.go) 复用锁定 adapter、共享管理 guard/输入复核与 T21 多包事务；[`ReadLocked`](../internal/source/cache.go) 只校验既有完整缓存。agenthooks 的协议、配置渲染、owner/trust 和 ApplyFiles 保持原职责，无新增修改。恢复的固定绑定、批准和部分产物保守失败边界见 [使用说明](STYLE-SOURCES.md#整锁离线恢复)。项目 T30/A6 和后续云端/插件 T31/T32 均已完成，当前真实状态见 M3 矩阵。
 
-[A5](review/M3-A5-2026-10-17.json) 的 21 个新函数/209 个叶子用例、16 份 golden、30 项 built CLI、三路线 owner 恢复与拒绝、app/source race 和完整兼容回归通过。旧 rendered 变更集摘要无法重现的部分修复保守失败；真实投递、Windows 和远端 CI 另验。
+[A5](review/M3-A5-2026-10-17.json) 的 21 个新函数/209 个叶子用例、16 份 golden、30 项 built CLI、三路线 owner 恢复与拒绝、app/source race 和完整兼容回归通过。旧 rendered 变更集摘要无法重现的部分修复保守失败；后续真实投递和平台结果见 [M3 测试矩阵](STYLE-M3-TESTS.md)。
 
 ## 12. 已知边界与后续工作
 

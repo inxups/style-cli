@@ -4,7 +4,7 @@
 
 状态（2026-10-18）：M1、M2 已关闭并只读归档；M2 的 native、stats、跨包去重、Claude rules/迁移和 replace 回退及真实验收事实保留，见 [M2 任务](../STYLE-M2-TASKS.md)与[测试矩阵](../STYLE-M2-TESTS.md)。
 
-当前里程碑 M3 的 D0–D11、全部实现及 A0–A18 已完成；[A17](../review/M3-A17-2026-10-18.json)固定支持范围的三平台原生 CI，[A18](../review/M3-A18-2026-10-18.json)固定旧版本和六路线组合回归。真实本地 B/C、exact 汇总和最终 CI 以[M3 任务](../STYLE-M3-TASKS.md)、[测试矩阵](../STYLE-M3-TESTS.md)为准，操作见[M3 手册](../STYLE-M3-MANUAL.md)。用户明确延期 C3、W1 和 Anthropic 独立 API；官方校准两家各 0/40 继续非阻塞，编码精确不替代校准。M3-RV-01 已由注册表校验关闭，D8 已将 engine 输出差异改为 adapter 能力。
+当前里程碑 M3 于 2026-10-18 按用户确认范围完成并关闭：D0–D11、全部实现/A0–A18、两家各三条本地真实路线、本地 exact 和最终 Ubuntu/macOS/Windows CI 均通过，[最终报告](../review/M3-FINAL-2026-10-18.json)与[文档关闭核对](../review/M3-DOCS-01-2026-10-18.json)固定证据。任务、测试和隔离操作见 [M3 清单](../STYLE-M3-TASKS.md)、[矩阵](../STYLE-M3-TESTS.md)、[手册](../STYLE-M3-MANUAL.md)。用户延期 C3、W1 和 Anthropic 独立 API，均未标记通过；官方校准两家各 0/40 仍独立非阻塞。M3-RV-01 已由注册表校验关闭，D8 已将 engine 输出差异改为 adapter 能力。下一步规划新里程碑。
 
 当前完整接入 Claude Code 与 Codex。Windows 支持两家 user 路线，POSIX 还支持项目及插件；本文接口示意须结合当前源码与[adapter 总览](../STYLE-ADAPTERS-CURRENT.md)阅读。
 
@@ -203,7 +203,7 @@ core 只消费通用目录/能力端口；agenthooks 继续负责协议、配置
 
 ### 4.1 M3-D1 诊断契约评审稿
 
-本节契约已于 2026-10-17 获用户确认，M3-D1 已关闭；T10 explain 已实现并通过 [A1](../review/M3-A1-2026-10-17.json)，T11 probe 已实现并通过 [A2](../review/M3-A2-2026-10-17.json)，[操作与恢复说明](../STYLE-PROBE.md) 已同步；真实 B1/C1 另验。完整输入、format=1 报告、失败行为和 A1-01–A1-12/A2-01–A2-12 断言见 [D1 方案](../review/M3-D1-DIAGNOSTICS-2026-10-17.md)。
+本节契约已于 2026-10-17 获用户确认，M3-D1 已关闭；T10 explain 已实现并通过 [A1](../review/M3-A1-2026-10-17.json)，T11 probe 已实现并通过 [A2](../review/M3-A2-2026-10-17.json)，[操作与恢复说明](../STYLE-PROBE.md) 已同步；真实 B1/C1 已在本地三路线分别通过，见当前 M3 矩阵。完整输入、format=1 报告、失败行为和 A1-01–A1-12/A2-01–A2-12 断言见 [D1 方案](../review/M3-D1-DIAGNOSTICS-2026-10-17.md)。
 
 **explain**：`--harness` 必填一家（沿用 claude 别名）；`--event` 为区分大小写的原生事件名，例如 PreToolUse，必须与 payload.hook_event_name 一致。payload/session 必填且有界，index 默认从 STYLE_HOME 读取，也可显式指定；同一份捕获字节交给真实 codec/adapter/engine，不能独立实现一个解释匹配器。
 
@@ -247,7 +247,7 @@ T31 已实现 `style export --target claude-cloud --project <dir> [--yes] [--jso
 
 T32 已实现用户级 `claude-plugin`，本地目录 marketplace，`${CLAUDE_PLUGIN_ROOT}/scripts/style` 启动，不用顶层 bin；手动原生登记/卸载。与 claude-user hook 载体互斥切换，静态仍在用户 rules，插件禁用不代表静态移除。原生 CLI 的空键/缓存残留单列，不直接编辑原生数据库或承诺其字节还原。
 
-新项目/Claude 插件路线使用 lock format=3，旧程序必须先拒绝，新 scope/binding 进入批准身份；旧三路线 lock 1/2、index format=1 及默认语义保留。agenthooks 继续负责原生协议/renderer/owner/ApplyFiles；补项目 hook 与用户 trust 分根、按项目 owner 合并和可移植 argv，app 不自行写原生配置。文件事务沿 D2 捕获/确认/guard/回滚；A6/A7/A8 为 12/6/6 组，A6/A7/A8 已通过离线验收。T30 提供显式多来源整批 clone 激活与采用归属披露；项目声明 format 1、lock 3 和私有 binding 共同核对效果、根及 runner。T31/T32 已完成，D3 已定稿，真实 B2/C2/C4 待验，C3 按用户决定延期。
+新项目/Claude 插件路线使用 lock format=3，旧程序必须先拒绝，新 scope/binding 进入批准身份；旧三路线 lock 1/2、index format=1 及默认语义保留。agenthooks 继续负责原生协议/renderer/owner/ApplyFiles；补项目 hook 与用户 trust 分根、按项目 owner 合并和可移植 argv，app 不自行写原生配置。文件事务沿 D2 捕获/确认/guard/回滚；A6/A7/A8 为 12/6/6 组，A6/A7/A8 已通过离线验收。T30 提供显式多来源整批 clone 激活与采用归属披露；项目声明 format 1、lock 3 和私有 binding 共同核对效果、根及 runner。T31/T32 已完成，D3 已定稿，真实 B2/C2/C4 已通过本地验收，C3 按用户决定延期。
 
 ## 5. 本地布局、锁文件和状态
 

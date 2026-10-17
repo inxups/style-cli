@@ -1,0 +1,20 @@
+{
+  "baseline": "2172103",
+  "documents": 7,
+  "local_links_and_anchors": 493,
+  "archives_unchanged": 59,
+  "historical_json_unchanged": 164,
+  "progress_prefix_sha256": "e113930285081d82fd47d84e967a19915f0217a87b3cb0ddd287102e3283783a",
+  "changed_files": [
+    "docs/PROGRESS.md",
+    "docs/STYLE-ADAPTERS-CURRENT.md",
+    "docs/STYLE-EXPLAIN.md",
+    "docs/STYLE-M3-MANUAL.md",
+    "docs/STYLE-M3-TASKS.md",
+    "docs/STYLE-M3-TESTS.md",
+    "docs/review/M3-DOCS-01-2026-10-18.json",
+    "docs/review/M3-DOCS-01-CHANGE-CHECK-2026-10-18.json",
+    "docs/spec/STYLE-cli-design.md"
+  ],
+  "checks": "pass"
+}
