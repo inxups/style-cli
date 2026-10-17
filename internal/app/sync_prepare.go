@@ -16,12 +16,12 @@ func (s *Service) prepareSync(ctx context.Context, request TrustRequest) (syncPr
 	if err := checkContext(ctx); err != nil {
 		return prepared, err
 	}
-	home, err := resolveStyleHome(request.Home)
+	home, err := s.resolveStyleHome(request.Home)
 	if err != nil {
 		return prepared, err
 	}
 	prepared.home = home
-	prepared.inputs, err = captureManagement(home)
+	prepared.inputs, err = s.captureManagement(home)
 	if err != nil {
 		return prepared, err
 	}
@@ -32,6 +32,9 @@ func (s *Service) prepareSync(ctx context.Context, request TrustRequest) (syncPr
 		return prepared, err
 	}
 	lock, err := decodeLock(lockBefore)
+	if err == nil {
+		err = s.validateScopeLock(home, lock)
+	}
 	if err != nil {
 		return prepared, err
 	}
@@ -119,7 +122,7 @@ func (s *Service) prepareSync(ctx context.Context, request TrustRequest) (syncPr
 		}
 	}
 	packages := make([]installPackage, 0, len(lock.Packages))
-	updated := lockDocument{Format: lock.Format, Packages: []lockPackage{}, Harnesses: cloneHarnesses(lock.Harnesses)}
+	updated := lockDocument{Format: lock.Format, Project: lock.Project, Packages: []lockPackage{}, Harnesses: cloneHarnesses(lock.Harnesses)}
 	replaceOwner := ""
 	for _, item := range lock.Packages {
 		parsed, err := s.parseInstalledSnapshot(ctx, home, item, snapshots[item.Name])
@@ -210,6 +213,10 @@ func (s *Service) prepareSync(ctx context.Context, request TrustRequest) (syncPr
 	}
 	// Syncing an empty installation only performs state maintenance.
 	if len(lock.Packages) > 0 {
+		prepared.files, err = s.projectFiles(home, lock, &updated, adapters, compilation, prepared.files, prepared.inputs)
+		if err != nil {
+			return prepared, err
+		}
 		lockAfter, err := yaml.Marshal(updated)
 		if err != nil {
 			return prepared, err

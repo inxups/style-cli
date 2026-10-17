@@ -18,6 +18,7 @@ func runInstall(ctx context.Context, service *Service, workDir string, args []st
 	if isHelp(args) {
 		fmt.Fprintln(out, "style install <source> [--ref ref] [--path repo-path] [--harness h] [--route h=r] [--set k=v] [--link] [--allow-replace] [--fail-closed h] [--yes] [--json]")
 		fmt.Fprintln(out, frozenUsage)
+		fmt.Fprintln(out, "Project: --project <dir>; a fresh multi-package installation also accepts repeatable --project-source <source> and --project-set package.key=value.")
 		return ExitOK
 	}
 	request, jsonOutput, err := parseInstallArgs(args)
@@ -31,6 +32,11 @@ func runInstall(ctx context.Context, service *Service, workDir string, args []st
 	}
 	if !source.Remote(request.Source) && !filepath.IsAbs(request.Source) {
 		request.Source = filepath.Join(workDir, request.Source)
+	}
+	for i, path := range request.ProjectSources {
+		if !source.Remote(path) && !filepath.IsAbs(path) {
+			request.ProjectSources[i] = filepath.Join(workDir, path)
+		}
 	}
 	previewWritten := false
 	if !jsonOutput {
@@ -101,6 +107,13 @@ func runInstall(ctx context.Context, service *Service, workDir string, args []st
 }
 
 func writeInstallPreview(out io.Writer, result InstallResult) {
+	if result.ProjectAdoption {
+		fmt.Fprintln(out, "project adoption: existing declared STYLE effects become owned by this clone and are removed on uninstall")
+	}
+	for _, pkg := range result.ProjectPackages {
+		fmt.Fprintf(out, "project package: %s %s source=%s\n", pkg.Name, pkg.Version, pkg.Source)
+		writeSource(out, pkg.Git)
+	}
 	writeSource(out, result.Source)
 	if len(result.Reports) > 0 {
 		writePlanText(out, PlanResult{Package: result.Package, Version: result.Version, Diagnostics: result.Diagnostics, Reports: result.Reports})
@@ -110,7 +123,7 @@ func writeInstallPreview(out io.Writer, result InstallResult) {
 }
 
 func parseInstallArgs(args []string) (InstallRequest, bool, error) {
-	request := InstallRequest{Settings: map[string]string{}, Routes: map[string]string{}}
+	request := InstallRequest{Settings: map[string]string{}, Routes: map[string]string{}, ProjectSettings: map[string]string{}}
 	jsonOutput := false
 	for index := 0; index < len(args); index++ {
 		if handled, err := parseSourceOption(args, &index, &request.Ref, &request.Path); handled {
@@ -121,6 +134,26 @@ func parseInstallArgs(args []string) (InstallRequest, bool, error) {
 		}
 		arg := args[index]
 		switch {
+		case arg == "--project-source" || arg == "--project-set":
+			if index+1 >= len(args) || strings.HasPrefix(args[index+1], "-") || args[index+1] == "" {
+				return InstallRequest{}, false, fmt.Errorf("%s requires a value", arg)
+			}
+			index++
+			if arg == "--project-source" {
+				request.ProjectSources = append(request.ProjectSources, args[index])
+			} else if err := parseSetting(request.ProjectSettings, args[index]); err != nil {
+				return InstallRequest{}, false, err
+			}
+		case strings.HasPrefix(arg, "--project-source="):
+			value := strings.TrimPrefix(arg, "--project-source=")
+			if value == "" {
+				return InstallRequest{}, false, errors.New("--project-source requires a value")
+			}
+			request.ProjectSources = append(request.ProjectSources, value)
+		case strings.HasPrefix(arg, "--project-set="):
+			if err := parseSetting(request.ProjectSettings, strings.TrimPrefix(arg, "--project-set=")); err != nil {
+				return InstallRequest{}, false, err
+			}
 		case arg == "--json":
 			jsonOutput = true
 		case arg == "--yes":

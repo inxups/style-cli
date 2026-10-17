@@ -20,17 +20,19 @@ import (
 // Runtime connects the provider codec, adapter enrichment, state, and core
 // engine. The codec remains responsible for reading stdin and encoding output.
 type Runtime struct {
-	Observer      *probe.Observer
-	Trace         *engine.Trace
-	Engine        *engine.Engine
-	State         *state.Store
-	Adapter       adapter.RuntimeEnricher
-	Provider      agenthooks.Provider
-	FailClosed    bool
-	Logger        *slog.Logger
-	Now           func() time.Time
-	CodecStateDir string
-	loadErr       error
+	// InitializationError rejects decoded events before any state access.
+	InitializationError error
+	Observer            *probe.Observer
+	Trace               *engine.Trace
+	Engine              *engine.Engine
+	State               *state.Store
+	Adapter             adapter.RuntimeEnricher
+	Provider            agenthooks.Provider
+	FailClosed          bool
+	Logger              *slog.Logger
+	Now                 func() time.Time
+	CodecStateDir       string
+	loadErr             error
 }
 
 // New assembles an invocation-scoped hook runtime.
@@ -166,6 +168,9 @@ func (r *Runtime) Register(runner *agenthooks.Runner) error {
 		return decision, nil
 	})
 	runner.OnOther("PostModelSwitch", func(_ context.Context, event *agenthooks.Event) error {
+		if r.InitializationError != nil {
+			return r.InitializationError
+		}
 		if event == nil {
 			return fmt.Errorf("runtime: missing model-switch event")
 		}
@@ -223,7 +228,7 @@ func (r *Runtime) process(ctx context.Context, event *agenthooks.Event, typed an
 	if event == nil {
 		return engine.Output{}, fmt.Errorf("runtime: missing decoded event")
 	}
-	if r.loadErr != nil {
+	if r.loadErr != nil || r.InitializationError != nil {
 		r.logError(event, "index-invalid")
 		return engine.Output{}, fmt.Errorf("runtime: index is unavailable")
 	}

@@ -32,7 +32,7 @@ func applyUpdate(ctx context.Context, prepared preparedUpdate, deps updateDepend
 	if err := checkContext(ctx); err != nil {
 		return result, err
 	}
-	guard, err := acquireManagement(ctx, prepared.home)
+	guard, err := acquireInputs(ctx, prepared.inputs, prepared.home)
 	if err != nil {
 		return result, err
 	}

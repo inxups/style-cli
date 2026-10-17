@@ -16,6 +16,8 @@ import (
 )
 
 type route struct {
+	project        bool
+	configUser     string
 	name           string
 	dir            string
 	command        string
@@ -36,7 +38,10 @@ func (r *route) BindStorage(home string) adapter.Route {
 func (r *route) BindInstallation(installation adapter.Installation) adapter.Route {
 	bound := *r
 	if installation.ConfigDir != "" {
-		bound.dir = installation.ConfigDir
+		bound.configUser = installation.ConfigDir
+		if !bound.project {
+			bound.dir = installation.ConfigDir
+		}
 	}
 	bound.harnessVersion = installation.Version
 	return &bound
@@ -49,6 +54,12 @@ func (r *route) Available(_ context.Context, installation adapter.Installation) 
 	if r.dir == "" {
 		return false, "Claude Code config directory is required", nil
 	}
+	if r.project {
+		if !adapter.VersionAtLeast(installation.Version, "2.1.301") {
+			return false, "project hooks require known Claude Code >= 2.1.301", nil
+		}
+		return true, "start Claude Code from the project root; subdirectory static discovery does not establish hook loading", nil
+	}
 	return true, "available", nil
 }
 
@@ -57,10 +68,16 @@ func (r *route) Trust() adapter.TrustInfo {
 }
 
 func (r *route) target() install.Target {
+	if r.project {
+		return install.Target{Provider: ProviderName, Scope: install.ScopeProject, Dir: filepath.Dir(r.dir), HarnessVersion: r.harnessVersion}
+	}
 	return install.Target{Provider: ProviderName, Scope: install.ScopeUser, Dir: r.dir, HarnessVersion: r.harnessVersion}
 }
 
 func (r *route) commandLine() []string {
+	if r.project {
+		return []string{"/bin/sh", "${CLAUDE_PROJECT_DIR}/.style/hooks/style"}
+	}
 	argv := []string{adapter.HookCommand(r.command)}
 	if r.storageHome != "" {
 		argv = append(argv, "--style-home="+r.storageHome, "--harness-home="+r.dir, "--harness-version="+r.harnessVersion)
@@ -513,4 +530,10 @@ func NewUserRouteForInstallation(dir, harnessVersion, command string, facts *Fac
 
 func NewUserRoute(dir string, facts *Facts) adapter.Route {
 	return NewUserRouteForInstallation(dir, "", "", facts)
+}
+
+func NewProjectRoute(root string) adapter.Route {
+	facts := NewFacts(adapter.Installation{ConfigDir: filepath.Join(root, ".claude")})
+	facts.Project = true
+	return &route{name: ProjectRouteName, project: true, dir: filepath.Join(root, ".claude"), command: "style", facts: facts}
 }

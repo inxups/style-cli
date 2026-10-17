@@ -61,6 +61,9 @@ func RunWithService(ctx context.Context, service *Service, workDir string, args 
 		printUsage(out)
 		return ExitOK
 	}
+	if projectInvocation(args) {
+		return runProjectCommand(ctx, service, workDir, args, out, errOut)
+	}
 	switch args[0] {
 	case "init":
 		return runInit(ctx, service, workDir, args[1:], out, errOut)
@@ -83,7 +86,7 @@ func RunWithService(ctx context.Context, service *Service, workDir string, args 
 	case "explain":
 		return runExplain(ctx, service, workDir, args[1:], out, errOut)
 	case "stats":
-		return runStats(ctx, args[1:], out, errOut)
+		return runScopedStats(ctx, service, args[1:], out, errOut)
 	default:
 		fmt.Fprintf(errOut, "style: unknown command %q\n", args[0])
 		printUsage(errOut)
@@ -92,6 +95,7 @@ func RunWithService(ctx context.Context, service *Service, workDir string, args 
 }
 
 func printUsage(out io.Writer) {
+	fmt.Fprintln(out, "Project scope: add --project <existing-dir> to management, diagnostic and stats commands.")
 	fmt.Fprintln(out, "style init [name] [--single]")
 	fmt.Fprintln(out, "style validate [source] [--ref ref] [--path repo-path] [--json]")
 	fmt.Fprintln(out, "style plan <source> [--ref ref] [--path repo-path] [--harness auto|codex,claude-code] [--assume-requests N] [--assume-triggers N] [--json]")

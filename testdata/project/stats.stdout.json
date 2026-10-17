@@ -1,0 +1,37 @@
+{
+  "by": "rule",
+  "format": 1,
+  "quality": {
+    "invalid_lines": 0,
+    "oversized_lines": 0,
+    "partial": false,
+    "skipped_symlinks": 0
+  },
+  "rows": [],
+  "scope": {
+    "base_home": "$FIXTURE/private",
+    "budget_scope": "selected installation only; active user packages have a separate budget and state",
+    "coexisting_user_packages": {},
+    "external_prerequisites": [
+      "style must be available on the harness PATH",
+      "harness workspace trust remains external",
+      "launch Claude Code at the project root",
+      "launch Codex through the canonical project path"
+    ],
+    "home": "$PROJECT_HOME",
+    "kind": "project",
+    "root": "$FIXTURE/project ' space"
+  },
+  "totals": {
+    "blocks": 0,
+    "cap_drops": 0,
+    "dedup": 0,
+    "estimated_tokens": 0,
+    "outputs": 0,
+    "unestimated": 0
+  },
+  "window": {
+    "since": "$TIME",
+    "until": "$TIME"
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "packages": [
+    {
+      "changed_files": [],
+      "hash_matches": true,
+      "link": "no",
+      "name": "project-rules",
+      "native_count": 0,
+      "seq": 1,
+      "source": "$FIXTURE/source",
+      "source_kind": "dir",
+      "version": "1.0.0"
+    }
+  ],
+  "scope": {
+    "base_home": "$FIXTURE/private",
+    "budget_scope": "selected installation only; active user packages have a separate budget and state",
+    "coexisting_user_packages": {},
+    "external_prerequisites": [
+      "style must be available on the harness PATH",
+      "harness workspace trust remains external",
+      "launch Claude Code at the project root",
+      "launch Codex through the canonical project path"
+    ],
+    "home": "$PROJECT_HOME",
+    "kind": "project",
+    "root": "$FIXTURE/project ' space"
+  }
+}

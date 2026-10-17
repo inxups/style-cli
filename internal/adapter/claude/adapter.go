@@ -20,6 +20,7 @@ import (
 )
 
 const (
+	ProjectRouteName  = "claude-project"
 	ProviderName      = agenthooks.ProviderClaudeCode
 	Owner             = "style"
 	UserRouteName     = "claude-user"
@@ -142,6 +143,7 @@ func cloneExtra(extra map[string]any) map[string]any {
 
 // Facts implements the provider facts consumed by core/plan.
 type Facts struct {
+	Project               bool
 	StaticAppendAvailable bool
 	StaticPath            string
 	staticLayout          string
@@ -262,7 +264,7 @@ func (f Facts) StaticLocation(mode string) (adapter.StaticLocation, bool) {
 }
 
 func (f Facts) StaticPositions(installation adapter.Installation) []adapter.StaticLocation {
-	if installation.ConfigDir != "" {
+	if !f.Project && installation.ConfigDir != "" {
 		f = NewFacts(installation)
 	}
 	location, ok := f.StaticLocation("append")

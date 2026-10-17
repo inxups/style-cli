@@ -31,8 +31,9 @@ type inputTree struct {
 	files map[string]inputFile
 }
 type managementInputs struct {
-	trees   map[string]inputTree
-	parents map[string]os.FileInfo
+	guardHomes []string
+	trees      map[string]inputTree
+	parents    map[string]os.FileInfo
 }
 
 func captureManagement(home string) (*managementInputs, error) {

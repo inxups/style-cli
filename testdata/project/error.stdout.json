@@ -1,0 +1,10 @@
+{
+  "diagnostics": [
+    {
+      "code": "project-invalid",
+      "severity": "error",
+      "message": "--project requires a directory"
+    }
+  ],
+  "status": "error"
+}

@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"reflect"
 	"sort"
 	"strings"
 	"time"
@@ -134,7 +135,7 @@ func (s *Service) Probe(ctx context.Context, request ProbeRequest) (result Probe
 	if s.probeDeps != nil {
 		deps = *s.probeDeps
 	}
-	home, err := resolveStyleHome(request.Home)
+	home, err := s.resolveStyleHome(request.Home)
 	if err != nil {
 		return result, fail("probe-not-installed", "Cannot resolve the installation root.")
 	}
@@ -148,6 +149,9 @@ func (s *Service) Probe(ctx context.Context, request ProbeRequest) (result Probe
 		return result, fail("probe-not-installed", "No readable installed STYLE lock.")
 	}
 	lock, err := decodeLock(lockBytes)
+	if err == nil {
+		err = s.validateScopeLock(home, lock)
+	}
 	if err != nil {
 		return result, fail("probe-not-installed", "Installed STYLE lock is invalid.")
 	}
@@ -209,6 +213,22 @@ func (s *Service) Probe(ctx context.Context, request ProbeRequest) (result Probe
 			}
 			return data, err
 		}
+		if s.project != nil {
+			data, bindingErr := capture(filepath.Join(home, "binding.json"))
+			var bound projectBinding
+			if bindingErr != nil || json.Unmarshal(data, &bound) != nil || !reflect.DeepEqual(&bound, lock.Project) {
+				add("project-binding-invalid", "error", "Project runtime binding is missing or differs from the lock.", string(id))
+				unavailable = true
+				continue
+			}
+			declaration, declarationErr := capture(filepath.Join(s.project.Root, projectDeclarationPath))
+			launcher, launcherErr := capture(filepath.Join(s.project.Root, projectLauncherPath))
+			if declarationErr != nil || hashBytes(declaration) != bound.Declaration || launcherErr != nil || string(launcher) != projectLauncher {
+				add("project-binding-invalid", "error", "Project declaration or launcher is missing or changed.", string(id))
+				unavailable = true
+				continue
+			}
+		}
 		setup, err := inspector.InspectProbe(ctx, capture)
 		if err != nil {
 			add("probe-installation-unavailable", "error", "Runtime configuration, registration, command or trust binding is unavailable or changed.", string(id))
@@ -230,6 +250,15 @@ func (s *Service) Probe(ctx context.Context, request ProbeRequest) (result Probe
 			add("runtime-unavailable", "error", "Installed runtime lacks the observation capability or a verifiable executable.", string(id))
 			unavailable = true
 			continue
+		}
+		if s.project != nil {
+			expected, bindingErr := canonicalProjectPath(lock.Project.Runner)
+			actual, actualErr := canonicalProjectPath(runtimePath)
+			if bindingErr != nil || actualErr != nil || expected != actual {
+				add("project-binding-invalid", "error", "PATH runtime differs from the approved project runner.", string(id))
+				unavailable = true
+				continue
+			}
 		}
 		harnessPath, err := deps.lookPath(setup.HarnessCommand)
 		if err != nil {

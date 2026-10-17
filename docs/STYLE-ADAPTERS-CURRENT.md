@@ -1,6 +1,6 @@
 # STYLE 当前 adapter 实现总览
 
-更新时间：2026-10-17。生产源码核对基线：`16d5c1c`（M2 native、stats、跨包去重、Claude rules/迁移），replace 回退验收 `4976713`，Claude 最终隔离准备 `5dd6742`。Codex M2 B1–B4 双路线证据归档至 `e6dd778`；D4/D5 已由 Claude 2.1.301 的 C1–C4 真实交互验收闭合；M2 已完成并关闭，远端 Ubuntu/macOS CI 在 `154506f` 全部通过（run `39000483969`，59 项采集器）。无 key 补充对照已完成；官方 token 计数仍各 0/40、待独立 API key，承接为 M3-CARRY-01 非阻塞待验。M3-T00 已统一注册表名称校验并通过 [M3-A0](review/M3-A0-2026-10-17.json)，关闭 M3-RV-01；T00 源码由该报告的完整摘要固定。M3-T10 的 [explain 离线验收](review/M3-A1-2026-10-17.json) 已通过，新增隔离重放与可选编译说明；M3-T11 的 [probe 离线验收](review/M3-A2-2026-10-17.json) 也已通过，观察既有 STYLE runtime 回调；M3-T20 的 [Git 来源验收](review/M3-A3-2026-10-17.json) 已通过，取得与锁定留在管理冷路径，真实验收状态不变。
+更新时间：2026-10-17。生产源码核对基线：`16d5c1c`（M2 native、stats、跨包去重、Claude rules/迁移），replace 回退验收 `4976713`，Claude 最终隔离准备 `5dd6742`。Codex M2 B1–B4 双路线证据归档至 `e6dd778`；D4/D5 已由 Claude 2.1.301 的 C1–C4 真实交互验收闭合；M2 已完成并关闭，远端 Ubuntu/macOS CI 在 `154506f` 全部通过（run `39000483969`，59 项采集器）。无 key 补充对照已完成；官方 token 计数仍各 0/40、待独立 API key，承接为 M3-CARRY-01 非阻塞待验。M3-T00 已统一注册表名称校验并通过 [M3-A0](review/M3-A0-2026-10-17.json)，关闭 M3-RV-01；T00 源码由该报告的完整摘要固定。M3-T10 的 [explain 离线验收](review/M3-A1-2026-10-17.json) 已通过，新增隔离重放与可选编译说明；M3-T11 的 [probe 离线验收](review/M3-A2-2026-10-17.json) 也已通过，观察既有 STYLE runtime 回调；M3-T20 的 [Git 来源验收](review/M3-A3-2026-10-17.json) 已通过，取得与锁定留在管理冷路径，真实验收状态不变。M3-T30 已提供两条显式项目路线并通过 [M3-A6](review/M3-A6-2026-10-17.json)，见 [项目安装说明](STYLE-PROJECTS.md)；云端和 Claude 插件继续暂缓。
 
 本文总结当前仓库的实现，不代表 Claude Code / Codex 所有版本的完整产品能力。能力声明、安装配置、运行时可接收事件和真实验收结果分别说明；未修改现有 fallback 语义。
 
@@ -17,7 +17,7 @@ STYLE 当前完整接入两个 provider：`codex` 和 `claude-code`。`agenthook
 | `core/engine`、`core/state` | 匹配、渲染、去重、预算、会话和 agent 状态 | [engine](../core/engine/)、[state](../core/state/) |
 | `internal/runtime` | 串起 codec、adapter、state、engine 和输出决策 | [runtime.go](../internal/runtime/runtime.go) |
 | `internal/source` | 显式 Git 来源、固定 OID 原始导出及私有完整缓存；仅管理冷路径 | [git.go](../internal/source/git.go)、[cache.go](../internal/source/cache.go) |
-| `internal/app` | 安装、卸载、sync/trust、lock 1/2 与批准身份、共享提交保护、路线选择、报告、CLI hook 入口 | [install.go](../internal/app/install.go)、[hook_command.go](../internal/app/hook_command.go) |
+| `internal/app` | 安装、卸载、sync/trust、lock 1/2 及项目 lock 3 与批准身份、共享提交保护、路线选择、报告、CLI hook 入口 | [install.go](../internal/app/install.go)、[hook_command.go](../internal/app/hook_command.go) |
 
 原则是 adapter 提供事实，core 决定策略。`core` 不导入 `agenthooks` 或 `internal/adapter`，由 [边界测试](../internal/adapter/boundary_test.go) 检查。
 
@@ -66,8 +66,10 @@ M3-T00 的 `Registry.ValidationCatalog()` 返回独立的名称 slice 与 native
 | `codex-plugin` | 插件默认在 `$STYLE_HOME/adapters/codex/plugin`；包含插件清单、hook 和指向固定程序的 POSIX 启动器；静态指令及 hook 信任配置仍关联 Codex 配置目录 | `user-confirmation`，不会因文件存在就宣称已信任 |
 | `codex-user` | Codex 配置目录的 `hooks.json` 和 `config.toml` | `preseed`，生成 hook 信任状态；配置满足安装检查时可报告 trusted |
 | `claude-user` | Claude 配置目录的 `settings.json` 和每包 `rules/style-<名字>.md`；重建时迁移旧 `CLAUDE.md` 块 | `workspace`，`Status.Trusted` 保守返回 false，无法从配置文件推断工作区信任 |
+| `codex-project` | 显式项目范围的 `R/.codex/hooks.json`，定义哈希信任在用户 CODEX_HOME；静态沿 session.start/compact 降级 | 仍需原生 workspace trust 和规范路径启动，STYLE 不写项目信任 |
+| `claude-project` | 显式项目范围的 `R/.claude/settings.json` 与 `R/.claude/rules/style-<名字>.md` | 动态要求根目录启动；文件存在不代表交互 trust 或真实投递 |
 
-Codex Definition 的声明顺序是 plugin、user；Claude 只有 user。实际选择还受显式路线参数、已安装锁定信息和可用性影响。项目级路线和 Claude 插件路线尚未实现。
+用户范围的 Codex Definition 声明顺序仍是 plugin、user，Claude 为 user；显式 --project 构造仅含对应项目路线的范围。实际选择还受路线参数、已安装锁定信息和可用性影响。项目路线要求已知 Codex >=0.159.3 / Claude >=2.1.301；PATH runner、STYLE_HOME 和 harness 用户配置须与批准绑定一致。Claude 插件路线尚未实现。
 
 Codex 插件的 marketplace 登记/启用尚未由 STYLE 自动完成；已有真实验收采用手动管理命令，不能把生成插件文件等同于 Codex 已加载插件。
 
@@ -464,7 +466,7 @@ M3-T22/A5 的 [`InstallFrozen`](../internal/app/frozen.go) 复用锁定 adapter�
 | Codex skill / 子 agent | 云端 skill 不支持且 plan 提示；原生工具名未采集。FINAL-07 已覆盖 fresh/fork/depth2 子 agent context、工具注入/阻断与独立 scope |
 | Claude | workspace trust 无法自动确认；Read新订阅热更新已测。所测环境未实现实际关闭思考，保留不产出none；六事件USER可见，clear来源启动USER未显示；SubagentStart不支持上下文注入 |
 | 成本与超限 | 官方计数仍各0/40、待API key；本地两编码对照不等于模型校准，真实订阅会话统计不代表逐规则成本或典型账单。两家原生文件预览已测，字符边界不等于token校准，Claude ASCII结果不外推Unicode边界 |
-| 路线与 provider | 项目级路线、Claude 插件路线、其他 STYLE provider adapter 尚未实现 |
+| 路线与 provider | 项目级路线已通过 A6，真实 B2/C2 待验；Claude 插件、云端导出和其他 STYLE provider adapter 尚未实现 |
 | M2 Claude | C1–C4 真实交互通过，用户 rules/生产静态/去重/native/matcher/卸载恢复均有原生证据；D5 回退方案生效。新 rules compact 行为不由本次新会话验收外推 |
 | 未来能力 | provider 条件等按 M3/M4 backlog 规划 |
 
@@ -480,6 +482,6 @@ U9控制配置补测已完成，见 [THINKING](review/M1-FINAL-06-THINKING-2026-
 
 ## 12. M3-D3 路线评审边界
 
-[安装范围与交付路线评审稿](review/M3-D3-ROUTES-2026-10-17.md)已结合 Claude Code 调查和静态加载补测回写规范；用户已确认先做项目级，本轮只进入 T30/A6，云端/插件暂缓。`codex-project`、`claude-project`、cloud export 与 `claude-plugin` 均未实现；本页前述三条现有路线仍是当前实现。新项目路线拟使用私有独立安装根、显式 --project、lock 3 与可移植入口；Codex 项目静态降级以免覆盖用户 developer_instructions，Claude 项目静态 rules 与 hook 发现分开报告。Claude 插件拟为手动登记的本地 marketplace hook 载体，静态继续在用户 rules，原生缓存残留单列。
+[安装范围与交付路线评审稿](review/M3-D3-ROUTES-2026-10-17.md)已结合 Claude Code 调查和静态加载补测回写规范；用户已确认先做项目级，T30 已实现并通过 [A6](review/M3-A6-2026-10-17.json)，云端/插件暂缓。`codex-project`、`claude-project` 使用私有独立安装根、显式 --project、lock 3 与可移植入口；Codex 项目静态降级以免覆盖用户 developer_instructions，Claude 项目静态 rules 与 hook 发现分开报告。Claude 插件拟为手动登记的本地 marketplace hook 载体，静态继续在用户 rules，原生缓存残留单列。
 
-本轮原生补测绑定 Codex 0.159.3 / Claude Code 2.1.301，仅以回环 stub 请求中的固定标记核对加载；未调用真实模型。A6–A8、B2/C2–C4、Windows、远端 CI 和官方两家各 0/40 状态不变，复核证据见 [D3 报告](review/M3-D3-DOCS-2026-10-17.json)。
+本轮原生补测绑定 Codex 0.159.3 / Claude Code 2.1.301，仅以回环 stub 请求中的固定标记核对加载；未调用真实模型。该调查不替代 A6；A6 现已另行完成，A7/A8、B2/C2–C4、Windows、远端 CI 和官方两家各 0/40 仍待验，复核证据见 [D3 报告](review/M3-D3-DOCS-2026-10-17.json)。

@@ -1,0 +1,280 @@
+{
+  "package": "project-rules",
+  "reports": [
+    {
+      "budget": {
+        "always_on": 600,
+        "per_event": 1200,
+        "per_rule": 400
+      },
+      "native_limit": {
+        "approximate": true,
+        "overflow": "file-preview",
+        "source": "Codex additionalContext default",
+        "unit": "tokens",
+        "value": 2500
+      },
+      "plan": {
+        "adapter": "codex",
+        "blocked": false,
+        "package": "project-rules",
+        "rules": [
+          {
+            "action": "inject",
+            "id": "dynamic",
+            "needs": [
+              "agent"
+            ],
+            "placements": [
+              {
+                "action": "inject",
+                "capabilities": [
+                  "add-context"
+                ],
+                "event": "tool.pre",
+                "repeat": "session",
+                "status": "native"
+              }
+            ],
+            "source": "STYLE.yaml#dynamic",
+            "status": "native",
+            "target": "tool"
+          },
+          {
+            "action": "inject",
+            "id": "static",
+            "needs": [
+              "agent"
+            ],
+            "placements": [
+              {
+                "action": "inject",
+                "capabilities": [
+                  "add-context"
+                ],
+                "degraded_from": "static",
+                "event": "session.start",
+                "repeat": "session",
+                "status": "degraded"
+              }
+            ],
+            "reasons": [
+              "static location unavailable; using dynamic system placements"
+            ],
+            "source": "STYLE.yaml#static",
+            "status": "degraded",
+            "target": "system"
+          }
+        ]
+      },
+      "provider": "codex",
+      "route": "codex-project",
+      "session_cost": {
+        "always_on": 78.65,
+        "requests": 60,
+        "total": 116.9,
+        "triggered": 38.25,
+        "triggers": 3
+      },
+      "tokens": {
+        "always_on": {
+          "chars": 37,
+          "tokens": 11
+        },
+        "events": [
+          {
+            "block": {
+              "chars": 0,
+              "tokens": 0
+            },
+            "estimate": {
+              "chars": 30,
+              "tokens": 9
+            },
+            "key": "codex\u0000PreToolUse Bash",
+            "label": "PreToolUse Bash",
+            "other": {
+              "chars": 30,
+              "tokens": 9
+            },
+            "other_count": 1
+          },
+          {
+            "block": {
+              "chars": 0,
+              "tokens": 0
+            },
+            "estimate": {
+              "chars": 37,
+              "tokens": 11
+            },
+            "key": "codex\u0000SessionStart",
+            "label": "SessionStart",
+            "other": {
+              "chars": 37,
+              "tokens": 11
+            },
+            "other_count": 1
+          }
+        ],
+        "rules": [
+          {
+            "action": "inject",
+            "estimate": {
+              "chars": 30,
+              "tokens": 9
+            },
+            "events": [
+              "tool.pre"
+            ],
+            "rule": "dynamic",
+            "status": "native"
+          },
+          {
+            "action": "inject",
+            "estimate": {
+              "chars": 37,
+              "tokens": 11
+            },
+            "events": [
+              "session.start"
+            ],
+            "rule": "static",
+            "status": "degraded"
+          }
+        ]
+      }
+    },
+    {
+      "budget": {
+        "always_on": 600,
+        "per_event": 1200,
+        "per_rule": 400
+      },
+      "native_limit": {
+        "approximate": false,
+        "overflow": "file-preview",
+        "source": "Claude Code hook input limit",
+        "unit": "chars",
+        "value": 10000
+      },
+      "plan": {
+        "adapter": "claude-code",
+        "blocked": false,
+        "package": "project-rules",
+        "rules": [
+          {
+            "action": "inject",
+            "id": "dynamic",
+            "needs": [
+              "agent"
+            ],
+            "placements": [
+              {
+                "action": "inject",
+                "capabilities": [
+                  "add-context"
+                ],
+                "event": "tool.pre",
+                "repeat": "session",
+                "status": "native"
+              }
+            ],
+            "source": "STYLE.yaml#dynamic",
+            "status": "native",
+            "target": "tool"
+          },
+          {
+            "action": "inject",
+            "id": "static",
+            "needs": [
+              "agent"
+            ],
+            "placements": [
+              {
+                "action": "inject",
+                "static_slot": "claude_rules",
+                "status": "native"
+              }
+            ],
+            "source": "STYLE.yaml#static",
+            "status": "native",
+            "target": "system"
+          }
+        ]
+      },
+      "provider": "claude-code",
+      "route": "claude-project",
+      "session_cost": {
+        "always_on": 78.65,
+        "requests": 60,
+        "total": 116.9,
+        "triggered": 38.25,
+        "triggers": 3
+      },
+      "tokens": {
+        "always_on": {
+          "chars": 37,
+          "tokens": 11
+        },
+        "events": [
+          {
+            "block": {
+              "chars": 0,
+              "tokens": 0
+            },
+            "estimate": {
+              "chars": 30,
+              "tokens": 9
+            },
+            "key": "claude-code\u0000PreToolUse Bash",
+            "label": "PreToolUse Bash",
+            "other": {
+              "chars": 30,
+              "tokens": 9
+            },
+            "other_count": 1
+          }
+        ],
+        "rules": [
+          {
+            "action": "inject",
+            "estimate": {
+              "chars": 30,
+              "tokens": 9
+            },
+            "events": [
+              "tool.pre"
+            ],
+            "rule": "dynamic",
+            "status": "native"
+          },
+          {
+            "action": "inject",
+            "estimate": {
+              "chars": 37,
+              "tokens": 11
+            },
+            "rule": "static",
+            "status": "native"
+          }
+        ]
+      }
+    }
+  ],
+  "scope": {
+    "base_home": "$FIXTURE/private",
+    "budget_scope": "selected installation only; active user packages have a separate budget and state",
+    "coexisting_user_packages": {},
+    "external_prerequisites": [
+      "style must be available on the harness PATH",
+      "harness workspace trust remains external",
+      "launch Claude Code at the project root",
+      "launch Codex through the canonical project path"
+    ],
+    "home": "$PROJECT_HOME",
+    "kind": "project",
+    "root": "$FIXTURE/project ' space"
+  },
+  "version": "1.0.0"
+}

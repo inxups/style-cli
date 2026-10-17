@@ -1,0 +1,5 @@
+scope=project root=$FIXTURE/project ' space home=$PROJECT_HOME
+prerequisites: style on harness PATH; same STYLE_HOME; external workspace trust; Claude starts at project root; Codex uses canonical path
+uninstalled project-rules
+route updated: claude-code=claude-project
+route updated: codex=codex-project

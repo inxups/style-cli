@@ -36,11 +36,11 @@ func (s *Service) List(ctx context.Context, request ListRequest) (ListResult, er
 	if err := checkContext(ctx); err != nil {
 		return ListResult{}, err
 	}
-	home, err := resolveStyleHome(request.Home)
+	home, err := s.resolveStyleHome(request.Home)
 	if err != nil {
 		return ListResult{}, err
 	}
-	lock, err := loadLock(home)
+	lock, err := s.loadLock(home)
 	if err != nil {
 		return ListResult{}, err
 	}

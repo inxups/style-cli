@@ -29,6 +29,9 @@ func InspectRuntime(m Manifest, t Target, read func(string) ([]byte, error)) (Ru
 	name := "hooks.json"
 	if t.Provider == agenthooks.ProviderClaudeCode {
 		name = "settings.json"
+		if t.Scope == ScopeProject {
+			name = ".claude/settings.json"
+		}
 	}
 	if t.Scope == ScopePlugin {
 		name = "hooks/hooks.json"
@@ -55,7 +58,7 @@ func InspectRuntime(m Manifest, t Target, read func(string) ([]byte, error)) (Ru
 	}
 	if t.Provider == agenthooks.ProviderCodex {
 		configRoot := t.Dir
-		if t.Scope == ScopePlugin {
+		if t.Scope == ScopePlugin || t.Scope == ScopeProject {
 			configRoot = t.ConfigDir
 		}
 		data, err := read(filepath.Join(configRoot, "config.toml"))

@@ -2,7 +2,7 @@
 
 对应规范：[STYLE-spec.md](STYLE-spec.md)（v0.3）。规范定义包格式、运行时语义、token 预算、安全约束和 `index.json`；本文定义命令、本地布局、编译和运行时流程、Claude Code 与 Codex 两个适配器、token 估算器、fork 改动、里程碑、验收和未决项。冲突时，格式和语义以规范为准，实现细节以本文为准。
 
-状态（2026-10-17）：M1、M2 已关闭并只读归档；M2 的 native、stats、跨包去重、Claude rules/迁移与 replace 回退已验收，Codex/Claude 真实环境、本地回归和最终 Ubuntu/macOS CI 均通过，历史证据见 [M2 任务清单](../STYLE-M2-TASKS.md)、[测试矩阵](../STYLE-M2-TESTS.md)。当前里程碑为 M3，任务、依赖和验收状态以 [M3 任务清单](../STYLE-M3-TASKS.md)、[测试矩阵](../STYLE-M3-TESTS.md) 为准；建档和隔离环境基线已完成，D0 已获用户确认，T00 注册表校验修复和 A0 验收已完成；[D1 诊断契约评审稿](../review/M3-D1-DIAGNOSTICS-2026-10-17.md) 已获用户确认，explain 已实现并通过 [M3-A1](../review/M3-A1-2026-10-17.json)，probe 也已实现并通过 [M3-A2](../review/M3-A2-2026-10-17.json)；[D2 来源与锁定评审稿](../review/M3-D2-SOURCES-2026-10-17.md) 已于 2026-10-17 获用户确认，Git 来源已由 T20 实现并通过 [M3-A3](../review/M3-A3-2026-10-17.json)，update 已由 T21 实现并通过 [M3-A4](../review/M3-A4-2026-10-17.json)，frozen 已由 T22 实现并通过 [M3-A5](../review/M3-A5-2026-10-17.json)。[D3 安装范围与交付路线评审稿](../review/M3-D3-ROUTES-2026-10-17.md)的项目部分已获用户确认，本轮只做 T30/A6；云端/插件暂缓，T30–T32 尚未实现。官方 token 计数仍各 0/40，承接为 M3-CARRY-01 非阻塞待验；本地编码/订阅 usage 作为补充，不提供误差范围保证。核心名称校验硬编码风险 M3-RV-01 已随 T00/A0 关闭；engine 既有输出安全特例仍按 D8 评估。当前仅支持 **Claude Code** 和 **Codex**；本文接口代码为设计示意，当前接口与职责见 [adapter 总览](../STYLE-ADAPTERS-CURRENT.md)。
+状态（2026-10-17）：M1、M2 已关闭并只读归档；M2 的 native、stats、跨包去重、Claude rules/迁移与 replace 回退已验收，Codex/Claude 真实环境、本地回归和最终 Ubuntu/macOS CI 均通过，历史证据见 [M2 任务清单](../STYLE-M2-TASKS.md)、[测试矩阵](../STYLE-M2-TESTS.md)。当前里程碑为 M3，任务、依赖和验收状态以 [M3 任务清单](../STYLE-M3-TASKS.md)、[测试矩阵](../STYLE-M3-TESTS.md) 为准；建档和隔离环境基线已完成，D0 已获用户确认，T00 注册表校验修复和 A0 验收已完成；[D1 诊断契约评审稿](../review/M3-D1-DIAGNOSTICS-2026-10-17.md) 已获用户确认，explain 已实现并通过 [M3-A1](../review/M3-A1-2026-10-17.json)，probe 也已实现并通过 [M3-A2](../review/M3-A2-2026-10-17.json)；[D2 来源与锁定评审稿](../review/M3-D2-SOURCES-2026-10-17.md) 已于 2026-10-17 获用户确认，Git 来源已由 T20 实现并通过 [M3-A3](../review/M3-A3-2026-10-17.json)，update 已由 T21 实现并通过 [M3-A4](../review/M3-A4-2026-10-17.json)，frozen 已由 T22 实现并通过 [M3-A5](../review/M3-A5-2026-10-17.json)。[D3 安装范围与交付路线评审稿](../review/M3-D3-ROUTES-2026-10-17.md)的项目部分已获用户确认，T30 已实现并通过 [A6](../review/M3-A6-2026-10-17.json)，见 [项目安装说明](../STYLE-PROJECTS.md)；云端/插件 T31/T32 暂缓。官方 token 计数仍各 0/40，承接为 M3-CARRY-01 非阻塞待验；本地编码/订阅 usage 作为补充，不提供误差范围保证。核心名称校验硬编码风险 M3-RV-01 已随 T00/A0 关闭；engine 既有输出安全特例仍按 D8 评估。当前仅支持 **Claude Code** 和 **Codex**；本文接口代码为设计示意，当前接口与职责见 [adapter 总览](../STYLE-ADAPTERS-CURRENT.md)。
 
 **依据**：
 - agenthooks `3f734c7` 源码，历史整理资料为 `agenthooks-codex.md`（外部资料，本仓库未收录）；
@@ -182,7 +182,8 @@ core 只消费通用目录/能力端口；agenthooks 继续负责协议、配置
 | `style validate/plan/install <git+https://…> [--ref …] [--path …]` | T20/A3 已完成：显式 Git 来源、固定 commit 原始快照（§4.2）；[使用说明](../STYLE-SOURCES.md) | M3 |
 | `style update <name>` / `style update --all` | T21/A4 已完成：明确选择、预览/确认、多包事务（§4.2）；[使用说明](../STYLE-SOURCES.md#明确选包更新) | M3 |
 | `style install --frozen [--yes] [--json] [--allow-replace]` | T22/A5 已完成：当前整锁/绑定下离线恢复（§4.2）；[使用说明](../STYLE-SOURCES.md#整锁离线恢复) | M3 |
-| `--project <dir>`、`export --target claude-cloud`、`claude-plugin` | D3 项目部分已确认，云端/插件仍待评审（§4.3），均尚未实现；`--count=exact` 仍待 D9 | M3 |
+| `--project <dir>` | T30/A6 已完成：显式项目安装、管理与诊断（§4.3）；[使用说明](../STYLE-PROJECTS.md) | M3 |
+| `export --target claude-cloud`、`claude-plugin` | D3 云端/插件部分暂缓、尚未实现（§4.3）；`--count=exact` 仍待 D9 | M3 |
 
 **选项说明**：
 - `--route h=r`：指定路线，例如 `codex=codex-user`、`codex=codex-plugin`、`claude-code=claude-user`。
@@ -232,7 +233,7 @@ T22/A5 的恢复实现与 [使用说明](../STYLE-SOURCES.md#整锁离线恢复)
 
 ### 4.3 M3-D3 安装范围与交付路线评审稿
 
-本节项目部分已于 2026-10-17 获用户确认，进入 T30/A6；云端和插件继续待评审，均尚未实现；[完整契约、调查复核、失败边界和验收细化](../review/M3-D3-ROUTES-2026-10-17.md)是评审依据。Codex 0.159.3 / Claude 2.1.301 的原探针与五个新增静态场景不能替代 A6–A8 或真实 B2/C2–C4。
+本节项目部分已于 2026-10-17 获用户确认，由 T30 实现并通过 [A6 离线验收](../review/M3-A6-2026-10-17.json)；云端和插件暂缓、尚未实现；[完整契约、调查复核、失败边界和验收细化](../review/M3-D3-ROUTES-2026-10-17.md)是评审依据。Codex 0.159.3 / Claude 2.1.301 的原探针与五个新增静态场景不能替代 A6–A8 或真实 B2/C2–C4。
 
 默认仍为用户范围；新增显式 `--project <dir>`，覆盖管理命令、诊断和状态查询，省略不自动选项目。规范路径摘要定位用户基根 `projects/<完整sha256>/` 中的独立安装；项目仅写可移植声明/启动器和 harness 文件，不把私有 lock/settings/state 提交入库。新 clone 必须重新取得明确来源、逐项重现受管候选并确认采用，不能靠声明自证信任。移动根、换 STYLE_HOME、嵌套 STYLE 项目及歧义明确拒绝；普通子目录和并列项目另测。
 
@@ -242,7 +243,7 @@ T31 提议 `style export --target claude-cloud --project <dir> [--yes] [--json]`
 
 T32 提议用户级 `claude-plugin`，本地目录 marketplace，`${CLAUDE_PLUGIN_ROOT}/scripts/style` 启动，不用顶层 bin；手动原生登记/卸载。与 claude-user hook 载体互斥切换，静态仍在用户 rules，插件禁用不代表静态移除。原生 CLI 的空键/缓存残留单列，不直接编辑原生数据库或承诺其字节还原。
 
-新项目/Claude 插件路线使用 lock format=3，旧程序必须先拒绝，新 scope/binding 进入批准身份；旧三路线 lock 1/2、index format=1 及默认语义保留。agenthooks 继续负责原生协议/renderer/owner/ApplyFiles；补项目 hook 与用户 trust 分根、按项目 owner 合并和可移植 argv，app 不自行写原生配置。文件事务沿 D2 捕获/确认/guard/回滚；A6/A7/A8 为 12/6/6 组，均待执行。用户已确认先做项目级，T30 可进入实现；T31/T32 暂缓，D3 整体保持部分完成。
+新项目/Claude 插件路线使用 lock format=3，旧程序必须先拒绝，新 scope/binding 进入批准身份；旧三路线 lock 1/2、index format=1 及默认语义保留。agenthooks 继续负责原生协议/renderer/owner/ApplyFiles；补项目 hook 与用户 trust 分根、按项目 owner 合并和可移植 argv，app 不自行写原生配置。文件事务沿 D2 捕获/确认/guard/回滚；A6/A7/A8 为 12/6/6 组，A6 已通过，A7/A8 待执行。T30 提供显式多来源整批 clone 激活与采用归属披露；项目声明 format 1、lock 3 和私有 binding 共同核对效果、根及 runner。T31/T32 暂缓，D3 整体保持部分完成，真实 B2/C2 待验。
 
 ## 5. 本地布局、锁文件和状态
 

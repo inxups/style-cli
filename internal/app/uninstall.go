@@ -42,15 +42,15 @@ func (s *Service) Uninstall(ctx context.Context, request UninstallRequest) (fina
 	if request.All == (strings.TrimSpace(request.Name) != "") {
 		return UninstallResult{}, &UsageError{Message: "specify one package name or --all"}
 	}
-	home, err := resolveStyleHome(request.Home)
+	home, err := s.resolveStyleHome(request.Home)
 	if err != nil {
 		return UninstallResult{}, err
 	}
-	inputs, err := captureManagement(home)
+	inputs, err := s.captureManagement(home)
 	if err != nil {
 		return UninstallResult{}, err
 	}
-	lock, err := loadLock(home)
+	lock, err := s.loadLock(home)
 	if err != nil {
 		return UninstallResult{}, err
 	}
@@ -67,7 +67,7 @@ func (s *Service) Uninstall(ctx context.Context, request UninstallRequest) (fina
 		return UninstallResult{}, &ConflictError{Message: "no matching installed package"}
 	}
 	result := UninstallResult{Removed: make([]string, 0, len(removeSet)), Remaining: make([]string, 0), Routes: make([]string, 0)}
-	remainingLock := lockDocument{Format: lock.Format, Packages: make([]lockPackage, 0, len(lock.Packages)), Harnesses: cloneHarnesses(lock.Harnesses)}
+	remainingLock := lockDocument{Format: lock.Format, Project: lock.Project, Packages: make([]lockPackage, 0, len(lock.Packages)), Harnesses: cloneHarnesses(lock.Harnesses)}
 	removedPackages := make([]lockPackage, 0, len(removeSet))
 	for _, item := range lock.Packages {
 		if removeSet[item.Name] {
@@ -163,11 +163,6 @@ func (s *Service) Uninstall(ctx context.Context, request UninstallRequest) (fina
 			}
 			changes = append(changes, approvalChanges...)
 		}
-		lockBytes, err := yaml.Marshal(remainingLock)
-		if err != nil {
-			return UninstallResult{}, err
-		}
-		changes = append(changes, plannedFile(home, "style.lock.yaml", lockBytes, 0o600)...)
 		changes = append(changes, plannedFile(filepath.Join(home, "build"), "index.json", compilation.indexBytes, 0o600)...)
 		changes = append(changes, plannedFile(filepath.Join(home, "build"), "explain.json", compilation.provenanceBytes, 0o600)...)
 	}
@@ -183,6 +178,17 @@ func (s *Service) Uninstall(ctx context.Context, request UninstallRequest) (fina
 		}
 		changes = append(changes, removals...)
 	}
+	changes, err = s.projectFiles(home, lock, &remainingLock, adapters, compilation, changes, inputs)
+	if err != nil {
+		return result, err
+	}
+	if len(remainingLock.Packages) > 0 {
+		lockBytes, err := yaml.Marshal(remainingLock)
+		if err != nil {
+			return result, err
+		}
+		changes = append(changes, plannedFile(home, "style.lock.yaml", lockBytes, 0o600)...)
+	}
 	changes, err = uniquePlannedFiles(changes)
 	if err != nil {
 		return UninstallResult{}, err
@@ -190,7 +196,7 @@ func (s *Service) Uninstall(ctx context.Context, request UninstallRequest) (fina
 	if err = inputs.planned(changes); err != nil {
 		return result, err
 	}
-	guard, err := acquireManagement(ctx, home)
+	guard, err := acquireInputs(ctx, inputs, home)
 	if err != nil {
 		return result, err
 	}
@@ -265,7 +271,7 @@ func (s *Service) lockedAdapters(ctx context.Context, home string, lock lockDocu
 			return nil, &ConflictError{Message: fmt.Sprintf("installed route %q for %s is unavailable", name, provider)}
 		}
 		installation := adapter.Installation{Provider: provider, Version: lock.Harnesses[raw].Version, ConfigDir: lock.Harnesses[raw].ConfigDir}
-		route = bindRoute(route, installation, home, staticStateFor(lock, provider))
+		route = bindRoute(route, installation, home, s.staticState(lock, provider))
 		result = append(result, installAdapter{provider: provider, definition: definition, installation: installation, route: route})
 	}
 	return result, nil

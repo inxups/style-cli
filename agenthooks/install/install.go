@@ -265,7 +265,7 @@ func planWithReader(m Manifest, t Target, readFile func(string) ([]byte, error))
 		}
 		mode := info.Mode().Perm()
 		root := t.Dir
-		if t.Provider == agenthooks.ProviderCodex && t.Scope == ScopePlugin && p == "config.toml" {
+		if t.Provider == agenthooks.ProviderCodex && (t.Scope == ScopePlugin || t.Scope == ScopeProject) && p == "config.toml" {
 			root = t.ConfigDir
 		}
 		dest := filepath.Join(root, filepath.FromSlash(p))
@@ -294,7 +294,7 @@ func planWithReader(m Manifest, t Target, readFile func(string) ([]byte, error))
 				final = merged
 			} else if isMergeableTOML(p) {
 				if t.Provider == agenthooks.ProviderCodex {
-					final, err = mergeCodexManagedTOML(existing, content, manifestOwner(m))
+					final, err = mergeCodexManagedTOML(existing, content, codexTrustOwner(m, t), codexManagedSources(t)...)
 					if err != nil {
 						return nil, fmt.Errorf("install: merge %s: %w", p, err)
 					}
@@ -425,7 +425,7 @@ func (s *pairSort) Swap(i, j int) {
 }
 
 func renderedRoot(t Target, path string) string {
-	if t.Provider == agenthooks.ProviderCodex && t.Scope == ScopePlugin && path == "config.toml" {
+	if t.Provider == agenthooks.ProviderCodex && (t.Scope == ScopePlugin || t.Scope == ScopeProject) && path == "config.toml" {
 		return t.ConfigDir
 	}
 	return t.Dir

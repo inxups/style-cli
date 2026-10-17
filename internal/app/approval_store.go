@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"reflect"
 	"strings"
 
 	"github.com/inxups/style-cli/internal/source"
@@ -16,6 +17,7 @@ import (
 // An approval retains the bytes and compiled representation that the user
 // accepted. Lock hashes authenticate it; it is never a runtime input.
 type approvedSnapshot struct {
+	Project  *projectBinding    `json:"project,omitempty"`
 	Git      *source.Git        `json:"git,omitempty"`
 	Format   int                `json:"format"`
 	Files    map[string][]byte  `json:"files"`
@@ -53,7 +55,7 @@ func approvalBytes(compilation installCompilation, name string, files map[string
 	if len(git) > 0 {
 		provenance = git[0]
 	}
-	return json.Marshal(approvedSnapshot{Git: provenance, Format: 1, Files: files, Rendered: view, Native: compilation.nativeReports(name)})
+	return json.Marshal(approvedSnapshot{Project: compilation.project, Git: provenance, Format: 1, Files: files, Rendered: view, Native: compilation.nativeReports(name)})
 }
 
 func loadApproval(home string, item lockPackage) (approvedSnapshot, bool, error) {
@@ -76,6 +78,13 @@ func loadApproval(home string, item lockPackage) (approvedSnapshot, bool, error)
 	}
 	if item.Source.Git != nil && (result.Git == nil || *result.Git != *item.Source.Git) || item.Source.Git == nil && result.Git != nil {
 		return result, false, fmt.Errorf("approval provenance for %s differs from the lock", item.Name)
+	}
+	lock, lockErr := loadLock(home)
+	if lockErr != nil {
+		return result, false, lockErr
+	}
+	if !reflect.DeepEqual(approvalProjectIdentity(result.Project), approvalProjectIdentity(lock.Project)) {
+		return result, false, projectFailure("approval scope differs from installation binding")
 	}
 	hashes, _ := hashPackageFiles(result.Files)
 	if result.Format != 1 || !reflectStringMap(hashes, item.Files) {

@@ -43,12 +43,12 @@ func (s *Service) Doctor(ctx context.Context, request DoctorRequest) (DoctorResu
 	if err := checkContext(ctx); err != nil {
 		return DoctorResult{}, err
 	}
-	home, err := resolveStyleHome(request.Home)
+	home, err := s.resolveStyleHome(request.Home)
 	if err != nil {
 		return DoctorResult{}, err
 	}
 	result := DoctorResult{Packages: []InstalledPackage{}, Adapters: []AdapterReport{}, Diagnostics: []Diagnostic{}, Effort: []EffortReport{}, TopRules: []RuleCost{}}
-	lock, lockErr := loadLock(home)
+	lock, lockErr := s.loadLock(home)
 	if lockErr != nil {
 		result.add("lock-invalid", "error", lockErr.Error())
 	} else {

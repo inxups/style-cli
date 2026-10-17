@@ -20,7 +20,7 @@ type SourceReport struct {
 }
 
 func (s *Service) acquireGit(ctx context.Context, request source.Request) (source.Snapshot, *SourceReport, error) {
-	home, err := resolveStyleHome(request.Home)
+	home, err := s.resolveStyleHome(request.Home)
 	if err != nil {
 		return source.Snapshot{}, nil, err
 	}

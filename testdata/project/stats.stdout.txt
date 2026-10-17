@@ -1,0 +1,6 @@
+scope=project root=$FIXTURE/project ' space home=$PROJECT_HOME
+prerequisites: style on harness PATH; same STYLE_HOME; external workspace trust; Claude starts at project root; Codex uses canonical path
+Window: $TIME .. $TIME
+available runtime records; estimated tokens; calibration pending
+Totals: outputs=0 blocks=0 dedup=0 cap_drops=0 estimated_tokens=0 unestimated=0
+No runtime records in window.

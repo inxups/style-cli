@@ -13,6 +13,7 @@ import (
 
 // Service holds the explicitly registered adapters used by planning.
 type Service struct {
+	project     *projectScope
 	sources     source.Acquirer
 	probeDeps   *probeDependencies
 	definitions map[adapter.ProviderID]adapter.Definition

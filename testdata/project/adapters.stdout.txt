@@ -1,0 +1,247 @@
+scope=project root=$FIXTURE/project ' space home=$PROJECT_HOME
+prerequisites: style on harness PATH; same STYLE_HOME; external workspace trust; Claude starts at project root; Codex uses canonical path
+codex: detected=true version=0.159.3 config=$FIXTURE/codex-user
+  codex-project: available=true installed=true trusted=false trust=workspace stable_key=true; available
+  limit: 2500 tokens approximate=true overflow=file-preview; Codex additionalContext default
+  session.start add-context: available=true; Codex hook codec supports this output
+  session.start system-message: available=false; Codex has no output capability at this evaluation point
+  session.start deny: available=false; Codex has no output capability at this evaluation point
+  prompt.submitted add-context: available=true; Codex hook codec supports this output
+  prompt.submitted system-message: available=true; Codex hook codec supports this output
+  prompt.submitted deny: available=true; Codex hook codec supports this output
+  skill.explicit add-context: available=true; Codex hook codec supports this output
+  skill.explicit system-message: available=true; Codex hook codec supports this output
+  skill.explicit deny: available=true; Codex hook codec supports this output
+  tool.pre add-context: available=true; Codex hook codec supports this output
+  tool.pre system-message: available=true; Codex hook codec supports this output
+  tool.pre deny: available=true; Codex hook codec supports this output
+  tool.post add-context: available=true; Codex hook codec supports this output
+  tool.post system-message: available=true; Codex hook codec supports this output
+  tool.post deny: available=false; Codex has no output capability at this evaluation point
+  tool.error add-context: available=false; Codex has no output capability at this evaluation point
+  tool.error system-message: available=false; Codex has no output capability at this evaluation point
+  tool.error deny: available=false; Codex has no output capability at this evaluation point
+  subagent.start add-context: available=true; Codex hook codec supports this output
+  subagent.start system-message: available=false; Codex has no output capability at this evaluation point
+  subagent.start deny: available=false; Codex has no output capability at this evaluation point
+  session.start model: available=true approximate=false source=Codex event/session state;
+  session.start thinking_effort: available=true approximate=false source=Codex event/session state;
+  session.start thinking_effort_raw: available=true approximate=false source=Codex event/session state;
+  session.start thinking_effort_approx: available=true approximate=false source=Codex event/session state;
+  session.start harness.cwd: available=true approximate=false source=Codex event/session state;
+  session.start harness.turn_id: available=true approximate=false source=Codex event/session state;
+  session.start harness.agent: available=true approximate=false source=Codex event/session state;
+  session.start tool.name: available=false approximate=false source=; Codex does not expose this field at the evaluation point
+  session.start tool.input: available=false approximate=false source=; Codex does not expose this field at the evaluation point
+  session.start tool.output: available=false approximate=false source=; Codex does not expose this field at the evaluation point
+  session.start tool.added: available=false approximate=false source=; Codex does not expose this field at the evaluation point
+  session.start mcp.server: available=false approximate=false source=; Codex does not expose this field at the evaluation point
+  session.start mcp.tool: available=false approximate=false source=; Codex does not expose this field at the evaluation point
+  session.start skill.name: available=false approximate=false source=; Codex does not expose this field at the evaluation point
+  prompt.submitted model: available=true approximate=false source=Codex event/session state;
+  prompt.submitted thinking_effort: available=true approximate=false source=Codex event/session state;
+  prompt.submitted thinking_effort_raw: available=true approximate=false source=Codex event/session state;
+  prompt.submitted thinking_effort_approx: available=true approximate=false source=Codex event/session state;
+  prompt.submitted harness.cwd: available=true approximate=false source=Codex event/session state;
+  prompt.submitted harness.turn_id: available=true approximate=false source=Codex event/session state;
+  prompt.submitted harness.agent: available=true approximate=false source=Codex event/session state;
+  prompt.submitted tool.name: available=false approximate=false source=; Codex does not expose this field at the evaluation point
+  prompt.submitted tool.input: available=false approximate=false source=; Codex does not expose this field at the evaluation point
+  prompt.submitted tool.output: available=false approximate=false source=; Codex does not expose this field at the evaluation point
+  prompt.submitted tool.added: available=false approximate=false source=; Codex does not expose this field at the evaluation point
+  prompt.submitted mcp.server: available=false approximate=false source=; Codex does not expose this field at the evaluation point
+  prompt.submitted mcp.tool: available=false approximate=false source=; Codex does not expose this field at the evaluation point
+  prompt.submitted skill.name: available=true approximate=false source=Codex UserPromptSubmit payload;
+  skill.explicit model: available=true approximate=false source=Codex event/session state;
+  skill.explicit thinking_effort: available=true approximate=false source=Codex event/session state;
+  skill.explicit thinking_effort_raw: available=true approximate=false source=Codex event/session state;
+  skill.explicit thinking_effort_approx: available=true approximate=false source=Codex event/session state;
+  skill.explicit harness.cwd: available=true approximate=false source=Codex event/session state;
+  skill.explicit harness.turn_id: available=true approximate=false source=Codex event/session state;
+  skill.explicit harness.agent: available=true approximate=false source=Codex event/session state;
+  skill.explicit tool.name: available=false approximate=false source=; Codex does not expose this field at the evaluation point
+  skill.explicit tool.input: available=false approximate=false source=; Codex does not expose this field at the evaluation point
+  skill.explicit tool.output: available=false approximate=false source=; Codex does not expose this field at the evaluation point
+  skill.explicit tool.added: available=false approximate=false source=; Codex does not expose this field at the evaluation point
+  skill.explicit mcp.server: available=false approximate=false source=; Codex does not expose this field at the evaluation point
+  skill.explicit mcp.tool: available=false approximate=false source=; Codex does not expose this field at the evaluation point
+  skill.explicit skill.name: available=true approximate=false source=Codex UserPromptSubmit payload;
+  tool.pre model: available=true approximate=false source=Codex event/session state;
+  tool.pre thinking_effort: available=true approximate=false source=Codex event/session state;
+  tool.pre thinking_effort_raw: available=true approximate=false source=Codex event/session state;
+  tool.pre thinking_effort_approx: available=true approximate=false source=Codex event/session state;
+  tool.pre harness.cwd: available=true approximate=false source=Codex event/session state;
+  tool.pre harness.turn_id: available=true approximate=false source=Codex event/session state;
+  tool.pre harness.agent: available=true approximate=false source=Codex event/session state;
+  tool.pre tool.name: available=true approximate=false source=Codex PreToolUse payload;
+  tool.pre tool.input: available=true approximate=false source=Codex PreToolUse payload;
+  tool.pre tool.output: available=false approximate=false source=; Codex does not expose this field at the evaluation point
+  tool.pre tool.added: available=true approximate=false source=Codex PreToolUse payload;
+  tool.pre mcp.server: available=true approximate=false source=Codex PreToolUse payload;
+  tool.pre mcp.tool: available=true approximate=false source=Codex PreToolUse payload;
+  tool.pre skill.name: available=true approximate=false source=Codex PreToolUse payload;
+  tool.post model: available=true approximate=false source=Codex event/session state;
+  tool.post thinking_effort: available=true approximate=false source=Codex event/session state;
+  tool.post thinking_effort_raw: available=true approximate=false source=Codex event/session state;
+  tool.post thinking_effort_approx: available=true approximate=false source=Codex event/session state;
+  tool.post harness.cwd: available=true approximate=false source=Codex event/session state;
+  tool.post harness.turn_id: available=true approximate=false source=Codex event/session state;
+  tool.post harness.agent: available=true approximate=false source=Codex event/session state;
+  tool.post tool.name: available=true approximate=false source=Codex PostToolUse payload;
+  tool.post tool.input: available=true approximate=false source=Codex PostToolUse payload;
+  tool.post tool.output: available=true approximate=false source=Codex PostToolUse payload;
+  tool.post tool.added: available=true approximate=false source=Codex PostToolUse payload;
+  tool.post mcp.server: available=true approximate=false source=Codex PostToolUse payload;
+  tool.post mcp.tool: available=true approximate=false source=Codex PostToolUse payload;
+  tool.post skill.name: available=true approximate=false source=Codex PostToolUse payload;
+  tool.error model: available=true approximate=false source=Codex event/session state;
+  tool.error thinking_effort: available=true approximate=false source=Codex event/session state;
+  tool.error thinking_effort_raw: available=true approximate=false source=Codex event/session state;
+  tool.error thinking_effort_approx: available=true approximate=false source=Codex event/session state;
+  tool.error harness.cwd: available=true approximate=false source=Codex event/session state;
+  tool.error harness.turn_id: available=true approximate=false source=Codex event/session state;
+  tool.error harness.agent: available=true approximate=false source=Codex event/session state;
+  tool.error tool.name: available=false approximate=false source=; Codex does not expose this field at the evaluation point
+  tool.error tool.input: available=false approximate=false source=; Codex does not expose this field at the evaluation point
+  tool.error tool.output: available=false approximate=false source=; Codex does not expose this field at the evaluation point
+  tool.error tool.added: available=false approximate=false source=; Codex does not expose this field at the evaluation point
+  tool.error mcp.server: available=false approximate=false source=; Codex does not expose this field at the evaluation point
+  tool.error mcp.tool: available=false approximate=false source=; Codex does not expose this field at the evaluation point
+  tool.error skill.name: available=false approximate=false source=; Codex does not expose this field at the evaluation point
+  subagent.start model: available=true approximate=false source=Codex event/session state;
+  subagent.start thinking_effort: available=true approximate=false source=Codex event/session state;
+  subagent.start thinking_effort_raw: available=true approximate=false source=Codex event/session state;
+  subagent.start thinking_effort_approx: available=true approximate=false source=Codex event/session state;
+  subagent.start harness.cwd: available=true approximate=false source=Codex event/session state;
+  subagent.start harness.turn_id: available=true approximate=false source=Codex event/session state;
+  subagent.start harness.agent: available=true approximate=false source=Codex event/session state;
+  subagent.start tool.name: available=false approximate=false source=; Codex does not expose this field at the evaluation point
+  subagent.start tool.input: available=false approximate=false source=; Codex does not expose this field at the evaluation point
+  subagent.start tool.output: available=false approximate=false source=; Codex does not expose this field at the evaluation point
+  subagent.start tool.added: available=false approximate=false source=; Codex does not expose this field at the evaluation point
+  subagent.start mcp.server: available=false approximate=false source=; Codex does not expose this field at the evaluation point
+  subagent.start mcp.tool: available=false approximate=false source=; Codex does not expose this field at the evaluation point
+  subagent.start skill.name: available=false approximate=false source=; Codex does not expose this field at the evaluation point
+claude-code: detected=true version=2.1.301 config=$FIXTURE/claude-user
+  claude-project: available=true installed=true trusted=false trust=workspace stable_key=true; start Claude Code from the project root; subdirectory static discovery does not establish hook loading
+  limit: 10000 chars approximate=false overflow=file-preview; Claude Code hook input limit
+  static claude_rules append: supported=true;
+  session.start add-context: available=true; Claude Code hook output supports this capability
+  session.start system-message: available=true; Claude Code hook output supports this capability
+  session.start deny: available=false; Claude Code has no output capability at this evaluation point
+  prompt.submitted add-context: available=true; Claude Code hook output supports this capability
+  prompt.submitted system-message: available=true; Claude Code hook output supports this capability
+  prompt.submitted deny: available=true; Claude Code hook output supports this capability
+  skill.explicit add-context: available=true; Claude Code hook output supports this capability
+  skill.explicit system-message: available=true; Claude Code hook output supports this capability
+  skill.explicit deny: available=true; Claude Code hook output supports this capability
+  tool.pre add-context: available=true; Claude Code hook output supports this capability
+  tool.pre system-message: available=true; Claude Code hook output supports this capability
+  tool.pre deny: available=true; Claude Code hook output supports this capability
+  tool.post add-context: available=true; Claude Code hook output supports this capability
+  tool.post system-message: available=true; Claude Code hook output supports this capability
+  tool.post deny: available=false; Claude Code has no output capability at this evaluation point
+  tool.error add-context: available=true; Claude Code hook output supports this capability
+  tool.error system-message: available=true; Claude Code hook output supports this capability
+  tool.error deny: available=false; Claude Code has no output capability at this evaluation point
+  subagent.start add-context: available=false; Claude Code has no output capability at this evaluation point
+  subagent.start system-message: available=false; Claude Code has no output capability at this evaluation point
+  subagent.start deny: available=false; Claude Code has no output capability at this evaluation point
+  session.start model: available=true approximate=false source=Claude Code event/session state;
+  session.start thinking_effort: available=true approximate=false source=Claude Code event/session state;
+  session.start thinking_effort_raw: available=true approximate=false source=Claude Code event/session state;
+  session.start thinking_effort_approx: available=true approximate=false source=Claude Code event/session state;
+  session.start harness.cwd: available=true approximate=false source=Claude Code event/session state;
+  session.start harness.turn_id: available=true approximate=false source=Claude Code event/session state;
+  session.start harness.agent: available=true approximate=false source=Claude Code event/session state;
+  session.start tool.name: available=false approximate=false source=; Claude Code does not expose this field at the evaluation point
+  session.start tool.input: available=false approximate=false source=; Claude Code does not expose this field at the evaluation point
+  session.start tool.output: available=false approximate=false source=; Claude Code does not expose this field at the evaluation point
+  session.start tool.added: available=false approximate=false source=; Claude Code does not expose this field at the evaluation point
+  session.start mcp.server: available=false approximate=false source=; Claude Code does not expose this field at the evaluation point
+  session.start mcp.tool: available=false approximate=false source=; Claude Code does not expose this field at the evaluation point
+  session.start skill.name: available=false approximate=false source=; Claude Code does not expose this field at the evaluation point
+  prompt.submitted model: available=true approximate=false source=Claude Code event/session state;
+  prompt.submitted thinking_effort: available=true approximate=false source=Claude Code event/session state;
+  prompt.submitted thinking_effort_raw: available=true approximate=false source=Claude Code event/session state;
+  prompt.submitted thinking_effort_approx: available=true approximate=false source=Claude Code event/session state;
+  prompt.submitted harness.cwd: available=true approximate=false source=Claude Code event/session state;
+  prompt.submitted harness.turn_id: available=true approximate=false source=Claude Code event/session state;
+  prompt.submitted harness.agent: available=true approximate=false source=Claude Code event/session state;
+  prompt.submitted tool.name: available=false approximate=false source=; Claude Code does not expose this field at the evaluation point
+  prompt.submitted tool.input: available=false approximate=false source=; Claude Code does not expose this field at the evaluation point
+  prompt.submitted tool.output: available=false approximate=false source=; Claude Code does not expose this field at the evaluation point
+  prompt.submitted tool.added: available=false approximate=false source=; Claude Code does not expose this field at the evaluation point
+  prompt.submitted mcp.server: available=false approximate=false source=; Claude Code does not expose this field at the evaluation point
+  prompt.submitted mcp.tool: available=false approximate=false source=; Claude Code does not expose this field at the evaluation point
+  prompt.submitted skill.name: available=false approximate=false source=; Claude Code does not expose this field at the evaluation point
+  skill.explicit model: available=true approximate=false source=Claude Code event/session state;
+  skill.explicit thinking_effort: available=true approximate=false source=Claude Code event/session state;
+  skill.explicit thinking_effort_raw: available=true approximate=false source=Claude Code event/session state;
+  skill.explicit thinking_effort_approx: available=true approximate=false source=Claude Code event/session state;
+  skill.explicit harness.cwd: available=true approximate=false source=Claude Code event/session state;
+  skill.explicit harness.turn_id: available=true approximate=false source=Claude Code event/session state;
+  skill.explicit harness.agent: available=true approximate=false source=Claude Code event/session state;
+  skill.explicit tool.name: available=false approximate=false source=; Claude Code does not expose this field at the evaluation point
+  skill.explicit tool.input: available=false approximate=false source=; Claude Code does not expose this field at the evaluation point
+  skill.explicit tool.output: available=false approximate=false source=; Claude Code does not expose this field at the evaluation point
+  skill.explicit tool.added: available=false approximate=false source=; Claude Code does not expose this field at the evaluation point
+  skill.explicit mcp.server: available=false approximate=false source=; Claude Code does not expose this field at the evaluation point
+  skill.explicit mcp.tool: available=false approximate=false source=; Claude Code does not expose this field at the evaluation point
+  skill.explicit skill.name: available=true approximate=false source=Claude UserPromptExpansion payload;
+  tool.pre model: available=true approximate=false source=Claude Code event/session state;
+  tool.pre thinking_effort: available=true approximate=false source=Claude Code event/session state;
+  tool.pre thinking_effort_raw: available=true approximate=false source=Claude Code event/session state;
+  tool.pre thinking_effort_approx: available=true approximate=false source=Claude Code event/session state;
+  tool.pre harness.cwd: available=true approximate=false source=Claude Code event/session state;
+  tool.pre harness.turn_id: available=true approximate=false source=Claude Code event/session state;
+  tool.pre harness.agent: available=true approximate=false source=Claude Code event/session state;
+  tool.pre tool.name: available=true approximate=false source=Claude PreToolUse payload;
+  tool.pre tool.input: available=true approximate=false source=Claude PreToolUse payload;
+  tool.pre tool.output: available=false approximate=false source=; Claude Code does not expose this field at the evaluation point
+  tool.pre tool.added: available=true approximate=false source=Claude PreToolUse payload;
+  tool.pre mcp.server: available=true approximate=false source=Claude PreToolUse payload;
+  tool.pre mcp.tool: available=true approximate=false source=Claude PreToolUse payload;
+  tool.pre skill.name: available=true approximate=false source=Claude PreToolUse payload;
+  tool.post model: available=true approximate=false source=Claude Code event/session state;
+  tool.post thinking_effort: available=true approximate=false source=Claude Code event/session state;
+  tool.post thinking_effort_raw: available=true approximate=false source=Claude Code event/session state;
+  tool.post thinking_effort_approx: available=true approximate=false source=Claude Code event/session state;
+  tool.post harness.cwd: available=true approximate=false source=Claude Code event/session state;
+  tool.post harness.turn_id: available=true approximate=false source=Claude Code event/session state;
+  tool.post harness.agent: available=true approximate=false source=Claude Code event/session state;
+  tool.post tool.name: available=true approximate=false source=Claude PostToolUse payload;
+  tool.post tool.input: available=true approximate=false source=Claude PostToolUse payload;
+  tool.post tool.output: available=true approximate=false source=Claude PostToolUse payload;
+  tool.post tool.added: available=true approximate=false source=Claude PostToolUse payload;
+  tool.post mcp.server: available=true approximate=false source=Claude PostToolUse payload;
+  tool.post mcp.tool: available=true approximate=false source=Claude PostToolUse payload;
+  tool.post skill.name: available=true approximate=false source=Claude PostToolUse payload;
+  tool.error model: available=true approximate=false source=Claude Code event/session state;
+  tool.error thinking_effort: available=true approximate=false source=Claude Code event/session state;
+  tool.error thinking_effort_raw: available=true approximate=false source=Claude Code event/session state;
+  tool.error thinking_effort_approx: available=true approximate=false source=Claude Code event/session state;
+  tool.error harness.cwd: available=true approximate=false source=Claude Code event/session state;
+  tool.error harness.turn_id: available=true approximate=false source=Claude Code event/session state;
+  tool.error harness.agent: available=true approximate=false source=Claude Code event/session state;
+  tool.error tool.name: available=true approximate=false source=Claude PostToolUseFailure payload;
+  tool.error tool.input: available=true approximate=false source=Claude PostToolUseFailure payload;
+  tool.error tool.output: available=false approximate=false source=; Claude Code does not expose this field at the evaluation point
+  tool.error tool.added: available=false approximate=false source=; Claude Code does not expose this field at the evaluation point
+  tool.error mcp.server: available=true approximate=false source=Claude PostToolUseFailure payload;
+  tool.error mcp.tool: available=true approximate=false source=Claude PostToolUseFailure payload;
+  tool.error skill.name: available=true approximate=false source=Claude PostToolUseFailure payload;
+  subagent.start model: available=true approximate=false source=Claude Code event/session state;
+  subagent.start thinking_effort: available=true approximate=false source=Claude Code event/session state;
+  subagent.start thinking_effort_raw: available=true approximate=false source=Claude Code event/session state;
+  subagent.start thinking_effort_approx: available=true approximate=false source=Claude Code event/session state;
+  subagent.start harness.cwd: available=true approximate=false source=Claude Code event/session state;
+  subagent.start harness.turn_id: available=true approximate=false source=Claude Code event/session state;
+  subagent.start harness.agent: available=true approximate=false source=Claude Code event/session state;
+  subagent.start tool.name: available=false approximate=false source=; Claude Code does not expose this field at the evaluation point
+  subagent.start tool.input: available=false approximate=false source=; Claude Code does not expose this field at the evaluation point
+  subagent.start tool.output: available=false approximate=false source=; Claude Code does not expose this field at the evaluation point
+  subagent.start tool.added: available=false approximate=false source=; Claude Code does not expose this field at the evaluation point
+  subagent.start mcp.server: available=false approximate=false source=; Claude Code does not expose this field at the evaluation point
+  subagent.start mcp.tool: available=false approximate=false source=; Claude Code does not expose this field at the evaluation point
+  subagent.start skill.name: available=false approximate=false source=; Claude Code does not expose this field at the evaluation point

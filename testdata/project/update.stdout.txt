@@ -1,0 +1,59 @@
+scope=project root=$FIXTURE/project ' space home=$PROJECT_HOME
+prerequisites: style on harness PATH; same STYLE_HOME; external workspace trust; Claude starts at project root; Codex uses canonical path
+Update: unchanged; selected=["project-rules"]
+project-rules (seq=1):
+  before: version="1.0.0" source="$FIXTURE/source" kind=dir link=false link_trusted=false replace=false content=sha256:69c4a0f0dc50c4228e1318bb20ebfa49b939f138f1b8c554103c699c4670c562
+  after: version="1.0.0" source="$FIXTURE/source" kind=dir link=false link_trusted=false replace=false content=sha256:69c4a0f0dc50c4228e1318bb20ebfa49b939f138f1b8c554103c699c4670c562
+  settings added=[] removed=[]; approval_changed=false configuration_repair=false
+Source diff:
+Rendered diff (static values substituted; event variables remain runtime fragments):
+Plan: project-rules
+
+
+Harness: codex
+Preferred route: codex-project (availability checked during install)
+Package: project-rules
+Adapter: codex
+- dynamic: native (inject tool)
+  needs: agent
+  -> tool.pre inject (native); capabilities: add-context
+- static: degraded (inject system)
+  needs: agent
+  -> session.start inject (degraded); capabilities: add-context
+  ! static location unavailable; using dynamic system placements
+Token (estimated; calibration pending):
+  native input limit: 2500 tokens (approximate); overflow=file-preview; source=Codex additionalContext default
+  budget: per_rule 400; per_event 1200; always_on 600 tokens
+  always-on: 11 tokens / 37 chars
+  per-rule:
+    dynamic: 9 tokens / 30 chars (native)
+    static: 11 tokens / 37 chars (degraded)
+  PreToolUse Bash: 9 tokens / 30 chars
+  SessionStart: 11 tokens / 37 chars
+  session cost (requests=60 triggers=3): 78.7 always-on + 38.2 triggered = 116.9 units
+  scenario only: 1.25x cache write + 0.1x later hits; assumes an eligible unchanged prefix within cache lifetime; not billing
+Plan: project-rules
+
+
+Harness: claude-code
+Preferred route: claude-project (availability checked during install)
+Package: project-rules
+Adapter: claude-code
+- dynamic: native (inject tool)
+  needs: agent
+  -> tool.pre inject (native); capabilities: add-context
+- static: native (inject system)
+  needs: agent
+  -> static:claude_rules inject (native)
+Token (estimated; calibration pending):
+  native input limit: 10000 chars; overflow=file-preview; source=Claude Code hook input limit
+  budget: per_rule 400; per_event 1200; always_on 600 tokens
+  always-on: 11 tokens / 37 chars
+  per-rule:
+    dynamic: 9 tokens / 30 chars (native)
+    static: 11 tokens / 37 chars (native)
+  PreToolUse Bash: 9 tokens / 30 chars
+  session cost (requests=60 triggers=3): 78.7 always-on + 38.2 triggered = 116.9 units
+  scenario only: 1.25x cache write + 0.1x later hits; assumes an eligible unchanged prefix within cache lifetime; not billing
+Locked routes: ["claude-code=claude-project" "codex=codex-project"]
+update unchanged (changed=false)

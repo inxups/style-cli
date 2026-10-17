@@ -23,6 +23,7 @@ const (
 	Owner              = "style"
 	PluginRouteName    = "codex-plugin"
 	UserRouteName      = "codex-user"
+	ProjectRouteName   = "codex-project"
 	StaticSlotAppend   = "developer_instructions"
 	DefaultInputTokens = 2500
 )
@@ -42,6 +43,7 @@ func Surface() []adapter.HookSpec {
 
 // Facts implements the provider facts consumed by core/plan.
 type Facts struct {
+	Project               bool
 	StaticAppendAvailable bool
 }
 
@@ -190,7 +192,7 @@ func (f Facts) StaticLocation(mode string) (adapter.StaticLocation, bool) {
 }
 
 func (f Facts) StaticPositions(installation adapter.Installation) []adapter.StaticLocation {
-	if installation.ConfigDir != "" {
+	if !f.Project && installation.ConfigDir != "" {
 		f = NewFacts(installation)
 	}
 	location, ok := f.StaticLocation("append")

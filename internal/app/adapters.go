@@ -69,7 +69,7 @@ func (s *Service) Adapters(ctx context.Context) (AdaptersResult, error) {
 	if err := checkContext(ctx); err != nil {
 		return AdaptersResult{}, err
 	}
-	home, err := resolveStyleHome("")
+	home, err := s.resolveStyleHome("")
 	if err != nil {
 		return AdaptersResult{}, err
 	}
@@ -111,7 +111,7 @@ func (s *Service) inspectAdapters(ctx context.Context, home string, lock lockDoc
 		}
 		report.Version, report.ConfigDir = installation.Version, installation.ConfigDir
 		for _, route := range definition.Routes {
-			report.Routes = append(report.Routes, inspectRoute(ctx, bindRoute(route, installation, home, staticStateFor(lock, provider)), installation, detected))
+			report.Routes = append(report.Routes, inspectRoute(ctx, bindRoute(route, installation, home, s.staticState(lock, provider)), installation, detected))
 		}
 		fillAdapterFacts(&report, definition, installation)
 		result.Adapters = append(result.Adapters, report)

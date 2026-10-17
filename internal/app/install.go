@@ -30,16 +30,18 @@ import (
 // InstallRequest contains all non-interactive install choices. A caller must
 // explicitly confirm the capability report with Yes before any mutation.
 type InstallRequest struct {
-	Source       string
-	Ref, Path    string
-	Home         string
-	Harnesses    []string
-	Routes       map[string]string
-	Settings     map[string]string
-	Link         bool
-	Yes          bool
-	AllowReplace bool
-	FailClosed   []string
+	ProjectSources  []string
+	ProjectSettings map[string]string
+	Source          string
+	Ref, Path       string
+	Home            string
+	Harnesses       []string
+	Routes          map[string]string
+	Settings        map[string]string
+	Link            bool
+	Yes             bool
+	AllowReplace    bool
+	FailClosed      []string
 	// Confirm receives the complete detached capability and native preview
 	// before package staging or any installation writes.
 	Confirm func(InstallResult) (bool, error)
@@ -47,6 +49,8 @@ type InstallRequest struct {
 
 // InstallResult is the stable summary written after an install transaction.
 type InstallResult struct {
+	ProjectPackages      []ProjectPackagePreview   `json:"project_packages,omitempty"`
+	ProjectAdoption      bool                      `json:"project_adoption,omitempty"`
 	Source               *SourceReport             `json:"source,omitempty"`
 	StaticMigrations     []adapter.StaticMigration `json:"static_migrations,omitempty"`
 	Package              string                    `json:"package"`
@@ -80,6 +84,7 @@ type installAdapter struct {
 }
 
 type installCompilation struct {
+	project         *projectBinding
 	index           compile.Index
 	indexBytes      []byte
 	provenanceBytes []byte
@@ -99,15 +104,21 @@ func (s *Service) Install(ctx context.Context, request InstallRequest) (final In
 	if strings.TrimSpace(request.Source) == "" {
 		return InstallResult{}, &UsageError{Message: "package source is required"}
 	}
-	home, err := resolveStyleHome(request.Home)
+	if len(request.ProjectSources) > 0 && (s.project == nil || request.Link || len(request.ProjectSources) > 63) {
+		return InstallResult{}, &UsageError{Message: "--project-source requires a fresh project installation, at most 64 sources, and copied packages"}
+	}
+	if len(request.ProjectSources) == 0 && len(request.ProjectSettings) > 0 {
+		return InstallResult{}, &UsageError{Message: "--project-set requires --project-source"}
+	}
+	home, err := s.resolveStyleHome(request.Home)
 	if err != nil {
 		return InstallResult{}, err
 	}
-	inputs, err := captureManagement(home)
+	inputs, err := s.captureManagement(home)
 	if err != nil {
 		return InstallResult{}, err
 	}
-	lock, err := loadLock(home)
+	lock, err := s.loadLock(home)
 	if err != nil {
 		return InstallResult{}, err
 	}
@@ -251,6 +262,12 @@ func (s *Service) Install(ctx context.Context, request InstallRequest) (final In
 		Source: lockSource{Kind: sourceKind(single), Path: sourcePath, Link: request.Link, Git: provenance},
 		Files:  fileHashes, Settings: settingNames, Replace: replace, Link: request.Link,
 	}
+	if len(lock.Packages) == 0 {
+		newLock.Seq, err = s.projectSequence(name, newLock.Seq)
+		if err != nil {
+			return InstallResult{}, err
+		}
+	}
 	packages, err := s.loadInstalledPackages(ctx, home, lock)
 	if err != nil {
 		return InstallResult{}, err
@@ -262,25 +279,48 @@ func (s *Service) Install(ctx context.Context, request InstallRequest) (final In
 		newLock = *existingLock
 	}
 
+	extra, extraPreviews, err := s.captureProjectPackages(ctx, request, home, lock, adapters, newLock)
+	if err != nil {
+		return InstallResult{}, err
+	}
+	packages = append(packages, extra...)
 	result := InstallResult{Source: report, Package: name, Version: version, Link: request.Link, Replace: replace}
+	if s.project != nil && len(lock.Packages) == 0 {
+		declaration, err := readProjectDeclaration(s.project.Root)
+		if err != nil {
+			return InstallResult{}, err
+		}
+		result.ProjectAdoption = declaration != nil
+	}
+	result.ProjectPackages = extraPreviews
 	compilation, err := s.compileInstalled(ctx, packages, adapters, name)
 	if err != nil {
 		return InstallResult{}, err
 	}
 	result.Reports, result.Diagnostics = compilation.reports, compilation.diagnostics
 	result.Native = compilation.nativeReports("")
+	for _, item := range extra {
+		for _, target := range adapters {
+			if report, ok := item.report[target.provider]; ok {
+				result.Reports = append(result.Reports, installPlanReport(target, report, item.tokens[target.provider], item.resolved))
+			}
+		}
+	}
 	for _, finding := range versionDiagnostics {
 		if lock.Harnesses[finding.Provider].Route == "" {
 			result.Diagnostics = append(result.Diagnostics, finding)
 		}
 	}
 	indexBytes := compilation.indexBytes
-	updatedLock := lockDocument{Format: lock.Format, Packages: append([]lockPackage(nil), lock.Packages...)}
-	if provenance != nil {
+	updatedLock := lockDocument{Format: lock.Format, Project: lock.Project, Packages: append([]lockPackage(nil), lock.Packages...)}
+	if provenance != nil && updatedLock.Format != projectLockFormat {
 		updatedLock.Format = gitLockFormat
 	}
 	if existingLock == nil {
 		updatedLock.Packages = append(updatedLock.Packages, newLock)
+		for _, item := range extra {
+			updatedLock.Packages = append(updatedLock.Packages, item.lock)
+		}
 	}
 	plannedChanges, harnesses, routes, migrations, err := planInstallRoutes(ctx, home, adapters, compilation, lock, request.FailClosed)
 	if err != nil {
@@ -302,6 +342,19 @@ func (s *Service) Install(ctx context.Context, request InstallRequest) (final In
 			return InstallResult{}, err
 		}
 		plannedChanges = append(plannedChanges, approvalChanges...)
+	}
+	for _, item := range extra {
+		if len(item.settings) > 0 {
+			data, e := yaml.Marshal(item.settings)
+			if e != nil {
+				return result, e
+			}
+			plannedChanges = append(plannedChanges, plannedFile(filepath.Join(home, "settings"), item.lock.Name+".yaml", data, 0o600)...)
+		}
+	}
+	plannedChanges, err = s.projectFiles(home, lock, &updatedLock, adapters, compilation, plannedChanges, inputs)
+	if err != nil {
+		return InstallResult{}, err
 	}
 	lockBytes, err := yaml.Marshal(updatedLock)
 	if err != nil {
@@ -344,7 +397,7 @@ func (s *Service) Install(ctx context.Context, request InstallRequest) (final In
 		}
 		return result, nil
 	}
-	guard, err := acquireManagement(ctx, home)
+	guard, err := acquireInputs(ctx, inputs, home)
 	if err != nil {
 		return result, err
 	}
@@ -352,29 +405,38 @@ func (s *Service) Install(ctx context.Context, request InstallRequest) (final In
 	if err = inputs.verify(); err != nil {
 		return result, err
 	}
-	var staged *packageSwap
-	stagedCommitted := false
+	var swaps []*packageSwap
+	committed := false
 	defer func() {
-		if staged != nil && !stagedCommitted {
-			runErr = errors.Join(runErr, staged.rollback())
+		if !committed {
+			for i := len(swaps) - 1; i >= 0; i-- {
+				runErr = errors.Join(runErr, swaps[i].rollback())
+			}
 		}
 	}()
+	candidates := append([]installPackage(nil), extra...)
 	if !request.Link && existingLock == nil {
-		staged, err = stagePackageFiles(home, name, single, files)
-		if err != nil {
-			return InstallResult{}, fmt.Errorf("stage package: %w", err)
+		candidates = append([]installPackage{{lock: newLock, pkg: parsed}}, candidates...)
+	}
+	for _, item := range candidates {
+		swap, e := stagePackageFiles(home, item.lock.Name, item.lock.Source.Kind == "file", item.pkg.Files)
+		if e != nil {
+			return result, fmt.Errorf("stage package: %w", e)
 		}
-		if err := staged.apply(); err != nil {
-			return InstallResult{}, fmt.Errorf("install package: %w", err)
+		swaps = append(swaps, swap)
+	}
+	for _, swap := range swaps {
+		if e := swap.apply(); e != nil {
+			return result, fmt.Errorf("install package: %w", e)
 		}
 	}
 	if err := install.ApplyFiles(ctx, plannedChanges); err != nil {
-		return InstallResult{}, fmt.Errorf("apply install changes: %w", err)
+		return result, fmt.Errorf("apply install changes: %w", err)
 	}
-	if staged != nil {
-		staged.commit()
-		stagedCommitted = true
+	for _, swap := range swaps {
+		swap.commit()
 	}
+	committed = true
 	result.Changed = true
 	sort.Strings(result.Routes)
 	sortDiagnostics(result.Diagnostics)
@@ -452,6 +514,16 @@ func (s *Service) compileInstalled(ctx context.Context, packages []installPackag
 	result.provenanceBytes, err = compile.BuildProvenance(compile.Request{StyleVersion: styleRuntimeVersion, Packages: compileInputs}, compiled, result.indexBytes)
 	if err != nil {
 		return installCompilation{}, err
+	}
+	if s.project != nil {
+		identities := lockDocument{Harnesses: map[string]lockHarness{}}
+		for _, target := range adapters {
+			identities.Harnesses[string(target.provider)] = lockHarness{ConfigDir: target.installation.ConfigDir, Version: target.installation.Version, Route: target.route.Name()}
+		}
+		result.project, err = bindingFor(s.project, identities)
+		if err != nil {
+			return installCompilation{}, err
+		}
 	}
 	result.sortNative()
 	sortDiagnostics(result.diagnostics)
@@ -775,6 +847,22 @@ func (s *Service) installAdapters(ctx context.Context, request InstallRequest, l
 			}
 			continue
 		}
+		if s.project != nil {
+			config, err := canonicalFuturePath(installation.ConfigDir)
+			if err != nil {
+				return nil, err
+			}
+			if within(config, s.project.Root) || within(s.project.Root, config) {
+				return nil, projectFailure("project and harness user configuration cannot contain one another")
+			}
+			if prior := lock.Harnesses[string(provider)].ConfigDir; prior != "" {
+				previous, err := canonicalFuturePath(prior)
+				if err != nil || previous != config {
+					return nil, projectFailure("detected harness configuration differs from the bound installation")
+				}
+			}
+			installation.ConfigDir = config
+		}
 		if previous := lock.Harnesses[string(provider)]; previous.ConfigDir != "" {
 			installation.ConfigDir = previous.ConfigDir
 		}
@@ -812,11 +900,11 @@ func (s *Service) installAdapters(ctx context.Context, request InstallRequest, l
 		if chosen == nil {
 			return nil, &UsageError{Message: fmt.Sprintf("no available route for %s", provider)}
 		}
-		home, err := resolveStyleHome(request.Home)
+		home, err := s.resolveStyleHome(request.Home)
 		if err != nil {
 			return nil, err
 		}
-		chosen = bindRoute(chosen, installation, home, staticStateFor(lock, provider))
+		chosen = bindRoute(chosen, installation, home, s.staticState(lock, provider))
 		result = append(result, installAdapter{provider: provider, definition: definition, installation: installation, route: chosen})
 	}
 	return result, nil

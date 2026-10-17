@@ -63,7 +63,7 @@ func applySync(ctx context.Context, prepared syncPreparation) (result SyncResult
 	if err := checkContext(ctx); err != nil {
 		return prepared.result, err
 	}
-	var guard *managementGuard
+	var guard *managementClosers
 	defer func() {
 		if guard != nil {
 			runErr = errors.Join(runErr, guard.close())
@@ -71,7 +71,7 @@ func applySync(ctx context.Context, prepared syncPreparation) (result SyncResult
 	}()
 	if len(prepared.files) > 0 {
 		var err error
-		guard, err = acquireManagement(ctx, prepared.home)
+		guard, err = acquireInputs(ctx, prepared.inputs, prepared.home)
 		if err != nil {
 			return prepared.result, err
 		}

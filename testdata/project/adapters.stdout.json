@@ -1,0 +1,1711 @@
+{
+  "adapters": [
+    {
+      "capabilities": [
+        {
+          "available": true,
+          "name": "add-context",
+          "point": "session.start",
+          "reason": "Codex hook codec supports this output"
+        },
+        {
+          "available": false,
+          "name": "system-message",
+          "point": "session.start",
+          "reason": "Codex has no output capability at this evaluation point"
+        },
+        {
+          "available": false,
+          "name": "deny",
+          "point": "session.start",
+          "reason": "Codex has no output capability at this evaluation point"
+        },
+        {
+          "available": true,
+          "name": "add-context",
+          "point": "prompt.submitted",
+          "reason": "Codex hook codec supports this output"
+        },
+        {
+          "available": true,
+          "name": "system-message",
+          "point": "prompt.submitted",
+          "reason": "Codex hook codec supports this output"
+        },
+        {
+          "available": true,
+          "name": "deny",
+          "point": "prompt.submitted",
+          "reason": "Codex hook codec supports this output"
+        },
+        {
+          "available": true,
+          "name": "add-context",
+          "point": "skill.explicit",
+          "reason": "Codex hook codec supports this output"
+        },
+        {
+          "available": true,
+          "name": "system-message",
+          "point": "skill.explicit",
+          "reason": "Codex hook codec supports this output"
+        },
+        {
+          "available": true,
+          "name": "deny",
+          "point": "skill.explicit",
+          "reason": "Codex hook codec supports this output"
+        },
+        {
+          "available": true,
+          "name": "add-context",
+          "point": "tool.pre",
+          "reason": "Codex hook codec supports this output"
+        },
+        {
+          "available": true,
+          "name": "system-message",
+          "point": "tool.pre",
+          "reason": "Codex hook codec supports this output"
+        },
+        {
+          "available": true,
+          "name": "deny",
+          "point": "tool.pre",
+          "reason": "Codex hook codec supports this output"
+        },
+        {
+          "available": true,
+          "name": "add-context",
+          "point": "tool.post",
+          "reason": "Codex hook codec supports this output"
+        },
+        {
+          "available": true,
+          "name": "system-message",
+          "point": "tool.post",
+          "reason": "Codex hook codec supports this output"
+        },
+        {
+          "available": false,
+          "name": "deny",
+          "point": "tool.post",
+          "reason": "Codex has no output capability at this evaluation point"
+        },
+        {
+          "available": false,
+          "name": "add-context",
+          "point": "tool.error",
+          "reason": "Codex has no output capability at this evaluation point"
+        },
+        {
+          "available": false,
+          "name": "system-message",
+          "point": "tool.error",
+          "reason": "Codex has no output capability at this evaluation point"
+        },
+        {
+          "available": false,
+          "name": "deny",
+          "point": "tool.error",
+          "reason": "Codex has no output capability at this evaluation point"
+        },
+        {
+          "available": true,
+          "name": "add-context",
+          "point": "subagent.start",
+          "reason": "Codex hook codec supports this output"
+        },
+        {
+          "available": false,
+          "name": "system-message",
+          "point": "subagent.start",
+          "reason": "Codex has no output capability at this evaluation point"
+        },
+        {
+          "available": false,
+          "name": "deny",
+          "point": "subagent.start",
+          "reason": "Codex has no output capability at this evaluation point"
+        }
+      ],
+      "config_dir": "$FIXTURE/codex-user",
+      "detected": true,
+      "detected_config_dir": "$FIXTURE/codex-user",
+      "fields": [
+        {
+          "approximate": false,
+          "available": true,
+          "name": "model",
+          "point": "session.start",
+          "source": "Codex event/session state"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "thinking_effort",
+          "point": "session.start",
+          "source": "Codex event/session state"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "thinking_effort_raw",
+          "point": "session.start",
+          "source": "Codex event/session state"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "thinking_effort_approx",
+          "point": "session.start",
+          "source": "Codex event/session state"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "harness.cwd",
+          "point": "session.start",
+          "source": "Codex event/session state"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "harness.turn_id",
+          "point": "session.start",
+          "source": "Codex event/session state"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "harness.agent",
+          "point": "session.start",
+          "source": "Codex event/session state"
+        },
+        {
+          "approximate": false,
+          "available": false,
+          "name": "tool.name",
+          "point": "session.start",
+          "reason": "Codex does not expose this field at the evaluation point"
+        },
+        {
+          "approximate": false,
+          "available": false,
+          "name": "tool.input",
+          "point": "session.start",
+          "reason": "Codex does not expose this field at the evaluation point"
+        },
+        {
+          "approximate": false,
+          "available": false,
+          "name": "tool.output",
+          "point": "session.start",
+          "reason": "Codex does not expose this field at the evaluation point"
+        },
+        {
+          "approximate": false,
+          "available": false,
+          "name": "tool.added",
+          "point": "session.start",
+          "reason": "Codex does not expose this field at the evaluation point"
+        },
+        {
+          "approximate": false,
+          "available": false,
+          "name": "mcp.server",
+          "point": "session.start",
+          "reason": "Codex does not expose this field at the evaluation point"
+        },
+        {
+          "approximate": false,
+          "available": false,
+          "name": "mcp.tool",
+          "point": "session.start",
+          "reason": "Codex does not expose this field at the evaluation point"
+        },
+        {
+          "approximate": false,
+          "available": false,
+          "name": "skill.name",
+          "point": "session.start",
+          "reason": "Codex does not expose this field at the evaluation point"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "model",
+          "point": "prompt.submitted",
+          "source": "Codex event/session state"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "thinking_effort",
+          "point": "prompt.submitted",
+          "source": "Codex event/session state"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "thinking_effort_raw",
+          "point": "prompt.submitted",
+          "source": "Codex event/session state"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "thinking_effort_approx",
+          "point": "prompt.submitted",
+          "source": "Codex event/session state"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "harness.cwd",
+          "point": "prompt.submitted",
+          "source": "Codex event/session state"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "harness.turn_id",
+          "point": "prompt.submitted",
+          "source": "Codex event/session state"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "harness.agent",
+          "point": "prompt.submitted",
+          "source": "Codex event/session state"
+        },
+        {
+          "approximate": false,
+          "available": false,
+          "name": "tool.name",
+          "point": "prompt.submitted",
+          "reason": "Codex does not expose this field at the evaluation point"
+        },
+        {
+          "approximate": false,
+          "available": false,
+          "name": "tool.input",
+          "point": "prompt.submitted",
+          "reason": "Codex does not expose this field at the evaluation point"
+        },
+        {
+          "approximate": false,
+          "available": false,
+          "name": "tool.output",
+          "point": "prompt.submitted",
+          "reason": "Codex does not expose this field at the evaluation point"
+        },
+        {
+          "approximate": false,
+          "available": false,
+          "name": "tool.added",
+          "point": "prompt.submitted",
+          "reason": "Codex does not expose this field at the evaluation point"
+        },
+        {
+          "approximate": false,
+          "available": false,
+          "name": "mcp.server",
+          "point": "prompt.submitted",
+          "reason": "Codex does not expose this field at the evaluation point"
+        },
+        {
+          "approximate": false,
+          "available": false,
+          "name": "mcp.tool",
+          "point": "prompt.submitted",
+          "reason": "Codex does not expose this field at the evaluation point"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "skill.name",
+          "point": "prompt.submitted",
+          "source": "Codex UserPromptSubmit payload"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "model",
+          "point": "skill.explicit",
+          "source": "Codex event/session state"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "thinking_effort",
+          "point": "skill.explicit",
+          "source": "Codex event/session state"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "thinking_effort_raw",
+          "point": "skill.explicit",
+          "source": "Codex event/session state"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "thinking_effort_approx",
+          "point": "skill.explicit",
+          "source": "Codex event/session state"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "harness.cwd",
+          "point": "skill.explicit",
+          "source": "Codex event/session state"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "harness.turn_id",
+          "point": "skill.explicit",
+          "source": "Codex event/session state"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "harness.agent",
+          "point": "skill.explicit",
+          "source": "Codex event/session state"
+        },
+        {
+          "approximate": false,
+          "available": false,
+          "name": "tool.name",
+          "point": "skill.explicit",
+          "reason": "Codex does not expose this field at the evaluation point"
+        },
+        {
+          "approximate": false,
+          "available": false,
+          "name": "tool.input",
+          "point": "skill.explicit",
+          "reason": "Codex does not expose this field at the evaluation point"
+        },
+        {
+          "approximate": false,
+          "available": false,
+          "name": "tool.output",
+          "point": "skill.explicit",
+          "reason": "Codex does not expose this field at the evaluation point"
+        },
+        {
+          "approximate": false,
+          "available": false,
+          "name": "tool.added",
+          "point": "skill.explicit",
+          "reason": "Codex does not expose this field at the evaluation point"
+        },
+        {
+          "approximate": false,
+          "available": false,
+          "name": "mcp.server",
+          "point": "skill.explicit",
+          "reason": "Codex does not expose this field at the evaluation point"
+        },
+        {
+          "approximate": false,
+          "available": false,
+          "name": "mcp.tool",
+          "point": "skill.explicit",
+          "reason": "Codex does not expose this field at the evaluation point"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "skill.name",
+          "point": "skill.explicit",
+          "source": "Codex UserPromptSubmit payload"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "model",
+          "point": "tool.pre",
+          "source": "Codex event/session state"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "thinking_effort",
+          "point": "tool.pre",
+          "source": "Codex event/session state"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "thinking_effort_raw",
+          "point": "tool.pre",
+          "source": "Codex event/session state"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "thinking_effort_approx",
+          "point": "tool.pre",
+          "source": "Codex event/session state"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "harness.cwd",
+          "point": "tool.pre",
+          "source": "Codex event/session state"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "harness.turn_id",
+          "point": "tool.pre",
+          "source": "Codex event/session state"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "harness.agent",
+          "point": "tool.pre",
+          "source": "Codex event/session state"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "tool.name",
+          "point": "tool.pre",
+          "source": "Codex PreToolUse payload"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "tool.input",
+          "point": "tool.pre",
+          "source": "Codex PreToolUse payload"
+        },
+        {
+          "approximate": false,
+          "available": false,
+          "name": "tool.output",
+          "point": "tool.pre",
+          "reason": "Codex does not expose this field at the evaluation point"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "tool.added",
+          "point": "tool.pre",
+          "source": "Codex PreToolUse payload"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "mcp.server",
+          "point": "tool.pre",
+          "source": "Codex PreToolUse payload"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "mcp.tool",
+          "point": "tool.pre",
+          "source": "Codex PreToolUse payload"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "skill.name",
+          "point": "tool.pre",
+          "source": "Codex PreToolUse payload"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "model",
+          "point": "tool.post",
+          "source": "Codex event/session state"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "thinking_effort",
+          "point": "tool.post",
+          "source": "Codex event/session state"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "thinking_effort_raw",
+          "point": "tool.post",
+          "source": "Codex event/session state"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "thinking_effort_approx",
+          "point": "tool.post",
+          "source": "Codex event/session state"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "harness.cwd",
+          "point": "tool.post",
+          "source": "Codex event/session state"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "harness.turn_id",
+          "point": "tool.post",
+          "source": "Codex event/session state"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "harness.agent",
+          "point": "tool.post",
+          "source": "Codex event/session state"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "tool.name",
+          "point": "tool.post",
+          "source": "Codex PostToolUse payload"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "tool.input",
+          "point": "tool.post",
+          "source": "Codex PostToolUse payload"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "tool.output",
+          "point": "tool.post",
+          "source": "Codex PostToolUse payload"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "tool.added",
+          "point": "tool.post",
+          "source": "Codex PostToolUse payload"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "mcp.server",
+          "point": "tool.post",
+          "source": "Codex PostToolUse payload"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "mcp.tool",
+          "point": "tool.post",
+          "source": "Codex PostToolUse payload"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "skill.name",
+          "point": "tool.post",
+          "source": "Codex PostToolUse payload"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "model",
+          "point": "tool.error",
+          "source": "Codex event/session state"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "thinking_effort",
+          "point": "tool.error",
+          "source": "Codex event/session state"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "thinking_effort_raw",
+          "point": "tool.error",
+          "source": "Codex event/session state"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "thinking_effort_approx",
+          "point": "tool.error",
+          "source": "Codex event/session state"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "harness.cwd",
+          "point": "tool.error",
+          "source": "Codex event/session state"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "harness.turn_id",
+          "point": "tool.error",
+          "source": "Codex event/session state"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "harness.agent",
+          "point": "tool.error",
+          "source": "Codex event/session state"
+        },
+        {
+          "approximate": false,
+          "available": false,
+          "name": "tool.name",
+          "point": "tool.error",
+          "reason": "Codex does not expose this field at the evaluation point"
+        },
+        {
+          "approximate": false,
+          "available": false,
+          "name": "tool.input",
+          "point": "tool.error",
+          "reason": "Codex does not expose this field at the evaluation point"
+        },
+        {
+          "approximate": false,
+          "available": false,
+          "name": "tool.output",
+          "point": "tool.error",
+          "reason": "Codex does not expose this field at the evaluation point"
+        },
+        {
+          "approximate": false,
+          "available": false,
+          "name": "tool.added",
+          "point": "tool.error",
+          "reason": "Codex does not expose this field at the evaluation point"
+        },
+        {
+          "approximate": false,
+          "available": false,
+          "name": "mcp.server",
+          "point": "tool.error",
+          "reason": "Codex does not expose this field at the evaluation point"
+        },
+        {
+          "approximate": false,
+          "available": false,
+          "name": "mcp.tool",
+          "point": "tool.error",
+          "reason": "Codex does not expose this field at the evaluation point"
+        },
+        {
+          "approximate": false,
+          "available": false,
+          "name": "skill.name",
+          "point": "tool.error",
+          "reason": "Codex does not expose this field at the evaluation point"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "model",
+          "point": "subagent.start",
+          "source": "Codex event/session state"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "thinking_effort",
+          "point": "subagent.start",
+          "source": "Codex event/session state"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "thinking_effort_raw",
+          "point": "subagent.start",
+          "source": "Codex event/session state"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "thinking_effort_approx",
+          "point": "subagent.start",
+          "source": "Codex event/session state"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "harness.cwd",
+          "point": "subagent.start",
+          "source": "Codex event/session state"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "harness.turn_id",
+          "point": "subagent.start",
+          "source": "Codex event/session state"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "harness.agent",
+          "point": "subagent.start",
+          "source": "Codex event/session state"
+        },
+        {
+          "approximate": false,
+          "available": false,
+          "name": "tool.name",
+          "point": "subagent.start",
+          "reason": "Codex does not expose this field at the evaluation point"
+        },
+        {
+          "approximate": false,
+          "available": false,
+          "name": "tool.input",
+          "point": "subagent.start",
+          "reason": "Codex does not expose this field at the evaluation point"
+        },
+        {
+          "approximate": false,
+          "available": false,
+          "name": "tool.output",
+          "point": "subagent.start",
+          "reason": "Codex does not expose this field at the evaluation point"
+        },
+        {
+          "approximate": false,
+          "available": false,
+          "name": "tool.added",
+          "point": "subagent.start",
+          "reason": "Codex does not expose this field at the evaluation point"
+        },
+        {
+          "approximate": false,
+          "available": false,
+          "name": "mcp.server",
+          "point": "subagent.start",
+          "reason": "Codex does not expose this field at the evaluation point"
+        },
+        {
+          "approximate": false,
+          "available": false,
+          "name": "mcp.tool",
+          "point": "subagent.start",
+          "reason": "Codex does not expose this field at the evaluation point"
+        },
+        {
+          "approximate": false,
+          "available": false,
+          "name": "skill.name",
+          "point": "subagent.start",
+          "reason": "Codex does not expose this field at the evaluation point"
+        }
+      ],
+      "limit": {
+        "approximate": true,
+        "overflow": "file-preview",
+        "source": "Codex additionalContext default",
+        "unit": "tokens",
+        "value": 2500
+      },
+      "provider": "codex",
+      "routes": [
+        {
+          "available": true,
+          "detail": "available",
+          "installed": true,
+          "name": "codex-project",
+          "stable_key": true,
+          "trust": "workspace",
+          "trust_summary": "project trust and hook definition trust are separate; STYLE never grants project trust; start from the canonical project path",
+          "trusted": false
+        }
+      ],
+      "static": [],
+      "version": "0.159.3"
+    },
+    {
+      "capabilities": [
+        {
+          "available": true,
+          "name": "add-context",
+          "point": "session.start",
+          "reason": "Claude Code hook output supports this capability"
+        },
+        {
+          "available": true,
+          "name": "system-message",
+          "point": "session.start",
+          "reason": "Claude Code hook output supports this capability"
+        },
+        {
+          "available": false,
+          "name": "deny",
+          "point": "session.start",
+          "reason": "Claude Code has no output capability at this evaluation point"
+        },
+        {
+          "available": true,
+          "name": "add-context",
+          "point": "prompt.submitted",
+          "reason": "Claude Code hook output supports this capability"
+        },
+        {
+          "available": true,
+          "name": "system-message",
+          "point": "prompt.submitted",
+          "reason": "Claude Code hook output supports this capability"
+        },
+        {
+          "available": true,
+          "name": "deny",
+          "point": "prompt.submitted",
+          "reason": "Claude Code hook output supports this capability"
+        },
+        {
+          "available": true,
+          "name": "add-context",
+          "point": "skill.explicit",
+          "reason": "Claude Code hook output supports this capability"
+        },
+        {
+          "available": true,
+          "name": "system-message",
+          "point": "skill.explicit",
+          "reason": "Claude Code hook output supports this capability"
+        },
+        {
+          "available": true,
+          "name": "deny",
+          "point": "skill.explicit",
+          "reason": "Claude Code hook output supports this capability"
+        },
+        {
+          "available": true,
+          "name": "add-context",
+          "point": "tool.pre",
+          "reason": "Claude Code hook output supports this capability"
+        },
+        {
+          "available": true,
+          "name": "system-message",
+          "point": "tool.pre",
+          "reason": "Claude Code hook output supports this capability"
+        },
+        {
+          "available": true,
+          "name": "deny",
+          "point": "tool.pre",
+          "reason": "Claude Code hook output supports this capability"
+        },
+        {
+          "available": true,
+          "name": "add-context",
+          "point": "tool.post",
+          "reason": "Claude Code hook output supports this capability"
+        },
+        {
+          "available": true,
+          "name": "system-message",
+          "point": "tool.post",
+          "reason": "Claude Code hook output supports this capability"
+        },
+        {
+          "available": false,
+          "name": "deny",
+          "point": "tool.post",
+          "reason": "Claude Code has no output capability at this evaluation point"
+        },
+        {
+          "available": true,
+          "name": "add-context",
+          "point": "tool.error",
+          "reason": "Claude Code hook output supports this capability"
+        },
+        {
+          "available": true,
+          "name": "system-message",
+          "point": "tool.error",
+          "reason": "Claude Code hook output supports this capability"
+        },
+        {
+          "available": false,
+          "name": "deny",
+          "point": "tool.error",
+          "reason": "Claude Code has no output capability at this evaluation point"
+        },
+        {
+          "available": false,
+          "name": "add-context",
+          "point": "subagent.start",
+          "reason": "Claude Code has no output capability at this evaluation point"
+        },
+        {
+          "available": false,
+          "name": "system-message",
+          "point": "subagent.start",
+          "reason": "Claude Code has no output capability at this evaluation point"
+        },
+        {
+          "available": false,
+          "name": "deny",
+          "point": "subagent.start",
+          "reason": "Claude Code has no output capability at this evaluation point"
+        }
+      ],
+      "config_dir": "$FIXTURE/claude-user",
+      "detected": true,
+      "detected_config_dir": "$FIXTURE/claude-user",
+      "fields": [
+        {
+          "approximate": false,
+          "available": true,
+          "name": "model",
+          "point": "session.start",
+          "source": "Claude Code event/session state"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "thinking_effort",
+          "point": "session.start",
+          "source": "Claude Code event/session state"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "thinking_effort_raw",
+          "point": "session.start",
+          "source": "Claude Code event/session state"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "thinking_effort_approx",
+          "point": "session.start",
+          "source": "Claude Code event/session state"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "harness.cwd",
+          "point": "session.start",
+          "source": "Claude Code event/session state"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "harness.turn_id",
+          "point": "session.start",
+          "source": "Claude Code event/session state"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "harness.agent",
+          "point": "session.start",
+          "source": "Claude Code event/session state"
+        },
+        {
+          "approximate": false,
+          "available": false,
+          "name": "tool.name",
+          "point": "session.start",
+          "reason": "Claude Code does not expose this field at the evaluation point"
+        },
+        {
+          "approximate": false,
+          "available": false,
+          "name": "tool.input",
+          "point": "session.start",
+          "reason": "Claude Code does not expose this field at the evaluation point"
+        },
+        {
+          "approximate": false,
+          "available": false,
+          "name": "tool.output",
+          "point": "session.start",
+          "reason": "Claude Code does not expose this field at the evaluation point"
+        },
+        {
+          "approximate": false,
+          "available": false,
+          "name": "tool.added",
+          "point": "session.start",
+          "reason": "Claude Code does not expose this field at the evaluation point"
+        },
+        {
+          "approximate": false,
+          "available": false,
+          "name": "mcp.server",
+          "point": "session.start",
+          "reason": "Claude Code does not expose this field at the evaluation point"
+        },
+        {
+          "approximate": false,
+          "available": false,
+          "name": "mcp.tool",
+          "point": "session.start",
+          "reason": "Claude Code does not expose this field at the evaluation point"
+        },
+        {
+          "approximate": false,
+          "available": false,
+          "name": "skill.name",
+          "point": "session.start",
+          "reason": "Claude Code does not expose this field at the evaluation point"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "model",
+          "point": "prompt.submitted",
+          "source": "Claude Code event/session state"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "thinking_effort",
+          "point": "prompt.submitted",
+          "source": "Claude Code event/session state"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "thinking_effort_raw",
+          "point": "prompt.submitted",
+          "source": "Claude Code event/session state"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "thinking_effort_approx",
+          "point": "prompt.submitted",
+          "source": "Claude Code event/session state"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "harness.cwd",
+          "point": "prompt.submitted",
+          "source": "Claude Code event/session state"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "harness.turn_id",
+          "point": "prompt.submitted",
+          "source": "Claude Code event/session state"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "harness.agent",
+          "point": "prompt.submitted",
+          "source": "Claude Code event/session state"
+        },
+        {
+          "approximate": false,
+          "available": false,
+          "name": "tool.name",
+          "point": "prompt.submitted",
+          "reason": "Claude Code does not expose this field at the evaluation point"
+        },
+        {
+          "approximate": false,
+          "available": false,
+          "name": "tool.input",
+          "point": "prompt.submitted",
+          "reason": "Claude Code does not expose this field at the evaluation point"
+        },
+        {
+          "approximate": false,
+          "available": false,
+          "name": "tool.output",
+          "point": "prompt.submitted",
+          "reason": "Claude Code does not expose this field at the evaluation point"
+        },
+        {
+          "approximate": false,
+          "available": false,
+          "name": "tool.added",
+          "point": "prompt.submitted",
+          "reason": "Claude Code does not expose this field at the evaluation point"
+        },
+        {
+          "approximate": false,
+          "available": false,
+          "name": "mcp.server",
+          "point": "prompt.submitted",
+          "reason": "Claude Code does not expose this field at the evaluation point"
+        },
+        {
+          "approximate": false,
+          "available": false,
+          "name": "mcp.tool",
+          "point": "prompt.submitted",
+          "reason": "Claude Code does not expose this field at the evaluation point"
+        },
+        {
+          "approximate": false,
+          "available": false,
+          "name": "skill.name",
+          "point": "prompt.submitted",
+          "reason": "Claude Code does not expose this field at the evaluation point"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "model",
+          "point": "skill.explicit",
+          "source": "Claude Code event/session state"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "thinking_effort",
+          "point": "skill.explicit",
+          "source": "Claude Code event/session state"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "thinking_effort_raw",
+          "point": "skill.explicit",
+          "source": "Claude Code event/session state"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "thinking_effort_approx",
+          "point": "skill.explicit",
+          "source": "Claude Code event/session state"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "harness.cwd",
+          "point": "skill.explicit",
+          "source": "Claude Code event/session state"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "harness.turn_id",
+          "point": "skill.explicit",
+          "source": "Claude Code event/session state"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "harness.agent",
+          "point": "skill.explicit",
+          "source": "Claude Code event/session state"
+        },
+        {
+          "approximate": false,
+          "available": false,
+          "name": "tool.name",
+          "point": "skill.explicit",
+          "reason": "Claude Code does not expose this field at the evaluation point"
+        },
+        {
+          "approximate": false,
+          "available": false,
+          "name": "tool.input",
+          "point": "skill.explicit",
+          "reason": "Claude Code does not expose this field at the evaluation point"
+        },
+        {
+          "approximate": false,
+          "available": false,
+          "name": "tool.output",
+          "point": "skill.explicit",
+          "reason": "Claude Code does not expose this field at the evaluation point"
+        },
+        {
+          "approximate": false,
+          "available": false,
+          "name": "tool.added",
+          "point": "skill.explicit",
+          "reason": "Claude Code does not expose this field at the evaluation point"
+        },
+        {
+          "approximate": false,
+          "available": false,
+          "name": "mcp.server",
+          "point": "skill.explicit",
+          "reason": "Claude Code does not expose this field at the evaluation point"
+        },
+        {
+          "approximate": false,
+          "available": false,
+          "name": "mcp.tool",
+          "point": "skill.explicit",
+          "reason": "Claude Code does not expose this field at the evaluation point"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "skill.name",
+          "point": "skill.explicit",
+          "source": "Claude UserPromptExpansion payload"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "model",
+          "point": "tool.pre",
+          "source": "Claude Code event/session state"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "thinking_effort",
+          "point": "tool.pre",
+          "source": "Claude Code event/session state"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "thinking_effort_raw",
+          "point": "tool.pre",
+          "source": "Claude Code event/session state"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "thinking_effort_approx",
+          "point": "tool.pre",
+          "source": "Claude Code event/session state"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "harness.cwd",
+          "point": "tool.pre",
+          "source": "Claude Code event/session state"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "harness.turn_id",
+          "point": "tool.pre",
+          "source": "Claude Code event/session state"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "harness.agent",
+          "point": "tool.pre",
+          "source": "Claude Code event/session state"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "tool.name",
+          "point": "tool.pre",
+          "source": "Claude PreToolUse payload"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "tool.input",
+          "point": "tool.pre",
+          "source": "Claude PreToolUse payload"
+        },
+        {
+          "approximate": false,
+          "available": false,
+          "name": "tool.output",
+          "point": "tool.pre",
+          "reason": "Claude Code does not expose this field at the evaluation point"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "tool.added",
+          "point": "tool.pre",
+          "source": "Claude PreToolUse payload"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "mcp.server",
+          "point": "tool.pre",
+          "source": "Claude PreToolUse payload"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "mcp.tool",
+          "point": "tool.pre",
+          "source": "Claude PreToolUse payload"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "skill.name",
+          "point": "tool.pre",
+          "source": "Claude PreToolUse payload"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "model",
+          "point": "tool.post",
+          "source": "Claude Code event/session state"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "thinking_effort",
+          "point": "tool.post",
+          "source": "Claude Code event/session state"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "thinking_effort_raw",
+          "point": "tool.post",
+          "source": "Claude Code event/session state"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "thinking_effort_approx",
+          "point": "tool.post",
+          "source": "Claude Code event/session state"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "harness.cwd",
+          "point": "tool.post",
+          "source": "Claude Code event/session state"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "harness.turn_id",
+          "point": "tool.post",
+          "source": "Claude Code event/session state"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "harness.agent",
+          "point": "tool.post",
+          "source": "Claude Code event/session state"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "tool.name",
+          "point": "tool.post",
+          "source": "Claude PostToolUse payload"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "tool.input",
+          "point": "tool.post",
+          "source": "Claude PostToolUse payload"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "tool.output",
+          "point": "tool.post",
+          "source": "Claude PostToolUse payload"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "tool.added",
+          "point": "tool.post",
+          "source": "Claude PostToolUse payload"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "mcp.server",
+          "point": "tool.post",
+          "source": "Claude PostToolUse payload"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "mcp.tool",
+          "point": "tool.post",
+          "source": "Claude PostToolUse payload"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "skill.name",
+          "point": "tool.post",
+          "source": "Claude PostToolUse payload"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "model",
+          "point": "tool.error",
+          "source": "Claude Code event/session state"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "thinking_effort",
+          "point": "tool.error",
+          "source": "Claude Code event/session state"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "thinking_effort_raw",
+          "point": "tool.error",
+          "source": "Claude Code event/session state"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "thinking_effort_approx",
+          "point": "tool.error",
+          "source": "Claude Code event/session state"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "harness.cwd",
+          "point": "tool.error",
+          "source": "Claude Code event/session state"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "harness.turn_id",
+          "point": "tool.error",
+          "source": "Claude Code event/session state"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "harness.agent",
+          "point": "tool.error",
+          "source": "Claude Code event/session state"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "tool.name",
+          "point": "tool.error",
+          "source": "Claude PostToolUseFailure payload"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "tool.input",
+          "point": "tool.error",
+          "source": "Claude PostToolUseFailure payload"
+        },
+        {
+          "approximate": false,
+          "available": false,
+          "name": "tool.output",
+          "point": "tool.error",
+          "reason": "Claude Code does not expose this field at the evaluation point"
+        },
+        {
+          "approximate": false,
+          "available": false,
+          "name": "tool.added",
+          "point": "tool.error",
+          "reason": "Claude Code does not expose this field at the evaluation point"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "mcp.server",
+          "point": "tool.error",
+          "source": "Claude PostToolUseFailure payload"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "mcp.tool",
+          "point": "tool.error",
+          "source": "Claude PostToolUseFailure payload"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "skill.name",
+          "point": "tool.error",
+          "source": "Claude PostToolUseFailure payload"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "model",
+          "point": "subagent.start",
+          "source": "Claude Code event/session state"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "thinking_effort",
+          "point": "subagent.start",
+          "source": "Claude Code event/session state"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "thinking_effort_raw",
+          "point": "subagent.start",
+          "source": "Claude Code event/session state"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "thinking_effort_approx",
+          "point": "subagent.start",
+          "source": "Claude Code event/session state"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "harness.cwd",
+          "point": "subagent.start",
+          "source": "Claude Code event/session state"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "harness.turn_id",
+          "point": "subagent.start",
+          "source": "Claude Code event/session state"
+        },
+        {
+          "approximate": false,
+          "available": true,
+          "name": "harness.agent",
+          "point": "subagent.start",
+          "source": "Claude Code event/session state"
+        },
+        {
+          "approximate": false,
+          "available": false,
+          "name": "tool.name",
+          "point": "subagent.start",
+          "reason": "Claude Code does not expose this field at the evaluation point"
+        },
+        {
+          "approximate": false,
+          "available": false,
+          "name": "tool.input",
+          "point": "subagent.start",
+          "reason": "Claude Code does not expose this field at the evaluation point"
+        },
+        {
+          "approximate": false,
+          "available": false,
+          "name": "tool.output",
+          "point": "subagent.start",
+          "reason": "Claude Code does not expose this field at the evaluation point"
+        },
+        {
+          "approximate": false,
+          "available": false,
+          "name": "tool.added",
+          "point": "subagent.start",
+          "reason": "Claude Code does not expose this field at the evaluation point"
+        },
+        {
+          "approximate": false,
+          "available": false,
+          "name": "mcp.server",
+          "point": "subagent.start",
+          "reason": "Claude Code does not expose this field at the evaluation point"
+        },
+        {
+          "approximate": false,
+          "available": false,
+          "name": "mcp.tool",
+          "point": "subagent.start",
+          "reason": "Claude Code does not expose this field at the evaluation point"
+        },
+        {
+          "approximate": false,
+          "available": false,
+          "name": "skill.name",
+          "point": "subagent.start",
+          "reason": "Claude Code does not expose this field at the evaluation point"
+        }
+      ],
+      "limit": {
+        "approximate": false,
+        "overflow": "file-preview",
+        "source": "Claude Code hook input limit",
+        "unit": "chars",
+        "value": 10000
+      },
+      "provider": "claude-code",
+      "routes": [
+        {
+          "available": true,
+          "detail": "start Claude Code from the project root; subdirectory static discovery does not establish hook loading",
+          "installed": true,
+          "name": "claude-project",
+          "stable_key": true,
+          "trust": "workspace",
+          "trust_summary": "Claude Code workspace trust controls hook execution",
+          "trusted": false
+        }
+      ],
+      "static": [
+        {
+          "mode": "append",
+          "name": "claude_rules",
+          "reason": "",
+          "supported": true
+        }
+      ],
+      "version": "2.1.301"
+    }
+  ],
+  "scope": {
+    "base_home": "$FIXTURE/private",
+    "budget_scope": "selected installation only; active user packages have a separate budget and state",
+    "coexisting_user_packages": {},
+    "external_prerequisites": [
+      "style must be available on the harness PATH",
+      "harness workspace trust remains external",
+      "launch Claude Code at the project root",
+      "launch Codex through the canonical project path"
+    ],
+    "home": "$PROJECT_HOME",
+    "kind": "project",
+    "root": "$FIXTURE/project ' space"
+  }
+}

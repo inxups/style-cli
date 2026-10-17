@@ -25,7 +25,7 @@ func isHookInvocation(args []string) bool {
 		if arg == "agenthooks" {
 			return true
 		}
-		if !strings.HasPrefix(arg, "--style-home=") && !strings.HasPrefix(arg, "--harness-home=") && !strings.HasPrefix(arg, "--harness-version=") {
+		if arg != "--project-hook" && !strings.HasPrefix(arg, "--project-entry-root=") && !strings.HasPrefix(arg, "--style-home=") && !strings.HasPrefix(arg, "--harness-home=") && !strings.HasPrefix(arg, "--harness-version=") {
 			return false
 		}
 	}
@@ -89,6 +89,32 @@ func runHook(ctx context.Context, args []string, in io.Reader, out, errOut io.Wr
 		enricher = value
 	default:
 		return invalid("explicit --provider=codex or --provider=claude-code is required")
+	}
+	projectMode := false
+	for _, arg := range args[:sentinel] {
+		if arg == "--project-hook" {
+			projectMode = true
+		}
+	}
+	if projectMode {
+		if home != "" || harnessHome != "" || version != "" {
+			return projectHookFailure(ctx, args, in, out, errOut, enricher, provider, closed, projectFailure("project entry cannot override private binding flags"))
+		}
+		binding, err := projectRuntimeBinding(args, provider)
+		if err != nil {
+			return projectHookFailure(ctx, args, in, out, errOut, enricher, provider, closed, err)
+		}
+		h := binding.Harnesses[string(provider)]
+		home = binding.Home
+		harnessHome = h.ConfigDir
+		version = h.Version
+		if value, ok := enricher.(*codex.Enricher); ok {
+			value.Home = harnessHome
+			value.HarnessVersion = version
+		}
+		if value, ok := enricher.(*claude.Enricher); ok {
+			value.HarnessVersion = version
+		}
 	}
 	home, err := resolveStyleHome(home)
 	if err != nil {

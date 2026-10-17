@@ -57,16 +57,22 @@ func (r *route) Available(_ context.Context, installation adapter.Installation) 
 	if installation.Provider != "" && installation.Provider != ProviderName {
 		return false, "wrong provider", nil
 	}
-	if r.scope == install.ScopePlugin && r.configDir == "" {
+	if (r.scope == install.ScopePlugin || r.scope == install.ScopeProject) && r.configDir == "" && installation.ConfigDir == "" {
 		return false, "CODEX_HOME is required for plugin trust state", nil
 	}
 	if r.dir == "" {
 		return false, "route directory is required", nil
 	}
+	if r.scope == install.ScopeProject && !adapter.VersionAtLeast(installation.Version, "0.159.3") {
+		return false, "project hooks require known Codex >= 0.159.3", nil
+	}
 	return true, "available", nil
 }
 
 func (r *route) Trust() adapter.TrustInfo {
+	if r.scope == install.ScopeProject {
+		return adapter.TrustInfo{Kind: adapter.TrustWorkspace, StableKey: true, Summary: "project trust and hook definition trust are separate; STYLE never grants project trust; start from the canonical project path"}
+	}
 	if r.scope == install.ScopePlugin {
 		return adapter.TrustInfo{Kind: adapter.TrustUserConfirmation, StableKey: true, Summary: "trust the style-runtime plugin once"}
 	}
@@ -105,6 +111,9 @@ func (r *route) target() install.Target {
 }
 
 func (r *route) manifest(requests ...[]adapter.HookSpec) install.Manifest {
+	if r.scope == install.ScopeProject {
+		return HookManifest([]string{"style", "--project-hook"}, requests...)
+	}
 	argv := []string{adapter.HookCommand(r.command)}
 	if r.storageHome != "" {
 		argv = append(argv, "--style-home="+r.storageHome, "--harness-home="+r.configRoot(), "--harness-version="+r.harnessVersion)
@@ -131,6 +140,16 @@ func (r *route) InspectNative(_ context.Context, hooks []adapter.HookSpec) ([]ad
 }
 
 func (r *route) planStatic(planned []install.PlannedFile, blocks []adapter.StaticBlock) (adapter.Changeset, error) {
+	if r.scope == install.ScopeProject {
+		if len(blocks) > 0 {
+			return adapter.Changeset{}, errors.New("codex project has no static slot")
+		}
+		changes := adapter.Changeset{}
+		for _, f := range planned {
+			changes.Files = append(changes.Files, fileChange(f))
+		}
+		return changes, nil
+	}
 	if len(blocks) > 0 && !r.facts.StaticAppendAvailable {
 		return adapter.Changeset{}, errors.New("codex route: developer_instructions is already user-owned")
 	}
@@ -193,6 +212,13 @@ func (r *route) Remove(_ context.Context, owner adapter.Owner) (adapter.Changese
 	planned, err := install.PlanUninstallFiles(manifest, r.target())
 	if err != nil {
 		return adapter.Changeset{}, err
+	}
+	if r.scope == install.ScopeProject {
+		result := adapter.Changeset{}
+		for _, f := range planned {
+			result.Files = append(result.Files, fileChange(f))
+		}
+		return result, nil
 	}
 	changes := make([]adapter.FileChange, 0, len(planned)+1)
 	for _, file := range planned {
@@ -288,7 +314,7 @@ func (r *route) configPath() string {
 
 func (r *route) configRoot() string {
 	root := r.dir
-	if r.scope == install.ScopePlugin {
+	if r.scope == install.ScopePlugin || r.scope == install.ScopeProject {
 		root = r.configDir
 	}
 	return root
@@ -508,3 +534,8 @@ func parseStaticTOML(data []byte) (map[string]any, error) {
 }
 
 var _ adapter.Route = (*route)(nil)
+
+// NewProjectRoute keeps project hook files separate from user trust state.
+func NewProjectRoute(root string) adapter.Route {
+	return &route{name: ProjectRouteName, scope: install.ScopeProject, dir: filepath.Join(root, ".codex"), command: "style", facts: Facts{Project: true}}
+}

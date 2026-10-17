@@ -11,8 +11,8 @@ import (
 // Codex's native TOML editor can append plugin/project tables before the
 // trailing end-marker comment. Only hook-trust tables belong to this region;
 // preserve native tables even when their bytes land inside the markers.
-func mergeCodexManagedTOML(existing, rendered []byte, owner string) ([]byte, error) {
-	foreign, _, _, err := codexForeignTOML(existing, owner)
+func mergeCodexManagedTOML(existing, rendered []byte, owner string, sources ...string) ([]byte, error) {
+	foreign, _, _, err := codexForeignTOML(existing, owner, sources...)
 	if err != nil {
 		return nil, err
 	}
@@ -26,8 +26,8 @@ func mergeCodexManagedTOML(existing, rendered []byte, owner string) ([]byte, err
 	return mergeManagedTOML(existing, rendered), nil
 }
 
-func removeCodexManagedTOML(existing []byte, owner string) ([]byte, bool, error) {
-	foreign, begin, end, err := codexForeignTOML(existing, owner)
+func removeCodexManagedTOML(existing []byte, owner string, sources ...string) ([]byte, bool, error) {
+	foreign, begin, end, err := codexForeignTOML(existing, owner, sources...)
 	if err != nil {
 		return nil, false, err
 	}
@@ -44,7 +44,7 @@ func removeCodexManagedTOML(existing []byte, owner string) ([]byte, bool, error)
 	return append(removed, existing[end:]...), true, nil
 }
 
-func codexForeignTOML(existing []byte, owner string) ([]byte, int, int, error) {
+func codexForeignTOML(existing []byte, owner string, sources ...string) ([]byte, int, int, error) {
 	beginMarker, endMarker := tomlMarkers(owner)
 	begin := bytes.Index(existing, []byte(beginMarker))
 	if begin < 0 {
@@ -81,6 +81,9 @@ func codexForeignTOML(existing []byte, owner string) ([]byte, int, int, error) {
 		}
 		lineStart := bytes.LastIndexByte(body[:keyStart], '\n') + 1
 		owned := node.Kind == unstable.Table && len(keys) == 3 && keys[0] == "hooks" && keys[1] == "state"
+		if owned && len(sources) > 0 {
+			owned = strings.HasPrefix(keys[2], sources[0]+":")
+		}
 		sections = append(sections, section{start: lineStart, owned: owned})
 	}
 	if err := parser.Error(); err != nil {

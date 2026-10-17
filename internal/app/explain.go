@@ -202,9 +202,14 @@ func (s *Service) explain(ctx context.Context, request ExplainRequest, ops expla
 		}
 	}
 	if request.Index == "" {
-		home, e := resolveStyleHome("")
+		home, e := s.resolveStyleHome("")
 		if e != nil {
 			return result, fail("index-invalid", "Cannot locate the default index.")
+		}
+		if s.project != nil {
+			if _, e = s.loadLock(home); e != nil {
+				return result, fail("project-binding-invalid", e.Error())
+			}
 		}
 		request.Index = filepath.Join(home, "build", "index.json")
 	}

@@ -52,7 +52,7 @@ func renderCodex(m Manifest, t Target) (fs.FS, error) {
 	if plugin {
 		dir = t.ConfigDir
 	}
-	if dir == "" {
+	if dir == "" || t.Scope == ScopeProject && t.ConfigDir == "" {
 		return nil, fmt.Errorf("install: Codex plugin scope requires Target.ConfigDir")
 	}
 	for _, spec := range m.Hooks {
@@ -106,7 +106,7 @@ func renderCodex(m Manifest, t Target) (fs.FS, error) {
 	// managed marker region (merged like Kimi's TOML configs).
 	sort.Slice(trust, func(i, j int) bool { return trust[i].key < trust[j].key })
 	var toml strings.Builder
-	begin, end := tomlMarkers(manifestOwner(m))
+	begin, end := tomlMarkers(codexTrustOwner(m, t))
 	toml.WriteString(begin + "\n")
 	for _, e := range trust {
 		fmt.Fprintf(&toml, "\n[hooks.state.%s]\n", tomlString(e.key))

@@ -26,11 +26,11 @@ func (s *Service) prepareFrozen(ctx context.Context, request FrozenRequest) (p p
 		return p, err
 	}
 	tx := &p.transaction
-	tx.home, err = resolveStyleHome(request.Home)
+	tx.home, err = s.resolveStyleHome(request.Home)
 	if err != nil {
 		return p, updateFailure("source-invalid", "cannot resolve STYLE home", err)
 	}
-	tx.inputs, err = captureManagement(tx.home)
+	tx.inputs, err = s.captureManagement(tx.home)
 	if err != nil {
 		return p, updateFailure("installation-changed", "cannot capture frozen installation inputs safely", err)
 	}
@@ -51,10 +51,13 @@ func (s *Service) prepareFrozen(ctx context.Context, request FrozenRequest) (p p
 	var header struct {
 		Format int `yaml:"format"`
 	}
-	if yaml.Unmarshal(raw.data, &header) != nil || header.Format != lockFormat && header.Format != gitLockFormat {
+	if yaml.Unmarshal(raw.data, &header) != nil || header.Format != lockFormat && header.Format != gitLockFormat && header.Format != projectLockFormat {
 		return fail("frozen requires an explicit supported lock format", nil)
 	}
 	lock, err := decodeLock(raw.data)
+	if err == nil {
+		err = s.validateScopeLock(tx.home, lock)
+	}
 	if err != nil {
 		return p, updateFailure("lock-invalid", "cannot decode a valid frozen lock", err)
 	}
@@ -163,6 +166,16 @@ func (s *Service) prepareFrozen(ctx context.Context, request FrozenRequest) (p p
 	}
 	if len(migrations) > 0 || !sameFrozenBindings(lock.Harnesses, harnesses) {
 		return p, updateFailure("frozen-build-mismatch", "route, version, configuration root, surface, rendered, trust or static layout differs from the lock; use the existing management flow first", nil)
+	}
+	if s.project != nil {
+		next := lock
+		files, err = s.projectFiles(tx.home, lock, &next, adapters, compilation, files, tx.inputs)
+		if err != nil {
+			return p, err
+		}
+		if !reflect.DeepEqual(next, lock) {
+			return p, projectFailure("frozen binding cannot change")
+		}
 	}
 	for _, file := range files {
 		// Frozen may recreate absent owner-authorized outputs. It never replaces

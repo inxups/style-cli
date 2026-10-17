@@ -26,6 +26,7 @@ const (
 )
 
 type lockDocument struct {
+	Project   *projectBinding        `yaml:"project,omitempty"`
 	Format    int                    `yaml:"format"`
 	Packages  []lockPackage          `yaml:"packages"`
 	Harnesses map[string]lockHarness `yaml:"harnesses,omitempty"`
@@ -100,17 +101,20 @@ func decodeLock(data []byte) (lockDocument, error) {
 	if document.Format == 0 {
 		document.Format = lockFormat
 	}
-	if document.Format != lockFormat && document.Format != gitLockFormat {
+	if document.Format != lockFormat && document.Format != gitLockFormat && document.Format != projectLockFormat {
 		return lockDocument{}, fmt.Errorf("unsupported lock format %d", document.Format)
 	}
 	decoder := yaml.NewDecoder(bytes.NewReader(data))
-	decoder.KnownFields(document.Format == gitLockFormat)
+	decoder.KnownFields(document.Format >= gitLockFormat)
 	var checked lockDocument
 	if err := decoder.Decode(&checked); err != nil {
 		return lockDocument{}, fmt.Errorf("decode lock: %w", err)
 	}
 	if err := decoder.Decode(new(any)); err != io.EOF {
 		return lockDocument{}, fmt.Errorf("decode lock: expected one YAML document")
+	}
+	if document.Format != projectLockFormat && document.Project != nil || document.Format == projectLockFormat && document.Project == nil {
+		return lockDocument{}, fmt.Errorf("project binding requires lock format 3")
 	}
 	if document.Format == lockFormat {
 		var node yaml.Node
@@ -121,7 +125,7 @@ func decodeLock(data []byte) (lockDocument, error) {
 	seen := map[string]bool{}
 	sequences := map[int]bool{}
 	for _, item := range document.Packages {
-		if document.Format == gitLockFormat {
+		if document.Format >= gitLockFormat {
 			if !lockedNamePattern.MatchString(item.Name) || seen[item.Name] || item.Version == "" || item.Seq < 1 || sequences[item.Seq] || item.Source.Path == "" || item.Source.Kind != "dir" && item.Source.Kind != "file" || item.Link != item.Source.Link {
 				return lockDocument{}, fmt.Errorf("invalid lock package identity")
 			}
@@ -151,6 +155,11 @@ func decodeLock(data []byte) (lockDocument, error) {
 	if document.Harnesses == nil {
 		document.Harnesses = map[string]lockHarness{}
 	}
+	if document.Project != nil {
+		if err := validateProjectLockIdentity(document); err != nil {
+			return lockDocument{}, err
+		}
+	}
 	return document, nil
 }
 
@@ -162,7 +171,7 @@ func writeLock(home string, document lockDocument) error {
 		document.Format = lockFormat
 	}
 	for _, item := range document.Packages {
-		if item.Source.Git != nil {
+		if item.Source.Git != nil && document.Format != projectLockFormat {
 			document.Format = gitLockFormat
 		}
 	}

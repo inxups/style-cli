@@ -68,8 +68,8 @@ func InspectNative(m Manifest, t Target) ([]NativeStatus, error) {
 		} `toml:"hooks"`
 	}
 	var trustErr error
-	if t.Provider == agenthooks.ProviderCodex && t.Scope == ScopeUser {
-		data, trustErr = os.ReadFile(filepath.Join(t.Dir, "config.toml"))
+	if t.Provider == agenthooks.ProviderCodex && (t.Scope == ScopeUser || t.Scope == ScopeProject) {
+		data, trustErr = os.ReadFile(filepath.Join(renderedRoot(t, "config.toml"), "config.toml"))
 		if trustErr == nil {
 			trustErr = toml.Unmarshal(data, &trust)
 		}
@@ -96,7 +96,7 @@ func InspectNative(m Manifest, t Target) ([]NativeStatus, error) {
 			return nil, fmt.Errorf("install: native %s was not rendered", spec.RawTag)
 		}
 		status := NativeStatus{Tag: spec.RawTag, State: "missing"}
-		if t.Provider == agenthooks.ProviderCodex && t.Scope == ScopeUser {
+		if t.Provider == agenthooks.ProviderCodex && (t.Scope == ScopeUser || t.Scope == ScopeProject) {
 			status.Trust = "missing"
 		}
 		found := 0
@@ -111,7 +111,7 @@ func InspectNative(m Manifest, t Target) ([]NativeStatus, error) {
 					if found == 1 && event == wantEvent && group.Matcher == wantMatcher && len(group.Hooks) == 1 && reflect.DeepEqual(hook, wantHook) {
 						status.State = "ok"
 					}
-					if t.Provider == agenthooks.ProviderCodex && t.Scope == ScopeUser {
+					if t.Provider == agenthooks.ProviderCodex && (t.Scope == ScopeUser || t.Scope == ScopeProject) {
 						status.Trust = "missing"
 						if trustErr != nil && !errors.Is(trustErr, os.ErrNotExist) {
 							status.Trust = "unreadable"

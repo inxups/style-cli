@@ -38,7 +38,7 @@ func planFilesWithReader(m Manifest, t Target, readFile func(string) ([]byte, er
 	if t.Dir == "" {
 		return nil, errors.New("install: Target.Dir is required")
 	}
-	if t.Provider == agenthooks.ProviderCodex && t.Scope == ScopePlugin && t.ConfigDir == "" {
+	if t.Provider == agenthooks.ProviderCodex && (t.Scope == ScopePlugin || t.Scope == ScopeProject) && t.ConfigDir == "" {
 		return nil, errors.New("install: Codex plugin scope requires Target.ConfigDir for trust state")
 	}
 	planned, err := planWithReader(m, t, readFile)
@@ -134,7 +134,7 @@ func PlanUninstallFiles(m Manifest, t Target) ([]PlannedFile, error) {
 			}
 		case isMergeableTOML(path):
 			if t.Provider == agenthooks.ProviderCodex {
-				updated, changed, err = removeCodexManagedTOML(existing, owner)
+				updated, changed, err = removeCodexManagedTOML(existing, codexTrustOwner(m, t), codexManagedSources(t)...)
 			} else {
 				updated, changed = removeManagedTOML(existing, owner)
 			}

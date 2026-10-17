@@ -18,6 +18,10 @@ func runStats(ctx context.Context, args []string, out, errOut io.Writer) int {
 }
 
 func runStatsAt(ctx context.Context, args []string, out, errOut io.Writer, now time.Time) int {
+	return runStatsAtHome(ctx, args, out, errOut, now, "")
+}
+
+func runStatsAtHome(ctx context.Context, args []string, out, errOut io.Writer, now time.Time, home string) int {
 	if isHelp(args) {
 		fmt.Fprintln(out, statsUsage)
 		return ExitOK
@@ -26,6 +30,9 @@ func runStatsAt(ctx context.Context, args []string, out, errOut io.Writer, now t
 	if err != nil {
 		fmt.Fprintf(errOut, "style stats: %v\nusage: %s\n", err, statsUsage)
 		return ExitUsage
+	}
+	if home != "" {
+		request.Home = home
 	}
 	result, err := statsAt(ctx, request, now)
 	if err != nil {

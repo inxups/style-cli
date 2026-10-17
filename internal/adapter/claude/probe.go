@@ -11,6 +11,9 @@ import (
 
 func (r *route) InspectProbe(ctx context.Context, read func(string) ([]byte, error)) (adapter.ProbeInstallation, error) {
 	result := adapter.ProbeInstallation{Root: r.dir, ConfigRoot: r.dir, RuntimeCommand: adapter.HookCommand(r.command), HarnessCommand: "claude", Events: []string{}}
+	if r.project {
+		result.ConfigRoot = r.configUser
+	}
 	if err := ctx.Err(); err != nil {
 		return result, err
 	}

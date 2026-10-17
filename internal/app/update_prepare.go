@@ -59,18 +59,18 @@ func (s *Service) prepareUpdate(ctx context.Context, request UpdateRequest) (p p
 	if request.Ref != "" && !source.ValidRef(request.Ref) {
 		return p, updateFailure("source-invalid", "--ref requires a full branch/tag ref or commit OID", nil)
 	}
-	p.home, err = resolveStyleHome(request.Home)
+	p.home, err = s.resolveStyleHome(request.Home)
 	if err != nil {
 		return p, updateFailure("source-invalid", "cannot resolve STYLE home", err)
 	}
-	p.inputs, err = captureManagement(p.home)
+	p.inputs, err = s.captureManagement(p.home)
 	if err != nil {
 		return p, updateFailure("installation-changed", "cannot capture installation inputs safely", err)
 	}
 	if err := checkUpdatePrivateInputs(p.home, p.inputs); err != nil {
 		return p, err
 	}
-	lock, err := loadLock(p.home)
+	lock, err := s.loadLock(p.home)
 	if err != nil {
 		return p, updateFailure("lock-invalid", "cannot read a valid installation lock", err)
 	}
@@ -257,6 +257,10 @@ func (s *Service) prepareUpdate(ctx context.Context, request UpdateRequest) (p p
 	}
 	p.result.Routes, updated.Harnesses = routes, harnesses
 	p.files = append(p.files, routeFiles...)
+	p.files, err = s.projectFiles(p.home, lock, &updated, adapters, compilation, p.files, p.inputs)
+	if err != nil {
+		return p, err
+	}
 	// Keep exact lock/settings bytes (including comments and formatting) when
 	// their meaning is unchanged. An unchanged update performs no writes.
 	if !reflect.DeepEqual(lock, updated) {
