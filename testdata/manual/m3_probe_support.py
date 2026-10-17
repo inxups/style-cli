@@ -56,7 +56,7 @@ class SourceBinding:
 
 def repository_binding(repo, style, harness):
     repo = Path(repo)
-    names = subprocess.check_output(['git', 'ls-files', '-z'], cwd=repo).decode().split('\0')
+    names = subprocess.check_output(['git', 'ls-files', '--cached', '--others', '--exclude-standard', '-z'], cwd=repo).decode().split('\0')
     # Include new collectors before their first commit. Binary source includes
     # embedded vocabularies, schema and module locks, not just edited Go files.
     names += [str(p.relative_to(repo)) for p in (repo/'testdata/manual').glob('*m3*.py')]

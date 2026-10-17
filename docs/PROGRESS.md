@@ -2041,3 +2041,10 @@ Codex 0.159.3 与实际配置模型服务、固定生产 STYLE 二进制，在�
 - 新采集器直接建立空隔离配置，仅允许原生 --version/plugin 管理，省去与未触发检查无关的 HTTP server/真实登录 profile；在当前权限内完成全部执行，不申请网络或访问认证。
 - 固定最终二进制、Codex 0.159.3 / Claude 2.1.301，user/plugin/project 各三条路线：有效 index captured，1s 无触发超时 + SIGINT 共 12 次预期失败均清理完成；卸载并恢复显式 profile/project bytes/mode。源码和二进制绑定、命令/环境/退出码见[报告](review/M3-PROBE-NEGATIVE-2026-10-18.json)。
 - 这只关闭 B1/C1 的未触发/中断子项；真实回调与模型完整正文仍需正向验收，REAL-01/02 不关闭。初版旧二进制 timeout 结果保留为历史，最终六路线均使用 A2 修复后的有效格式检测。
+
+## 2026-10-18 M3-A2 Codex 缓存绑定与真实插件路线
+
+- 三次真实插件原生回调/模型正文存在，但 probe 按生成源根关联失败，均保留未通过。独立观察器仅新增 PLUGIN_ROOT/CLAUDE_PLUGIN_ROOT 两字段 sidecar，0600 私有存储；原始 payload 字节不改，不采集完整环境。
+- 原生 0.159.3 将本地插件复制到固定 cache；STYLE 更新不会同步该副本。按 [D1 补充](review/M3-D1-CODEX-CACHE-2026-10-18.md) 由 agenthooks 有限核对 config/marketplace/local source、hooks/launcher/descriptor 等字节，adapter 只传已核实根。保留 owner/trust/祖先/不可变绑定；注册缓存失效不可回退源根，漂移回归通过。
+- [离线报告](review/M3-A2-CODEX-CACHE-2026-10-18.json)固定临时三缓存/环境清理、专项 Go、agenthooks fresh、双 vet、78 采集器和构建。原生插件整轮九次 exec/resume 真实验收通过，涵盖 probe/explain 完整正文、refresh/围栏/provider/effort/unknown、正常工具/损坏 state 拒绝/恢复、更新/frozen、卸载恢复与新会话无回调。更新更换 native 正文，原生 add 刷新后仅新正文出现；[白名单报告](review/M3-B-CODEX-PLUGIN-2026-10-18.json)不含原始请求/凭据。
+- 首次本轮命令自动审批超时未启动，获准的一次重试成功；不作为产品失败或验收通过。REAL-01/B 仍等待项目路线；Claude 本地、最终 CI/FINAL 继续。

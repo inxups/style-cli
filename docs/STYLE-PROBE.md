@@ -1,6 +1,6 @@
 # style probe 使用说明
 
-2026-10-17：M3-T11 观察已安装的 STYLE runtime hook，离线验收记录见 [M3-A2](review/M3-A2-2026-10-17.json)，契约见 [D1 §5–6](review/M3-D1-DIAGNOSTICS-2026-10-17.md#5-probe-的观察范围与关联)。当前路线为 `codex-user`、`codex-plugin`、`claude-user`。本轮 fixture 不代表 M3-B1/C1 的真实回调或模型投递验收。
+2026-10-18：M3-T11 观察已安装的 STYLE runtime hook，离线验收记录见 [M3-A2](review/M3-A2-2026-10-17.json)，契约见 [D1 §5–6](review/M3-D1-DIAGNOSTICS-2026-10-17.md#5-probe-的观察范围与关联)。POSIX 支持两家的 user/plugin/project 路线，项目安装使用 `--project /absolute/project`；Windows 支持 user 路线。真实回调和模型投递状态分别见 [M3 测试矩阵](STYLE-M3-TESTS.md)。
 
 ## 启动观察
 
@@ -18,7 +18,9 @@ style probe --timeout 2m --json
 
 预检由既有 adapter/agenthooks 核对 STYLE 命令归属和原生配置；foreign/native 作者命令不会成为 runtime 订阅。只有静态规则或 native 命令、无 runtime hook、未启用插件、配置/信任漂移、旧 runtime 缺观察能力时均不能成功。请使用正常安装/注册流程处理这些情况后重新观察。
 
-runtime 的文件身份和完整摘要在预检固定；native executable 从本次 PATH 解析并只读捕获。已安装命令必须与当前入口及锁定的路线绑定一致。PATH 包装脚本、不同的原生子程序、插件缓存根不符、进程读取权限不足或无法复核存活祖先时保持来源未核验。当前 OS 来源实现为 Darwin/Linux；Windows 的原生实现与验收仍归 D11/W1。
+runtime 的文件身份和完整摘要在预检固定；native executable 从本次 PATH 解析并只读捕获。已安装命令必须与当前入口及锁定的路线绑定一致。PATH 包装脚本、不同的原生子程序、插件缓存根不符、进程读取权限不足或无法复核存活祖先时保持来源未核验。Darwin/Linux/Windows 的 OS 身份实现已完成；真实 Windows harness 验收 W1 按用户决定延期。
+
+Codex 0.159.3 的本地 marketplace 插件从原生缓存运行。probe 核对 config.toml 登记、marketplace 的唯一 local source、生成源文件和固定缓存的 hooks/launcher/descriptor 字节，再关联实际缓存根；缺失或陈旧缓存不能退回源根。STYLE 更新 native 定义后，操作者需按原生流程执行 `codex plugin add style-runtime@style --json` 刷新缓存，再开新会话。probe 本身只读，不替用户登记或刷新；完整规则见 [D1 缓存补充](review/M3-D1-CODEX-CACHE-2026-10-18.md)。
 
 ## 阅读结果
 

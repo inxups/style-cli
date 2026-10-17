@@ -21,6 +21,18 @@ def main():
             if not written:raise OSError('native payload write made no progress')
             remaining=remaining[written:]
     finally: os.close(fd)
+    # Retain only native route variables beside the untouched raw payload.
+    # Full environments can contain credentials and are never collected.
+    origin=json.dumps({'plugin_root':os.getenv('PLUGIN_ROOT',''),
+                       'claude_plugin_root':os.getenv('CLAUDE_PLUGIN_ROOT','')}).encode()
+    fd=os.open(path.with_suffix('.origin'),os.O_WRONLY|os.O_CREAT|os.O_EXCL,0o600)
+    try:
+        remaining=memoryview(origin)
+        while remaining:
+            written=os.write(fd,remaining)
+            if not written:raise OSError('native origin write made no progress')
+            remaining=remaining[written:]
+    finally:os.close(fd)
     if marker:
         print(json.dumps({'hookSpecificOutput':{'hookEventName':decoded['hook_event_name'],'additionalContext':marker}}))
 

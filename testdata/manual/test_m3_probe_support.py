@@ -89,10 +89,14 @@ class M3EvidenceTests(unittest.TestCase):
     def test_independent_observer_preserves_complete_raw_payload(self):
         raw=' {"session_id":"fixture", "hook_event_name":"SessionStart", "prompt":"原始正文"}\n'.encode()
         destination=self.root/'native-events'
-        result=subprocess.run([sys.executable,'-I',str(Path(__file__).with_name('m3_native_observer.py')),str(destination),'fixture-marker'],input=raw,capture_output=True,check=True)
+        env=os.environ.copy();env.update(PLUGIN_ROOT='/fixture/native-cache',CLAUDE_PLUGIN_ROOT='/fixture/native-cache',OBSERVER_SECRET='must-not-collect')
+        result=subprocess.run([sys.executable,'-I',str(Path(__file__).with_name('m3_native_observer.py')),str(destination),'fixture-marker'],input=raw,capture_output=True,check=True,env=env)
         files=list(destination.glob('*.json'));self.assertEqual(len(files),1)
         self.assertEqual(files[0].read_bytes(),raw)
         self.assertEqual(files[0].stat().st_mode & 0o777,0o600)
+        origin=files[0].with_suffix('.origin')
+        self.assertEqual(json.loads(origin.read_bytes()),{'plugin_root':'/fixture/native-cache','claude_plugin_root':'/fixture/native-cache'})
+        self.assertEqual(origin.stat().st_mode & 0o777,0o600)
         self.assertEqual(json.loads(result.stdout)['hookSpecificOutput']['additionalContext'],'fixture-marker')
 
 

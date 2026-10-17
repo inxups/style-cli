@@ -18,7 +18,12 @@ import (
 
 // RuntimeStatus describes only this owner's runner subscriptions, not native
 // author commands. Read is supplied by the consumer's bounded file capture.
-type RuntimeStatus struct{ Events []string }
+type RuntimeStatus struct {
+	Events []string
+	// Root is the verified native cache root when registration uses a copy.
+	// Empty preserves the target directory as the runtime root.
+	Root string
+}
 
 func InspectRuntime(m Manifest, t Target, read func(string) ([]byte, error)) (RuntimeStatus, error) {
 	result := RuntimeStatus{Events: []string{}}
@@ -55,6 +60,7 @@ func InspectRuntime(m Manifest, t Target, read func(string) ([]byte, error)) (Ru
 		Plugins map[string]struct {
 			Enabled bool `toml:"enabled"`
 		} `toml:"plugins"`
+		Marketplaces map[string]codexProbeMarketplace `toml:"marketplaces"`
 	}
 	if t.Provider == agenthooks.ProviderCodex {
 		configRoot := t.Dir
@@ -187,6 +193,7 @@ func InspectRuntime(m Manifest, t Target, read func(string) ([]byte, error)) (Ru
 		}
 	}
 	if t.Scope == ScopePlugin {
+		sourceFiles := map[string][]byte{"hooks/hooks.json": raw}
 		artifacts := []string{"bin/style", ".codex-plugin/plugin.json"}
 		if t.Provider == agenthooks.ProviderClaudeCode {
 			artifacts = []string{".claude-plugin/plugin.json"}
@@ -205,6 +212,13 @@ func InspectRuntime(m Manifest, t Target, read func(string) ([]byte, error)) (Ru
 			}
 			if !bytes.Equal(actual, expected) {
 				return result, errors.New("runtime plugin artifact changed")
+			}
+			sourceFiles[path] = actual
+		}
+		if t.Provider == agenthooks.ProviderCodex {
+			result.Root, err = inspectCodexProbeCache(m, t, trust.Marketplaces, sourceFiles, read)
+			if err != nil {
+				return result, err
 			}
 		}
 	}

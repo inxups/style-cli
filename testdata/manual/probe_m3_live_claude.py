@@ -13,7 +13,7 @@ import shlex
 import subprocess
 
 from m3_claude_support import M3ClaudeProbe
-from m3_live_fixture import package, native_payload, outputs, REFRESH, STATIC, NATIVE_START, NATIVE_TOOL, UNMATCHED, GUARD, UNKNOWN
+from m3_live_fixture import package, native_payload, outputs, REFRESH, STATIC, NATIVE_START, NATIVE_UPDATED, NATIVE_TOOL, UNMATCHED, GUARD, UNKNOWN
 from m3_probe_support import PrivateBaseline, correlate_probe, private_write, repository_binding, sha, wait_probe
 
 REPO=Path(__file__).resolve().parents[2]
@@ -105,10 +105,12 @@ def run(probe,route,binding,report):
         document=json.loads((source/'STYLE.yaml').read_text());document['version']='1.0.1'
         for rule in document['rules']:
             if rule['target']=='native':rule['claude-code']['timeout']=9
+            if rule['id']=='native-start':rule['claude-code']['command']=rule['claude-code']['command'].replace(NATIVE_START,NATIVE_UPDATED)
         private_write(source/'STYLE.yaml',json.dumps(document,ensure_ascii=False,indent=2)+'\n')
         assert style('update','--all','--yes')['changed']
         updated=probe.live('updated-native','Reply exactly OK. Do not use tools.')
-        assert updated['exit']==0 and probe.delivery(updated,NATIVE_START)['complete_body']
+        assert updated['exit']==0 and probe.delivery(updated,NATIVE_UPDATED)['complete_body']
+        assert not probe.delivery(updated,NATIVE_START)['complete_body']
         lock=probe.store/'style.lock.yaml';locked=lock.read_bytes();manifest=probe.store/'packages/m3-live/STYLE.yaml';original=manifest.read_bytes()
         private_write(manifest,'corrupt managed source');style('install','--frozen','--yes')
         assert manifest.read_bytes()==original and lock.read_bytes()==locked
@@ -120,7 +122,7 @@ def run(probe,route,binding,report):
                 assert isolated['exit']==0 and not probe.delivery(isolated,STATIC)['complete_body'] and not probe.delivery(isolated,REFRESH)['complete_body']
             finally:probe.work=original_work
         report['checks']['M3-C2' if scope else 'M3-C4' if registered else 'user_lifecycle']={'passed':True,'route':route,'update_and_frozen_locked_bytes':True,'other_project_isolated':bool(scope),'native_plugin_registered':bool(registered)}
-        report['checks']['M3-C6']={'passed':True,'native_start':probe.delivery(first,NATIVE_START),'native_tool':probe.delivery(healthy,NATIVE_TOOL),'unmatched_delivered':False,'matcher':'^Bash$','initial_timeout':10,'updated_timeout':9,'D10_extensions':'explicitly unsupported; four-field command only'}
+        report['checks']['M3-C6']={'passed':True,'native_start':probe.delivery(first,NATIVE_START),'native_tool':probe.delivery(healthy,NATIVE_TOOL),'unmatched_delivered':False,'matcher':'^Bash$','initial_timeout':10,'updated_timeout':9,'updated_native_body':probe.delivery(updated,NATIVE_UPDATED),'old_native_body_absent_after_update':True,'D10_extensions':'explicitly unsupported; four-field command only'}
         if installed_plugin:probe.native_command('plugin','uninstall',result['registration'][0]['plugin'],'--scope','user','--json');installed_plugin=False
         if registered:probe.native_command('plugin','marketplace','remove',registered,'--scope','user','--json');registered=None
         style('uninstall','--all','--yes')
@@ -129,7 +131,7 @@ def run(probe,route,binding,report):
         baseline.restore();project_baseline.verify()
         after=probe.live('uninstalled','Reply exactly OK. Do not use tools.')
         assert after['exit']==0
-        for body in [REFRESH,STATIC,NATIVE_START,NATIVE_TOOL,GUARD]:assert not probe.delivery(after,body)['complete_body']
+        for body in [REFRESH,STATIC,NATIVE_START,NATIVE_UPDATED,NATIVE_TOOL,GUARD]:assert not probe.delivery(after,body)['complete_body']
         assert not [p for p in (probe.root/'native-events').glob('*.json') if json.loads(p.read_bytes()).get('session_id')==after['session_id']]
         unavailable=style('probe','--harness','claude-code','--timeout=1s',expected=1)
         assert unavailable['status']=='error' and unavailable['cleanup']['complete']

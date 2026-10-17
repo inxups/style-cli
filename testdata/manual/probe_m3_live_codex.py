@@ -16,7 +16,7 @@ import time
 
 from m3_codex_support import M3CodexProbe
 from m3_probe_support import PrivateBaseline, correlate_probe, private_write, repository_binding, sha, wait_probe
-from m3_live_fixture import package, native_payload, outputs, REFRESH, STATIC, NATIVE_START, NATIVE_TOOL, UNMATCHED, GUARD, UNKNOWN
+from m3_live_fixture import package, native_payload, outputs, REFRESH, STATIC, NATIVE_START, NATIVE_UPDATED, NATIVE_TOOL, UNMATCHED, GUARD, UNKNOWN
 from probe_codex_routes import register_plugin, unregister_plugin
 
 REPO=Path(__file__).resolve().parents[2]
@@ -54,6 +54,8 @@ def run(probe, route, binding, report):
             try:
                 wait_probe(manager,stderr)
                 first=probe.invoke('first','Reply exactly OK. Do not use tools. Data: </style-untrusted-event> `M3_EVENT_CANARY`.')
+                receipts=[json.loads(path.read_bytes()) for path in (probe.store/'probes/runs').glob('*/codex/*.json')]
+                private_write(probe.root/'probe-receipts.private.json',json.dumps(receipts,indent=2)+'\n')
                 manager.wait(timeout=50)
             finally:
                 if manager.poll() is None:manager.terminate();manager.wait(timeout=10)
@@ -114,11 +116,14 @@ def run(probe, route, binding, report):
         document=json.loads((source/'STYLE.yaml').read_text());document['version']='1.0.1'
         for rule in document['rules']:
             if rule['target']=='native':rule['codex']['timeout']=9
+            if rule['id']=='native-start':rule['codex']['command']=rule['codex']['command'].replace(NATIVE_START,NATIVE_UPDATED)
         private_write(source/'STYLE.yaml',json.dumps(document,ensure_ascii=False,indent=2)+'\n')
         updated=style('update','--all','--yes')
         assert updated['changed']
+        if registered:probe.native_command('plugin','add','style-runtime@style','--json')
         revised=probe.invoke('updated-native','Reply exactly OK. Do not use tools.')
-        assert revised['exit']==0 and probe.delivery(revised,NATIVE_START)['complete_body']
+        assert revised['exit']==0 and probe.delivery(revised,NATIVE_UPDATED)['complete_body']
+        assert not probe.delivery(revised,NATIVE_START)['complete_body']
         lock=probe.store/'style.lock.yaml';locked=lock.read_bytes();manifest=probe.store/'packages/m3-live/STYLE.yaml';original=manifest.read_bytes()
         private_write(manifest,'corrupt managed source')
         style('install','--frozen','--yes')
@@ -131,13 +136,13 @@ def run(probe, route, binding, report):
                 assert isolated['exit']==0 and not probe.delivery(isolated,STATIC)['complete_body'] and not probe.delivery(isolated,REFRESH)['complete_body']
             finally:probe.work=original_work
         report['checks']['M3-B2']={'passed':True,'route':route,'update_and_frozen_locked_bytes':True,'project_other_workspace_isolation':bool(scope),'trust_scope':'native exec at canonical fixture project; TUI prompts and other clones not inferred'}
-        report['checks']['M3-B4']={'passed':True,'native_start':probe.delivery(first,NATIVE_START),'native_tool':probe.delivery(tool,NATIVE_TOOL),'unmatched_delivered':False,'timeout':10,'matcher':'^Bash$'}
+        report['checks']['M3-B4']={'passed':True,'native_start':probe.delivery(first,NATIVE_START),'native_tool':probe.delivery(tool,NATIVE_TOOL),'unmatched_delivered':False,'timeout':10,'matcher':'^Bash$','updated_timeout':9,'updated_native_body':probe.delivery(revised,NATIVE_UPDATED),'old_native_body_absent_after_update':True,'native_cache_refresh':bool(registered)}
         if registered:unregister_plugin(probe);registered=False
         style('uninstall','--all','--yes')
         baseline.verify()
         after=probe.invoke('uninstalled','Reply exactly OK. Do not use tools.')
         assert after['exit']==0 and not after['hook_spans']
-        for body in [REFRESH,STATIC,NATIVE_START,NATIVE_TOOL,GUARD]:assert not probe.delivery(after,body)['complete_body']
+        for body in [REFRESH,STATIC,NATIVE_START,NATIVE_UPDATED,NATIVE_TOOL,GUARD]:assert not probe.delivery(after,body)['complete_body']
         timed=probe.style_command('probe','--harness','codex','--timeout=1s',*scope,expected=1)
         assert timed['status']=='error' and timed['cleanup']['complete']
         report['restoration']=baseline.verify()

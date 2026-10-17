@@ -14,6 +14,9 @@ func (r *route) InspectProbe(ctx context.Context, read func(string) ([]byte, err
 	}
 	status, err := install.InspectRuntime(r.manifest(), r.target(), read)
 	result.Events = status.Events
+	if status.Root != "" {
+		result.Root = status.Root
+	}
 	return result, err
 }
 func (r *route) VerifyProbeOrigin(origin adapter.ProbeOrigin) bool {

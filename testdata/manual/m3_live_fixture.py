@@ -8,6 +8,7 @@ from m3_probe_support import private_write
 REFRESH = 'M3_REFRESH_2E841C. Keep responses concise.'
 STATIC = 'M3_STATIC_192C5A. Use concrete statements.'
 NATIVE_START = 'M3_NATIVE_START_42D671. Native session observer.'
+NATIVE_UPDATED = 'M3_NATIVE_UPDATED_91B326. Updated native session observer.'
 NATIVE_TOOL = 'M3_NATIVE_TOOL_612B83. Native Bash observer.'
 UNMATCHED = 'M3_NATIVE_UNMATCHED_833E2A.'
 GUARD = 'M3_GUARD_6218F2. Check the requested shell command.'

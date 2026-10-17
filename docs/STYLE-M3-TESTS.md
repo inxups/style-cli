@@ -93,6 +93,8 @@ PYTHONDONTWRITEBYTECODE=1 python3 scripts/check_m2_rules_migration.py \
 - [x] **M3-A17 Windows 平台**（M3-D11、M3-T70）：支持的两家 user 路线、盘符/空格/Unicode/长路径、安全引用/owner、stdin/退出码、DACL、状态并发/清理和文件事务均完成 Windows 原生 CI。[完整报告](review/M3-A17-2026-10-18.json)固定 run 39055736061 / `b481396`：三平台全过；Windows 根 3,380/agenthooks 521 pass、0 fail，280/35 skip 逐项列明，生产 CLI 25 项全过。POSIX 回归保持；W1 实际 harness 与最终 CI-01 独立。
 - [x] **M3-A18 conformance 与升级**（M3-T80）：[报告](review/M3-A18-2026-10-18.json)固定双模块 fresh 4,412 pass/0 fail、25 既有 skip 单列；codec/stdout 白名单/golden、native/stats/跨包去重与旧包/锁/index/state 保持。六路线 36 项组合核对映射/provider/unknown/refresh/围栏/fail-closed、排序/零重复成本、frozen 状态保留与恢复；16 组真实旧布局迁移、12 组 replace 回退、40 smoke 和双 vet 通过，未重录旧 golden。
 
+M3-A2 缓存补充：Codex 0.159.3 原生插件使用独立缓存，三次真实旧根关联失败保留；按 [D1 补充](review/M3-D1-CODEX-CACHE-2026-10-18.md) 核对登记/source/固定执行文件后绑定缓存根，[回归报告](review/M3-A2-CODEX-CACHE-2026-10-18.json)与新真实插件整轮通过。更换 native 正文并通过原生 add 刷新后，新会话收到新正文且旧正文缺席；probe 不执行登记/刷新命令。
+
 ## 准备验证
 
 - [x] **M3-P1 两家 runbook/采集器**（M3-PREP-01）：[手册](STYLE-M3-MANUAL.md)与[报告](review/M3-P1-2026-10-18.json)固定私有源码/STYLE/harness/实际观察器副本摘要、原生时序/session/路线关联和完整正文判定；六路线干跑/bytes/mode 恢复、76 项全量和最终 10 项 M3 自测通过。拒绝漂移、缺原生/请求/时间证据、伪造回调单证及 symlink，验证短写入与原始观察器 subprocess。只关闭准备，不计真实 B/C。
@@ -102,10 +104,10 @@ PYTHONDONTWRITEBYTECODE=1 python3 scripts/check_m2_rules_migration.py \
 
 既有 `codex-user`、`codex-plugin` 两路线独立记录，不拼接为一套通过；项目路线新增单独证据。记录固定版本、二进制和配置基线、原生 hook 来源/回调、完整上下文或请求摘要及卸载恢复；只声明实际观察到的信任范围。
 
-- [~] **M3-B1 probe 与 explain**（M3-T10、M3-T11、M3-REAL-01）：真实会话触发可关联回调，user/plugin 路线分别执行；用独立原生 hook 来源/事件证据关联 probe 收据、时间与 session，不能只依赖进程祖先或手工调用。采集原生 payload、事件前 state、补充事实和固定 index 后按 D1 隔离解释，与实际命中/去重/输出及原生上下文/请求证据核对。未触发、退出、清理与卸载后新会话无残留分别记录；callback-observed 不单独证明模型投递。 用户路线已通过[真实运行](review/M3-B-CODEX-USER-2026-10-18.json)，其余路线继续。 [六路线未触发/中断检查](review/M3-PROBE-NEGATIVE-2026-10-18.json)已通过：有效 index、12 次失败状态/完整清理与显式配置恢复；无模型调用，不据此关闭真实投递。
+- [~] **M3-B1 probe 与 explain**（M3-T10、M3-T11、M3-REAL-01）：真实会话触发可关联回调，user/plugin 路线分别执行；用独立原生 hook 来源/事件证据关联 probe 收据、时间与 session，不能只依赖进程祖先或手工调用。采集原生 payload、事件前 state、补充事实和固定 index 后按 D1 隔离解释，与实际命中/去重/输出及原生上下文/请求证据核对。未触发、退出、清理与卸载后新会话无残留分别记录；callback-observed 不单独证明模型投递。 用户路线已通过[真实运行](review/M3-B-CODEX-USER-2026-10-18.json)，插件路线也已通过[完整真实验收](review/M3-B-CODEX-PLUGIN-2026-10-18.json)，项目路线继续。 [六路线未触发/中断检查](review/M3-PROBE-NEGATIVE-2026-10-18.json)已通过：有效 index、12 次失败状态/完整清理与显式配置恢复；无模型调用，不据此关闭真实投递。
 - [?] **M3-B2 项目路线与来源生命周期**（M3-T20–T22、M3-T30、M3-REAL-01）：在隔离项目中用锁定来源安装，核对项目配置被真实 harness 接受、实际投递和用户/其他项目隔离；更新/frozen 与 native 变更信任沿定稿执行。多 clone 信任不外推，卸载后配置与原有用户规则还原。
-- [~] **M3-B3 运行时扩展**（M3-T40–T45、M3-REAL-01）：以固定真实事件序列核对 refresh、围栏、provider/unknown、effort 映射和受支持失败策略。原生回调/上下文、state、stats 与 explain 相符；不支持能力按批准设计证明边界，不把模型回复当投递证据。 用户路线已通过[真实运行](review/M3-B-CODEX-USER-2026-10-18.json)，其余路线继续。
-- [~] **M3-B4 native 与既有路线回归**（M3-T60、M3-T80、M3-REAL-01）：真实触发仍受支持的 native 及 STYLE hook，核对来源、matcher/timeout、信任与共存。新 native 能力仅按 D10 的 Codex 支持范围取证；卸载恢复外部文件，后续新会话不再触发。 用户路线已通过[真实运行](review/M3-B-CODEX-USER-2026-10-18.json)，其余路线继续。
+- [~] **M3-B3 运行时扩展**（M3-T40–T45、M3-REAL-01）：以固定真实事件序列核对 refresh、围栏、provider/unknown、effort 映射和受支持失败策略。原生回调/上下文、state、stats 与 explain 相符；不支持能力按批准设计证明边界，不把模型回复当投递证据。 用户路线已通过[真实运行](review/M3-B-CODEX-USER-2026-10-18.json)，插件路线也已通过[完整真实验收](review/M3-B-CODEX-PLUGIN-2026-10-18.json)，项目路线继续。
+- [~] **M3-B4 native 与既有路线回归**（M3-T60、M3-T80、M3-REAL-01）：真实触发仍受支持的 native 及 STYLE hook，核对来源、matcher/timeout、信任与共存。新 native 能力仅按 D10 的 Codex 支持范围取证；卸载恢复外部文件，后续新会话不再触发。 用户路线已通过[真实运行](review/M3-B-CODEX-USER-2026-10-18.json)，插件路线也已通过[完整真实验收](review/M3-B-CODEX-PLUGIN-2026-10-18.json)，项目路线继续。
 
 ## M3b：Claude Code 真实环境
 
