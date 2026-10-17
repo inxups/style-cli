@@ -2077,3 +2077,9 @@ Codex 0.159.3 与实际配置模型服务、固定生产 STYLE 二进制，在�
 
 - 最终受验源码 2c24e5f9、run 39064157115 的 Ubuntu/macOS/Windows 三 job 全部成功。POSIX 各35个有测试 package fresh/无 cached、双 vet/构建、78采集器、生产 smoke、六路线准备、12 replace、16真实旧二进制迁移及36组合验收均通过。
 - Windows 双 module fresh 结果、逐 skip 原因、25 项原生 STYLE CLI、amd64/arm64 构建及原始 artifact/log SHA 见[报告](review/M3-CI-01-2026-10-18.json)。CI 使用版本 stub，不计用户延期的实际 harness W1；三缓存/环境清理与 GOWORK=off 沿工作流执行。关闭 CI-01；后续只提交收尾文档，按源码等价性核对，不改已验实现。
+
+## 2026-10-18 M3-FINAL 适用范围最终回归
+
+- A0–A18/P1/P2、本地 B1–B4/C1/C2/C4/C5/C6、本地 exact 与最终三平台 CI 全部通过。[总报告](review/M3-FINAL-2026-10-18.json)关联逐项独立证据及摘要，两家各三路线共56次调用/74次实际请求，六路线12次预期负向/清理、双模块4450 pass/0 fail、缓存补充专项 race、78采集器、287 exact CLI、36组合和真旧升级/回退完成。
+- [可重复核对脚本](review/M3-FINAL-VERIFY-2026-10-18.py)检查44任务/39测试、归档/旧golden/报告、只追加日志及963份受验源码绑定。生产源码等于5da3b45，最终CI源码2c24e5f9；后续收尾只改文档，保留原构建VCS dirty元数据并以实际输入摘要证明等价，不以该元数据冒充新构建。
+- C3、W1/REAL-04、Anthropic独立API只按用户决定延期，未标记通过；官方校准两家各0/40仍独立非阻塞。关闭FINAL，DOCS-01继续完成最终文档/状态验收。
