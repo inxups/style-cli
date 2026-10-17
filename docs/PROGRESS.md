@@ -2066,3 +2066,9 @@ Codex 0.159.3 与实际配置模型服务、固定生产 STYLE 二进制，在�
 - Claude 2.1.301 原生 UI 明确选择信任、正常退出后，以原生配置发现模式完成项目路线全套真实模型验收。其他项目无静态/动态规则，用户 home 无本项目会话 state；profile/project bytes/mode、卸载后无正文/回调通过。probe/explain、refresh/围栏/provider/映射/unknown、真实 Bash 拒绝/恢复、新 native 正文/frozen 均通过，[完整报告](review/M3-C-CLAUDE-PROJECT-2026-10-18.json)固定请求摘要、source/两二进制/观察器副本和原生 provenance；关闭 C2，插件继续。
 - 前四轮在原生菜单退出，未调用模型；第五轮实际 trust 成功，但私有 PATH 未提供 style，probe 正确拒绝。与直接原生 PTY 对照后，等待初始化稳定和 Yes 的真实重绘再确认，保留 raw 输入模式；补齐同一二进制的 PATH/style。五次未通过报告摘要保留，不作为产品通过。
 - 支持层 10 项自测与修改脚本 AST、文档链接/锚点/围栏、历史归档与追加日志检查通过。生产 Go 源码自 5da3b45 未变。
+
+## 2026-10-18 M3-C4 / REAL-02 本地三路线完成
+
+- Claude 2.1.301 本地插件经原生 marketplace 登记/启用，UI 明确信任且正常退出，实际 root 与固定 direct plugin root 相符。整轮 probe/explain 完整正文、refresh/围栏/provider/effort/unknown、正常工具/坏 state 拒绝/恢复、native 更新正文替换、frozen、原生取消登记和卸载/配置恢复通过，[插件报告](review/M3-C-CLAUDE-PLUGIN-2026-10-18.json)保留摘要。
+- [本地总报告](review/M3-REAL-02-LOCAL-2026-10-18.json)固定 user/project/plugin 各自完整证据；三路线共 28 次调用、37 次实际 claude-haiku-5-5 请求，本地 stub 共0，外部显式配置 bytes/mode 还原。关闭 C1/C4/C5/C6，C2 已独立关闭；REAL-02 只因用户延期云端 C3 保留混合 `[~]`，本次本地适用范围全部完成。
+- 最终采集器 78 项通过；M1/M2 及已存在 golden 未改、日志仅追加。三平台最终 CI 和总收尾继续；C3/W1/API 与官方两家各0/40均未标记通过。

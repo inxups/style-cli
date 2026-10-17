@@ -6,7 +6,7 @@
 
 本文件记录 M3 测试矩阵与当前证据状态，任务及依赖见 [STYLE-M3-TASKS.md](STYLE-M3-TASKS.md)，运行记录追加到 [PROGRESS.md](PROGRESS.md)。[M1 测试](STYLE-M1-TESTS.md)、[M2 测试](STYLE-M2-TESTS.md) 已只读归档；历史通过结果不替代 M3 的新验收。
 
-当前状态：M3-00、M3-BASE-01、A0–A18 与 P1/P2 已通过。Codex 三条本地路线 B1–B4 与本地 exact 必过子项均通过同一最终生产源码；Claude 本地、最终 CI 和文档验收继续推进。用户明确延期的 C3、W1/REAL-04 与 Anthropic 独立 API 子项保持待验并退出本次 FINAL 必过集合。M3-CARRY-01 官方校准仍两家各 0/40、非阻塞；硬编码成员校验风险已由 T00/A0 关闭。
+当前状态：M3-00、M3-BASE-01、A0–A18 与 P1/P2 已通过。Codex 三条本地路线 B1–B4 与本地 exact 必过子项均通过同一最终生产源码；Claude 三条本地路线也已通过，最终 CI 和文档验收继续推进。用户明确延期的 C3、W1/REAL-04 与 Anthropic 独立 API 子项保持待验并退出本次 FINAL 必过集合。M3-CARRY-01 官方校准仍两家各 0/40、非阻塞；硬编码成员校验风险已由 T00/A0 关闭。
 
 ## 状态与验收规则
 
@@ -113,12 +113,12 @@ M3-A2 缓存补充：Codex 0.159.3 原生插件使用独立缓存，三次真实
 
 本地用户/项目/插件与云端分别记录。沿用隔离 runbook 和原生证据；交互操作沿既有授权范围执行，登录/钥匙串等需要用户交互时单列。固定版本、实际工作区信任范围和文件基线，安装/卸载分别启动新会话核对。
 
-- [~] **M3-C1 probe 与 explain**（M3-T10、M3-T11、M3-REAL-02）：真实交互会话产生可关联原生回调，用独立原生 hook 来源/事件证据对应收据/时间/session。固定原 payload/index、事件前 state 和补充事实后隔离解释，对照命中/去重/codec 输出与实际投递；当前 user 路线单独记录，后续新路线另验。核对未触发/超时、清理及卸载后新会话；进程祖先、callback-observed 或采集器手工调用均不单独替代原生/投递证据。 [六路线未触发/中断检查](review/M3-PROBE-NEGATIVE-2026-10-18.json)已通过：有效 index、12 次失败状态/完整清理与显式配置恢复；无模型调用，不据此关闭真实投递。 用户路线已通过[实际认证模型验收](review/M3-C-CLAUDE-USER-2026-10-18.json)，[项目路线](review/M3-C-CLAUDE-PROJECT-2026-10-18.json)也通过完整验收；插件继续。
+- [x] **M3-C1 probe 与 explain**（M3-T10、M3-T11、M3-REAL-02）：真实交互会话产生可关联原生回调，用独立原生 hook 来源/事件证据对应收据/时间/session。固定原 payload/index、事件前 state 和补充事实后隔离解释，对照命中/去重/codec 输出与实际投递；当前 user 路线单独记录，后续新路线另验。核对未触发/超时、清理及卸载后新会话；进程祖先、callback-observed 或采集器手工调用均不单独替代原生/投递证据。 [六路线未触发/中断检查](review/M3-PROBE-NEGATIVE-2026-10-18.json)已通过：有效 index、12 次失败状态/完整清理与显式配置恢复；无模型调用，不据此关闭真实投递。 用户路线已通过[实际认证模型验收](review/M3-C-CLAUDE-USER-2026-10-18.json)，[项目路线](review/M3-C-CLAUDE-PROJECT-2026-10-18.json)也通过完整验收；[插件路线](review/M3-C-CLAUDE-PLUGIN-2026-10-18.json)也通过完整验收；[本地总报告](review/M3-REAL-02-LOCAL-2026-10-18.json)固定全部三条路线。
 - [x] **M3-C2 本地项目路线**（M3-T30、M3-REAL-02）：原生加载/指令附件或请求证据证明项目规则生效，用户规则与其他项目隔离；核对信任、动态/native 与静态位置、卸载恢复和新会话无残留。 [真实项目报告](review/M3-C-CLAUDE-PROJECT-2026-10-18.json)验证原生 UI 接受信任且正常退出、原生发现配置、其他项目无规则、native 新正文、frozen 与卸载/基线还原。
 - [?] **M3-C3 云端项目交付**（M3-T31、M3-REAL-02）：在实际云端会话中验证定稿支持的交付路径、规则发现、hook 运行和完整投递；记录 clone/运行时条件及卸载或移除后的新会话。无真实环境保持待验，本地 fixture 不代替云端结果。
-- [?] **M3-C4 插件路线**（M3-T32、M3-REAL-02）：实际登记/启用插件、原生加载并触发目标规则；与已有用户/项目路线无重复投递，核对原生信任边界、禁用/卸载和外部文件恢复。
-- [~] **M3-C5 运行时扩展**（M3-T40–T45、M3-REAL-02）：真实事件序列核对 refresh、事件围栏、provider/unknown 和用户 effort 映射；对规则级 fail-closed 注入定稿允许的故障并验证工具行为，恢复后新会话正常。用原生证据与 state/stats 对照，明确静态规则 compact 等未覆盖边界。 用户路线已通过[实际认证模型验收](review/M3-C-CLAUDE-USER-2026-10-18.json)，[项目路线](review/M3-C-CLAUDE-PROJECT-2026-10-18.json)也通过完整验收；插件继续。
-- [~] **M3-C6 native 扩展**（M3-T60、M3-REAL-02）：对 D10 获支持的能力验证实际原生事件、输出/失败行为、版本门槛及与 STYLE hook 共存；不支持项保留结论。核对 trust/卸载恢复及新会话不再触发，旧四字段命令继续可用。 用户路线已通过[实际认证模型验收](review/M3-C-CLAUDE-USER-2026-10-18.json)，[项目路线](review/M3-C-CLAUDE-PROJECT-2026-10-18.json)也通过完整验收；插件继续。
+- [x] **M3-C4 插件路线**（M3-T32、M3-REAL-02）：[插件真实报告](review/M3-C-CLAUDE-PLUGIN-2026-10-18.json)已通过实际登记/启用插件、原生加载并触发目标规则；与已有用户/项目路线无重复投递，核对原生信任边界、禁用/卸载和外部文件恢复。
+- [x] **M3-C5 运行时扩展**（M3-T40–T45、M3-REAL-02）：真实事件序列核对 refresh、事件围栏、provider/unknown 和用户 effort 映射；对规则级 fail-closed 注入定稿允许的故障并验证工具行为，恢复后新会话正常。用原生证据与 state/stats 对照，明确静态规则 compact 等未覆盖边界。 用户路线已通过[实际认证模型验收](review/M3-C-CLAUDE-USER-2026-10-18.json)，[项目路线](review/M3-C-CLAUDE-PROJECT-2026-10-18.json)也通过完整验收；[插件路线](review/M3-C-CLAUDE-PLUGIN-2026-10-18.json)也通过完整验收；[本地总报告](review/M3-REAL-02-LOCAL-2026-10-18.json)固定全部三条路线。
+- [x] **M3-C6 native 扩展**（M3-T60、M3-REAL-02）：对 D10 获支持的能力验证实际原生事件、输出/失败行为、版本门槛及与 STYLE hook 共存；不支持项保留结论。核对 trust/卸载恢复及新会话不再触发，旧四字段命令继续可用。 用户路线已通过[实际认证模型验收](review/M3-C-CLAUDE-USER-2026-10-18.json)，[项目路线](review/M3-C-CLAUDE-PROJECT-2026-10-18.json)也通过完整验收；[插件路线](review/M3-C-CLAUDE-PLUGIN-2026-10-18.json)也通过完整验收；[本地总报告](review/M3-REAL-02-LOCAL-2026-10-18.json)固定全部三条路线。
 
 ## 计数与 Windows 真实验收
 

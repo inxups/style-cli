@@ -1,0 +1,98 @@
+{
+  "format": 1,
+  "task": "M3-REAL-02 local acceptance",
+  "applicable_scope_passed": true,
+  "aggregate_status": "partial only because user deferred hosted cloud C3",
+  "routes": [
+    {
+      "route": "claude-user",
+      "passed": true,
+      "report": "M3-C-CLAUDE-USER-2026-10-18.json",
+      "report_sha256": "d39bc4120b29acf0afb1571ba44ccfa5e68474f00b27cc71184ede758a87d4c8",
+      "calls": 9,
+      "requests": 12,
+      "models": [
+        "claude-haiku-5-5"
+      ],
+      "profile_restored": {
+        "files": 9,
+        "bytes_and_modes_restored": true
+      },
+      "project_restored": {
+        "files": 3,
+        "bytes_and_modes_restored": true
+      }
+    },
+    {
+      "route": "claude-project",
+      "passed": true,
+      "report": "M3-C-CLAUDE-PROJECT-2026-10-18.json",
+      "report_sha256": "126467b76f18824026dfec7a05a63fbabd0d6cafdfe10c420248e728780a6176",
+      "calls": 10,
+      "requests": 13,
+      "models": [
+        "claude-haiku-5-5"
+      ],
+      "profile_restored": {
+        "files": 9,
+        "bytes_and_modes_restored": true
+      },
+      "project_restored": {
+        "files": 3,
+        "bytes_and_modes_restored": true
+      }
+    },
+    {
+      "route": "claude-plugin",
+      "passed": true,
+      "report": "M3-C-CLAUDE-PLUGIN-2026-10-18.json",
+      "report_sha256": "b00cde9dfd4168c0dd330839717ee5c1afe636f277f66c765a2baa36e72ec6f6",
+      "calls": 9,
+      "requests": 12,
+      "models": [
+        "claude-haiku-5-5"
+      ],
+      "profile_restored": {
+        "files": 9,
+        "bytes_and_modes_restored": true
+      },
+      "project_restored": {
+        "files": 3,
+        "bytes_and_modes_restored": true
+      }
+    }
+  ],
+  "local_stub_requests": 0,
+  "binary_sha256": "sha256:ca34c0b65a55261791c065a73b870a615af1013a27b080f18f4ab6d16386baaa",
+  "native_binary_sha256": "sha256:1f04c69e1c24e4d0a716a863af0aad8fc64d49a499334c29701f073700276b99",
+  "C3": {
+    "status": "waiting",
+    "user_deferred": true,
+    "counted_as_pass": false
+  },
+  "collectors": {
+    "command": [
+      "python3",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "testdata/manual",
+      "-p",
+      "test_*.py"
+    ],
+    "exit_code": 0,
+    "seconds": 41.525,
+    "environment": {
+      "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+      "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+      "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+      "GOPROXY": "off",
+      "GOFLAGS": "-mod=readonly",
+      "GOWORK": "off"
+    }
+  },
+  "negative_report": "M3-PROBE-NEGATIVE-FINAL-2026-10-18.json",
+  "native_ui_trust": "project/plugin accepted native Yes selection and clean UI exit; user print-mode evidence does not infer TUI trust",
+  "source_equivalence": "Production Go unchanged since 5da3b45. Subsequent changes affect private collection readiness/provenance and docs only."
+}

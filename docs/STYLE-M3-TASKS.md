@@ -6,7 +6,7 @@
 
 本文件是 STYLE CLI M3 的持久化任务清单。每项完成后同步状态和可重复证据，测试矩阵见 [STYLE-M3-TESTS.md](STYLE-M3-TESTS.md)，执行记录追加到 [PROGRESS.md](PROGRESS.md)。M1、M2 已关闭并只读归档；上一里程碑的事实见 [M2 任务清单](STYLE-M2-TASKS.md)、[M2 测试矩阵](STYLE-M2-TESTS.md) 和 [M2 总验收报告](review/M2-DOCS-01-2026-10-17.json)。
 
-当前总状态：M3 基线、D0–D11、T00–T80/A0–A18 和 PREP-01/02 已完成。Codex 用户路线已有真实投递/恢复证据，本地 exact 必过子项已通过最终二进制验收；插件/项目与 Claude 本地真实验收、最终 CI 和收尾仍按矩阵推进。用户延期的 C3、W1 和 Anthropic 独立 API 仍待验。
+当前总状态：M3 基线、D0–D11、T00–T80/A0–A18、PREP-01/02、Codex 和 Claude 全部本地路线及本地 exact 已通过。最终三平台 CI、FINAL 与文档总验收继续；用户延期的 C3、W1 和 Anthropic 独立 API 保持待验。
 
 ## 范围与推进顺序
 
@@ -97,7 +97,7 @@ M3-CARRY-01 与 `--count=exact` 产品验收分别记录；前者的非阻塞决
 - [x] **M3-PREP-01 两家真实验收准备**：目标是准备可复核的 Codex/Claude runbook。依赖：M3-D1、M3-T11 和各功能设计。产出：[M3 手册](STYLE-M3-MANUAL.md)、固定源码/二进制/观察器副本、独立 native/请求采集与显式私有基线恢复。测试：M3-P1。[准备报告](review/M3-P1-2026-10-18.json)记录六路线安装/sync/卸载与 bytes/mode 干跑、全量 76 项采集器及最终 10 项 M3 自测、帮助/语法检查；新增原生时序、缺证据/漂移拒绝、短写入和 symlink 恢复保护。仅关闭准备，B/C 必须实际执行。
 - [x] **M3-PREP-02 云端、计数与 Windows 准备**：目标是明确特殊环境的执行条件。依赖：M3-PREP-01、M3-D3、M3-D9、M3-D11。产出：[手册 P2](STYLE-M3-MANUAL.md#延期环境-p2)和[准备报告](review/M3-P2-2026-10-18.json)。云端八项离线交付入口、local exact 两编码、API 缺 key 零请求拒绝通过；Windows 自动化依据 A17，真实 host/harness 入口另列。三类真实环境已由用户延期，保持待验；准备不计 C3/W1/API 成功。测试：M3-P2。
 - [x] **M3-REAL-01 Codex 真实验收**：目标是验证受支持路线上的实际调用与投递。依赖：M3-T80、M3-PREP-01。产出：固定版本下的诊断、项目隔离、运行时和 native 证据，以及卸载恢复；既有 user/plugin 两路线独立核对，新增项目路线另测。测试：M3-B1–B4。Codex 0.159.3 用户路线已完整通过[真实证据](review/M3-B-CODEX-USER-2026-10-18.json)，插件路线也通过[缓存修复后的完整真实验收](review/M3-B-CODEX-PLUGIN-2026-10-18.json)，项目及用户最终复验均完成，[三路线总报告](review/M3-REAL-01-2026-10-18.json)固定同一二进制及逐路线完整证据。 [六路线未触发/中断检查](review/M3-PROBE-NEGATIVE-2026-10-18.json)已通过：有效 index、12 次失败状态/完整清理与显式配置恢复；无模型调用，不据此关闭真实投递。
-- [~] **M3-REAL-02 Claude 真实验收**：目标是验证本地用户/项目/插件与云端支持范围。依赖：M3-T80、M3-PREP-01、M3-PREP-02。产出：真实回调、加载/投递、信任、运行时与卸载恢复证据；本地与云端分开判定。测试：M3-C1–C6。 Claude Code 2.1.301 用户路线已通过[真实验收](review/M3-C-CLAUDE-USER-2026-10-18.json)，[项目路线](review/M3-C-CLAUDE-PROJECT-2026-10-18.json)也已通过原生 UI 信任与实际模型完整验收；插件路线继续。 [六路线未触发/中断检查](review/M3-PROBE-NEGATIVE-2026-10-18.json)已通过：有效 index、12 次失败状态/完整清理与显式配置恢复；无模型调用，不据此关闭真实投递。
+- [~] **M3-REAL-02 Claude 真实验收**：目标是验证本地用户/项目/插件与云端支持范围。依赖：M3-T80、M3-PREP-01、M3-PREP-02。产出：真实回调、加载/投递、信任、运行时与卸载恢复证据；本地与云端分开判定。测试：M3-C1–C6。 Claude Code 2.1.301 用户路线已通过[真实验收](review/M3-C-CLAUDE-USER-2026-10-18.json)，[项目路线](review/M3-C-CLAUDE-PROJECT-2026-10-18.json)也已通过原生 UI 信任与实际模型完整验收；[插件路线](review/M3-C-CLAUDE-PLUGIN-2026-10-18.json)也完整通过。[本地总报告](review/M3-REAL-02-LOCAL-2026-10-18.json)关闭全部适用本地子项；本任务只因云端 C3 延期保留 `[~]`。 [六路线未触发/中断检查](review/M3-PROBE-NEGATIVE-2026-10-18.json)已通过：有效 index、12 次失败状态/完整清理与显式配置恢复；无模型调用，不据此关闭真实投递。
 - [~] **M3-REAL-03 exact 真实计数**：目标是验证 D9 宣称的计数能力。依赖：M3-T50、M3-PREP-02，以及对应编码/接口环境。产出：真实计数结果、模型/编码版本、文本与请求摘要及报告范围；与旧校准遗留分别记录。测试：M3-TOKEN-01。 [最终二进制本地证据](review/M3-TOKEN-LOCAL-2026-10-18.json)：137 文本 × 两编码的 274 计数、共 287 CLI 检查及完整词表摘要通过；本次必过的本地子项已完成，独立 API 子项按用户决定保持 `[?]`，不计官方 40 条校准。
 - [?] **M3-REAL-04 Windows 真实验收**：目标是验证 Windows 上实际安装和 hook 执行。依赖：M3-T80、M3-PREP-02。产出：原生 shell、受支持 harness 路线、stdin/退出码、状态并发和卸载恢复证据；交叉编译不视为通过。测试：M3-W1。
 
