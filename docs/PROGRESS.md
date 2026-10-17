@@ -1651,3 +1651,10 @@ PY
 - A1-01–A1-12、A2-01–A2-12 全部待执行；B1/C1 补事件前 state/facts、原生来源及已装路线独立取证要求，保持 `[?]`。T10/T11 未开始，官方校准继续两家各 0/40、非阻塞待验；D3–D11 等后续契约没有提前批准。
 - 文档检查命令 `PYTHONDONTWRITEBYTECODE=1 python3 /tmp/style-m3-d1-doc-check-20261017.py --base bf278633cd58661b1d60b7128bdff06b79f0d92b --closed` 已通过：8 份当前 Markdown 的 110 个本地链接/锚点及围栏、4 段 shell 语法和 3 个 JSON 示例、44 任务/39 测试映射/依赖和状态、21 份源码的 59 条调查事实及 SHA256、PROGRESS 追加前缀、77 份 M1/M2 归档和 `git diff --check`；结果与检查器摘要归入 `docs/review/M3-D1-DOCS-2026-10-17.json`。原日志字节前缀 SHA256 `2b8149e50310b37b326eb8dd4c398295fa45cefc63a4df69522d62b5f13f4ffb` 保持。
 - 本次仅提交文档/调查证据，未运行新 Go/功能/真实环境验收，不改生产代码、测试、agenthooks、依赖、已有 fixture/golden 或 workflow。用户确认具体评审稿后才单独关闭 D1 并进入 T10/A1，随后 T11/A2。
+
+### 2026-10-17 — M3-D1 explain / probe 诊断契约定稿 `[x]`
+
+- 接 clean `87c878fa380d01a5f6b9e4355896ed2c86dc74c5`。用户在已展示评审稿和明确确认问题后回复“继续”，批准原生 event/默认空 state/显式 facts 的隔离重放、绑定 index 的可选编译说明与旧安装回退、probe 观察现有 hook 的三项产品选择；据此关闭 D1，不重复请求批准。
+- 任务、矩阵、详细方案及相关规范同步为设计已确认、尚待实现。T10/T11、A1/A2 各 12 组功能验收仍未执行；B1/C1 与官方计数状态保持，不提前批准 D2 及后续契约。
+- 验证命令 `PYTHONDONTWRITEBYTECODE=1 python3 /tmp/style-m3-d1-approved-check-20261017.py --base 87c878fa380d01a5f6b9e4355896ed2c86dc74c5 --closed`：核对本地链接/锚点、围栏、JSON/shell 示例、任务/测试映射及依赖、批准与待实现状态、源码调查、进度日志追加和 M1/M2 归档；结果归入 `docs/review/M3-D1-APPROVED-2026-10-17.json`。源码、测试、agenthooks、依赖未改，`git diff --check` 通过；本次文档检查不代替 A1/A2。
+- 独立提交 D1 定稿后进入 M3-T10/M3-A1，再按依赖推进 M3-T11/M3-A2。

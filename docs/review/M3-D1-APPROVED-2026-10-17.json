@@ -1,0 +1,303 @@
+{
+  "task": "M3-D1",
+  "date": "2026-10-17",
+  "scope": "design investigation and documentation validation only",
+  "status": "approved_implementation_pending",
+  "source_base": "87c878fa380d01a5f6b9e4355896ed2c86dc74c5",
+  "verification": {
+    "command": "PYTHONDONTWRITEBYTECODE=1 python3 /tmp/style-m3-d1-approved-check-20261017.py --base 87c878fa380d01a5f6b9e4355896ed2c86dc74c5 --closed",
+    "exit_code": 0,
+    "checker_sha256": "dd89ac6e8469379dbc52ee6cad6f8963fbae38c8798f0df7609e0088defd9f45",
+    "result": {
+      "base": "87c878fa380d01a5f6b9e4355896ed2c86dc74c5",
+      "documents_checked": 8,
+      "local_links_and_anchors": 112,
+      "shell_blocks_syntax_checked": 4,
+      "JSON_examples_checked": 3,
+      "task_entries": 44,
+      "test_entries": 39,
+      "task_test_mappings_valid": true,
+      "dependencies_acyclic": true,
+      "architecture_prerequisite_checked": true,
+      "full_scope_present": true,
+      "design_status": "approved by user; implementation pending",
+      "A1_subcases_pending": 12,
+      "A2_subcases_pending": 12,
+      "progress_prefix_unchanged": true,
+      "progress_prefix_sha256": "fffae163cd94fa5f4b7e3c71a3ba751c0b16f177635b3f9830885aff4f6c37ca",
+      "historical_archives_unchanged": 77,
+      "only_documentation_changed": true,
+      "source_files_checked": 21,
+      "source_facts_checked": 59,
+      "completed_tasks": [
+        "M3-00",
+        "M3-01",
+        "M3-D0",
+        "M3-D1",
+        "M3-RV-01",
+        "M3-T00"
+      ],
+      "completed_tests": [
+        "M3-00",
+        "M3-A0",
+        "M3-BASE-01"
+      ],
+      "new_Go_or_feature_or_real_environment_tests_executed": false,
+      "diff_check": "passed"
+    }
+  },
+  "audited_sources": [
+    {
+      "path": "internal/app/entry.go",
+      "sha256": "8a1d7f08107f5273f05a15bb126be65c4bdf767076ef5a2023f51e38e7511bef",
+      "facts": [
+        "case \"stats\":",
+        "return runStats(ctx, args[1:], out, errOut)"
+      ]
+    },
+    {
+      "path": "internal/app/hook_command.go",
+      "sha256": "dde90afac0a79a34d449783166e31b24788131fff94c7453fa5748c1f3204897",
+      "facts": [
+        "styleruntime.Load(filepath.Join(home, \"build\", \"index.json\")",
+        "runtime.CodecStateDir = filepath.Join(home, \"cache\", \"agenthooks\")"
+      ]
+    },
+    {
+      "path": "internal/runtime/runtime.go",
+      "sha256": "57e83063144b59ab736f6a5d90529f009fbaad636ed6fd4522c42e3de0a09e5e",
+      "facts": [
+        "runtime.loadErr = loadErr",
+        "agenthooks.WithoutBackfill()",
+        "session, scope, err := r.State.Update(",
+        "output, err := r.Engine.Process(input, limit)",
+        "r.record(event, output)",
+        "return runner.Run(ctx, args, stdin, stdout, stderr)"
+      ]
+    },
+    {
+      "path": "core/engine/process.go",
+      "sha256": "18be7a77be580b86f999a515e033cd848bf3d97cc4f19a019b5187b67119e588",
+      "facts": [
+        "!matchesTarget(entry, point) || !matchesSource(entry, point.Name, input.Source)",
+        "if len(blocks) > 0",
+        "reservation, allowed, err := e.store.Claim(",
+        "item.reservation.Release()"
+      ]
+    },
+    {
+      "path": "core/when/match.go",
+      "sha256": "cfae5f70c24384af748732c0fa049acbd3a7163150a6327b41b5f953dbe95cab",
+      "facts": [
+        "if rule.Provider != nil",
+        "actual, available := input.Fields.ReadConditionField(condition.Field)",
+        "if !available || !condition.match(actual)"
+      ]
+    },
+    {
+      "path": "core/state/state.go",
+      "sha256": "c9b55de4b1810f370831c38c0980e3a5dbff24160e795c1c64c6ae04a9cd6d45",
+      "facts": [
+        "case \"startup\":",
+        "case \"clear\":",
+        "case \"compact\":",
+        "func (s *Store) Read(",
+        "func component(value string) string"
+      ]
+    },
+    {
+      "path": "core/state/dedup.go",
+      "sha256": "c77816284a3272e93cea4cbd982175a811d670ec7c4c6f8f5df2574b9d503beb",
+      "facts": [
+        "input.Action == \"block\" || input.Repeat == \"every\" || input.Event == \"subagent.start\"",
+        "os.O_CREATE|os.O_EXCL|os.O_WRONLY"
+      ]
+    },
+    {
+      "path": "core/compile/types.go",
+      "sha256": "c11064f20de70080c8ef93b88d4e5a16b1d0e7b34a4db5d7191bb83cb8cf94b7",
+      "facts": [
+        "Format = 1",
+        "Deduplicated          []Deduplication",
+        "type StaticEntry struct"
+      ]
+    },
+    {
+      "path": "core/compile/dedup.go",
+      "sha256": "002ef465dd2e54a9603f3ba00e6938e0d39366eb65e370170a7cdfda0bfaa519",
+      "facts": [
+        "result.Deduplicated = append(result.Deduplicated, relation)",
+        "result.Index.Static[harness] = kept"
+      ]
+    },
+    {
+      "path": "agenthooks/agenthooks.go",
+      "sha256": "e4ed2ef7578c108d15acd24ca3ea5a2ecaf20cd4abb2d218a7d352e29a24de3c",
+      "facts": [
+        "const maxPayloadBytes = 32 << 20",
+        "func (r *Runner) OnAny(",
+        "r.resolveMCPContext(hctx, typed)",
+        "wire := noOpResponse(provider)"
+      ]
+    },
+    {
+      "path": "agenthooks/codec.go",
+      "sha256": "28f9008d8d9f199f7e86540922290f6d2d7cb2ceb87cbaa5f4e7ee0b5f604e89",
+      "facts": [
+        "func noOpResponse(p Provider) wireResponse",
+        "func decodePayload(",
+        "func encodeDecision("
+      ]
+    },
+    {
+      "path": "agenthooks/codec_codex.go",
+      "sha256": "eb4575c7adeb927da0c47917e629f4e8670ad1f8796dac02b27f9918a4d50525",
+      "facts": [
+        "var codexKinds = map[string]EventKind",
+        "wire.Stdout = nil"
+      ]
+    },
+    {
+      "path": "agenthooks/codec_claudecode.go",
+      "sha256": "53c0cccff3db76763efecf8ba628d686a2d343e1655611279e28f50a3901bd0e",
+      "facts": [
+        "var claudeKinds = map[string]EventKind",
+        "backfillClaudeSkillOutput(event)",
+        "in.HookEventName == \"PostModelSwitch\""
+      ]
+    },
+    {
+      "path": "agenthooks/claude_skill.go",
+      "sha256": "bfee5d90bfd44fee85c5f8147d9b5243a7d1da201b515d067c270c8dbee09c6f",
+      "facts": [
+        "maxSkillContentBytes        = 65_536",
+        "func backfillClaudeSkillOutput(",
+        "content, ok := readClaudeSkillContent("
+      ]
+    },
+    {
+      "path": "agenthooks/mcpresolve.go",
+      "sha256": "c7fb95ab78741b3534b94e16e72b2b3872d43c165e3a7bdf8ea4e8fce174f885",
+      "facts": [
+        "func (r *Runner) resolveMCPContext(",
+        "os.Getenv(\"CODEX_HOME\")"
+      ]
+    },
+    {
+      "path": "agenthooks/promptargv.go",
+      "sha256": "e8ec7f594bbb17f561d2ba532ef879a89056273d8437768ef79cf8d2fba1f05b",
+      "facts": [
+        "const backfillMaxAncestors = 6",
+        "func findAncestorProcess("
+      ]
+    },
+    {
+      "path": "agenthooks/promptargv_darwin.go",
+      "sha256": "e3d559bc58e14c813cbf4287465af575dc905bf804590a2231caa3205fd980bf",
+      "facts": [
+        "unix.SysctlRaw(\"kern.procargs2\", pid)",
+        "func procExecutable(pid int)"
+      ]
+    },
+    {
+      "path": "internal/adapter/codex/runtime.go",
+      "sha256": "da555a7e6bee90c8e392e502a878b9bc8283fe9963f48ee50b38b687ecb68678",
+      "facts": [
+        "if previous.EffortResolved",
+        "agenthooks.CurrentCodexLaunchSettings(event.Session.CWD)",
+        "input.ReadFile = enricher.ReadFile"
+      ]
+    },
+    {
+      "path": "internal/adapter/claude/runtime.go",
+      "sha256": "36187574278675d421e1579f2fa3d6deadd84ed8d8200b172b7d6bbab289969c",
+      "facts": [
+        "os.Getenv(\"CLAUDE_EFFORT\")",
+        "ResolveEffort(eventEffort, environment, previous)"
+      ]
+    },
+    {
+      "path": "internal/app/uninstall.go",
+      "sha256": "a88fb3adde968ea65b6626f3533bd220820e6a04487560df6ec74cebf293fb64",
+      "facts": [
+        "if len(remainingLock.Packages) == 0",
+        "filepath.Join(home, \"build\", \"index.json\")",
+        "plannedRemoval(path)"
+      ]
+    },
+    {
+      "path": "internal/adapter/registry.go",
+      "sha256": "d8acd544d276797b5cee0291416c4877ec8748fda0025314c2ff72c74bfa5cd1",
+      "facts": [
+        "func (r *Registry) ValidationCatalog() spec.ValidationCatalog"
+      ]
+    }
+  ],
+  "document_sha256": {
+    "AGENTS.md": "f405ef8b1d31f01ba43d3f07950db847e770956a79372f212fd30482d3e463c9",
+    "docs/PROGRESS.md": "4c77af8b052da4e83e162eb1ad19f94ce521c1cd4fda8942572d799afc99ee02",
+    "docs/STYLE-M3-TASKS.md": "629b393bcdca9a60ed4281147cff6371c2f7152076f82abd6074f4c82e6b7cbb",
+    "docs/STYLE-M3-TESTS.md": "a20244cb1aac84ac844c52ed268fd9790c9cba76dac00a263b5ec7e12d1de1d1",
+    "docs/review/M3-D1-DIAGNOSTICS-2026-10-17.md": "e4f12ed64c328b9066c58c1f56610d3b852f895f7ab63e5a0cc1a992e51dc152",
+    "docs/spec/STYLE-cli-design.md": "ce59b7fce404db67f01332b9d3f9a6cf8e2a6fbacb77b46b6e1ebede3ac3ef93",
+    "docs/spec/STYLE-spec-compiled.md": "1593420dd89613416cda60d2c8a3f5d5d0489707e7fee4c53c436d248255f182",
+    "docs/spec/STYLE-spec-runtime.md": "72b5373532ea0db9e3a06aa51bdf64c78d9e2f79c8515a95495cc5c2020bcb26"
+  },
+  "pending_acceptance": {
+    "A1": [
+      "A1-01",
+      "A1-02",
+      "A1-03",
+      "A1-04",
+      "A1-05",
+      "A1-06",
+      "A1-07",
+      "A1-08",
+      "A1-09",
+      "A1-10",
+      "A1-11",
+      "A1-12"
+    ],
+    "A2": [
+      "A2-01",
+      "A2-02",
+      "A2-03",
+      "A2-04",
+      "A2-05",
+      "A2-06",
+      "A2-07",
+      "A2-08",
+      "A2-09",
+      "A2-10",
+      "A2-11",
+      "A2-12"
+    ]
+  },
+  "unchanged_states": {
+    "M3-T10": "not_started",
+    "M3-T11": "not_started",
+    "M3-A1": "not_executed",
+    "M3-A2": "not_executed",
+    "M3-B1": "real_environment_pending",
+    "M3-C1": "real_environment_pending",
+    "M3-CARRY-01": {
+      "status": "nonblocking_pending",
+      "codex": "0/40",
+      "claude-code": "0/40"
+    }
+  },
+  "not_executed": [
+    "new Go tests/builds",
+    "explain/probe feature acceptance",
+    "real harness sessions",
+    "native commands",
+    "model requests",
+    "official token counting",
+    "remote CI"
+  ],
+  "compatibility": {
+    "M1_M2_archives_unchanged": true,
+    "PROGRESS_append_only": true,
+    "production_tests_agenthooks_dependencies_old_fixtures_goldens_workflows_unchanged": true
+  }
+}

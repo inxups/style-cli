@@ -284,7 +284,7 @@ STYLE 的 hook 输出**只允许**这几样：`additionalContext`、`systemMessa
 
 ### 8.9 M3-D1 诊断隔离评审稿
 
-以下为 `[~]` 待用户评审的 D1 契约，explain/probe 尚未实现；完整命令、输入/报告和退出码见 [D1 设计](../review/M3-D1-DIAGNOSTICS-2026-10-17.md)，入口见 [CLI §4.1](STYLE-cli-design.md#41-m3-d1-诊断契约评审稿)。
+以下为已获用户确认的 D1 契约，explain/probe 尚未实现；完整命令、输入/报告和退出码见 [D1 设计](../review/M3-D1-DIAGNOSTICS-2026-10-17.md)，入口见 [CLI §4.1](STYLE-cli-design.md#41-m3-d1-诊断契约评审稿)。
 
 - explain 的 event 是原生事件名，与原 payload 一致；真实 codec → adapter → state → engine → codec 链在私有临时根执行。默认空状态，显式 state 输入只读复制所选 session/agent；源 bytes/mode/mtime 不改，复制检测到变化即失败，不声称等于历史事件前的状态。
 - 默认禁用外部事实补充；可显式提供与 payload 摘要绑定的版本、effort、MCP/Skill 事实，来源标为 provided。隔离必须覆盖 agenthooks 解码中的本地 Skill manifest 读取及 MCP/进程/环境/transcript 依赖；不接受只关 MCP 后仍读宿主文件。所有正常优先级、未知 effort 清旧值和缺值不匹配规则保持。

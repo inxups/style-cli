@@ -155,7 +155,7 @@
 
 ### 9.7 M3-D1 编译说明文件评审稿
 
-本节是 `[~]` 待用户评审的 D1 设计，尚未实现。用于 explain 解释已经被编译删除的跨包等价声明，详细契约见 [D1 方案](../review/M3-D1-DIAGNOSTICS-2026-10-17.md)。当前 format=1 index、lock、state 均不改；runtime 仍不读取这份冷路径文件。
+本节是已获用户确认的 D1 设计，尚未实现。用于 explain 解释已经被编译删除的跨包等价声明，详细契约见 [D1 方案](../review/M3-D1-DIAGNOSTICS-2026-10-17.md)。当前 format=1 index、lock、state 均不改；runtime 仍不读取这份冷路径文件。
 
 拟新增 `build/explain.json`，权限 0600，严格 JSON、上限 16 MiB。顶层为 `format=1`、`index_sha256`（带 sha256: 前缀，对最终 index 文件的精确字节计算）、`harnesses`。每个 harness 保存本次冷编译实际得到的规则说明：canonical rule ID、来源包内路径、RulePlan 的 target/action/status、placement 的 event/static_slot、编译折叠的 deduplicated_into 和安全原因代码；native 可附 event/matcher/实际 timeout。
 

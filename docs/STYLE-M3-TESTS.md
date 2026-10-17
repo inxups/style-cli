@@ -4,7 +4,7 @@
 
 本文件记录 M3 测试矩阵与当前证据状态，任务及依赖见 [STYLE-M3-TASKS.md](STYLE-M3-TASKS.md)，运行记录追加到 [PROGRESS.md](PROGRESS.md)。[M1 测试](STYLE-M1-TESTS.md)、[M2 测试](STYLE-M2-TESTS.md) 已只读归档；历史通过结果不替代 M3 的新验收。
 
-当前状态：M3-00 建档检查、M3-BASE-01 新基线及 M3-A0 注册表/架构边界均已通过；D1 已形成[诊断评审稿](review/M3-D1-DIAGNOSTICS-2026-10-17.md)，A1/A2 各细化 12 组待执行断言。A1–A18、准备、CI 和最终文档验收尚未执行。Codex B1–B4、Claude C1–C6、exact TOKEN-01 与 Windows W1 均待真实环境。M3-CARRY-01 官方校准仍两家各 0/40；三处名称校验的硬编码风险已由 M3-T00/M3-A0 关闭，设计文档检查不关闭新功能验收。
+当前状态：M3-00 建档检查、M3-BASE-01 新基线及 M3-A0 注册表/架构边界均已通过；D1 已获用户确认并[定稿](review/M3-D1-DIAGNOSTICS-2026-10-17.md)，A1/A2 各细化 12 组待执行断言。A1–A18、准备、CI 和最终文档验收尚未执行。Codex B1–B4、Claude C1–C6、exact TOKEN-01 与 Windows W1 均待真实环境。M3-CARRY-01 官方校准仍两家各 0/40；三处名称校验的硬编码风险已由 M3-T00/M3-A0 关闭，设计文档检查不关闭新功能验收。
 
 ## 状态与验收规则
 
@@ -70,8 +70,8 @@ PYTHONDONTWRITEBYTECODE=1 python3 scripts/check_m2_rules_migration.py \
 ## M3a：离线验收
 
 - [x] **M3-A0 注册表与架构边界**（M3-D0、M3-T00、M3-RV-01）：用仅注册假 harness、删去某家、两家现有注册表及空目录的 fixture，覆盖 `when.harness.name`、`requires.harness`、`recommends` 及 native 校验。目录/单文件包、所有 app 入包路径给出一致诊断；普通名称全集与 native 子集、快照隔离、结构/完整 API、预算重复路径和 auto 遍历均需证明。core 不导入具体 adapter/agenthooks，旧包/诊断排序及失败后 bytes/mode/mtime 保持兼容。[D0 设计 §6](review/M3-D0-REGISTRY-VALIDATION-2026-10-17.md#6-m3-a0-验收细化) 的 A0-01–A0-10 已逐项通过，见 [本轮报告](review/M3-A0-2026-10-17.json)。macOS 27.0.1 / Go 1.27.0、临时三缓存及清理环境下，新执行双 module fresh test（30 个有测试 package，均非 cached）/vet、core/spec/tokens/adapter/app 四包完整 race；14 个新测试函数、205 个叶子用例，含 144 组目录/单文件/from 的精确名称组合与 33 组无效候选文件保全。与固定基线 CLI 的 32 组文本/JSON 输出和退出码逐字节相同；8 个隔离 import fixture 证明整个 adapter/agenthooks 前缀受限。59 项采集器、40 smoke、16 组 `74a473d` 真实旧版迁移、12 组回退通过；当前二进制 SHA256 `8d4e933ccdc6d79167294b0998e0bfe76668cfbf0a268a64d25dc3f3b5ad6967`。首轮测试中两个 fixture 问题及修正后通过均保留；生产校验未放宽、agenthooks/协议/旧 golden 未改，未调用真实 harness、远端 CI 或官方计数。关闭 M3-RV-01，允许进入 D1。
-- [ ] **M3-A1 explain**（M3-D1、M3-T10）：按 [D1 §8 的 A1-01–A1-12](review/M3-D1-DIAGNOSTICS-2026-10-17.md#8-待执行的验收细化)（待用户评审）固定两家原生 payload/index、空 state/只读 snapshot 和绑定 facts。逐项核对共享短路 trace、缺值、来源/agent、repeat、block 优先、多点评估、cap-drop/释放、编译折叠与 static/native 边界，实际 codec wire 和管理退出码分开。覆盖解码起零外部读取/进程/网络、坏/超限/漂移输入、取消/清理失败、并发隔离和 bytes/mode/mtime；explain.json 与 index 同事务及旧安装 index-only 回退另验。文本/JSON 确定性、协议白名单和兼容回归均需新证据；当前尚未实现或执行。
-- [ ] **M3-A2 probe**（M3-D1、M3-T11）：按 [D1 §8 的 A2-01–A2-12](review/M3-D1-DIAGNOSTICS-2026-10-17.md#8-待执行的验收细化)（待用户评审）以隔离 runner/进程来源 fixture 验证现有 STYLE hook 的 lease/run ID/安装根/原生事件/二进制绑定，旧/伪造收据与仅安装/版本命令不计成功。覆盖多目标部分完成、来源不明、超时/中断/并发 busy/配置漂移/崩溃恢复/迟到写入/清理失败、receipt 上限及脱敏。配置/信任/包/lock/index/说明文件保持，普通 hook 输出和 state/stats 不因观察改变；此项只验离线生命周期，实际原生调用及独立来源由 B1/C1 验收。
+- [ ] **M3-A1 explain**（M3-D1、M3-T10）：按 [D1 §8 的 A1-01–A1-12](review/M3-D1-DIAGNOSTICS-2026-10-17.md#8-待执行的验收细化)（已获用户确认）固定两家原生 payload/index、空 state/只读 snapshot 和绑定 facts。逐项核对共享短路 trace、缺值、来源/agent、repeat、block 优先、多点评估、cap-drop/释放、编译折叠与 static/native 边界，实际 codec wire 和管理退出码分开。覆盖解码起零外部读取/进程/网络、坏/超限/漂移输入、取消/清理失败、并发隔离和 bytes/mode/mtime；explain.json 与 index 同事务及旧安装 index-only 回退另验。文本/JSON 确定性、协议白名单和兼容回归均需新证据；当前尚未实现或执行。
+- [ ] **M3-A2 probe**（M3-D1、M3-T11）：按 [D1 §8 的 A2-01–A2-12](review/M3-D1-DIAGNOSTICS-2026-10-17.md#8-待执行的验收细化)（已获用户确认）以隔离 runner/进程来源 fixture 验证现有 STYLE hook 的 lease/run ID/安装根/原生事件/二进制绑定，旧/伪造收据与仅安装/版本命令不计成功。覆盖多目标部分完成、来源不明、超时/中断/并发 busy/配置漂移/崩溃恢复/迟到写入/清理失败、receipt 上限及脱敏。配置/信任/包/lock/index/说明文件保持，普通 hook 输出和 state/stats 不因观察改变；此项只验离线生命周期，实际原生调用及独立来源由 B1/C1 验收。
 - [ ] **M3-A3 Git 来源**（M3-D2、M3-T20）：用临时本地 Git 仓库模拟固定 revision、分支推进、同名/不同内容、目录与单文件包。覆盖不可达/缺 revision、非法包、路径逃逸/symlink 和取得中断；锁与内容摘要一致，失败不留半安装。取得源码不执行仓库代码；凭据与来源中的敏感字段不进入报告。
 - [ ] **M3-A4 update**（M3-D2、M3-T21）：fixture 覆盖无变化、普通内容变化、native 变化、多个包和已授权 link 的交互。核对预览/批准边界、来源与锁/index/配置一致、取消/部分失败完整回滚；不会连带批准未选包或跳过既有 native 信任。
 - [ ] **M3-A5 frozen**（M3-D2、M3-T22）：在隔离根重复锁定安装，核对 revision/摘要/有效规则可重复；覆盖锁缺失/不匹配、缓存缺失、离线条件、远端分支移动和本地/link 来源的定稿行为。失败结果明确，锁/已安装配置不发生未批准变化。

@@ -2,7 +2,7 @@
 
 对应规范：[STYLE-spec.md](STYLE-spec.md)（v0.3）。规范定义包格式、运行时语义、token 预算、安全约束和 `index.json`；本文定义命令、本地布局、编译和运行时流程、Claude Code 与 Codex 两个适配器、token 估算器、fork 改动、里程碑、验收和未决项。冲突时，格式和语义以规范为准，实现细节以本文为准。
 
-状态（2026-10-17）：M1、M2 已关闭并只读归档；M2 的 native、stats、跨包去重、Claude rules/迁移与 replace 回退已验收，Codex/Claude 真实环境、本地回归和最终 Ubuntu/macOS CI 均通过，历史证据见 [M2 任务清单](../STYLE-M2-TASKS.md)、[测试矩阵](../STYLE-M2-TESTS.md)。当前里程碑为 M3，任务、依赖和验收状态以 [M3 任务清单](../STYLE-M3-TASKS.md)、[测试矩阵](../STYLE-M3-TESTS.md) 为准；建档和隔离环境基线已完成，D0 已获用户确认，T00 注册表校验修复和 A0 验收已完成；[D1 诊断契约评审稿](../review/M3-D1-DIAGNOSTICS-2026-10-17.md) 已形成，等待用户评审，explain/probe 尚未实现。官方 token 计数仍各 0/40，承接为 M3-CARRY-01 非阻塞待验；本地编码/订阅 usage 作为补充，不提供误差范围保证。核心名称校验硬编码风险 M3-RV-01 已随 T00/A0 关闭；engine 既有输出安全特例仍按 D8 评估。当前仅支持 **Claude Code** 和 **Codex**；本文接口代码为设计示意，当前接口与职责见 [adapter 总览](../STYLE-ADAPTERS-CURRENT.md)。
+状态（2026-10-17）：M1、M2 已关闭并只读归档；M2 的 native、stats、跨包去重、Claude rules/迁移与 replace 回退已验收，Codex/Claude 真实环境、本地回归和最终 Ubuntu/macOS CI 均通过，历史证据见 [M2 任务清单](../STYLE-M2-TASKS.md)、[测试矩阵](../STYLE-M2-TESTS.md)。当前里程碑为 M3，任务、依赖和验收状态以 [M3 任务清单](../STYLE-M3-TASKS.md)、[测试矩阵](../STYLE-M3-TESTS.md) 为准；建档和隔离环境基线已完成，D0 已获用户确认，T00 注册表校验修复和 A0 验收已完成；[D1 诊断契约评审稿](../review/M3-D1-DIAGNOSTICS-2026-10-17.md) 已获用户确认，explain/probe 尚未实现。官方 token 计数仍各 0/40，承接为 M3-CARRY-01 非阻塞待验；本地编码/订阅 usage 作为补充，不提供误差范围保证。核心名称校验硬编码风险 M3-RV-01 已随 T00/A0 关闭；engine 既有输出安全特例仍按 D8 评估。当前仅支持 **Claude Code** 和 **Codex**；本文接口代码为设计示意，当前接口与职责见 [adapter 总览](../STYLE-ADAPTERS-CURRENT.md)。
 
 **依据**：
 - agenthooks `3f734c7` 源码，历史整理资料为 `agenthooks-codex.md`（外部资料，本仓库未收录）；
@@ -177,8 +177,8 @@ core 只消费通用目录/能力端口；agenthooks 继续负责协议、配置
 | `style adapters` | 适配器、检测结果、可用路线、信任方式、能力摘要、上限 | M1 |
 | `style agenthooks run --provider=<h> [--owner=style] [--fail-closed]` | 隐藏，hook 入口（第 8 节） | M1 |
 | `style stats [--by rule\|session] [--since <duration\|RFC3339>] [--json]` | 只读汇总历史运行时记录，默认最近 7 天、按规则；D2/T20 已实现（§11.5） | M2 |
-| `style explain --harness h --event NativeEvent --payload f.json [--index f] [--state-dir d] [--facts f] [--provenance f] [--fail-closed] [--json]` | 隔离重放一次原生 hook，解释命中/跳过/去重/容量和最终 wire；D1 评审中（§4.1），尚未实现 | M3 |
-| `style probe [--harness h] [--timeout 60s] [--json]` | 等待已安装 STYLE hook 的关联回调；D1 评审中（§4.1），尚未实现 | M3 |
+| `style explain --harness h --event NativeEvent --payload f.json [--index f] [--state-dir d] [--facts f] [--provenance f] [--fail-closed] [--json]` | 隔离重放一次原生 hook，解释命中/跳过/去重/容量和最终 wire；D1 已定稿（§4.1），尚未实现 | M3 |
+| `style probe [--harness h] [--timeout 60s] [--json]` | 等待已安装 STYLE hook 的关联回调；D1 已定稿（§4.1），尚未实现 | M3 |
 | `style update`、git 来源、`install --frozen`、`install --project`、`--count=exact` | | M3 |
 
 **选项说明**：
@@ -195,7 +195,7 @@ core 只消费通用目录/能力端口；agenthooks 继续负责协议、配置
 
 ### 4.1 M3-D1 诊断契约评审稿
 
-本节是 `[~]` 待用户评审的接口，T10/T11 尚未实现。完整输入、format=1 报告、失败行为和 A1-01–A1-12/A2-01–A2-12 断言见 [D1 方案](../review/M3-D1-DIAGNOSTICS-2026-10-17.md)。
+本节契约已于 2026-10-17 获用户确认，M3-D1 已关闭；T10/T11 尚未实现。完整输入、format=1 报告、失败行为和 A1-01–A1-12/A2-01–A2-12 断言见 [D1 方案](../review/M3-D1-DIAGNOSTICS-2026-10-17.md)。
 
 **explain**：`--harness` 必填一家（沿用 claude 别名）；`--event` 为区分大小写的原生事件名，例如 PreToolUse，必须与 payload.hook_event_name 一致。payload/session 必填且有界，index 默认从 STYLE_HOME 读取，也可显式指定；同一份捕获字节交给真实 codec/adapter/engine，不能独立实现一个解释匹配器。
 
