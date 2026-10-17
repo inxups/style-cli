@@ -1928,3 +1928,7 @@ T50/A15 已完成后，固定官方 hooks.md 与 Claude 2.1.301 六组隔离原�
 [A16](review/M3-A16-2026-10-18.json)保留临时三缓存与清环境命令、源码/二进制摘要及失败历史：3 个新函数/135 专项和 race pass，126 字段/格式/注册表组合、from 整体覆盖、六路线 108 次命令零写入/不执行作者代码和批准四字段 frozen 恢复通过；根 fresh test 3,880 pass/0 fail、2 既有 skip 单列，vet、24 agenthooks native renderer pass、40 五路线 built CLI 与 40 smoke 通过。实际旧 T50 二进制的计划/配置字节兼容，sync 与卸载保留外部 HTTP/MCP/prompt/agent/异步 command。
 
 初期新安装同名 guard、update 存储完整性/安全候选分类、sync 的 trust/3 gate 预期先后问题均已修正 fixture 并保留原行为；没有为测试放宽安全检查。[文档检查](review/M3-A16-DOCS-2026-10-18.json)通过，日志只追加、归档/历史 JSON/旧 testdata/agenthooks/依赖不变。关闭 T60/A16，按依赖进入 D11/T70；B4/C6 后续实际验收。
+
+## 2026-10-18 M3-D11 Windows 定稿
+
+在 T60/A16 clean `2ddb678` 上核对 Windows 不支持的现有 refresh/进程身份、POSIX 权限位检查与已有插件/native renderer 边界。[D11](review/M3-D11-WINDOWS-2026-10-18.md)按授权固定两家 Windows user 路线、真实 exe/编码启动器、owner/定义 hash、内核身份/DACL/锁与文件事务及 A17 四组验收。Windows 项目/插件与作者 POSIX native 明确不可用，不静默生成 sh 脚本；W1 已由用户延期，Windows CI 仍必做。Microsoft 网页抓取 TLS 失败单列，API 签名依据已锁定的官方 x/sys 源码，见[来源](review/M3-D11-SOURCES-2026-10-18.json)。仅关闭 D11；T70/A17 待实现和 Windows 自动化证据。文档检查见[D11-DOCS](review/M3-D11-DOCS-2026-10-18.json)。

@@ -965,3 +965,7 @@ T50 的计数输出与边界见[文本计数指南](../STYLE-COUNT.md)：本地�
 [D10 定稿](../review/M3-D10-NATIVE-EXTENSIONS-2026-10-18.md)保留 event/matcher/command/timeout 四字段。async、onFailure、HTTP/MCP/prompt/agent 等扩展逐项评估后明确拒绝；不把异步后续投递或模型/网络授权冒充已有 native 管理能力。六组隔离真 CLI/本地 stub 证据不代替真实模型投递。
 
 T60/A16 已落实扩展拒绝原因与四字段兼容，见[指南](../STYLE-NATIVE.md)及[验收](../review/M3-A16-2026-10-18.json)。原生配置/归属继续由 agenthooks 负责，未扩展透传未知字段。
+
+## M3-D11 Windows 平台契约
+
+[D11 定稿](../review/M3-D11-WINDOWS-2026-10-18.md)限定 Windows 原生 style.exe 的两家 user 路线；项目/插件启动器与作者 POSIX native 在 Windows 明确不可用。安全参数传递、owner/信任、内核身份、私有 DACL、共享/独占 refresh 锁与失败恢复须经 A17/Windows CI 验证；用户延期的 W1 不以 CI 或交叉编译代替。POSIX 路线保持。

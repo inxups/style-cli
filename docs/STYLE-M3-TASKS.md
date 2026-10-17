@@ -64,7 +64,7 @@ M3-CARRY-01 与 `--count=exact` 产品验收分别记录；前者的非阻塞决
 - [x] **M3-D8 规则级 fail-closed**：目标是明确 `fail: closed` 的适用动作、事件、可判定错误和原生能力门槛。依赖：M3-T44。产出：与现有 Claude 安装级 `--fail-closed` 的关系、混合规则处理、index 不可读时的可实现边界和不支持路线的报告；评估 D0 调查记录的 engine prompt suppression 名称判断及其能力边界，回写运行时与安装设计。测试：M3-A14、M3-B3、M3-C5。 定稿：[D8 契约](review/M3-D8-FAIL-CLOSED-2026-10-18.md)明确事件范围故障保护、安装级独立边界、能力化输出和 index 7/严格锁；按授权进入 T45。
 - [x] **M3-D9 精确计数边界**：目标是明确 `--count=exact` 用于哪些命令、计什么文本以及精确性的适用范围。依赖：M3-T45；不依赖 M3-CARRY-01 完成。产出：本地 OpenAI 分词与 Anthropic 计数接口的适配边界、模型/编码披露、凭据与联网要求、失败行为和估算模式兼容；回写 token 设计，不等同于账单保证。测试：M3-A15、M3-TOKEN-01。 [D9 定稿](review/M3-D9-EXACT-COUNT-2026-10-18.md)明确 count/plan/explain、静态与实际文本、本地具名编码、固定 API 最小请求及失败隐私边界；直接推进 T50。
 - [x] **M3-D10 native 扩展评估**：目标是评估 Claude `async`、`onFailure` 和非 command hook。依赖：M3-T50。产出：逐项支持/不支持结论及来源/实测、归属和信任方案、披露与旧四字段兼容策略；回写规则 §3.10 与路线设计。测试：M3-A16、M3-B4、M3-C6。评估完成不等于未支持的类型已实现。 [D10 定稿](review/M3-D10-NATIVE-EXTENSIONS-2026-10-18.md)和六组原生 CLI/本地 stub 探针固定 async、onFailure、HTTP 行为；M3 保留 command 四字段，对扩展明确拒绝并细化归属/授权原因，进入 T60。
-- [ ] **M3-D11 Windows 支持边界**：目标是确定 Windows 路径、命令执行、归属标记、文件事务和支持路线。依赖：M3-T60。产出：shell/启动器、native stdin/退出码、权限/锁与原子写入适配、平台 CI 和真实验收方案；回写 CLI/规则设计。测试：M3-A17、M3-W1、M3-CI-01。
+- [x] **M3-D11 Windows 支持边界**：目标是确定 Windows 路径、命令执行、归属标记、文件事务和支持路线。依赖：M3-T60。产出：shell/启动器、native stdin/退出码、权限/锁与原子写入适配、平台 CI 和真实验收方案；回写 CLI/规则设计。测试：M3-A17、M3-W1、M3-CI-01。 [D11 定稿](review/M3-D11-WINDOWS-2026-10-18.md)明确 Windows 原生二进制和两家 user 路线、安全启动/归属、内核身份/DACL/refresh 锁和文件事务；Windows 项目/插件与作者 POSIX native 明确不可用。进入 T70，A17 仍需 Windows CI 实际执行。
 
 ## 离线实现
 

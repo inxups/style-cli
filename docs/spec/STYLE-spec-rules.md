@@ -274,3 +274,7 @@ M1 的 `skipped-m2` 状态取消。token 一节单列"native hook 输出不估�
 已定稿[规则级失败契约](../review/M3-D8-FAIL-CLOSED-2026-10-18.md)：fail: closed 仅在可 deny 的直接运行时评估点使用；故障保护按整个原生事件范围保守选择，正常未命中不拦。index 7 与严格最低格式锁保护语义；index 不可读/宿主终止需安装级机制，agenthooks 保留协议职责。T45/A14 已实现并通过[离线验收](../review/M3-A14-2026-10-18.json)，见[使用说明](../STYLE-FAIL-CLOSED.md)；B3/C5 后续独立。
 
 T60/A16 已落实扩展拒绝原因与四字段兼容，见[指南](../STYLE-NATIVE.md)及[验收](../review/M3-A16-2026-10-18.json)。原生配置/归属继续由 agenthooks 负责，未扩展透传未知字段。
+
+## M3-D11 Windows 平台契约
+
+[D11 定稿](../review/M3-D11-WINDOWS-2026-10-18.md)限定 Windows 原生 style.exe 的两家 user 路线；项目/插件启动器与作者 POSIX native 在 Windows 明确不可用。安全参数传递、owner/信任、内核身份、私有 DACL、共享/独占 refresh 锁与失败恢复须经 A17/Windows CI 验证；用户延期的 W1 不以 CI 或交叉编译代替。POSIX 路线保持。
