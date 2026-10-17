@@ -1779,3 +1779,13 @@ PY
 - 首轮失败与修正：空临时模块缓存 DNS 失败后复用离线临时依赖；配置检测时序、`/var` 规范化和 happy fixture 别名修正；验收发现缺登记扫描和 binding symlink、launcher 确认漂移缺口，已补拒绝与回归。clone 动态/settings/native 效果摘要和部分卸载声明绑定顺序补全；新增 golden helper 重名、stats 时间归一化及旧程序错误分类修正。源码 TLS fixture 首次因沙箱禁止本地监听失败，经授权的回环测试通过；最终测试未跳过新用例。12 次失败运行及修正后的通过结果均在报告中保留摘要与日志哈希。
 - 文档与证据：[项目使用说明](STYLE-PROJECTS.md)、[A6 完整报告](review/M3-A6-2026-10-17.json)、[文档检查报告](review/M3-A6-DOCS-2026-10-17.json)。同步任务/矩阵、D3 的 A6-01–A6-12、CLI/编译/运行时规范及 adapter 总览；检查链接/锚点、围栏/shell/JSON、44 项任务/39 项测试映射与依赖、源码/二进制/日志摘要、PROGRESS 追加前缀和 77 份 M1/M2 归档、旧 golden/历史 M3 报告保全；gofmt、Python 语法和 git diff --check 均通过。报告项目结果后等待下一步范围决定。
 - 提交前补查：暂存后的 diff --check 发现新文本 golden 的既有 CLI 行尾空格；先前未暂存的检查未覆盖 untracked 文件。仅在新增文本 golden 比较中归一化行尾空格/tab，生产输出及 JSON golden 不变；重录后 A6 全组和不带录制变量的 race 再通过。文档审计改用基线与当前合并差异，提交前再次检查全部暂存文件。
+
+## 2026-10-17 — M3-D4 refresh 设计评审稿 [~]
+
+- 基线 clean `22551eed12b27a5db2a2fc4d1a26da5f67538c63`，T30/A6 已完成。用户要求“继续推进其他 M3 阶段计划”，据此将 D4 前置从暂缓的 T32 调整为 T30；云端 T31/A7、Claude 插件 T32/A8 继续暂缓，D3 不关闭，后续完整 backlog 保留。
+- 产出：[refresh 评审稿](review/M3-D4-REFRESH-2026-10-17.md)，回写规则、运行时、编译和 CLI 的待评审入口、adapter 当前状态及 M3 清单/矩阵。提议 refresh 0/省略关闭、正整数按同模型正文上次保留输出计算间隔，配合 repeat session；system 转动态，其余 target 保留匹配点。原生 ID 去重的提交时钟、缺 ID 局限、compact/clear/resume/fork/子作用域、旧 seen 保守基线、跨进程锁/释放、format 2 及全文预算均明确，A9-01–A9-12 全部待验。
+- 调查识别 state.Update 仅进程内互斥、按回调递增；不能直接用旧 prompt_count 保证多进程周期。源码检查与旧行为探针不能当作已复现 lost-update，T40 须补真正同步屏障多进程测试。agenthooks 继续独占原生 codec、事件表、配置渲染/owner；本轮未改任何生产代码、schema、依赖、脚本或 fixture/golden。
+- 基线命令 `python3 /tmp/style-m3-d4-20261017/run.py baseline-tests go test ./core/state ./core/engine ./core/compile ./core/plan ./internal/runtime -count=1 -json`：5 个 package，307 条 pass/0 fail/0 skip，无 cached。`baseline-probe go run /tmp/style-m3-d4-20261017/baseline-probe.go` 的 8 项旧行为检查通过；探针源全文与哈希保存在报告，可提取重跑，不是新功能实现。使用既有临时三缓存 `/tmp/style-m3-project-20261017/{gopath,modcache,gocache}`、GOPROXY=off/GOFLAGS=-mod=readonly/GOWORK=off，并清理 CODEX_HOME/CODEX_SANDBOX/STYLE_HOME/Claude 配置与 effort/录制/性能等环境变量。
+- 官方核对：实际获取 Codex Hooks 与 Claude Hooks 文档，固定 SHA256、地址和读取日期；初次 curl 因沙箱 DNS 失败退出 6，随后只读网络放行后正常 TLS 获取。仅引用回合 ID、提交事件和生命周期的文档前提；沿用 D3 已固定版本作为调查边界，没有查询/声明最新版本，未运行真实 harness、模型、云端、Windows、远端 CI 或计数接口。
+- 文档检查命令 `PYTHONDONTWRITEBYTECODE=1 python3 /tmp/style-m3-d4-20261017/check-docs.py`，证据见 [D4 报告](review/M3-D4-DOCS-2026-10-17.json)：本地链接/锚点、围栏、44 任务/39 测试映射与依赖无环、A9 的 12 组编号/状态、仅 D4 改为部分完成、PROGRESS 只追加、M1/M2 归档及历史 M3 报告/全部其他基线文件未变、源码/基线命令/官方页面摘要、git diff --check。本轮不关闭 D4/T40/A9，不改变真实验收或两家各 0/40 的官方计数状态。
+- 按任务约定“设计项先回写相关 docs/spec，用户评审通过后进入实现”，本轮独立提交评审稿，待确认其三项产品选择后再关闭 D4、进入 T40/A9；不自动批准 D5–D11。

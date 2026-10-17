@@ -230,6 +230,10 @@ budget:            # 包级，可省略；下面是默认值（未经实测，�
 
 执行语义一致限制、同包多条时保留、单包 plan/源级预算不依赖安装环境，以及保留方切换可再次注入，均已随 D3 评审通过。
 
+### 7.6 M3-D4 周期补发评审稿
+
+待评审 [D4 方案](../review/M3-D4-REFRESH-2026-10-17.md)提议 refresh 以实际 prompt.submitted 计回合，同正文从上次保留输出计算间隔；无有效 refresh 不改变既有热路径。T001、T003 和硬上限按单次完整正文计算，不按 N 分摊；动态 system 和跨包去重采用完整 refresh 策略参与规划。stats 字段与 output/dedup/cap-drop 口径不变，explain 才提供安全的到期原因。
+
 ## 8. 安全
 
 ### 8.1 输出白名单
@@ -301,3 +305,9 @@ STYLE 的 hook 输出**只允许**这几样：`additionalContext`、`systemMessa
 每个项目/clone 的 index/state/stats/codec cache/probe 分离，用户/项目不同名包允许同时生效，不承诺跨范围优先级/共同预算/正文去重；同一 harness 的同名包在管理入口阻断。项目 root 定位与绑定归 app；协议、事件与原生输出继续归 agenthooks，core 不识别项目/harness 配置。Claude 从子目录启动的静态向上发现与 hook settings 发现不同，不以其一推断另一种投递。
 
 云端入口只加载 manifest 验证过的预编译 bundle，状态写云端私有 HOME，不写仓库或自动下载/编译；固定 runner 的预置为外部前提。native 仍由原生执行，原文与依赖如实披露，不声称任意 shell 跨平台可用。插件禁用只停止插件 hook，静态 user rules 直到 STYLE uninstall 才移除；真实加载/信任和新会话无残留仍待 B2/C2–C4。
+
+### 8.11 M3-D4 refresh 状态隔离评审稿
+
+本节为待用户确认的 [D4 §3–8](../review/M3-D4-REFRESH-2026-10-17.md#3-回合时钟)，未实现。新增时钟/原生 ID 摘要收据/正文游标独立于旧 session/scope/seen，按真实 state 根、harness、session/agent 隔离；跨进程保护覆盖更新、claim 与释放，锁等待上限 20ms，失败继续既有 runtime/codec 策略。原生 ID 不可做数字运算，缺失时明确披露回调计数局限，不哈希提示正文作身份，不读 transcript 补历史。
+
+snapshot/explain 必须捕获新增状态并保留只读、严格解码、文件身份、总量和漂移检查；原生 ID、事件/模板正文和私有路径不得进入日志或说明。占位早于 stdout，进程崩溃可能损失本次补发，不能把 output 视为原生已投递。agenthooks 保持 codec、事件表与配置渲染职责；Windows 的锁实现仍待 D11/T70，不能据 POSIX 设计宣称支持。
