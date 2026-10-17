@@ -69,7 +69,7 @@ PYTHONDONTWRITEBYTECODE=1 python3 scripts/check_m2_rules_migration.py \
 
 ## M3a：离线验收
 
-- [ ] **M3-A0 注册表与架构边界**（M3-D0、M3-T00、M3-RV-01）：用仅注册假 harness、删去某家、两家现有注册表及空目录的 fixture，覆盖 `when.harness.name`、`requires.harness`、`recommends` 及 native 校验。目录/单文件包、所有 app 入包路径给出一致诊断；普通名称全集与 native 子集、快照隔离、结构/完整 API、预算重复路径和 auto 遍历均需证明。core 不导入具体 adapter/agenthooks，旧包/诊断排序及失败后 bytes/mode/mtime 保持兼容。[D0 评审稿 §6](review/M3-D0-REGISTRY-VALIDATION-2026-10-17.md#6-m3-a0-验收细化) 已列 A0-01–A0-10 待执行断言；评审和实现均未完成，不能以文档检查或 BASE-01 关闭本项。通过才关闭风险并开始后续功能。
+- [ ] **M3-A0 注册表与架构边界**（M3-D0、M3-T00、M3-RV-01）：用仅注册假 harness、删去某家、两家现有注册表及空目录的 fixture，覆盖 `when.harness.name`、`requires.harness`、`recommends` 及 native 校验。目录/单文件包、所有 app 入包路径给出一致诊断；普通名称全集与 native 子集、快照隔离、结构/完整 API、预算重复路径和 auto 遍历均需证明。core 不导入具体 adapter/agenthooks，旧包/诊断排序及失败后 bytes/mode/mtime 保持兼容。[D0 设计 §6](review/M3-D0-REGISTRY-VALIDATION-2026-10-17.md#6-m3-a0-验收细化) 已列 A0-01–A0-10 待执行断言；D0 已获用户确认，实现与 A0 尚未完成，不能以设计确认、文档检查或 BASE-01 关闭本项。通过才关闭风险并开始后续功能。
 - [ ] **M3-A1 explain**（M3-D1、M3-T10）：固定两家原生 payload、index 和隔离状态，解释命中/不命中、缺值、repeat、跨包去重、容量丢弃与最终输出；结果与真实 runtime/codec 相符。覆盖坏 payload/index、未知 harness/event 和 native 边界；以目录字节/权限/mtime 对照证明不改真实 state/config、不执行 native 命令，输出范围按 D1 固定。
 - [ ] **M3-A2 probe**（M3-D1、M3-T11）：以隔离回调 fixture 验证关联、真实回调与仅安装的区分、超时/中断/未触发诊断及失败清理；他人配置与已有 STYLE 安装保持完整，不残留探针。此项仅验离线生命周期，实际 harness 调用由 B1/C1 验收。
 - [ ] **M3-A3 Git 来源**（M3-D2、M3-T20）：用临时本地 Git 仓库模拟固定 revision、分支推进、同名/不同内容、目录与单文件包。覆盖不可达/缺 revision、非法包、路径逃逸/symlink 和取得中断；锁与内容摘要一致，失败不留半安装。取得源码不执行仓库代码；凭据与来源中的敏感字段不进入报告。

@@ -1,6 +1,6 @@
-# M3-D0 注册表校验边界评审稿
+# M3-D0 注册表校验边界设计
 
-日期：2026-10-17。状态：`[~]`，方案及调用链调查已完成，等待用户评审；尚未实现，不关闭 M3-D0、M3-T00、M3-A0 或 M3-RV-01。
+日期：2026-10-17。状态：`[x]`，用户在明确的评审问题后回复“继续”，确认本文的完整目录接口、`Validate` 结构校验兼容选择及实现范围；M3-D0 已定稿。M3-T00、M3-A0 尚未执行，M3-RV-01 保持 `[!]`。
 
 调查起点是 clean `323acf81ad63b417ea27b29064f9473efbb7a12b`；其生产源码与建档提交 `7586cca` 相同。[M3-BASE-01](M3-BASE-01-2026-10-17.json) 已新执行双 module fresh test/vet、59 项采集器、40 项 smoke、16 组旧版迁移和 12 组回退。本文依据仓库源码定边界，不引入外部 harness 能力或新安装路线。
 
@@ -29,9 +29,9 @@ rg -n '"codex"|"claude-code"' core --glob '*.go' --glob '!**/*_test.go'
 
 最后一条还发现 [engine/process.go](../../core/engine/process.go) 有两处 Claude prompt suppression 的名称判断。这是既有原生输出安全边界，不参与名称合法性集合；本次 T00 聚焦 M3-RV-01 的三个校验点和相关入口，不删除这两个判断，也不声称所有 core 特例已清零。该额外发现保留到 M3-D8 的输出/失败策略边界设计中评估；任何能力化改动都需对应 engine/adapter/runtime 白名单回归。
 
-## 2. 推荐接口
+## 2. 定稿接口
 
-新增的 core 数据结构与入口如下；此处是拟议接口，不代表代码已存在：
+新增的 core 数据结构与入口如下；此处是已批准的接口契约，尚待 T00 实现：
 
 ```go
 // core/spec：只有普通名称和既有 native 能力端口，不导入 adapter 或 agenthooks。
@@ -72,7 +72,7 @@ func (r *Registry) ValidationCatalog() spec.ValidationCatalog
 
 native 未注册名称保留 `native-field` 及既有消息格式，registered 列表按完整目录字典序展示；两家默认目录的列表、事件/matcher 错误及来源路径应与旧结果一致。已注册但无 Native 的专用消息仅影响新增 fixture 场景。CLI JSON 字段、严重度、退出码和诊断排序不变。
 
-**需要明确批准的兼容选择**：`spec.Validate(pkg)` 保持可编译的 Go 调用签名，但改为结构/lint 校验，不再在没有目录时猜测合法 harness。直接调用者若要判断完整有效性，必须迁移到 `ValidateWithCatalog`；仅继续调用 `Validate` 或 `Validate + ValidateNative` 都不代表完整名称验收。仓库内的普通未知名称测试改为显式传入 fixture 目录，另测试不带目录的结构行为。CLI/app 的完整有效性继续严格拒绝未注册名称。
+**已批准的兼容选择**：`spec.Validate(pkg)` 保持可编译的 Go 调用签名，但改为结构/lint 校验，不再在没有目录时猜测合法 harness。直接调用者若要判断完整有效性，必须迁移到 `ValidateWithCatalog`；仅继续调用 `Validate` 或 `Validate + ValidateNative` 都不代表完整名称验收。仓库内的普通未知名称测试改为显式传入 fixture 目录，另测试不带目录的结构行为。CLI/app 的完整有效性继续严格拒绝未注册名称。
 
 这样不把默认两家名单移到另一处 core 常量，也不通过未传目录默认放行来构成 app 入包门禁。解析接口 `Load`、`LoadSnapshot` 保持只负责读取和构建 Package；它们不自行寻找注册表。
 
@@ -106,8 +106,8 @@ native 未注册名称保留 `native-field` 及既有消息格式，registered �
 | A0-09 | core 不导入整个 adapter/agenthooks 路径前缀；三个校验点没有内置名称 allowlist；不以搜索整个 core 零名称替代行为验证 |
 | A0-10 | 双 module fresh test/vet、既有 conformance/stdout golden、40 项 smoke、16 组旧迁移及 12 组回退通过；新 case 数和所用二进制摘要完整记录 |
 
-Go 命令遵循 [M3 测试环境约定](../STYLE-M3-TESTS.md#测试环境约定)，清理宿主变量并使用临时三缓存。T00 对目录快照并发行为运行相关 core/spec、app、adapter 的 race 回归；本轮只写设计，M3-BASE-01 已通过的 Go 检查不冒充 A0 的新结果。
+Go 命令遵循 [M3 测试环境约定](../STYLE-M3-TESTS.md#测试环境约定)，清理宿主变量并使用临时三缓存。T00 对目录快照并发行为运行相关 core/spec、app、adapter 的 race 回归；设计定稿不执行实现验收，M3-BASE-01 已通过的 Go 检查不冒充 A0 的新结果。
 
 ## 7. 评审与完成条件
 
-用户确认本稿的完整目录接口、`Validate` 的结构校验兼容选择和上述实现范围后，记录批准并关闭 D0；随后执行 T00 和 M3-A0。只有 A0 的真实回归通过才能关闭 M3-RV-01、开始 D1。当前仅完成调查与文档检查，设计状态保持 `[~]`，实现/测试状态保持 `[ ]`。
+2026-10-17 用户在评审问题后回复“继续”，确认完整目录接口、`Validate` 的结构校验兼容选择和上述实现范围，关闭 D0；随后执行 T00 和 M3-A0。只有 A0 的真实回归通过才能关闭 M3-RV-01、开始 D1。当前设计状态为 `[x]`，实现/测试状态保持 `[ ]`；批准证据及文档检查记入 `PROGRESS.md`。
