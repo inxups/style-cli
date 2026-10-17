@@ -71,6 +71,8 @@ func RunWithService(ctx context.Context, service *Service, workDir string, args 
 		return runInit(ctx, service, workDir, args[1:], out, errOut)
 	case "validate":
 		return runValidate(ctx, service, workDir, args[1:], out, errOut)
+	case "count":
+		return runCount(ctx, service, workDir, args[1:], out, errOut)
 	case "plan":
 		return runPlan(ctx, service, workDir, args[1:], out, errOut)
 	case "install":
@@ -97,10 +99,11 @@ func RunWithService(ctx context.Context, service *Service, workDir string, args 
 }
 
 func printUsage(out io.Writer) {
+	fmt.Fprintln(out, countUsage)
 	fmt.Fprintln(out, "Project scope: add --project <existing-dir> to management, diagnostic and stats commands.")
 	fmt.Fprintln(out, "style init [name] [--single]")
 	fmt.Fprintln(out, "style validate [source] [--ref ref] [--path repo-path] [--json]")
-	fmt.Fprintln(out, "style plan <source> [--ref ref] [--path repo-path] [--harness auto|codex,claude-code] [--assume-requests N] [--assume-triggers N] [--json]")
+	fmt.Fprintln(out, "style plan <source> [--ref ref] [--path repo-path] [--harness auto|codex,claude-code] [--assume-requests N] [--assume-triggers N] "+countFlags+" [--json]")
 	fmt.Fprintln(out, "style install <source> [--ref ref] [--path repo-path] [--harness h] [--route h=r] [--set k=v] [--link] [--allow-replace] [--fail-closed h] [--yes] [--json]")
 	fmt.Fprintln(out, exportUsage)
 	fmt.Fprintln(out, frozenUsage)

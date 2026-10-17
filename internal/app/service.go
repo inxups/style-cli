@@ -9,10 +9,12 @@ import (
 	"github.com/inxups/style-cli/core/spec"
 	"github.com/inxups/style-cli/internal/adapter"
 	"github.com/inxups/style-cli/internal/source"
+	"github.com/inxups/style-cli/internal/tokencount"
 )
 
 // Service holds the explicitly registered adapters used by planning.
 type Service struct {
+	counter     *tokencount.Counter
 	project     *projectScope
 	sources     source.Acquirer
 	probeDeps   *probeDependencies

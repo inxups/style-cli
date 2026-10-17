@@ -61,7 +61,7 @@ func runValidate(ctx context.Context, service *Service, workDir string, args []s
 
 func runPlan(ctx context.Context, service *Service, workDir string, args []string, out, errOut io.Writer) int {
 	if isHelp(args) {
-		fmt.Fprintln(out, "style plan <source> [--ref ref] [--path repo-path] [--harness auto|codex,claude-code] [--assume-requests N] [--assume-triggers N] [--json]")
+		fmt.Fprintln(out, "style plan <source> [--ref ref] [--path repo-path] [--harness auto|codex,claude-code] [--assume-requests N] [--assume-triggers N] "+countFlags+" [--json]")
 		return ExitOK
 	}
 	request, jsonOutput, err := parsePlanArgs(args)
@@ -94,6 +94,15 @@ func runPlan(ctx context.Context, service *Service, workDir string, args []strin
 		writeDiagnostics(out, result.Diagnostics)
 		if result.Package != "" || len(result.Reports) > 0 {
 			writePlanText(out, result)
+			for _, report := range result.Reports {
+				for _, count := range report.Counts {
+					fmt.Fprintf(out, "count %s %s %s: ", report.Provider, count.Rule, count.Point)
+					writeCountText(out, count.Count)
+				}
+				if report.CountScope != "" {
+					fmt.Fprintln(out, report.CountScope)
+				}
+			}
 		}
 	}
 	if hasErrors(result.Diagnostics) {
@@ -145,6 +154,12 @@ func parsePlanArgs(args []string) (PlanRequest, bool, error) {
 	request := PlanRequest{}
 	jsonOutput := false
 	for index := 0; index < len(args); index++ {
+		if handled, err := parseCountOption(args, &index, &request.Count); handled {
+			if err != nil {
+				return PlanRequest{}, false, err
+			}
+			continue
+		}
 		if handled, err := parseSourceOption(args, &index, &request.Ref, &request.Path); handled {
 			if err != nil {
 				return PlanRequest{}, false, err

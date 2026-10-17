@@ -1906,3 +1906,11 @@ PY
 ## 2026-10-18 M3-D9 精确计数定稿
 
 依赖 T45/A14 完成，按全部评审通过授权定稿[D9](review/M3-D9-EXACT-COUNT-2026-10-18.md)。明确三命令、静态/实际模型文本和动态拒绝、纯 Go 具名编码、固定 Anthropic 单消息口径、隐私/取消/无回落与旧估算兼容；固定 v0.7.0 以保留 Go 1.25 基线。来源摘要和 MIT/依赖边界有记录，只关闭 D9，A15/本地 TOKEN-01 待执行，API 真运行仍按用户决定延期。[文档检查](review/M3-D9-DOCS-2026-10-18.json)通过后进入 T50。
+
+## 2026-10-18 M3-T50 / M3-A15 精确文本计数
+
+完成 count/plan/explain 的显式 exact 冷路径、本地两具名编码与固定 Anthropic 最小消息计数；默认预算/JSON/原生 wire 保持。固定 tokenizer v0.7.0/regexp2 v1.11.5 与 MIT 全文，不提高 Go 1.25 基线；内置词表使二进制从 11,432,898 增至 30,074,514 字节。实现调查补充连续空白/非空白 4,096 UTF-8 字节拒绝边界，避免固定 BPE 的二次复杂度合并，不截断或分段伪装精确。
+
+[A15](review/M3-A15-2026-10-18.json)固定三缓存/清环境命令、源码与二进制摘要：9 新函数/329 专项和 race pass，137×2 独立 Python golden、两套完整词表摘要及 socket 禁用再生成；根 fresh test 3,745 pass/0 fail，2 既有 opt-in/helper skip 单列，vet/构建通过。生产 CLI 287 项、45 故障兼容、50 refresh/五路线各 50 次进程采样、40 smoke 通过，p95 24.602–33.887ms。API transport 覆盖成功、请求口径/截止时间、HTTP/取消/重定向/响应格式及隐私；未调用真实 API。首轮帮助文案、同包重复预期、状态 fixture API 和路径碰撞失败保留并修正。
+
+[文档检查](review/M3-A15-DOCS-2026-10-18.json)通过；PROGRESS 只追加、M1/M2/历史 JSON 和旧 testdata/agenthooks 不变。仅关闭 T50/A15，REAL-03 汇总本地生产 CLI，用户延期的 API/云端/Windows 真机保持 [?]；官方校准两家各 0/40。继续 D10/T60。

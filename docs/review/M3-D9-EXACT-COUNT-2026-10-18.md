@@ -16,6 +16,8 @@ explain 在原有隔离状态/显式 facts 求值与 cap/dedup/合并之后，�
 
 OpenAI 路径只支持显式 `o200k_base` / `cl100k_base`，用固定纯 Go 实现 github.com/tiktoken-go/tokenizer@v0.7.0（Go 1.23/MIT），词表随二进制嵌入；无需 Python、key 或运行时下载。v0.8.1 要 Go 1.26，故不为本功能提高项目 Go 1.25 基线。报告实现版本、encoding、UTF-8 文本摘要、字符数和整数 token 数。特殊 token 拼写按普通文字计，不添加模型控制 token。
 
+T50 实现调查补充：固定版 BPE 在单个 pre-token 内采用二次复杂度合并。本地 exact 拒绝超过 4,096 UTF-8 字节的连续空白或非空白段，采用 Unicode IsSpace 分类；拒绝范围保守，不截断或分段。256 KiB 文件上限保持。estimate/API 不受此局部编码限制；边界 golden 和失败 fixture 必须覆盖。
+
 不提供隐式 model→encoding 推断；本地指定 model 会拒绝，防止把编码精确偷换为某个模型/全请求的精确。独立 Python tiktoken0.12.0 的固定文本/随机 Unicode 对照用于验收，公开语料和词表摘要固定。CARRY-01 官方模型校准仍两家各 0/40，不被本地对照关闭。
 
 ## Anthropic 请求与失败
@@ -30,13 +32,15 @@ OpenAI 路径只支持显式 `o200k_base` / `cl100k_base`，用固定纯 Go 实�
 
 | 编号 | 状态 | 断言 |
 |---|---|---|
-| A15-01 | [ ] | 两编码独立 Python golden/中文/英文/控制/emoji/组合/特殊 token 拼写，离线运行和版本披露 |
-| A15-02 | [ ] | Anthropic 固定请求/header/摘要、成功和缺配置/HTTP/JSON/超时/取消/重定向/泄漏保护，全部 transport fixture |
-| A15-03 | [ ] | count/plan/explain CLI、静态变量/warn/去重/动态拒绝、实际最终文本、无输入/失败恢复和旧 JSON/预算兼容 |
-| A15-04 | [ ] | 三缓存 fresh test/vet/race、无运行时网络/副作用、发布构建与文档 |
+| A15-01 | [x] | 两编码独立 Python golden/中文/英文/控制/emoji/组合/特殊 token 拼写，离线运行和版本披露 |
+| A15-02 | [x] | Anthropic 固定请求/header/摘要、成功和缺配置/HTTP/JSON/超时/取消/重定向/泄漏保护，全部 transport fixture |
+| A15-03 | [x] | count/plan/explain CLI、静态变量/warn/去重/动态拒绝、实际最终文本、无输入/失败恢复和旧 JSON/预算兼容 |
+| A15-04 | [x] | 三缓存 fresh test/vet/race、无运行时网络/副作用、发布构建与文档 |
 
 TOKEN-01 的本地编码需实际运行生产 CLI；API 真运行保持用户延期的 [?]。实现完成不自动关闭 TOKEN-01。
 
 ## 调查来源
 
 固定版本上游 tokenizer.go/go.mod/LICENSE 和 Anthropic 官方 Count tokens in a Message 参考（2026-10-18 获取），摘要见[来源记录](M3-D9-SOURCES-2026-10-18.json)。前者为 Go port，不冒充 OpenAI 官方 SDK。官方 API 描述 input_tokens 为已提供 messages/system/tools 的总数，本设计只构造明确的单 message。
+
+四组均通过 [A15 实现验收](M3-A15-2026-10-18.json)，细节及本地长段拒绝见[指南](../STYLE-COUNT.md)。TOKEN-01 的生产 CLI 证据由 REAL-03 单独汇总，真实 API 仍延期。

@@ -24,10 +24,12 @@ import (
 	"github.com/inxups/style-cli/internal/adapter/codex"
 	styleruntime "github.com/inxups/style-cli/internal/runtime"
 	"github.com/inxups/style-cli/internal/saferead"
+	"github.com/inxups/style-cli/internal/tokencount"
 	"github.com/speakeasy-api/agenthooks"
 )
 
 type ExplainRequest struct {
+	Count                                                       tokencount.Options
 	Harness, Event, Payload, Index, StateDir, Facts, Provenance string
 	FailClosed                                                  bool
 }
@@ -85,6 +87,7 @@ type ExplainProvenance struct {
 	Native   []compile.ProvenanceRule `json:"native"`
 }
 type ExplainResult struct {
+	Count             *tokencount.Result   `json:"count,omitempty"`
 	Format            int                  `json:"format"`
 	Command           string               `json:"command"`
 	Status            string               `json:"status"`
@@ -136,6 +139,9 @@ func (s *Service) explain(ctx context.Context, request ExplainRequest, ops expla
 		result.Status = "error"
 		result.Diagnostics = append(result.Diagnostics, ExplainDiagnostic{code, "error", message})
 		return errors.New(code)
+	}
+	if err := request.Count.Validate(); err != nil {
+		return result, fail("count-options-invalid", err.Error())
 	}
 	if err := checkContext(ctx); err != nil {
 		return result, fail("cancelled", "Replay was cancelled.")
@@ -319,6 +325,10 @@ func (s *Service) explain(ctx context.Context, request ExplainRequest, ops expla
 	}
 	trace := engine.Trace{Points: []engine.PointTrace{}, Entries: []*engine.EntryTrace{}}
 	runtime.Trace = &trace
+	var rendered engine.Output
+	if request.Count.Exact() {
+		runtime.CapturedOutput = &rendered
+	}
 	runtime.Logger = slog.New(slog.NewTextHandler(io.Discard, nil))
 	runtime.CodecStateDir = filepath.Join(private, "cache")
 	offline := agenthooks.OfflineInputs{SkillContent: facts.ClaudeSkillContent}
@@ -379,6 +389,20 @@ func (s *Service) explain(ctx context.Context, request ExplainRequest, ops expla
 	}
 	if len(trace.Points) == 0 && native != "PostModelSwitch" {
 		result.Diagnostics = append(result.Diagnostics, ExplainDiagnostic{"no-style-handler", "info", "Recognized native event has no STYLE evaluation handler."})
+	}
+	if request.Count.Exact() {
+		text := modelText(rendered)
+		var counted tokencount.Result
+		var err error
+		if text == "" {
+			counted, err = tokencount.None(request.Count)
+		} else {
+			counted, err = s.countText(ctx, text, request.Count)
+		}
+		if err != nil {
+			return result, fail("count-failed", err.Error())
+		}
+		result.Count = &counted
 	}
 	result.Status = "ok"
 	return result, nil

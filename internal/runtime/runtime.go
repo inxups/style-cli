@@ -21,6 +21,8 @@ import (
 // Runtime connects the provider codec, adapter enrichment, state, and core
 // engine. The codec remains responsible for reading stdin and encoding output.
 type Runtime struct {
+	// CapturedOutput is opt-in for cold-path diagnostic text counting.
+	CapturedOutput *engine.Output
 	// InitializationError rejects decoded events before any state access.
 	InitializationError error
 	Observer            *probe.Observer
@@ -349,6 +351,9 @@ func (r *Runtime) process(ctx context.Context, event *agenthooks.Event, typed an
 	if err := output.ValidateFor(string(r.Provider)); err != nil {
 		r.logError(event, "output-invalid")
 		return engine.Output{}, fmt.Errorf("runtime: output validation failed")
+	}
+	if r.CapturedOutput != nil {
+		*r.CapturedOutput = engine.Output{Block: output.Block, Reason: output.Reason, AdditionalContext: output.AdditionalContext, SystemMessage: output.SystemMessage, Records: append([]engine.Record(nil), output.Records...)}
 	}
 	r.record(event, output)
 	return output, nil

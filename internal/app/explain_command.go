@@ -10,7 +10,7 @@ import (
 	"strings"
 )
 
-const explainUsage = "style explain --harness h --event NativeEvent --payload f.json [--index f] [--state-dir d] [--facts f] [--provenance f] [--fail-closed] [--json]"
+const explainUsage = "style explain --harness h --event NativeEvent --payload f.json [--index f] [--state-dir d] [--facts f] [--provenance f] [--fail-closed] " + countFlags + " [--json]"
 
 func runExplain(ctx context.Context, s *Service, workDir string, args []string, out, errOut io.Writer) int {
 	request, jsonMode, err := parseExplainArgs(args)
@@ -39,6 +39,9 @@ func runExplain(ctx context.Context, s *Service, workDir string, args []string, 
 		}
 	} else {
 		writeExplainText(out, result)
+		if result.Count != nil {
+			writeCountText(out, *result.Count)
+		}
 	}
 	if runErr != nil {
 		return ExitInvalid
@@ -50,6 +53,12 @@ func parseExplainArgs(args []string) (ExplainRequest, bool, error) {
 	jsonMode := false
 	seen := map[string]bool{}
 	for i := 0; i < len(args); i++ {
+		if handled, err := parseCountOption(args, &i, &request.Count); handled {
+			if err != nil {
+				return request, false, err
+			}
+			continue
+		}
 		arg, value, inline := strings.Cut(args[i], "=")
 		if arg == "--help" || arg == "-h" {
 			return request, false, nil

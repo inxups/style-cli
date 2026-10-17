@@ -58,3 +58,5 @@ payload/index/facts/编译说明上限分别为 32/16/1/16 MiB，文件必须为
 管理命令退出 0 表示重放完成，包括普通未命中、repeat-seen、cap-drop、空事件或规则 block。输入、求值、取消或清理失败退出 1；有效解析的 `--json` 请求仍输出单个 error 报告，用法错误只写 stderr。`wire.exit_code` 单列原生结果，fail-open 的 0 不使管理失败变成成功；`--fail-closed` 仅模拟现有 Claude 安装级策略。
 
 所有模拟 state/stats/cache 位于本次私有临时根，成功和错误后清理；清理失败会报告该目录并退出 1。完整 wire 只输出给本次调用者，不保存到真实 hook.log 或 stats。fixture、离线重放与补充事实不证明已发生真实投递；M3-B1/C1 继续独立待验。
+
+可附加 `--count=exact --count-provider=openai --encoding=o200k_base` 计最终模型文本，原生 wire 不变；完整范围和 Anthropic 的显式发送行为见[文本计数](STYLE-COUNT.md)。

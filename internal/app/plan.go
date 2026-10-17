@@ -11,11 +11,13 @@ import (
 	"github.com/inxups/style-cli/core/spec"
 	"github.com/inxups/style-cli/core/tokens"
 	"github.com/inxups/style-cli/internal/adapter"
+	"github.com/inxups/style-cli/internal/tokencount"
 )
 
 // PlanRequest selects one or more provider plan reports. "auto" selects
 // providers detected on the current host.
 type PlanRequest struct {
+	Count           tokencount.Options
 	Source          string
 	Ref, Path, Home string
 	Harnesses       []string
@@ -26,14 +28,16 @@ type PlanRequest struct {
 // PlanReport combines the core placement report and token report for one
 // provider. Bodies and template values are deliberately absent.
 type PlanReport struct {
-	Provider    string        `json:"provider"`
-	Route       string        `json:"route"`
-	NativeLimit NativeLimit   `json:"native_limit"`
-	Budget      BudgetSummary `json:"budget"`
-	Plan        plan.Report   `json:"plan"`
-	Tokens      tokens.Report `json:"tokens"`
-	SessionCost SessionCost   `json:"session_cost"`
-	Diagnostics []Diagnostic  `json:"diagnostics,omitempty"`
+	Counts      []PlacementCount `json:"counts,omitempty"`
+	CountScope  string           `json:"count_scope,omitempty"`
+	Provider    string           `json:"provider"`
+	Route       string           `json:"route"`
+	NativeLimit NativeLimit      `json:"native_limit"`
+	Budget      BudgetSummary    `json:"budget"`
+	Plan        plan.Report      `json:"plan"`
+	Tokens      tokens.Report    `json:"tokens"`
+	SessionCost SessionCost      `json:"session_cost"`
+	Diagnostics []Diagnostic     `json:"diagnostics,omitempty"`
 }
 
 // NativeLimit describes the provider input ceiling used by runtime hooks.
@@ -84,6 +88,9 @@ func (err *UsageError) Error() string { return err.Message }
 func (s *Service) Plan(ctx context.Context, request PlanRequest) (PlanResult, error) {
 	if err := checkContext(ctx); err != nil {
 		return PlanResult{}, err
+	}
+	if err := request.Count.Validate(); err != nil {
+		return PlanResult{}, &UsageError{Message: err.Error()}
 	}
 	validation, err := s.Validate(ctx, ValidateRequest{Source: request.Source, Ref: request.Ref, Path: request.Path, Home: request.Home})
 	if err != nil {
@@ -153,6 +160,9 @@ func (s *Service) Plan(ctx context.Context, request PlanRequest) (PlanResult, er
 			},
 			Budget: budgetSummary(resolved), Plan: planned, Tokens: budget, SessionCost: cost,
 		})
+	}
+	if err := s.planCounts(ctx, &result, resolved, request.Count); err != nil {
+		return result, err
 	}
 	return result, nil
 }

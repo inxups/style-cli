@@ -1,0 +1,1252 @@
+{
+  "format": 1,
+  "generator": "scripts/generate_m3_exact_golden.py",
+  "tiktoken_version": "0.12.0",
+  "special_tokens": "ordinary text; encode_ordinary",
+  "source_corpus_sha256": "e73e9f3b638495de3836a1861d4639a20d9d6b82a2c23ace24f8355e3dc3afd5",
+  "vocabularies": {
+    "o200k_base": {
+      "tokens": 199998,
+      "sha256": "a92b256cc1fda9381d8064e995867d6697efadd7a400023a76253cc3c5e5beaa"
+    },
+    "cl100k_base": {
+      "tokens": 100256,
+      "sha256": "312314a4b1a58756a8308e20b59cdfaf4d5ef22909fbdb3d9736e674fa3baa03"
+    }
+  },
+  "cases": [
+    {
+      "id": "en-review-format",
+      "text": "Review code concisely. Put actionable findings first and include a file and line for each finding.",
+      "sha256": "41d012ed5d942d136951794ab78eb1627f19dbfaed999148cf488aaebf96aa9f",
+      "tokens": {
+        "o200k_base": 20,
+        "cl100k_base": 20
+      }
+    },
+    {
+      "id": "en-force-push",
+      "text": "Do not force push. Preserve shared history and create a new commit for corrections.",
+      "sha256": "02ba9bc3e7a52b19f50884749dcc6d8909168fbee866ec372470a9534b35955c",
+      "tokens": {
+        "o200k_base": 16,
+        "cl100k_base": 16
+      }
+    },
+    {
+      "id": "en-test-evidence",
+      "text": "Run the tests relevant to the change before reporting it complete, and state any checks that could not run.",
+      "sha256": "e0654852545cc55fe534aff5186bd9bfadcd3a31e3e36331266d224be4bc219d",
+      "tokens": {
+        "o200k_base": 21,
+        "cl100k_base": 21
+      }
+    },
+    {
+      "id": "en-small-diff",
+      "text": "Keep the patch focused on the requested behavior. Split unrelated cleanup into a separate change.",
+      "sha256": "889fdd22eaf4d3796ba8f8c127bdbe59979d0cec7968fcc6fb5ff1d6c44271f7",
+      "tokens": {
+        "o200k_base": 17,
+        "cl100k_base": 17
+      }
+    },
+    {
+      "id": "en-error-context",
+      "text": "Return errors with the operation and affected resource so the caller can identify the failure.",
+      "sha256": "6e0878da88bcba2de36d858f963a525d32ff5a0a08165e049edaaac19ec57f21",
+      "tokens": {
+        "o200k_base": 16,
+        "cl100k_base": 16
+      }
+    },
+    {
+      "id": "en-credentials",
+      "text": "Read credentials from the designated environment variables. Never include their values in logs, fixtures, or reports.",
+      "sha256": "6b83483d72861855faec3222cd38b97d2063d47736a086f0d3be378cc1337d8f",
+      "tokens": {
+        "o200k_base": 20,
+        "cl100k_base": 20
+      }
+    },
+    {
+      "id": "en-api-compatibility",
+      "text": "Preserve public request and response shapes unless the change explicitly requires a versioned migration.",
+      "sha256": "de8f31b739dc078cfacccf603e6e8e18d0f68ceb3eadbe73b79b2236e3fa863b",
+      "tokens": {
+        "o200k_base": 17,
+        "cl100k_base": 17
+      }
+    },
+    {
+      "id": "en-file-safety",
+      "text": "Read an existing file before editing it. Preserve user content outside the region owned by this tool.",
+      "sha256": "c38ae69c7d27758a58d0ab6a29a19ec0208a0ed01f6c215df09a5930eefc90b7",
+      "tokens": {
+        "o200k_base": 19,
+        "cl100k_base": 19
+      }
+    },
+    {
+      "id": "en-transaction",
+      "text": "Validate all inputs before writing configuration. If a multi-file update fails, restore the previous bytes.",
+      "sha256": "012764c98b6c2494933f9dfe1e92ce8d60d7a306fc98b7a3ab4ae970f558db95",
+      "tokens": {
+        "o200k_base": 19,
+        "cl100k_base": 19
+      }
+    },
+    {
+      "id": "en-concurrency",
+      "text": "Protect shared mutable state across concurrent calls and verify that deduplication remains atomic.",
+      "sha256": "b187f03e684c86fe5b4ee7d5938a446105985a46a68d32d10efe758e079bb10c",
+      "tokens": {
+        "o200k_base": 16,
+        "cl100k_base": 16
+      }
+    },
+    {
+      "id": "en-subprocess",
+      "text": "Pass subprocess arguments as an argument vector. Avoid interpolating untrusted text into shell commands.",
+      "sha256": "22480eac3b6e1b8e5d4e510b37004e7f5a58d7f5e6c874df794bb740b33b4793",
+      "tokens": {
+        "o200k_base": 18,
+        "cl100k_base": 18
+      }
+    },
+    {
+      "id": "en-boundaries",
+      "text": "Explain unsupported behavior in the plan before installation. Do not report a fallback as full native support.",
+      "sha256": "6ec8be9f7a19d5d9ede56a656b294bd4b45334a5676caff4adf862b9c2353f66",
+      "tokens": {
+        "o200k_base": 19,
+        "cl100k_base": 20
+      }
+    },
+    {
+      "id": "en-evidence",
+      "text": "Treat model recollection as supporting evidence. Verify delivery with request records and native hook results.",
+      "sha256": "f42d5403724e957eea579c7bf4bcb21be0bb8de9ef2387951870ccac0047b1ba",
+      "tokens": {
+        "o200k_base": 18,
+        "cl100k_base": 19
+      }
+    },
+    {
+      "id": "en-performance",
+      "text": "Measure the full sample set with the agreed percentile method. Preserve slow samples and report event distributions.",
+      "sha256": "bec0a0b1679930aec4cbaac55d3537b630df2adea39d1cc1f19900457c07ba5a",
+      "tokens": {
+        "o200k_base": 19,
+        "cl100k_base": 19
+      }
+    },
+    {
+      "id": "en-unknown-values",
+      "text": "Keep unknown configuration values distinct from known defaults. Do not reuse a previous tier when resolution fails.",
+      "sha256": "e1555038eb75d02455d2944ad604e92eb08a62c248123047f7f5625aa8d659b7",
+      "tokens": {
+        "o200k_base": 19,
+        "cl100k_base": 19
+      }
+    },
+    {
+      "id": "en-documentation",
+      "text": "Update the task list, test matrix, and append-only progress log as soon as an independently verifiable item is complete.",
+      "sha256": "bb0d1533d6a30ff47a39ba49c6be0b7d412ea994db7245a92d85b30a36274258",
+      "tokens": {
+        "o200k_base": 24,
+        "cl100k_base": 24
+      }
+    },
+    {
+      "id": "en-local-remote",
+      "text": "Test destructive Git push cases only against a temporary local bare remote, and verify its refs afterward.",
+      "sha256": "1174287488d4bbd10b193289e42d6a2712a7e3851ef3b30f9ef03cc61c6a8e5b",
+      "tokens": {
+        "o200k_base": 19,
+        "cl100k_base": 19
+      }
+    },
+    {
+      "id": "en-cost-report",
+      "text": "Separate rule-level token estimates from whole-session provider usage. Label scenario costs with their assumptions.",
+      "sha256": "22af1f413e45b65ace803dc2a49d6f0a8b942aff26407eedf663fe82125fa1f5",
+      "tokens": {
+        "o200k_base": 18,
+        "cl100k_base": 19
+      }
+    },
+    {
+      "id": "en-cache",
+      "text": "Do not assume every repeated input hits a prompt cache. Record model, cache conditions, and reported cached usage.",
+      "sha256": "e5767762697a064f0c9662c174b5771daea6082ff15edd7395cfeb882af79298",
+      "tokens": {
+        "o200k_base": 22,
+        "cl100k_base": 22
+      }
+    },
+    {
+      "id": "en-handoff",
+      "text": "Before handing off unfinished work, record the reproduction command, current evidence, blocker, and next action.",
+      "sha256": "e9dea4c910e53886ea0a80095dde885d33b9f3524834879fb77340f016a7c80b",
+      "tokens": {
+        "o200k_base": 20,
+        "cl100k_base": 20
+      }
+    },
+    {
+      "id": "zh-review-format",
+      "text": "简洁地评审代码，先列可操作的问题，每条问题注明文件和行号。",
+      "sha256": "3714c0e84a30c6db8f5e86fc7b207ee748e1eade77b68104ca125bda57f57186",
+      "tokens": {
+        "o200k_base": 21,
+        "cl100k_base": 25
+      }
+    },
+    {
+      "id": "zh-force-push",
+      "text": "不要强制推送。保留共享提交历史，用新的提交完成修正。",
+      "sha256": "51a7c003d60f935e38d6ca0d4adf77dd98efc4abcfdad2f3fd98e38a42543702",
+      "tokens": {
+        "o200k_base": 18,
+        "cl100k_base": 26
+      }
+    },
+    {
+      "id": "zh-test-evidence",
+      "text": "宣布修改完成前运行相关测试，并明确列出未能执行的检查。",
+      "sha256": "6193de45f913ac74acf9cbe89628b491a6c6fffd024c096683fb518b9c496ff8",
+      "tokens": {
+        "o200k_base": 17,
+        "cl100k_base": 22
+      }
+    },
+    {
+      "id": "zh-small-diff",
+      "text": "让补丁聚焦于用户要求的行为，无关清理另行处理。",
+      "sha256": "1378914fe5faf6c60bf4409de04e46b38132be101b4aa5dc554d739aa8b6134b",
+      "tokens": {
+        "o200k_base": 18,
+        "cl100k_base": 27
+      }
+    },
+    {
+      "id": "zh-error-context",
+      "text": "错误应包含执行的操作和受影响的资源，便于调用方定位失败。",
+      "sha256": "ff2b002d2fd1a9952898bce3abdfe6996fbd3f004b78620d911511a0272eba0b",
+      "tokens": {
+        "o200k_base": 19,
+        "cl100k_base": 26
+      }
+    },
+    {
+      "id": "zh-credentials",
+      "text": "只从指定环境变量读取凭据，不把凭据值写入日志、测试数据或报告。",
+      "sha256": "e4930ebf6148c0c6c294029f1b47dd248172d992620e2040ca4566deeb86ab03",
+      "tokens": {
+        "o200k_base": 22,
+        "cl100k_base": 33
+      }
+    },
+    {
+      "id": "zh-api-compatibility",
+      "text": "保持公开请求和响应结构；确需变更时提供明确的版本迁移方案。",
+      "sha256": "1ebd46329e59424633de57abb695c024b6f9d2e94ebcfb9ada40ae2d6b80458f",
+      "tokens": {
+        "o200k_base": 20,
+        "cl100k_base": 29
+      }
+    },
+    {
+      "id": "zh-file-safety",
+      "text": "修改已有文件前先读取，保留本工具托管范围之外的用户内容。",
+      "sha256": "d832cd65d508aa01c3f03779e178a2b7401d84de5c658f7b1abdf80bc90f3f60",
+      "tokens": {
+        "o200k_base": 19,
+        "cl100k_base": 28
+      }
+    },
+    {
+      "id": "zh-transaction",
+      "text": "写配置前验证全部输入；多文件更新失败时恢复此前的字节内容。",
+      "sha256": "b0ebf9c20470cc67c84a972581828cdb8667988e740213ebac3c491d19e9b4c9",
+      "tokens": {
+        "o200k_base": 19,
+        "cl100k_base": 22
+      }
+    },
+    {
+      "id": "zh-concurrency",
+      "text": "并发调用必须保护共享可变状态，并验证去重操作的原子性。",
+      "sha256": "99c84dbeb6f1e5932d9880fe01b528deb562fe54edd2bf72d3680063582e0e62",
+      "tokens": {
+        "o200k_base": 19,
+        "cl100k_base": 25
+      }
+    },
+    {
+      "id": "zh-subprocess",
+      "text": "用参数数组启动子进程，避免把不可信文本拼接到 shell 命令。",
+      "sha256": "dae70d205bc90b0a91000ad944f4d8d3072666158d06986efcfa688893766c73",
+      "tokens": {
+        "o200k_base": 21,
+        "cl100k_base": 31
+      }
+    },
+    {
+      "id": "zh-boundaries",
+      "text": "安装前在计划中说明不支持的行为，不把回退描述为完整的原生支持。",
+      "sha256": "610cf27c5de179b7062bff9ffe55d6378ba130bb11a23a953d7eee8067498de8",
+      "tokens": {
+        "o200k_base": 22,
+        "cl100k_base": 31
+      }
+    },
+    {
+      "id": "zh-evidence",
+      "text": "模型复述只作辅助证据，投递结论应与请求记录和原生 hook 结果交叉核对。",
+      "sha256": "60536f53cb36dee8d86dc041957d96d3196c8cdea4620ac92f37d9e730ceeada",
+      "tokens": {
+        "o200k_base": 28,
+        "cl100k_base": 34
+      }
+    },
+    {
+      "id": "zh-performance",
+      "text": "按约定的百分位算法统计全部样本，保留慢样本并报告各事件分布。",
+      "sha256": "08ec72fecaaa723966d85548765797281e20129ccdba7bf5ec5f37fc6a8ff216",
+      "tokens": {
+        "o200k_base": 24,
+        "cl100k_base": 33
+      }
+    },
+    {
+      "id": "zh-unknown-values",
+      "text": "未知配置值应与已知默认值区分，解析失败时不得沿用之前的档位。",
+      "sha256": "cc27fcbcce1a916fcee47ceb4f7037f3869d2f009f56ca18c6a811078a240120",
+      "tokens": {
+        "o200k_base": 23,
+        "cl100k_base": 29
+      }
+    },
+    {
+      "id": "zh-documentation",
+      "text": "每完成一个可独立验证的条目，立即更新任务清单、测试矩阵和追加式进度日志。",
+      "sha256": "55e16aa3a4ee8b2ec4634f37114d381462aeff91f0b03cd9067e0b7fc18dea41",
+      "tokens": {
+        "o200k_base": 27,
+        "cl100k_base": 36
+      }
+    },
+    {
+      "id": "zh-local-remote",
+      "text": "有破坏性的 Git 推送测试只连接临时本地 bare 远端，并核对运行后的引用。",
+      "sha256": "20890e7d400f95abc1ff3e8f24a1272791da666d94daf60c662dc8c92721510e",
+      "tokens": {
+        "o200k_base": 25,
+        "cl100k_base": 34
+      }
+    },
+    {
+      "id": "zh-cost-report",
+      "text": "分别列出规则级 token 估算与整段会话的服务 usage，并注明情景成本的假设。",
+      "sha256": "5864b1a65cc8df6f076d681084d320ff1a7f4770b5fbe21b664ad99eefc2bc4c",
+      "tokens": {
+        "o200k_base": 26,
+        "cl100k_base": 32
+      }
+    },
+    {
+      "id": "zh-cache",
+      "text": "不要假设重复输入必然命中提示词缓存，应记录模型、缓存条件和返回的缓存用量。",
+      "sha256": "8a14b17dab0c42b0d29a15e6abd80853fd0c6799f0e7de1bd2fc5f7279869fec",
+      "tokens": {
+        "o200k_base": 25,
+        "cl100k_base": 37
+      }
+    },
+    {
+      "id": "zh-handoff",
+      "text": "交接未完成工作前，记录复现命令、现有证据、阻塞原因和下一步操作。",
+      "sha256": "ca4f973c5e3ab388053182694cbc6441ad9c6cccfb7c7836a58a30f858ef0f40",
+      "tokens": {
+        "o200k_base": 26,
+        "cl100k_base": 32
+      }
+    },
+    {
+      "id": "0",
+      "text": "",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "tokens": {
+        "o200k_base": 0,
+        "cl100k_base": 0
+      }
+    },
+    {
+      "id": "1",
+      "text": " ",
+      "sha256": "36a9e7f1c95b82ffb99743e0c5c4ce95d83c9a430aac59f84ef3cbfab6145068",
+      "tokens": {
+        "o200k_base": 1,
+        "cl100k_base": 1
+      }
+    },
+    {
+      "id": "2",
+      "text": "\r\n\t",
+      "sha256": "aaef425db14f619ebba77e7c2c120ebf399f2da6bf08ce8564dcd818c2f6c683",
+      "tokens": {
+        "o200k_base": 2,
+        "cl100k_base": 2
+      }
+    },
+    {
+      "id": "3",
+      "text": "hello world",
+      "sha256": "b94d27b9934d3e08a52e52d7da7dabfac484efe37a5380ee9088f7ace2efcde9",
+      "tokens": {
+        "o200k_base": 2,
+        "cl100k_base": 2
+      }
+    },
+    {
+      "id": "4",
+      "text": "你好，世界！",
+      "sha256": "fa65d94b3532d83fd24ada92dadecfc7ae5370e6dbf762133027a89c2e7202f1",
+      "tokens": {
+        "o200k_base": 4,
+        "cl100k_base": 7
+      }
+    },
+    {
+      "id": "5",
+      "text": "👩🏽‍💻🙂🇯🇵",
+      "sha256": "682923fb09aebd074b73d9271f6d8c7e512576d3b7e2088b971fe2c2faf77f82",
+      "tokens": {
+        "o200k_base": 12,
+        "cl100k_base": 18
+      }
+    },
+    {
+      "id": "6",
+      "text": "é café Å Å",
+      "sha256": "3aa4f97f7286181113216150ecd98fa28369f62937a7b441b2f757d93ca7844e",
+      "tokens": {
+        "o200k_base": 6,
+        "cl100k_base": 6
+      }
+    },
+    {
+      "id": "7",
+      "text": "<|endoftext|> <|endofprompt|> <|fim_prefix|>",
+      "sha256": "e469a92af32388acf5535a124d7884be89fbc0a6f0d17804a861647d06ec697b",
+      "tokens": {
+        "o200k_base": 20,
+        "cl100k_base": 19
+      }
+    },
+    {
+      "id": "8",
+      "text": "I'm WE'RE They've can't It'll",
+      "sha256": "99a8d982ed46f72040a5c0a875c0dce5c06c48cb593499db34c20d447754e346",
+      "tokens": {
+        "o200k_base": 7,
+        "cl100k_base": 10
+      }
+    },
+    {
+      "id": "9",
+      "text": "line\n\n二行\r\n",
+      "sha256": "b1908593d46d952ef6b89ba02e01e84c03ecf9bb56f598c642006feb928efab1",
+      "tokens": {
+        "o200k_base": 5,
+        "cl100k_base": 5
+      }
+    },
+    {
+      "id": "10",
+      "text": "\u0000\u0001\u001f  ",
+      "sha256": "baeb71d515509e54c4ba6aa2096783efddf346e9385982f7bd4c3233609b4899",
+      "tokens": {
+        "o200k_base": 7,
+        "cl100k_base": 8
+      }
+    },
+    {
+      "id": "11",
+      "text": "א ב العربية हिन्दी ไทย 한국어 カタカナ",
+      "sha256": "73571191242bbbd43d45a70dd3c73e15aa2f62d47cfc06d3f123e5a2cd740dbc",
+      "tokens": {
+        "o200k_base": 11,
+        "cl100k_base": 26
+      }
+    },
+    {
+      "id": "12",
+      "text": "1234567890 0.5 -42 3e10",
+      "sha256": "f70b11ef37436a6e229c3a660449cc2c208f8ac7e5cc706ba29b73d830979178",
+      "tokens": {
+        "o200k_base": 14,
+        "cl100k_base": 14
+      }
+    },
+    {
+      "id": "13",
+      "text": ".*?[]{}()\\/!=#++==",
+      "sha256": "cd9edb0a30f755a4ffce763f77d3e68f211133a4106633bc8836cc5f87e30304",
+      "tokens": {
+        "o200k_base": 10,
+        "cl100k_base": 10
+      }
+    },
+    {
+      "id": "14",
+      "text": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "sha256": "c93eee2d0db02f10acc7460d9576e122dcf8cd53c4bf8dfcae1b3e74ebcfff5a",
+      "tokens": {
+        "o200k_base": 512,
+        "cl100k_base": 512
+      }
+    },
+    {
+      "id": "15",
+      "text": "                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                ",
+      "sha256": "46e4e5b3fe2549da0ecfcf8d067ac060b3b8fd132981043eeb66c7c3be875848",
+      "tokens": {
+        "o200k_base": 32,
+        "cl100k_base": 32
+      }
+    },
+    {
+      "id": "16",
+      "text": " \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t \n\t",
+      "sha256": "1ac139f20c199794cc8728962ce62e245e53d9e322bc2e14acea486c057dd34d",
+      "tokens": {
+        "o200k_base": 257,
+        "cl100k_base": 257
+      }
+    },
+    {
+      "id": "seeded-0",
+      "text": "ב本ב\rな\u0000中ع本1한글İな9-.\u0000日İ글.-2ב3É.글Ω-🙂ı31ع本अé\t,a-عÉ\t1, É日अ_בıع‍a9中A-́\n な9\tß🙂عı한अ\rなé‍本ΩЖ.,3Aאかع🙂93İ_\n.0ΩİなÉ中中9中 \ń2ЖΩع,か\rЖé🙂אかअ-,91Ж本‍한अ글🙂글Ж🙂\nعa0._9日글ع2ב é3\u0000-本عßع 9İ",
+      "sha256": "1cb3f84b986d9d6f59887a5563357665418101cd592b17234ab048fc9b40140f",
+      "tokens": {
+        "o200k_base": 145,
+        "cl100k_base": 171
+      }
+    },
+    {
+      "id": "seeded-1",
+      "text": "\naか本בß,0글な本ı عאß‍0,a\r‍한ééな9́Aב अÉÉ🙂日A3🙂\r3A글אאé\n‍ЖΩéA2\t́\rı\r🙂,本_\nא \n글日\u0000\u0000अ\u0000́İ\r2́́.\rא,.İなな, ıかな‍か́ ב́aı日330 中日か-अな\n_ בב中.בAא-a🙂本글中a ́a- ,ß🙂한́🙂\t2ב日अ‍",
+      "sha256": "442601b18a61260239718ac2b8afe435c318adfb2f59e52013c4a74aa6dfde98",
+      "tokens": {
+        "o200k_base": 132,
+        "cl100k_base": 158
+      }
+    },
+    {
+      "id": "seeded-2",
+      "text": "ع-\tא ÉıÉ🙂🙂É\n_İع.本בא한ı\u0000な中\n-1Ωअع- 1-‍_éかعAa\t\t\u0000日🙂中_3Éİ🙂글א́かß.中́글1अ\u00002\ra한3ع2 ב本.\n\r글かअ中2な\n1ßßع日\r글\tか.かअ-ΩअİなЖ本Ж글.9‍‍글\n한1,בßİ20éİİ‍3 अ\u0000ع,1_ع🙂2‍ßなعЖ\u0000-عع‍a-Ω_\n\u0000🙂É",
+      "sha256": "3f55010c51a185ffc2d799f4417091c810bdad16075d4c9431ea0d58152b7b71",
+      "tokens": {
+        "o200k_base": 146,
+        "cl100k_base": 174
+      }
+    },
+    {
+      "id": "seeded-3",
+      "text": "本Éıı\r3日 é́9\u000032本,Ω_́か-か中",
+      "sha256": "0c4961e11947b9c2dc922c3363260cc9ed6a1c067f8544868251df78b4de8410",
+      "tokens": {
+        "o200k_base": 21,
+        "cl100k_base": 22
+      }
+    },
+    {
+      "id": "seeded-4",
+      "text": "Ωß\u0000İ글a\n な2Ω\tא́中1日 00عかב. 本\r글_1한عé1.Éב0A.‍́本-́3Ωß本日\t1\t́éअa,Ω1Ж0か\u0000 な한な- 日1عع-́\n9글\n本عAA\u00002É ıß",
+      "sha256": "da2d543a833e099f84ba9afa0c90be8d9c08a49fbb7decd349329ae8fbcfa6b1",
+      "tokens": {
+        "o200k_base": 85,
+        "cl100k_base": 96
+      }
+    },
+    {
+      "id": "seeded-5",
+      "text": ".글\né090な\r🙂a-\r1",
+      "sha256": "3d8cc6f5429dd21918759a8872e1f2725ac14461cc69b96b1958f21fd349f8be",
+      "tokens": {
+        "o200k_base": 12,
+        "cl100k_base": 13
+      }
+    },
+    {
+      "id": "seeded-6",
+      "text": "日Ω,\u0000ع-글な한なé中글\u00002Aא \r9‍93A0ıか.\t中éÉ中",
+      "sha256": "b5c2b30268a91e63eed9125cefcfc8fcf8ab3e5b49df50de26e4a8dde286da29",
+      "tokens": {
+        "o200k_base": 32,
+        "cl100k_base": 35
+      }
+    },
+    {
+      "id": "seeded-7",
+      "text": "本\t\rΩ‍ב9,\u0000É🙂É中,ΏAअع\nななב-Жなع3 Aかa글́한글글ЖıЖ_本ß中\r中éב\r\tΩЖA\r🙂ב3日\n\tאaı글́13अß\u0000Ω\nAعAé글ß\t_🙂글בΩ9글.-1בß글本अ‍ع‍\r  ÉЖЖ.Ω_한 A‍9a3İ-İ\u0000A日É0🙂‍ 中ß\n\n日\téع0",
+      "sha256": "5167add280d4289e68e53de29bc8947daafa66b655e6fe33104cb96a5a8b2b04",
+      "tokens": {
+        "o200k_base": 127,
+        "cl100k_base": 153
+      }
+    },
+    {
+      "id": "seeded-8",
+      "text": " _\r本かЖЖ中,Ωı\t9ıな 한 ı1A中글.3日अ日2\tع2日ı2 ‍かİ ß0 aAßא中🙂1́é글א日\t9א30なA글 本ı한\u0000日عΩ",
+      "sha256": "768c375e9000de71f0747fc15934674f6db36f5a47c5967bb692af09bb89ec03",
+      "tokens": {
+        "o200k_base": 68,
+        "cl100k_base": 78
+      }
+    },
+    {
+      "id": "seeded-9",
+      "text": "か._א\t글ı0בअ글\réA本1な\rعא,中\u0000Ωअ中,́\t93Ж🙂本é‍\r本2́İ_عA3,\nअİ0ع本aЖ.\n-\né本,א글ב한A. Жıع1अЖ2 ́か2ı\r0🙂ß9한本\r-\u0000́İ本.中なaか Ωa🙂9aaÉ0か́ÉΩ中 \u0000ב中́0Ж.ב\r_.‍ß한中19中0",
+      "sha256": "ee6862d610650754613f0926cc18540173bd314a5ec9ac48c7f4c8c214cac7c4",
+      "tokens": {
+        "o200k_base": 124,
+        "cl100k_base": 144
+      }
+    },
+    {
+      "id": "seeded-10",
+      "text": "3日日अב\tA1ß1\tA,1ÉבΩか́_かअअ\t2🙂9ıÉ1\nなßΩ\tかÉな अב,Ωな2.か0Жなאא1ع 3.अב,ıÉ한,_अ-́11a2\rß日ßЖאЖ3\t\n\nİ_‍中.,3ı\t́かİ  א́İ_中  Éか0É",
+      "sha256": "5c17cc1830416aa7b410439f3f0037aa46d412a3249d04fdd3b8177287842729",
+      "tokens": {
+        "o200k_base": 99,
+        "cl100k_base": 118
+      }
+    },
+    {
+      "id": "seeded-11",
+      "text": "日Éअ\t1か本 בかı한_\r\n\r\tבÉ‍ 本0\r글_ בıאאİבÉ\t3A3日ЖıÉع111_\u0000,\u00009--なı́\t,中\t2अ本 عßéかa글ב\t本Ωعב🙂한\t2,\rअ.🙂-9_aÉな‍अΩ かéअ",
+      "sha256": "9767813dd853d1e99609af401813147a45681987f12586a24cab322462c841a9",
+      "tokens": {
+        "o200k_base": 88,
+        "cl100k_base": 101
+      }
+    },
+    {
+      "id": "seeded-12",
+      "text": ",한İ930A-な0 \u0000a \u0000ع_א1éअ́́1A0,İ́İ́Ж 本한2अ\tאéaא本ıな‍,なA🙂🙂́ıか글a\tअא日\r글\ń\tA0א‍ב한‍\nか\r本日3É\u0000한9İΩ3_‍ 글한ÉÉ1अ.\r3 عİéאı0ı́\rı..글ΩÉ\u0000عב́ב-中日🙂‍ 한な한ıAé\u0000é__本ב.İ\rअ-90aअ א\nÉאáı_Éか🙂अ글अ Éב\nÉ",
+      "sha256": "fd1d79311c7d911b4799b3b46e467136cb689825b41d70c9ddb6958d4cc10690",
+      "tokens": {
+        "o200k_base": 155,
+        "cl100k_base": 181
+      }
+    },
+    {
+      "id": "seeded-13",
+      "text": "  ß\u0000ع 글.한\tع3‍",
+      "sha256": "678ed41a91d8b464d321ea74b576659fef9b5675564db9cecc76a6b7572df587",
+      "tokens": {
+        "o200k_base": 13,
+        "cl100k_base": 15
+      }
+    },
+    {
+      "id": "seeded-14",
+      "text": "Жב́한1한本_本1ב 🙂́\n-1 ı0ıか\t\n🙂글\ń\u0000अ\rΩÉİعé\u0000中é1",
+      "sha256": "be76ff056f0f25c8f0e6eca5c19787f42fbc9af71a8c0c6f8868cb14bdb6d6d2",
+      "tokens": {
+        "o200k_base": 39,
+        "cl100k_base": 45
+      }
+    },
+    {
+      "id": "seeded-15",
+      "text": "\nAÉ_中-A ́3अ_\n-0",
+      "sha256": "fd9c7f23cc597cdd852a4ff2974a608bf5cdb6d04f6fddb4669455ffe0ef52b5",
+      "tokens": {
+        "o200k_base": 13,
+        "cl100k_base": 15
+      }
+    },
+    {
+      "id": "seeded-16",
+      "text": ",글Ж..1अ\r2.é\u0000.ßı.א.-.3ıЖ\n9\n🙂한-2かな글本ı\u0000ב0AאAΩ. \nAİ9‍日\u0000İ‍‍\tßİ0ÉÉ‍.ı本中ב,ع한\u0000",
+      "sha256": "52ec1a09b4c957c260e777df78cc749f79b6ec36c5de42e3d1f5f91362b5cfd2",
+      "tokens": {
+        "o200k_base": 65,
+        "cl100k_base": 76
+      }
+    },
+    {
+      "id": "seeded-17",
+      "text": "글Ωéな日عא\tA글,2_ ́É-ßع日אع_9İı Ж日9なA\t_0な_Éİ_\rなaΩ中 3É",
+      "sha256": "f6c4a7edda3a2e3ee6739df414e6dd112f0631ddf3cafc314d589526cb092738",
+      "tokens": {
+        "o200k_base": 47,
+        "cl100k_base": 52
+      }
+    },
+    {
+      "id": "seeded-18",
+      "text": "Ж 🙂ÉΩ글中é\nא本19_ 日_Жaא 1 한é 中عé\rא\tAéa‍か́本 \nЖ Aß9日_🙂ב\r.\u0000.日א\r\t\rअé́2 ב\n-İאع,\t .‍0 ́2 _ıかİか91., 本\u0000\n3é글A Ω🙂É--日\tאअA-éЖß9한́ב🙂ßa\u0000‍🙂א\nععع 本\n93_かß0́א0글 ‍\n中3  日İ🙂,ב0अ日1\u0000-İな本عA中 Éかב🙂",
+      "sha256": "28d19fa1007ac75c4651c2f200853ccae679c7b86168f5f80597677d321f3b95",
+      "tokens": {
+        "o200k_base": 157,
+        "cl100k_base": 187
+      }
+    },
+    {
+      "id": "seeded-19",
+      "text": "ع\u00009한 0한 Aİ日عな,A 글a\u0000‍1かÉ\r한\u0000ßı 中\nЖ a\nİאΩع,\u0000é글한なअ日,中ב日\raא한\t-Ω한 3한\nعÉaİ🙂É한ع中한aıЖı\nİ글1 ‍な\n🙂́0中\r9İa 글\u0000́글\tאא\r1ع‍.,日אΩΩ1かAΩ글3ß한Éאß🙂",
+      "sha256": "7850b0f3071c98616c829967cc74905fa71ee6fd876426181330d357c75c31b3",
+      "tokens": {
+        "o200k_base": 120,
+        "cl100k_base": 140
+      }
+    },
+    {
+      "id": "seeded-20",
+      "text": "Ω글\n1ı한 ‍Ж0ı Ж글a1本é 🙂_09ı\u0000 Ω글中\n,عבבİ日ı ß\rかבı- \t3.9ı中́A글İ中अ\u0000Ω글\n. 🙂\t9\n日AÉअ‍عअ日1אЖ日3한,本ÁéЖな\tÉ19\t_Éא́عか\ŕ 2 🙂.ΩかÉ.\t\u00002한3300ß‍1日🙂\t\rבİ本\u0000한한‍aı_",
+      "sha256": "905865fb0234ba07a2b1da68b93ac8e029d8b202d8e8109ae05cb206a5b39e80",
+      "tokens": {
+        "o200k_base": 127,
+        "cl100k_base": 147
+      }
+    },
+    {
+      "id": "seeded-21",
+      "text": "日な日99‍本글🙂_-3ععİ\n🙂Ж\t\u0000한ב글ΩÉ11É\r.한-本aع0\nA1글0本 2́9İÉ-́か9-İか-글Aß\u0000な中かב🙂102日 ‍-_.Ωßع本ב2́日Ω‍é本א\t_Aかع\t2 \nΩ‍İßÉß.,0\r 日\rع,Aع__\n本\u0000\té́3Ω",
+      "sha256": "28d76f65b7a1dee2195d3cffeae57775ce692202b7541e400ec0a32c910c1452",
+      "tokens": {
+        "o200k_base": 111,
+        "cl100k_base": 126
+      }
+    },
+    {
+      "id": "seeded-22",
+      "text": " A \t한İß אعé🙂한한Жع\u0000한́अ30\u0000🙂é\nな9中İか\n中É\t́aな3Aİअ中日ß בa\u0000\n한中\n\téı_2,\n2अ,글日Ω.글",
+      "sha256": "cc8a8fec2f6b80e3c5e3ab8e549dd7072373be03b84de0bd30d4775a122be6e3",
+      "tokens": {
+        "o200k_base": 65,
+        "cl100k_base": 74
+      }
+    },
+    {
+      "id": "seeded-23",
+      "text": "  ‍3한א한0\u00000中‍ع31İ.한ıÉב3בЖЖéıЖ글ב‍א\tΩ1\r한ß-\n_É9\t글א🙂本ßAİİ中2,글 .अな\té1한_א3ع0é.Ω글\r30ع 2́2अ.",
+      "sha256": "576c010f5b4a0b7f8c92db5fdfa9668d4af0e9e9972e0394b4e8e888c15d6da1",
+      "tokens": {
+        "o200k_base": 79,
+        "cl100k_base": 93
+      }
+    },
+    {
+      "id": "seeded-24",
+      "text": "A éב\ŕא_ع,ß한\r\u0000İ13.ı9İ‍ Aı1ß.Ωअ🙂本é\nא日🙂בЖ0🙂- \r-글한‍日É2\u0000ıΩΩΩ한́Ж‍A‍É9\r2中अЖ9İ本 ,9 Aع_39本́2éअ\rな中Ωßİ.Ωב한אか ,3\tÉ\rא 한な한ß\tב\u0000 か\tع 0",
+      "sha256": "d6dc3cd0f5f9b75e0b761413a17833441b94759e41b5166925deab0fb2df8a13",
+      "tokens": {
+        "o200k_base": 114,
+        "cl100k_base": 139
+      }
+    },
+    {
+      "id": "seeded-25",
+      "text": "🙂かéかİא日_‍‍́בaß.عבא́Éع2a🙂本\u0000é2中אéב́-ßßı,בİ1かع2,-.かЖع-ع\tअİaЖ글0aß\nΩ\u0000な\t\tıבA.́İÉ한aअA 1🙂A日Ж,א בİß한992A9なא3\t_Ω🙂عaЖ‍Éé0İı_글अ.\tЖ20日İΩéı20 \t́अ,\u0000Ω9İ\u0000İ\tअÉı́عa A‍,́İaéİ.🙂a",
+      "sha256": "46efe8ef89de86a3e7be4412238cf7647185bd6a22dd9b21f82676797ba7b300",
+      "tokens": {
+        "o200k_base": 150,
+        "cl100k_base": 178
+      }
+    },
+    {
+      "id": "seeded-26",
+      "text": "A한3عaßЖ0́ع🙂 か\r글9ع_9İع3🙂.か́0AΩ\t.é3\r91Aİ-a\n\nか글अ_é本9か本\r中3🙂日0\n글́,1本20 글글🙂-,3中日中ع한2_🙂́אかかÉΩı-\r‍.ב2本, 한É\u0000Ωİב,",
+      "sha256": "a51970f87e766be3d409307bb0f4bee49be0d4d429eb6f9c25003ba5baa5eac1",
+      "tokens": {
+        "o200k_base": 97,
+        "cl100k_base": 112
+      }
+    },
+    {
+      "id": "seeded-27",
+      "text": "é🙂İ_日א́かか글א日,Ω ßЖ3ıİか2_İअ23320\u0000\n aÉع日_ß글\u000092か\tअÉ‍ıß\rعÉЖİב\r日3É2éΩ \n\nअ ßか  日な\t中1É,なअ9か‍3‍ a\n 1かなع中\rב\r本か\u0000ß.日éなな1🙂3な日Aع\n1🙂한\rÉ本-9한É 0\r2Aİ\tЖ글\u0000\n\n",
+      "sha256": "2ba545c804547c5d564b82c91fe55d236c01ff7797be2f90988ebb83ecf7925a",
+      "tokens": {
+        "o200k_base": 129,
+        "cl100k_base": 149
+      }
+    },
+    {
+      "id": "seeded-28",
+      "text": "_א한3, 3かב1ıÉa한é2ÉÉ 92かéな\u00003 _aع_Ж39.ב́‍\tA🙂Ωa‍か_91\u0000Ω.‍א‍3 9‍本ß0ع日글ı,́\u0000́\nב  ́か_عअ ‍\r\n中🙂か1🙂‍0ב1\nかΩ-अ ßΩ\u0000.日́ı́\tな29Ж\r中अ-É0ıב2AΩßaAß中1a-0Ω\nЖéב中 ́中ı글İ1本글ΩЖ\r.a한Aב‍_🙂_中ع 1éé‍ בİİな",
+      "sha256": "597052b0a8027af328949aefd0649a4a86a0a640f2c4bb08b51f6b285327d99c",
+      "tokens": {
+        "o200k_base": 159,
+        "cl100k_base": 195
+      }
+    },
+    {
+      "id": "seeded-29",
+      "text": "本عな32ב9글A\n한Жב한ıב-É3ع",
+      "sha256": "1ccf4e33748291d729a6f1ef78230cd4a5907c62a45a86584ebc2dbb801b312f",
+      "tokens": {
+        "o200k_base": 19,
+        "cl100k_base": 20
+      }
+    },
+    {
+      "id": "seeded-30",
+      "text": "Жב2Ж",
+      "sha256": "90185d2081eebdbfb630eb2e53e5f05cfee4421fd3bafa4b02a92aaca69d6081",
+      "tokens": {
+        "o200k_base": 4,
+        "cl100k_base": 6
+      }
+    },
+    {
+      "id": "seeded-31",
+      "text": "\t́अ́🙂\ré\u00001🙂中 글 \r9\n本 日한글Ж-\u0000\u0000ı",
+      "sha256": "7bb79d65618787a8d4b20f9babf8c1d0e89345f9085a66251a8bad6aa16aad9b",
+      "tokens": {
+        "o200k_base": 25,
+        "cl100k_base": 31
+      }
+    },
+    {
+      "id": "seeded-32",
+      "text": "0,2ع0Ω\nAع.3なÉ3́글א9本0本Aa글🙂\nかعか-İ́0ב\t\t0́中é, Ω\rאع한-,ßか́عéअ\u0000É0_0אaa3\rß-‍Ж 03בב3é́32अ‍ıA\n1ı\t_1 한日日_🙂.\u0000́Ώな한 -ב日́Ж \rאİعAאअ2 Aな中\u0000-_ıع글한a\tЖ\u00009\rع9ÉÉ3ıع9Ω글Ж🙂かב אİЖअa‍-1\u0000中02\r‍中 ",
+      "sha256": "9dda261f41367d2eaedb4c17c0516421ea5f04ab4b2012f562a8f7501ebd4d4e",
+      "tokens": {
+        "o200k_base": 154,
+        "cl100k_base": 181
+      }
+    },
+    {
+      "id": "seeded-33",
+      "text": "2\ŕ\t本  \tÉ한\r글 ‍3́ __\r A0‍なか中0ع\t.\u0000_\tÉ20中İ日 ,‍ı2\ń",
+      "sha256": "2a9397524a5fd3f9565d00004e17f2158383bb8087b70b66f4dbd0e01f4b0d17",
+      "tokens": {
+        "o200k_base": 40,
+        "cl100k_base": 43
+      }
+    },
+    {
+      "id": "seeded-34",
+      "text": "39\rבב中3Ω本,ع글9한🙂Aか́日É -9_-🙂‍İなıA_א0한か́0ı  ß33בß́\tב2🙂글अ\nΩ É\u00002अЖ0한अ\u0000ß, ıÉ́ß3\t글\tıÉ,A1a日‍a中ßaב-ع한ı日ב‍ß中な É本\t\u0000,日.‍1",
+      "sha256": "2e240531766675892a834c5018ce2a649130f1f94d9ed0bed259ced485264c43",
+      "tokens": {
+        "o200k_base": 103,
+        "cl100k_base": 118
+      }
+    },
+    {
+      "id": "seeded-35",
+      "text": "한İa-0本\u00000AÉعअ本Ж日\t3日  \r\t中🙂Ωß\rA9‍בAなıß0中な0İ́_0中1 ß\u0000́,A3 ́ Ώ한1Жב0글🙂なÉ1בß\rİ.3本\u0000な한ع한ßÉÉı🙂1בא\u0000aÉЖ\r",
+      "sha256": "2e906ca6d743fb5b6c9183898bfa4d5651f6d70e3de86b0d0888a8b911b7127b",
+      "tokens": {
+        "o200k_base": 89,
+        "cl100k_base": 104
+      }
+    },
+    {
+      "id": "seeded-36",
+      "text": "글中अअअ́\u0000\t中ıß本3本́ع́Ω 🙂0́日_글בÉЖß‍2글a\u0000A\tع中 🙂한中عı-é한अ3Aعななかか-Ω1‍\t\ŕ\u0000-中.é\r",
+      "sha256": "1591ce86c5ad5573153a8073a1997041c9a2ccbbe20ed6cad797f2098e4317ae",
+      "tokens": {
+        "o200k_base": 67,
+        "cl100k_base": 81
+      }
+    },
+    {
+      "id": "seeded-37",
+      "text": "é9عअ_ı本éな_1א\rな\u0000É-Aİ ıa‍한‍",
+      "sha256": "38356a245ebf9f9a4d123e2abd672b9eb85873924970cd980b8e04c8a8ecc316",
+      "tokens": {
+        "o200k_base": 24,
+        "cl100k_base": 28
+      }
+    },
+    {
+      "id": "seeded-38",
+      "text": "な日ß中a🙂3aЖב-İ日020한\u0000か é\rב_अЖ\n1🙂 本9ß3ع\nかİか中Жı -\u0000ع日ב\n\téΩΩא 本日अÉЖ日\n0글0Aな1 é.日́な\rאא,. aÉな_  한Ж1かבé\r 日0한अ \r31Ж.🙂\t.9日な‍عअ\nıéı\nß‍Ж\u0000ı日́İ2İב글ع한_本 ́ अ한Ω,글.Ω\t0‍\r,\n33אב中́Aı한́a3",
+      "sha256": "08596202abca635a5a3dddf6edf3aed34a5c33bb440d37f63276e840b69be954",
+      "tokens": {
+        "o200k_base": 151,
+        "cl100k_base": 181
+      }
+    },
+    {
+      "id": "seeded-39",
+      "text": "日א한\n글é‍-\n\r- 2中Aİ́Ж글,🙂‍́か2अ \ŕ-Ж_É\nか É0한中な,글13\t10글\n-İA9한अЖaع日023なבİ,本Ωß3‍日́\n中 -Жé3かß\u0000-2Aé\n_日Ω23,\rか글か,.é3ı ΩÉ-中本한\nع _É9ב 1अ0Aな2🙂ΩÉ中AÉİ\u0000\r\r🙂\r_3Ω글093ß日🙂Ωא\ńß中É अİ2",
+      "sha256": "9f472dc5554f38dcc5380f8b93ece95e7fabc77b09f964aeff9eb07352c46c94",
+      "tokens": {
+        "o200k_base": 146,
+        "cl100k_base": 174
+      }
+    },
+    {
+      "id": "seeded-40",
+      "text": "א _かÉ本0한‍9 Éa\tЖı2日\n\u0000ع\n0אع\u0000な日ı1,. .글1בİ1本-\n日  ßع́한\t1\u0000AअЖЖ‍9かA-a1عa中글́日\u0000_3ıß-._\rı한3́_Ω日 .ÉЖΩअ‍中 İAבıאअع́  글_अ1\u0000́🙂Ж‍ב2日\nıЖÉЖ‍-92‍\u0000Éİ",
+      "sha256": "efe21385625e3a04e5c24704841ef1e0eef0ab2b06d3b8087ccc79fae0cea48f",
+      "tokens": {
+        "o200k_base": 122,
+        "cl100k_base": 146
+      }
+    },
+    {
+      "id": "seeded-41",
+      "text": "İЖÉΏअß\n1",
+      "sha256": "ce28c7e859f6aa1beabde15fa07e17cc056aa8fac2918f04c0dbf1135a7f7c2a",
+      "tokens": {
+        "o200k_base": 9,
+        "cl100k_base": 12
+      }
+    },
+    {
+      "id": "seeded-42",
+      "text": "ß 日2 9\t 日Éé🙂本",
+      "sha256": "71659bed2d23277a335d6afaf195fb067d4bdc402f37c7494a16c8388dfb0e3a",
+      "tokens": {
+        "o200k_base": 13,
+        "cl100k_base": 17
+      }
+    },
+    {
+      "id": "seeded-43",
+      "text": "ßЖな0ı2अ3AΩßAかı日Ω\u0000한‍Ж\t2 عÉaか🙂글本_日aבÉΩ.09عİ3\nı\u0000,‍ 3éΩ_ß\n\r-日\t🙂0か3か\rß-かé글9な\tなßבİ2日2́中.なかßΩAİA-本ב 한A한-ΏA.éか‍.A ב\n-0‍ ,A本中9\t0日Ω日か_Ж,_Éع9 \rב0글本́1éa한,.,א2Ж9éé\nな_ı한🙂🙂なı ‍中ع🙂🙂Ω\rA글Éı\r3\nな",
+      "sha256": "0ddf3162ff47dc2fa143eac7a79344b55c2fe997db4da7b5e6c3b81b9a2ed516",
+      "tokens": {
+        "o200k_base": 170,
+        "cl100k_base": 199
+      }
+    },
+    {
+      "id": "seeded-44",
+      "text": "अ3_ 🙂2글 ı2अ2 ,é日_A2글글\u0000Ж3İaΩΩ한בअ\u0000な\t\n中-,Ωaİ́\rı\n3ı\u0000_한A2_́ß\n-한ÉİÉ🙂本\u0000なअ글a9́A -عЖİßı한́Ж한글30אかかΩ日_ßı本글0aß\tב\u0000-ß한글0אअß‍a-ع‍א09\r AİİЖع か \rıß本中30अ -בßAЖ 本ßع 한İ\r글-ع1\u0000É글é中1.111\u00009Ж🙂,aЖΩ2\tİ글",
+      "sha256": "7a3b946b6c92a4940aabb799fcf8072b1f6613e7117d641acc19867f8d630f4d",
+      "tokens": {
+        "o200k_base": 164,
+        "cl100k_base": 192
+      }
+    },
+    {
+      "id": "seeded-45",
+      "text": "İ‍A\u0000中Ω\rבאAא\r日Éع \rΩ한\rÉ2ßAa글अ1,ß本.é0Жअ🙂\ra本\u0000Ж‍.\t  \u0000\rか日本.中 \r\rA1ב本,ЖなאÉな글글-,🙂א\n\t🙂\nא中‍Ω \r한अ\rß日 عЖİΩ‍か日‍な한a 한ıאAב  İ‍ß ı3é3Ωع_🙂‍́é한なÉÁ글2.한0-2",
+      "sha256": "a3b7cd32f34525f2016247aca268f5c0f51a771648adce8cf12e0c97c903d55e",
+      "tokens": {
+        "o200k_base": 128,
+        "cl100k_base": 162
+      }
+    },
+    {
+      "id": "seeded-46",
+      "text": "本A한́א\r3한AA0Aİع한\nな本0\n‍\r.中なאa中בع_글かAa,2aअı0글́1な20\t3a本中Ж́\tか\tאΩİ\u0000 ,_ 2İかב́\u0000éß.ع.__ıéá글\tअ_É_2かß 한Жı\r9A",
+      "sha256": "60b3319d606e5f769a5828e0c26dd1eada1c6d936008f557f27aa6ebc89e7a83",
+      "tokens": {
+        "o200k_base": 91,
+        "cl100k_base": 99
+      }
+    },
+    {
+      "id": "seeded-47",
+      "text": "_3",
+      "sha256": "fffdff4b07a9d973fd1c3a6be443851bc13e82c4af94c88325244694e352aa31",
+      "tokens": {
+        "o200k_base": 2,
+        "cl100k_base": 2
+      }
+    },
+    {
+      "id": "seeded-48",
+      "text": "日 .\nÉ अA\t한 ́9.\rΩ\n. ı\nअअ Ж한Ж́ 글글अ中अß글\ra,0İÉé1. 中9ΩअかЖな0\u0000é本日9É9,Ω.,Aב🙂عअ",
+      "sha256": "d2bcd4f07d66bea369657d4069c9f2d387c3fb6693a10ee686a59f081a8f41f9",
+      "tokens": {
+        "o200k_base": 65,
+        "cl100k_base": 82
+      }
+    },
+    {
+      "id": "seeded-49",
+      "text": "É🙂2 か9́‍Ж‍अ\n日é_本🙂ßב本0अЖ2A2,अЖ🙂0ב中A本글אな1a\nЖ2か2.글अع._ ,ı글‍3\t 0É本Ωבعßع0a中21.בı1  ב🙂日🙂\tअअ93Ωבİ🙂本‍İ글İع\t É\u0000中3\n한\n2aЖ글İ0İ É한_ßなב本\t́İ-2é9Ж本 ÉΩ\r\t 글-\u0000ЖAı9אא21É 9글\rבÉع‍글 中‍ı93́글_\u0000한अ1한",
+      "sha256": "5583e17a5276063dd910be0a7a84d3375e8616a5ce34387012c495a49f1e77aa",
+      "tokens": {
+        "o200k_base": 162,
+        "cl100k_base": 196
+      }
+    },
+    {
+      "id": "seeded-50",
+      "text": "בع한\r1日अ3글\u0000中अ3,글",
+      "sha256": "b97cdf1abdd30d981df7f5c68b6652936ac5a00fdd343b3fae213494a6b5e821",
+      "tokens": {
+        "o200k_base": 15,
+        "cl100k_base": 17
+      }
+    },
+    {
+      "id": "seeded-51",
+      "text": "É,ß\n🙂Ω中́-中\t\u0000İなAЖ글3İか글32א\nב99-é1\n1.́9\ń́か1글中\u00001ЖΩ2🙂́É,אaİ글Ω_ıı,🙂\n0‍ .á2\t中́9\u00001ß",
+      "sha256": "5c4c40ff4cd950c6057db6f9aaf637baf4f45c7e861468eb299ce0b2b00fdbd5",
+      "tokens": {
+        "o200k_base": 73,
+        "cl100k_base": 84
+      }
+    },
+    {
+      "id": "seeded-52",
+      "text": "‍É日\nΩİ\nıéı\n0É🙂1Ωı‍\tÉ9な\tא Ж10ع本글ב\n中é0글בßA\u0000\r ‍é글́İ3_Ж3عéaa3,2́İ글Éב\n_🙂な2‍\n\r.",
+      "sha256": "6a3820dcaed1febba6873e6f4d448f721242aaea37e5da8b74611bf733702b2b",
+      "tokens": {
+        "o200k_base": 70,
+        "cl100k_base": 81
+      }
+    },
+    {
+      "id": "seeded-53",
+      "text": "0é,aß本-,日́._ı‍ıअ\nか\rß\t中0éé,2é글\na🙂🙂.ıなعAかßか0É9Éかßב9\u0000א🙂1中 ß\u00001É本-な\rЖ\r Éא\u0000‍ב‍な글_\n9한 अ-ع한अ本\u0000 ",
+      "sha256": "aa3dcfc79b6f5b6a535d20e701b2769c704ecae93971328dacfa995f03cd637a",
+      "tokens": {
+        "o200k_base": 82,
+        "cl100k_base": 94
+      }
+    },
+    {
+      "id": "seeded-54",
+      "text": "éİなAعか\rß\n,0_0日\nع_\n本İÉa本中́عאかعı3,\n글한_3́ß́21_\n_Éבı-\tא,É-,‍本_中9 中2Ж글.ß‍عı,בЖÉ,é本3",
+      "sha256": "e94dfb8606cd193c0ceb7c017c544848e6b3ee19ef34cafdddb06a4dee4a05c0",
+      "tokens": {
+        "o200k_base": 72,
+        "cl100k_base": 76
+      }
+    },
+    {
+      "id": "seeded-55",
+      "text": "A글عA.日É한9A中🙂2عאななב9A\u0000.글‍3なÁ́́글한_éΩ02 글İ中_2́1中🙂1אÁ2अ-अ1Жß",
+      "sha256": "3f756d45dad677ecf49324172631ca4aef807b5d6dbb2fcdd141bd77248e348e",
+      "tokens": {
+        "o200k_base": 56,
+        "cl100k_base": 65
+      }
+    },
+    {
+      "id": "seeded-56",
+      "text": "अ日‍本32\r, א‍本글  A本3な글‍ع글本\r_́な\tב अıAıÉ -_ßÉ_अ なı3\u0000_日\na か́本 ",
+      "sha256": "91e6f9c18ee854164ecefb0a368a69142ac4524963850a18f4d9b72260a194f2",
+      "tokens": {
+        "o200k_base": 52,
+        "cl100k_base": 61
+      }
+    },
+    {
+      "id": "seeded-57",
+      "text": "_9א19,‍́é日本_本aé한 日ıAな\rı1א\rЖ\u0000 Ω20\r",
+      "sha256": "8c7178205eb09bbbb36cad49a3ab9850691b74f9c0d2ee988e0d25daf95c0389",
+      "tokens": {
+        "o200k_base": 29,
+        "cl100k_base": 34
+      }
+    },
+    {
+      "id": "seeded-58",
+      "text": "Ж_か\u0000_,.́🙂א\u0000ı1な",
+      "sha256": "a090e6e15609e923e853b103ada89b447f94a2b7a988e4c240623adcc526a9db",
+      "tokens": {
+        "o200k_base": 13,
+        "cl100k_base": 15
+      }
+    },
+    {
+      "id": "seeded-59",
+      "text": " अİ ,अבかİÉ Éअß_ ‍本‍ב.\u0000عéıא10🙂Ω_é \téA1,Á́\t.\u0000\nΩΩ\r1,.अअÉ글\n.🙂10中अéאAA-な日なΩЖ0글,א\r‍́ ,é한글9́119ع\u0000Ж\tב\n,か🙂2A\rA中なअЖ\u00002ı32Ω-\néב\t,2אİ\r한中1عΩ\u0000-ב 🙂 00Aב.Ж9İع\naΩ\rA 0Éअ‍1Жא🙂",
+      "sha256": "25c1b2ed87c57af0a67df93de0bcdf886b65905190ff78ca0b3c68d0fe5715c0",
+      "tokens": {
+        "o200k_base": 145,
+        "cl100k_base": 179
+      }
+    },
+    {
+      "id": "seeded-60",
+      "text": "A0ع3अÉ日1\n9 ıな글.0ı0日Ω \n\tع   בı2\u0000ב\ré3אéé\t\r29\nΩかé́İ かaÉé ع2日2\ra中か1글ב かİ\t́200Жא한ع_́\n2한İAな9ı글é2Ééなعなな2🙂ЖΩ1本ı3‍́é🙂ב本ı日\n\nΩ글A9Ωא2 日A",
+      "sha256": "f611cf1afe859fd965a1956ef709118b6c8bffe474e53bbaf73c372573a46e8c",
+      "tokens": {
+        "o200k_base": 116,
+        "cl100k_base": 129
+      }
+    },
+    {
+      "id": "seeded-61",
+      "text": "́10 éß İ9か\u0000かa本0ع\r-日3ß́🙂É́글か3\u0000Aか中🙂\rな\rか_éß한Ω\ŕ अ\n _בなか ב中__a한3Ω,א\néİЖé日\r-\u0000é_אבİ \r\rá_\u0000\nב́á.Ω\tAΏİÉな_\r9_中İ,か日\n ‍ع9é. .İ な-,한_Ω\rאЖ\u0000\u0000\tЖ_3‍\u0000本,.́ ı🙂中Aa.글a22中ıa3ع\rな._عıAıבなか É\r3",
+      "sha256": "e91e47d4e4cf5f3c80527c540865e5de61a38efa6770fe094abd6997de344bab",
+      "tokens": {
+        "o200k_base": 152,
+        "cl100k_base": 174
+      }
+    },
+    {
+      "id": "seeded-62",
+      "text": "本133 한9א İ\n2 9なaıかא.9日かı\u0000中aİß글É अ-́éıΩ-अß9日日Жع_éÉ  Éع日İ\u0000אЖÉ́,\ta\u0000 ́な",
+      "sha256": "1943b5f7c29fe11c98b72fae0ec42c8107e633672c8dfea05a5b7a9c1208897a",
+      "tokens": {
+        "o200k_base": 60,
+        "cl100k_base": 71
+      }
+    },
+    {
+      "id": "seeded-63",
+      "text": "אΩA\n\n글なع0",
+      "sha256": "5d4a9100c6ac741a8e91fe4f91dbac946f283fac8c3687a6c7a0f0f956916b85",
+      "tokens": {
+        "o200k_base": 8,
+        "cl100k_base": 9
+      }
+    },
+    {
+      "id": "seeded-64",
+      "text": "अЖ中\nع́ЖЖΩ中本\n,अ\tΩ9-a글,な中2🙂A2本한\r글éなב._İ1‍\u0000ß_\rअé\t",
+      "sha256": "e55cc50bccbc02987653f5e4259602bc3b553182a0e3c75fbd36b9b77ed7ab7d",
+      "tokens": {
+        "o200k_base": 44,
+        "cl100k_base": 54
+      }
+    },
+    {
+      "id": "seeded-65",
+      "text": "日\r0א\u0000本अ_aב‍.,-عıع \u0000글,\na中ßİ글か́ı한A2a अÉ1か,0Aع\rA‍ßअıЖ-ß_",
+      "sha256": "ede8b2e9b469c281ec98781e27675866877de1453abfe53babbee4b70314af50",
+      "tokens": {
+        "o200k_base": 50,
+        "cl100k_base": 58
+      }
+    },
+    {
+      "id": "seeded-66",
+      "text": "\tΩ999अかअ한\rA🙂.ß\r_🙂א2,‍\u0000Ж本_🙂בअÉa9Éaı.0日.אЖ中한-中İع\nİ \r‍ÉअЖ2́本_글Aa,._中2日329🙂かA1a\r-ß한Ωא🙂글́한-🙂éא,́글 ,Ω\tЖA\r30́\u0000 1İ中,,\t\n中か\u0000ع本한な\r,ع2ع,_अ.中9中‍ 0́0İ_な,2בİ日अか\nअ한かЖ.‍-İ1ΩÉאA\n2अ",
+      "sha256": "ff12e95746b80048e0c07474cae10b9b3890525094238e3b23177fbc3cdc4a71",
+      "tokens": {
+        "o200k_base": 152,
+        "cl100k_base": 181
+      }
+    },
+    {
+      "id": "seeded-67",
+      "text": "İé한éİé0-",
+      "sha256": "13d9fb7cf560de930d7797d0ae1f9d6e87806bb5bbea090fcc8b38c8cbf5e3c7",
+      "tokens": {
+        "o200k_base": 8,
+        "cl100k_base": 8
+      }
+    },
+    {
+      "id": "seeded-68",
+      "text": "な\u0000-ßЖअअ3ב2é글かΩな日अ.00Éı_Éか9\u0000한なÉ,1か\u0000한글\rअ12-中á39İか\u0000글́\n\t\nİ2ع0Ж9A",
+      "sha256": "553bd5862e035625745836b12890db86a9b49b4e4eda0beff158f7e9de7df913",
+      "tokens": {
+        "o200k_base": 56,
+        "cl100k_base": 64
+      }
+    },
+    {
+      "id": "seeded-69",
+      "text": "9中́अ‍\téЖ한\u0000éßß한-日0Éİ3\taअ_ععאA3中日\u0000日अ_İ",
+      "sha256": "91e7311fa4eda04afcd413d8ae45f421c074a73eb754308f52dd708dfbee2b6c",
+      "tokens": {
+        "o200k_base": 35,
+        "cl100k_base": 40
+      }
+    },
+    {
+      "id": "seeded-70",
+      "text": "\nΩ한‍本İな🙂09_9\rבß 92ı0\r한한ßאa한한.é0ıß\r 0İאéÉ‍.\r한9ß0a31\r글\rع,a9🙂́,1Aعı\tΩ\t\t3日́ ́\n0な‍İ3ıA\t中な中ßAaЖéな,\r 日ع中.本9ع́ ع本Ωא 本-",
+      "sha256": "ac3d2cf5df81f7830b8caa12682460c16b0a9a2d2a7f2810b141fa762eb974e5",
+      "tokens": {
+        "o200k_base": 102,
+        "cl100k_base": 117
+      }
+    },
+    {
+      "id": "seeded-71",
+      "text": "A_́1 ع3-\tßA🙂अ日글.אΩ‍Жß__1한1Ω本Ж한🙂9🙂0‍A_🙂é한.\nな́日ב🙂9🙂_é\tİé\r3,İ日かıא\r한3A\nא日ع9.É\u0000İ,ıЖЖé‍1한0_0ع\ta-Á2-באבÉ,AअaЖ-é.2\t글한É🙂ß\ra0-‍-한א글本00\t\r \nअא\tבß\raß,अΩ\r.́́2ב\u0000Aな0",
+      "sha256": "6c926a369970f5a3d17e0a0f2baa853c09094547381206b918b0c02712be67a8",
+      "tokens": {
+        "o200k_base": 142,
+        "cl100k_base": 169
+      }
+    },
+    {
+      "id": "seeded-72",
+      "text": "éЖİ\r1中0ЖЖ \nבא \n\na글,3日‍ ",
+      "sha256": "67b6536c5b1bc1470e9493a981c4b1bb80475155882122a2bf6c86e6e6d11946",
+      "tokens": {
+        "o200k_base": 20,
+        "cl100k_base": 26
+      }
+    },
+    {
+      "id": "seeded-73",
+      "text": "İ\u00002Ж-3日é\t1בな\r9‍本.2İ,2,́अΩअ한Ω\r日글 ..글İ1  .İ3な a🙂aב글なな3-Éé9é\nか‍Ж0.",
+      "sha256": "8de6b24885ce654c6b90beae1307e85711d989eaecb717e6182afbcaa61b21bf",
+      "tokens": {
+        "o200k_base": 60,
+        "cl100k_base": 71
+      }
+    },
+    {
+      "id": "seeded-74",
+      "text": "な‍な🙂99É.,,\t1\tع\u000033한3\n\n中ı _._🙂なΩ中ÉなİЖ .Ж_\ré, ßÉ\n.中aé本א\u0000é1글.中な\rא2א\r\t글\n\t-な--בÉa3,אéЖなı अ9‍中",
+      "sha256": "4cea2ec0af9e88de02cf149c80b2ca37e40c6bafcb5b3e8394b43c5ec011ff7f",
+      "tokens": {
+        "o200k_base": 80,
+        "cl100k_base": 92
+      }
+    },
+    {
+      "id": "seeded-75",
+      "text": "9🙂́\u0000‍-\u0000か-é2aΩ Ж\nか\r‍ı\r1__\u0000A  ,🙂, 9अ中_ß日Ж中\t\u0000かΏ\n日한ı\u00009🙂عaב,9글21_9ıعı か本 \u000021\t3글א.ı\u0000_אa0.",
+      "sha256": "450b004938e3719eee052375e6595d0fd113b16e8f15200eb1c2c6d3f831e3a3",
+      "tokens": {
+        "o200k_base": 78,
+        "cl100k_base": 91
+      }
+    },
+    {
+      "id": "seeded-76",
+      "text": "0ı本か글\n\r\u0000ЖÉ🙂A22\n‍ 1ß1éİЖ́中9Ω🙂2א,בıÉ0ב-‍,01א1.́글글A\nAı3aa\tב0中ع\u00001́́Ω中Ж\t本 -a2🙂אΩ9Жאな🙂ЖЖ",
+      "sha256": "cf04ee62b61f2ef96ddfb512260ad1c2197c75c8bb82a2fe53842853676fab16",
+      "tokens": {
+        "o200k_base": 77,
+        "cl100k_base": 94
+      }
+    },
+    {
+      "id": "seeded-77",
+      "text": " 글İ本\raAअ2.2,.İ本.3中a_-3é\n1É.א本É_中,É中בaな ßÉıЖ글な🙂a,ß2",
+      "sha256": "f2ae4c355ab1acae532d79f673dfc5fc052ecff484160534b621c1669b1737fc",
+      "tokens": {
+        "o200k_base": 47,
+        "cl100k_base": 51
+      }
+    },
+    {
+      "id": "seeded-78",
+      "text": "_ 🙂aAعİ日な3中,中1か\tßなבAב-な\t2,9 ß日한Ωאß글éב中Ж‍a\rא2ΩЖßa글.2Ж‍ \u0000ß\u0000́é0́0a\u00000,İıعÉÉ\n\r א\r\t",
+      "sha256": "ff5df3537102ccd842ae950db65a989a58830784dcd4793f1dff64b47c4d0164",
+      "tokens": {
+        "o200k_base": 76,
+        "cl100k_base": 85
+      }
+    },
+    {
+      "id": "seeded-79",
+      "text": "अב本 3́0\n Жéבב\u00001.,İ2_3 1ЖかعA ‍\u0000かع한3日\n日É한א,\u0000\r בな中Ж__0Ω🙂\nع0ßΩ2_Ω本\u0000א0 か🙂\né  ı́ЖÉ3\u0000İאか3בı\t\nかAÉא日中אΩ.‍.‍‍अ\u0000Ж中3 🙂éa\u0000日.A🙂日3-ıı3\ŕב日א‍.,\nÉ́‍İA🙂_",
+      "sha256": "7c31119e790bbc5d85e15836494b1dee2ba1bcfd5f0cf919a67051760d18b2f7",
+      "tokens": {
+        "o200k_base": 124,
+        "cl100k_base": 148
+      }
+    }
+  ]
+}

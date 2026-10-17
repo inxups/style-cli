@@ -1,0 +1,81 @@
+{
+  "baseline": "0ea1c2b",
+  "documents": 10,
+  "local_links_and_anchors": 402,
+  "archives_unchanged": 59,
+  "historical_json_unchanged": 104,
+  "progress_prefix_sha256": "16b12b9edacdfa7be80e996e2b4653531b9302ecefff744ec0d3a7030b217825",
+  "changed_files": [
+    "docs/PROGRESS.md",
+    "docs/STYLE-ADAPTERS-CURRENT.md",
+    "docs/STYLE-COUNT.md",
+    "docs/STYLE-EXPLAIN.md",
+    "docs/STYLE-M3-TASKS.md",
+    "docs/STYLE-M3-TESTS.md",
+    "docs/review/M3-A15-2026-10-18.json",
+    "docs/review/M3-A15-DOCS-2026-10-18.json",
+    "docs/review/M3-D9-EXACT-COUNT-2026-10-18.md",
+    "docs/spec/STYLE-cli-design.md",
+    "docs/spec/STYLE-spec-runtime.md",
+    "go.mod",
+    "go.sum",
+    "internal/app/command.go",
+    "internal/app/command_test.go",
+    "internal/app/count.go",
+    "internal/app/count_command.go",
+    "internal/app/count_test.go",
+    "internal/app/entry.go",
+    "internal/app/explain.go",
+    "internal/app/explain_command.go",
+    "internal/app/plan.go",
+    "internal/app/service.go",
+    "internal/runtime/runtime.go",
+    "internal/tokencount/anthropic.go",
+    "internal/tokencount/count.go",
+    "internal/tokencount/count_test.go",
+    "scripts/check_m3_exact.py",
+    "scripts/generate_m3_exact_golden.py",
+    "testdata/count/exact-text-v1.json",
+    "third_party/README.md",
+    "third_party/licenses/openai-tiktoken.txt",
+    "third_party/licenses/regexp2.txt",
+    "third_party/licenses/tiktoken-go-tokenizer.txt"
+  ],
+  "checks": "pass",
+  "protected_testdata_agenthooks_unchanged": 560,
+  "gofmt": "pass",
+  "new_test_functions": [
+    "TestM3A15CountCLIReadOnlyAndInvalidInput",
+    "TestM3A15PlanCountsCompiledTextAndPreservesEstimate",
+    "TestM3A15PlanDynamicRejectedBeforeNetwork",
+    "TestM3A15ExplainCountsFinalModelTextWithoutChangingWire",
+    "TestM3A15AnthropicCommandBoundaryAndFailureRecovery",
+    "TestM3A15IndependentTiktokenGoldenAndVocabularies",
+    "TestM3A15OptionsLimitsEstimatesAndCancellation",
+    "TestM3A15AnthropicRequestAndSafeFailures",
+    "TestM3A15ConcurrentLocalCounters"
+  ],
+  "whitespace": "physical LF-delimited lines; U+2028/U+2029 preserved inside public JSON golden text",
+  "groups": [
+    {
+      "id": "A15-01",
+      "task": "M3-T50",
+      "state": "passed"
+    },
+    {
+      "id": "A15-02",
+      "task": "M3-T50",
+      "state": "passed"
+    },
+    {
+      "id": "A15-03",
+      "task": "M3-T50",
+      "state": "passed"
+    },
+    {
+      "id": "A15-04",
+      "task": "M3-T50",
+      "state": "passed"
+    }
+  ]
+}

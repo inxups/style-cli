@@ -6,7 +6,7 @@
 
 本文件记录 M3 测试矩阵与当前证据状态，任务及依赖见 [STYLE-M3-TASKS.md](STYLE-M3-TASKS.md)，运行记录追加到 [PROGRESS.md](PROGRESS.md)。[M1 测试](STYLE-M1-TESTS.md)、[M2 测试](STYLE-M2-TESTS.md) 已只读归档；历史通过结果不替代 M3 的新验收。
 
-当前状态：M3-00、M3-BASE-01 与 A0–A14 已各自通过本轮离线验收，最新 [A13](review/M3-A13-2026-10-17.json) 覆盖用户 effort 映射。A15–A18、准备、真实本地 B/C、exact 本地编码、跨平台 CI 和最终文档验收仍按依赖推进；设计完成不代替功能或真实投递。用户明确延期的 C3、W1/REAL-04 与 Anthropic 独立 API 子项保持待验并退出本次 FINAL 必过集合。M3-CARRY-01 官方校准仍两家各 0/40、非阻塞；硬编码成员校验风险已由 T00/A0 关闭。
+当前状态：M3-00、M3-BASE-01 与 A0–A15 已各自通过本轮离线验收，最新 [A13](review/M3-A13-2026-10-17.json) 覆盖用户 effort 映射。A16–A18、准备、真实本地 B/C、exact 本地编码、跨平台 CI 和最终文档验收仍按依赖推进；设计完成不代替功能或真实投递。用户明确延期的 C3、W1/REAL-04 与 Anthropic 独立 API 子项保持待验并退出本次 FINAL 必过集合。M3-CARRY-01 官方校准仍两家各 0/40、非阻塞；硬编码成员校验风险已由 T00/A0 关闭。
 
 ## 状态与验收规则
 
@@ -88,7 +88,7 @@ PYTHONDONTWRITEBYTECODE=1 python3 scripts/check_m2_rules_migration.py \
 - [x] **M3-A12 unknown 匹配**（M3-D6、M3-T43）：覆盖批准字段上的缺失、空字符串、未知原始值、显式 `unknown` 和与已有值组合；比较表达式、否定条件和不支持字段按定稿处理。未使用新语法的旧规则仍遵循既有缺值语义，plan/compile/runtime/explain 一致。 证据：[本轮报告](review/M3-A12-2026-10-17.json)；A12-01–04 均通过，六路线生命周期/frozen/标记清理、五路线 CLI 和实际 T42 旧运行器/管理器拒绝有独立证据。
 - [x] **M3-A13 用户 effort 映射**（M3-D7、M3-T44）：验证用户配置与内置映射的定稿优先级、无效/冲突项、未知 raw、approx 与会话缓存更新。隔离配置下 doctor/plan 说明来源，fixture 逐行核对两家原生值；缺值时不沿用旧档位，不伪造原生未提供的思考开关。 证据：[A13 报告](review/M3-A13-2026-10-17.json)，A13-01–04 均通过；11 新函数/73 含分组 pass、同专项 race、全量 Go/vet、35 映射 CLI/35 unknown 兼容/40 smoke。
 - [x] **M3-A14 规则级 fail-closed**（M3-D8、M3-T45）：覆盖受支持/不支持事件与路线、混合规则、模板/状态/超时故障、index 缺失/损坏及既有安装级开关。错误分类、原生输出与退出码按定稿，默认放行兼容；无法识别规则的故障不声称已实现规则级判断，正常未命中不误拦。 [验收报告](review/M3-A14-2026-10-18.json)覆盖 A14-01–04、六路线/云端、真实旧 T44 二进制拒绝/清标记恢复；9 新函数/74 pass、根 3,416 pass、race/vet/80 CLI/40 smoke 通过，2 既有 skip 单列。
-- [ ] **M3-A15 exact 模式**（M3-D9、M3-T50）：固定本地编码及计数接口 fixture，核对计数对象、模型/编码披露、文本/JSON 与确定性排序。覆盖缺凭据/未知模型/编码、取消、限流/网络/接口错误和计数失败；不把估算静默标为 exact，不泄露 key。默认估算模式与旧预算兼容；stub 不能关闭 TOKEN-01 或 CARRY-01。
+- [x] **M3-A15 exact 模式**（M3-D9、M3-T50）：固定本地编码及计数接口 fixture，核对计数对象、模型/编码披露、文本/JSON 与确定性排序。覆盖缺凭据/未知模型/编码、取消、限流/网络/接口错误和计数失败；不把估算静默标为 exact，不泄露 key。默认估算模式与旧预算兼容；stub 不能关闭 TOKEN-01 或 CARRY-01。 [本轮报告](review/M3-A15-2026-10-18.json)与[指南](STYLE-COUNT.md)：两套完整词表和 137×2 独立 golden、无网络再生成、329 新专项/race pass；根 fresh test 3,745 pass/0 fail、vet、287 built CLI、45 故障兼容、50 refresh/五路线 p95 和 40 smoke 通过。首次帮助文案/fixture 失败保留，修正后复验；旧 testdata/agenthooks 不改。
 - [ ] **M3-A16 native 扩展**（M3-D10、M3-T60）：按评估结论覆盖获支持的 `async`/`onFailure`/非 command 类型及拒绝项、版本门槛、目录/单文件包和 from 覆盖。核对安装披露、sync/trust、owner/信任/卸载、原生执行约束及旧四字段兼容；native 仍不被虚构为 STYLE runtime stats/token 记录。
 - [ ] **M3-A17 Windows 平台**（M3-D11、M3-T70）：平台 fixture 与 Windows 原生测试覆盖盘符/空格/Unicode/长路径、启动器引用、支持 shell、native 归属、stdin/退出码、并发状态锁和文件事务。验证失败回滚、外部文件/权限语义和多路线切换；POSIX 路径的既有行为保留。
 - [ ] **M3-A18 conformance 与升级**（M3-T80）：重跑两家 codec/stdout 白名单和共享路线 conformance；覆盖旧包/锁/index/state、旧 Claude 布局与 native/stats/跨包去重/replace 回退。新功能组合验证隔离、排序、预算、去重与错误恢复；golden 变化必须关联批准设计，不用整体重录掩盖无关回归。

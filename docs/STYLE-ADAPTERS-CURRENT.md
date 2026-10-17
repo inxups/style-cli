@@ -498,3 +498,5 @@ M3-T41 通过 [A10](review/M3-A10-2026-10-17.json)：两家 DataSource 对 event
 ## 规则级故障保护
 
 两家 adapter 提供原生事件到统一故障评估点的保守映射；Claude 普通 prompt 的抑制能力也由 adapter 提供，engine 不再按 harness 名推断。原生错误输出、timeout/panic 处理、配置渲染和 owner 合并仍由 agenthooks 负责。使用与边界见[规则故障说明](STYLE-FAIL-CLOSED.md)。
+
+M3-T50 已提供显式 `count/plan/explain --count=exact`，通过[A15](review/M3-A15-2026-10-18.json)。本地具名编码与 Anthropic 最小请求的区别、256 KiB/局部长段限制、实现版本和 API 延期见[计数说明](STYLE-COUNT.md)。普通 hook/预算/stats 仍用原估算。
