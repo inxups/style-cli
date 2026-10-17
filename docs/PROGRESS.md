@@ -2030,3 +2030,8 @@ Codex 0.159.3 与实际配置模型服务、固定生产 STYLE 二进制，在�
 - 使用 A2 补充修复后的最终生产二进制，重跑 scripts/check_m3_exact.py：137 份固定 UTF-8 文本 × o200k_base/cl100k_base 共 274 计数、旧默认/estimate 字节兼容与 plan/explain 文本范围，共 287 CLI 项通过；完整词表与独立 tiktoken 参考的 Go 对照另行重跑通过。
 - 临时三缓存、GOWORK=off，清理检测/provider 环境；[本地报告](review/M3-TOKEN-LOCAL-2026-10-18.json)记录命令、实现/参考版本、文本/二进制摘要和逐项结果。此为编码文本精度，不外推请求/账单。
 - 本次必过的 local 子项完成；独立 Anthropic API 仍依用户决定延期 `[?]`，实际请求 0；REAL-03/TOKEN-01 汇总 `[~]` 保留混合状态。M3-CARRY-01 仍两家各 0/40、独立非阻塞。
+
+## 2026-10-18 M3-DOCS-01 指南同步（总验收未关闭）
+
+- 同步教程、adapter 总览、主设计和相关规范的 M3 已实现入口，补来源/更新/frozen、项目/插件/云端、诊断和计数流程；修正规则级与安装级 fail-closed、内置与用户 effort、Windows/native 边界的过期措辞。
+- 六个生产命令帮助和三个采集器帮助/AST 通过；当前链接、锚点、围栏、追加日志、M1/M2 及历史 JSON 保护与 git diff --check 通过。[报告](review/M3-DOCS-GUIDES-2026-10-18.json)明确只是指南更新，真实本地、最终 CI、FINAL 待完成，本项保持 `[~]`。

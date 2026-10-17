@@ -1,8 +1,8 @@
 # STYLE CLI 使用教程
 
-更新时间：2026-10-17。生产源码核对基线：`16d5c1c`（M2 native、stats、跨包去重、Claude rules/迁移），replace 回退验收 `4976713`，支持 Claude Code 与 Codex。Codex M2 B1–B4 已在两条路线通过；Claude 2.1.301 的 C1–C4 真实交互验收已通过，D4 符合预期、D5 回退方案生效。当前状态见 [M2 任务清单](STYLE-M2-TASKS.md)；M1 结果只作为历史证据。M2 已完成并关闭；`154506f` 的远端 Ubuntu/macOS CI 全部通过。无 key 的[本地编码/订阅补充验证](review/M2-ALT-01-2026-10-17.md)已完成；两家官方计数仍各 0/40，估算不承诺误差范围，非阻塞遗留见任务清单。
+更新时间：2026-10-18。当前里程碑为 M3，基线、全部功能实现与 A0–A18 离线/升级验收已通过；Windows 原生自动化三平台结果见 [A17](review/M3-A17-2026-10-18.json)。真实 B/C 与最终 CI 的进度以 [M3 任务](STYLE-M3-TASKS.md)和[测试矩阵](STYLE-M3-TESTS.md)为准。M1/M2 已关闭并保留只读历史；官方固定语料计数仍两家各 0/40、非阻塞，精确本地编码不替代模型校准。
 
-本教程面向第一次使用 `style` 的人，从构建到卸载走完整个生命周期。文中命令输出是在隔离沙箱里运行得到的（路径已缩写）；新增 M2 示例只有命令和配置，其验证见 M2 进度日志。规则语义的权威定义在 [docs/spec](spec/STYLE-spec.md)，adapter 的实现细节见 [STYLE-ADAPTERS-CURRENT.md](STYLE-ADAPTERS-CURRENT.md)，当前真实环境验收步骤见 [STYLE-M2-MANUAL.md](STYLE-M2-MANUAL.md)。
+本教程面向第一次使用 STYLE 的人，从构建到卸载走完整生命周期。早期示例输出来自隔离沙箱，路径已缩写；M3 命令和边界在第 16 节汇总，验证依据链接到各功能指南。规则语义以[规范](spec/STYLE-spec.md)为准，实现职责见 [adapter 总览](STYLE-ADAPTERS-CURRENT.md)，当前真实环境步骤见 [M3 手册](STYLE-M3-MANUAL.md)。
 
 ## 目录
 
@@ -21,6 +21,7 @@
 13. [常见场景](#13-常见场景)
 14. [排错](#14-排错)
 15. [当前不支持的功能](#15-当前不支持的功能)
+16. [M3 工作流程](#16-m3-工作流程)
 
 ---
 
@@ -808,7 +809,7 @@ rules:
     text: 低强度下先确认需求再动手。
 ```
 
-注意 Codex 的强度来自配置里写的 `model_reasoning_effort`，会话中途用 `/model` 改动看不到；多数默认安装取不到值，规则就不会匹配。用 `style doctor` 查看当前解析结果。
+注意 Codex 的强度来自配置里写的 `model_reasoning_effort`，会话中途用 `/model` 改动看不到；缺值时普通已知档位条件不匹配；M3 可显式使用 `when.thinking_effort: unknown`。用 `style doctor` 查看当前解析结果。
 
 ### 13.3 给特定 skill / MCP 追加说明
 
@@ -851,12 +852,12 @@ style plan ./pkg --harness codex,claude-code --json
 |---|---|
 | `adapters` 里 `detected=false` | 可执行文件不在 `PATH`，且配置目录没有配置文件。设置 `CLAUDE_CONFIG_DIR` / `CODEX_HOME`，或让 harness 至少运行一次 |
 | `installation requires capability confirmation; pass --yes` | 非交互环境，加 `--yes`（先读完 plan 输出） |
-| `package "x" is already installed` | 先 `uninstall`，或对 `--link` 包用 `sync` + `trust` |
+| `package "x" is already installed` | 对普通来源先 `update x` 预览，再加 `--yes`；开发链接按 `sync` / `trust` 流程 |
 | `unknown setting "x"` / `requires --set x=value` | 设置名要与 `settings[].name` 一致；没有 `default` 的设置必须传值 |
 | 安装成功但会话里没效果 | 1) 新开会话；2) Claude 里 `/hooks` 看有没有 STYLE hook、工作区信任是否已确认；3) 手工喂 payload（第 7.2 节）确认规则逻辑；4) 看 hook 的 stderr 日志是否有 `STYLE rule evaluated`；5) `doctor` 看路线和漂移 |
 | 规则注入了一次后不再出现 | 这是默认去重（`repeat: session`）。需要重复就改 `repeat`，并写 `reason:`；上下文压缩后要补发用 `reinject_on_compact: true` |
 | `plan` 退出码 4 | 有 `fallback: error` 的规则在某个 harness 上做不到。改成 `degrade`/`skip`，或用 `--harness` 只装另一家 |
-| `fail-closed … requires >= 2.1.295` | 只对 Claude Code 生效，且需要检测到版本 ≥ 2.1.295；Codex 不支持 |
+| `fail-closed … requires >= 2.1.295` | 安装级 `--fail-closed` 仅 Claude；规则级 `fail: closed` 在两家可 deny 的直接评估点使用，见[失败策略](STYLE-FAIL-CLOSED.md) |
 | hook 报找不到命令 | 安装后移动或删除了 `style` 二进制。把它放回原路径，或重装 |
 | 配置目录里有“别人”的 STYLE 条目 | 另一个 `STYLE_HOME` 的安装也在写 `owner=style`。用原实例卸载后再继续 |
 | `validate` 提示 `undeclared-rule-file` | `rules/` 下的文件没有被 `from:` 引入，不会生效 |
@@ -868,14 +869,65 @@ style plan ./pkg --harness codex,claude-code --json
 
 ## 15. 当前不支持的功能
 
-教程覆盖当前已实现的 M2 部分。以下功能的状态见 [任务清单](STYLE-M2-TASKS.md)，**还不能用**：
+以下边界适用于当前 M3；完整状态见[任务清单](STYLE-M3-TASKS.md)。
 
-- 安装来源只有本地包目录或 `*.style.md` 文件；git 来源、`update`、`--frozen`、`explain`、`probe` 命令未实现。
-- 只支持 Claude Code 与 Codex；Gemini、OpenCode、Cursor 等 provider 未接入。
-- 只有用户级路线；项目级路线、Claude 插件路线未实现。
-- Claude 静态指令已迁到用户级每包 rules；旧布局兼容与离线迁移已验证，[真实交互 C1–C4](STYLE-M2-TESTS.md#m2bclaude-code-真实环境) 已确认加载、native/matcher、去重和卸载恢复。新 rules 的 compact 行为未在本次验收中声明。
-- `mode: replace`：两家都没有替换槽位，规则会被跳过或拒绝，STYLE 只能**追加**，不能替换 harness 自带的 system prompt。
-- Codex 的插件路线不会自动登记到 marketplace；Codex 云端 skill 未验证。
-- Windows 未适配（hook 依赖 POSIX shell 的场景）。
+- 完整 adapter 仍只有 Claude Code 和 Codex，其他 harness 留待 M4。
+- 两家均无 replace 槽位，`--allow-replace` 不会创造替换能力；degrade/skip/error 沿用既有语义。
+- Codex 中途 `/model` 修改 effort 的可靠观测未纳入 M3；provider 表示配置请求，不能证明网关实际上游或账单主体。
+- native 保留 event/matcher/command/timeout 四字段；async、onFailure、HTTP/MCP/prompt/agent 类型明确拒绝，见[native 指南](STYLE-NATIVE.md)。
+- Windows 支持两家 user 路线与原生 exe；项目/插件路线和作者 POSIX native 不支持。自动化通过不等于 W1 的实际 harness 验收。
+- 用户已延期 Claude 托管云端 C3、Windows 实际主机/harness W1 和 Anthropic 独立计数 API；不得用本地 fixture 或编码对照替代。官方两家各 0/40 另为非阻塞遗留。
+- 原生插件登记仍需按报告命令执行；文件存在、登记 enabled、回调 observed 和完整正文投递分别核对。Claude rules 的 compact 行为不由新会话验收外推。
 
-真实环境的验收结论与剩余未决项见 [M2 测试矩阵](STYLE-M2-TESTS.md) 和 [adapter 现状总览](STYLE-ADAPTERS-CURRENT.md) 第 12 节。
+## 16. M3 工作流程
+
+### 16.1 来源、更新和锁恢复
+
+普通 copy 安装使用批准快照；更新先审预览，再确认：
+
+```sh
+style update my-style --json
+style update my-style --yes --json
+style install --frozen --yes --json
+```
+
+Git 来源必须显式 `git+https://`，支持公共 HTTPS、完整 ref 和子目录；安装记录固定 commit 和原始对象快照。frozen 仅按当前整锁与绑定离线恢复，不取得新 ref、不批准新源码。详细语法与失败恢复见[来源指南](STYLE-SOURCES.md)。
+
+### 16.2 项目、插件与云端
+
+```sh
+style install ./my-style --project . --harness codex,claude-code --yes --json
+style doctor --project . --json
+style sync --project . --json
+style uninstall --all --project . --yes --json
+```
+
+项目 home 按规范根隔离；项目与 user 同名冲突、复制 clone 与原生工作区 trust 均有显式门禁，见[项目指南](STYLE-PROJECTS.md)。项目参数须沿用到管理、probe、explain 和 stats 等诊断命令。
+
+Claude 插件显式选 `--route claude-code=claude-plugin`，生成后 registration-required/退出1仍需原生登记；卸载先停用原生插件，见[插件指南](STYLE-CLAUDE-PLUGIN.md)。云端 export 交付已批准 bundle，不在远端自动取来源或编译，见[云端指南](STYLE-CLOUD.md)。
+
+### 16.3 解释与实际回调
+
+```sh
+style explain --harness codex --event PreToolUse --payload payload.json --index /absolute/index.json --json
+style probe --harness codex --timeout=60s --json
+```
+
+explain 默认空隔离状态，可显式提供 state/facts；它不读取本机隐藏配置，也不请求模型。probe 观察已安装 hook，须由原生会话触发，不能手工调用替代；observed 仍不单独证明正文进了模型请求。见[解释](STYLE-EXPLAIN.md)、[probe](STYLE-PROBE.md)及[M3 真实验收手册](STYLE-M3-MANUAL.md)。
+
+### 16.4 运行时与计数
+
+| 功能 | 使用方式与边界 |
+|---|---|
+| [refresh](STYLE-REFRESH.md) | `refresh: N` 按已提交回合补发；repeat、compact 和完整单次预算仍分别生效 |
+| [事件围栏](STYLE-EVENT-CONTENT.md) | 显式 reads.event / event. 引用；截断和转义后作为不可信内容，不能当作可信指令 |
+| [provider](STYLE-PROVIDER.md)、[unknown](STYLE-UNKNOWN.md) | 声明 reads；只用可观测配置请求/缺值，不猜测实际服务或思考行为 |
+| [effort 映射](STYLE-EFFORT-MAPPING.md) | 当前 STYLE home 的 effort.yaml，sync 编译；保留 raw，用户别名标记 approx |
+| [失败策略](STYLE-FAIL-CLOSED.md) | 规则 `fail: closed` 保护受支持直接事件；index 不可读或宿主终止有明确边界 |
+| [exact](STYLE-COUNT.md) | count/plan/explain 显式 opt-in；本地具名编码和 Anthropic 最小消息计数分别披露，预算仍用估算 |
+
+```sh
+style count rules.txt --count=exact --count-provider=openai --encoding=o200k_base --json
+```
+
+本地编码内置词表，不需 key 或下载；固定实现/编码名、文本摘要与范围随结果返回。API 路线会发送文本且需独立 key，已按用户要求延期实际验收。精确编码数不能称为完整请求、账单或估算误差保证。

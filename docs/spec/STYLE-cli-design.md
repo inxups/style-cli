@@ -2,7 +2,11 @@
 
 对应规范：[STYLE-spec.md](STYLE-spec.md)（v0.3）。规范定义包格式、运行时语义、token 预算、安全约束和 `index.json`；本文定义命令、本地布局、编译和运行时流程、Claude Code 与 Codex 两个适配器、token 估算器、fork 改动、里程碑、验收和未决项。冲突时，格式和语义以规范为准，实现细节以本文为准。
 
-状态（2026-10-17）：M1、M2 已关闭并只读归档；M2 的 native、stats、跨包去重、Claude rules/迁移与 replace 回退已验收，Codex/Claude 真实环境、本地回归和最终 Ubuntu/macOS CI 均通过，历史证据见 [M2 任务清单](../STYLE-M2-TASKS.md)、[测试矩阵](../STYLE-M2-TESTS.md)。当前里程碑为 M3，任务、依赖和验收状态以 [M3 任务清单](../STYLE-M3-TASKS.md)、[测试矩阵](../STYLE-M3-TESTS.md) 为准；建档和隔离环境基线已完成，D0 已获用户确认，T00 注册表校验修复和 A0 验收已完成；[D1 诊断契约评审稿](../review/M3-D1-DIAGNOSTICS-2026-10-17.md) 已获用户确认，explain 已实现并通过 [M3-A1](../review/M3-A1-2026-10-17.json)，probe 也已实现并通过 [M3-A2](../review/M3-A2-2026-10-17.json)；[D2 来源与锁定评审稿](../review/M3-D2-SOURCES-2026-10-17.md) 已于 2026-10-17 获用户确认，Git 来源已由 T20 实现并通过 [M3-A3](../review/M3-A3-2026-10-17.json)，update 已由 T21 实现并通过 [M3-A4](../review/M3-A4-2026-10-17.json)，frozen 已由 T22 实现并通过 [M3-A5](../review/M3-A5-2026-10-17.json)。[D3 安装范围与交付路线评审稿](../review/M3-D3-ROUTES-2026-10-17.md)的项目部分已获用户确认，T30 已实现并通过 [A6](../review/M3-A6-2026-10-17.json)，见 [项目安装说明](../STYLE-PROJECTS.md)；云端/插件 T31/T32 暂缓。用户已要求继续其他 M3 阶段，现进入 [D4 refresh 评审稿](../review/M3-D4-REFRESH-2026-10-17.md)，新增契约已获用户确认，T40 已实现，验收见 [A9](../review/M3-A9-2026-10-17.json) 和 [周期补发说明](../STYLE-REFRESH.md)。官方 token 计数仍各 0/40，承接为 M3-CARRY-01 非阻塞待验；本地编码/订阅 usage 作为补充，不提供误差范围保证。核心名称校验硬编码风险 M3-RV-01 已随 T00/A0 关闭；engine 既有输出安全特例仍按 D8 评估。当前仅支持 **Claude Code** 和 **Codex**；本文接口代码为设计示意，当前接口与职责见 [adapter 总览](../STYLE-ADAPTERS-CURRENT.md)。
+状态（2026-10-18）：M1、M2 已关闭并只读归档；M2 的 native、stats、跨包去重、Claude rules/迁移和 replace 回退及真实验收事实保留，见 [M2 任务](../STYLE-M2-TASKS.md)与[测试矩阵](../STYLE-M2-TESTS.md)。
+
+当前里程碑 M3 的 D0–D11、全部实现及 A0–A18 已完成；[A17](../review/M3-A17-2026-10-18.json)固定支持范围的三平台原生 CI，[A18](../review/M3-A18-2026-10-18.json)固定旧版本和六路线组合回归。真实本地 B/C、exact 汇总和最终 CI 以[M3 任务](../STYLE-M3-TASKS.md)、[测试矩阵](../STYLE-M3-TESTS.md)为准，操作见[M3 手册](../STYLE-M3-MANUAL.md)。用户明确延期 C3、W1 和 Anthropic 独立 API；官方校准两家各 0/40 继续非阻塞，编码精确不替代校准。M3-RV-01 已由注册表校验关闭，D8 已将 engine 输出差异改为 adapter 能力。
+
+当前完整接入 Claude Code 与 Codex。Windows 支持两家 user 路线，POSIX 还支持项目及插件；本文接口示意须结合当前源码与[adapter 总览](../STYLE-ADAPTERS-CURRENT.md)阅读。
 
 **依据**：
 - agenthooks `3f734c7` 源码，历史整理资料为 `agenthooks-codex.md`（外部资料，本仓库未收录）；
@@ -24,7 +28,7 @@
 - **适配器只回答事实**：支持哪些能力、数据从哪来、装到哪、怎么信任、静态文字写到哪、单次注入上限多少。"做不到怎么办"由核心按规范第 5 节的阶梯决定。
 - **适配器分两层**：协议层（事件名、stdin/stdout、工具名）用 agenthooks（fork）的 codec；STYLE 适配器只写协议层以外的部分：安装路线、信任、静态位置、数据来源、skill 识别补充、上限。
 - **热路径只读 `index.json`**，不读 md、不算哈希；没命中时输出为空。
-- **出错放行**（规范 8.8）。
+- **默认出错放行**（规范 8.8）；M3 规则级 `fail: closed` 及既有 Claude 安装级开关按各自契约处理，见[故障指南](../STYLE-FAIL-CLOSED.md)。
 - **省 token 是一等需求**：`validate` 出 lint，`plan` 出 token 报告，运行时记计数。
 
 ## 2. 分层
@@ -157,7 +161,7 @@ map: { low: low, medium: medium, high: high, xhigh: xhigh, max: max }
 
 保留 `spec.Validate(pkg)` 签名作为结构/lint 校验，以及既有 NativeCatalog/ValidateNative 底层入口；需要完整有效性的调用必须使用新完整入口。app 的 validate、plan、install、sync、trust 和保留包重编译均走完整门禁，再将源诊断交给预算与去重报告；tokens 的无源诊断回退只做结构检查。三处未知名诊断保持既有 code/message/path，默认两家 CLI 输出与退出码保持兼容。validate 的预算遍历和 plan 的 auto 检测改为遍历注册项，报告顺序沿用现有策略。
 
-core 只消费通用目录/能力端口；agenthooks 继续负责协议、配置渲染、owner 合并和卸载恢复。依赖检查补齐 adapter 子路径。`core/engine/process.go` 另有两处既有 Claude prompt suppression 判断，本次校验目录不删除它们；在 M3-D8 评估其输出能力边界，不以 T00 通过宣称所有 core 特例清零。M3-A0 的十组细化断言见详细方案；D0 已获用户确认，T00 已按此范围实现；14 个新测试函数、205 个叶子用例及旧包/输出兼容回归通过。
+core 只消费通用目录/能力端口；agenthooks 继续负责协议、配置渲染、owner 合并和卸载恢复。依赖检查补齐 adapter 子路径。`core/engine/process.go` 另有两处既有 Claude prompt suppression 判断，本次校验目录不删除它们；当时留待 D8；现已由 T45/A14 改为 adapter 输出能力，T00 的历史验收范围保持。M3-A0 的十组细化断言见详细方案；D0 已获用户确认，T00 已按此范围实现；14 个新测试函数、205 个叶子用例及旧包/输出兼容回归通过。
 
 ## 4. 命令
 
@@ -183,7 +187,7 @@ core 只消费通用目录/能力端口；agenthooks 继续负责协议、配置
 | `style update <name>` / `style update --all` | T21/A4 已完成：明确选择、预览/确认、多包事务（§4.2）；[使用说明](../STYLE-SOURCES.md#明确选包更新) | M3 |
 | `style install --frozen [--yes] [--json] [--allow-replace]` | T22/A5 已完成：当前整锁/绑定下离线恢复（§4.2）；[使用说明](../STYLE-SOURCES.md#整锁离线恢复) | M3 |
 | `--project <dir>` | T30/A6 已完成：显式项目安装、管理与诊断（§4.3）；[使用说明](../STYLE-PROJECTS.md) | M3 |
-| `export --target claude-cloud`、`claude-plugin` | T31/T32 已通过 A7/A8（§4.3）；`--count=exact` 仍待 D9 | M3 |
+| `export --target claude-cloud`、`claude-plugin` | T31/T32 已通过 A7/A8（§4.3）；`count/plan/explain --count=exact` 已通过 T50/A15 | M3 |
 
 **选项说明**：
 - `--route h=r`：指定路线，例如 `codex=codex-user`、`codex=codex-plugin`、`claude-code=claude-user`。
@@ -391,11 +395,11 @@ T8 的实施契约见 [运行时 §7.5](STYLE-spec-runtime.md#75-m2-d3-跨包去
 
 ### 8.1 M3-D4 refresh 评审稿
 
-本节是已获用户确认的 [D4 契约](../review/M3-D4-REFRESH-2026-10-17.md)，T40 已实现，离线验收见 [A9](../review/M3-A9-2026-10-17.json)。用户要求在项目路线完成后继续其他阶段，因此 D4 前置改为 T30；Claude 云端/插件仍暂缓，现有五条路线是 T40 的实施范围。
+本节是已获用户确认的 [D4 契约](../review/M3-D4-REFRESH-2026-10-17.md)，T40 已实现，离线验收见 [A9](../review/M3-A9-2026-10-17.json)。用户要求在项目路线完成后继续其他阶段，因此 D4 前置改为 T30；该设计推进时 Claude 云端/插件暂缓，T40 首次验收覆盖当时五条路线；最终六路线组合另见 A18。
 
 规则/defaults/from 可写 `refresh: N`（整数 0–1,000,000，0/省略关闭），只与 inject/warn 的 repeat session 搭配。system 自动转动态；同正文首次命中即发，之后按实际收到的 prompt.submitted 距上次保留输出满 N 回合、再次符合条件时补一次。工具次数不推进周期；原生不透明 ID 防重复，缺 ID 披露按回调计数。生命周期、迟到事件、正文切换和旧 seen 的保守升级按契约执行。
 
-有效 refresh 的 harness 使用独立时钟/游标和跨进程状态保护，Claude 按需补 UserPromptSubmit 时钟入口，订阅/渲染/owner/信任仍交 agenthooks。无有效 refresh 继续旧热路径和 format 1；新能力写 index 2，旧 runner 明确拒绝。预算按一次全文而非除以 N；stats 沿用结果和估算字段，到期原因由 explain 安全 trace 说明。A9-01–A9-12 的结果见 [A9 报告](../review/M3-A9-2026-10-17.json)，当前支持 macOS/Linux；真实 B3/C5、Windows 与远端 CI 继续待验。
+有效 refresh 的 harness 使用独立时钟/游标和跨进程状态保护，Claude 按需补 UserPromptSubmit 时钟入口，订阅/渲染/owner/信任仍交 agenthooks。无有效 refresh 继续旧热路径和 format 1；新能力写 index 2，旧 runner 明确拒绝。预算按一次全文而非除以 N；stats 沿用结果和估算字段，到期原因由 explain 安全 trace 说明。A9-01–A9-12 的结果见 [A9 报告](../review/M3-A9-2026-10-17.json)，首次验收范围为 macOS/Linux；Windows 现已通过 A17，最终真实 B3/C5 与 CI 状态见 M3 测试矩阵。
 
 ## 9. Codex 适配器
 
@@ -629,7 +633,7 @@ Codex 用 `shell -lc` 跑 hook 命令，登录 shell 会读用户的 profile：�
 ### 10.8 已知限制
 
 - `UserPromptSubmit` 不只在用户打字时触发，定时任务、后台子 agent 回报、别的会话发来的消息也会触发它【方案 N4】。`prompt.submitted` 规则会命中这些；默认 `repeat: session` 让它们不会反复注入。
-- Claude 的云端会话不读本机的 `~/.claude/settings.json`，用户级安装在那里不生效。项目级路线放 M3。
+- Claude 的云端会话不读本机的 `~/.claude/settings.json`，用户级安装在那里不生效。M3 项目路线和显式云端 bundle 交付已实现，见[项目](../STYLE-PROJECTS.md)与[云端指南](../STYLE-CLOUD.md)；实际托管云会话 C3 仍待验。
 - 未接受工作区信任的目录里，hook 不跑。
 - SessionStart 要快：第一次回复要等它跑完；`/clear` 时没跑完的结果会被丢弃【方案 N10】。
 
@@ -646,8 +650,8 @@ chars = Unicode 字符（rune）个数，精确值
 ```
 
 - 动态正文里的每个变量按占位长度算：一般变量 16 token / 64 字符；`harness.cwd` 32 token / 128 字符。
-- 结果明确标为估算，不提供百分比误差保证；U-T3 官方计数校准尚未完成，不调整现有系数。 2026-10-17 的 [M2-ALT-01](../review/M2-ALT-01-2026-10-17.md) 补齐固定 40 条语料的两种本地编码对照与既有订阅 usage；编码差异和语料偏差均单列，不代替官方计数，不新增 `--count=exact`。
-- `--count=exact`（调用 Anthropic 的 token 计数接口、本地 OpenAI 分词器）留到 M3。
+- 结果明确标为估算，不提供百分比误差保证；U-T3 官方计数校准尚未完成，不调整现有系数。 2026-10-17 的 [M2-ALT-01](../review/M2-ALT-01-2026-10-17.md) 补齐固定 40 条语料的两种本地编码对照与既有订阅 usage；编码差异和语料偏差均单列，不代替官方计数；该 M2 补充当时未新增 `--count=exact`。
+- M3 已实现显式 `--count=exact`，用于本地编码或独立 Anthropic 计数 API；默认估算、预算和热路径保持。具体 scope、编码/模型/凭据参数及失败边界见[计数指南](../STYLE-COUNT.md)，最终本地验收见[TOKEN-01](../review/M3-TOKEN-LOCAL-2026-10-18.json)；独立 API 按用户决定延期。
 
 ### 11.2 按原生事件分组
 
@@ -932,7 +936,7 @@ Claude U9、U-C1/C2/C3/C5 已由用户界面观察、原生请求/hook及state�
 
 ### 15.3 设计层面留到以后的
 
-- `refresh` 已由 T40 按 [D4](../review/M3-D4-REFRESH-2026-10-17.md) 实现；事件内容带围栏进模板、`--count=exact`、用户自定义 effort 映射、"取不到"能否用 `unknown` 匹配、`provider` 的数据来源、规则级 `fail: closed`：M3。
+- M3 的 refresh、事件围栏、exact、用户 effort 映射、unknown/provider 与规则级 fail:closed 已分别完成 T40–T50/A9–A15；具体边界见本页对应定稿章节和功能指南。
 - Codex 会话中途 `/model` 改强度看不到，这是"只读配置"的代价；要不要补办法，M3 之后再说。
 - 只有开关的模型（Kimi、GLM）的开关从哪读：跟着这些 harness 一起推迟到 M4。
 
@@ -942,13 +946,13 @@ M3-T32 已通过 [A8](../review/M3-A8-2026-10-17.json)，本地 marketplace、�
 
 M3-T41 已实现并通过 [A10](../review/M3-A10-2026-10-17.json)；`event.` + `reads.event` 明确启用，完整转义围栏、512 code point 和 index 3 见[说明](../STYLE-EVENT-CONTENT.md)。doctor 给出 runner 升级要求，默认旧模板和 index 1/2 保持。
 
-M3-T42 已通过 [A11](../review/M3-A11-2026-10-17.json)，reads.provider、服务选择请求、离线重放及 index 4 的当前行为见[说明](../STYLE-PROVIDER.md)。旧 stats/log/hook 参数的 provider 仍指 harness；T43 unknown 已通过 [A12](../review/M3-A12-2026-10-17.json)，四字段缺值/index 5/严格锁保护见[说明](../STYLE-UNKNOWN.md)。后续按 D7 自定义 effort 映射继续。
+M3-T42 已通过 [A11](../review/M3-A11-2026-10-17.json)，reads.provider、服务选择请求、离线重放及 index 4 的当前行为见[说明](../STYLE-PROVIDER.md)。旧 stats/log/hook 参数的 provider 仍指 harness；T43 unknown 已通过 [A12](../review/M3-A12-2026-10-17.json)，四字段缺值/index 5/严格锁保护见[说明](../STYLE-UNKNOWN.md)。D7/T44 已完成，见下节。
 
 ## M3-D7 自定义 effort 配置
 
 按[D7](../review/M3-D7-EFFORT-MAPPING-2026-10-17.md)实施当前 STYLE home 的 effort.yaml。plan/管理预览显示快照摘要；sync 采纳用户修改，doctor 报待同步，frozen 保持锁快照。用户解释只调整已有 raw 的 canonical/approx，不声称原生实际思考模式。
 
-T44/A13 已实现并通过[验收](../review/M3-A13-2026-10-17.json)，严格格式和来源说明见[用户指南](../STYLE-EFFORT-MAPPING.md)。当前继续 D8。
+T44/A13 已实现并通过[验收](../review/M3-A13-2026-10-17.json)，严格格式和来源说明见[用户指南](../STYLE-EFFORT-MAPPING.md)。D8/T45 亦已完成，见下节。
 
 ## M3-D8 规则级失败策略
 
@@ -968,4 +972,4 @@ T60/A16 已落实扩展拒绝原因与四字段兼容，见[指南](../STYLE-NAT
 
 ## M3-D11 Windows 平台契约
 
-[D11 定稿](../review/M3-D11-WINDOWS-2026-10-18.md)限定 Windows 原生 style.exe 的两家 user 路线；项目/插件启动器与作者 POSIX native 在 Windows 明确不可用。安全参数传递、owner/信任、内核身份、私有 DACL、共享/独占 refresh 锁与失败恢复须经 A17/Windows CI 验证；用户延期的 W1 不以 CI 或交叉编译代替。POSIX 路线保持。
+[D11 定稿](../review/M3-D11-WINDOWS-2026-10-18.md)限定 Windows 原生 style.exe 的两家 user 路线；项目/插件启动器与作者 POSIX native 在 Windows 明确不可用。安全参数传递、owner/信任、内核身份、私有 DACL、共享/独占 refresh 锁与失败恢复已通过[A17 原生 CI](../review/M3-A17-2026-10-18.json)；用户延期的 W1 不以 CI 或交叉编译代替。POSIX 路线保持。

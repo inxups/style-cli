@@ -272,7 +272,7 @@ M3-T31 已实现 cloud manifest format 1、相对逻辑来源、绑定文件摘�
 
 ## M3-D6 服务条件与缺值 index 4/5
 
-[D6 定稿](../review/M3-D6-PROVIDER-UNKNOWN-2026-10-17.md)规定 provider 条件/变量使用 format 4，四字段 unknown 使用 format 5；旧 format 的新语义严格拒绝，重新编译原包启用。when/body 结构保持，needs 加 provider；新 runner 兼容合法 1/2/3/4，混合 refresh/event/provider/unknown 取最高格式。T42/A11 与 T43/[A12](../review/M3-A12-2026-10-17.json) 均已实现。
+[D6 定稿](../review/M3-D6-PROVIDER-UNKNOWN-2026-10-17.md)规定 provider 条件/变量使用 format 4，四字段 unknown 使用 format 5；旧 format 的新语义严格拒绝，重新编译原包启用。when/body 结构保持，needs 加 provider；新 runner 兼容其支持的合法旧格式，混合 refresh/event/provider/unknown 及后续映射/失败策略时取所需最高格式。T42/A11 与 T43/[A12](../review/M3-A12-2026-10-17.json) 均已实现。
 
 M3-T43 的 unknown 采用独立 index 5；严格锁增加按需 min_index_format: 5，阻止 T42 旧管理器降级。用户普通锁最低 2，项目/插件仍 3，无新语法不加标记。依据和 frozen/移除边界见 [D6 兼容修订](../review/M3-D6-PROVIDER-UNKNOWN-2026-10-17.md#4-状态重放和兼容)。
 

@@ -6,7 +6,7 @@
 
 本文件记录 M3 测试矩阵与当前证据状态，任务及依赖见 [STYLE-M3-TASKS.md](STYLE-M3-TASKS.md)，运行记录追加到 [PROGRESS.md](PROGRESS.md)。[M1 测试](STYLE-M1-TESTS.md)、[M2 测试](STYLE-M2-TESTS.md) 已只读归档；历史通过结果不替代 M3 的新验收。
 
-当前状态：M3-00、M3-BASE-01 与 A0–A16 已各自通过本轮离线验收，最新 [A13](review/M3-A13-2026-10-17.json) 覆盖用户 effort 映射。A17–A18、准备、真实本地 B/C、exact 本地编码、跨平台 CI 和最终文档验收仍按依赖推进；设计完成不代替功能或真实投递。用户明确延期的 C3、W1/REAL-04 与 Anthropic 独立 API 子项保持待验并退出本次 FINAL 必过集合。M3-CARRY-01 官方校准仍两家各 0/40、非阻塞；硬编码成员校验风险已由 T00/A0 关闭。
+当前状态：M3-00、M3-BASE-01、A0–A18 与 P1/P2 已通过。Codex 用户路线已有真实证据，本地 exact 必过子项已通过最终二进制；其余本地 B/C、最终 CI 和文档验收继续推进。用户明确延期的 C3、W1/REAL-04 与 Anthropic 独立 API 子项保持待验并退出本次 FINAL 必过集合。M3-CARRY-01 官方校准仍两家各 0/40、非阻塞；硬编码成员校验风险已由 T00/A0 关闭。
 
 ## 状态与验收规则
 
@@ -127,7 +127,7 @@ PYTHONDONTWRITEBYTECODE=1 python3 scripts/check_m2_rules_migration.py \
 
 - [ ] **M3-CI-01 跨平台 CI**（M3-CI-01）：最终 headSha 在 Ubuntu/macOS/Windows 的适用 format/vet、双 module fresh test/build、采集器、smoke 与旧迁移/回退检查全部通过；平台脚本使用原生临时缓存和环境清理。记录逐 job/步骤结果，跳过项不得算通过，适用时验证 `GOWORK=off` 发布形态。
 - [ ] **M3-FINAL 最终回归**（M3-FINAL）：M3-BASE-01、A0–A18、P1/P2、B1–B4、C1–C6、TOKEN-01、W1 与 CI-01 按定稿范围全部验收；关联同一最终源码/二进制或说明等价性，无未解释 golden/兼容性差异。CARRY-01 继续独立非阻塞，其他缺环境项不能自动豁免。
-- [ ] **M3-DOCS-01 总文档验收**（M3-DOCS-01）：规范、命令帮助/示例、教程、adapter 总览和 M3 手册反映最终已验行为；任务/测试/日志证据互相对应，链接/围栏/摘要核对通过，历史归档未改。M3-FINAL 通过后关闭里程碑，并提示用户进行下一步规划。
+- [~] **M3-DOCS-01 总文档验收**（M3-DOCS-01）：规范、命令帮助/示例、教程、adapter 总览和 M3 手册反映最终已验行为；任务/测试/日志证据互相对应，链接/围栏/摘要核对通过，历史归档未改。M3-FINAL 通过后关闭里程碑，并提示用户进行下一步规划。 [指南同步检查](review/M3-DOCS-GUIDES-2026-10-18.json)已覆盖当前实现、计数与失败策略/平台边界；本地真实、最终 CI 和 FINAL 尚待完成，本项不关闭。
 
 ## 2026-10-17 用户确认的延期真实验收
 

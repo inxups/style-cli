@@ -258,7 +258,7 @@ M1 的 `skipped-m2` 状态取消。token 一节单列"native hook 输出不估�
 - 每条 native 规则在对应事件下单独占一个 matcher 组、一个 handler，排在 STYLE 自身订阅面的组之后；多条 native 规则按包结构 1.4 的顺序（`order`）排列。产出逐字节稳定。
 - 写入的 `command` 为 `: --owner=style --native=<包名>/<规则 id>; <作者命令>`。`:` 是 POSIX 的空操作，不读 stdin、不改退出码；harness 的 hook 输入照常交给作者命令。`<包名>/<规则 id>` 含 shell 特殊字符时按 shell 规则加引号。卸载、换路线、重编译都沿用 agenthooks 按 `--owner=style` 识别归属的逻辑，不认这个前缀的条目一律保留。
 - Codex 用户路线（`codex-user`）照常为 native 条目预置 `trusted_hash`；信任关口是 STYLE 的安装披露与确认（运行时 8.6）。
-- Windows 的 cmd.exe 没有 `:` 空操作，native 规则在 Windows 上的写法随 M3 的 Windows 支持再定。
+- Windows 的 cmd.exe 没有 `:` 空操作；M3 Windows 两家 user 路线不支持包作者的 POSIX native 命令，边界见[D11](../review/M3-D11-WINDOWS-2026-10-18.md)与[native 指南](../STYLE-NATIVE.md)。
 - native 条目不经过 STYLE 运行时：不写 `stats.jsonl`，`style stats` 不统计；M2-D3 确定 native 不参与跨包去重（命令即使相同也可能有副作用），见[运行时 §7.5](STYLE-spec-runtime.md#75-m2-d3-跨包去重契约)。
 
 ### 3.11 M3-D4 refresh 评审稿
