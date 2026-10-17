@@ -65,8 +65,27 @@ func (body Body) Render(values map[string]string) string {
 			if !exists && part.Variable.Default != nil {
 				value = *part.Variable.Default
 			}
+			if template.IsEventVariable(part.Variable.Name) {
+				value = template.FenceEvent(part.Variable.Name, value)
+			}
 			text.WriteString(value)
 		}
 	}
 	return text.String()
+}
+
+// EventVariables lists explicitly fenced references in source order.
+func (body Body) EventVariables() []string {
+	var names []string
+	for _, p := range body.Parts {
+		if p.Variable != nil && template.IsEventVariable(p.Variable.Name) {
+			names = append(names, p.Variable.Name)
+		}
+	}
+	return names
+}
+
+// HasEventContent reports whether either output body uses untrusted event data.
+func (entry Entry) HasEventContent() bool {
+	return len(entry.Body.EventVariables()) > 0 || entry.ModelBody != nil && len(entry.ModelBody.EventVariables()) > 0
 }

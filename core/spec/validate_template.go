@@ -28,6 +28,23 @@ func (v *validator) validateTemplateName(name string, hasDefault bool, source st
 			return
 		}
 	}
+	if strings.HasPrefix(name, "event.") {
+		field := strings.TrimPrefix(name, "event.")
+		if !styletemplate.EventFieldKnown(field) {
+			v.add("undeclared-var", source, name+" is not a supported event variable")
+			return
+		}
+		v.requireRuntimeRead(name, source)
+		if !v.conditionFieldAvailable(field, rule) {
+			v.add("event-var-unavailable", source, name+" is unavailable for this target/event")
+		}
+		if v.effectiveRuleString(rule, "action", "inject") == "warn" {
+			if _, ok := effectiveRuleValue(rule, v.pkg, "model_text"); !ok {
+				v.add("event-warn-model-text", source, "warn with event content requires explicit model_text to preserve complete fences")
+			}
+		}
+		return
+	}
 	switch {
 	case strings.HasPrefix(name, "vars."):
 		vars := asStringMap(v.pkg.Metadata["vars"])

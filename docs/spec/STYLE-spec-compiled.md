@@ -268,4 +268,4 @@ M3-T31 已实现 cloud manifest format 1、相对逻辑来源、绑定文件摘�
 
 ## M3-D5 事件模板 index 3
 
-[D5 定稿](../review/M3-D5-EVENT-CONTENT-2026-10-17.md)要求 event. 动态变量使用整体 format 3；body 仍用既有 var/default 表达，渲染必经截断/转义/围栏，format 1/2 拒绝新变量。format 3 可同时承载 refresh，旧格式与原 golden 保持。T41/A10 实现待验。
+[D5 定稿](../review/M3-D5-EVENT-CONTENT-2026-10-17.md)要求 event. 动态变量使用整体 format 3；body 仍用既有 var/default 表达，渲染必经截断/转义/围栏，format 1/2 拒绝新变量。format 3 可同时承载 refresh，旧格式与原 golden 保持。T41 已实现并通过 [A10](../review/M3-A10-2026-10-17.json)。

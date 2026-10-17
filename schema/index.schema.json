@@ -5,9 +5,9 @@
   "type": "object",
   "required": ["format", "style_version", "packages", "static", "harnesses"],
   "additionalProperties": false,
-  "allOf": [{"if": {"properties": {"format": {"const": 1}}}, "then": {"properties": {"harnesses": {"additionalProperties": {"additionalProperties": {"items": {"not": {"required": ["refresh"]}}}}}}}}],
+  "allOf": [{"if": {"properties": {"format": {"const": 1}}}, "then": {"properties": {"harnesses": {"additionalProperties": {"additionalProperties": {"items": {"not": {"required": ["refresh"]}}}}}}}}, {"if": {"properties": {"format": {"enum": [1, 2]}}}, "then": {"properties": {"harnesses": {"additionalProperties": {"additionalProperties": {"items": {"properties": {"body": {"$ref": "#/$defs/legacyBody"}, "model_body": {"$ref": "#/$defs/legacyBody"}}}}}}}}}],
   "properties": {
-    "format": {"enum": [1, 2]},
+    "format": {"enum": [1, 2, 3]},
     "style_version": {"type": "string", "minLength": 1},
     "packages": {
       "type": "array",
@@ -69,10 +69,11 @@
       "required": ["var"],
       "additionalProperties": false,
       "properties": {
-        "var": {"type": "string", "pattern": "^[A-Za-z_][A-Za-z0-9_.]*$"},
+        "var": {"type": "string", "pattern": "^[A-Za-z_][A-Za-z0-9_.]*$", "anyOf": [{"not": {"pattern": "^event\\."}}, {"pattern": "^event\\.(prompt|tool\\.(name|input(\\.[A-Za-z0-9_]+)*|added|output)|mcp\\.(server|tool)|skill\\.name)$"}]},
         "default": {"type": "string"}
       }
     },
+    "legacyBody": {"allOf": [{"$ref": "#/$defs/body"}, {"properties": {"parts": {"items": {"not": {"type": "object", "required": ["var"], "properties": {"var": {"pattern": "^event\\."}}}}}}}]},
     "body": {
       "oneOf": [
         {

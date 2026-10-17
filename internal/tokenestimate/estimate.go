@@ -71,6 +71,10 @@ func RenderForEstimate(source string, context Context) (string, error) {
 			rendered.WriteString(part.Text)
 			continue
 		}
+		if template.IsEventVariable(part.Name) {
+			rendered.WriteString(template.EstimateEvent(part.Name))
+			continue
+		}
 		if template.IsRuntimeVariable(part.Name) {
 			length := 64
 			if part.Name == "harness.cwd" {

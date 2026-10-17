@@ -67,8 +67,11 @@ func Build(request Request) (Result, error) {
 	for _, events := range result.Index.Harnesses {
 		for _, entries := range events {
 			for _, entry := range entries {
-				if entry.Refresh > 0 {
+				if entry.Refresh > 0 && result.Index.Format < RefreshFormat {
 					result.Index.Format = RefreshFormat
+				}
+				if entry.HasEventContent() {
+					result.Index.Format = EventFormat
 				}
 			}
 		}

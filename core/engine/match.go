@@ -134,3 +134,19 @@ func mergeValues(base, point map[string]string, input when.Input) map[string]str
 func isPromptPoint(point string) bool {
 	return point == "prompt.submitted"
 }
+
+// Event values come only from this evaluation point, never ambient variables.
+func populateEventValues(entry compile.Entry, values map[string]string, input when.Input) {
+	names := entry.Body.EventVariables()
+	if entry.ModelBody != nil {
+		names = append(names, entry.ModelBody.EventVariables()...)
+	}
+	for _, name := range names {
+		delete(values, name)
+		if input.Fields != nil {
+			if value, ok := input.Fields.ReadConditionField(strings.TrimPrefix(name, "event.")); ok {
+				values[name] = value
+			}
+		}
+	}
+}

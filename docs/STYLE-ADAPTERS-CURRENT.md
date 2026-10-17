@@ -490,3 +490,5 @@ U9控制配置补测已完成，见 [THINKING](review/M1-FINAL-06-THINKING-2026-
 M3-T31 已提供 [Claude 云端 bundle 导出与入口](STYLE-CLOUD.md)，通过 [A7 离线验收](review/M3-A7-2026-10-17.json)。使用已批准的 claude-project 配置、预置 PATH runner、显式 remote 分支及私有 HOME 状态；实际托管 C3 仍待验。Claude 插件 T32 已恢复实施，尚未验收。
 
 Claude plugin 的可选 `RegistrationInspector` 给出登记状态/原生命令/残留；`TransitionPlanner` 原子切换 user/plugin，active 或 unknown 登记阻止删除源目录。agenthooks 增加显式本地 marketplace 目标字段、渲染器与只读原生登记检查，零值保留既有 renderer 行为。锁允许仅 Claude plugin 的用户 format 3；项目仍须完整 binding。
+
+M3-T41 通过 [A10](review/M3-A10-2026-10-17.json)：两家 DataSource 对 event. 引用查询原 condition field 的来源；core 从本评估点 FieldReader 读取并进行 512 code point 截断/单行 JSON 围栏，agenthooks 协议与渲染不变。index 3 与 refresh 可组合，旧 index 继续可读；六路线管理/五路线实际配置启动器与云端 bundle 的离线验收通过。

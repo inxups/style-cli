@@ -1,6 +1,10 @@
 package spec
 
-import "fmt"
+import (
+	"fmt"
+	styletemplate "github.com/inxups/style-cli/core/template"
+	"strings"
+)
 
 var harnessReadFields = stringSet("name", "version", "cwd", "permission_mode", "agent", "session_id", "turn_id")
 
@@ -30,6 +34,9 @@ func (v *validator) collectReads() {
 		if enabled, _ := reads["thinking_effort"].(bool); enabled {
 			v.declaredReads["thinking_effort"] = true
 		}
+		for _, field := range stringValues(reads["event"]) {
+			v.declaredReads["event."+field] = true
+		}
 		for _, field := range stringValues(reads["harness"]) {
 			v.declaredHarness[field] = true
 		}
@@ -51,6 +58,23 @@ func (v *validator) validateReads(value any, source string) {
 		case "model", "thinking_effort":
 			if enabled, ok := item.(bool); !ok || !enabled {
 				v.add("invalid-schema", source, fmt.Sprintf("reads.%s must be true", key))
+			}
+		case "event":
+			values, ok := item.([]any)
+			if !ok {
+				v.add("invalid-schema", source, "reads.event must be a list")
+				continue
+			}
+			seen := map[string]bool{}
+			for _, value := range values {
+				name, ok := value.(string)
+				if !ok || !styletemplate.EventFieldKnown(name) {
+					v.add("invalid-schema", source, fmt.Sprintf("unknown reads.event field %q", value))
+				} else if seen[name] {
+					v.add("invalid-schema", source, "duplicate reads.event field "+name)
+				} else {
+					seen[name] = true
+				}
 			}
 		case "harness":
 			values, ok := item.([]any)
@@ -76,6 +100,13 @@ func (v *validator) validateReads(value any, source string) {
 }
 
 func (v *validator) requireRuntimeRead(name, source string) {
+	if strings.HasPrefix(name, "event.") {
+		v.usedReads[name] = true
+		if !v.declaredReads[name] {
+			v.add("reads-missing", source, name+" is used but not declared in reads.event")
+		}
+		return
+	}
 	if name == "model" {
 		v.usedReads[name] = true
 		if !v.declaredReads[name] {
@@ -124,6 +155,11 @@ func (v *validator) reportUnusedReads() {
 		for _, key := range []string{"model", "thinking_effort"} {
 			if enabled, _ := reads[key].(bool); enabled && !v.usedReads[key] {
 				v.warn("reads-unused", declaration.source, "reads."+key+" is declared but unused")
+			}
+		}
+		for _, field := range stringValues(reads["event"]) {
+			if !v.usedReads["event."+field] {
+				v.warn("reads-unused", declaration.source, "reads.event."+field+" is declared but unused")
 			}
 		}
 		for _, field := range stringValues(reads["harness"]) {

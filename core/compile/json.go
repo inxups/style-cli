@@ -5,6 +5,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"strings"
+
+	"github.com/inxups/style-cli/core/template"
 )
 
 // Encode produces deterministic UTF-8 JSON with a final newline. Map keys are
@@ -49,7 +52,7 @@ func (index *Index) UnmarshalJSON(data []byte) error {
 	if err := decodeStrict(data, &decoded); err != nil {
 		return err
 	}
-	if decoded.Format != Format && decoded.Format != RefreshFormat {
+	if decoded.Format != Format && decoded.Format != RefreshFormat && decoded.Format != EventFormat {
 		return fmt.Errorf("compile: unsupported index format %d", decoded.Format)
 	}
 	if decoded.Format == Format {
@@ -70,6 +73,13 @@ func (index *Index) UnmarshalJSON(data []byte) error {
 		}
 	}
 	for _, events := range decoded.Harnesses {
+		for _, entries := range events {
+			for _, entry := range entries {
+				if entry.HasEventContent() && decoded.Format < EventFormat {
+					return fmt.Errorf("compile: event content requires index format 3")
+				}
+			}
+		}
 		for event, entries := range events {
 			for i := range entries {
 				entries[i].When.Event = event
@@ -153,6 +163,9 @@ func (body *Body) UnmarshalJSON(data []byte) error {
 			}
 			if err := decodeStrict(raw, &variable); err != nil || variable.Name == "" {
 				return fmt.Errorf("compile: invalid runtime variable fragment")
+			}
+			if strings.HasPrefix(variable.Name, "event.") && !template.IsEventVariable(variable.Name) {
+				return fmt.Errorf("compile: unsupported event variable")
 			}
 			decoded.Parts = append(decoded.Parts, Fragment{Variable: &Variable{Name: variable.Name, Default: variable.Default}})
 		}

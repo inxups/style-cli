@@ -1,0 +1,772 @@
+{
+  "format": 1,
+  "task": "M3-T41",
+  "acceptance": "M3-A10",
+  "baseline": "af821b628c7b5d21b9ceb841bcc133a9a4807fdf",
+  "date": "2026-10-17",
+  "status": "passed-offline",
+  "source_sha256": {
+    "core/compile/body.go": "2f0c2027d69914fb8c1f1dc35abf5a2d3110f26d9acc5059f875128632aaeeda",
+    "core/compile/build.go": "b2759f43287b678dbf3e302b660299180e471ae4dc0f7a7cd0ee8105925c248c",
+    "core/compile/event_test.go": "41e25f7eb2e3f8eb786532be63673f49e895de2a52de2ed9b9d9393b03c399c0",
+    "core/compile/json.go": "97a8e48c40cd25fdff57e05c23f07693fb1c5d682c12e00dab826aa30928d34f",
+    "core/compile/types.go": "f94ff3de1c12bc55957cfc88054b01d6fd1de11c54f0aa0a384f316b36087520",
+    "core/engine/event_test.go": "5f52f6ce7c932621396cd676ebeacf83eadbdb7c1d74e151f555fcbc57133ae9",
+    "core/engine/load.go": "b5217a94492e4c25bb323089da71fd608749a12755f7feb1ca87be2eda4ca5e3",
+    "core/engine/match.go": "11c7c0c9f0b2eecd73062c97af7ec501fa4a5be60be3a4fa456f52387ab9d04d",
+    "core/engine/process.go": "7e63111b195404f1b1dd7e691b101664d63e0adad47d6360618d060daed03e44",
+    "core/spec/event_template_test.go": "7e82307ad82547a928e0edb6d5adaf24da6fa756e8c01a0e68bcd28ff8460741",
+    "core/spec/validate_reads.go": "2b966aa8ebb066fd3f15144ecea7a37f4c4967954f5b321fa43aa4e8f285f6ec",
+    "core/spec/validate_template.go": "92cad1797892ac305d4ab70e42621718542777fc0ec1fbd3b79cc03a6ef16476",
+    "core/spec/values.go": "af7467d2f41681880e1da16ebe4733e4b491a7ddc682d1ed4e39242950b13fea",
+    "core/template/event.go": "9ba0f7e7768096ef56bc5d5f9de2f69ab98583e75bc99c45afea4579d10a7ec3",
+    "core/template/event_test.go": "1fee99ed9457f9490f17efed95c8b52f92dcc3446317af2d703c6ddf3ee5fc53",
+    "core/template/template.go": "b34773ac24bc3f80377f483aa520b558a7ad8331e2aa3439b9438b7173845098",
+    "internal/adapter/claude/adapter.go": "b927517cc4e082b44ae8594ed4f00905d26e9076536bb6efe7e8fcc6ae8d3759",
+    "internal/adapter/codex/adapter.go": "4b0fd2d4b3a6908b1e9ad2f2f42e544e8d8497a01fea66e876b3700033cd5ed5",
+    "internal/adapter/conformance/event_test.go": "32215196e15698a3ad19a321196eaa8fb73e59ac588923d6e5252e679af2525d",
+    "internal/app/doctor.go": "2c9ae84145387c81f2a685aeee496d1d05c3c050eb713ad75b1e54c334779fef",
+    "internal/app/event_template_test.go": "e69d482228160be7ff7999617b9aaf52231c07f56f7a263c0c543457953f8acf",
+    "internal/tokenestimate/estimate.go": "59594433afde64dc144790177e89f5c17db5e7e0c59b27994524a939d6420524",
+    "schema/index.schema.json": "63d7a31af671db353c542941cf1f06ebed1ffbca2b458728b2a4e7b17223bca7",
+    "scripts/check_m3_event_content.py": "89a873a89a51b66f66ef036a4d3627442b2fea3b6dd0a11fa6f7febdcc8b130e",
+    "testdata/event-content/fence.golden": "f765ebc6b0a947355c773cb6970f8bc334299a5f6be6c092584c9944c6e291c5"
+  },
+  "binary_sha256": "2e8ed5b9d5e687f162f1961dcb3b89f262aaa347bcd9c73c36e64bf250486630",
+  "runner_source": "import json,os,subprocess,sys,time\nfrom pathlib import Path\nroot=Path('/tmp/style-m3-complete-20261017');name=sys.argv[1];cmd=sys.argv[2:];env=os.environ.copy()\nfor key in ['CODEX_HOME','CODEX_SANDBOX','STYLE_HOME','CLAUDE_CONFIG_DIR','CLAUDE_CODE_CONFIG_DIR','CLAUDE_CODE_EFFORT_LEVEL','CLAUDE_EFFORT','CLAUDE_CODE_REMOTE','CLAUDE_PLUGIN_ROOT','PLUGIN_ROOT','STYLE_PERF','STYLE_PERF_OUTPUT','STYLE_M3_A6_RECORD','STYLE_UPDATE_GOLDENS','STYLE_REFRESH_HELPER','STYLE_REFRESH_TURN','STYLE_REFRESH_WORKER']:env.pop(key,None)\nfor key,value in {'GOPATH':'gopath','GOMODCACHE':'modcache','GOCACHE':'gocache'}.items():env[key]=str(Path('/tmp/style-m3-project-20261017')/value)\nenv['GOPROXY']='off';env['GOFLAGS']='-mod=readonly';env['GOWORK']='off';start=time.time()\nwith (root/(name+'.log')).open('wb') as f:p=subprocess.run(cmd,env=env,stdout=f,stderr=subprocess.STDOUT)\nresult={'command':cmd,'exit_code':p.returncode,'seconds':round(time.time()-start,3),'environment':{key:env[key] for key in ['GOPATH','GOMODCACHE','GOCACHE','GOPROXY','GOFLAGS','GOWORK']}}\n(root/(name+'.json')).write_text(json.dumps(result,indent=2)+'\\n');print(json.dumps(result))\nif p.returncode:\n lines=(root/(name+'.log')).read_text().splitlines();events=[]\n for line in lines:\n  try:events.append(json.loads(line))\n  except:pass\n failed=[v.get('Test') for v in events if v.get('Action')=='fail' and v.get('Test')]\n if failed:\n  for test in failed:print(test, ''.join(v.get('Output','') for v in events if v.get('Test')==test)[-2200:])\n else: print('\\n'.join(lines[-35:]))\nsys.exit(p.returncode)\n",
+  "runs": [
+    {
+      "command": [
+        "go",
+        "test",
+        "./core/...",
+        "./schema",
+        "./internal/tokenestimate",
+        "./internal/adapter/...",
+        "-count=1",
+        "-json"
+      ],
+      "exit_code": 1,
+      "seconds": 4.666,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "name": "event-compile",
+      "log_sha256": "493dd723f144a3454649c36c4203c53a7ed959b766a925ab0bc90f3d5e966a4c",
+      "counts": {
+        "pass": 853,
+        "skip": 1
+      }
+    },
+    {
+      "command": [
+        "go",
+        "test",
+        "./core/...",
+        "./schema",
+        "./internal/tokenestimate",
+        "./internal/adapter/...",
+        "-count=1",
+        "-json"
+      ],
+      "exit_code": 0,
+      "seconds": 6.784,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "name": "event-compile-2",
+      "log_sha256": "21a152293216fe53bf4233938bc84bb66fd2b98c2eb2367cf6073a7047bce86b",
+      "counts": {
+        "pass": 1340,
+        "skip": 2
+      }
+    },
+    {
+      "command": [
+        "go",
+        "test",
+        "./core/...",
+        "./schema",
+        "./internal/tokenestimate",
+        "-run",
+        "TestM3A10",
+        "-count=1",
+        "-json"
+      ],
+      "exit_code": 1,
+      "seconds": 1.227,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "name": "event-tests-1",
+      "log_sha256": "84e7c109de29b9c54085f16ea7b11c2f8a876f05b5b09e887447819971448870",
+      "counts": {
+        "pass": 23
+      }
+    },
+    {
+      "command": [
+        "go",
+        "test",
+        "./core/...",
+        "./schema",
+        "./internal/tokenestimate",
+        "./internal/adapter/conformance",
+        "./internal/app",
+        "-run",
+        "TestM3A10",
+        "-count=1",
+        "-json"
+      ],
+      "exit_code": 1,
+      "seconds": 2.929,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "name": "event-tests-2",
+      "log_sha256": "5b5533cdb60543670e122defdde73a22000ab88e11202470039b9e12f939f0e5",
+      "counts": {
+        "pass": 44,
+        "fail": 2
+      }
+    },
+    {
+      "command": [
+        "go",
+        "test",
+        "./core/...",
+        "./schema",
+        "./internal/tokenestimate",
+        "./internal/adapter/conformance",
+        "./internal/app",
+        "-run",
+        "TestM3A10",
+        "-count=1",
+        "-json"
+      ],
+      "exit_code": 0,
+      "seconds": 2.597,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "name": "event-tests-3",
+      "log_sha256": "6fdd4204f4caa1aa191f3741ae73eab670dd88b172700dc07c460890e11a617f",
+      "counts": {
+        "pass": 46
+      }
+    },
+    {
+      "command": [
+        "go",
+        "test",
+        "./core/...",
+        "./schema",
+        "./internal/tokenestimate",
+        "./internal/adapter/conformance",
+        "./internal/app",
+        "-run",
+        "TestM3A10",
+        "-count=1",
+        "-json"
+      ],
+      "exit_code": 0,
+      "seconds": 2.79,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "name": "event-tests-final",
+      "log_sha256": "aa7ec4eacdf25c01de9da27dedaac57c610cf6aaae8e2cc550ca329669eed9fa",
+      "counts": {
+        "pass": 46
+      }
+    },
+    {
+      "command": [
+        "go",
+        "test",
+        "./core/...",
+        "./schema",
+        "./internal/tokenestimate",
+        "./internal/adapter/...",
+        "-count=1",
+        "-json"
+      ],
+      "exit_code": 0,
+      "seconds": 6.948,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "name": "event-core-final",
+      "log_sha256": "f4d98a9d37273b9a5b42de2b04d60d35dad9070e82a7c38b5e30a745945c1d36",
+      "counts": {
+        "pass": 1378,
+        "skip": 2
+      }
+    },
+    {
+      "command": [
+        "go",
+        "test",
+        "./core/engine",
+        "./internal/adapter/conformance",
+        "-run",
+        "TestM3A10",
+        "-count=1",
+        "-json"
+      ],
+      "exit_code": 0,
+      "seconds": 1.372,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "name": "event-added-tests",
+      "log_sha256": "51183af68f3a339d2920725fedd8d171b9a3bd778827fd3f12b56375c3865a8c",
+      "counts": {
+        "pass": 26
+      }
+    },
+    {
+      "command": [
+        "go",
+        "test",
+        "-race",
+        "./core/template",
+        "./core/spec",
+        "./core/compile",
+        "./core/engine",
+        "./internal/adapter/conformance",
+        "./internal/app",
+        "-run",
+        "TestM3A10",
+        "-count=1",
+        "-json"
+      ],
+      "exit_code": 0,
+      "seconds": 3.621,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "name": "event-new-final",
+      "log_sha256": "fc60c0d85d9e830e68b7000d2fdb6f38c31a2a92e45a7af9ec092499f985a667",
+      "counts": {
+        "pass": 57
+      }
+    },
+    {
+      "command": [
+        "go",
+        "test",
+        "./...",
+        "-count=1",
+        "-json"
+      ],
+      "exit_code": 0,
+      "seconds": 111.341,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "name": "event-root",
+      "log_sha256": "fb52ec84a775205571998aa8b11bca5cfa578802411e2b734422e54353bcd6ef",
+      "counts": {
+        "pass": 3079,
+        "skip": 2
+      }
+    },
+    {
+      "command": [
+        "go",
+        "vet",
+        "./..."
+      ],
+      "exit_code": 0,
+      "seconds": 0.877,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "name": "event-vet",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "counts": {}
+    },
+    {
+      "command": [
+        "go",
+        "build",
+        "-o",
+        "/tmp/style-m3-complete-20261017/style-event",
+        "./cmd/style"
+      ],
+      "exit_code": 0,
+      "seconds": 0.811,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "name": "event-build-final",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "counts": {}
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/check_m3_event_content.py",
+        "--binary",
+        "/tmp/style-m3-complete-20261017/style-event",
+        "--old-binary",
+        "/tmp/style-m3-complete-20261017/style-plugin",
+        "--report",
+        "/tmp/style-m3-complete-20261017/event-cli-report.json"
+      ],
+      "exit_code": 1,
+      "seconds": 1.329,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "name": "event-cli-1",
+      "log_sha256": "305040dd46a89b3c8cc625896c03bd4a318a9e7803e3d2ff38a9406222df5f5a",
+      "counts": {}
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/check_m3_event_content.py",
+        "--binary",
+        "/tmp/style-m3-complete-20261017/style-event",
+        "--old-binary",
+        "/tmp/style-m3-complete-20261017/style-plugin",
+        "--report",
+        "/tmp/style-m3-complete-20261017/event-cli-report.json"
+      ],
+      "exit_code": 0,
+      "seconds": 5.691,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "name": "event-cli-final",
+      "log_sha256": "6b3e595daedae6528e6528161eae9c1007e480a0bd2a5d176ec3c6a185e1e02b",
+      "counts": {}
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/smoke.py",
+        "/tmp/style-m3-complete-20261017/style-event"
+      ],
+      "exit_code": 0,
+      "seconds": 1.721,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "name": "event-smoke",
+      "log_sha256": "5039b6cbbaa0d673d3772dfa18b0e24352159e7f2ddf65dd8cdabcbff5e08b63",
+      "counts": {}
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/check_m3_cloud.py",
+        "--binary",
+        "/tmp/style-m3-complete-20261017/style-event",
+        "--report",
+        "/tmp/style-m3-complete-20261017/event-cloud-report.json"
+      ],
+      "exit_code": 0,
+      "seconds": 1.141,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "name": "event-cloud-cli",
+      "log_sha256": "f8b9ad401f1f807d476be38a795b4bc90951993f090100f03a594ed5aa6bd696",
+      "counts": {}
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/check_m3_claude_plugin.py",
+        "--binary",
+        "/tmp/style-m3-complete-20261017/style-event",
+        "--old-binary",
+        "/tmp/style-m3-a9-20261017/style-release",
+        "--report",
+        "/tmp/style-m3-complete-20261017/event-plugin-report.json"
+      ],
+      "exit_code": 0,
+      "seconds": 1.114,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "name": "event-plugin-cli",
+      "log_sha256": "99f0f9ca2c119e614a5c882b78b5184976ce750ec480a022a858f405925e628a",
+      "counts": {}
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/check_m3_refresh.py",
+        "--binary",
+        "/tmp/style-m3-complete-20261017/style-event",
+        "--old-binary",
+        "/tmp/style-m3-project-20261017/style-final",
+        "--report",
+        "/tmp/style-m3-complete-20261017/event-refresh-report.json"
+      ],
+      "exit_code": 0,
+      "seconds": 11.634,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "name": "event-refresh-cli",
+      "log_sha256": "29c0e97e9cba1ff0109976783b89178a0bb2e593306bd5cdd70ea89e45f4f50f",
+      "counts": {}
+    }
+  ],
+  "cli": {
+    "format": 1,
+    "binary_sha256": "2e8ed5b9d5e687f162f1961dcb3b89f262aaa347bcd9c73c36e64bf250486630",
+    "old_binary_sha256": "1a974ae96a8c7854bce12cc9a24555962cba6fdbf54efdd6ee3d1880f7329e94",
+    "real_harness": false,
+    "cases": [
+      {
+        "route": "codex-user",
+        "action": "preview-zero-write",
+        "status": "passed"
+      },
+      {
+        "route": "codex-user",
+        "action": "dynamic-index3",
+        "status": "passed"
+      },
+      {
+        "route": "codex-user",
+        "action": "configured-hook-fences-truncation-readonly-explain-dedup",
+        "status": "passed"
+      },
+      {
+        "route": "codex-user",
+        "action": "state-stats-no-event-body",
+        "status": "passed"
+      },
+      {
+        "route": "codex-user",
+        "action": "actual-old-runtime-and-management-refuse-zero-write",
+        "status": "passed"
+      },
+      {
+        "route": "codex-user",
+        "action": "new-management-frozen-rebuild-and-doctor",
+        "status": "passed"
+      },
+      {
+        "route": "codex-user",
+        "action": "uninstall",
+        "status": "passed"
+      },
+      {
+        "route": "codex-plugin",
+        "action": "preview-zero-write",
+        "status": "passed"
+      },
+      {
+        "route": "codex-plugin",
+        "action": "dynamic-index3",
+        "status": "passed"
+      },
+      {
+        "route": "codex-plugin",
+        "action": "configured-hook-fences-truncation-readonly-explain-dedup",
+        "status": "passed"
+      },
+      {
+        "route": "codex-plugin",
+        "action": "state-stats-no-event-body",
+        "status": "passed"
+      },
+      {
+        "route": "codex-plugin",
+        "action": "actual-old-runtime-and-management-refuse-zero-write",
+        "status": "passed"
+      },
+      {
+        "route": "codex-plugin",
+        "action": "new-management-frozen-rebuild-and-doctor",
+        "status": "passed"
+      },
+      {
+        "route": "codex-plugin",
+        "action": "uninstall",
+        "status": "passed"
+      },
+      {
+        "route": "claude-user",
+        "action": "preview-zero-write",
+        "status": "passed"
+      },
+      {
+        "route": "claude-user",
+        "action": "dynamic-index3",
+        "status": "passed"
+      },
+      {
+        "route": "claude-user",
+        "action": "configured-hook-fences-truncation-readonly-explain-dedup",
+        "status": "passed"
+      },
+      {
+        "route": "claude-user",
+        "action": "state-stats-no-event-body",
+        "status": "passed"
+      },
+      {
+        "route": "claude-user",
+        "action": "actual-old-runtime-and-management-refuse-zero-write",
+        "status": "passed"
+      },
+      {
+        "route": "claude-user",
+        "action": "new-management-frozen-rebuild-and-doctor",
+        "status": "passed"
+      },
+      {
+        "route": "claude-user",
+        "action": "uninstall",
+        "status": "passed"
+      },
+      {
+        "route": "codex-project",
+        "action": "preview-zero-write",
+        "status": "passed"
+      },
+      {
+        "route": "codex-project",
+        "action": "dynamic-index3",
+        "status": "passed"
+      },
+      {
+        "route": "codex-project",
+        "action": "configured-hook-fences-truncation-readonly-explain-dedup",
+        "status": "passed"
+      },
+      {
+        "route": "codex-project",
+        "action": "state-stats-no-event-body",
+        "status": "passed"
+      },
+      {
+        "route": "codex-project",
+        "action": "actual-old-runtime-and-management-refuse-zero-write",
+        "status": "passed"
+      },
+      {
+        "route": "codex-project",
+        "action": "new-management-frozen-rebuild-and-doctor",
+        "status": "passed"
+      },
+      {
+        "route": "codex-project",
+        "action": "uninstall",
+        "status": "passed"
+      },
+      {
+        "route": "claude-project",
+        "action": "preview-zero-write",
+        "status": "passed"
+      },
+      {
+        "route": "claude-project",
+        "action": "dynamic-index3",
+        "status": "passed"
+      },
+      {
+        "route": "claude-project",
+        "action": "configured-hook-fences-truncation-readonly-explain-dedup",
+        "status": "passed"
+      },
+      {
+        "route": "claude-project",
+        "action": "state-stats-no-event-body",
+        "status": "passed"
+      },
+      {
+        "route": "claude-project",
+        "action": "actual-old-runtime-and-management-refuse-zero-write",
+        "status": "passed"
+      },
+      {
+        "route": "claude-project",
+        "action": "new-management-frozen-rebuild-and-doctor",
+        "status": "passed"
+      },
+      {
+        "route": "claude-project",
+        "action": "uninstall",
+        "status": "passed"
+      }
+    ]
+  },
+  "groups": [
+    {
+      "id": "A10-01",
+      "status": "passed",
+      "evidence": [
+        "TestM3A10EventValidationAndReads",
+        "TestM3A10EventReadsFromUnionAndFieldAvailability"
+      ]
+    },
+    {
+      "id": "A10-02",
+      "status": "passed",
+      "evidence": [
+        "TestM3A10EventValidationAndReads",
+        "TestM3A10EventTemplateDefaultsAndClassification",
+        "TestM3A10RealCodecsFencedEventFields"
+      ]
+    },
+    {
+      "id": "A10-03",
+      "status": "passed",
+      "evidence": [
+        "TestM3A10RealCodecsFencedEventFields",
+        "TestM3A10EventFieldIsolationCapAndPrivacy"
+      ]
+    },
+    {
+      "id": "A10-04",
+      "status": "passed",
+      "evidence": [
+        "TestM3A10EventFenceGoldenAndRoundTrip",
+        "testdata/event-content/fence.golden"
+      ]
+    },
+    {
+      "id": "A10-05",
+      "status": "passed",
+      "evidence": [
+        "TestM3A10EventWarnCannotCutFence",
+        "TestM3A10EventRefreshAndCapRecovery",
+        "TestM3A10EventFieldIsolationCapAndPrivacy"
+      ]
+    },
+    {
+      "id": "A10-06",
+      "status": "passed",
+      "evidence": [
+        "TestM3A10CompileFormatEstimateAndLegacyGate",
+        "actual-old-runtime-and-management-refuse-zero-write"
+      ]
+    },
+    {
+      "id": "A10-07",
+      "status": "passed",
+      "evidence": [
+        "TestM3A10CompileFormatEstimateAndLegacyGate",
+        "TestM3A10EventFieldIsolationCapAndPrivacy",
+        "state-stats-no-event-body"
+      ]
+    },
+    {
+      "id": "A10-08",
+      "status": "passed",
+      "evidence": [
+        "TestM3A10SixRouteLifecycleAndFrozen",
+        "TestM3A10CloudBundleRetainsFencedIndex",
+        "new-management-frozen-rebuild-and-doctor"
+      ]
+    }
+  ],
+  "failures_retained": {
+    "event-compile": "edit script reused process.go text for match.go; compiler rejected duplicate declarations, original match.go restored and narrow helper added",
+    "event-tests-1": "fixture used nonexistent when.MapFields; corrected to FieldMap",
+    "event-tests-2": "Claude plugin fixture selected Codex config; corrected helper route to Claude user",
+    "event-cli-1": "fixture hash helper expected Path; used hashlib for bytes"
+  },
+  "verification_boundary": "Root suite 3079 pass and two existing skips used final production code. Only additional metadata/refresh test cases were added afterward; all final 57 A10 pass events rerun with race. Embedded JSON schema enforces format and event names directly; redundant validation walk removed before final build/root. Agenthooks, dependencies and all previous golden files unchanged. Local configured-hook execution is not real harness delivery.",
+  "remaining": "B3/C5 real local harness runtime acceptance remains pending. User-deferred actual cloud, Windows harness host, Anthropic API stay [?]; official calibration each 0/40."
+}

@@ -105,6 +105,7 @@ func (e *Engine) process(input Input, limit tokens.InputLimit, trace *Trace) (Ou
 				continue
 			}
 			values := mergeValues(input.Variables, point.Values, whenInput)
+			populateEventValues(entry, values, whenInput)
 			modelText := entry.RenderModelText(values)
 			userText := ""
 			if entry.Action == "warn" {

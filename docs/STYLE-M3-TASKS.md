@@ -6,7 +6,7 @@
 
 本文件是 STYLE CLI M3 的持久化任务清单。每项完成后同步状态和可重复证据，测试矩阵见 [STYLE-M3-TESTS.md](STYLE-M3-TESTS.md)，执行记录追加到 [PROGRESS.md](PROGRESS.md)。M1、M2 已关闭并只读归档；上一里程碑的事实见 [M2 任务清单](STYLE-M2-TASKS.md)、[M2 测试矩阵](STYLE-M2-TESTS.md) 和 [M2 总验收报告](review/M2-DOCS-01-2026-10-17.json)。
 
-当前总状态：M3-00、M3-01、M3-D0、M3-T00 已完成，M3-A0 已通过，M3-RV-01 已关闭。M3-D1 诊断契约已获用户确认并[定稿](review/M3-D1-DIAGNOSTICS-2026-10-17.md)；M3-T10 explain 已实现并通过 M3-A1，见 [使用说明](STYLE-EXPLAIN.md) 和 [验收报告](review/M3-A1-2026-10-17.json)。M3-T11 probe 已实现并通过 M3-A2，见 [使用说明](STYLE-PROBE.md) 和 [验收报告](review/M3-A2-2026-10-17.json)。M3-D2 [来源与锁定契约](review/M3-D2-SOURCES-2026-10-17.md) 已获用户确认并定稿；T20 Git 来源已实现并通过 [A3 验收](review/M3-A3-2026-10-17.json)，见 [使用说明](STYLE-SOURCES.md)；T21 update 已实现并通过 [A4](review/M3-A4-2026-10-17.json)，T22 frozen 已实现并通过 [A5](review/M3-A5-2026-10-17.json)；D3 已按用户通知要求开始，调查已复核并形成[安装范围与交付路线评审稿](review/M3-D3-ROUTES-2026-10-17.md)，项目部分已获用户确认，T30 项目路线已实现并通过 [A6 验收](review/M3-A6-2026-10-17.json)，见 [使用说明](STYLE-PROJECTS.md)；云端与插件暂缓。用户现要求继续其他 M3 阶段，D4 refresh [契约](review/M3-D4-REFRESH-2026-10-17.md)已获用户确认；T40 已实现并通过 [A9 验收](review/M3-A9-2026-10-17.json)，见 [使用说明](STYLE-REFRESH.md)。用户已确认完整覆盖 M3 backlog、分阶段推进，并将核心 harness 名硬编码修复列为前置必做项；具体接口语义仍需各设计项定稿。
+当前总状态：基线、注册表、诊断、来源/update/frozen、项目/云端/Claude 插件、refresh 与事件内容围栏均已实现并完成对应离线 A0–A10；D0–D5 已定稿。T41/A10 的命令和源码摘要见 [报告](review/M3-A10-2026-10-17.json)，使用方式见 [事件内容说明](STYLE-EVENT-CONTENT.md)。当前进入 D6 provider/unknown。真实本地 B/C、后续运行时/计数/平台/CI 与最终收尾尚待执行；用户明确延期的三类真实环境单独保留待验。
 
 ## 范围与推进顺序
 
@@ -80,7 +80,7 @@ M3-CARRY-01 与 `--count=exact` 产品验收分别记录；前者的非阻塞决
 - [x] **M3-T31 Claude 云端交付**：目标是按 D3 提供经证据确认的项目交付方式（2026-10-17 用户恢复完整 M3 范围）。依赖：M3-T30。产出：所需项目产物、加载条件、路径/运行时可移植性检查和操作说明；无可用真实环境时明确待验，不能用本地配置存在代替云端生效。测试：M3-A7、M3-C3。证据：[A7 报告](review/M3-A7-2026-10-17.json)、[使用说明](STYLE-CLOUD.md)与 [CLI 检查](../scripts/check_m3_cloud.py)。54 条新 pass/race、根 module 2,989 pass、vet、8 项 built CLI 与 40 smoke 通过；明确导出批准 bundle、相对来源、私有云状态、摘要/版本拒绝、全预览、取消恢复、重导出与最后卸载。仅关闭产物验收，真实 C3 保持 `[?]`。
 - [x] **M3-T32 Claude 插件路线**：目标是按 D3 支持插件安装与卸载（2026-10-17 用户恢复完整 M3 范围）。依赖：M3-T31。产出：插件产物、登记/启用边界、与用户/项目路线切换及残留检查，复用 agenthooks 渲染。测试：M3-A8、M3-C4。证据：[A8 报告](review/M3-A8-2026-10-17.json)、[插件说明](STYLE-CLAUDE-PLUGIN.md)与 [CLI 检查](../scripts/check_m3_claude_plugin.py)。本地 marketplace/launcher、只读登记检查、互斥切换、多包/native 更新、lock 3 旧程序门禁与取消恢复通过；双 module fresh test 3,555 pass/0 fail、vet、专项 race、8 项插件 CLI、8 项云端 CLI、40 smoke 与旧迁移/replace 回归通过。仅关闭离线 A8，C4 真实登记/投递仍待验。
 - [x] **M3-T40 refresh**：目标是按 D4 支持周期补发。依赖：M3-D4。产出：校验/plan/compile/runtime/state/stats 的一致实现和兼容 fixture。测试：M3-A9、M3-B3、M3-C5。证据：[完整报告](review/M3-A9-2026-10-17.json)、[使用说明](STYLE-REFRESH.md) 与 [built CLI 门禁](../scripts/check_m3_refresh.py)。29 个通过的新测试函数/85 个叶子用例（98 条含分组 pass），另有进程 helper 由父测试启动验证；覆盖滚动时钟/原生 ID、旧 claim 升级、生命周期、跨包去重、OS 锁/崩溃/清理、写入与回滚故障、只读 snapshot、严格 format 1/2 和五路线审批事务。双 module fresh test 3,445 pass/0 fail、vet、相关 race、68 采集器、50 refresh CLI 及全部旧门禁通过；五路线各 50 次进程采样 p95 为 9.269–16.919ms。24 项既有 opt-in skip 与 helper 的父进程非工作模式 skip 单列；agenthooks/go.mod/旧 golden 不改。仅关闭 T40/A9；真实 B3/C5、Windows、远端 CI 与官方计数不关闭。
-- [ ] **M3-T41 事件内容模板**：目标是按 D5 开放经围栏处理的事件内容。依赖：M3-D5。产出：字段访问、转义/截断、模板与预算支持及敏感数据日志检查。测试：M3-A10、M3-B3、M3-C5。
+- [x] **M3-T41 事件内容模板**：目标是按 D5 开放经围栏处理的事件内容。依赖：M3-D5。产出：字段访问、转义/截断、模板与预算支持及敏感数据日志检查。测试：M3-A10、M3-B3、M3-C5。证据：[A10 报告](review/M3-A10-2026-10-17.json)和[使用说明](STYLE-EVENT-CONTENT.md)。11 个新函数、最终专项/race 57 pass；根 module 全量 3,079 pass/0 fail，35 项五路线 CLI、8 云端/8 插件 CLI、40 smoke 与 refresh 回归通过。agenthooks/旧 golden 未变，真实 B3/C5 待验。
 - [ ] **M3-T42 provider 条件**：目标是按 D6 使用有来源依据的模型服务信息。依赖：M3-D6。产出：adapter 数据声明、状态更新和条件评估，区分 harness 标识与服务 provider。测试：M3-A11、M3-B3、M3-C5。
 - [ ] **M3-T43 unknown 匹配**：目标是按 D6 支持显式缺失值匹配。依赖：M3-T42。产出：校验、编译、匹配及 explain/plan 说明，旧规则缺值行为兼容。测试：M3-A12、M3-B3、M3-C5。
 - [ ] **M3-T44 用户 effort 映射**：目标是按 D7 支持可追溯的用户配置。依赖：M3-D7。产出：配置读取、映射与缓存失效、raw/approx 和 doctor/plan 诊断。测试：M3-A13、M3-B3、M3-C5。
@@ -123,3 +123,5 @@ M3-T00/M3-A0、M3-D1、M3-T10/M3-A1、M3-T11/M3-A2、M3-D2 和 M3-T20–T22/M3-A
 用户在收到所需环境清单后明确“这些等以后再测试，先排除这些，继续”。据此延期 Claude 托管云端 C3、Windows 主机实际 harness 验收 W1/REAL-04、Anthropic 独立计数 API 的 TOKEN-01 子项及相应 REAL-03 子项；三者保持 `[?]` 并作为后续真实验收，不在本次 M3 完成门槛内，不标记通过。T31/T50/T70 等实现与离线验收、Windows CI、可本地执行的精确编码和其他本地真实 B/C 验收仍在当前范围。FINAL/DOCS 按调整后的完整范围判定，报告须显式列出延期项目与用户决定。
 
 T31/A7、T32/A8 现已完成离线实现验收；当前进入 D5/T41。D3 设计已定稿，早期暂缓记载不再代表当前状态。
+
+T41/A10 已完成；当前按依赖推进 D6/T42/T43，T31/T32 早期暂缓记载已由最新授权覆盖。

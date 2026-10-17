@@ -202,6 +202,7 @@ func (f Facts) Capability(point string, capability plan.Capability) adapter.Capa
 }
 
 func (f Facts) DataSource(point, field string) adapter.DataAvailability {
+	field = strings.TrimPrefix(field, "event.")
 	common := map[string]bool{
 		"model": true, "thinking_effort": true, "thinking_effort_raw": true,
 		"thinking_effort_approx": true, "harness.name": true, "harness.version": true,

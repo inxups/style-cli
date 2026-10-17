@@ -77,8 +77,14 @@ func newValidated(index compile.Index, store *state.Store) (*Engine, error) {
 		for point, entries := range events {
 			compiled := make([]compiledEntry, 0, len(entries))
 			for _, entry := range entries {
-				if entry.Refresh > 0 && (index.Format != compile.RefreshFormat || entry.Repeat != "session" || entry.Action == "block" || point == "subagent.start") {
+				if entry.Refresh > 0 && (index.Format < compile.RefreshFormat || entry.Repeat != "session" || entry.Action == "block" || point == "subagent.start") {
 					return nil, fmt.Errorf("engine: invalid refresh policy")
+				}
+				if entry.HasEventContent() && index.Format < compile.EventFormat {
+					return nil, fmt.Errorf("engine: event content requires index format 3")
+				}
+				if entry.HasEventContent() && entry.ModelBodyFirstSentence {
+					return nil, fmt.Errorf("engine: event content cannot use implicit first-sentence rendering")
 				}
 				if entry.Reevaluate && (entry.Target != "system" || point != "prompt.submitted") {
 					return nil, fmt.Errorf("engine: reeval is only valid for dynamic system entries at prompt.submitted")

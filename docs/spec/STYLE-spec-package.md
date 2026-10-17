@@ -102,6 +102,7 @@ rules:
   | `model`、`thinking_effort`、`thinking_effort_raw` | 运行时 | 能 | `reads` 里声明 |
   | `harness.name`、`harness.version`、`harness.cwd`、`harness.permission_mode`、`harness.agent` | 运行时 | 能 | `reads.harness` 里声明 |
   | `harness.session_id`、`harness.turn_id` | 运行时 | 能，但 lint `T006` 告警：每次都变，破坏去重和缓存 | 同上 |
+  | `event.prompt`、`event.tool.input`/子路径等 | 当前事件 | M3 可以，始终截断/转义/围栏 | `reads.event` 声明完整字段；见 [说明](../STYLE-EVENT-CONTENT.md) |
   | `prompt`、`tool.name`、`tool.input.*`、`tool.added`、`tool.output`、`mcp.server`、`mcp.tool`、`skill.name` | 运行时，取自当前事件 | **不能**，报错 `event-var-in-template`；只能在 `when.conditions` 里用 | — |
 
 - **取不到值时**：有 `default` 就用默认值，没有就是空字符串。想"取不到就别注入"，就在 `when` 里写条件，不要靠模板。运行时变量没写 `default`、又没有被 `when` 保证有值时，validate 给警告 `var-no-default`。"被 `when` 保证"指：`when.model` 保证 `model`；`when.thinking_effort` 保证 `thinking_effort` 和 `thinking_effort_raw`；`when.harness.<键>` 保证 `harness.<键>`。

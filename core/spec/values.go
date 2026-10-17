@@ -88,6 +88,8 @@ func hasNonStringMapKey(value any) bool {
 
 func unionReads(values ...any) map[string]any {
 	merged := make(map[string]any)
+	events := make([]string, 0)
+	seenEvent := map[string]bool{}
 	harness := make([]string, 0)
 	seenHarness := make(map[string]bool)
 	for _, value := range values {
@@ -98,6 +100,13 @@ func unionReads(values ...any) map[string]any {
 				if enabled, ok := item.(bool); ok && enabled {
 					merged[key] = true
 				}
+			case "event":
+				for _, name := range stringValues(item) {
+					if !seenEvent[name] {
+						seenEvent[name] = true
+						events = append(events, name)
+					}
+				}
 			case "harness":
 				for _, name := range stringValues(item) {
 					if !seenHarness[name] {
@@ -107,6 +116,9 @@ func unionReads(values ...any) map[string]any {
 				}
 			}
 		}
+	}
+	if len(events) != 0 {
+		merged["event"] = events
 	}
 	if len(harness) != 0 {
 		merged["harness"] = harness

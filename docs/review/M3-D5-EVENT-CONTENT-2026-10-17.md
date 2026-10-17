@@ -32,13 +32,15 @@ agenthooks 原有 codec/事件/renderer 不改；在 core 从现有字段读取�
 
 ## 4. A10 验收矩阵
 
-| 编号 | 断言 |
-|---|---|
-| A10-01 | 显式命名、声明并集/缺失/多余/错误类型、未知字段、旧裸字段继续拒绝 |
-| A10-02 | 目标/事件可用性、缺失/default/显式空值、动态规划、adapter 来源查询 |
-| A10-03 | prompt/input 子路径/output/added 和 metadata；两家实际 codec payload 对照 |
-| A10-04 | 假闭合标签/代码围栏/嵌套标记、控制字符/bidi/Unicode/无效 UTF-8/超长，固定 golden |
-| A10-05 | warn 显式 model_text、完整围栏、运行时硬上限及 claim 释放、重复正文/refresh 组合 |
-| A10-06 | format 3/schema/严格解码/真旧程序拒绝，旧格式与普通 golden 不变 |
-| A10-07 | plan/token 估算包含完整最坏围栏，stats/state/trace/log 不含原文，explain wire 按用户明确请求返回 |
-| A10-08 | 安装/sync/frozen/cloud 导出生命周期，全量相关回归及 built CLI；真实 B3/C5 后续另验 |
+| 编号 | 状态 | 断言 |
+|---|---|---|
+| A10-01 | [x] | 显式命名、声明并集/缺失/多余/错误类型、未知字段、旧裸字段继续拒绝 |
+| A10-02 | [x] | 目标/事件可用性、缺失/default/显式空值、动态规划、adapter 来源查询 |
+| A10-03 | [x] | prompt/input 子路径/output/added 和 metadata；两家实际 codec payload 对照 |
+| A10-04 | [x] | 假闭合标签/代码围栏/嵌套标记、控制字符/bidi/Unicode/无效 UTF-8/超长，固定 golden |
+| A10-05 | [x] | warn 显式 model_text、完整围栏、运行时硬上限及 claim 释放、重复正文/refresh 组合 |
+| A10-06 | [x] | format 3/schema/严格解码/真旧程序拒绝，旧格式与普通 golden 不变 |
+| A10-07 | [x] | plan/token 估算包含完整最坏围栏，stats/state/trace/log 不含原文，explain wire 按用户明确请求返回 |
+| A10-08 | [x] | 安装/sync/frozen/cloud 导出生命周期，全量相关回归及 built CLI；真实 B3/C5 后续另验 |
+
+T41/A10 已通过离线验收，命令/源码/失败修正与八组证据见 [A10 报告](M3-A10-2026-10-17.json)；[使用说明](../STYLE-EVENT-CONTENT.md)包含当前接口。B3/C5 真实本地投递仍待验。

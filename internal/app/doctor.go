@@ -86,10 +86,23 @@ func (s *Service) Doctor(ctx context.Context, request DoctorRequest) (DoctorResu
 		}
 		if data, err := saferead.ReadFile(filepath.Join(home, "build", "index.json"), 16<<20); err == nil {
 			var index compile.Index
-			if json.Unmarshal(data, &index) == nil && index.Format == compile.RefreshFormat {
-				result.add("refresh-index-2", "warning", "refresh uses index format 2; upgrade every configured STYLE runner before sync; old runners conservatively reject the whole index")
-				if !state.RefreshSupported() {
-					result.add("refresh-unsupported-platform", "error", "refresh session locking is unavailable on this platform")
+			if json.Unmarshal(data, &index) == nil {
+				if index.Format >= compile.EventFormat {
+					result.add("event-index-3", "warning", "event templates require index format 3; upgrade every configured STYLE runner")
+				}
+				refresh := false
+				for _, events := range index.Harnesses {
+					for _, entries := range events {
+						for _, entry := range entries {
+							refresh = refresh || entry.Refresh > 0
+						}
+					}
+				}
+				if refresh {
+					result.add("refresh-index-2", "warning", "refresh uses index format 2 or newer; upgrade every configured STYLE runner before sync; old runners conservatively reject unsupported indices")
+					if !state.RefreshSupported() {
+						result.add("refresh-unsupported-platform", "error", "refresh session locking is unavailable on this platform")
+					}
 				}
 			}
 		}

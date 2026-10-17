@@ -1842,3 +1842,11 @@ PY
 ## 2026-10-17 M3-D5 定稿
 
 按用户“所有评审全部通过”授权，先记录[事件内容模板契约](review/M3-D5-EVENT-CONTENT-2026-10-17.md)并回写运行时/编译规范。明确显式 event. + reads.event、512 code point、单行 JSON 转义与完整围栏、warn model_text、最坏估算/index 3 与隐私边界，八组 A10 待实施。文档链接/锚点/围栏、历史归档、追加日志和 diff 检查通过；仅关闭 D5。
+
+## 2026-10-17 M3-T41 / M3-A10 事件内容围栏
+
+- 按 D5 增加显式 event. 模板和 reads.event 完整字段声明/并集、目标事件校验；保留裸事件字段拒绝。取本评估点 condition FieldReader，默认值/空值同路径处理，不从 ambient/session 借事件正文。512 code point 前缀、无效 UTF-8 替换、单行 JSON 对换行/控制/格式/尖括号/反引号等转义，始终完整数据围栏；warn 要显式 model_text。
+- 编译产物采用 index 3，schema 本身与严格解码共同拒绝旧格式的新变量及未知 event 字段；旧 index 1/2、旧 golden 不变，format 3 可运行 refresh。估算按最坏 12 字节 Unicode 转义宽度与完整围栏，硬上限超出整条丢弃并释放 claim。doctor 提示升级，agenthooks/依赖未变。
+- [验收报告](review/M3-A10-2026-10-17.json)：11 个新函数，最终专项/race 57 pass、0 fail/skip；根 module 全量 3,079 pass/0 fail，2 既有 opt-in/helper skip 单列。全量编译后仅新增 metadata/refresh 测试，最终专项/race 单独重跑，生产源码与 full suite/二进制一致。vet、35 项五路线 CLI、8 云端/8 插件 CLI、40 smoke、50 refresh CLI 通过。六路线生命周期/frozen、cloud bundle、两家原 codec 的十种字段、围栏 golden、逐点来源、隐私、cap/dedup/refresh 恢复均有证据；真旧程序运行/管理拒绝且文件保全。
+- 初期编辑脚本复用错误导致重复声明，恢复原 match.go 后仅加窄 helper；测试类型/Claude fixture 配置/哈希 helper 的错误修正重跑，失败摘要保留。Go 沿临时三缓存和外部环境清理；全量 TLS 来源 fixture 的 localhost 监听按既有授权放行。
+- [文档检查](review/M3-A10-DOCS-2026-10-17.json)通过，规范/说明/任务/测试同步，进度仅追加、历史归档与旧 JSON/golden 不变。仅关闭 T41/A10；后续 D6 provider/unknown 按依赖推进，真实 B3/C5 不以本地 fixture 代替。

@@ -135,7 +135,7 @@ reads:
   harness: [name, version, cwd, permission_mode, agent, session_id, turn_id]
 ```
 
-键只能是 `model`、`thinking_effort`、`harness`。模板或 `when` 用了没声明的数据，报错 `reads-missing`；声明了没用，给警告 `reads-unused`。规则文件 frontmatter 里的 `reads` 并入包级。
+键为 `model`、`thinking_effort`、`harness`，M3-T41 增加 `event` 完整字段列表（§8.2）。模板或 `when` 用了没声明的数据，报错 `reads-missing`；声明了没用，给警告 `reads-unused`。规则文件 frontmatter 里的 `reads` 并入包级。
 
 **两家的数据从哪来**：
 
@@ -244,7 +244,7 @@ STYLE 的 hook 输出**只允许**这几样：`additionalContext`、`systemMessa
 
 ### 8.2 事件内容围栏
 
-用户提示、工具参数、工具输出可能被人操控。M3-D5 [定稿契约](../review/M3-D5-EVENT-CONTENT-2026-10-17.md)新增显式 `{{event.prompt}}` 等引用与 `reads.event` 完整字段声明；裸事件字段继续禁止。每值最多 512 个 Unicode code point，单行 JSON string 转义控制/格式字符、尖括号与反引号，始终包在 style-untrusted-event 围栏内，default 同样处理。运行时按完整输出预算，超限整条丢弃；warn 含事件引用须显式 model_text。使用 index 3，旧 1/2 不接受新变量；不使用新语法的旧规则不变。设计已定稿，T41/A10 尚待实现验收。
+用户提示、工具参数、工具输出可能被人操控。M3-D5 [定稿契约](../review/M3-D5-EVENT-CONTENT-2026-10-17.md)新增显式 `{{event.prompt}}` 等引用与 `reads.event` 完整字段声明；裸事件字段继续禁止。每值最多 512 个 Unicode code point，单行 JSON string 转义控制/格式字符、尖括号与反引号，始终包在 style-untrusted-event 围栏内，default 同样处理。运行时按完整输出预算，超限整条丢弃；warn 含事件引用须显式 model_text。使用 index 3，旧 1/2 不接受新变量；不使用新语法的旧规则不变。T41 已实现并通过 [A10](../review/M3-A10-2026-10-17.json)，见[使用说明](../STYLE-EVENT-CONTENT.md)。
 
 ### 8.3 正文和标记
 
