@@ -1,0 +1,1782 @@
+{
+  "test": "M3-A0 registry validation and architecture boundary",
+  "date": "2026-10-17",
+  "status": "passed",
+  "source": {
+    "parent_commit": "7a577d5ff1ab566f8adaf7659e61d688695fa7a3",
+    "working_tree_contains_M3_T00": true,
+    "design_approval_commit": "7a577d5ff1ab566f8adaf7659e61d688695fa7a3",
+    "scopes": [
+      "cmd",
+      "core",
+      "internal",
+      "agenthooks",
+      "schema",
+      "scripts",
+      "testdata",
+      "go.mod",
+      "go.sum",
+      "go.work",
+      "Makefile"
+    ],
+    "files_fingerprinted": 686,
+    "source_inventory_sha256": "a7b4e3c2027f8d57e872d5935c27178fa3c3a58cad4605105e7868d3acd22a5c",
+    "content_fingerprint_sha256": "b4513fa557eb30a63758437aff58dc4149163b5c2c61a2b963ab6f7f89b31d8d",
+    "fingerprint_algorithm": "SHA256 of sorted repo-relative path + NUL + lowercase SHA256(file bytes) + LF for every file in scopes, including new Go files",
+    "changed_files_sha256": {
+      "core/spec/native.go": "86a727c5a717f6b69c5f2bce87b35698b0805e382debfbeabba6329648ad7e94",
+      "core/spec/validate.go": "0f3b9a94fde0ad1cd8373c7316eb3de97224efd59d906c07985ef99517a716e2",
+      "core/spec/validate_condition_test.go": "7660f8fb43fd2930c65d4f1b6a1c8ed5396e78fe4039350e639a91dddd10fdac",
+      "core/spec/validate_conditions.go": "da17e995651e48ca7420e102ac082bf77c63078b33476d243146fc3089ca547a",
+      "core/spec/validate_native_test.go": "424faa222baac78a409de2c570fa037cf6b562f531288f99f9e4ac027bb4a865",
+      "core/spec/validate_package.go": "ee681d9ac65f524053fa32f4c4b367651a421d289ddfe626725f5c0f30b08471",
+      "core/spec/validation_catalog_test.go": "283911f19730df43017013d63d9c4d17558701623dd3953bf9c6f031d31ef599",
+      "core/tokens/analyze.go": "78d51a623be15d3147d8fd48d9d859c21c7e725d405c3f7c8ed6070233ffb05e",
+      "core/tokens/validation_catalog_test.go": "f03dfe8ccf22d50efe650898b694cb3fea558be878499f4cc549a45d096e1c12",
+      "internal/adapter/boundary_test.go": "73304634571b99efea7bf9f1834f5ac92b3c5b09178eab5db86f5227e6626d99",
+      "internal/adapter/registry.go": "d8acd544d276797b5cee0291416c4877ec8748fda0025314c2ff72c74bfa5cd1",
+      "internal/adapter/registry_test.go": "66f737300c04606f1e47bae339fbb9a9d6556f8ddd415385454f73e9239c2d75",
+      "internal/app/install.go": "9e955d546e3cbf2035d03e5220d8afc35b556a53158e31a6bb0810e2a05e7e8d",
+      "internal/app/install_dedup.go": "9500fc9a71e745e0f66bb272d33ac3d0b125ad2b7ced1adad2e29ec852c8bf98",
+      "internal/app/install_test.go": "afd8f90401387c12fe0a9a4114987c237a8f3e28354b453a38d3dae9eba454e3",
+      "internal/app/native_catalog_test.go": "242f7b81d02b4c1d16ef4ebf527323c4cf00f6ebefd645228975239c2d658317",
+      "internal/app/package_snapshot.go": "b0fd253805867b194169998daeb4d4095af5a40d172867a33bbb500cfdaa79b1",
+      "internal/app/plan.go": "a4b9c4654ac9722d7b391b3900027b10cc3bb36be7a7eeb03b85a34100886868",
+      "internal/app/service.go": "67213b4d3d12cad86db0ded015675a32736786606bb1594f4a251afd22eeca18",
+      "internal/app/test_helpers_test.go": "07533ec90655c9edcde9a85613c338261e1514f710816490983c9d6cd08c9fd2",
+      "internal/app/validate.go": "aeaa3e4918db90d20b60fcea090c6ea2cb7c4248f5852882e8d36195210d1bd1",
+      "internal/app/validation_catalog_test.go": "3f4951892429f00aa99d4a681b29a05a30267fe0ec9fbdddacb6a11b9c466be4"
+    },
+    "agenthooks_dependencies_workflow_scripts_fixtures_and_goldens_unchanged": true,
+    "engine_prompt_suppression_unchanged": true
+  },
+  "environment": {
+    "os": [
+      "ProductName:\t\tmacOS",
+      "ProductVersion:\t\t27.0.1",
+      "BuildVersion:\t\t26A434"
+    ],
+    "architecture": "arm64",
+    "go": "go version go1.27.0 darwin/arm64",
+    "python": "3.14.7",
+    "cleared_environment": [
+      "CODEX_HOME",
+      "CODEX_SANDBOX",
+      "CLAUDE_CONFIG_DIR",
+      "STYLE_HOME",
+      "GOFLAGS",
+      "GOWORK"
+    ],
+    "go_caches": {
+      "GOPATH": "/tmp/style-cli-gopath",
+      "GOMODCACHE": "/tmp/style-cli-gomodcache",
+      "GOCACHE": "/tmp/style-cli-gocache"
+    },
+    "standard_build_GOWORK": "off",
+    "fresh_test_effective_GOFLAGS": "-mod=readonly -count=1",
+    "race_flags": [
+      "-race",
+      "-count=1"
+    ]
+  },
+  "summary": {
+    "fresh_dual_module_test_packages": 30,
+    "fresh_test_all_uncached": true,
+    "vet": "passed",
+    "race_packages": 4,
+    "race_all_pass_test_events": 790,
+    "new_M3A0_test_functions": 14,
+    "new_M3A0_leaf_cases": 205,
+    "new_M3A0_pass_events_including_groups": 211,
+    "new_M3A0_events_by_package": {
+      "github.com/inxups/style-cli/core/tokens": 3,
+      "github.com/inxups/style-cli/internal/adapter": 1,
+      "github.com/inxups/style-cli/core/spec": 163,
+      "github.com/inxups/style-cli/internal/app": 44
+    },
+    "race_failures_or_skips": 0,
+    "collector_cases": 59,
+    "smoke_cases": 40,
+    "actual_legacy_migration_cases": 16,
+    "replace_fallback_cases": 12,
+    "diagnostic_byte_comparisons": 32,
+    "isolated_boundary_fixtures": 8
+  },
+  "acceptance_subcases": {
+    "A0-01": {
+      "tests": [
+        "TestM3A0CatalogControlsAllOrdinaryNames",
+        "TestM3A0RegisteredNamesAreIndependentOfDetectionAndSelection"
+      ],
+      "facts": "144 ordinary-name leaves: four catalogs, three formats, six exact name spellings and scalar/list conditions; LoadSnapshot agrees; from overrides replace the source name.",
+      "status": "passed"
+    },
+    "A0-02": {
+      "tests": [
+        "TestM3A0NativeUsesNameSupersetAndCapabilitySubset"
+      ],
+      "facts": "12 native leaves cover ordinary-only and nil capabilities, extra Native keys, zero catalog, stable deduplicated name lists and fake native events; ten additional default-provider compatibility comparisons are asserted inside the same test.",
+      "status": "passed"
+    },
+    "A0-03": {
+      "tests": [
+        "TestM3A0CatalogDiagnosticCompatibility",
+        "TestM3A0NativeUsesNameSupersetAndCapabilitySubset",
+        "TestM3A0CLIDiagnosticsRetainJSONAndExitContract"
+      ],
+      "facts": "Exact code/path/severity/message/order for unknown and malformed values, nil package and native errors; 32 baseline/current CLI stdout/stderr/exit comparisons are byte identical.",
+      "status": "passed"
+    },
+    "A0-04": {
+      "tests": [
+        "TestM3A0CatalogControlsAllOrdinaryNames",
+        "TestM3A0ZeroCatalogAndConcurrentCatalogs",
+        "TestM3A0ServiceSnapshotsAndConcurrentValidation"
+      ],
+      "facts": "Structural Validate never guesses membership; complete zero catalog rejects names and accepts generic packages; Load and LoadSnapshot admit no implicit registry.",
+      "status": "passed"
+    },
+    "A0-05": {
+      "tests": [
+        "TestM3A0RegistryValidationCatalogIsAnIsolatedSnapshot",
+        "TestM3A0ZeroCatalogAndConcurrentCatalogs",
+        "TestM3A0ServiceSnapshotsAndConcurrentValidation",
+        "TestM3A0ValidationNeverDetectsOrExecutesNativeCommands"
+      ],
+      "facts": "Returned slice/map mutations, concurrent registry/service validation and different catalogs are isolated; detectors remain uncalled and native command marker is absent.",
+      "status": "passed"
+    },
+    "A0-06": {
+      "tests": [
+        "TestM3A0AutoAndBudgetEnumerationIncludeEveryRegistration",
+        "TestM3A0RegisteredNamesAreIndependentOfDetectionAndSelection",
+        "TestM3A0AdmissionFailuresPreserveInstalledBytesModesAndTimes"
+      ],
+      "facts": "Fake explicit/auto targets and unselected/undetected registrations; 33 leaves across three fields and eleven read/admission/rebuild operations preserve unknown-name facts.",
+      "status": "passed"
+    },
+    "A0-07": {
+      "tests": [
+        "TestM3A0FakeBudgetDiagnosticsSurviveCompileAndDedup",
+        "TestM3A0AutoAndBudgetEnumerationIncludeEveryRegistration",
+        "TestM3A0EmptySourceFallbackPreservesStructuralLintsForFakeHarness"
+      ],
+      "facts": "Fake T002/T004 budgets, T001/T007 source lints before/after real cross-package dedup and empty-source token fallback; default-provider goldens remain unchanged.",
+      "status": "passed"
+    },
+    "A0-08": {
+      "tests": [
+        "TestM3A0AdmissionFailuresPreserveInstalledBytesModesAndTimes",
+        "TestM3A0RegistryChangeRecoveryAndRemovedPackageCompatibility"
+      ],
+      "facts": "Whole fixture tree bytes/modes/mtimes unchanged after rejection, including lock/index/approval/state/external config; restoring registration recovers sync; removing invalid old package validates only retained packages and final uninstall restores external bytes/mode.",
+      "status": "passed"
+    },
+    "A0-09": {
+      "tests": [
+        "TestCoreDoesNotImportProviderOrAdapterImplementations"
+      ],
+      "facts": "Actual core import guard passes; isolated exact-copy guard rejects five forbidden root/subpackage imports and accepts three nonmatching prefixes. No built-in names remain in the three spec validation points; engine prompt suppression checks remain deferred to D8.",
+      "status": "passed"
+    },
+    "A0-10": {
+      "commands": [
+        "fresh-test",
+        "vet",
+        "race",
+        "collectors",
+        "smoke",
+        "migration",
+        "replace"
+      ],
+      "facts": "30 dual-module test packages fresh, vet, conformance/stdout goldens, four-package race, 59 collectors, 40 smoke, 16 legacy upgrades and 12 replace cases all pass; build hashes fixed.",
+      "status": "passed"
+    }
+  },
+  "new_test_functions": {
+    "TestM3A0CatalogControlsAllOrdinaryNames": "core/spec/validation_catalog_test.go",
+    "TestM3A0CatalogDiagnosticCompatibility": "core/spec/validation_catalog_test.go",
+    "TestM3A0NativeUsesNameSupersetAndCapabilitySubset": "core/spec/validation_catalog_test.go",
+    "TestM3A0ZeroCatalogAndConcurrentCatalogs": "core/spec/validation_catalog_test.go",
+    "TestM3A0EmptySourceFallbackPreservesStructuralLintsForFakeHarness": "core/tokens/validation_catalog_test.go",
+    "TestM3A0RegistryValidationCatalogIsAnIsolatedSnapshot": "internal/adapter/registry_test.go",
+    "TestM3A0RegisteredNamesAreIndependentOfDetectionAndSelection": "internal/app/validation_catalog_test.go",
+    "TestM3A0AutoAndBudgetEnumerationIncludeEveryRegistration": "internal/app/validation_catalog_test.go",
+    "TestM3A0ServiceSnapshotsAndConcurrentValidation": "internal/app/validation_catalog_test.go",
+    "TestM3A0ValidationNeverDetectsOrExecutesNativeCommands": "internal/app/validation_catalog_test.go",
+    "TestM3A0AdmissionFailuresPreserveInstalledBytesModesAndTimes": "internal/app/validation_catalog_test.go",
+    "TestM3A0RegistryChangeRecoveryAndRemovedPackageCompatibility": "internal/app/validation_catalog_test.go",
+    "TestM3A0FakeBudgetDiagnosticsSurviveCompileAndDedup": "internal/app/validation_catalog_test.go",
+    "TestM3A0CLIDiagnosticsRetainJSONAndExitContract": "internal/app/validation_catalog_test.go"
+  },
+  "binaries": {
+    "style": {
+      "path": "/tmp/style-m3-a0-20261017.0ttt7bk2/build/style",
+      "sha256": "8d4e933ccdc6d79167294b0998e0bfe76668cfbf0a268a64d25dc3f3b5ad6967",
+      "go_build_metadata": [
+        "\tpath\tgithub.com/inxups/style-cli/cmd/style",
+        "\tmod\tgithub.com/inxups/style-cli\t(devel)\t",
+        "\tdep\tgithub.com/google/jsonschema-go\tv0.4.3\th1:/DBOLZTfDow7pe2GmaJNhltueGTtDKICi8V8p+DQPd0=",
+        "\tdep\tgithub.com/pelletier/go-toml/v2\tv2.4.2\th1:M2fKKbmyvI+hGId/D0W64qDBMVhJnNR10O5gIbMc//Q=",
+        "\tdep\tgithub.com/speakeasy-api/agenthooks\tv0.0.0",
+        "\t=>\t./agenthooks\t(devel)\t",
+        "\t",
+        "\tdep\tgolang.org/x/sys\tv0.46.0\th1:noSf2Fq6F8DBgS+LysIkx7rIExoNHJsxOAtPp4rthXw=",
+        "\tdep\tgopkg.in/yaml.v3\tv3.0.1\th1:fxVm/GzAzEWqLHuvctI91KS9hhNmmWOoWu0XTYJS7CA=",
+        "\tbuild\t-buildmode=exe",
+        "\tbuild\t-compiler=gc",
+        "\tbuild\t-trimpath=true",
+        "\tbuild\tDefaultGODEBUG=cryptocustomrand=1,tlssecpmlkem=0,tracebacklabels=0,urlstrictcolons=0,x509sslcertoverrideplatform=0",
+        "\tbuild\tCGO_ENABLED=1",
+        "\tbuild\tGOARCH=arm64",
+        "\tbuild\tGOOS=darwin",
+        "\tbuild\tGOARM64=v8.0"
+      ]
+    },
+    "style-legacy": {
+      "path": "/tmp/style-m3-a0-20261017.0ttt7bk2/build/style-legacy",
+      "sha256": "4b2a46049758faef4c0a7e7e3045b877fe0503d0479b349fc5bf929adff8d958",
+      "go_build_metadata": [
+        "\tpath\tgithub.com/inxups/style-cli/cmd/style",
+        "\tmod\tgithub.com/inxups/style-cli\t(devel)\t",
+        "\tdep\tgithub.com/google/jsonschema-go\tv0.4.3\th1:/DBOLZTfDow7pe2GmaJNhltueGTtDKICi8V8p+DQPd0=",
+        "\tdep\tgithub.com/pelletier/go-toml/v2\tv2.4.2\th1:M2fKKbmyvI+hGId/D0W64qDBMVhJnNR10O5gIbMc//Q=",
+        "\tdep\tgithub.com/speakeasy-api/agenthooks\tv0.0.0",
+        "\t=>\t./agenthooks\t(devel)\t",
+        "\t",
+        "\tdep\tgolang.org/x/sys\tv0.46.0\th1:noSf2Fq6F8DBgS+LysIkx7rIExoNHJsxOAtPp4rthXw=",
+        "\tdep\tgopkg.in/yaml.v3\tv3.0.1\th1:fxVm/GzAzEWqLHuvctI91KS9hhNmmWOoWu0XTYJS7CA=",
+        "\tbuild\t-buildmode=exe",
+        "\tbuild\t-compiler=gc",
+        "\tbuild\t-trimpath=true",
+        "\tbuild\tDefaultGODEBUG=cryptocustomrand=1,tlssecpmlkem=0,tracebacklabels=0,urlstrictcolons=0,x509sslcertoverrideplatform=0",
+        "\tbuild\tCGO_ENABLED=1",
+        "\tbuild\tGOARCH=arm64",
+        "\tbuild\tGOOS=darwin",
+        "\tbuild\tGOARM64=v8.0"
+      ]
+    }
+  },
+  "legacy_source_commit": "74a473d2e238af44c346da3807f46e1c9993176d",
+  "fresh_test_package_results": [
+    {
+      "package": "github.com/inxups/style-cli/core/compile",
+      "seconds": 0.834
+    },
+    {
+      "package": "github.com/inxups/style-cli/core/engine",
+      "seconds": 0.838
+    },
+    {
+      "package": "github.com/inxups/style-cli/core/plan",
+      "seconds": 0.663
+    },
+    {
+      "package": "github.com/inxups/style-cli/core/spec",
+      "seconds": 1.252
+    },
+    {
+      "package": "github.com/inxups/style-cli/core/state",
+      "seconds": 0.795
+    },
+    {
+      "package": "github.com/inxups/style-cli/core/template",
+      "seconds": 0.582
+    },
+    {
+      "package": "github.com/inxups/style-cli/core/tokens",
+      "seconds": 0.592
+    },
+    {
+      "package": "github.com/inxups/style-cli/core/warn",
+      "seconds": 0.539
+    },
+    {
+      "package": "github.com/inxups/style-cli/core/when",
+      "seconds": 0.542
+    },
+    {
+      "package": "github.com/inxups/style-cli/internal/adapter",
+      "seconds": 0.279
+    },
+    {
+      "package": "github.com/inxups/style-cli/internal/adapter/claude",
+      "seconds": 0.507
+    },
+    {
+      "package": "github.com/inxups/style-cli/internal/adapter/codex",
+      "seconds": 0.398
+    },
+    {
+      "package": "github.com/inxups/style-cli/internal/adapter/conformance",
+      "seconds": 6.784
+    },
+    {
+      "package": "github.com/inxups/style-cli/internal/adapter/effortmap",
+      "seconds": 0.272
+    },
+    {
+      "package": "github.com/inxups/style-cli/internal/agenthookscheck",
+      "seconds": 0.271
+    },
+    {
+      "package": "github.com/inxups/style-cli/internal/app",
+      "seconds": 18.59
+    },
+    {
+      "package": "github.com/inxups/style-cli/internal/runtime",
+      "seconds": 0.321
+    },
+    {
+      "package": "github.com/inxups/style-cli/internal/tokenestimate",
+      "seconds": 0.268
+    },
+    {
+      "package": "github.com/inxups/style-cli/schema",
+      "seconds": 0.275
+    },
+    {
+      "package": "github.com/speakeasy-api/agenthooks",
+      "seconds": 10.408
+    },
+    {
+      "package": "github.com/speakeasy-api/agenthooks/e2e",
+      "seconds": 0.296
+    },
+    {
+      "package": "github.com/speakeasy-api/agenthooks/examples/secretguard",
+      "seconds": 0.334
+    },
+    {
+      "package": "github.com/speakeasy-api/agenthooks/install",
+      "seconds": 0.937
+    },
+    {
+      "package": "github.com/speakeasy-api/agenthooks/internal/jsonx",
+      "seconds": 0.393
+    },
+    {
+      "package": "github.com/speakeasy-api/agenthooks/provider/claudecode",
+      "seconds": 0.422
+    },
+    {
+      "package": "github.com/speakeasy-api/agenthooks/provider/copilot",
+      "seconds": 0.395
+    },
+    {
+      "package": "github.com/speakeasy-api/agenthooks/provider/gemini",
+      "seconds": 0.397
+    },
+    {
+      "package": "github.com/speakeasy-api/agenthooks/provider/kimicode",
+      "seconds": 0.424
+    },
+    {
+      "package": "github.com/speakeasy-api/agenthooks/provider/openclaw",
+      "seconds": 0.407
+    },
+    {
+      "package": "github.com/speakeasy-api/agenthooks/transcript",
+      "seconds": 0.326
+    }
+  ],
+  "smoke_cases": [
+    "stats on empty home creates no state",
+    "validate terse-reviewer",
+    "plan terse-reviewer --json",
+    "validate m1b-probes",
+    "plan m1b-probes --json",
+    "install terse-reviewer for codex-user and claude-user",
+    "list shows terse-reviewer with matching hash",
+    "doctor healthy",
+    "codex developer_instructions written",
+    "claude package rules written",
+    "combined install discloses cross-package aliases and zero additional cost",
+    "two installed packages keep one set of static and runtime placements",
+    "doctor accepts cross-package compiled output",
+    "codex PreToolUse deny: git push --force origin main",
+    "codex PreToolUse deny: git push -f origin main",
+    "codex PreToolUse deny: git -C repo push origin +main",
+    "codex PreToolUse deny: bash --rcfile /dev/null -c 'git push --force origin main'",
+    "codex PreToolUse deny: bash -O extglob -c 'git push -f origin main'",
+    "codex PreToolUse deny: bash -eo pipefail -c 'git push --force origin main'",
+    "codex PreToolUse allow: git status --short",
+    "codex PreToolUse allow: git push origin main",
+    "codex PreToolUse allow: echo 'git push --force'",
+    "codex PreToolUse allow: bash --rcfile /dev/null -c 'git status --short'",
+    "claude-code PreToolUse deny: git push --force origin main",
+    "claude-code PreToolUse deny: git push -f origin main",
+    "claude-code PreToolUse deny: git -C repo push origin +main",
+    "claude-code PreToolUse deny: bash --rcfile /dev/null -c 'git push --force origin main'",
+    "claude-code PreToolUse deny: bash -O extglob -c 'git push -f origin main'",
+    "claude-code PreToolUse deny: bash -eo pipefail -c 'git push --force origin main'",
+    "claude-code PreToolUse allow: git status --short",
+    "claude-code PreToolUse allow: git push origin main",
+    "claude-code PreToolUse allow: echo 'git push --force'",
+    "claude-code PreToolUse allow: bash --rcfile /dev/null -c 'git status --short'",
+    "stats groups actual hook records by provider and rule",
+    "stats session grouping preserves hook counts and estimates",
+    "uninstalling an alias preserves canonical placements",
+    "sync",
+    "uninstall --all",
+    "uninstall removes STYLE hooks and static text",
+    "stats history remains available after uninstall"
+  ],
+  "migration_cases": [
+    {
+      "entrypoint": "install",
+      "legacy_fixture": "lf",
+      "passed": true,
+      "read_only_commands": 5,
+      "migrated_owners": 2,
+      "repeat_sync_changed": false,
+      "doctor_healthy_before_and_after": true,
+      "external_bytes_and_mode_restored": true
+    },
+    {
+      "entrypoint": "install",
+      "legacy_fixture": "crlf",
+      "passed": true,
+      "read_only_commands": 5,
+      "migrated_owners": 2,
+      "repeat_sync_changed": false,
+      "doctor_healthy_before_and_after": true,
+      "external_bytes_and_mode_restored": true
+    },
+    {
+      "entrypoint": "install",
+      "legacy_fixture": "no-newline",
+      "passed": true,
+      "read_only_commands": 5,
+      "migrated_owners": 2,
+      "repeat_sync_changed": false,
+      "doctor_healthy_before_and_after": true,
+      "external_bytes_and_mode_restored": true
+    },
+    {
+      "entrypoint": "install",
+      "legacy_fixture": "absent",
+      "passed": true,
+      "read_only_commands": 5,
+      "migrated_owners": 2,
+      "repeat_sync_changed": false,
+      "doctor_healthy_before_and_after": true,
+      "external_bytes_and_mode_restored": true
+    },
+    {
+      "entrypoint": "sync",
+      "legacy_fixture": "lf",
+      "passed": true,
+      "read_only_commands": 5,
+      "migrated_owners": 2,
+      "repeat_sync_changed": false,
+      "doctor_healthy_before_and_after": true,
+      "external_bytes_and_mode_restored": true
+    },
+    {
+      "entrypoint": "sync",
+      "legacy_fixture": "crlf",
+      "passed": true,
+      "read_only_commands": 5,
+      "migrated_owners": 2,
+      "repeat_sync_changed": false,
+      "doctor_healthy_before_and_after": true,
+      "external_bytes_and_mode_restored": true
+    },
+    {
+      "entrypoint": "sync",
+      "legacy_fixture": "no-newline",
+      "passed": true,
+      "read_only_commands": 5,
+      "migrated_owners": 2,
+      "repeat_sync_changed": false,
+      "doctor_healthy_before_and_after": true,
+      "external_bytes_and_mode_restored": true
+    },
+    {
+      "entrypoint": "sync",
+      "legacy_fixture": "absent",
+      "passed": true,
+      "read_only_commands": 5,
+      "migrated_owners": 2,
+      "repeat_sync_changed": false,
+      "doctor_healthy_before_and_after": true,
+      "external_bytes_and_mode_restored": true
+    },
+    {
+      "entrypoint": "trust",
+      "legacy_fixture": "lf",
+      "passed": true,
+      "read_only_commands": 5,
+      "migrated_owners": 2,
+      "repeat_sync_changed": false,
+      "doctor_healthy_before_and_after": true,
+      "external_bytes_and_mode_restored": true
+    },
+    {
+      "entrypoint": "trust",
+      "legacy_fixture": "crlf",
+      "passed": true,
+      "read_only_commands": 5,
+      "migrated_owners": 2,
+      "repeat_sync_changed": false,
+      "doctor_healthy_before_and_after": true,
+      "external_bytes_and_mode_restored": true
+    },
+    {
+      "entrypoint": "trust",
+      "legacy_fixture": "no-newline",
+      "passed": true,
+      "read_only_commands": 5,
+      "migrated_owners": 2,
+      "repeat_sync_changed": false,
+      "doctor_healthy_before_and_after": true,
+      "external_bytes_and_mode_restored": true
+    },
+    {
+      "entrypoint": "trust",
+      "legacy_fixture": "absent",
+      "passed": true,
+      "read_only_commands": 5,
+      "migrated_owners": 2,
+      "repeat_sync_changed": false,
+      "doctor_healthy_before_and_after": true,
+      "external_bytes_and_mode_restored": true
+    },
+    {
+      "entrypoint": "uninstall",
+      "legacy_fixture": "lf",
+      "passed": true,
+      "read_only_commands": 5,
+      "migrated_owners": 2,
+      "repeat_sync_changed": false,
+      "doctor_healthy_before_and_after": true,
+      "external_bytes_and_mode_restored": true
+    },
+    {
+      "entrypoint": "uninstall",
+      "legacy_fixture": "crlf",
+      "passed": true,
+      "read_only_commands": 5,
+      "migrated_owners": 2,
+      "repeat_sync_changed": false,
+      "doctor_healthy_before_and_after": true,
+      "external_bytes_and_mode_restored": true
+    },
+    {
+      "entrypoint": "uninstall",
+      "legacy_fixture": "no-newline",
+      "passed": true,
+      "read_only_commands": 5,
+      "migrated_owners": 2,
+      "repeat_sync_changed": false,
+      "doctor_healthy_before_and_after": true,
+      "external_bytes_and_mode_restored": true
+    },
+    {
+      "entrypoint": "uninstall",
+      "legacy_fixture": "absent",
+      "passed": true,
+      "read_only_commands": 5,
+      "migrated_owners": 2,
+      "repeat_sync_changed": false,
+      "doctor_healthy_before_and_after": true,
+      "external_bytes_and_mode_restored": true
+    }
+  ],
+  "replace_cases": [
+    {
+      "provider": "codex",
+      "fallback": "degrade",
+      "format": "text",
+      "plan_status": "skipped",
+      "plan_exit": 0,
+      "unauthorized_install_exit": 1,
+      "authorized_install_exit": 0,
+      "placements": 0,
+      "user_style_tree_preserved": true,
+      "passed": true
+    },
+    {
+      "provider": "codex",
+      "fallback": "degrade",
+      "format": "json",
+      "plan_status": "skipped",
+      "plan_exit": 0,
+      "unauthorized_install_exit": 1,
+      "authorized_install_exit": 0,
+      "placements": 0,
+      "user_style_tree_preserved": true,
+      "passed": true
+    },
+    {
+      "provider": "codex",
+      "fallback": "skip",
+      "format": "text",
+      "plan_status": "skipped",
+      "plan_exit": 0,
+      "unauthorized_install_exit": 1,
+      "authorized_install_exit": 0,
+      "placements": 0,
+      "user_style_tree_preserved": true,
+      "passed": true
+    },
+    {
+      "provider": "codex",
+      "fallback": "skip",
+      "format": "json",
+      "plan_status": "skipped",
+      "plan_exit": 0,
+      "unauthorized_install_exit": 1,
+      "authorized_install_exit": 0,
+      "placements": 0,
+      "user_style_tree_preserved": true,
+      "passed": true
+    },
+    {
+      "provider": "codex",
+      "fallback": "error",
+      "format": "text",
+      "plan_status": "install-error",
+      "plan_exit": 4,
+      "unauthorized_install_exit": 1,
+      "authorized_install_exit": 4,
+      "placements": 0,
+      "user_style_tree_preserved": true,
+      "passed": true
+    },
+    {
+      "provider": "codex",
+      "fallback": "error",
+      "format": "json",
+      "plan_status": "install-error",
+      "plan_exit": 4,
+      "unauthorized_install_exit": 1,
+      "authorized_install_exit": 4,
+      "placements": 0,
+      "user_style_tree_preserved": true,
+      "passed": true
+    },
+    {
+      "provider": "claude-code",
+      "fallback": "degrade",
+      "format": "text",
+      "plan_status": "skipped",
+      "plan_exit": 0,
+      "unauthorized_install_exit": 1,
+      "authorized_install_exit": 0,
+      "placements": 0,
+      "user_style_tree_preserved": true,
+      "passed": true
+    },
+    {
+      "provider": "claude-code",
+      "fallback": "degrade",
+      "format": "json",
+      "plan_status": "skipped",
+      "plan_exit": 0,
+      "unauthorized_install_exit": 1,
+      "authorized_install_exit": 0,
+      "placements": 0,
+      "user_style_tree_preserved": true,
+      "passed": true
+    },
+    {
+      "provider": "claude-code",
+      "fallback": "skip",
+      "format": "text",
+      "plan_status": "skipped",
+      "plan_exit": 0,
+      "unauthorized_install_exit": 1,
+      "authorized_install_exit": 0,
+      "placements": 0,
+      "user_style_tree_preserved": true,
+      "passed": true
+    },
+    {
+      "provider": "claude-code",
+      "fallback": "skip",
+      "format": "json",
+      "plan_status": "skipped",
+      "plan_exit": 0,
+      "unauthorized_install_exit": 1,
+      "authorized_install_exit": 0,
+      "placements": 0,
+      "user_style_tree_preserved": true,
+      "passed": true
+    },
+    {
+      "provider": "claude-code",
+      "fallback": "error",
+      "format": "text",
+      "plan_status": "install-error",
+      "plan_exit": 4,
+      "unauthorized_install_exit": 1,
+      "authorized_install_exit": 4,
+      "placements": 0,
+      "user_style_tree_preserved": true,
+      "passed": true
+    },
+    {
+      "provider": "claude-code",
+      "fallback": "error",
+      "format": "json",
+      "plan_status": "install-error",
+      "plan_exit": 4,
+      "unauthorized_install_exit": 1,
+      "authorized_install_exit": 4,
+      "placements": 0,
+      "user_style_tree_preserved": true,
+      "passed": true
+    }
+  ],
+  "diagnostic_comparison": {
+    "baseline_binary": "/tmp/style-m3-baseline-20261017.lbp47_dq/build/style",
+    "baseline_sha256": "66ed7d4c21eb1e03a6b4b1c93269535ed96be58cc694d90c57dd5843582103c4",
+    "source_commit": "7586cca5744c697c1cc84a7cc0409e20cc39af40",
+    "scenario_count": 8,
+    "count": 32,
+    "all_stdout_stderr_exit_codes_identical": true,
+    "checks": [
+      {
+        "scenario": "ordinary-directory",
+        "arguments": [
+          "validate",
+          "/tmp/style-m3-a0-20261017.0ttt7bk2/diagnostic-fixtures/ordinary-directory"
+        ],
+        "exit_code": 1,
+        "stdout_sha256": "0817b49c81ea52f579e6591cb6a5dc065a13f00a4ca3a30f1b3e9477f171f700",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "byte_identical": true
+      },
+      {
+        "scenario": "ordinary-directory",
+        "arguments": [
+          "validate",
+          "/tmp/style-m3-a0-20261017.0ttt7bk2/diagnostic-fixtures/ordinary-directory",
+          "--json"
+        ],
+        "exit_code": 1,
+        "stdout_sha256": "066981d9994900e8fdc3419b0671cfb44421960dad6b04ba663c980e1e83b587",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "byte_identical": true
+      },
+      {
+        "scenario": "ordinary-directory",
+        "arguments": [
+          "plan",
+          "/tmp/style-m3-a0-20261017.0ttt7bk2/diagnostic-fixtures/ordinary-directory",
+          "--harness=codex,claude-code"
+        ],
+        "exit_code": 1,
+        "stdout_sha256": "0fdac65b6bb41b3ec209c8c112ad0552930eb3627cfac06b0bdb1022edce3880",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "byte_identical": true
+      },
+      {
+        "scenario": "ordinary-directory",
+        "arguments": [
+          "plan",
+          "/tmp/style-m3-a0-20261017.0ttt7bk2/diagnostic-fixtures/ordinary-directory",
+          "--harness=codex,claude-code",
+          "--json"
+        ],
+        "exit_code": 1,
+        "stdout_sha256": "c0930ca4cea617df3d65927c8a311906948b1e9c673ea63d58eaa4b3798aec48",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "byte_identical": true
+      },
+      {
+        "scenario": "ordinary-single",
+        "arguments": [
+          "validate",
+          "/tmp/style-m3-a0-20261017.0ttt7bk2/diagnostic-fixtures/ordinary-single/fixture.style.md"
+        ],
+        "exit_code": 1,
+        "stdout_sha256": "6912f00cb58b6a597feeea4c6c8678e5f1ac6902ab5c342a820faea77a2f9e6d",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "byte_identical": true
+      },
+      {
+        "scenario": "ordinary-single",
+        "arguments": [
+          "validate",
+          "/tmp/style-m3-a0-20261017.0ttt7bk2/diagnostic-fixtures/ordinary-single/fixture.style.md",
+          "--json"
+        ],
+        "exit_code": 1,
+        "stdout_sha256": "2aaefb5a1fa609ab947bb51a6ad776ed11ea4a91c63bc7a5b0596eb600866276",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "byte_identical": true
+      },
+      {
+        "scenario": "ordinary-single",
+        "arguments": [
+          "plan",
+          "/tmp/style-m3-a0-20261017.0ttt7bk2/diagnostic-fixtures/ordinary-single/fixture.style.md",
+          "--harness=codex,claude-code"
+        ],
+        "exit_code": 1,
+        "stdout_sha256": "c2abb90c0cf919156b78430be2678c9135e190a293abd0ad4b6a2a91835e7a8d",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "byte_identical": true
+      },
+      {
+        "scenario": "ordinary-single",
+        "arguments": [
+          "plan",
+          "/tmp/style-m3-a0-20261017.0ttt7bk2/diagnostic-fixtures/ordinary-single/fixture.style.md",
+          "--harness=codex,claude-code",
+          "--json"
+        ],
+        "exit_code": 1,
+        "stdout_sha256": "4c499f6c457e67c9b7519284d82b07061cfa7ee70185573af1d3f67a1344165b",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "byte_identical": true
+      },
+      {
+        "scenario": "ordinary-from",
+        "arguments": [
+          "validate",
+          "/tmp/style-m3-a0-20261017.0ttt7bk2/diagnostic-fixtures/ordinary-from"
+        ],
+        "exit_code": 1,
+        "stdout_sha256": "b0a53fe9dca7e5a2d6b2f3779b5f73b5510d3b9827806457467f7e57ed9fc4e7",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "byte_identical": true
+      },
+      {
+        "scenario": "ordinary-from",
+        "arguments": [
+          "validate",
+          "/tmp/style-m3-a0-20261017.0ttt7bk2/diagnostic-fixtures/ordinary-from",
+          "--json"
+        ],
+        "exit_code": 1,
+        "stdout_sha256": "675359261951ef0edd477063a7ccee43d5cac844a57598d40b64b78bc86f085e",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "byte_identical": true
+      },
+      {
+        "scenario": "ordinary-from",
+        "arguments": [
+          "plan",
+          "/tmp/style-m3-a0-20261017.0ttt7bk2/diagnostic-fixtures/ordinary-from",
+          "--harness=codex,claude-code"
+        ],
+        "exit_code": 1,
+        "stdout_sha256": "9da51d97984d6581bf3e537e385cc31241d7db03af37d0882fae2b72bc3074ed",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "byte_identical": true
+      },
+      {
+        "scenario": "ordinary-from",
+        "arguments": [
+          "plan",
+          "/tmp/style-m3-a0-20261017.0ttt7bk2/diagnostic-fixtures/ordinary-from",
+          "--harness=codex,claude-code",
+          "--json"
+        ],
+        "exit_code": 1,
+        "stdout_sha256": "14cc92aa12d3ff6a8cb7c7263b2440e8cde0bf1a6a0eb341a70671b13fb0d425",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "byte_identical": true
+      },
+      {
+        "scenario": "native-unknown",
+        "arguments": [
+          "validate",
+          "/tmp/style-m3-a0-20261017.0ttt7bk2/diagnostic-fixtures/native-unknown"
+        ],
+        "exit_code": 1,
+        "stdout_sha256": "07aec29562ecff53b94326c6a3120a570043fe88f98a771e21f14edfdd763671",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "byte_identical": true
+      },
+      {
+        "scenario": "native-unknown",
+        "arguments": [
+          "validate",
+          "/tmp/style-m3-a0-20261017.0ttt7bk2/diagnostic-fixtures/native-unknown",
+          "--json"
+        ],
+        "exit_code": 1,
+        "stdout_sha256": "e11f7f01a3c17711ac05bdc76f3310636681c20daaf97d6ccda37bc88bf24f40",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "byte_identical": true
+      },
+      {
+        "scenario": "native-unknown",
+        "arguments": [
+          "plan",
+          "/tmp/style-m3-a0-20261017.0ttt7bk2/diagnostic-fixtures/native-unknown",
+          "--harness=codex,claude-code"
+        ],
+        "exit_code": 1,
+        "stdout_sha256": "5e96be2d7f61ae7b25420d6b48e44160a59f2da79b7b1af90037d9a0a730bcdc",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "byte_identical": true
+      },
+      {
+        "scenario": "native-unknown",
+        "arguments": [
+          "plan",
+          "/tmp/style-m3-a0-20261017.0ttt7bk2/diagnostic-fixtures/native-unknown",
+          "--harness=codex,claude-code",
+          "--json"
+        ],
+        "exit_code": 1,
+        "stdout_sha256": "0b5269dc372c8abeab4062076c94d743a6065bf405fbe195c02ec9fc6db1b842",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "byte_identical": true
+      },
+      {
+        "scenario": "native-bad-regex",
+        "arguments": [
+          "validate",
+          "/tmp/style-m3-a0-20261017.0ttt7bk2/diagnostic-fixtures/native-bad-regex"
+        ],
+        "exit_code": 1,
+        "stdout_sha256": "22c39c27d43a7e143dacf956b0703ea782d013c34e2fafc58cb3da9d72c2d163",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "byte_identical": true
+      },
+      {
+        "scenario": "native-bad-regex",
+        "arguments": [
+          "validate",
+          "/tmp/style-m3-a0-20261017.0ttt7bk2/diagnostic-fixtures/native-bad-regex",
+          "--json"
+        ],
+        "exit_code": 1,
+        "stdout_sha256": "39ef0b6af15a51d208b8593f1d8ee2ddedeb8ff37654fa11863c2d21efda7dfd",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "byte_identical": true
+      },
+      {
+        "scenario": "native-bad-regex",
+        "arguments": [
+          "plan",
+          "/tmp/style-m3-a0-20261017.0ttt7bk2/diagnostic-fixtures/native-bad-regex",
+          "--harness=codex,claude-code"
+        ],
+        "exit_code": 1,
+        "stdout_sha256": "a48a45333cb9a4d1d0c4def211281fe181c431ba9492bed8f44035d806458f5c",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "byte_identical": true
+      },
+      {
+        "scenario": "native-bad-regex",
+        "arguments": [
+          "plan",
+          "/tmp/style-m3-a0-20261017.0ttt7bk2/diagnostic-fixtures/native-bad-regex",
+          "--harness=codex,claude-code",
+          "--json"
+        ],
+        "exit_code": 1,
+        "stdout_sha256": "aa8b92a1ef1953822094292ca1898d22e561a83ea0309038b5363a49042eec5d",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "byte_identical": true
+      },
+      {
+        "scenario": "native-bad-event",
+        "arguments": [
+          "validate",
+          "/tmp/style-m3-a0-20261017.0ttt7bk2/diagnostic-fixtures/native-bad-event"
+        ],
+        "exit_code": 1,
+        "stdout_sha256": "c509ab02e3c0f8bff7a710330180b260db382a2b548c593203f981f76adf8446",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "byte_identical": true
+      },
+      {
+        "scenario": "native-bad-event",
+        "arguments": [
+          "validate",
+          "/tmp/style-m3-a0-20261017.0ttt7bk2/diagnostic-fixtures/native-bad-event",
+          "--json"
+        ],
+        "exit_code": 1,
+        "stdout_sha256": "432ae5423fc3dab42ddc01277845533d1f7fccefc0a5d704b371e22682ed1288",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "byte_identical": true
+      },
+      {
+        "scenario": "native-bad-event",
+        "arguments": [
+          "plan",
+          "/tmp/style-m3-a0-20261017.0ttt7bk2/diagnostic-fixtures/native-bad-event",
+          "--harness=codex,claude-code"
+        ],
+        "exit_code": 1,
+        "stdout_sha256": "5088ec68d8726916a787c95924256d5829e8fe334f1bcd81ae420a21582e4fb5",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "byte_identical": true
+      },
+      {
+        "scenario": "native-bad-event",
+        "arguments": [
+          "plan",
+          "/tmp/style-m3-a0-20261017.0ttt7bk2/diagnostic-fixtures/native-bad-event",
+          "--harness=codex,claude-code",
+          "--json"
+        ],
+        "exit_code": 1,
+        "stdout_sha256": "29e2e263a1ea855dabec4b88d4f88bf6b161ed8d50628f9643b47d12e8f5b80c",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "byte_identical": true
+      },
+      {
+        "scenario": "bad-types",
+        "arguments": [
+          "validate",
+          "/tmp/style-m3-a0-20261017.0ttt7bk2/diagnostic-fixtures/bad-types"
+        ],
+        "exit_code": 1,
+        "stdout_sha256": "6383351b338dfb59628e5da8d11ca92457831c1ec9fc776b2fe3f2c41ffbf875",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "byte_identical": true
+      },
+      {
+        "scenario": "bad-types",
+        "arguments": [
+          "validate",
+          "/tmp/style-m3-a0-20261017.0ttt7bk2/diagnostic-fixtures/bad-types",
+          "--json"
+        ],
+        "exit_code": 1,
+        "stdout_sha256": "0c17611a14bc0f44c473392d51d780cf7a00206f71c5181fba3a519f27fe9617",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "byte_identical": true
+      },
+      {
+        "scenario": "bad-types",
+        "arguments": [
+          "plan",
+          "/tmp/style-m3-a0-20261017.0ttt7bk2/diagnostic-fixtures/bad-types",
+          "--harness=codex,claude-code"
+        ],
+        "exit_code": 1,
+        "stdout_sha256": "6bf48cbc71cd310ae5569ed6f8b52feb4ec33c159109818a49811b37b2a18449",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "byte_identical": true
+      },
+      {
+        "scenario": "bad-types",
+        "arguments": [
+          "plan",
+          "/tmp/style-m3-a0-20261017.0ttt7bk2/diagnostic-fixtures/bad-types",
+          "--harness=codex,claude-code",
+          "--json"
+        ],
+        "exit_code": 1,
+        "stdout_sha256": "f57fe5978c1b3d829fd32ff49d23bd157dfe831825d115fb2a6883bc20946036",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "byte_identical": true
+      },
+      {
+        "scenario": "valid-example",
+        "arguments": [
+          "validate",
+          "/Users/inxups/project/style-cli/example/terse-reviewer"
+        ],
+        "exit_code": 0,
+        "stdout_sha256": "009d962905920ad0e3ff46c6987fad36418982deb81796fd1f58e326d167c268",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "byte_identical": true
+      },
+      {
+        "scenario": "valid-example",
+        "arguments": [
+          "validate",
+          "/Users/inxups/project/style-cli/example/terse-reviewer",
+          "--json"
+        ],
+        "exit_code": 0,
+        "stdout_sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "byte_identical": true
+      },
+      {
+        "scenario": "valid-example",
+        "arguments": [
+          "plan",
+          "/Users/inxups/project/style-cli/example/terse-reviewer",
+          "--harness=codex,claude-code"
+        ],
+        "exit_code": 0,
+        "stdout_sha256": "ad3c58e2421110aad0c3aad7318cbf3866c0152b94792af33b66299220c9ba66",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "byte_identical": true
+      },
+      {
+        "scenario": "valid-example",
+        "arguments": [
+          "plan",
+          "/Users/inxups/project/style-cli/example/terse-reviewer",
+          "--harness=codex,claude-code",
+          "--json"
+        ],
+        "exit_code": 0,
+        "stdout_sha256": "fce9aff27dfe5325e64557752c58a544faf7ea0a2e7255e4b1bbf0901ea9281a",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "byte_identical": true
+      }
+    ]
+  },
+  "boundary_comparison": {
+    "copied_guard": "internal/adapter/boundary_test.go",
+    "guard_sha256": "73304634571b99efea7bf9f1834f5ac92b3c5b09178eab5db86f5227e6626d99",
+    "command_template": [
+      "go",
+      "-C",
+      "/tmp/style-m3-a0-20261017.0ttt7bk2/boundary-fixtures/internal/adapter",
+      "test",
+      "-count=1",
+      "-run",
+      "TestCoreDoesNotImportProviderOrAdapterImplementations",
+      "boundary_test.go"
+    ],
+    "isolated_core_never_compiled": true,
+    "repository_files_mutated": false,
+    "checks": [
+      {
+        "import": "github.com/speakeasy-api/agenthooks",
+        "expected_rejection": true,
+        "actual_exit_code": 1,
+        "output_sha256": "5ca244d0540999d52f6582cb78b28b5c9bb8d046d218c6074b29c9418446c5d6",
+        "expected_result_observed": true
+      },
+      {
+        "import": "github.com/speakeasy-api/agenthooks/install",
+        "expected_rejection": true,
+        "actual_exit_code": 1,
+        "output_sha256": "f200694bcd4fbffaa10faf8560cd382f4f425093ff51d94e8b94b19fa349b891",
+        "expected_result_observed": true
+      },
+      {
+        "import": "github.com/inxups/style-cli/internal/adapter",
+        "expected_rejection": true,
+        "actual_exit_code": 1,
+        "output_sha256": "6cf4e255fb0c0b9ceaf0fd6388a108706df084872409709acb8809d74342b760",
+        "expected_result_observed": true
+      },
+      {
+        "import": "github.com/inxups/style-cli/internal/adapter/codex",
+        "expected_rejection": true,
+        "actual_exit_code": 1,
+        "output_sha256": "461f29b00c2e0c40d349bd991fba5a6e4b185e232a052b3d1b3468ca491cece0",
+        "expected_result_observed": true
+      },
+      {
+        "import": "github.com/inxups/style-cli/internal/adapter/future/nested",
+        "expected_rejection": true,
+        "actual_exit_code": 1,
+        "output_sha256": "8e7b20642cb33d24aa97bd2f1cfc68f9ab5c4f16ceee2f7ac6f17dad03f10e45",
+        "expected_result_observed": true
+      },
+      {
+        "import": "github.com/inxups/style-cli/core/spec",
+        "expected_rejection": false,
+        "actual_exit_code": 0,
+        "output_sha256": "c107a42bd8cd3dfb0f2534bc09c5f92bcc596d164700b410f6427acb083a800e",
+        "expected_result_observed": true
+      },
+      {
+        "import": "github.com/inxups/style-cli/internal/adapters-neighbor",
+        "expected_rejection": false,
+        "actual_exit_code": 0,
+        "output_sha256": "a3d0f0f6013e9e7157ad8b9d3ea41f7b15b3a43ac0ad084a624d7e11221b75bb",
+        "expected_result_observed": true
+      },
+      {
+        "import": "github.com/speakeasy-api/agenthooks-neighbor",
+        "expected_rejection": false,
+        "actual_exit_code": 0,
+        "output_sha256": "b5e02ea518596d306a7b840f2f626d7a79b5eb14ccc01ef4a93b7d82eebd8d08",
+        "expected_result_observed": true
+      }
+    ],
+    "all_passed": true
+  },
+  "failed_attempts_and_recovery": [
+    {
+      "step": "targeted",
+      "attempt": 1,
+      "cause": "New compilation test omitted the report-only route, causing a nil route.Name panic at installPlanReport.",
+      "recovery": "Added catalogReportRoute, whose sole implemented operation is Name; no production relaxation. Targeted attempt 2 and final full/race suites pass."
+    },
+    {
+      "step": "fresh-test",
+      "attempt": 1,
+      "cause": "Old testCodexInstallService registered only Codex but installed an example declaring Claude in requires. The complete catalog correctly rejected the unregistered name.",
+      "recovery": "Registered an explicitly undetected Claude test definition; only Codex is installed/selected. Final fresh attempt 2 and race pass, preserving strict production validation.",
+      "note": "GOTESTFLAGS=-json in this first command was an unused Make variable; GOFLAGS=-mod=readonly -count=1 was the effective fresh-test flag."
+    }
+  ],
+  "commands": [
+    {
+      "step": "targeted",
+      "attempt": 1,
+      "command": [
+        "go",
+        "test",
+        "-json",
+        "-count=1",
+        "-run",
+        "M3A0|TestValidateHarnessNameValues|TestNativeCatalogComesFromRegisteredAdapters",
+        "./core/spec",
+        "./core/tokens",
+        "./internal/adapter",
+        "./internal/app"
+      ],
+      "note": "",
+      "exit_code": 1,
+      "elapsed_seconds": 3.897,
+      "log": "/tmp/style-m3-a0-20261017.0ttt7bk2/steps/targeted-1.log",
+      "log_sha256": "1084b5855796824e53b787c6428555f8cdfab8d3ccbd58a5fa43d6ae333bb86a",
+      "cleared_environment": [
+        "CODEX_HOME",
+        "CODEX_SANDBOX",
+        "CLAUDE_CONFIG_DIR",
+        "STYLE_HOME",
+        "GOFLAGS",
+        "GOWORK"
+      ],
+      "environment": {
+        "GOPATH": "/tmp/style-cli-gopath",
+        "GOMODCACHE": "/tmp/style-cli-gomodcache",
+        "GOCACHE": "/tmp/style-cli-gocache",
+        "GOFLAGS": "-mod=readonly",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      }
+    },
+    {
+      "step": "targeted",
+      "attempt": 2,
+      "command": [
+        "go",
+        "test",
+        "-json",
+        "-count=1",
+        "-run",
+        "M3A0|TestValidateHarnessNameValues|TestNativeCatalogComesFromRegisteredAdapters",
+        "./core/spec",
+        "./core/tokens",
+        "./internal/adapter",
+        "./internal/app"
+      ],
+      "note": "",
+      "exit_code": 0,
+      "elapsed_seconds": 3.014,
+      "log": "/tmp/style-m3-a0-20261017.0ttt7bk2/steps/targeted-2.log",
+      "log_sha256": "b3eb6700ad45ec61dd23a026a718706bc52514a949dc1e9f1c45aba0572f8bd9",
+      "cleared_environment": [
+        "CODEX_HOME",
+        "CODEX_SANDBOX",
+        "CLAUDE_CONFIG_DIR",
+        "STYLE_HOME",
+        "GOFLAGS",
+        "GOWORK"
+      ],
+      "environment": {
+        "GOPATH": "/tmp/style-cli-gopath",
+        "GOMODCACHE": "/tmp/style-cli-gomodcache",
+        "GOCACHE": "/tmp/style-cli-gocache",
+        "GOFLAGS": "-mod=readonly",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      }
+    },
+    {
+      "step": "fresh-test",
+      "attempt": 1,
+      "command": [
+        "make",
+        "test-go",
+        "GOFLAGS=-mod=readonly -count=1",
+        "GOTESTFLAGS=-json"
+      ],
+      "note": "",
+      "exit_code": 2,
+      "elapsed_seconds": 19.934,
+      "log": "/tmp/style-m3-a0-20261017.0ttt7bk2/steps/fresh-test-1.log",
+      "log_sha256": "6e5487514a3ae554b7ff06ddf106d9793c2f92d2db2eaaebfb6cea7943cadd02",
+      "cleared_environment": [
+        "CODEX_HOME",
+        "CODEX_SANDBOX",
+        "CLAUDE_CONFIG_DIR",
+        "STYLE_HOME",
+        "GOFLAGS",
+        "GOWORK"
+      ],
+      "environment": {
+        "GOPATH": "/tmp/style-cli-gopath",
+        "GOMODCACHE": "/tmp/style-cli-gomodcache",
+        "GOCACHE": "/tmp/style-cli-gocache",
+        "GOFLAGS": "-mod=readonly",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "effective_go_flags": "-mod=readonly -count=1"
+    },
+    {
+      "step": "fresh-test",
+      "attempt": 2,
+      "command": [
+        "make",
+        "test-go",
+        "GOFLAGS=-mod=readonly -count=1"
+      ],
+      "note": "",
+      "exit_code": 0,
+      "elapsed_seconds": 30.949,
+      "log": "/tmp/style-m3-a0-20261017.0ttt7bk2/steps/fresh-test-2.log",
+      "log_sha256": "8486d60e5044a75c342a40b91d8d6735cee67eea115a11741064681b766b3dda",
+      "cleared_environment": [
+        "CODEX_HOME",
+        "CODEX_SANDBOX",
+        "CLAUDE_CONFIG_DIR",
+        "STYLE_HOME",
+        "GOFLAGS",
+        "GOWORK"
+      ],
+      "environment": {
+        "GOPATH": "/tmp/style-cli-gopath",
+        "GOMODCACHE": "/tmp/style-cli-gomodcache",
+        "GOCACHE": "/tmp/style-cli-gocache",
+        "GOFLAGS": "-mod=readonly",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "effective_go_flags": "-mod=readonly -count=1"
+    },
+    {
+      "step": "vet",
+      "attempt": 1,
+      "command": [
+        "make",
+        "vet-go",
+        "GOFLAGS=-mod=readonly"
+      ],
+      "note": "",
+      "exit_code": 0,
+      "elapsed_seconds": 0.515,
+      "log": "/tmp/style-m3-a0-20261017.0ttt7bk2/steps/vet-1.log",
+      "log_sha256": "c3e36b766aa965211cced519ace9e08040a4514036bfd8cad99ac6b508125005",
+      "cleared_environment": [
+        "CODEX_HOME",
+        "CODEX_SANDBOX",
+        "CLAUDE_CONFIG_DIR",
+        "STYLE_HOME",
+        "GOFLAGS",
+        "GOWORK"
+      ],
+      "environment": {
+        "GOPATH": "/tmp/style-cli-gopath",
+        "GOMODCACHE": "/tmp/style-cli-gomodcache",
+        "GOCACHE": "/tmp/style-cli-gocache",
+        "GOFLAGS": "-mod=readonly",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "effective_go_flags": "-mod=readonly"
+    },
+    {
+      "step": "collectors",
+      "attempt": 1,
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "testdata/manual",
+        "-p",
+        "test_*.py"
+      ],
+      "note": "",
+      "exit_code": 0,
+      "elapsed_seconds": 4.472,
+      "log": "/tmp/style-m3-a0-20261017.0ttt7bk2/steps/collectors-1.log",
+      "log_sha256": "792126fcc990c13cb4020575de86fa1113797ac17fd1c9a3c7f1ee425370d86f",
+      "cleared_environment": [
+        "CODEX_HOME",
+        "CODEX_SANDBOX",
+        "CLAUDE_CONFIG_DIR",
+        "STYLE_HOME",
+        "GOFLAGS",
+        "GOWORK"
+      ],
+      "environment": {
+        "GOPATH": "/tmp/style-cli-gopath",
+        "GOMODCACHE": "/tmp/style-cli-gomodcache",
+        "GOCACHE": "/tmp/style-cli-gocache",
+        "GOFLAGS": "-mod=readonly",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "sandbox_permission": "escalated: loopback HTTP fixture, as established by M3-BASE-01"
+    },
+    {
+      "step": "export-legacy",
+      "attempt": 1,
+      "command": [
+        "python3",
+        "-c",
+        "from pathlib import Path; import subprocess; root=Path(\"/tmp/style-m3-a0-20261017.0ttt7bk2/build\"); dest=root/\"legacy-source\"; dest.mkdir(); archive=root/\"legacy-source.tar\"; stream=archive.open(\"wb\"); subprocess.run([\"git\",\"archive\",\"74a473d2e238af44c346da3807f46e1c9993176d\"],stdout=stream,check=True); stream.close(); subprocess.run([\"tar\",\"-xf\",str(archive),\"-C\",str(dest)],check=True); print(dest)"
+      ],
+      "note": "",
+      "exit_code": 0,
+      "elapsed_seconds": 0.359,
+      "log": "/tmp/style-m3-a0-20261017.0ttt7bk2/steps/export-legacy-1.log",
+      "log_sha256": "b8b171132ae4f0ec871ec2fd1532ba0a3e2ffc11306aa6c6c533066d42cec85c",
+      "cleared_environment": [
+        "CODEX_HOME",
+        "CODEX_SANDBOX",
+        "CLAUDE_CONFIG_DIR",
+        "STYLE_HOME",
+        "GOFLAGS",
+        "GOWORK"
+      ],
+      "environment": {
+        "GOPATH": "/tmp/style-cli-gopath",
+        "GOMODCACHE": "/tmp/style-cli-gomodcache",
+        "GOCACHE": "/tmp/style-cli-gocache",
+        "GOFLAGS": "-mod=readonly",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      }
+    },
+    {
+      "step": "build",
+      "attempt": 1,
+      "command": [
+        "go",
+        "build",
+        "-trimpath",
+        "-buildvcs=false",
+        "-o",
+        "/tmp/style-m3-a0-20261017.0ttt7bk2/build/style",
+        "./cmd/style"
+      ],
+      "note": "",
+      "exit_code": 0,
+      "elapsed_seconds": 1.128,
+      "log": "/tmp/style-m3-a0-20261017.0ttt7bk2/steps/build-1.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "cleared_environment": [
+        "CODEX_HOME",
+        "CODEX_SANDBOX",
+        "CLAUDE_CONFIG_DIR",
+        "STYLE_HOME",
+        "GOFLAGS",
+        "GOWORK"
+      ],
+      "environment": {
+        "GOPATH": "/tmp/style-cli-gopath",
+        "GOMODCACHE": "/tmp/style-cli-gomodcache",
+        "GOCACHE": "/tmp/style-cli-gocache",
+        "GOFLAGS": "-mod=readonly",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "GOWORK": "off"
+      }
+    },
+    {
+      "step": "race",
+      "attempt": 1,
+      "command": [
+        "go",
+        "test",
+        "-json",
+        "-race",
+        "-count=1",
+        "./core/spec",
+        "./core/tokens",
+        "./internal/adapter",
+        "./internal/app"
+      ],
+      "note": "",
+      "exit_code": 0,
+      "elapsed_seconds": 35.689,
+      "log": "/tmp/style-m3-a0-20261017.0ttt7bk2/steps/race-1.log",
+      "log_sha256": "51b4878038361f7a66dea3044fb6b3faf3339aacd7744589c74c498a11ddfbf0",
+      "cleared_environment": [
+        "CODEX_HOME",
+        "CODEX_SANDBOX",
+        "CLAUDE_CONFIG_DIR",
+        "STYLE_HOME",
+        "GOFLAGS",
+        "GOWORK"
+      ],
+      "environment": {
+        "GOPATH": "/tmp/style-cli-gopath",
+        "GOMODCACHE": "/tmp/style-cli-gomodcache",
+        "GOCACHE": "/tmp/style-cli-gocache",
+        "GOFLAGS": "-mod=readonly",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      }
+    },
+    {
+      "step": "legacy-build",
+      "attempt": 1,
+      "command": [
+        "go",
+        "-C",
+        "/tmp/style-m3-a0-20261017.0ttt7bk2/build/legacy-source",
+        "build",
+        "-trimpath",
+        "-buildvcs=false",
+        "-o",
+        "/tmp/style-m3-a0-20261017.0ttt7bk2/build/style-legacy",
+        "./cmd/style"
+      ],
+      "note": "",
+      "exit_code": 0,
+      "elapsed_seconds": 0.261,
+      "log": "/tmp/style-m3-a0-20261017.0ttt7bk2/steps/legacy-build-1.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "cleared_environment": [
+        "CODEX_HOME",
+        "CODEX_SANDBOX",
+        "CLAUDE_CONFIG_DIR",
+        "STYLE_HOME",
+        "GOFLAGS",
+        "GOWORK"
+      ],
+      "environment": {
+        "GOPATH": "/tmp/style-cli-gopath",
+        "GOMODCACHE": "/tmp/style-cli-gomodcache",
+        "GOCACHE": "/tmp/style-cli-gocache",
+        "GOFLAGS": "-mod=readonly",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "GOWORK": "off"
+      }
+    },
+    {
+      "step": "smoke",
+      "attempt": 1,
+      "command": [
+        "python3",
+        "scripts/smoke.py",
+        "/tmp/style-m3-a0-20261017.0ttt7bk2/build/style"
+      ],
+      "note": "",
+      "exit_code": 0,
+      "elapsed_seconds": 2.079,
+      "log": "/tmp/style-m3-a0-20261017.0ttt7bk2/steps/smoke-1.log",
+      "log_sha256": "5039b6cbbaa0d673d3772dfa18b0e24352159e7f2ddf65dd8cdabcbff5e08b63",
+      "cleared_environment": [
+        "CODEX_HOME",
+        "CODEX_SANDBOX",
+        "CLAUDE_CONFIG_DIR",
+        "STYLE_HOME",
+        "GOFLAGS",
+        "GOWORK"
+      ],
+      "environment": {
+        "GOPATH": "/tmp/style-cli-gopath",
+        "GOMODCACHE": "/tmp/style-cli-gomodcache",
+        "GOCACHE": "/tmp/style-cli-gocache",
+        "GOFLAGS": "-mod=readonly",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      }
+    },
+    {
+      "step": "replace",
+      "attempt": 1,
+      "command": [
+        "python3",
+        "scripts/check_m2_replace.py",
+        "/tmp/style-m3-a0-20261017.0ttt7bk2/build/style",
+        "--report",
+        "/tmp/style-m3-a0-20261017.0ttt7bk2/replace.json"
+      ],
+      "note": "",
+      "exit_code": 0,
+      "elapsed_seconds": 4.243,
+      "log": "/tmp/style-m3-a0-20261017.0ttt7bk2/steps/replace-1.log",
+      "log_sha256": "ca4a7384714f31c2511250703ec0e899128da6048b3cb677adfda8ee6b037050",
+      "cleared_environment": [
+        "CODEX_HOME",
+        "CODEX_SANDBOX",
+        "CLAUDE_CONFIG_DIR",
+        "STYLE_HOME",
+        "GOFLAGS",
+        "GOWORK"
+      ],
+      "environment": {
+        "GOPATH": "/tmp/style-cli-gopath",
+        "GOMODCACHE": "/tmp/style-cli-gomodcache",
+        "GOCACHE": "/tmp/style-cli-gocache",
+        "GOFLAGS": "-mod=readonly",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      }
+    },
+    {
+      "step": "migration",
+      "attempt": 1,
+      "command": [
+        "python3",
+        "scripts/check_m2_rules_migration.py",
+        "--old-binary",
+        "/tmp/style-m3-a0-20261017.0ttt7bk2/build/style-legacy",
+        "--binary",
+        "/tmp/style-m3-a0-20261017.0ttt7bk2/build/style",
+        "--report",
+        "/tmp/style-m3-a0-20261017.0ttt7bk2/migration.json"
+      ],
+      "note": "",
+      "exit_code": 0,
+      "elapsed_seconds": 12.147,
+      "log": "/tmp/style-m3-a0-20261017.0ttt7bk2/steps/migration-1.log",
+      "log_sha256": "f44b07d85cd6db9adef12b9e87bf6b29fbfbd11bd6ceb36335e50552c279a375",
+      "cleared_environment": [
+        "CODEX_HOME",
+        "CODEX_SANDBOX",
+        "CLAUDE_CONFIG_DIR",
+        "STYLE_HOME",
+        "GOFLAGS",
+        "GOWORK"
+      ],
+      "environment": {
+        "GOPATH": "/tmp/style-cli-gopath",
+        "GOMODCACHE": "/tmp/style-cli-gomodcache",
+        "GOCACHE": "/tmp/style-cli-gocache",
+        "GOFLAGS": "-mod=readonly",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      }
+    },
+    {
+      "step": "diagnostic-compatibility",
+      "attempt": 1,
+      "command": [
+        "python3",
+        "/tmp/style-m3-a0-diagnostics-20261017.py"
+      ],
+      "note": "",
+      "exit_code": 0,
+      "elapsed_seconds": 0.367,
+      "log": "/tmp/style-m3-a0-20261017.0ttt7bk2/steps/diagnostic-compatibility-1.log",
+      "log_sha256": "82a1339cee26dd5359471a0cbcd2bddce364215c31381515402d28faf9b9b962",
+      "cleared_environment": [
+        "CODEX_HOME",
+        "CODEX_SANDBOX",
+        "CLAUDE_CONFIG_DIR",
+        "STYLE_HOME",
+        "GOFLAGS",
+        "GOWORK"
+      ],
+      "environment": {
+        "GOPATH": "/tmp/style-cli-gopath",
+        "GOMODCACHE": "/tmp/style-cli-gomodcache",
+        "GOCACHE": "/tmp/style-cli-gocache",
+        "GOFLAGS": "-mod=readonly",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      }
+    },
+    {
+      "step": "boundary-fixtures",
+      "attempt": 1,
+      "command": [
+        "python3",
+        "/tmp/style-m3-a0-boundary-20261017.py"
+      ],
+      "note": "",
+      "exit_code": 0,
+      "elapsed_seconds": 4.497,
+      "log": "/tmp/style-m3-a0-20261017.0ttt7bk2/steps/boundary-fixtures-1.log",
+      "log_sha256": "4458f5da646a33385e2c36f92769b7c4e6e3717b5c68b0c75581ebaaeab24182",
+      "cleared_environment": [
+        "CODEX_HOME",
+        "CODEX_SANDBOX",
+        "CLAUDE_CONFIG_DIR",
+        "STYLE_HOME",
+        "GOFLAGS",
+        "GOWORK"
+      ],
+      "environment": {
+        "GOPATH": "/tmp/style-cli-gopath",
+        "GOMODCACHE": "/tmp/style-cli-gomodcache",
+        "GOCACHE": "/tmp/style-cli-gocache",
+        "GOFLAGS": "-mod=readonly",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      }
+    }
+  ],
+  "raw_artifacts": [
+    {
+      "path": "/tmp/style-m3-a0-20261017.0ttt7bk2/run.json",
+      "sha256": "de53655537b1aae31f15cf8961eb106a4a345b0bef2452e3413bb765f5ba3f63"
+    },
+    {
+      "path": "/tmp/style-m3-a0-20261017.0ttt7bk2/source-inventory.json",
+      "sha256": "a7b4e3c2027f8d57e872d5935c27178fa3c3a58cad4605105e7868d3acd22a5c"
+    },
+    {
+      "path": "/tmp/style-m3-a0-20261017.0ttt7bk2/replace.json",
+      "sha256": "c7e0983bad7a180d07a99dfb32acb09c8af48c3c4c92dba6db552455eb53a374"
+    },
+    {
+      "path": "/tmp/style-m3-a0-20261017.0ttt7bk2/migration.json",
+      "sha256": "5e190e35fe9ebfa84f317a5eb49576389b49ce6559e09064edb06a9b8f32afb8"
+    },
+    {
+      "path": "/tmp/style-m3-a0-20261017.0ttt7bk2/diagnostic-comparison.json",
+      "sha256": "245008bf31acb20536d4a23b596118d6da6d7647d311846d96fbb7e20879d198"
+    },
+    {
+      "path": "/tmp/style-m3-a0-20261017.0ttt7bk2/boundary-comparison.json",
+      "sha256": "b488f6d4b8ac7e9dbecd3116eaa200ca65c95813b46b184a8a67ac0dc9a2b3b8"
+    }
+  ],
+  "reproduction_helpers": [
+    {
+      "path": "/tmp/style-m3-a0-run-20261017.py",
+      "sha256": "cb449a9ed470ba8bdee055c8b21e3cbad5c86cbd195b18331c2e0f161a65233f"
+    },
+    {
+      "path": "/tmp/style-m3-a0-diagnostics-20261017.py",
+      "sha256": "a1667d9a1895d6558549470d5e6a1243cd79d9ebe47d5d2c20b41b167849ed60"
+    },
+    {
+      "path": "/tmp/style-m3-a0-boundary-20261017.py",
+      "sha256": "73dcd27a17b3f0e55a9b81183936aef866c00c832eb012994963c39c71bc8f09"
+    }
+  ],
+  "report_interpretation": [
+    "M2 migration/replace scripts retain historical M2 test names and constants. source_revision is the parent commit plus the fingerprinted T00 changes, not a clean build of that parent.",
+    "migration.source_includes_uncommitted_T40 is a historical hard-coded label; only M3-T00 source is uncommitted in this run.",
+    "replace.scope mentions historical C4 pending; it does not reset accepted M2 real-session results or claim M3 real acceptance.",
+    "Expected nonzero guard-fixture exits are checked rejection evidence, not unexplained failed acceptance tests."
+  ],
+  "not_executed": [
+    "remote CI",
+    "real harness/model sessions",
+    "official token calibration",
+    "Windows native acceptance"
+  ],
+  "carryover": {
+    "official_calibration": {
+      "codex": "0/40",
+      "claude-code": "0/40",
+      "status": "nonblocking pending API keys"
+    },
+    "M3_RV_01": "closed by M3-A0",
+    "engine_Claude_prompt_suppression": "unchanged; capability boundary review remains M3-D8"
+  },
+  "documentation_verification": {
+    "command": [
+      "python3",
+      "/tmp/style-m3-t00-check-20261017.py",
+      "--base",
+      "7a577d5ff1ab566f8adaf7659e61d688695fa7a3",
+      "--closed"
+    ],
+    "checker_sha256": "c506f6dcde4ba0a827bb084b6cd4d5ba30ec2a43c6d8de69aacf9df1a0297a7d",
+    "exit_code": 0,
+    "current_markdown_documents": 9,
+    "local_links_and_anchors": 147,
+    "shell_blocks_syntax_checked": 4,
+    "task_entries": 44,
+    "test_entries": 39,
+    "historical_M1_M2_archives_unchanged": 77,
+    "progress_prefix_sha256": "4b976e73deb835ee25fec4030f291c0e8bb6fc889b060c4cfbf9467902f2ea1f",
+    "diff_check": "passed",
+    "source_and_artifact_hashes": "passed"
+  }
+}

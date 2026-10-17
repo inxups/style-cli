@@ -36,6 +36,8 @@ func AnalyzeWithLayout(pkg *spec.ResolvedPackage, planned plan.Report, layout La
 		return Report{}, fmt.Errorf("token analysis requires a layout")
 	}
 	if len(sourceDiagnostics) == 0 {
+		// This fallback supplies structural lints, not package admission.
+		// Only the caller's registry can validate harness membership.
 		sourceDiagnostics = spec.Validate(pkg.Package)
 	}
 	limits := limitsFromPackage(pkg)

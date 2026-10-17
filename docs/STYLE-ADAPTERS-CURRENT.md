@@ -1,6 +1,6 @@
 # STYLE 当前 adapter 实现总览
 
-更新时间：2026-10-17。生产源码核对基线：`16d5c1c`（M2 native、stats、跨包去重、Claude rules/迁移），replace 回退验收 `4976713`，Claude 最终隔离准备 `5dd6742`。Codex M2 B1–B4 双路线证据归档至 `e6dd778`；D4/D5 已由 Claude 2.1.301 的 C1–C4 真实交互验收闭合；M2 已完成并关闭，远端 Ubuntu/macOS CI 在 `154506f` 全部通过（run `39000483969`，59 项采集器）。无 key 补充对照已完成；官方 token 计数仍各 0/40、待独立 API key，RV-01 保留非阻塞风险。
+更新时间：2026-10-17。生产源码核对基线：`16d5c1c`（M2 native、stats、跨包去重、Claude rules/迁移），replace 回退验收 `4976713`，Claude 最终隔离准备 `5dd6742`。Codex M2 B1–B4 双路线证据归档至 `e6dd778`；D4/D5 已由 Claude 2.1.301 的 C1–C4 真实交互验收闭合；M2 已完成并关闭，远端 Ubuntu/macOS CI 在 `154506f` 全部通过（run `39000483969`，59 项采集器）。无 key 补充对照已完成；官方 token 计数仍各 0/40、待独立 API key，承接为 M3-CARRY-01 非阻塞待验。M3-T00 已统一注册表名称校验并通过 [M3-A0](review/M3-A0-2026-10-17.json)，关闭 M3-RV-01；本轮源码由该报告的完整摘要固定，未新增真实 harness 接入。
 
 本文总结当前仓库的实现，不代表 Claude Code / Codex 所有版本的完整产品能力。能力声明、安装配置、运行时可接收事件和真实验收结果分别说明；未修改现有 fallback 语义。
 
@@ -31,7 +31,7 @@ STYLE 当前完整接入两个 provider：`codex` 和 `claude-code`。`agenthook
 | `PlanningFacts.DataSource` | 某评估点能否提供条件/模板所需字段，记录来源与近似标记 |
 | `PlanningFacts.BlindSpot` | 整条规则是否不可观测；非 fatal reason 说明部分可见性边界 |
 | `PlanningFacts.StaticLocation` | `append` / `replace` 是否有可用静态槽位 |
-| `NativePlanningFacts` / `NativeWriter` / `Definition.Native` | 分别提供 native 规划事实、命令渲染与合法原生事件；注册表向 validate 提供 native catalog |
+| `NativePlanningFacts` / `NativeWriter` / `Definition.Native` | 分别提供 native 规划事实、命令渲染与合法原生事件；注册表向完整 validate 提供普通名称全集及 native 能力子集 |
 | `StaticPositionProvider` | 列出具体安装的静态位置，供报告使用 |
 | `Routes` | 安装路线及其优先级，声明顺序保留 |
 | `Limits` | 原生输入限制、计量单位、是否近似和外部超限行为 |
@@ -42,6 +42,8 @@ STYLE 当前完整接入两个 provider：`codex` 和 `claude-code`。`agenthook
 `RuntimeEnricher` 单独定义，没有直接存入 `Definition`。CLI 的 `runHook` 按 provider 显式构造具体 `Enricher`；新增 provider 时也要补这一处接线。
 
 [Registry](../internal/adapter/registry.go) 显式构造，没有全局自动注册。它校验 provider/route 名称、必需接口、限制单位与 compact 元数据；provider 枚举排序，route 顺序保留。`BuildPlanAdapter` 将丰富的事实接口投影成 `core/plan.Adapter` 的窄接口。
+
+M3-T00 的 `Registry.ValidationCatalog()` 返回独立的名称 slice 与 native map，Service 构造时保存快照。[`spec.ValidateWithCatalog`](../core/spec/validate.go) 统一检查 `when.harness.name`、`requires.harness`、`recommends` 和 native 映射；名称只看注册，不看本机检测或当前选择。普通注册项可无 native 能力，额外 Native 键不能扩大名称全集，空目录明确拒绝任何显式名称。`spec.Validate(pkg)` 保留签名但只做结构/lint；`Validate + ValidateNative` 也不代表完整有效性。入包/重编译均使用完整入口，预算/去重复用源诊断，core 不从宿主环境或全局名单推导注册项。
 
 ## 3. 检测、目录和安装路线
 

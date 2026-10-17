@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"reflect"
+	"sync"
 	"testing"
 
 	"github.com/inxups/style-cli/core/plan"
@@ -108,6 +109,57 @@ func TestRegistryIsExplicitAndDeterministic(t *testing.T) {
 	}
 	if _, ok := (*Registry)(nil).Lookup("codex"); ok {
 		t.Fatal("nil registry unexpectedly found a provider")
+	}
+}
+
+type registryNativeSurface struct{}
+
+func (registryNativeSurface) NativeEvent(event string) (bool, bool) {
+	return false, event == "FixtureEvent"
+}
+func (registryNativeSurface) ValidMatcher(string) bool { return false }
+
+func TestM3A0RegistryValidationCatalogIsAnIsolatedSnapshot(t *testing.T) {
+	a, z := definition("a-fixture"), definition("z-fixture")
+	z.Native = registryNativeSurface{}
+	registry, err := NewRegistry(z, a)
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := spec.ValidationCatalog{Harnesses: []string{"a-fixture", "z-fixture"}, Native: spec.NativeCatalog{"z-fixture": registryNativeSurface{}}}
+	if got := registry.ValidationCatalog(); !reflect.DeepEqual(got, want) {
+		t.Fatalf("catalog = %+v, want %+v", got, want)
+	}
+	// Mutations belong to this caller, including changes made concurrently
+	// with another caller obtaining its own snapshot.
+	var workers sync.WaitGroup
+	for range 16 {
+		workers.Add(1)
+		go func() {
+			defer workers.Done()
+			for range 10 {
+				got := registry.ValidationCatalog()
+				if !reflect.DeepEqual(got, want) {
+					t.Errorf("snapshot contaminated: %+v", got)
+					return
+				}
+				got.Harnesses[0] = "mutated"
+				delete(got.Native, "z-fixture")
+				got.Native["unregistered"] = registryNativeSurface{}
+			}
+		}()
+	}
+	workers.Wait()
+	legacy := registry.NativeCatalog()
+	delete(legacy, "z-fixture")
+	if !reflect.DeepEqual(registry.ValidationCatalog(), want) {
+		t.Fatal("legacy native catalog mutation changed the full catalog")
+	}
+	for _, empty := range []*Registry{nil, {providers: map[ProviderID]Definition{}}} {
+		got := empty.ValidationCatalog()
+		if len(got.Harnesses) != 0 || len(got.Native) != 0 {
+			t.Fatalf("empty registry has built-in fallback: %+v", got)
+		}
 	}
 }
 

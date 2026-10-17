@@ -11,7 +11,6 @@ import (
 var effortLevels = stringSet("none", "minimal", "low", "medium", "high", "xhigh", "max")
 var conditionOperators = stringSet("regex", "shell_regex", "contains", "equals", "not_contains", "starts_with", "ends_with")
 var validEvents = stringSet("session.start", "prompt.submitted", "tool.pre", "tool.post", "tool.error", "subagent.start")
-var validHarnessNames = stringSet("codex", "claude-code")
 
 func (v *validator) validateWhen(value any, rule Rule, source string) {
 	when := asStringMap(value)
@@ -78,7 +77,7 @@ func (v *validator) validateHarnessWhen(value any, source string) {
 			v.add("invalid-schema", source, fmt.Sprintf("when.harness.%s must be a string or list of strings", field))
 		} else if field == "name" {
 			for _, name := range stringValues(harness[field]) {
-				if !validHarnessNames[name] {
+				if v.harnesses != nil && !v.harnesses[name] {
 					v.add("invalid-schema", source, fmt.Sprintf("unknown harness name %q", name))
 				}
 			}

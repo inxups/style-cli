@@ -73,6 +73,17 @@ func (r *Registry) NativeCatalog() spec.NativeCatalog {
 	return catalog
 }
 
+// ValidationCatalog returns independent containers for all registered names
+// and their native subset. Capability instances are immutable adapter facts.
+func (r *Registry) ValidationCatalog() spec.ValidationCatalog {
+	providers := r.Providers()
+	names := make([]string, 0, len(providers))
+	for _, provider := range providers {
+		names = append(names, string(provider))
+	}
+	return spec.ValidationCatalog{Harnesses: names, Native: r.NativeCatalog()}
+}
+
 // BuildPlanAdapter adapts a provider's richer planning facts to core/plan.
 func BuildPlanAdapter(provider ProviderID, facts PlanningFacts) (plan.Adapter, error) {
 	if strings.TrimSpace(string(provider)) == "" {

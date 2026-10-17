@@ -63,6 +63,7 @@ type installPackage struct {
 	pkg      *spec.Package
 	resolved *spec.ResolvedPackage
 	settings map[string]string
+	source   []spec.Diagnostic
 	report   map[adapter.ProviderID]plan.Report
 	tokens   map[adapter.ProviderID]tokens.Report
 }
@@ -212,7 +213,7 @@ func (s *Service) Install(ctx context.Context, request InstallRequest) (InstallR
 		return InstallResult{}, err
 	}
 	if existingLock == nil {
-		packages = append(packages, installPackage{lock: newLock, pkg: parsed, resolved: resolved, settings: settings,
+		packages = append(packages, installPackage{lock: newLock, pkg: parsed, resolved: resolved, settings: settings, source: diagnostics,
 			report: make(map[adapter.ProviderID]plan.Report), tokens: make(map[adapter.ProviderID]tokens.Report)})
 	} else {
 		newLock = *existingLock
@@ -356,7 +357,7 @@ func (s *Service) compileInstalled(ctx context.Context, packages []installPackag
 			if planned.Blocked {
 				return installCompilation{}, &BlockedError{Message: fmt.Sprintf("plan for %s is blocked on %s", packages[index].lock.Name, target.provider)}
 			}
-			budget, err := tokens.AnalyzeWithLayout(packages[index].resolved, planned, layoutFor(target.provider), spec.Validate(packages[index].pkg)...)
+			budget, err := tokens.AnalyzeWithLayout(packages[index].resolved, planned, layoutFor(target.provider), packages[index].source...)
 			if err != nil {
 				return installCompilation{}, fmt.Errorf("token analysis %s/%s: %w", packages[index].lock.Name, target.provider, err)
 			}

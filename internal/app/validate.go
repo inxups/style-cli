@@ -33,6 +33,7 @@ type ValidateRequest struct {
 type Validation struct {
 	Package     *spec.Package
 	Diagnostics []Diagnostic
+	source      []spec.Diagnostic
 }
 
 // Valid reports whether no error-severity finding was produced.
@@ -59,7 +60,7 @@ func (s *Service) Validate(ctx context.Context, request ValidateRequest) (Valida
 		return Validation{Diagnostics: []Diagnostic{parseDiagnostic(err)}}, nil
 	}
 	source := s.validateSpec(pkg)
-	result := Validation{Package: pkg, Diagnostics: convertDiagnostics(source)}
+	result := Validation{Package: pkg, Diagnostics: convertDiagnostics(source), source: source}
 	if hasErrors(result.Diagnostics) {
 		return result, nil
 	}
@@ -68,11 +69,8 @@ func (s *Service) Validate(ctx context.Context, request ValidateRequest) (Valida
 		result.Diagnostics = append(result.Diagnostics, parseDiagnostic(err))
 		return result, nil
 	}
-	for _, provider := range []adapter.ProviderID{adapter.ProviderID("codex"), adapter.ProviderID("claude-code")} {
-		definition, ok := s.definitions[provider]
-		if !ok {
-			continue
-		}
+	for _, provider := range s.providers() {
+		definition := s.definitions[provider]
 		planner, err := adapter.BuildPlanAdapter(provider, definition.Facts)
 		if err != nil {
 			continue

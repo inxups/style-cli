@@ -196,12 +196,25 @@ func integerValue(value any) (int, bool) {
 	}
 }
 
-// ValidateNative checks native rules against the registered harnesses. It
-// complements Validate, which cannot know which harness keys and events
-// exist; callers that accept packages must run both.
+// ValidateNative checks only native rules against the supplied hook surfaces.
+// It is a low-level compatibility entry point; Validate plus ValidateNative
+// does not check ordinary harness references. Package admission must use
+// ValidateWithCatalog.
 func ValidateNative(pkg *Package, catalog NativeCatalog) []Diagnostic {
+	return validateNative(pkg, catalog, nil)
+}
+
+func validateNative(pkg *Package, catalog NativeCatalog, harnesses map[string]bool) []Diagnostic {
 	if pkg == nil {
 		return nil
+	}
+	names := catalog.Names()
+	if harnesses != nil {
+		names = make([]string, 0, len(harnesses))
+		for name := range harnesses {
+			names = append(names, name)
+		}
+		sort.Strings(names)
 	}
 	v := &validator{pkg: pkg}
 	for index, rule := range pkg.Rules {
@@ -216,8 +229,16 @@ func ValidateNative(pkg *Package, catalog NativeCatalog) []Diagnostic {
 			value, _ := nativeMapping(rule, harness)
 			mapping := asStringMap(value)
 			surface, registered := catalog[harness]
-			if !registered || surface == nil {
-				v.add("native-field", source, fmt.Sprintf("unknown field %q: not a STYLE field or registered harness (registered: %s)", harness, strings.Join(catalog.Names(), ", ")))
+			known := registered && surface != nil
+			if harnesses != nil {
+				known = harnesses[harness]
+			}
+			if !known {
+				v.add("native-field", source, fmt.Sprintf("unknown field %q: not a STYLE field or registered harness (registered: %s)", harness, strings.Join(names, ", ")))
+				continue
+			}
+			if surface == nil {
+				v.add("native-field", source, fmt.Sprintf("harness %q does not support native hooks", harness))
 				continue
 			}
 			if mapping == nil {

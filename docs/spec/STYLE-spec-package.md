@@ -145,8 +145,8 @@ rules:
 | `defaults` | 否 | 所有规则共用的默认字段，白名单见 1.3 |
 | `rules` | 是 | 包里全部规则的清单，至少一条 |
 
-### 2.1 M3-D0 名称校验补充（已定稿，待实现）
+### 2.1 M3-D0 名称校验补充（M3-T00 已实现）
 
-[M3-D0 设计](STYLE-cli-design.md#31-m3-d0-注册表校验边界) 已确定将 `requires.harness`、`recommends` 的 harness 键统一交给当前 Service 的注册表校验，与 `when.harness.name` 使用同一名称全集。当前生产默认仍是两家，尚未实现此改动；不会因 agenthooks 还有其他 Provider 常量而自动支持其他 harness。
+[M3-D0 设计](STYLE-cli-design.md#31-m3-d0-注册表校验边界) 由当前 Service 的注册表统一校验 `requires.harness`、`recommends` 的 harness 键，与 `when.harness.name` 使用同一名称全集。M3-T00 已实现，当前生产默认注册两家；不会因 agenthooks 还有其他 Provider 常量而自动支持其他 harness。
 
-目录包与单文件包共用完整入口。`requires.harness` 的值继续为现有版本约束，版本未满足的安装行为不变；`recommends` 的值继续要求 mapping，安装器仍只提示。注册且暂未检测到的名称不属于未知名；已注册但无 native 能力也可用于这两个字段，不能因此接受该名称的 native 映射。旧诊断及结构校验 API 的兼容选择见详细设计，2026-10-17 已获用户确认，由 M3-T00 实现。
+目录包与单文件包共用完整入口。`requires.harness` 的值继续为现有版本约束，版本未满足的安装行为不变；`recommends` 的值继续要求 mapping，安装器仍只提示。注册且暂未检测到的名称不属于未知名；已注册但无 native 能力也可用于这两个字段，不能因此接受该名称的 native 映射。`spec.Validate` 仅做结构/lint 校验；完整有效性使用显式目录的 `ValidateWithCatalog`。旧诊断及 API 兼容选择见详细设计，结果见 [M3-A0](../review/M3-A0-2026-10-17.json)。

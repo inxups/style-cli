@@ -2,7 +2,7 @@
 
 对应规范：[STYLE-spec.md](STYLE-spec.md)（v0.3）。规范定义包格式、运行时语义、token 预算、安全约束和 `index.json`；本文定义命令、本地布局、编译和运行时流程、Claude Code 与 Codex 两个适配器、token 估算器、fork 改动、里程碑、验收和未决项。冲突时，格式和语义以规范为准，实现细节以本文为准。
 
-状态（2026-10-17）：M1、M2 已关闭并只读归档；M2 的 native、stats、跨包去重、Claude rules/迁移与 replace 回退已验收，Codex/Claude 真实环境、本地回归和最终 Ubuntu/macOS CI 均通过，历史证据见 [M2 任务清单](../STYLE-M2-TASKS.md)、[测试矩阵](../STYLE-M2-TESTS.md)。当前里程碑为 M3，任务、依赖和验收状态以 [M3 任务清单](../STYLE-M3-TASKS.md)、[测试矩阵](../STYLE-M3-TESTS.md) 为准；建档和隔离环境基线已完成，D0 注册表校验边界已获用户确认，进入 T00，尚未实现 M3 功能。官方 token 计数仍各 0/40，承接为 M3-CARRY-01 非阻塞待验；本地编码/订阅 usage 作为补充，不提供误差范围保证。核心硬编码风险承接为 M3-RV-01，用户已确定为 M3 前置必修，当前尚未修复。当前仅支持 **Claude Code** 和 **Codex**；本文接口代码为设计示意，当前接口与职责见 [adapter 总览](../STYLE-ADAPTERS-CURRENT.md)。
+状态（2026-10-17）：M1、M2 已关闭并只读归档；M2 的 native、stats、跨包去重、Claude rules/迁移与 replace 回退已验收，Codex/Claude 真实环境、本地回归和最终 Ubuntu/macOS CI 均通过，历史证据见 [M2 任务清单](../STYLE-M2-TASKS.md)、[测试矩阵](../STYLE-M2-TESTS.md)。当前里程碑为 M3，任务、依赖和验收状态以 [M3 任务清单](../STYLE-M3-TASKS.md)、[测试矩阵](../STYLE-M3-TESTS.md) 为准；建档和隔离环境基线已完成，D0 已获用户确认，T00 注册表校验修复和 A0 验收已完成，下一项为 D1 诊断契约设计。官方 token 计数仍各 0/40，承接为 M3-CARRY-01 非阻塞待验；本地编码/订阅 usage 作为补充，不提供误差范围保证。核心名称校验硬编码风险 M3-RV-01 已随 T00/A0 关闭；engine 既有输出安全特例仍按 D8 评估。当前仅支持 **Claude Code** 和 **Codex**；本文接口代码为设计示意，当前接口与职责见 [adapter 总览](../STYLE-ADAPTERS-CURRENT.md)。
 
 **依据**：
 - agenthooks `3f734c7` 源码，历史整理资料为 `agenthooks-codex.md`（外部资料，本仓库未收录）；
@@ -20,7 +20,7 @@
 
 ## 1. 原则
 
-- **一套通用核心，每个 harness 一个薄适配器。** 核心（规则、条件、模板、优先级、去重、降级阶梯、token 估算、报告）里不出现任何 harness 的名字。用依赖检查强制：`core/...` 不允许 import `adapter/codex`、`adapter/claude`，CI 里跑一个测试。harness 名的合法取值（`native` 的键、`when.harness.name`、`requires.harness`、`recommends`）由适配器注册表提供，核心不硬编码字符串；当前差距及 M3-D0 的具体修复边界见 [§3.1](#31-m3-d0-注册表校验边界)。
+- **一套通用核心，每个 harness 一个薄适配器。** 核心通过能力端口和注入目录处理 harness 差异，不维护 harness 名称白名单。用依赖检查强制：`core/...` 不允许 import 整个 `internal/adapter` 或 agenthooks 路径及其子包，CI 里跑一个测试。harness 名的合法取值（`native` 的键、`when.harness.name`、`requires.harness`、`recommends`）由适配器注册表提供，核心不硬编码字符串；M3-D0 的修复边界及保留的 engine 输出特例见 [§3.1](#31-m3-d0-注册表校验边界)。
 - **适配器只回答事实**：支持哪些能力、数据从哪来、装到哪、怎么信任、静态文字写到哪、单次注入上限多少。"做不到怎么办"由核心按规范第 5 节的阶梯决定。
 - **适配器分两层**：协议层（事件名、stdin/stdout、工具名）用 agenthooks（fork）的 codec；STYLE 适配器只写协议层以外的部分：安装路线、信任、静态位置、数据来源、skill 识别补充、上限。
 - **热路径只读 `index.json`**，不读 md、不算哈希；没命中时输出为空。
@@ -151,13 +151,13 @@ map: { low: low, medium: medium, high: high, xhigh: xhigh, max: max }
 
 ### 3.1 M3-D0 注册表校验边界
 
-本节及 [详细方案与调用链](../review/M3-D0-REGISTRY-VALIDATION-2026-10-17.md) 为 2026-10-17 用户确认的 M3-D0 定稿，尚待 T00 实现。现有 native 目录已由 Registry 提供，普通条件/版本要求/recommends 仍写死两家，M3-RV-01 未关闭。
+本节及 [详细方案与调用链](../review/M3-D0-REGISTRY-VALIDATION-2026-10-17.md) 为 2026-10-17 用户确认的 M3-D0 定稿，已由 T00 实现并通过 [M3-A0](../review/M3-A0-2026-10-17.json)。普通条件/版本要求/recommends 和 native 共用注册表，M3-RV-01 已关闭。
 
 新增 `spec.ValidationCatalog{Harnesses []string, Native spec.NativeCatalog}` 与 `spec.ValidateWithCatalog(pkg, catalog)`；`Registry.ValidationCatalog()` 从同一注册表生成名称全集与 native 子集，Service 构造时保存隔离快照。完整入口统一检查三个普通名称位置及 native；合法名称与本机检测、当前选中的 harness 无关，空目录明确表示无注册项，Native 额外键不能扩大名称全集。
 
 保留 `spec.Validate(pkg)` 签名作为结构/lint 校验，以及既有 NativeCatalog/ValidateNative 底层入口；需要完整有效性的调用必须使用新完整入口。app 的 validate、plan、install、sync、trust 和保留包重编译均走完整门禁，再将源诊断交给预算与去重报告；tokens 的无源诊断回退只做结构检查。三处未知名诊断保持既有 code/message/path，默认两家 CLI 输出与退出码保持兼容。validate 的预算遍历和 plan 的 auto 检测改为遍历注册项，报告顺序沿用现有策略。
 
-core 只消费通用目录/能力端口；agenthooks 继续负责协议、配置渲染、owner 合并和卸载恢复。依赖检查补齐 adapter 子路径。`core/engine/process.go` 另有两处既有 Claude prompt suppression 判断，本次校验目录不删除它们；在 M3-D8 评估其输出能力边界，不以 T00 通过宣称所有 core 特例清零。M3-A0 的十组细化断言见详细方案；D0 已获用户确认，T00 按此范围实施。
+core 只消费通用目录/能力端口；agenthooks 继续负责协议、配置渲染、owner 合并和卸载恢复。依赖检查补齐 adapter 子路径。`core/engine/process.go` 另有两处既有 Claude prompt suppression 判断，本次校验目录不删除它们；在 M3-D8 评估其输出能力边界，不以 T00 通过宣称所有 core 特例清零。M3-A0 的十组细化断言见详细方案；D0 已获用户确认，T00 已按此范围实现；14 个新测试函数、205 个叶子用例及旧包/输出兼容回归通过。
 
 ## 4. 命令
 

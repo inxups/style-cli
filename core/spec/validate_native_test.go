@@ -34,7 +34,7 @@ var testNativeCatalog = NativeCatalog{
 }
 
 func validateWithNative(pkg *Package, catalog NativeCatalog) []Diagnostic {
-	return append(Validate(pkg), ValidateNative(pkg, catalog)...)
+	return ValidateWithCatalog(pkg, ValidationCatalog{Harnesses: catalog.Names(), Native: catalog})
 }
 
 func errorCodes(diagnostics []Diagnostic) []string {

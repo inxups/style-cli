@@ -112,7 +112,7 @@ func (v *validator) validateRequires(value any) {
 			return
 		}
 		for _, name := range sortedMapKeys(harness) {
-			if name != "codex" && name != "claude-code" {
+			if v.harnesses != nil && !v.harnesses[name] {
 				v.add("invalid-schema", source, fmt.Sprintf("unknown harness %q", name))
 				continue
 			}
@@ -232,7 +232,7 @@ func (v *validator) validateRecommends(value any) {
 		return
 	}
 	for _, harness := range sortedMapKeys(recommends) {
-		if harness != "codex" && harness != "claude-code" {
+		if v.harnesses != nil && !v.harnesses[harness] {
 			v.add("invalid-schema", source, fmt.Sprintf("unknown recommends harness %q", harness))
 		}
 		if asStringMap(recommends[harness]) == nil {

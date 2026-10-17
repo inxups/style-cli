@@ -4,7 +4,7 @@
 
 本文件记录 M3 测试矩阵与当前证据状态，任务及依赖见 [STYLE-M3-TASKS.md](STYLE-M3-TASKS.md)，运行记录追加到 [PROGRESS.md](PROGRESS.md)。[M1 测试](STYLE-M1-TESTS.md)、[M2 测试](STYLE-M2-TESTS.md) 已只读归档；历史通过结果不替代 M3 的新验收。
 
-当前状态：M3-00 建档检查、M3-BASE-01 新基线已通过；A0–A18、准备、CI 和最终文档验收尚未执行。Codex B1–B4、Claude C1–C6、exact TOKEN-01 与 Windows W1 均待真实环境。M3-CARRY-01 官方校准仍两家各 0/40；核心硬编码风险尚未修复，M3-A0 为功能开发前置必做验收。
+当前状态：M3-00 建档检查、M3-BASE-01 新基线及 M3-A0 注册表/架构边界均已通过；A1–A18、准备、CI 和最终文档验收尚未执行。Codex B1–B4、Claude C1–C6、exact TOKEN-01 与 Windows W1 均待真实环境。M3-CARRY-01 官方校准仍两家各 0/40；三处名称校验的硬编码风险已由 M3-T00/M3-A0 关闭，后续功能按依赖继续设计。
 
 ## 状态与验收规则
 
@@ -69,7 +69,7 @@ PYTHONDONTWRITEBYTECODE=1 python3 scripts/check_m2_rules_migration.py \
 
 ## M3a：离线验收
 
-- [ ] **M3-A0 注册表与架构边界**（M3-D0、M3-T00、M3-RV-01）：用仅注册假 harness、删去某家、两家现有注册表及空目录的 fixture，覆盖 `when.harness.name`、`requires.harness`、`recommends` 及 native 校验。目录/单文件包、所有 app 入包路径给出一致诊断；普通名称全集与 native 子集、快照隔离、结构/完整 API、预算重复路径和 auto 遍历均需证明。core 不导入具体 adapter/agenthooks，旧包/诊断排序及失败后 bytes/mode/mtime 保持兼容。[D0 设计 §6](review/M3-D0-REGISTRY-VALIDATION-2026-10-17.md#6-m3-a0-验收细化) 已列 A0-01–A0-10 待执行断言；D0 已获用户确认，实现与 A0 尚未完成，不能以设计确认、文档检查或 BASE-01 关闭本项。通过才关闭风险并开始后续功能。
+- [x] **M3-A0 注册表与架构边界**（M3-D0、M3-T00、M3-RV-01）：用仅注册假 harness、删去某家、两家现有注册表及空目录的 fixture，覆盖 `when.harness.name`、`requires.harness`、`recommends` 及 native 校验。目录/单文件包、所有 app 入包路径给出一致诊断；普通名称全集与 native 子集、快照隔离、结构/完整 API、预算重复路径和 auto 遍历均需证明。core 不导入具体 adapter/agenthooks，旧包/诊断排序及失败后 bytes/mode/mtime 保持兼容。[D0 设计 §6](review/M3-D0-REGISTRY-VALIDATION-2026-10-17.md#6-m3-a0-验收细化) 的 A0-01–A0-10 已逐项通过，见 [本轮报告](review/M3-A0-2026-10-17.json)。macOS 27.0.1 / Go 1.27.0、临时三缓存及清理环境下，新执行双 module fresh test（30 个有测试 package，均非 cached）/vet、core/spec/tokens/adapter/app 四包完整 race；14 个新测试函数、205 个叶子用例，含 144 组目录/单文件/from 的精确名称组合与 33 组无效候选文件保全。与固定基线 CLI 的 32 组文本/JSON 输出和退出码逐字节相同；8 个隔离 import fixture 证明整个 adapter/agenthooks 前缀受限。59 项采集器、40 smoke、16 组 `74a473d` 真实旧版迁移、12 组回退通过；当前二进制 SHA256 `8d4e933ccdc6d79167294b0998e0bfe76668cfbf0a268a64d25dc3f3b5ad6967`。首轮测试中两个 fixture 问题及修正后通过均保留；生产校验未放宽、agenthooks/协议/旧 golden 未改，未调用真实 harness、远端 CI 或官方计数。关闭 M3-RV-01，允许进入 D1。
 - [ ] **M3-A1 explain**（M3-D1、M3-T10）：固定两家原生 payload、index 和隔离状态，解释命中/不命中、缺值、repeat、跨包去重、容量丢弃与最终输出；结果与真实 runtime/codec 相符。覆盖坏 payload/index、未知 harness/event 和 native 边界；以目录字节/权限/mtime 对照证明不改真实 state/config、不执行 native 命令，输出范围按 D1 固定。
 - [ ] **M3-A2 probe**（M3-D1、M3-T11）：以隔离回调 fixture 验证关联、真实回调与仅安装的区分、超时/中断/未触发诊断及失败清理；他人配置与已有 STYLE 安装保持完整，不残留探针。此项仅验离线生命周期，实际 harness 调用由 B1/C1 验收。
 - [ ] **M3-A3 Git 来源**（M3-D2、M3-T20）：用临时本地 Git 仓库模拟固定 revision、分支推进、同名/不同内容、目录与单文件包。覆盖不可达/缺 revision、非法包、路径逃逸/symlink 和取得中断；锁与内容摘要一致，失败不留半安装。取得源码不执行仓库代码；凭据与来源中的敏感字段不进入报告。

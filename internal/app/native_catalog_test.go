@@ -16,7 +16,7 @@ func TestNativeCatalogComesFromRegisteredAdapters(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if got := service.native.Names(); !reflect.DeepEqual(got, []string{"claude-code", "codex"}) {
+	if got := service.catalog.Native.Names(); !reflect.DeepEqual(got, []string{"claude-code", "codex"}) {
 		t.Fatalf("catalog harnesses = %v", got)
 	}
 	cases := []struct {
@@ -36,15 +36,15 @@ func TestNativeCatalogComesFromRegisteredAdapters(t *testing.T) {
 		{"claude-code", "PostModelSwitch", false, false},
 	}
 	for _, tc := range cases {
-		matcher, known := service.native[tc.harness].NativeEvent(tc.event)
+		matcher, known := service.catalog.Native[tc.harness].NativeEvent(tc.event)
 		if known != tc.known || matcher != tc.matcher {
 			t.Errorf("%s %s = (matcher %v, known %v), want (%v, %v)", tc.harness, tc.event, matcher, known, tc.matcher, tc.known)
 		}
 	}
-	if service.native["codex"].ValidMatcher("*") || !service.native["claude-code"].ValidMatcher("*") {
+	if service.catalog.Native["codex"].ValidMatcher("*") || !service.catalog.Native["claude-code"].ValidMatcher("*") {
 		t.Error("only Claude Code accepts the * matcher")
 	}
-	if service.native["codex"].ValidMatcher("(") || service.native["claude-code"].ValidMatcher("(") {
+	if service.catalog.Native["codex"].ValidMatcher("(") || service.catalog.Native["claude-code"].ValidMatcher("(") {
 		t.Error("invalid regex accepted")
 	}
 }

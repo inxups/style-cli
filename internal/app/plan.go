@@ -128,7 +128,7 @@ func (s *Service) Plan(ctx context.Context, request PlanRequest) (PlanResult, er
 		if err != nil {
 			return result, fmt.Errorf("plan %s: %w", provider, err)
 		}
-		budget, err := tokens.AnalyzeWithLayout(resolved, planned, layoutFor(provider), spec.Validate(validation.Package)...)
+		budget, err := tokens.AnalyzeWithLayout(resolved, planned, layoutFor(provider), validation.source...)
 		if err != nil {
 			return result, fmt.Errorf("token plan %s: %w", provider, err)
 		}
@@ -234,11 +234,8 @@ func (s *Service) selectProviders(ctx context.Context, values []string) ([]adapt
 				continue
 			}
 			if value == "auto" {
-				for _, provider := range []adapter.ProviderID{"codex", "claude-code"} {
-					definition, ok := s.definitions[provider]
-					if !ok {
-						continue
-					}
+				for _, provider := range s.providers() {
+					definition := s.definitions[provider]
 					_, installed, err := definition.Detect(ctx)
 					if err != nil {
 						return nil, err

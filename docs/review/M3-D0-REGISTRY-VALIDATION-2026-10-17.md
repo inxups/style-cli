@@ -1,10 +1,10 @@
 # M3-D0 注册表校验边界设计
 
-日期：2026-10-17。状态：`[x]`，用户在明确的评审问题后回复“继续”，确认本文的完整目录接口、`Validate` 结构校验兼容选择及实现范围；M3-D0 已定稿。M3-T00、M3-A0 尚未执行，M3-RV-01 保持 `[!]`。
+日期：2026-10-17。状态：`[x]`，用户在明确的评审问题后回复“继续”，确认本文的完整目录接口、`Validate` 结构校验兼容选择及实现范围；M3-D0 已定稿。M3-T00 已实现，M3-A0 已通过，M3-RV-01 已关闭，结果见 [本轮验收报告](M3-A0-2026-10-17.json)。
 
-调查起点是 clean `323acf81ad63b417ea27b29064f9473efbb7a12b`；其生产源码与建档提交 `7586cca` 相同。[M3-BASE-01](M3-BASE-01-2026-10-17.json) 已新执行双 module fresh test/vet、59 项采集器、40 项 smoke、16 组旧版迁移和 12 组回退。本文依据仓库源码定边界，不引入外部 harness 能力或新安装路线。
+调查起点是 clean `323acf81ad63b417ea27b29064f9473efbb7a12b`；其生产源码与建档提交 `7586cca` 相同。[M3-BASE-01](M3-BASE-01-2026-10-17.json) 已新执行双 module fresh test/vet、59 项采集器、40 项 smoke、16 组旧版迁移和 12 组回退。第 1 节冻结定稿前的源码调查，修复后的源码/命令/二进制摘要以本轮验收报告为准。本文依据仓库源码定边界，不引入外部 harness 能力或新安装路线。
 
-## 1. 现状与问题
+## 1. 定稿前的现状与问题
 
 | 位置 | 当前事实 | 本次处理 |
 |---|---|---|
@@ -18,20 +18,20 @@
 | [原生指纹](../../internal/app/native.go) | `loadNativeSource` 只解析、合并以比较声明或重建批准基线 | 保留其用途；候选包在入包/重编译入口完整校验 |
 | [core 依赖检查](../../internal/adapter/boundary_test.go) | 已禁止 agenthooks 根路径/子路径及 adapter 根路径，但未覆盖 adapter 子路径 | 补齐整个 adapter 路径前缀的约束 |
 
-可重复调查命令（仓库根目录；输出须以固定起点复核）：
+可重复调查命令（仓库根目录，固定定稿前源码起点）：
 
 ```sh
-git rev-parse HEAD
-rg -n 'validHarnessNames|unknown harness|unknown recommends harness' core/spec/validate_conditions.go core/spec/validate_package.go
-rg -n 'spec.Validate\(|spec.ValidateNative\(' core internal --glob '*.go' --glob '!**/*_test.go'
-rg -n '"codex"|"claude-code"' core --glob '*.go' --glob '!**/*_test.go'
+git rev-parse 323acf8^{commit}
+git grep -n -E 'validHarnessNames|unknown harness|unknown recommends harness' 323acf8 -- core/spec/validate_conditions.go core/spec/validate_package.go
+git grep -n -E 'spec.Validate\(|spec.ValidateNative\(' 323acf8 -- core internal ':(exclude)**/*_test.go'
+git grep -n -E '"codex"|"claude-code"' 323acf8 -- core ':(exclude)**/*_test.go'
 ```
 
 最后一条还发现 [engine/process.go](../../core/engine/process.go) 有两处 Claude prompt suppression 的名称判断。这是既有原生输出安全边界，不参与名称合法性集合；本次 T00 聚焦 M3-RV-01 的三个校验点和相关入口，不删除这两个判断，也不声称所有 core 特例已清零。该额外发现保留到 M3-D8 的输出/失败策略边界设计中评估；任何能力化改动都需对应 engine/adapter/runtime 白名单回归。
 
 ## 2. 定稿接口
 
-新增的 core 数据结构与入口如下；此处是已批准的接口契约，尚待 T00 实现：
+新增的 core 数据结构与入口如下；此处是已批准且由 T00 实现的接口契约：
 
 ```go
 // core/spec：只有普通名称和既有 native 能力端口，不导入 adapter 或 agenthooks。
@@ -91,7 +91,7 @@ native 未注册名称保留 `native-field` 及既有消息格式，registered �
 
 ## 6. M3-A0 验收细化
 
-以下均是 T00 的待执行断言，当前不算通过：
+以下断言已由 T00/M3-A0 逐项执行通过，测试函数、fixture、命令和结果见 [验收报告](M3-A0-2026-10-17.json) 的 `acceptance_subcases`：
 
 | 子项 | 必须证明的行为 |
 |---|---|
@@ -106,8 +106,8 @@ native 未注册名称保留 `native-field` 及既有消息格式，registered �
 | A0-09 | core 不导入整个 adapter/agenthooks 路径前缀；三个校验点没有内置名称 allowlist；不以搜索整个 core 零名称替代行为验证 |
 | A0-10 | 双 module fresh test/vet、既有 conformance/stdout golden、40 项 smoke、16 组旧迁移及 12 组回退通过；新 case 数和所用二进制摘要完整记录 |
 
-Go 命令遵循 [M3 测试环境约定](../STYLE-M3-TESTS.md#测试环境约定)，清理宿主变量并使用临时三缓存。T00 对目录快照并发行为运行相关 core/spec、app、adapter 的 race 回归；设计定稿不执行实现验收，M3-BASE-01 已通过的 Go 检查不冒充 A0 的新结果。
+Go 命令遵循 [M3 测试环境约定](../STYLE-M3-TESTS.md#测试环境约定)，清理宿主变量并使用临时三缓存。T00 对目录快照并发行为运行相关 core/spec、app、adapter 的 race 回归；M3-A0 已重新执行完整 fresh test/vet 和四包 race，未沿用 BASE-01 的旧结果。
 
 ## 7. 评审与完成条件
 
-2026-10-17 用户在评审问题后回复“继续”，确认完整目录接口、`Validate` 的结构校验兼容选择和上述实现范围，关闭 D0；随后执行 T00 和 M3-A0。只有 A0 的真实回归通过才能关闭 M3-RV-01、开始 D1。当前设计状态为 `[x]`，实现/测试状态保持 `[ ]`；批准证据及文档检查记入 `PROGRESS.md`。
+2026-10-17 用户在评审问题后回复“继续”，确认完整目录接口、`Validate` 的结构校验兼容选择和上述实现范围，关闭 D0；随后执行 T00 和 M3-A0。只有 A0 的真实回归通过才能关闭 M3-RV-01、开始 D1。当前设计、T00 和 A0 状态均为 `[x]`，批准与新验收证据记入 `PROGRESS.md`；下一项为 D1。

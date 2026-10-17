@@ -11,6 +11,7 @@ import (
 
 	"github.com/inxups/style-cli/core/tokens"
 	"github.com/inxups/style-cli/internal/adapter"
+	"github.com/inxups/style-cli/internal/adapter/claude"
 	"github.com/inxups/style-cli/internal/adapter/codex"
 	"github.com/speakeasy-api/agenthooks"
 )
@@ -67,7 +68,11 @@ func testCodexInstallService(t *testing.T, configDir, pluginDir string) *Service
 		codex.NewPluginRouteForCommand(pluginDir, configDir, "/tmp/style", &facts),
 		codex.NewUserRouteForCommand(configDir, "/tmp/style", &facts),
 	}
-	service, err := New(definition)
+	// Examples declare both registered harnesses. This fixture installs only
+	// Codex; absence on the host must not remove Claude from the catalog.
+	other := claude.Definition()
+	other.Detector = undetectedHarness{}
+	service, err := New(definition, other)
 	if err != nil {
 		t.Fatal(err)
 	}

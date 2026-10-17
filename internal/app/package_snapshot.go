@@ -41,7 +41,8 @@ func (s *Service) parseInstalledSnapshot(ctx context.Context, home string, item 
 	if err != nil {
 		return installPackage{}, fmt.Errorf("load %s: %w", item.Name, err)
 	}
-	if diagnostics := s.validateSpec(pkg); hasSpecErrors(diagnostics) {
+	diagnostics := s.validateSpec(pkg)
+	if hasSpecErrors(diagnostics) {
 		return installPackage{}, &ValidationError{Diagnostics: convertDiagnostics(diagnostics)}
 	}
 	if pkg.Metadata["name"] != item.Name {
@@ -81,6 +82,6 @@ func (s *Service) parseInstalledSnapshot(ctx context.Context, home string, item 
 	item.Version, _ = pkg.Metadata["version"].(string)
 	item.Settings = names
 	item.Replace = packageUsesReplace(resolved)
-	return installPackage{lock: item, pkg: pkg, resolved: resolved, settings: settings,
+	return installPackage{lock: item, pkg: pkg, resolved: resolved, settings: settings, source: diagnostics,
 		report: make(map[adapter.ProviderID]plan.Report), tokens: make(map[adapter.ProviderID]tokens.Report)}, nil
 }

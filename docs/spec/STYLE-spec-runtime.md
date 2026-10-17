@@ -25,7 +25,7 @@ when:
 - **`provider`**：M1 没有数据来源。validate 接受并警告 `provider-unimplemented`，运行时永不满足。M3 再定。
 - **`thinking_effort`**：写法只有四种：单值（`high`）、列表（`[minimal, low]`）、`>=档位`、`<=档位`，不区分大小写；其他写法报错 `bad-effort-expr`。别名（如 `ultra`）不能写在 `when` 里，只在映射层用。取值和比较规则见 4.2。
 - **`thinking_effort_approx`**：`true` / `false`，要求档位是或不是近似值。M1 两个适配器的已知映射均为 `false`；未知档位同时清除 approx，不沿用旧值。字段留给以后的预算型 harness。
-- **`harness.name`**：当前生产接受 `claude-code`、`codex`。M3-D0 已确定改为由当前 Service 的注册表提供合法名称全集，与 `requires.harness`、`recommends` 一致，按 canonical ID 精确匹配；不从全部 agenthooks Provider 常量或本机检测结果推导。此改动已于 2026-10-17 获用户确认，尚待 M3-T00 实现，接口和兼容选择见 [设计 §3.1](STYLE-cli-design.md#31-m3-d0-注册表校验边界)。`harness.permission_mode` 继续使用 harness 原生取值，reads 与缺值匹配行为不变。
+- **`harness.name`**：由当前 Service 的注册表提供合法名称全集，当前生产默认注册 `claude-code`、`codex`，与 `requires.harness`、`recommends` 一致，按 canonical ID 精确匹配；不从全部 agenthooks Provider 常量或本机检测结果推导。M3-T00 已于 2026-10-17 实现并通过 M3-A0，接口和兼容选择见 [设计 §3.1](STYLE-cli-design.md#31-m3-d0-注册表校验边界)。`harness.permission_mode` 继续使用 harness 原生取值，reads 与缺值匹配行为不变。
 - **`agent`**：不写时等于 `[main]`，只在主 agent 里生效；挂在 `subagent.start` 上的规则不写时等于 `any`。`any` 表示主 agent 和所有子 agent；列表里可以写 `main` 和子 agent 的类型名（`agent_type`）。**主 agent 的判断是"事件里没有 `agent_id`"**：Claude 用 `--agent` 启动时，主 agent 的事件里也有 `agent_type`【文档】。
 - **`reads`**：`when` 里用到的 `model`、`thinking_effort`、`harness.<键>` 必须先在 `reads` 里声明（`reads-missing`）。`agent` 不需要声明，它是去重作用域本来就要读的。
 

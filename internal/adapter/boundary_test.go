@@ -35,7 +35,7 @@ func TestCoreDoesNotImportProviderOrAdapterImplementations(t *testing.T) {
 			if err != nil {
 				t.Fatalf("parse import path in %s: %v", path, err)
 			}
-			if importPath == "github.com/speakeasy-api/agenthooks" || strings.HasPrefix(importPath, "github.com/speakeasy-api/agenthooks/") || importPath == "github.com/inxups/style-cli/internal/adapter" {
+			if importPath == "github.com/speakeasy-api/agenthooks" || strings.HasPrefix(importPath, "github.com/speakeasy-api/agenthooks/") || importPath == "github.com/inxups/style-cli/internal/adapter" || strings.HasPrefix(importPath, "github.com/inxups/style-cli/internal/adapter/") {
 				t.Errorf("core source %s imports provider implementation %q", path, importPath)
 			}
 		}

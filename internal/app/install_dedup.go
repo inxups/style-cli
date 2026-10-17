@@ -5,7 +5,6 @@ import (
 	"strings"
 
 	"github.com/inxups/style-cli/core/compile"
-	"github.com/inxups/style-cli/core/spec"
 	"github.com/inxups/style-cli/core/tokens"
 )
 
@@ -48,7 +47,7 @@ func effectiveInstallReports(result *installCompilation, packages []installPacka
 					rule.Reasons = append(append([]string(nil), rule.Reasons...), reason)
 				}
 			}
-			budget, err := tokens.AnalyzeWithLayout(item.resolved, planned, layoutFor(target.provider), spec.Validate(item.pkg)...)
+			budget, err := tokens.AnalyzeWithLayout(item.resolved, planned, layoutFor(target.provider), item.source...)
 			if err != nil {
 				return fmt.Errorf("effective token analysis %s/%s: %w", item.lock.Name, target.provider, err)
 			}

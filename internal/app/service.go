@@ -4,6 +4,7 @@ package app
 import (
 	"context"
 	"fmt"
+	"sort"
 
 	"github.com/inxups/style-cli/core/spec"
 	"github.com/inxups/style-cli/internal/adapter"
@@ -12,7 +13,7 @@ import (
 // Service holds the explicitly registered adapters used by planning.
 type Service struct {
 	definitions map[adapter.ProviderID]adapter.Definition
-	native      spec.NativeCatalog
+	catalog     spec.ValidationCatalog
 }
 
 // New constructs a service from an explicit adapter catalog.
@@ -21,7 +22,7 @@ func New(definitions ...adapter.Definition) (*Service, error) {
 	if err != nil {
 		return nil, err
 	}
-	service := &Service{definitions: make(map[adapter.ProviderID]adapter.Definition), native: registry.NativeCatalog()}
+	service := &Service{definitions: make(map[adapter.ProviderID]adapter.Definition), catalog: registry.ValidationCatalog()}
 	for _, provider := range registry.Providers() {
 		definition, ok := registry.Lookup(provider)
 		if !ok {
@@ -32,12 +33,26 @@ func New(definitions ...adapter.Definition) (*Service, error) {
 	return service, nil
 }
 
-// validateSpec runs schema validation plus the registry-dependent native
-// checks. Every path that accepts a package must use it instead of
-// spec.Validate alone.
+// validateSpec is the complete admission gate for all package paths.
 func (s *Service) validateSpec(pkg *spec.Package) []spec.Diagnostic {
-	diagnostics := spec.Validate(pkg)
-	return append(diagnostics, spec.ValidateNative(pkg, s.native)...)
+	return spec.ValidateWithCatalog(pkg, s.catalog)
+}
+
+// providers preserves the existing command report order while including
+// every registered harness, whether or not it is installed or selected.
+func (s *Service) providers() []adapter.ProviderID {
+	providers := make([]adapter.ProviderID, 0, len(s.definitions))
+	for provider := range s.definitions {
+		providers = append(providers, provider)
+	}
+	sort.Slice(providers, func(i, j int) bool {
+		left, right := providerOrder(providers[i]), providerOrder(providers[j])
+		if left != right {
+			return left < right
+		}
+		return providers[i] < providers[j]
+	})
+	return providers
 }
 
 // CheckContext returns the context error before a use case starts filesystem
