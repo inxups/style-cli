@@ -1,0 +1,172 @@
+{
+  "format": 1,
+  "command": "explain",
+  "status": "ok",
+  "harness": "codex",
+  "event": "PreToolUse",
+  "inputs": {
+    "index_sha256": "sha256:01bf31f2b59b679fc8115d78807076b63ec0662919f69c79ad9095f50a1c97e4",
+    "payload_sha256": "sha256:0d010935a62e8be7e68b2a06cc0d3508d45c10f2689ca9203f696a6132b1e98e",
+    "fail_closed": false
+  },
+  "state": {
+    "mode": "empty",
+    "seed_scope_exists": false,
+    "before": {
+      "gen": 0,
+      "epoch": 0,
+      "prompt_count": 0
+    },
+    "after": {
+      "gen": 0,
+      "epoch": 0,
+      "prompt_count": 0
+    }
+  },
+  "facts": [
+    {
+      "field": "claude_skill_content",
+      "available": false,
+      "source": "unavailable"
+    },
+    {
+      "field": "configuration-files",
+      "available": false,
+      "source": "unavailable"
+    },
+    {
+      "field": "environment",
+      "available": false,
+      "source": "unavailable"
+    },
+    {
+      "field": "harness.version",
+      "available": false,
+      "source": "unavailable"
+    },
+    {
+      "field": "mcp",
+      "available": false,
+      "source": "unavailable"
+    },
+    {
+      "field": "mcp-discovery",
+      "available": false,
+      "source": "unavailable"
+    },
+    {
+      "field": "model",
+      "available": false,
+      "source": "unavailable"
+    },
+    {
+      "field": "network",
+      "available": false,
+      "source": "unavailable"
+    },
+    {
+      "field": "process-ancestry",
+      "available": false,
+      "source": "unavailable"
+    },
+    {
+      "field": "skill-manifest-files",
+      "available": false,
+      "source": "unavailable"
+    },
+    {
+      "field": "thinking_effort",
+      "available": false,
+      "source": "unavailable"
+    },
+    {
+      "field": "thinking_effort_approx",
+      "available": false,
+      "source": "unavailable"
+    },
+    {
+      "field": "thinking_effort_raw",
+      "available": false,
+      "source": "unavailable"
+    },
+    {
+      "field": "transcript-backfill",
+      "available": false,
+      "source": "unavailable"
+    }
+  ],
+  "points": [
+    {
+      "point": "tool.pre",
+      "candidate_count": 1
+    }
+  ],
+  "entries": [
+    {
+      "rule": "fixture/context",
+      "entry": "fixture/context@tool.pre",
+      "point": "tool.pre",
+      "order": [
+        50,
+        1,
+        0
+      ],
+      "action": "inject",
+      "needs": [],
+      "source": "rules/context.md",
+      "selector": "pass",
+      "sources": "pass",
+      "when": "pass",
+      "conditions": [
+        {
+          "field": "agent",
+          "available": true,
+          "result": "pass",
+          "source": "session"
+        }
+      ],
+      "render": "pass",
+      "model": {
+        "bytes": 20,
+        "sha256": "sha256:ab97dffff520f379d5e6cbb636719442ba739f705511c1801686b2f72772e61c"
+      },
+      "user": {
+        "bytes": 0,
+        "sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "block": "pass",
+      "repeat": "claimed",
+      "repeat_key_sha256": "sha256:16bfd853dd7f16c7ae005dcb23703dec8a51e619989bb4ffc1d9c95680a8c44d",
+      "gen": 0,
+      "epoch": 0,
+      "turn_source": "prompt-count",
+      "output": "output",
+      "reservation_released": false
+    }
+  ],
+  "compile_provenance": {
+    "status": "unavailable",
+    "coverage": "index-only",
+    "rules": [],
+    "static": [],
+    "native": []
+  },
+  "wire": {
+    "stdout": "{\"hookSpecificOutput\":{\"additionalContext\":\"Use fixture context.\",\"hookEventName\":\"PreToolUse\"}}",
+    "stderr": "",
+    "exit_code": 0,
+    "stdout_bytes": 96,
+    "stderr_bytes": 0,
+    "stdout_sha256": "sha256:d4cdb5b70b8a9d60d178cac8b1da0948427520b920e6371262aef002eb15f6ae",
+    "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stage": "complete",
+    "fail_policy": "open"
+  },
+  "diagnostics": [
+    {
+      "code": "provenance-unavailable",
+      "severity": "warning",
+      "message": "Compilation provenance is unavailable; index-only coverage."
+    }
+  ]
+}

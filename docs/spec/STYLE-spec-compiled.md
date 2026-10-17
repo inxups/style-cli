@@ -155,9 +155,9 @@
 
 ### 9.7 M3-D1 编译说明文件评审稿
 
-本节是已获用户确认的 D1 设计，尚未实现。用于 explain 解释已经被编译删除的跨包等价声明，详细契约见 [D1 方案](../review/M3-D1-DIAGNOSTICS-2026-10-17.md)。当前 format=1 index、lock、state 均不改；runtime 仍不读取这份冷路径文件。
+本节是已获用户确认的 D1 设计，已由 M3-T10 实现并通过 [M3-A1](../review/M3-A1-2026-10-17.json)。用于 explain 解释已经被编译删除的跨包等价声明，详细契约见 [D1 方案](../review/M3-D1-DIAGNOSTICS-2026-10-17.md)。当前 format=1 index、lock、state 均不改；runtime 仍不读取这份冷路径文件。
 
-拟新增 `build/explain.json`，权限 0600，严格 JSON、上限 16 MiB。顶层为 `format=1`、`index_sha256`（带 sha256: 前缀，对最终 index 文件的精确字节计算）、`harnesses`。每个 harness 保存本次冷编译实际得到的规则说明：canonical rule ID、来源包内路径、RulePlan 的 target/action/status、placement 的 event/static_slot、编译折叠的 deduplicated_into 和安全原因代码；native 可附 event/matcher/实际 timeout。
+新增 `build/explain.json`，权限 0600，严格 JSON、上限 16 MiB。顶层为 `format=1`、`index_sha256`（带 sha256: 前缀，对最终 index 文件的精确字节计算）、`harnesses`。每个 harness 保存本次冷编译实际得到的规则说明：canonical rule ID、来源包内路径、RulePlan 的 target/action/status、placement 的 event/static_slot、编译折叠的 deduplicated_into 和安全原因代码；native 可附 event/matcher/实际 timeout。
 
 说明来自同一次已批准输入的 RulePlan、compile.Result.Deduplicated 与最终 index，不能重读新源推测。不得存正文、settings/vars 值、原生命令、工具/prompt 内容、凭据或原始配置；更早阶段已被移除且没有记录的声明不补造“未命中”原因。按 harness、规则稳定顺序输出，保留的 runtime/static placement 与折叠引用的保留方必须能与最终 index 对上；skipped/native 等说明不伪造 index entry。
 
@@ -165,7 +165,7 @@
 
 explain 只读捕获 index 和说明，精确摘要相同且结构/引用有效才使用；缺失、格式错误、超限、symlink 或摘要不符给 warning，按 index-only 解释，不编译源码也不补写文件。并发更新时可重新捕获一组一次，仍不相符就如实降为 index-only，不拼接两代元数据。旧安装缺说明继续正常运行，doctor 不因缺这份可选文件判损坏；下一次正常成功重建才生成。
 
-static 仍只提供 index 的位置/摘要/估算，不证明原生已加载；native 说明只表示冷路径计划，不执行命令。compile-deduplicated 与运行时 repeat 的 dedup 分列，既有 stats 归因不变。A1-09/A1-10 专项验收这些边界，不因 D1 文档检查通过。
+static 仍只提供 index 的位置/摘要/估算，不证明原生已加载；native 说明只表示冷路径计划，不执行命令。compile-deduplicated 与运行时 repeat 的 dedup 分列，既有 stats 归因不变。A1-09/A1-10 已专项验收这些边界，包含三条安装路线、无说明的旧安装、实际应用后的取消回滚与 index/说明更新窗口；结果见上述 A1 报告。
 
 ## 10. 安装后的状态和静态位置
 

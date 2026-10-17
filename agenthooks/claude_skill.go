@@ -360,6 +360,10 @@ func readClaudeSkillContent(name, cwd string) (string, bool) {
 // the resolved manifest. Resolve the same local skill so Output reflects the
 // model-visible content; Event.Raw retains Claude's response verbatim.
 func backfillClaudeSkillOutput(event *ToolPostEvent) {
+	backfillClaudeSkillOutputWithReader(event, readClaudeSkillContent)
+}
+
+func backfillClaudeSkillOutputWithReader(event *ToolPostEvent, readSkill func(string, string) (string, bool)) {
 	if event.Failed || !strings.EqualFold(event.Tool.Name, "Skill") {
 		return
 	}
@@ -369,7 +373,7 @@ func backfillClaudeSkillOutput(event *ToolPostEvent) {
 	if json.Unmarshal(event.Tool.Input, &input) != nil {
 		return
 	}
-	content, ok := readClaudeSkillContent(strings.TrimSpace(input.Skill), event.Session.CWD)
+	content, ok := readSkill(strings.TrimSpace(input.Skill), event.Session.CWD)
 	if !ok {
 		return
 	}

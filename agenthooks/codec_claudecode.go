@@ -71,6 +71,10 @@ type claudeMCPServer struct {
 }
 
 func decodeClaude(v Variant, conf DetectionConfidence, now time.Time, payload []byte) (any, error) {
+	return decodeClaudeWithSkillReader(v, conf, now, payload, readClaudeSkillContent)
+}
+
+func decodeClaudeWithSkillReader(v Variant, conf DetectionConfidence, now time.Time, payload []byte, readSkill func(string, string) (string, bool)) (any, error) {
 	var in claudeIn
 	if err := json.Unmarshal(payload, &in); err != nil {
 		return nil, err
@@ -111,7 +115,7 @@ func decodeClaude(v Variant, conf DetectionConfidence, now time.Time, payload []
 	}
 	typed := buildClaudeShaped(base, &in)
 	if event, ok := typed.(*ToolPostEvent); ok {
-		backfillClaudeSkillOutput(event)
+		backfillClaudeSkillOutputWithReader(event, readSkill)
 	}
 	return typed, nil
 }

@@ -203,6 +203,11 @@ func (s *Service) prepareSync(ctx context.Context, request TrustRequest) (syncPr
 		}
 		prepared.files = append(prepared.files, planPrivateBytes(lockPath, lockBefore, lockAfter)...)
 		prepared.files = append(prepared.files, planPrivateBytes(indexPath, indexBefore, compilation.indexBytes)...)
+		provenanceChanges, err := planPrivateFile(filepath.Join(home, "build", "explain.json"), compilation.provenanceBytes)
+		if err != nil {
+			return syncPreparation{}, err
+		}
+		prepared.files = append(prepared.files, provenanceChanges...)
 	}
 	prepared.files, err = uniquePlannedFiles(prepared.files)
 	return prepared, err

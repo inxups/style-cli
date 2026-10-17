@@ -41,6 +41,8 @@ const maxPayloadBytes = 32 << 20
 // (observe-only) and runs regardless. Typed handlers gate/mutate; OnAny
 // never does. Middleware installed with Use wraps the typed pipeline.
 type Runner struct {
+	offline            *OfflineInputs
+	runObserver        func(RunOutcome)
 	policy             PolicyFunc
 	logger             *slog.Logger
 	now                func() time.Time
@@ -304,6 +306,12 @@ func Main(r *Runner) {
 
 // Run is the testable core of Main: explicit streams, returns the exit code.
 func (r *Runner) Run(ctx context.Context, args []string, stdin io.Reader, stdout, stderr io.Writer) int {
+	outcome := RunOutcome{Stage: "arguments"}
+	defer func() {
+		if r.runObserver != nil {
+			r.runObserver(outcome)
+		}
+	}()
 	inv, err := parseArgs(args)
 	if err != nil {
 		_, _ = fmt.Fprintln(stderr, err)
@@ -334,24 +342,39 @@ func (r *Runner) Run(ctx context.Context, args []string, stdin io.Reader, stdout
 		return 0
 	}
 	variant := inv.variant
-	if variant == VariantUnknown {
+	if variant == VariantUnknown && r.offline == nil {
 		variant = detectVariant(provider)
 	}
 
 	var typed any
-	if inv.mode == "notify" {
+	outcome.Stage = "decode"
+	if r.offline != nil {
+		typed, err = r.decodeOffline(provider, variant, conf, payload)
+	} else if inv.mode == "notify" {
 		typed, err = decodeCodexNotify(variant, conf, r.now(), payload)
 	} else {
 		typed, err = decodePayload(provider, variant, conf, r.now(), payload)
 	}
 	if err != nil {
+		outcome.ErrorCode = "decode-error"
 		r.logger.Error("agenthooks: decode failed; emitting no-op", "provider", provider, "error", err)
 		wire := noOpResponse(provider)
 		_, _ = stdout.Write(wire.Stdout)
 		return wire.ExitCode
 	}
+	if r.offline != nil {
+		if err := r.applyOfflineMCP(typed); err != nil {
+			outcome.ErrorCode = "facts-conflict"
+			return 1
+		}
+	}
 	base := eventOf(typed)
 	pol := r.policy(base)
+	outcome.FailPolicy = "open"
+	if pol.Fail == FailClosed {
+		outcome.FailPolicy = "closed"
+	}
+	outcome.Stage = "dispatch"
 	if tool := toolOf(typed); tool != nil {
 		r.logger.Debug("agenthooks: event decoded", "native", base.NativeName, "kind", string(base.Kind), "tool", tool.Name, "session", base.Session.ID, "turn", base.Session.TurnID)
 	} else {
@@ -361,10 +384,10 @@ func (r *Runner) Run(ctx context.Context, args []string, stdin io.Reader, stdout
 	// Start the launch-context inventory probe without delaying SessionStart.
 	// A first MCP event arriving before it finishes waits on the same cache
 	// lock and consumes the worker's snapshot.
-	if provider == ProviderClaudeCode && base.Kind == KindSessionStart && r.mcpWarmStart != nil && r.shouldWarmClaudeMCP(base.Session.CWD) {
+	if r.offline == nil && provider == ProviderClaudeCode && base.Kind == KindSessionStart && r.mcpWarmStart != nil && r.shouldWarmClaudeMCP(base.Session.CWD) {
 		r.mcpWarmStart(base.Session.CWD)
 	}
-	if provider == ProviderCodex && base.Kind == KindSessionStart && r.codexMCPWarmStart != nil {
+	if r.offline == nil && provider == ProviderCodex && base.Kind == KindSessionStart && r.codexMCPWarmStart != nil {
 		if launch, ok := r.codexMCPWarmContext(base.Session.CWD); ok {
 			r.codexMCPWarmStart(launch)
 		}
@@ -409,7 +432,7 @@ func (r *Runner) Run(ctx context.Context, args []string, stdin io.Reader, stdout
 	// The first MCP gate waits for provider discovery and inventory delivery.
 	// All work shares the hook deadline so timeout policy applies before exit.
 	tool := toolOf(typed)
-	if hctx.Err() == nil && shouldReportMCPInventory(base, tool) {
+	if r.offline == nil && hctx.Err() == nil && shouldReportMCPInventory(base, tool) {
 		err := r.reportMCPInventory(hctx, base, base.Kind != KindSessionStart)
 		if err != nil {
 			r.logger.Error("agenthooks: MCP inventory handler failed", "error", err)
@@ -430,6 +453,7 @@ func (r *Runner) Run(ctx context.Context, args []string, stdin io.Reader, stdout
 	var core decisionCore
 	failClosedError := false
 	if err := hctx.Err(); err != nil {
+		outcome.ErrorCode = "dispatch-error"
 		r.logger.Error("agenthooks: handler failed", "kind", base.Kind, "error", err)
 		core = failCore(pol, base)
 		failClosedError = true
@@ -437,6 +461,7 @@ func (r *Runner) Run(ctx context.Context, args []string, stdin io.Reader, stdout
 		var herr error
 		core, herr = r.dispatch(hctx, typed)
 		if herr != nil {
+			outcome.ErrorCode = "dispatch-error"
 			r.logger.Error("agenthooks: handler failed", "kind", base.Kind, "error", herr)
 			core = failCore(pol, base)
 			failClosedError = true
@@ -444,8 +469,13 @@ func (r *Runner) Run(ctx context.Context, args []string, stdin io.Reader, stdout
 	}
 	core = r.applyPolicy(typed, base, core, pol)
 
+	if outcome.ErrorCode == "" {
+		outcome.Stage = "encode"
+	}
 	wire, encErr := encodeDecision(typed, core)
 	if encErr != nil {
+		outcome.Stage = "encode"
+		outcome.ErrorCode = "encode-error"
 		failClosedError = true
 		if errors.Is(encErr, ErrLossyUpdate) && pol.Unsupported == Degrade {
 			r.logger.Warn("agenthooks: dropping lossy input rewrite (shallow-merge provider)", "native", base.NativeName)
@@ -464,6 +494,10 @@ func (r *Runner) Run(ctx context.Context, args []string, stdin io.Reader, stdout
 	}
 	if failClosedError && pol.Fail == FailClosed && pol.FailClosedExitCode > 0 && provider == ProviderClaudeCode && base.Kind == KindToolPre {
 		wire.ExitCode = pol.FailClosedExitCode
+	}
+	outcome.Encoded = true
+	if outcome.ErrorCode == "" {
+		outcome.Stage = "complete"
 	}
 	if len(wire.Stdout) > 0 {
 		_, _ = stdout.Write(wire.Stdout)
@@ -509,6 +543,9 @@ func (r *Runner) observe(ctx context.Context, typed any) {
 // the typed handlers under the panic/deadline guard. Observers run inside the
 // guard so a blocking observer that ignores ctx cannot defeat the deadline.
 func (r *Runner) decideGuarded(ctx context.Context, typed any) (Decision, error) {
+	if r.offline != nil {
+		return r.decideOffline(ctx, typed)
+	}
 	type result struct {
 		d   Decision
 		err error

@@ -1,0 +1,81 @@
+{
+  "format": 1,
+  "style_version": "0.3.0",
+  "packages": [],
+  "static": {
+    "codex": [],
+    "claude-code": []
+  },
+  "harnesses": {
+    "codex": {
+      "tool.pre": [
+        {
+          "rule": "fixture/context",
+          "entry": "fixture/context@tool.pre",
+          "src": "rules/context.md",
+          "src_sha256": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+          "body_sha256": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+          "order": [
+            50,
+            1,
+            0
+          ],
+          "target": "event",
+          "action": "inject",
+          "when": {
+            "agent": [
+              "main"
+            ],
+            "thinking_effort_approx": null
+          },
+          "repeat": "session",
+          "reinject_on_compact": false,
+          "needs": [],
+          "body": {
+            "static": "Use fixture context."
+          },
+          "est": {
+            "tokens": 6,
+            "chars": 20
+          },
+          "degraded_from": null
+        }
+      ]
+    },
+    "claude-code": {
+      "tool.pre": [
+        {
+          "rule": "fixture/context",
+          "entry": "fixture/context@tool.pre",
+          "src": "rules/context.md",
+          "src_sha256": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+          "body_sha256": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+          "order": [
+            50,
+            1,
+            0
+          ],
+          "target": "event",
+          "action": "inject",
+          "when": {
+            "agent": [
+              "main"
+            ],
+            "thinking_effort_approx": null
+          },
+          "repeat": "session",
+          "reinject_on_compact": false,
+          "needs": [],
+          "body": {
+            "static": "Use fixture context."
+          },
+          "est": {
+            "tokens": 6,
+            "chars": 20
+          },
+          "degraded_from": null
+        }
+      ]
+    }
+  }
+}

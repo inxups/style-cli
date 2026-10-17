@@ -50,20 +50,7 @@ func (s *Store) Claim(input ClaimInput) (*Reservation, bool, error) {
 	if err := ensurePrivatePath(s.root, component(input.Scope.SessionID), component(input.Scope.AgentID), "seen"); err != nil {
 		return nil, false, fmt.Errorf("state: create seen directory: %w", err)
 	}
-	var name string
-	if input.Repeat == "session" {
-		epoch := uint64(0)
-		if input.ReinjectOnCompact {
-			epoch = input.Scope.Epoch
-		}
-		name = fmt.Sprintf("s.%d.%d.%s.%s", input.Scope.Generation, epoch, shortHash(input.Rule), shortHash(input.Body))
-	} else {
-		turn := input.TurnID
-		if turn == "" {
-			turn = strconv.FormatUint(input.Scope.PromptCount, 10)
-		}
-		name = fmt.Sprintf("t.%d.%s.%s.%s", input.Scope.Generation, shortHash(turn), shortHash(input.Rule), shortHash(input.Body))
-	}
+	name := repeatName(input)
 	path := filepath.Join(seenDir, name)
 	file, err := os.OpenFile(path, os.O_CREATE|os.O_EXCL|os.O_WRONLY, 0o600)
 	if errors.Is(err, os.ErrExist) {
@@ -101,4 +88,30 @@ func shortHash(value string) string {
 func sha256Sum(value string) string {
 	sum := sha256.Sum256([]byte(value))
 	return hex.EncodeToString(sum[:])
+}
+
+// RepeatKeySHA256 identifies the logical claim without exposing filesystem paths.
+func RepeatKeySHA256(input ClaimInput) string {
+	if input.Action == "block" || input.Repeat == "every" || input.Event == "subagent.start" {
+		return ""
+	}
+	return "sha256:" + sha256Sum(repeatName(input))
+}
+
+func repeatName(input ClaimInput) string {
+	var name string
+	if input.Repeat == "session" {
+		epoch := uint64(0)
+		if input.ReinjectOnCompact {
+			epoch = input.Scope.Epoch
+		}
+		name = fmt.Sprintf("s.%d.%d.%s.%s", input.Scope.Generation, epoch, shortHash(input.Rule), shortHash(input.Body))
+	} else {
+		turn := input.TurnID
+		if turn == "" {
+			turn = strconv.FormatUint(input.Scope.PromptCount, 10)
+		}
+		name = fmt.Sprintf("t.%d.%s.%s.%s", input.Scope.Generation, shortHash(turn), shortHash(input.Rule), shortHash(input.Body))
+	}
+	return name
 }

@@ -77,12 +77,13 @@ type installAdapter struct {
 }
 
 type installCompilation struct {
-	index        compile.Index
-	indexBytes   []byte
-	staticBodies []compile.StaticBody
-	reports      []PlanReport
-	diagnostics  []Diagnostic
-	native       map[adapter.ProviderID][]compiledNative
+	index           compile.Index
+	indexBytes      []byte
+	provenanceBytes []byte
+	staticBodies    []compile.StaticBody
+	reports         []PlanReport
+	diagnostics     []Diagnostic
+	native          map[adapter.ProviderID][]compiledNative
 }
 
 // Install validates, plans, compiles, and applies one package as a single
@@ -263,6 +264,7 @@ func (s *Service) Install(ctx context.Context, request InstallRequest) (InstallR
 	}
 	plannedChanges = append(plannedChanges, plannedFile(home, "style.lock.yaml", lockBytes, 0o600)...)
 	plannedChanges = append(plannedChanges, plannedFile(filepath.Join(home, "build"), "index.json", indexBytes, 0o600)...)
+	plannedChanges = append(plannedChanges, plannedFile(filepath.Join(home, "build"), "explain.json", compilation.provenanceBytes, 0o600)...)
 	if len(settings) > 0 {
 		settingsBytes, err := yaml.Marshal(settings)
 		if err != nil {
@@ -385,6 +387,10 @@ func (s *Service) compileInstalled(ctx context.Context, packages []installPackag
 	result.index = compiled.Index
 	result.staticBodies = compiled.StaticBodies
 	result.indexBytes, err = compile.Encode(compiled.Index)
+	if err != nil {
+		return installCompilation{}, err
+	}
+	result.provenanceBytes, err = compile.BuildProvenance(compile.Request{StyleVersion: styleRuntimeVersion, Packages: compileInputs}, compiled, result.indexBytes)
 	if err != nil {
 		return installCompilation{}, err
 	}

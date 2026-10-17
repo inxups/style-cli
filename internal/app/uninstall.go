@@ -104,7 +104,7 @@ func (s *Service) Uninstall(ctx context.Context, request UninstallRequest) (Unin
 			result.Routes = append(result.Routes, string(target.provider)+"="+target.route.Name())
 			delete(remainingLock.Harnesses, string(target.provider))
 		}
-		for _, path := range []string{filepath.Join(home, "build", "index.json"), filepath.Join(home, "style.lock.yaml")} {
+		for _, path := range []string{filepath.Join(home, "build", "index.json"), filepath.Join(home, "build", "explain.json"), filepath.Join(home, "style.lock.yaml")} {
 			removals, err := plannedRemoval(path)
 			if err != nil {
 				return UninstallResult{}, err
@@ -159,6 +159,7 @@ func (s *Service) Uninstall(ctx context.Context, request UninstallRequest) (Unin
 		}
 		changes = append(changes, plannedFile(home, "style.lock.yaml", lockBytes, 0o600)...)
 		changes = append(changes, plannedFile(filepath.Join(home, "build"), "index.json", compilation.indexBytes, 0o600)...)
+		changes = append(changes, plannedFile(filepath.Join(home, "build"), "explain.json", compilation.provenanceBytes, 0o600)...)
 	}
 	for _, item := range removedPackages {
 		approvalRemovals, err := plannedRemoval(approvalPath(home, item.Name))

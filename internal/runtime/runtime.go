@@ -19,6 +19,7 @@ import (
 // Runtime connects the provider codec, adapter enrichment, state, and core
 // engine. The codec remains responsible for reading stdin and encoding output.
 type Runtime struct {
+	Trace         *engine.Trace
 	Engine        *engine.Engine
 	State         *state.Store
 	Adapter       adapter.RuntimeEnricher
@@ -170,7 +171,7 @@ func (r *Runtime) Register(runner *agenthooks.Runner) error {
 }
 
 // Run delegates stdin decode and provider output encoding to agenthooks.
-func (r *Runtime) Run(ctx context.Context, args []string, stdin io.Reader, stdout, stderr io.Writer) int {
+func (r *Runtime) Run(ctx context.Context, args []string, stdin io.Reader, stdout, stderr io.Writer, extra ...agenthooks.Option) int {
 	if r == nil {
 		_, _ = fmt.Fprintln(stderr, "runtime: nil runtime")
 		return 1
@@ -192,6 +193,7 @@ func (r *Runtime) Run(ctx context.Context, args []string, stdin io.Reader, stdou
 	if r.CodecStateDir != "" {
 		options = append(options, agenthooks.WithDedupDir(r.CodecStateDir))
 	}
+	options = append(options, extra...)
 	runner := agenthooks.New(options...)
 	runtime := *r
 	runtime.Logger = logger
@@ -264,10 +266,22 @@ func (r *Runtime) process(ctx context.Context, event *agenthooks.Event, typed an
 	}
 	if event.Session.TurnID != "" {
 		input.TurnID = event.Session.TurnID
+		input.TurnSource = "native"
 	} else if input.TurnID == "" {
 		input.TurnID = strconv.FormatUint(scope.PromptCount, 10)
+		input.TurnSource = "prompt-count"
 	}
-	output, err := r.Engine.Process(input, limit)
+	if input.TurnSource == "" {
+		input.TurnSource = "prompt-count"
+	}
+	var output engine.Output
+	if r.Trace != nil {
+		var trace engine.Trace
+		output, trace, err = r.Engine.ProcessWithTrace(input, limit)
+		*r.Trace = trace
+	} else {
+		output, err = r.Engine.Process(input, limit)
+	}
 	if err != nil {
 		r.logError(event, "engine-error")
 		return engine.Output{}, fmt.Errorf("runtime: event evaluation failed")

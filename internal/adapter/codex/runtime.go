@@ -24,6 +24,9 @@ var _ adapter.RuntimeEnricher = (*Enricher)(nil)
 // decision before project configuration can affect effort matching.
 type Enricher struct {
 	Home string
+	// OfflineConfigEffort replaces all external config and process discovery during replay.
+	OfflineConfigEffort *string
+	Offline             bool
 	// HarnessVersion is the detected installation version. Event data takes
 	// precedence when present.
 	HarnessVersion string
@@ -68,6 +71,19 @@ func (enricher *Enricher) StateUpdate(event *agenthooks.Event, typed any, previo
 		return update
 	}
 
+	if enricher != nil && enricher.Offline {
+		update.EffortResolved = true
+		if enricher.OfflineConfigEffort != nil {
+			table, err := EffortTable()
+			if err == nil {
+				value := table.Resolve(*enricher.OfflineConfigEffort)
+				update.ThinkingEffort = value.Effort
+				update.EffortRaw = value.EffortRaw
+				update.EffortApprox = cloneBool(value.EffortApprox)
+			}
+		}
+		return update
+	}
 	input := EffortInput{CWD: event.Session.CWD, HarnessVersion: update.HarnessVersion}
 	if enricher != nil {
 		input.Home = enricher.Home

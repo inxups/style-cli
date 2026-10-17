@@ -28,12 +28,13 @@ type Point struct {
 
 // Input contains provider-neutral facts for one hook invocation.
 type Input struct {
-	Harness   string
-	Source    string
-	TurnID    string
-	Scope     state.Scope
-	Variables map[string]string
-	Points    []Point
+	Harness    string
+	Source     string
+	TurnSource string
+	TurnID     string
+	Scope      state.Scope
+	Variables  map[string]string
+	Points     []Point
 }
 
 // Output exposes only channels permitted by STYLE runtime output policy.
@@ -63,6 +64,7 @@ type candidate struct {
 	modelText   string
 	userText    string
 	reservation *state.Reservation
+	trace       *EntryTrace
 }
 
 type compiledEntry struct {

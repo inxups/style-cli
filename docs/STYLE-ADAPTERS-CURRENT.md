@@ -1,6 +1,6 @@
 # STYLE 当前 adapter 实现总览
 
-更新时间：2026-10-17。生产源码核对基线：`16d5c1c`（M2 native、stats、跨包去重、Claude rules/迁移），replace 回退验收 `4976713`，Claude 最终隔离准备 `5dd6742`。Codex M2 B1–B4 双路线证据归档至 `e6dd778`；D4/D5 已由 Claude 2.1.301 的 C1–C4 真实交互验收闭合；M2 已完成并关闭，远端 Ubuntu/macOS CI 在 `154506f` 全部通过（run `39000483969`，59 项采集器）。无 key 补充对照已完成；官方 token 计数仍各 0/40、待独立 API key，承接为 M3-CARRY-01 非阻塞待验。M3-T00 已统一注册表名称校验并通过 [M3-A0](review/M3-A0-2026-10-17.json)，关闭 M3-RV-01；本轮源码由该报告的完整摘要固定，未新增真实 harness 接入。
+更新时间：2026-10-17。生产源码核对基线：`16d5c1c`（M2 native、stats、跨包去重、Claude rules/迁移），replace 回退验收 `4976713`，Claude 最终隔离准备 `5dd6742`。Codex M2 B1–B4 双路线证据归档至 `e6dd778`；D4/D5 已由 Claude 2.1.301 的 C1–C4 真实交互验收闭合；M2 已完成并关闭，远端 Ubuntu/macOS CI 在 `154506f` 全部通过（run `39000483969`，59 项采集器）。无 key 补充对照已完成；官方 token 计数仍各 0/40、待独立 API key，承接为 M3-CARRY-01 非阻塞待验。M3-T00 已统一注册表名称校验并通过 [M3-A0](review/M3-A0-2026-10-17.json)，关闭 M3-RV-01；T00 源码由该报告的完整摘要固定。M3-T10 的 [explain 离线验收](review/M3-A1-2026-10-17.json) 已通过，新增隔离重放与可选编译说明，未新增真实 harness 接入。
 
 本文总结当前仓库的实现，不代表 Claude Code / Codex 所有版本的完整产品能力。能力声明、安装配置、运行时可接收事件和真实验收结果分别说明；未修改现有 fallback 语义。
 
@@ -412,6 +412,14 @@ M1b 实测版本为 Codex 0.159.3、Claude Code 2.1.300。M1b 的 B/C 条目已�
 - FINAL-10 已统计真实请求、注入/去重与会话 usage，缓存条件已核对官方资料；公式是情景比较，token 官方计数仍待 API 认证。
 
 完整证据见 [测试矩阵](STYLE-M1-TESTS.md)、[进度日志](PROGRESS.md)、[M1b 手册](STYLE-M1B-MANUAL.md)、[设计 §15](spec/STYLE-cli-design.md)。
+
+### 11.3 M3 explain 离线诊断
+
+[style explain](STYLE-EXPLAIN.md) 显式选择一家 harness、原生 event 和保存的 payload，复用实际 codec、adapter、state 与 engine，在私有临时根重放。默认空状态，可只读捕获指定 session/agent 的 snapshot；外部事实只能通过绑定 payload 摘要的 facts 提供，Codex/Claude 的既有 effort 优先级保持。
+
+agenthooks 新增 `WithOfflineInputs`、`RecognizesNativeEvent` 和 `WithRunObserver`，负责从解码阶段替换 Skill/MCP 等外部依赖并报告阶段/错误类别；默认 Run 行为和配置渲染归属保持。core 的可选 trace 与普通 Match/Process 共用一次短路、渲染、Claim 和 cap 处理。`build/explain.json` 来自同次冷编译的计划与去重结果，绑定 index，随正常安装重建/sync/trust/卸载同事务处理；旧安装缺说明降为 index-only。
+
+M3-A1 的 26 个新函数/145 个叶子用例、两家 JSON golden、29 组普通 runtime 对照和完整兼容回归通过。probe、真实回调/投递以及 Windows 仍分别由 T11/A2、B1/C1、D11/W1 验收。
 
 ## 12. 已知边界与后续工作
 

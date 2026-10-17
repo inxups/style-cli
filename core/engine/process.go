@@ -13,6 +13,30 @@ import (
 // Process evaluates all points in one provider call, applies repeat claims,
 // gives block decisions precedence, merges output, and releases capped claims.
 func (e *Engine) Process(input Input, limit tokens.InputLimit) (Output, error) {
+	return e.process(input, limit, nil)
+}
+
+// ProcessWithTrace performs exactly one normal evaluation and records its safe decisions.
+func (e *Engine) ProcessWithTrace(input Input, limit tokens.InputLimit) (Output, Trace, error) {
+	trace := Trace{Points: make([]PointTrace, 0), Entries: make([]*EntryTrace, 0)}
+	output, err := e.process(input, limit, &trace)
+	sort.SliceStable(trace.Entries, func(i, j int) bool {
+		a, b := trace.Entries[i], trace.Entries[j]
+		if lessOrder(a.Order, b.Order) {
+			return true
+		}
+		if lessOrder(b.Order, a.Order) {
+			return false
+		}
+		if a.Entry != b.Entry {
+			return a.Entry < b.Entry
+		}
+		return a.Point < b.Point
+	})
+	return output, trace, err
+}
+
+func (e *Engine) process(input Input, limit tokens.InputLimit, trace *Trace) (Output, error) {
 	if e == nil || e.store == nil {
 		return Output{}, fmt.Errorf("engine: uninitialized engine")
 	}
@@ -28,13 +52,53 @@ func (e *Engine) Process(input Input, limit tokens.InputLimit) (Output, error) {
 		if point.Name == "" {
 			return Output{}, fmt.Errorf("engine: evaluation point name is required")
 		}
+		if trace != nil {
+			trace.Points = append(trace.Points, PointTrace{point.Name, len(e.entries[input.Harness][point.Name])})
+		}
 		for _, item := range e.entries[input.Harness][point.Name] {
 			entry := item.entry
-			if !matchesTarget(entry, point) || !matchesSource(entry, point.Name, input.Source) {
+			var detail *EntryTrace
+			if trace != nil {
+				detail = newEntryTrace(entry, point.Name)
+				detail.Generation = input.Scope.Generation
+				detail.Epoch = input.Scope.Epoch
+				trace.Entries = append(trace.Entries, detail)
+			}
+			if !matchesTarget(entry, point) {
+				if detail != nil {
+					detail.Selector = "target-mismatch"
+				}
 				continue
 			}
+			if detail != nil {
+				detail.Selector = "pass"
+			}
+			if !matchesSource(entry, point.Name, input.Source) {
+				if detail != nil {
+					detail.Sources = "source-mismatch"
+				}
+				continue
+			}
+			if detail != nil {
+				detail.Sources = "pass"
+			}
 			whenInput := mergeWhenInput(point.When, input)
-			if !item.matcher.Match(whenInput) {
+			matched := false
+			if detail != nil {
+				matched, detail.Conditions = item.matcher.MatchWithTrace(whenInput)
+				detail.When = "pass"
+				if !matched {
+					detail.When = "predicate-false"
+					for _, c := range detail.Conditions {
+						if c.Result == "missing-data" {
+							detail.When = "missing-data"
+						}
+					}
+				}
+			} else {
+				matched = item.matcher.Match(whenInput)
+			}
+			if !matched {
 				continue
 			}
 			values := mergeValues(input.Variables, point.Values, whenInput)
@@ -43,7 +107,12 @@ func (e *Engine) Process(input Input, limit tokens.InputLimit) (Output, error) {
 			if entry.Action == "warn" {
 				userText = entry.Body.Render(values)
 			}
-			candidates = append(candidates, candidate{entry: entry, point: point, modelText: modelText, userText: userText})
+			if detail != nil {
+				detail.Render = "pass"
+				detail.Model = renderSummary(modelText)
+				detail.User = renderSummary(userText)
+			}
+			candidates = append(candidates, candidate{entry: entry, point: point, modelText: modelText, userText: userText, trace: detail})
 		}
 	}
 	sort.SliceStable(candidates, func(i, j int) bool {
@@ -71,11 +140,27 @@ func (e *Engine) Process(input Input, limit tokens.InputLimit) (Output, error) {
 		blocks = append(blocks, item)
 	}
 	if len(blocks) > 0 {
+		for _, item := range candidates {
+			if item.trace != nil {
+				item.trace.Block = "block-precedence"
+				if item.entry.Action == "block" {
+					item.trace.Block = "pass"
+					item.trace.Repeat = "repeat-bypass"
+				}
+			}
+		}
 		output := Output{Block: true}
 		reasons := make([]string, 0, len(blocks))
 		for _, item := range blocks {
 			if strings.TrimSpace(item.modelText) == "" {
+				if item.trace != nil {
+					item.trace.Render = "empty-render"
+				}
 				return Output{}, fmt.Errorf("engine: block entry %q rendered an empty reason", item.entry.Entry)
+			}
+			if item.trace != nil {
+				item.trace.Block = "blocked"
+				item.trace.Output = "blocked"
 			}
 			reasons = append(reasons, item.modelText)
 			output.Records = append(output.Records, recordCandidate(item, "blocked"))
@@ -117,19 +202,42 @@ func (e *Engine) Process(input Input, limit tokens.InputLimit) (Output, error) {
 				userText = ""
 			}
 		}
+		if item.trace != nil {
+			item.trace.Block = "pass"
+		}
 		if modelText == "" && userText == "" {
+			if item.trace != nil {
+				item.trace.Render = "empty-render"
+			}
 			continue
 		}
-		reservation, allowed, err := e.store.Claim(state.ClaimInput{
+		claim := state.ClaimInput{
 			Scope: input.Scope, Repeat: item.entry.Repeat, Action: item.entry.Action,
 			Event: item.point.Name, Rule: item.entry.Rule, TurnID: input.TurnID,
 			Body: modelText, ReinjectOnCompact: item.entry.ReinjectOnCompact,
-		})
+		}
+		reservation, allowed, err := e.store.Claim(claim)
+		if item.trace != nil {
+			item.trace.Repeat = "claimed"
+			item.trace.RepeatKeySHA256 = state.RepeatKeySHA256(claim)
+			item.trace.Generation = input.Scope.Generation
+			item.trace.Epoch = input.Scope.Epoch
+			item.trace.TurnSource = input.TurnSource
+			if item.trace.TurnSource == "" {
+				item.trace.TurnSource = "unspecified"
+			}
+			if claim.Action == "block" || claim.Repeat == "every" || claim.Event == "subagent.start" {
+				item.trace.Repeat = "repeat-bypass"
+			}
+		}
 		if err != nil {
 			releaseCandidates(accepted)
 			return Output{}, err
 		}
 		if !allowed {
+			if item.trace != nil {
+				item.trace.Repeat = "repeat-seen"
+			}
 			output.Records = append(output.Records, recordCandidate(item, "dedup"))
 			continue
 		}
@@ -139,10 +247,15 @@ func (e *Engine) Process(input Input, limit tokens.InputLimit) (Output, error) {
 	accepted, dropped := capCandidates(accepted, limit)
 	var releaseErr error
 	for _, item := range dropped {
+		if item.trace != nil {
+			item.trace.Output = "cap-drop"
+		}
 		if err := item.reservation.Release(); err != nil {
 			if releaseErr == nil {
 				releaseErr = fmt.Errorf("engine: release capped entry %q: %w", item.entry.Entry, err)
 			}
+		} else if item.trace != nil {
+			item.trace.ReservationReleased = item.reservation != nil
 		}
 	}
 	if releaseErr != nil {
@@ -155,6 +268,9 @@ func (e *Engine) Process(input Input, limit tokens.InputLimit) (Output, error) {
 	}
 	contexts, messages := make([]string, 0), make([]string, 0)
 	for _, item := range accepted {
+		if item.trace != nil {
+			item.trace.Output = "output"
+		}
 		if item.modelText != "" {
 			contexts = append(contexts, item.modelText)
 		}
