@@ -943,3 +943,7 @@ M3-T32 已通过 [A8](../review/M3-A8-2026-10-17.json)，本地 marketplace、�
 M3-T41 已实现并通过 [A10](../review/M3-A10-2026-10-17.json)；`event.` + `reads.event` 明确启用，完整转义围栏、512 code point 和 index 3 见[说明](../STYLE-EVENT-CONTENT.md)。doctor 给出 runner 升级要求，默认旧模板和 index 1/2 保持。
 
 M3-T42 已通过 [A11](../review/M3-A11-2026-10-17.json)，reads.provider、服务选择请求、离线重放及 index 4 的当前行为见[说明](../STYLE-PROVIDER.md)。旧 stats/log/hook 参数的 provider 仍指 harness；T43 unknown 已通过 [A12](../review/M3-A12-2026-10-17.json)，四字段缺值/index 5/严格锁保护见[说明](../STYLE-UNKNOWN.md)。后续按 D7 自定义 effort 映射继续。
+
+## M3-D7 自定义 effort 配置
+
+按[D7](../review/M3-D7-EFFORT-MAPPING-2026-10-17.md)实施当前 STYLE home 的 effort.yaml。plan/管理预览显示快照摘要；sync 采纳用户修改，doctor 报待同步，frozen 保持锁快照。用户解释只调整已有 raw 的 canonical/approx，不声称原生实际思考模式。

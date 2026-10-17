@@ -1,0 +1,18 @@
+{
+  "baseline": "53f0aff",
+  "documents": 6,
+  "local_links_and_anchors": 244,
+  "archives_unchanged": 59,
+  "historical_json_unchanged": 96,
+  "progress_prefix_sha256": "21ca23d7c10b7564b8dcba40ec197ae6316e767714c1fafb81b84d9f276f61c8",
+  "changed_files": [
+    "docs/PROGRESS.md",
+    "docs/STYLE-M3-TASKS.md",
+    "docs/review/M3-D7-DOCS-2026-10-17.json",
+    "docs/review/M3-D7-EFFORT-MAPPING-2026-10-17.md",
+    "docs/spec/STYLE-cli-design.md",
+    "docs/spec/STYLE-spec-compiled.md",
+    "docs/spec/STYLE-spec-runtime.md"
+  ],
+  "checks": "pass"
+}

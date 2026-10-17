@@ -1878,3 +1878,8 @@ PY
 - [A12 报告](review/M3-A12-2026-10-17.json)固定源码/二进制和命令：10 个新函数，专项及 race 各 90 pass；根 module fresh test 3,269 pass/0 fail，2 项既有 opt-in/helper skip 单列；vet、35 unknown CLI、35 provider 兼容 CLI 与 40 smoke 通过。实际 T42 二进制运行入口及 sync/update/trust/frozen/install/uninstall 拒绝新语义且文件不变；清标记后实际旧 sync 可运行。Go 沿临时三缓存和外部环境清理，全量本机 TLS 来源 fixture 按既有授权放行。agenthooks/依赖/旧 testdata 未改，没有重复宣称运行未变的 module。
 - 新 snapshot fixture 首轮对无 seed 的空路径做 lstat，修正为隔离空状态目录后重跑；失败摘要保留，生产代码不因此更改。A11 的两项当前断言随支持 unknown 选择器前移，provider 数据 ID 仍拒绝保留字；历史 A11 报告不改。
 - [文档检查](review/M3-A12-DOCS-2026-10-17.json)核对链接/锚点/围栏、PROGRESS 仅追加、归档/历史 JSON/旧 testdata 原样、格式与 diff。仅关闭 T43/A12，继续 D7/T44。真实 B3/C5 尚待后续；用户延期 C3、W1/REAL-04、Anthropic 独立 API 及两家各 0/40 非阻塞官方计数保持。
+
+## 2026-10-17 M3-D7 自定义 effort 映射定稿
+
+- 从 clean `53f0aff` 定稿[D7 契约](review/M3-D7-EFFORT-MAPPING-2026-10-17.md)，用户已批准全部评审，直接进入实现。确定当前 STYLE home 严格配置、显式用户覆盖/approx=true、原生 raw 来源保持、编译与锁快照/index 6、frozen 和缓存失效边界；agenthooks 职责不变。
+- 四组 A13 待实施，设计通过不关闭 T44 或真实 B3/C5。文档链接/锚点/围栏、归档/历史 JSON、进度追加和 diff 检查见[D7 检查](review/M3-D7-DOCS-2026-10-17.json)。

@@ -320,3 +320,7 @@ D5 模板字段/可用事件沿 §4 条件字段定义；`reads.event` 精确列
 ## M3-D6 provider 与 unknown
 
 [D6 契约](../review/M3-D6-PROVIDER-UNKNOWN-2026-10-17.md)规定 Codex 明确启动参数或文件 profile/用户层，provider 排除项目层，不照搬 effort；Claude 使用服务环境白名单，托管/自定义端点/冲突为缺值。只解析显式需要的 provider，来源固定码；explain 仅用绑定事实。unknown 只在 model/provider/thinking_effort/harness.permission_mode 显式匹配空 canonical 值，普通规则缺值不满足。provider 使用 index 4，unknown 使用 index 5 与按需严格锁标记；T42/A11 和 T43/A12 均通过离线验收。四字段列表/缺值/缓存和旧版本保护见[说明](../STYLE-UNKNOWN.md)与[A12 证据](../review/M3-A12-2026-10-17.json)。
+
+## M3-D7 用户 effort 映射
+
+[D7 定稿](../review/M3-D7-EFFORT-MAPPING-2026-10-17.md)规定当前 STYLE home 的 effort.yaml、显式用户项优先内置、raw 不变且用户映射 approx=true。管理冷路径捕获到 index 6/严格锁，frozen 使用锁快照；原生来源优先级不变，变更/删除后按已有 raw 重算，缺原值不伪造档位。plan/doctor/explain 披露来源/摘要，运行时不读 ambient 配置。T44/A13 待实现。
