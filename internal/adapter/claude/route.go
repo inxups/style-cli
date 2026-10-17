@@ -142,6 +142,9 @@ func (r *route) Status(ctx context.Context, installation adapter.Installation) (
 }
 
 func (r *route) Plan(ctx context.Context, hooks []adapter.HookSpec, blocks []adapter.StaticBlock) (adapter.Changeset, error) {
+	if runtime.GOOS == "windows" && (r.plugin || r.project) {
+		return adapter.Changeset{}, errors.New("Windows supports the user route; project and plugin launchers require POSIX")
+	}
 	if r.plugin {
 		return r.planPlugin(ctx, hooks, blocks)
 	}

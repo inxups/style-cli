@@ -42,3 +42,27 @@ func TestM3A17WindowsDACLRefusesPublicRecords(t *testing.T) {
 		t.Fatal(err)
 	}
 }
+
+func TestM3A17WindowsLongUnicodePath(t *testing.T) {
+	root := t.TempDir()
+	for i := 0; i < 6; i++ {
+		root = filepath.Join(root, "长目录 with spaces 123456789012345678901234567890")
+	}
+	if err := os.MkdirAll(root, 0o700); err != nil {
+		t.Fatal(err)
+	}
+	if err := PrepareDirectory(root); err != nil {
+		t.Fatal(err)
+	}
+	file, err := os.Create(filepath.Join(root, "记录.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer file.Close()
+	if err = Restrict(file); err != nil {
+		t.Fatal(err)
+	}
+	if err = Check(file); err != nil {
+		t.Fatal(err)
+	}
+}

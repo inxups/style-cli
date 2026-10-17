@@ -112,6 +112,8 @@ jobs:
           go vet -C agenthooks ./...
           exit $LASTEXITCODE
       - name: Native Windows fresh tests
+        id: windows-tests
+        continue-on-error: true
         run: python scripts/run_m3_windows.py
       - name: Build native and arm64 binaries
         shell: pwsh
@@ -125,6 +127,9 @@ jobs:
           exit $LASTEXITCODE
       - name: Native Windows CLI smoke
         run: python scripts/check_m3_windows.py "${{ runner.temp }}\style.exe" "${{ runner.temp }}\harness.exe" "${{ runner.temp }}\style-windows-evidence\cli.json"
+      - name: Require native Windows tests to pass
+        if: always() && steps.windows-tests.outcome == 'failure'
+        run: exit 1
       - name: Preserve Windows evidence
         if: always()
         uses: actions/upload-artifact@v4

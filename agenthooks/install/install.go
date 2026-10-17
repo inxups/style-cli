@@ -128,6 +128,11 @@ func Render(m Manifest, t Target) (fs.FS, error) {
 			return nil, errors.New("install: raw native commands require RawTag")
 		}
 	}
+	if runtime.GOOS == "windows" && t.Provider == agenthooks.ProviderCodex {
+		if _, err := windowsLauncherPath(); err != nil {
+			return nil, err
+		}
+	}
 	switch t.Provider {
 	case agenthooks.ProviderClaudeCode:
 		return renderClaude(m, t)
@@ -558,7 +563,7 @@ func commandHasOwner(command, owner string) bool {
 		return false
 	}
 	if decoded, ok := windowsDecodedCommand(command); ok {
-		command = decoded
+		return strings.Contains(" "+decoded+" ", " "+quoteWindowsArgument("--owner="+owner)+" ")
 	}
 	want := "--owner=" + owner
 	for _, field := range strings.Fields(command) {

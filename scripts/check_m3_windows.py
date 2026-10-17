@@ -32,7 +32,7 @@ def main():
             payload=json.dumps({'session_id':'win-中文','cwd':str(user),'hook_event_name':'PreToolUse','tool_name':'Bash','tool_input':{'command':'git push --force origin main'}},ensure_ascii=False)
             if harness=='codex':
                 argv=['cmd.exe','/d','/s','/c',entry['command']]
-                check(entry['command'].startswith('powershell.exe '),'Codex encoded launcher')
+                check('/WindowsPowerShell/v1.0/powershell.exe -NoLogo' in entry['command'],'Codex encoded launcher')
             else:
                 argv=[entry['command'],*entry['args']]
                 check(argv[0].lower().endswith('.exe'),'Claude exec form')

@@ -126,6 +126,9 @@ func (r *route) manifest(requests ...[]adapter.HookSpec) install.Manifest {
 }
 
 func (r *route) Plan(_ context.Context, hooks []adapter.HookSpec, blocks []adapter.StaticBlock) (adapter.Changeset, error) {
+	if runtime.GOOS == "windows" && (r.scope != install.ScopeUser) {
+		return adapter.Changeset{}, errors.New("Windows supports the user route; project and plugin launchers require POSIX")
+	}
 	manifest := r.manifest(hooks)
 	planned, err := install.PlanFiles(manifest, r.target())
 	if err != nil {

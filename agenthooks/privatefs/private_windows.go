@@ -4,6 +4,8 @@ import (
 	"errors"
 	"golang.org/x/sys/windows"
 	"os"
+	"path/filepath"
+	"strings"
 	"unsafe"
 )
 
@@ -77,7 +79,18 @@ func Restrict(file *os.File) error {
 	if err != nil {
 		return err
 	}
-	path, err := windows.UTF16PtrFromString(file.Name())
+	absolute, err := filepath.Abs(file.Name())
+	if err != nil {
+		return err
+	}
+	if !strings.HasPrefix(absolute, `\\?\`) {
+		if strings.HasPrefix(absolute, `\\`) {
+			absolute = `\\?\UNC\` + strings.TrimPrefix(absolute, `\\`)
+		} else {
+			absolute = `\\?\` + absolute
+		}
+	}
+	path, err := windows.UTF16PtrFromString(absolute)
 	if err != nil {
 		return err
 	}

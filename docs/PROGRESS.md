@@ -1938,3 +1938,9 @@ T50/A15 已完成后，固定官方 hooks.md 与 Claude 2.1.301 六组隔离原�
 实现 Windows GetProcessTimes/文件 ID、LockFileEx refresh、按真实 DACL 校验和私有化的 privatefs、Codex 编码 PowerShell 启动器/owner 和异步参数、Claude exec shim 拒绝及平台路线/native 规划边界。协议、事件、渲染、归属、事务仍由 agenthooks 承担；core 只调整 Windows 会话路径分量和系统锁。
 
 [阶段报告](review/M3-A17-INITIAL-2026-10-18.json)记录 macOS 根模块/agenthooks fresh 回归、双 vet、Windows 交叉编译/vet 和首轮编译 fixture 失误修正。Windows 进程 stdin/argv/退出码与 DACL 拒绝用例、版本-only harness 和原生 built CLI 脚本已接入独立 Windows CI job。交叉编译不计 Windows 运行成功；T70 部分完成、A17 保持未关闭，须在临时验证分支实际运行 Windows CI 后逐项修正。文档/归档检查见[阶段 DOCS](review/M3-A17-INITIAL-DOCS-2026-10-18.json)。
+
+## 2026-10-18 M3-A17 Windows 首轮 CI 与启动边界修正
+
+临时验证分支 `codex/m3-windows` 的 run 39048948213 固定 `1c81d29`；Windows job 117443312689 在 gofmt 阶段失败，日志证明 checkout 的 Go 文件为 CRLF，未执行原生测试。补充 `.gitattributes` LF 约定并保留原有 golden 空白属性；没有更改 M1/M2 归档内容。
+
+启动器改用 GetSystemDirectory 固定绝对系统 PowerShell（不从 cwd/PATH/环境找 shell）及 ProcessStartInfo 的 Windows argv/原始标准句柄，补空参数/引号/伪 owner/伪 shell/Unicode/退出码和长路径用例。首轮 owner 对普通含空白值的误判及 Windows 测试构造返回值错误均已修正并保留失败。[平台修正报告](review/M3-A17-PLATFORM-FIXES-2026-10-18.json)记录专项/race、安装模块与 adapter 回归、双 module Windows 编译/vet；Windows CI 待重跑，A17/T70 仍未关闭。文档检查见[报告](review/M3-A17-PLATFORM-FIXES-DOCS-2026-10-18.json)。

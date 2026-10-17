@@ -34,7 +34,11 @@ func TestM3A17WindowsChildHelper(t *testing.T) {
 	os.Exit(7)
 }
 func TestM3A17WindowsShellPreservesProcessContract(t *testing.T) {
-	marker := filepath.Join(t.TempDir(), "must-not-exist")
+	root := t.TempDir()
+	marker := filepath.Join(root, "must-not-exist")
+	if err := os.WriteFile(filepath.Join(root, "powershell.exe"), []byte("not a program"), 0o600); err != nil {
+		t.Fatal(err)
+	}
 	args := []string{"中文 🧪", "", "a'b", `trailing\`, `%PATH% ! & | < > ( ) ^`, "$(New-Item '" + marker + "')", "--owner=style"}
 	command := windowsHookCommand(append([]string{os.Args[0], "-test.run=^TestM3A17WindowsChildHelper$", "--"}, args...))
 	for _, shell := range []string{"cmd.exe", "powershell.exe"} {
@@ -45,7 +49,8 @@ func TestM3A17WindowsShellPreservesProcessContract(t *testing.T) {
 			} else {
 				cmd = exec.Command(shell, "-NoProfile", "-NonInteractive", "-Command", command)
 			}
-			cmd.Env = append(os.Environ(), "STYLE_WINDOWS_PROCESS_HELPER=1")
+			cmd.Dir = root
+			cmd.Env = append(os.Environ(), "STYLE_WINDOWS_PROCESS_HELPER=1", "PATH="+root+string(os.PathListSeparator)+os.Getenv("PATH"))
 			input := "{\"值\":\"中😀\"}\r\n"
 			cmd.Stdin = strings.NewReader(input)
 			var out, stderr bytes.Buffer
