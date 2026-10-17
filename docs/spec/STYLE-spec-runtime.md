@@ -242,9 +242,9 @@ STYLE 的 hook 输出**只允许**这几样：`additionalContext`、`systemMessa
 
 **绝不输出** `allow`、`ask`、`updatedInput`、`updatedToolOutput`、`continue: false`、`stopReason`、`initialUserMessage` 等其他字段。原因：Claude 里 `permissionDecision: "allow"` 会跳过权限提示，`updatedInput` 能改写工具参数，误输出就等于绕过了用户确认【文档】；Codex 会把 `allow`、`ask`、单独的 `updatedInput` 当成无效输出【源码】。编码层强制这条规则，测试对所有黄金输出做静态检查。
 
-### 8.2 事件内容不进模板
+### 8.2 事件内容围栏
 
-用户提示、工具参数、工具输出可能被人操控。M1 里它们只能用在 `when.conditions`，不能出现在注入正文里（1.5）。M3 再考虑开放，开放时要包一层"不可信内容"的围栏、转义围栏字符、限制长度。
+用户提示、工具参数、工具输出可能被人操控。M3-D5 [定稿契约](../review/M3-D5-EVENT-CONTENT-2026-10-17.md)新增显式 `{{event.prompt}}` 等引用与 `reads.event` 完整字段声明；裸事件字段继续禁止。每值最多 512 个 Unicode code point，单行 JSON string 转义控制/格式字符、尖括号与反引号，始终包在 style-untrusted-event 围栏内，default 同样处理。运行时按完整输出预算，超限整条丢弃；warn 含事件引用须显式 model_text。使用 index 3，旧 1/2 不接受新变量；不使用新语法的旧规则不变。设计已定稿，T41/A10 尚待实现验收。
 
 ### 8.3 正文和标记
 
@@ -313,3 +313,5 @@ STYLE 的 hook 输出**只允许**这几样：`additionalContext`、`systemMessa
 snapshot/explain 必须捕获新增状态并保留只读、严格解码、文件身份、总量和漂移检查；原生 ID、事件/模板正文和私有路径不得进入日志或说明。占位早于 stdout，进程崩溃可能损失本次补发，不能把 output 视为原生已投递。agenthooks 保持 codec、事件表与配置渲染职责；当前锁实现支持 macOS/Linux，Windows 仍待 D11/T70。新增 `refresh/<harness>.json` 为独立 format 1，单文件 4 MiB、收据与游标合计 40,000 项；snapshot 总限额仍为 16 MiB / 10,000 文件，源锁只读取得且不复制。冷路径清理先取得同一锁再隔离过期目录，活动写入者保持。实现/恢复边界见 [使用说明](../STYLE-REFRESH.md) 与 [A9](../review/M3-A9-2026-10-17.json)。
 
 M3-T31 的 Claude 项目入口在 `CLAUDE_CODE_REMOTE=true` 时实际校验 cloud entry v1；仅从根目录的完整 bundle 加载，状态位于仓库外 HOME。失败走原 codec/策略，不回落本机私有 binding。见[云端说明](../STYLE-CLOUD.md)。
+
+D5 模板字段/可用事件沿 §4 条件字段定义；`reads.event` 精确列出去掉 event. 的字段名，包/规则/from 取并集。来源由 adapter 声明，缺失默认空串且不从会话读历史正文。围栏不保证模型抗注入；stats/state/日志/trace 不记录原文，显式 explain wire 按诊断约定返回渲染输出。

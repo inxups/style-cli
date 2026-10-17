@@ -1838,3 +1838,7 @@ PY
 - 互斥 user/plugin 切换、多包/native 更新与批准、部分/最后卸载、外来 handler 与原生数据库保全、取消检查点恢复、probe 来源、安装级 fail-closed 普通 wire 均有测试。用户 plugin 采用 project 为空的 lock 3，真正 A9 旧程序在管理写入前拒绝；切回 user 恢复适用 lock 1/2。
 - 验证：[A8 报告](review/M3-A8-2026-10-17.json)固定源码/二进制摘要与命令；11 个新函数、56 条新 pass，双 module fresh test 3,555 pass/0 fail（25 条既有 opt-in/helper skip 单列），双 module vet、app/adapter 与 agenthooks/install race、8 插件 CLI、8 云端 CLI、40 smoke、16 真旧迁移和 12 replace 回退均通过。Go 沿临时三缓存、清理外部检测/云端/插件变量；完整来源测试需 localhost TLS 监听，使用批准的沙箱放行。初次 fixture 的不存在 CLI 参数和等价 shell 引用断言错误修正后重跑，失败记录保留。
 - [文档检查](review/M3-A8-DOCS-2026-10-17.json)核对链接/锚点、围栏、Python 语法、追加日志、历史归档/JSON 与 diff；只关闭 T32/A8，真实 C4 留待本地原生验收。用户明确延期的 C3、W1 和 Anthropic 独立 API 保持待验且不阻塞本次 FINAL。
+
+## 2026-10-17 M3-D5 定稿
+
+按用户“所有评审全部通过”授权，先记录[事件内容模板契约](review/M3-D5-EVENT-CONTENT-2026-10-17.md)并回写运行时/编译规范。明确显式 event. + reads.event、512 code point、单行 JSON 转义与完整围栏、warn model_text、最坏估算/index 3 与隐私边界，八组 A10 待实施。文档链接/锚点/围栏、历史归档、追加日志和 diff 检查通过；仅关闭 D5。

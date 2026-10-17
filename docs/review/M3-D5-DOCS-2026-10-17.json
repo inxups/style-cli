@@ -1,0 +1,16 @@
+{
+  "baseline": "d352230",
+  "documents": 5,
+  "local_links_and_anchors": 137,
+  "archives_unchanged": 59,
+  "historical_json_unchanged": 86,
+  "progress_prefix_sha256": "bde7d7ae0ffee899b38fda51c2bb6ddbfc8026c3ebe2c7d169539a393061fb47",
+  "changed_files": [
+    "docs/PROGRESS.md",
+    "docs/STYLE-M3-TASKS.md",
+    "docs/review/M3-D5-EVENT-CONTENT-2026-10-17.md",
+    "docs/spec/STYLE-spec-compiled.md",
+    "docs/spec/STYLE-spec-runtime.md"
+  ],
+  "checks": "pass"
+}
