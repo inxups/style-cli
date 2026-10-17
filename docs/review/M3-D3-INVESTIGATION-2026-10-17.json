@@ -1,0 +1,484 @@
+{
+  "id": "M3-D3-INVESTIGATION-2026-10-17",
+  "status": "investigation only; not a D3 review draft, not approved, does not close M3-D3/A6-A8/B2/C2-C4",
+  "source_commit": "fd88e8da66cd8409b6939e71875edd4bee3c9421",
+  "branch": "claude/m3-d3-investigation",
+  "environment": {
+    "os": "macOS 27.0.1 arm64",
+    "python": "3.14.7",
+    "git": "2.54.0",
+    "codex": "codex-cli 0.159.3",
+    "claude_code": "2.1.301 (installed; not executed)",
+    "cleared_env": [
+      "CODEX_HOME",
+      "CODEX_SANDBOX",
+      "CLAUDE_CONFIG_DIR"
+    ],
+    "per_case_isolation": "fresh HOME, CODEX_HOME and git project under private scratch; PATH inherited"
+  },
+  "model_service": "local loopback Responses SSE stub; no real inference, no credentials read or copied",
+  "files": {
+    "testdata/manual/probe_m3_d3_routes.py": "ff7253fabe9e4516b60cdf0034d3b556a5a1c73aa84734ca595cfab3b0e1ed43",
+    "testdata/manual/test_probe_m3_d3_routes.py": "4f95b0848a99c66e8994162d8bba9ab12ab939ac0bab3125ef72e6499d77efef"
+  },
+  "commands": {
+    "probe": "env -u CODEX_HOME -u CODEX_SANDBOX -u CLAUDE_CONFIG_DIR PYTHONDONTWRITEBYTECODE=1 python3 testdata/manual/probe_m3_d3_routes.py --scratch <empty-private-dir> --output <json>",
+    "self_test": "env -u CODEX_HOME -u CODEX_SANDBOX -u CLAUDE_CONFIG_DIR PYTHONDONTWRITEBYTECODE=1 python3 -m unittest testdata/manual/test_probe_m3_d3_routes.py",
+    "collectors": "env -u CODEX_HOME -u CODEX_SANDBOX -u CLAUDE_CONFIG_DIR PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s testdata/manual -p 'test_*.py'"
+  },
+  "results_summary": {
+    "probe_exit": 0,
+    "self_test": "5/5 ok (fake-codex case also asserts whitelisted sandbox field)",
+    "collectors": "64/64 ok (59 existing + 5 new)",
+    "hash_vector_check": "Python definition_hash equals agenthooks/install.DefinitionHash for 2 vectors (trust.go compiled standalone in scratch)"
+  },
+  "rounds": [
+    {
+      "round": 1,
+      "cases": 7,
+      "note": "single marker file per event; same 7 outcomes as final"
+    },
+    {
+      "round": 2,
+      "cases": 10,
+      "note": "per-invocation mktemp markers; added user+project duplicate, subdir, symlink; run-via-symlink did not fire"
+    },
+    {
+      "round": 3,
+      "cases": 4,
+      "note": "symlink variants isolating project-trust vs hook-trust path spelling"
+    },
+    {
+      "round": 4,
+      "cases": 13,
+      "note": "all cases with the pre-sandbox-field script; outcomes identical to rounds 1-3; output superseded (sandbox lines read from raw private stderr only)"
+    },
+    {
+      "round": "final",
+      "cases": 13,
+      "note": "final script adds whitelisted sandbox line; fired/config outcomes identical to round 4",
+      "output_sha256": "83aeb583e29c37cecf3a5f1cc13ef62024288376ce960b09cbe5d0c6118761b4"
+    }
+  ],
+  "codex_project_probe": {
+    "probe": "M3-D3 codex project hooks",
+    "codex_version": "codex-cli 0.159.3",
+    "model_service": "local stub, no inference",
+    "results": [
+      {
+        "case": "untrusted",
+        "spec": {},
+        "exit_code": 0,
+        "stub_requests": 1,
+        "sandbox": "read-only",
+        "fired": {},
+        "payload_keys": {},
+        "user_config_changed": false,
+        "user_config_before": "sha256:0b76e9454b3ebe402abb045027b7b397417b631075402cdf2da130f300a0704c",
+        "user_config_after": "sha256:0b76e9454b3ebe402abb045027b7b397417b631075402cdf2da130f300a0704c",
+        "user_config_added_text": null,
+        "stderr_hook_lines": [
+          "workdir: <case>/project"
+        ]
+      },
+      {
+        "case": "project-trusted-only",
+        "spec": {
+          "project": true
+        },
+        "exit_code": 0,
+        "stub_requests": 1,
+        "sandbox": "workspace-write [workdir, /tmp, $TMPDIR]",
+        "fired": {},
+        "payload_keys": {},
+        "user_config_changed": false,
+        "user_config_before": "sha256:9c271262cfc5e428738e8a384daa22a7f3bfb6154b11ddb244dd34d8d89092d0",
+        "user_config_after": "sha256:9c271262cfc5e428738e8a384daa22a7f3bfb6154b11ddb244dd34d8d89092d0",
+        "user_config_added_text": null,
+        "stderr_hook_lines": [
+          "workdir: <case>/project"
+        ]
+      },
+      {
+        "case": "hook-hash-only",
+        "spec": {
+          "hooks": true
+        },
+        "exit_code": 0,
+        "stub_requests": 1,
+        "sandbox": "read-only",
+        "fired": {},
+        "payload_keys": {},
+        "user_config_changed": false,
+        "user_config_before": "sha256:ab3a20d36b85243ef781a21fa324ca3962b85ae39d42768e0e9fbc2722c3445e",
+        "user_config_after": "sha256:ab3a20d36b85243ef781a21fa324ca3962b85ae39d42768e0e9fbc2722c3445e",
+        "user_config_added_text": null,
+        "stderr_hook_lines": [
+          "workdir: <case>/project"
+        ]
+      },
+      {
+        "case": "project-and-hook-trusted",
+        "spec": {
+          "project": true,
+          "hooks": true
+        },
+        "exit_code": 0,
+        "stub_requests": 1,
+        "sandbox": "workspace-write [workdir, /tmp, $TMPDIR]",
+        "fired": {
+          "original-session_start": 1,
+          "original-user_prompt_submit": 1
+        },
+        "payload_keys": {
+          "original-session_start": [
+            "cwd",
+            "hook_event_name",
+            "model",
+            "permission_mode",
+            "session_id",
+            "source",
+            "transcript_path"
+          ],
+          "original-session_start:cwd": "<case>/project",
+          "original-user_prompt_submit": [
+            "cwd",
+            "hook_event_name",
+            "model",
+            "permission_mode",
+            "prompt",
+            "session_id",
+            "transcript_path",
+            "turn_id"
+          ],
+          "original-user_prompt_submit:cwd": "<case>/project"
+        },
+        "user_config_changed": false,
+        "user_config_before": "sha256:82fc5d7255e6027fbe656273cdd5f50b7d4ef310968304159be6dbac3d949227",
+        "user_config_after": "sha256:82fc5d7255e6027fbe656273cdd5f50b7d4ef310968304159be6dbac3d949227",
+        "user_config_added_text": null,
+        "stderr_hook_lines": [
+          "hook: SessionStart",
+          "hook: SessionStart Completed",
+          "hook: UserPromptSubmit",
+          "hook: UserPromptSubmit Completed",
+          "workdir: <case>/project"
+        ]
+      },
+      {
+        "case": "repo-self-declared-hook-trust",
+        "spec": {
+          "project": true,
+          "repo_hooks_state": true
+        },
+        "exit_code": 0,
+        "stub_requests": 1,
+        "sandbox": "workspace-write [workdir, /tmp, $TMPDIR]",
+        "fired": {},
+        "payload_keys": {},
+        "user_config_changed": false,
+        "user_config_before": "sha256:3327057a521e32593155b4273688e7fd3fd6cafbabc978f69847cf6e9387322e",
+        "user_config_after": "sha256:3327057a521e32593155b4273688e7fd3fd6cafbabc978f69847cf6e9387322e",
+        "user_config_added_text": null,
+        "stderr_hook_lines": [
+          "workdir: <case>/project"
+        ]
+      },
+      {
+        "case": "clone-with-original-trust",
+        "spec": {
+          "project": true,
+          "hooks": true,
+          "clone": true
+        },
+        "exit_code": 0,
+        "stub_requests": 1,
+        "sandbox": "read-only",
+        "fired": {},
+        "payload_keys": {},
+        "user_config_changed": false,
+        "user_config_before": "sha256:1c6b426db965ffbe13898ba17884b2096a399bcbedec257a854c6b6078ac3ff9",
+        "user_config_after": "sha256:1c6b426db965ffbe13898ba17884b2096a399bcbedec257a854c6b6078ac3ff9",
+        "user_config_added_text": null,
+        "stderr_hook_lines": [
+          "workdir: <case>/clone"
+        ]
+      },
+      {
+        "case": "clone-project-trusted-only",
+        "spec": {
+          "project": true,
+          "hooks": true,
+          "clone": true,
+          "trust_clone_project": true
+        },
+        "exit_code": 0,
+        "stub_requests": 1,
+        "sandbox": "workspace-write [workdir, /tmp, $TMPDIR]",
+        "fired": {},
+        "payload_keys": {},
+        "user_config_changed": false,
+        "user_config_before": "sha256:c9be88299d1c99c5a23dca87e7d09997882d832d85c8366617a4cd29349e29c7",
+        "user_config_after": "sha256:c9be88299d1c99c5a23dca87e7d09997882d832d85c8366617a4cd29349e29c7",
+        "user_config_added_text": null,
+        "stderr_hook_lines": [
+          "workdir: <case>/clone"
+        ]
+      },
+      {
+        "case": "user-and-project-same-command",
+        "spec": {
+          "project": true,
+          "hooks": true,
+          "user_same": true
+        },
+        "exit_code": 0,
+        "stub_requests": 1,
+        "sandbox": "workspace-write [workdir, /tmp, $TMPDIR]",
+        "fired": {
+          "original-session_start": 2,
+          "original-user_prompt_submit": 2
+        },
+        "payload_keys": {
+          "original-session_start": [
+            "cwd",
+            "hook_event_name",
+            "model",
+            "permission_mode",
+            "session_id",
+            "source",
+            "transcript_path"
+          ],
+          "original-session_start:cwd": "<case>/project",
+          "original-user_prompt_submit": [
+            "cwd",
+            "hook_event_name",
+            "model",
+            "permission_mode",
+            "prompt",
+            "session_id",
+            "transcript_path",
+            "turn_id"
+          ],
+          "original-user_prompt_submit:cwd": "<case>/project"
+        },
+        "user_config_changed": false,
+        "user_config_before": "sha256:04678e43e805d8401473e5b4ff69540ce33280c5ac1ed4bd3545192914b140a8",
+        "user_config_after": "sha256:04678e43e805d8401473e5b4ff69540ce33280c5ac1ed4bd3545192914b140a8",
+        "user_config_added_text": null,
+        "stderr_hook_lines": [
+          "hook: SessionStart",
+          "hook: SessionStart Completed",
+          "hook: UserPromptSubmit",
+          "hook: UserPromptSubmit Completed"
+        ]
+      },
+      {
+        "case": "run-from-subdir",
+        "spec": {
+          "project": true,
+          "hooks": true,
+          "subdir": true
+        },
+        "exit_code": 0,
+        "stub_requests": 1,
+        "sandbox": "workspace-write [workdir, /tmp, $TMPDIR]",
+        "fired": {
+          "original-session_start": 1,
+          "original-user_prompt_submit": 1
+        },
+        "payload_keys": {
+          "original-session_start": [
+            "cwd",
+            "hook_event_name",
+            "model",
+            "permission_mode",
+            "session_id",
+            "source",
+            "transcript_path"
+          ],
+          "original-session_start:cwd": "<case>/project/nested/dir",
+          "original-user_prompt_submit": [
+            "cwd",
+            "hook_event_name",
+            "model",
+            "permission_mode",
+            "prompt",
+            "session_id",
+            "transcript_path",
+            "turn_id"
+          ],
+          "original-user_prompt_submit:cwd": "<case>/project/nested/dir"
+        },
+        "user_config_changed": false,
+        "user_config_before": "sha256:290cdc1f8532e9a584c8e12fd44729ffdacb5580ebc1d8b58d3fe620ce798f9b",
+        "user_config_after": "sha256:290cdc1f8532e9a584c8e12fd44729ffdacb5580ebc1d8b58d3fe620ce798f9b",
+        "user_config_added_text": null,
+        "stderr_hook_lines": [
+          "hook: SessionStart",
+          "hook: SessionStart Completed",
+          "hook: UserPromptSubmit",
+          "hook: UserPromptSubmit Completed"
+        ]
+      },
+      {
+        "case": "run-via-symlink",
+        "spec": {
+          "project": true,
+          "hooks": true,
+          "symlink": true
+        },
+        "exit_code": 0,
+        "stub_requests": 1,
+        "sandbox": "workspace-write [workdir, /tmp, $TMPDIR]",
+        "fired": {},
+        "payload_keys": {},
+        "user_config_changed": false,
+        "user_config_before": "sha256:cc4f1dfce2ed1a7cb777d53db5bf32171991501e76c1d21cbf8c489d0133b52a",
+        "user_config_after": "sha256:cc4f1dfce2ed1a7cb777d53db5bf32171991501e76c1d21cbf8c489d0133b52a",
+        "user_config_added_text": null,
+        "stderr_hook_lines": []
+      },
+      {
+        "case": "symlink-link-project-and-hooks",
+        "spec": {
+          "project": true,
+          "hooks": true,
+          "symlink": true,
+          "link_project": true,
+          "link_hooks": true
+        },
+        "exit_code": 0,
+        "stub_requests": 1,
+        "sandbox": "workspace-write [workdir, /tmp, $TMPDIR]",
+        "fired": {
+          "original-session_start": 1,
+          "original-user_prompt_submit": 1
+        },
+        "payload_keys": {
+          "original-user_prompt_submit": [
+            "cwd",
+            "hook_event_name",
+            "model",
+            "permission_mode",
+            "prompt",
+            "session_id",
+            "transcript_path",
+            "turn_id"
+          ],
+          "original-user_prompt_submit:cwd": "<case>/link",
+          "original-session_start": [
+            "cwd",
+            "hook_event_name",
+            "model",
+            "permission_mode",
+            "session_id",
+            "source",
+            "transcript_path"
+          ],
+          "original-session_start:cwd": "<case>/link"
+        },
+        "user_config_changed": false,
+        "user_config_before": "sha256:f518c2ed770d34e474e4441d778615bff75ca56734316c49026ffce85e444475",
+        "user_config_after": "sha256:f518c2ed770d34e474e4441d778615bff75ca56734316c49026ffce85e444475",
+        "user_config_added_text": null,
+        "stderr_hook_lines": [
+          "hook: SessionStart",
+          "hook: SessionStart Completed",
+          "hook: UserPromptSubmit",
+          "hook: UserPromptSubmit Completed",
+          "workdir: <case>/link"
+        ]
+      },
+      {
+        "case": "symlink-link-project-only",
+        "spec": {
+          "project": true,
+          "hooks": true,
+          "symlink": true,
+          "link_project": true
+        },
+        "exit_code": 0,
+        "stub_requests": 1,
+        "sandbox": "workspace-write [workdir, /tmp, $TMPDIR]",
+        "fired": {},
+        "payload_keys": {},
+        "user_config_changed": false,
+        "user_config_before": "sha256:79abefc6b1a1c2063eecca465e54e3cb156cb6148fb319632f4d311e20ff13ac",
+        "user_config_after": "sha256:79abefc6b1a1c2063eecca465e54e3cb156cb6148fb319632f4d311e20ff13ac",
+        "user_config_added_text": null,
+        "stderr_hook_lines": []
+      },
+      {
+        "case": "symlink-link-hooks-only",
+        "spec": {
+          "project": true,
+          "hooks": true,
+          "symlink": true,
+          "link_hooks": true
+        },
+        "exit_code": 0,
+        "stub_requests": 1,
+        "sandbox": "workspace-write [workdir, /tmp, $TMPDIR]",
+        "fired": {
+          "original-session_start": 1,
+          "original-user_prompt_submit": 1
+        },
+        "payload_keys": {
+          "original-session_start": [
+            "cwd",
+            "hook_event_name",
+            "model",
+            "permission_mode",
+            "session_id",
+            "source",
+            "transcript_path"
+          ],
+          "original-session_start:cwd": "<case>/link",
+          "original-user_prompt_submit": [
+            "cwd",
+            "hook_event_name",
+            "model",
+            "permission_mode",
+            "prompt",
+            "session_id",
+            "transcript_path",
+            "turn_id"
+          ],
+          "original-user_prompt_submit:cwd": "<case>/link"
+        },
+        "user_config_changed": false,
+        "user_config_before": "sha256:77f03f2f7dc982b9a0e85aae54166ed4027e63c371abe90f48a23dcc39be4332",
+        "user_config_after": "sha256:77f03f2f7dc982b9a0e85aae54166ed4027e63c371abe90f48a23dcc39be4332",
+        "user_config_added_text": null,
+        "stderr_hook_lines": [
+          "hook: SessionStart",
+          "hook: SessionStart Completed",
+          "hook: UserPromptSubmit",
+          "hook: UserPromptSubmit Completed",
+          "workdir: <case>/link"
+        ]
+      }
+    ]
+  },
+  "documentation_sources": {
+    "fetched": "2026-10-17",
+    "urls": [
+      "https://code.claude.com/docs/en/hooks",
+      "https://code.claude.com/docs/en/settings",
+      "https://code.claude.com/docs/en/claude-code-on-the-web",
+      "https://code.claude.com/docs/en/cloud-environments",
+      "https://code.claude.com/docs/en/plugins-reference",
+      "https://code.claude.com/docs/en/plugins/loading"
+    ],
+    "note": "Claude facts are documentation-only; no Claude Code process was run in this investigation"
+  },
+  "not_covered": [
+    "Codex interactive TUI trust prompts for project hooks",
+    "Codex project hooks under codex-plugin route coexistence",
+    "Claude Code real runs (project settings, plugin marketplace add/install, trust dialog)",
+    "Claude cloud session (C3)",
+    "Windows",
+    "STYLE binary itself (probe uses plain shell hooks)"
+  ]
+}
