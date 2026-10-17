@@ -1,0 +1,326 @@
+{
+  "item": "M2-CI-01",
+  "date": "2026-10-17",
+  "passed": false,
+  "status": "rerun_pending",
+  "repository": "inxups/style-cli",
+  "branch": "codex/m2-remote-ci-20261017",
+  "trigger": "workflow_dispatch",
+  "workflow": {
+    "path": "/Users/inxups/project/style-cli/.github/workflows/ci.yml",
+    "sha256": "ce730b708aa9b95ba153a2afdfdee868affb7db6b8ec399b82c67d4be69ccba6"
+  },
+  "runs": [
+    {
+      "run": {
+        "conclusion": "failure",
+        "createdAt": "2026-10-17T03:30:35Z",
+        "databaseId": 38999049830,
+        "event": "workflow_dispatch",
+        "headBranch": "codex/m2-remote-ci-20261017",
+        "headSha": "3102f690f48c0bea48f073f061f57e4da8a109cb",
+        "jobs": [
+          {
+            "completedAt": "2026-10-17T03:31:20Z",
+            "conclusion": "failure",
+            "databaseId": 117297887182,
+            "name": "Test (macos-latest)",
+            "startedAt": "2026-10-17T03:30:43Z",
+            "status": "completed",
+            "steps": [
+              {
+                "completedAt": "2026-10-17T03:30:44Z",
+                "conclusion": "success",
+                "name": "Set up job",
+                "number": 1,
+                "startedAt": "2026-10-17T03:30:43Z",
+                "status": "completed"
+              },
+              {
+                "completedAt": "2026-10-17T03:30:46Z",
+                "conclusion": "success",
+                "name": "Run actions/checkout@v6",
+                "number": 2,
+                "startedAt": "2026-10-17T03:30:44Z",
+                "status": "completed"
+              },
+              {
+                "completedAt": "2026-10-17T03:31:02Z",
+                "conclusion": "success",
+                "name": "Set up Go",
+                "number": 3,
+                "startedAt": "2026-10-17T03:30:46Z",
+                "status": "completed"
+              },
+              {
+                "completedAt": "2026-10-17T03:31:03Z",
+                "conclusion": "success",
+                "name": "Check formatting",
+                "number": 4,
+                "startedAt": "2026-10-17T03:31:02Z",
+                "status": "completed"
+              },
+              {
+                "completedAt": "2026-10-17T03:31:05Z",
+                "conclusion": "success",
+                "name": "Vet",
+                "number": 5,
+                "startedAt": "2026-10-17T03:31:03Z",
+                "status": "completed"
+              },
+              {
+                "completedAt": "2026-10-17T03:31:15Z",
+                "conclusion": "failure",
+                "name": "Test",
+                "number": 6,
+                "startedAt": "2026-10-17T03:31:05Z",
+                "status": "completed"
+              },
+              {
+                "completedAt": "2026-10-17T03:31:15Z",
+                "conclusion": "skipped",
+                "name": "Test acceptance collectors",
+                "number": 7,
+                "startedAt": "2026-10-17T03:31:15Z",
+                "status": "completed"
+              },
+              {
+                "completedAt": "2026-10-17T03:31:15Z",
+                "conclusion": "skipped",
+                "name": "Build",
+                "number": 8,
+                "startedAt": "2026-10-17T03:31:15Z",
+                "status": "completed"
+              },
+              {
+                "completedAt": "2026-10-17T03:31:15Z",
+                "conclusion": "skipped",
+                "name": "Smoke test built binary",
+                "number": 9,
+                "startedAt": "2026-10-17T03:31:15Z",
+                "status": "completed"
+              },
+              {
+                "completedAt": "2026-10-17T03:31:15Z",
+                "conclusion": "skipped",
+                "name": "Check replace fallback and user style preservation",
+                "number": 10,
+                "startedAt": "2026-10-17T03:31:15Z",
+                "status": "completed"
+              },
+              {
+                "completedAt": "2026-10-17T03:31:15Z",
+                "conclusion": "skipped",
+                "name": "Post Set up Go",
+                "number": 19,
+                "startedAt": "2026-10-17T03:31:15Z",
+                "status": "completed"
+              },
+              {
+                "completedAt": "2026-10-17T03:31:15Z",
+                "conclusion": "success",
+                "name": "Post Run actions/checkout@v6",
+                "number": 20,
+                "startedAt": "2026-10-17T03:31:15Z",
+                "status": "completed"
+              },
+              {
+                "completedAt": "2026-10-17T03:31:16Z",
+                "conclusion": "success",
+                "name": "Complete job",
+                "number": 21,
+                "startedAt": "2026-10-17T03:31:15Z",
+                "status": "completed"
+              }
+            ],
+            "url": "https://github.com/inxups/style-cli/actions/runs/38999049830/job/117297887182"
+          },
+          {
+            "completedAt": "2026-10-17T03:31:00Z",
+            "conclusion": "failure",
+            "databaseId": 117297887275,
+            "name": "Test (ubuntu-latest)",
+            "startedAt": "2026-10-17T03:30:39Z",
+            "status": "completed",
+            "steps": [
+              {
+                "completedAt": "2026-10-17T03:30:40Z",
+                "conclusion": "success",
+                "name": "Set up job",
+                "number": 1,
+                "startedAt": "2026-10-17T03:30:39Z",
+                "status": "completed"
+              },
+              {
+                "completedAt": "2026-10-17T03:30:41Z",
+                "conclusion": "success",
+                "name": "Run actions/checkout@v6",
+                "number": 2,
+                "startedAt": "2026-10-17T03:30:40Z",
+                "status": "completed"
+              },
+              {
+                "completedAt": "2026-10-17T03:30:48Z",
+                "conclusion": "success",
+                "name": "Set up Go",
+                "number": 3,
+                "startedAt": "2026-10-17T03:30:41Z",
+                "status": "completed"
+              },
+              {
+                "completedAt": "2026-10-17T03:30:48Z",
+                "conclusion": "success",
+                "name": "Check formatting",
+                "number": 4,
+                "startedAt": "2026-10-17T03:30:48Z",
+                "status": "completed"
+              },
+              {
+                "completedAt": "2026-10-17T03:30:50Z",
+                "conclusion": "success",
+                "name": "Vet",
+                "number": 5,
+                "startedAt": "2026-10-17T03:30:48Z",
+                "status": "completed"
+              },
+              {
+                "completedAt": "2026-10-17T03:30:59Z",
+                "conclusion": "failure",
+                "name": "Test",
+                "number": 6,
+                "startedAt": "2026-10-17T03:30:50Z",
+                "status": "completed"
+              },
+              {
+                "completedAt": "2026-10-17T03:30:59Z",
+                "conclusion": "skipped",
+                "name": "Test acceptance collectors",
+                "number": 7,
+                "startedAt": "2026-10-17T03:30:59Z",
+                "status": "completed"
+              },
+              {
+                "completedAt": "2026-10-17T03:30:59Z",
+                "conclusion": "skipped",
+                "name": "Build",
+                "number": 8,
+                "startedAt": "2026-10-17T03:30:59Z",
+                "status": "completed"
+              },
+              {
+                "completedAt": "2026-10-17T03:30:59Z",
+                "conclusion": "skipped",
+                "name": "Smoke test built binary",
+                "number": 9,
+                "startedAt": "2026-10-17T03:30:59Z",
+                "status": "completed"
+              },
+              {
+                "completedAt": "2026-10-17T03:30:59Z",
+                "conclusion": "skipped",
+                "name": "Check replace fallback and user style preservation",
+                "number": 10,
+                "startedAt": "2026-10-17T03:30:59Z",
+                "status": "completed"
+              },
+              {
+                "completedAt": "2026-10-17T03:30:59Z",
+                "conclusion": "skipped",
+                "name": "Post Set up Go",
+                "number": 19,
+                "startedAt": "2026-10-17T03:30:59Z",
+                "status": "completed"
+              },
+              {
+                "completedAt": "2026-10-17T03:30:59Z",
+                "conclusion": "success",
+                "name": "Post Run actions/checkout@v6",
+                "number": 20,
+                "startedAt": "2026-10-17T03:30:59Z",
+                "status": "completed"
+              },
+              {
+                "completedAt": "2026-10-17T03:30:59Z",
+                "conclusion": "success",
+                "name": "Complete job",
+                "number": 21,
+                "startedAt": "2026-10-17T03:30:59Z",
+                "status": "completed"
+              }
+            ],
+            "url": "https://github.com/inxups/style-cli/actions/runs/38999049830/job/117297887275"
+          }
+        ],
+        "status": "completed",
+        "updatedAt": "2026-10-17T03:31:20Z",
+        "url": "https://github.com/inxups/style-cli/actions/runs/38999049830",
+        "workflowName": "CI"
+      },
+      "log": {
+        "path": "/tmp/style-m2-ci.tD4GCHgQ/run-38999049830.log",
+        "sha256": "57af04786701d1c2e35c550405e12402ac283f93218bceaaed8193d5fbdf70d5"
+      },
+      "failure": {
+        "step": "Test",
+        "test": "TestA2NativePlanReports",
+        "message": "plan --json exit=1 stderr=style plan: no harness selected",
+        "runner_count": 2
+      }
+    }
+  ],
+  "cause": "The JSON CLI call omitted --harness and depended on automatic detection of host harness binaries/configuration; GitHub runners have neither.",
+  "fix": {
+    "file": "internal/app/native_plan_test.go",
+    "description": "Run the existing acceptance test with an empty HOME/PATH and cleared harness overrides; explicitly select codex,claude-code for JSON planning. Production code and workflow unchanged.",
+    "sha256": "ac601375ac18975a0bfcfc96d74d160d2ff6fafbc0e1f91fe68f194e6175a183"
+  },
+  "local_validation": {
+    "go_environment": {
+      "CODEX_HOME": "unset",
+      "CODEX_SANDBOX": "unset",
+      "GOPATH": "/tmp/style-cli-gopath",
+      "GOMODCACHE": "/tmp/style-cli-gomodcache",
+      "GOCACHE": "/tmp/style-cli-gocache",
+      "GOFLAGS": "-mod=readonly"
+    },
+    "before": {
+      "command": "/tmp/style-m2-ci.tD4GCHgQ/app-before.test -test.run ^TestA2NativePlanReports$ -test.v",
+      "environment": {
+        "HOME": "/tmp/style-m2-ci.tD4GCHgQ/empty-home",
+        "PATH": "/tmp/style-m2-ci.tD4GCHgQ/empty-bin",
+        "inherited_variables": false
+      },
+      "exit_code": 1,
+      "expected_failure": true,
+      "log": {
+        "path": "/tmp/style-m2-ci.tD4GCHgQ/local-before.log",
+        "sha256": "95ed5a3ff234d5726e9ebeddbf66c0d47d7dd99db338a8f7c6fa63b7242af115"
+      }
+    },
+    "after": {
+      "command": "/tmp/style-m2-ci.tD4GCHgQ/app-after.test -test.run ^TestA2NativePlanReports$ -test.v",
+      "same_environment_as_before": true,
+      "exit_code": 0,
+      "log": {
+        "path": "/tmp/style-m2-ci.tD4GCHgQ/local-after.log",
+        "sha256": "12992e6b3c17394216a904400e0c57d3280a73d3a9c6fa4420d401cf3cabe08a"
+      }
+    },
+    "commands": [
+      {
+        "command": "go test -count=1 ./internal/app",
+        "exit_code": 0,
+        "result": "ok github.com/inxups/style-cli/internal/app 16.561s"
+      },
+      {
+        "command": "go vet ./internal/app",
+        "exit_code": 0
+      },
+      {
+        "command": "git diff --check",
+        "exit_code": 0
+      }
+    ]
+  },
+  "scope": "No remote CI success claimed until both complete jobs pass; original failed run retained. Official token calibration remains pending API keys."
+}

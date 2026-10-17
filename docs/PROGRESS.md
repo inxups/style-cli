@@ -1563,3 +1563,10 @@ PY
 - 核对四份 Claude 验收报告引用的 42 处实际私有文件摘要：41 处与当前文件精确相同，C1 InstructionsLoaded 全日志摘要匹配后续追加前的完整行前缀。再次确认固定 STYLE/Claude 摘要、六份用户文件还原、六个独立真实交互会话均已正常退出；C1/C4 设计目录与 C2/C3 新工作目录的信任范围分别记录。
 - 未采用的附加请求重放明确保留 native message content hash mismatch，不把模型回复或绕过哈希的重放用于投递证明。C2/C3 按矩阵采用原生 hook 完成/完整上下文、加载事件/附件和卸载恢复；新 rules compact 未声称。官方计数仍缺独立 API key，远端 Ubuntu/macOS CI 未执行，RV-01 仍为既有风险；M2 不提前关闭或转入 M3。
 - 验证：本轮 53 项采集器已通过；四报告 JSON/证据摘要和所有 M2 变更当前 Markdown 的本地链接/锚点/围栏、M1 归档未变、PROGRESS 追加前缀、git diff --check 均核对。仅文档/真实证据归档，无生产代码、agenthooks 或依赖变更，不重复已通过的 Go 回归和模型请求。
+
+### 2026-10-17 — M2-CI-01 首轮远端失败与测试环境修正 `[~]`
+
+- 用户要求进行远端 CI。起点 clean 3102f69，发布到专用分支 codex/m2-remote-ci-20261017，workflow_dispatch 触发现有 ci.yml；没有创建 PR。run 38999049830 的 headSha 精确匹配，Ubuntu/macOS 均在 TestA2NativePlanReports 失败：plan --json exit=1 stderr=style plan: no harness selected。format/vet 已通过，后续采集器/build/smoke/replace 被跳过，不能计为通过。
+- 原因是 A2 的 Service.Plan 已显式选择两家，而 JSON CLI 调用漏了 --harness，默认 auto 依赖本机已安装的 harness/用户配置。隔离编译旧 app.test，再以 env -i、空 HOME/PATH 执行同一测试，稳定退出 1 并复现同一报错；不是生产计划能力失效。
+- 原测试补空 HOME/PATH、清理 CODEX_HOME/CODEX_SANDBOX/CLAUDE_CONFIG_DIR，并对 JSON 命令显式 --harness=codex,claude-code。相同隔离条件下新 app.test 退出 0；标准临时 Go 三缓存、清理宿主 Codex 变量，go test -count=1 ./internal/app（16.561s）及 go vet ./internal/app 均通过。生产代码、agenthooks 和 workflow 未改。
+- 原始远端日志、元数据及本地前后对照留在 /tmp/style-m2-ci.tD4GCHgQ；白名单运行/逐步骤元数据、日志摘要、原因与验证归档 docs/review/M2-CI-01-2026-10-17.json。M2-CI-01 保持 [~]，提交修正后重跑；不覆盖失败事实，不提前关闭最终回归或官方计数。

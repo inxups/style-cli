@@ -91,7 +91,7 @@ M1 中已记录的已知限制（如 force-push 示例规则对 `--push-option` 
 - [x] **M2a 离线验收**：M2-A1–A9 全部有可重复证据；最终双 module fresh test/vet、相关 race、53 项采集器、固定构建/重建一致、40 smoke、16 组升级与 12 组回退通过。证据：[A9 本地最终回归](review/M2-A9-LOCAL-REGRESSION-2026-10-17.json)。
 - [x] **M2b Codex 真实环境**：M2-B1–B4，codex-user/plugin 两路线真实服务、原生观察/OTel/rollout/stats 证据均通过，见测试矩阵和 `docs/review/M2-B*-CODEX-2026-10-17.json`。
 - [x] **M2b Claude Code 真实环境**：固定 Claude 2.1.301 的 M2-C1–C4 真实交互终端验收通过：用户 rules、native/matcher、生产静态去重/加载/卸载及 output style 切换；证据见测试矩阵与 docs/review/M2-C*-CLAUDE-2026-10-17.json。
-- [~] **M2-FINAL 最终回归**：最终本地双 module fresh test/vet、相关 race、53 项采集器、固定构建/重建一致、40 smoke、迁移/回退 CLI 通过；当前提交未推送，最终 Ubuntu/macOS CI（M2-CI-01）仍待执行。
+- [~] **M2-FINAL 最终回归**：最终本地双 module fresh test/vet、相关 race、53 项采集器、固定构建/重建一致、40 smoke、迁移/回退 CLI 通过；`3102f69` 已发布专用 CI 分支，首轮 Ubuntu/macOS 均暴露 A2 测试依赖宿主自动检测，测试隔离与显式选择修复通过本地 app fresh test/vet，等待远端重跑（M2-CI-01）。
 - [~] **M2-DOCS 文档同步**：当前实现/设计/离线结果已同步（DOCS-02/03），本地链接/围栏通过；Claude C1–C4 最终事实已归档；DOCS-04 已同步相关内容文档并核对证据；最终 CI/计数状态仍待补齐，再关闭总文档验收 DOCS-01。
 - [x] **M2-DOCS-02 已实现功能文档同步**：[教程](STYLE-TUTORIAL.md) 和 [adapter 总览](STYLE-ADAPTERS-CURRENT.md) 补 native、stats、跨包等价去重，移除 M1 过时支持状态；CLI 设计 §14.4 与编译规范静态位置表反映当前实现，明确 Claude 待定与最终验收边界。真实固定二进制跑通教程新增 native 包的 validate/双 harness plan/install/uninstall 和三个 stats 命令；配置字节/0640 还原，文档链接/锚点/围栏检查通过。证据：`docs/review/M2-DOCS-02-2026-10-17.json`、`docs/PROGRESS.md` M2-DOCS-02。本项不关闭 D4/D5、Claude 真实验收或最终文档总验收。
 - [x] **M2-DOCS-03 rules/回退与离线最终状态**：教程、adapter 总览、CLI/编译/规则规范同步 claude_rules、旧迁移/归属/冲突和真实界面边界；C2/C3 最终手册与采集器入口完成。核对本轮 M2 改过的全部当前 Markdown 本地链接/锚点、围栏、证据 JSON、M1 归档未变和 diff-check；当时未完成的 Claude/CI/计数明确保留；Claude 后续结果见 DOCS-04。证据：`docs/PROGRESS.md` M2-A9/DOCS-03。

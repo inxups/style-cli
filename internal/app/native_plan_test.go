@@ -21,6 +21,13 @@ import (
 // TestA2NativePlanReports checks the M2-A2 plan contract for the example
 // native rule on both harnesses (rules §3.10).
 func TestA2NativePlanReports(t *testing.T) {
+	// Offline planning must work with no installed harness or user configuration.
+	home := t.TempDir()
+	t.Setenv("HOME", home)
+	t.Setenv("PATH", home)
+	t.Setenv("CODEX_HOME", "")
+	t.Setenv("CODEX_SANDBOX", "")
+	t.Setenv("CLAUDE_CONFIG_DIR", "")
 	root := repositoryRoot(t)
 	service := testService(t)
 	result, err := service.Plan(context.Background(), PlanRequest{Source: filepath.Join(root, "example", "terse-reviewer"), Harnesses: []string{"codex", "claude-code"}})
@@ -64,7 +71,7 @@ func TestA2NativePlanReports(t *testing.T) {
 	}
 
 	var out, errOut bytes.Buffer
-	if code := RunWithService(context.Background(), service, root, []string{"plan", "example/terse-reviewer", "--json"}, &out, &errOut); code != ExitOK {
+	if code := RunWithService(context.Background(), service, root, []string{"plan", "example/terse-reviewer", "--harness=codex,claude-code", "--json"}, &out, &errOut); code != ExitOK {
 		t.Fatalf("plan --json exit=%d stderr=%s", code, errOut.String())
 	}
 	text := out.String()

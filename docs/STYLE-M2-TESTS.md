@@ -110,7 +110,7 @@ Codex 真实配置由 agent 执行，步骤见 M2-PREP 建立的 `docs/STYLE-M2-
 
 ## 持续集成与文档核对
 
-- [ ] **M2-CI-01**：M2 最终提交的 GitHub Actions 在 Ubuntu/macOS 上 format、vet、双 module test、采集器测试、build、smoke 全部 success。
+- [~] **M2-CI-01**：专用分支 `codex/m2-remote-ci-20261017` 的首轮 GitHub Actions `38999049830`（`3102f69`）在 Ubuntu/macOS 均因 `TestA2NativePlanReports` 的 JSON 调用漏选 harness 失败。空 HOME/PATH 下复现后，测试显式选择两家并隔离宿主；本地 app fresh test/vet 和前后对照通过，等待远端重跑。验收仍要求两台 runner 的 format、vet、双 module test、采集器、build、smoke 和 replace 回退全成功。证据：[CI 报告](review/M2-CI-01-2026-10-17.json)。
 - [~] **M2-DOCS-01**：已实现功能和 D4/D5、最终离线结果检查通过（DOCS-02/03），M2 修改过的当前文档链接/锚点/围栏已核对；Claude 最终结果和 DOCS-04 同步已通过；CI/官方计数最终状态仍待补齐，再关闭总项。
 - [x] **M2-DOCS-03**：当前 rules/回退规范、教程/总览、C2/C3 手册、A1–A9 状态与证据 JSON 同步；全部本轮 M2 当前 Markdown 的本地链接/锚点/围栏和 diff-check 通过，M1 归档未改。见 `docs/PROGRESS.md` M2-A9/DOCS-03。
 - [x] **M2-DOCS-02**：教程 §4.4 新包 validate/两家 native-hook plan/install/uninstall 退出 0，原有配置字节与 0640 权限还原、Codex hooks 无残留；§10.4 三个 stats 示例为空记录成功，`--since 7d` 退出 1 且 stdout 为空。四份内容文档的 116 个本地链接/锚点和围栏通过；原有三处仓库未分发材料的失效链接改为明确的历史材料名。证据：[文档示例报告](review/M2-DOCS-02-2026-10-17.json)。仅本地 CLI 示例，不代替真实 harness 触发或 M2 最终回归。
