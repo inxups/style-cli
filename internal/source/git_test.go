@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"github.com/inxups/style-cli/internal/source"
+	"github.com/inxups/style-cli/internal/testfs"
 	"github.com/inxups/style-cli/internal/testgit"
 )
 
@@ -297,9 +298,7 @@ func TestM3A3CacheRepairAndPreviewIsolation(t *testing.T) {
 					t.Fatal(err)
 				}
 			case "permissions":
-				if err := os.Chmod(filepath.Join(entry, "files", "STYLE.yaml"), 0o644); err != nil {
-					t.Fatal(err)
-				}
+				testfs.MakePublic(t, filepath.Join(entry, "files", "STYLE.yaml"), 0o644)
 			}
 			r := resolve(t, f, "", "pkg", home)
 			if r.CacheHit || !reflect.DeepEqual(a.Files, r.Files) {

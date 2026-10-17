@@ -1960,3 +1960,11 @@ Ubuntu CI run 39049754503 的 lease-replaced 回归证明删除后立即重建�
 ## 2026-10-18 M3-A17 第三轮 CI 格式修正
 
 run 39051594728 固定 `6f1ff04`，三平台在格式检查停下，未执行测试。补正遗漏的 `internal/source/transport_test.go` 格式，全部已跟踪 Go 文件 gofmt 与 diff 检查通过；没有代码行为变更，继续重跑原生 CI，A17 未关闭。
+
+## 2026-10-18 M3-A17 Windows 第四轮与清理协调锁
+
+run 39051809495 固定 `7ea3819`，Ubuntu/macOS 全部通过；Windows 14 项生产 CLI 全通过（两家 user 安装、真实配置命令/stdin/deny、sync、doctor/list/stats、两编码与卸载）。原生根模块 2,559 pass/92 fail/83 skip，agenthooks 490 pass/43 fail/25 skip；app 的 native preview 越界 panic 截止后续测试，未把缺失结果算通过。
+
+Windows 实测证明持子锁句柄时移动目录失败；根级共享/独占协调锁覆盖关闭子句柄到隔离重命名的窗口，并补互斥、损坏/取消测试。权限 fixture 改用真实 DACL 拒绝/恢复及公有 ACL 拒绝检查；状态文件路径使用全部摘要分量，快照读取句柄实际元数据，保留 readonly 校验。支持路线仍执行生命周期/回滚，POSIX 作者 native/项目/插件及其管理 golden 明确单列 skip，未整体跳过用户路线或协议 golden；Windows built CLI 增补 frozen 精确恢复、路线拒绝和外部配置字节还原。
+
+[阶段报告](review/M3-A17-GATE-2026-10-18.json)保留初次 fixture 编译错误与修正、macOS fresh 双模块、追加权限/陈旧输入、race、双 vet 与 Windows 双模块交叉编译/vet。新增 Windows 测试仍需原生 runner 执行；T70/A17 保持部分完成。[文档检查](review/M3-A17-GATE-DOCS-2026-10-18.json)核对归档、追加日志、链接/围栏与 diff。

@@ -13,6 +13,7 @@ import (
 )
 
 func TestProjectCodexTrustIsIsolatedBySource(t *testing.T) {
+	requirePOSIXFixture(t, "POSIX plugin/project or author native fixture")
 	user := t.TempDir()
 	before := []byte("# original\nmodel = 'user'\n[projects.'/some/project']\ntrust_level = 'trusted'\n")
 	if err := os.WriteFile(filepath.Join(user, "config.toml"), before, 0o640); err != nil {

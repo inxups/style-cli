@@ -9,6 +9,7 @@ import (
 	"strings"
 	"testing"
 
+	"encoding/json"
 	"github.com/inxups/style-cli/core/plan"
 	"github.com/inxups/style-cli/core/spec"
 	"github.com/inxups/style-cli/internal/adapter"
@@ -159,6 +160,9 @@ func TestCodexPluginStatusDoesNotClaimTrustBeforeConfirmation(t *testing.T) {
 }
 
 func TestCodexPluginRoutePlansStaticAndHookConfigAtomically(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		t.Skip("D11: POSIX plugin launcher fixture")
+	}
 	root := t.TempDir()
 	pluginDir := filepath.Join(root, "plugin")
 	codexHome := filepath.Join(root, "codex-home")
@@ -289,6 +293,9 @@ func TestCodexRouteRemoveCleansStaticOnlyAndKeepsExternalBytes(t *testing.T) {
 }
 
 func TestCodexPluginApplyUsesNarrowestRoot(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		t.Skip("D11: POSIX plugin launcher fixture")
+	}
 	root := t.TempDir()
 	codexHome := filepath.Join(root, "codex-home")
 	pluginDir := filepath.Join(codexHome, "nested", "plugin")
@@ -338,6 +345,13 @@ func TestCodexUserRouteWritesAbsoluteHookCommandForRelativeProgram(t *testing.T)
 		if filepath.Base(change.Path) == "hooks.json" {
 			hooks = string(change.After)
 		}
+	}
+	if runtime.GOOS == "windows" {
+		var document map[string]json.RawMessage
+		if json.Unmarshal([]byte(hooks), &document) != nil || !strings.Contains(hooks, " -EncodedCommand ") {
+			t.Fatal("Windows encoded command missing")
+		}
+		return
 	}
 	want := filepath.Join(cwd, "style") + " --style-home="
 	if !strings.Contains(hooks, want) || strings.Contains(hooks, `"./style`) {

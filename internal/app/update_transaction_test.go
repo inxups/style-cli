@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"testing"
 	"time"
@@ -182,7 +183,7 @@ func TestM3A4RollbackFailuresAreReportedAndRetained(t *testing.T) {
 	}
 	after := a4State(t, home, config)
 	for path, state := range before {
-		if strings.Contains(path, "/packages/first/") {
+		if strings.Contains(filepath.ToSlash(path), "/packages/first/") {
 			continue
 		}
 		if after[path] != state {
@@ -212,7 +213,11 @@ func TestM3A4ConfirmationRejectsEveryStaleInput(t *testing.T) {
 					if err != nil {
 						t.Fatal(err)
 					}
-					if err := os.Chmod(path, info.Mode().Perm()^0o044); err != nil {
+					mode := info.Mode().Perm() ^ 0o044
+					if runtime.GOOS == "windows" {
+						mode = info.Mode().Perm() ^ 0o222
+					}
+					if err := os.Chmod(path, mode); err != nil {
 						t.Fatal(err)
 					}
 				case "lock-mtime":
@@ -233,7 +238,14 @@ func TestM3A4ConfirmationRejectsEveryStaleInput(t *testing.T) {
 					if err != nil {
 						t.Fatal(err)
 					}
-					if err := os.Chmod(path, info.Mode().Perm()^0o055); err != nil {
+					if runtime.GOOS == "windows" {
+						if err := os.Rename(path, path+"-previous"); err != nil {
+							t.Fatal(err)
+						}
+						if err := os.Mkdir(path, 0700); err != nil {
+							t.Fatal(err)
+						}
+					} else if err := os.Chmod(path, info.Mode().Perm()^0o055); err != nil {
 						t.Fatal(err)
 					}
 				case "new-file":

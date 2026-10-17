@@ -12,6 +12,7 @@ import (
 )
 
 func TestCodexNativeRegistrationInsideMarkersSurvivesLifecycle(t *testing.T) {
+	requirePOSIXFixture(t, "POSIX plugin/project or author native fixture")
 	for _, scope := range []Scope{ScopeUser, ScopePlugin} {
 		t.Run(string(scope), func(t *testing.T) {
 			root := t.TempDir()

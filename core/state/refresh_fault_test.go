@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"runtime"
 	"testing"
 	"time"
 )
@@ -103,9 +102,6 @@ func TestRefreshCleanupFirstEnableAndLegacyCandidates(t *testing.T) {
 }
 
 func TestRefreshWriteAndRollbackFailuresPreservePriorClaims(t *testing.T) {
-	if runtime.GOOS == "windows" {
-		t.Skip("POSIX directory chmod fault; Windows DACL faults have separate coverage")
-	}
 	if !RefreshSupported() {
 		t.Skip("refresh platform")
 	}
@@ -117,10 +113,9 @@ func TestRefreshWriteAndRollbackFailuresPreservePriorClaims(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		if err := os.Chmod(dir, 0500); err != nil {
-			t.Fatal(err)
-		}
-		defer os.Chmod(dir, 0700)
+		writable := fixtureWritableDirectory(t, dir)
+		writable(false)
+		defer writable(true)
 		for _, body := range []string{"new", "old"} {
 			_, allowed, err := s.Claim(ClaimInput{Scope: f.scope, Repeat: "session", Action: "inject", Event: "tool.pre", Rule: "pkg/r", Body: body, ReinjectOnCompact: true, Refresh: 1, RefreshFrame: f})
 			if err == nil || allowed {
@@ -131,13 +126,13 @@ func TestRefreshWriteAndRollbackFailuresPreservePriorClaims(t *testing.T) {
 				t.Fatal("failed save changed cursor")
 			}
 		}
-		os.Chmod(dir, 0700)
+		writable(true)
 		r, _ := refreshClaim(t, f, 1, "old", true)
-		os.Chmod(dir, 0500)
+		writable(false)
 		if err := r.Release(); err == nil {
 			t.Fatal("rollback failure ignored")
 		}
-		os.Chmod(dir, 0700)
+		writable(true)
 		if err := r.Release(); err != nil {
 			t.Fatal("rollback retry failed", err)
 		}

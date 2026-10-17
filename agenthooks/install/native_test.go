@@ -78,6 +78,7 @@ func TestRawNativeCommandsBypassRunnerAndPreserveShellContract(t *testing.T) {
 }
 
 func TestCodexRawNativeEventsAndSessionEndTimeout(t *testing.T) {
+	requirePOSIXFixture(t, "POSIX plugin/project or author native fixture")
 	manifest := Manifest{Command: []string{"style"}, Owner: "style"}
 	for event := range codexEventLabel {
 		manifest.Hooks = append(manifest.Hooks, HookSpec{NativeEvent: event, RawCommand: "true", RawTag: "pkg/" + event, Timeout: time.Minute})

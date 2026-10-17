@@ -341,7 +341,7 @@ func TestMissingOrInvalidIndexUsesCodecFailPolicy(t *testing.T) {
 func TestStateFailureUsesFailOpenAndLogsOnlySafeCode(t *testing.T) {
 	root := t.TempDir()
 	stateRoot := filepath.Join(root, "state")
-	badState := filepath.Join(stateRoot, "sess-claude-1", "session.json")
+	badState := filepath.Join(stateRoot, fixtureStateComponent("sess-claude-1"), "session.json")
 	if err := os.MkdirAll(filepath.Dir(badState), 0o700); err != nil {
 		t.Fatal(err)
 	}

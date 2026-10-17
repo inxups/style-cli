@@ -1,8 +1,10 @@
 package state
 
 import (
+	"github.com/inxups/style-cli/internal/testfs"
 	"os"
 	"runtime"
+	"testing"
 )
 
 // Windows exposes read-only attributes as mode bits. DACL privacy is separately
@@ -18,4 +20,8 @@ func fixtureMode(want os.FileMode, dir bool) os.FileMode {
 		return 0444
 	}
 	return 0666
+}
+
+func fixtureWritableDirectory(t *testing.T, path string) func(bool) {
+	return testfs.WritableDirectory(t, path)
 }

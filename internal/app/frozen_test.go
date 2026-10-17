@@ -110,7 +110,7 @@ func TestM3A5NoopAndBuildRecovery(t *testing.T) {
 				check := a5Lock(t, home)
 				before := a4State(t, home, config)
 				preview, err := s.InstallFrozen(context.Background(), FrozenRequest{Home: home})
-				if err != nil || preview.LockSHA256 != hashBytes(raw) || !preview.LockedSource || preview.Command != "install --frozen" || len(preview.Native) != 2 || len(preview.Reports) != 1 {
+				if err != nil || preview.LockSHA256 != hashBytes(raw) || !preview.LockedSource || preview.Command != "install --frozen" || len(preview.Native) != fixtureNativeCount(2) || len(preview.Reports) != 1 {
 					t.Fatalf("preview=%+v %v", preview, err)
 				}
 				a4AssertState(t, before, home, config)

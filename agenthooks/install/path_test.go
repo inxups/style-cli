@@ -104,7 +104,7 @@ func TestApplyFilesRechecksPathAndRollsBackPriorMutation(t *testing.T) {
 		if data, err := os.ReadFile(path); err != nil || string(data) != "original" {
 			t.Fatal("prior bytes not restored")
 		}
-		if info, err := os.Stat(path); err != nil || info.Mode().Perm() != 0o640 {
+		if info, err := os.Stat(path); err != nil || info.Mode().Perm() != fixtureMode(0o640) {
 			t.Fatal("prior permissions not restored")
 		}
 	}

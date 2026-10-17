@@ -10,6 +10,8 @@ import (
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/inxups/style-cli/internal/testfs"
 )
 
 type a5CacheFile struct {
@@ -108,9 +110,7 @@ func TestM3A5ReadLockedCacheIsReadOnly(t *testing.T) {
 						t.Fatal(err)
 					}
 				case "mode":
-					if err := os.Chmod(entry, 0o755); err != nil {
-						t.Fatal(err)
-					}
+					testfs.MakePublic(t, entry, 0o755)
 				case "hash-mismatch":
 					hashes = map[string]string{name: "sha256:" + strings.Repeat("c", 64)}
 					identity.ContentSHA256 = Aggregate(hashes)

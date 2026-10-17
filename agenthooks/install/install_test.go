@@ -338,7 +338,7 @@ func TestApplyFilesRollsBackEarlierChangesWhenContextCancels(t *testing.T) {
 	if _, err := os.Stat(second); !os.IsNotExist(err) {
 		t.Fatalf("second file exists after rollback, err=%v", err)
 	}
-	if mode, err := os.Stat(first); err != nil || mode.Mode().Perm() != 0o600 {
+	if mode, err := os.Stat(first); err != nil || mode.Mode().Perm() != fixtureMode(0o600) {
 		t.Fatalf("rollback changed original mode: mode=%v err=%v", mode, err)
 	}
 }
@@ -497,7 +497,15 @@ func TestRenderCodexAsyncAndTrust(t *testing.T) {
 	// Codex parses-but-skips async (quirk #10): telemetry hooks get --async
 	// so the runner detaches itself; no shell wrapper anywhere.
 	post := cfg.Hooks["PostToolUse"][0].Hooks[0]
-	if !strings.HasSuffix(post.Command, " --async") || strings.Contains(post.Command, "/bin/sh") {
+	command := post.Command
+	if runtime.GOOS == "windows" {
+		decoded, ok := windowsDecodedCommand(command)
+		if !ok {
+			t.Fatal("invalid Windows command")
+		}
+		command = decoded
+	}
+	if !strings.Contains(command, "--async") || strings.Contains(command, "/bin/sh") {
 		t.Errorf("non-blocking codex hook must render --async without a shell: %s", post.Command)
 	}
 	preEntry := cfg.Hooks["PreToolUse"][0]
@@ -729,7 +737,7 @@ func TestUninstallRemovesOnlyMatchingOwner(t *testing.T) {
 	if bytes.Contains(got, []byte("--owner=style")) || bytes.Contains(got, []byte("old-style")) {
 		t.Errorf("STYLE-owned commands remain after uninstall:\n%s", got)
 	}
-	if mode, err := os.Stat(settingsPath); err != nil || mode.Mode().Perm() != 0o600 {
+	if mode, err := os.Stat(settingsPath); err != nil || mode.Mode().Perm() != fixtureMode(0o600) {
 		t.Errorf("uninstall changed existing config permissions: mode=%v err=%v", mode, err)
 	}
 }

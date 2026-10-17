@@ -24,6 +24,7 @@ func a8Manifest() Manifest {
 	return Manifest{Command: []string{"/fixed ' path/style", "--style-home=/private ' home"}, Owner: "style", Identity: Identity{Name: "style-runtime", Version: "0.1.0", Description: "STYLE runtime hooks"}, Hooks: []HookSpec{{Kind: agenthooks.KindToolPre, Blocking: true}, {NativeEvent: "PreToolUse", RawCommand: "printf NATIVE", RawTag: "sample/native"}}}
 }
 func TestM3A8ClaudeLocalMarketplaceRenderingAndLifecycle(t *testing.T) {
+	requirePOSIXFixture(t, "POSIX plugin/project or author native fixture")
 	target := a8Target(t)
 	m := a8Manifest()
 	rendered, err := Render(m, target)
@@ -148,6 +149,7 @@ func TestM3A8ClaudeRegistrationStates(t *testing.T) {
 	}
 }
 func TestM3A8ClaudePluginRuntimeRejectsChangedLauncher(t *testing.T) {
+	requirePOSIXFixture(t, "POSIX plugin/project or author native fixture")
 	target := a8Target(t)
 	m := a8Manifest()
 	files, err := PlanFiles(m, target)

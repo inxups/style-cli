@@ -26,7 +26,7 @@ func TestM3A17WindowsDACLRefusesPublicRecords(t *testing.T) {
 		t.Fatal(err)
 	}
 	name, _ := windows.UTF16PtrFromString(path)
-	handle, err := windows.CreateFile(name, windows.WRITE_DAC, windows.FILE_SHARE_READ|windows.FILE_SHARE_WRITE|windows.FILE_SHARE_DELETE, nil, windows.OPEN_EXISTING, 0, 0)
+	handle, err := windows.CreateFile(name, windows.READ_CONTROL|windows.WRITE_DAC, windows.FILE_SHARE_READ|windows.FILE_SHARE_WRITE|windows.FILE_SHARE_DELETE, nil, windows.OPEN_EXISTING, 0, 0)
 	if err != nil {
 		t.Fatal(err)
 	}

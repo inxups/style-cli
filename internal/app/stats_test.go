@@ -252,9 +252,20 @@ func snapshotStatsTree(t *testing.T, root string) map[string]statsFileSnapshot {
 		if err != nil {
 			return err
 		}
-		info, err := entry.Info()
+		info, err := os.Lstat(path)
 		if err != nil {
 			return err
+		}
+		if info.Mode()&os.ModeSymlink == 0 {
+			file, e := os.Open(path)
+			if e != nil {
+				return e
+			}
+			info, e = file.Stat()
+			file.Close()
+			if e != nil {
+				return e
+			}
 		}
 		item := statsFileSnapshot{Mode: info.Mode(), Time: info.ModTime()}
 		if info.Mode().IsRegular() {

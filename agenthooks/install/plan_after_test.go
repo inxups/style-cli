@@ -7,7 +7,10 @@ import (
 	"path/filepath"
 	"testing"
 
+	"encoding/json"
 	"github.com/speakeasy-api/agenthooks"
+	"runtime"
+	"strings"
 )
 
 func TestPlanFilesAfterComposesSharedConfigWithoutWrites(t *testing.T) {
@@ -61,7 +64,28 @@ func TestPlanFilesAfterComposesSharedConfigWithoutWrites(t *testing.T) {
 		t.Fatal(err)
 	}
 	hooks, _ := os.ReadFile(filepath.Join(dir, "hooks.json"))
-	if !bytes.Contains(hooks, []byte("/tmp/new-hooks")) || bytes.Contains(hooks, []byte("/usr/local/bin/myhooks")) {
+	check := string(hooks)
+	if runtime.GOOS == "windows" {
+		var document map[string]any
+		if json.Unmarshal(hooks, &document) != nil {
+			t.Fatal("invalid configuration")
+		}
+		var decoded []string
+		for _, v := range document["hooks"].(map[string]any) {
+			for _, group := range v.([]any) {
+				for _, h := range group.(map[string]any)["hooks"].([]any) {
+					c := h.(map[string]any)["command"].(string)
+					value, ok := windowsDecodedCommand(c)
+					if !ok {
+						t.Fatal("invalid encoded command")
+					}
+					decoded = append(decoded, value)
+				}
+			}
+		}
+		check = strings.Join(decoded, "\n")
+	}
+	if !strings.Contains(check, "/tmp/new-hooks") || strings.Contains(check, "/usr/local/bin/myhooks") {
 		t.Fatalf("hooks=%s", hooks)
 	}
 	remove, err = PlanUninstallFiles(manifest, target)

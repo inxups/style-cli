@@ -15,6 +15,9 @@ func TestM3A3ManagementPathsIncludesUnchangedFilesAndRestoreRecords(t *testing.T
 		scope    Scope
 	}{{agenthooks.ProviderCodex, ScopeUser}, {agenthooks.ProviderCodex, ScopePlugin}, {agenthooks.ProviderClaudeCode, ScopeUser}} {
 		t.Run(string(scope.provider)+"/"+string(scope.scope), func(t *testing.T) {
+			if scope.scope == ScopePlugin {
+				requirePOSIXFixture(t, "POSIX plugin route")
+			}
 			dir, config := t.TempDir(), t.TempDir()
 			target := Target{Provider: scope.provider, Scope: scope.scope, Dir: dir, ConfigDir: config, HarnessVersion: "2.1.315"}
 			m := testManifest()

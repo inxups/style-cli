@@ -32,3 +32,10 @@ func fixtureMode(want os.FileMode, dir bool) os.FileMode {
 	}
 	return 0666
 }
+
+func fixtureNativeCount(posix int) int {
+	if runtime.GOOS == "windows" {
+		return 0
+	}
+	return posix
+}

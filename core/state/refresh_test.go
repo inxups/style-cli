@@ -99,7 +99,7 @@ func TestRefreshNativeReplayLateUnknownAndFallback(t *testing.T) {
 			}
 		})
 	}
-	data, err := os.ReadFile(filepath.Join(s.root, component("s"), component("main"), "refresh", "codex.json"))
+	data, err := os.ReadFile(filepath.Join(s.root, component("s"), component("main"), "refresh", component("codex")+".json"))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -286,7 +286,7 @@ func TestRefreshRejectsCorruptionSymlinksAndOverflow(t *testing.T) {
 		t.Run(bad, func(t *testing.T) {
 			s := refreshStore(t)
 			refreshEvent(t, s, "s", "main", "codex", EventUpdate{}, "", nil)
-			path := filepath.Join(s.root, component("s"), component("main"), "refresh", "codex.json")
+			path := filepath.Join(s.root, component("s"), component("main"), "refresh", component("codex")+".json")
 			os.WriteFile(path, []byte(bad), 0600)
 			g, err := s.BeginRefresh(context.Background(), "s")
 			if err != nil {
@@ -332,7 +332,7 @@ func TestRefreshRejectsCorruptionSymlinksAndOverflow(t *testing.T) {
 		t.Run(part, func(t *testing.T) {
 			s := refreshStore(t)
 			refreshEvent(t, s, "s", "main", "codex", EventUpdate{}, "", nil)
-			path := map[string]string{"root": s.root, "session": filepath.Join(s.root, component("s")), "scope": filepath.Join(s.root, component("s"), component("main")), "refresh": filepath.Join(s.root, component("s"), component("main"), "refresh"), "state": filepath.Join(s.root, component("s"), component("main"), "refresh", "codex.json"), "lock": filepath.Join(s.root, component("s"), "refresh.lock"), "seen": filepath.Join(s.root, component("s"), component("main"), "seen")}[part]
+			path := map[string]string{"root": s.root, "session": filepath.Join(s.root, component("s")), "scope": filepath.Join(s.root, component("s"), component("main")), "refresh": filepath.Join(s.root, component("s"), component("main"), "refresh"), "state": filepath.Join(s.root, component("s"), component("main"), "refresh", component("codex")+".json"), "lock": filepath.Join(s.root, component("s"), "refresh.lock"), "seen": filepath.Join(s.root, component("s"), component("main"), "seen")}[part]
 			os.RemoveAll(path)
 			target := t.TempDir()
 			if part == "state" || part == "lock" {

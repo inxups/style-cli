@@ -9,9 +9,13 @@ import (
 	"time"
 
 	"github.com/speakeasy-api/agenthooks"
+	"runtime"
 )
 
 func a2RuntimeConfig(t *testing.T, provider agenthooks.Provider, plugin bool) (Manifest, Target, map[string][]byte) {
+	if plugin {
+		requirePOSIXFixture(t, "POSIX plugin route")
+	}
 	t.Helper()
 	dir := t.TempDir()
 	config := dir
@@ -21,6 +25,9 @@ func a2RuntimeConfig(t *testing.T, provider agenthooks.Provider, plugin bool) (M
 		config = t.TempDir()
 	}
 	manifest := Manifest{Command: []string{"/fixture/style", "--style-home=/fixture/home", "--harness-home=" + config}, Owner: "style", Identity: Identity{Name: "style-runtime", Version: "0.1.0", PluginID: "style-runtime@style"}, Hooks: []HookSpec{{Kind: agenthooks.KindToolPre, NativeMatcher: "Bash", Blocking: true, Timeout: 10 * time.Second}, {NativeEvent: "SessionEnd", RawCommand: "echo native-canary", RawTag: "author"}}}
+	if runtime.GOOS == "windows" {
+		manifest.Hooks = manifest.Hooks[:1]
+	}
 	target := Target{Provider: provider, Scope: scope, Dir: dir, ConfigDir: config, HarnessVersion: "2.1.301"}
 	rendered, err := Render(manifest, target)
 	if err != nil {

@@ -359,6 +359,18 @@ func (s *Store) Cleanup(maxAge time.Duration) (int, error) {
 	if err != nil {
 		return 0, fmt.Errorf("state: scan state root: %w", err)
 	}
+	// The Windows gate serializes the close-before-rename interval with every
+	// active refresh process. A busy gate conservatively postpones this cleanup.
+	gate, err := platformCleanupGate(s.root)
+	if err != nil {
+		if strings.Contains(err.Error(), "lock busy") {
+			return 0, nil
+		}
+		return 0, err
+	}
+	if gate != nil {
+		defer func() { unlockRefresh(gate); gate.Close() }()
+	}
 	cutoff := s.now().Add(-maxAge)
 	removed := 0
 	for _, entry := range entries {
@@ -381,7 +393,7 @@ func (s *Store) Cleanup(maxAge time.Duration) (int, error) {
 			if err != nil {
 				return removed, err
 			}
-			guard, err := openRefreshGuard(context.Background(), s, root, entry.Name(), false)
+			guard, err := openRefreshGuardGated(context.Background(), s, root, entry.Name(), false, false)
 			if err != nil {
 				if strings.Contains(err.Error(), "lock busy") {
 					continue
@@ -405,7 +417,7 @@ func (s *Store) Cleanup(maxAge time.Duration) (int, error) {
 			quarantine := ".expired-" + randomReservation()
 			err = guard.Check()
 			if err == nil {
-				err = guard.root.Rename(entry.Name(), quarantine)
+				err = quarantineRefreshSession(guard, quarantine)
 			}
 			guard.Close()
 			if err == nil {

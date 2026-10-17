@@ -147,7 +147,7 @@ func TestRulesUpdatePreservesModeAndOwnerRemovalKeepsOtherState(t *testing.T) {
 	if err := r.Apply(context.Background(), change); err != nil {
 		t.Fatal(err)
 	}
-	if info, err := os.Stat(path); err != nil || info.Mode().Perm() != 0o600 {
+	if info, err := os.Stat(path); err != nil || info.Mode().Perm() != fixtureMode(0o600) {
 		t.Fatal("update changed existing rules mode")
 	}
 	change, err = r.Remove(context.Background(), "first")

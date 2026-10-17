@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"testing"
 	"time"
@@ -125,7 +126,7 @@ func TestM3A5RollbackFailureRetainsBackup(t *testing.T) {
 	}
 	after := a4State(t, home, config)
 	for path, state := range before {
-		if !strings.Contains(path, "/packages/first/") && after[path] != state {
+		if !strings.Contains(filepath.ToSlash(path), "/packages/first/") && after[path] != state {
 			t.Fatal("another rollback was skipped", path)
 		}
 	}
@@ -144,13 +145,22 @@ func TestM3A5CapturedInputsAndDetachedConfirmation(t *testing.T) {
 				// Every mutable preview collection is detached from the committed plan.
 				preview.Selected[0] = "changed"
 				preview.Changes[0].After.Source.Path = "changed"
-				preview.Native[0].Command = "printf UNAPPROVED"
+				if len(preview.Native) > 0 {
+					preview.Native[0].Command = "printf UNAPPROVED"
+				}
 				preview.Contents[0].Snapshot = "changed"
 				path := paths[input]
 				switch input {
 				case "none":
 				case "parent":
-					if err := os.Chmod(config, 0o755); err != nil {
+					if runtime.GOOS == "windows" {
+						if err := os.Rename(config, config+"-previous"); err != nil {
+							t.Fatal(err)
+						}
+						if err := os.Mkdir(config, 0700); err != nil {
+							t.Fatal(err)
+						}
+					} else if err := os.Chmod(config, 0o755); err != nil {
 						t.Fatal(err)
 					}
 				case "new-file":
@@ -160,7 +170,11 @@ func TestM3A5CapturedInputsAndDetachedConfirmation(t *testing.T) {
 					if err != nil {
 						t.Fatal(err)
 					}
-					if err := os.Chmod(path, info.Mode().Perm()^0o044); err != nil {
+					mode := info.Mode().Perm() ^ 0o044
+					if runtime.GOOS == "windows" {
+						mode = info.Mode().Perm() ^ 0o222
+					}
+					if err := os.Chmod(path, mode); err != nil {
 						t.Fatal(err)
 					}
 				case "lock-mtime":
@@ -178,7 +192,7 @@ func TestM3A5CapturedInputsAndDetachedConfirmation(t *testing.T) {
 				return true, nil
 			}})
 			if input == "none" {
-				if err != nil || !result.Changed || result.Selected[0] != "first" || result.Native[0].Command == "printf UNAPPROVED" || result.Contents[0].Snapshot != "source" {
+				if err != nil || !result.Changed || result.Selected[0] != "first" || (len(result.Native) > 0 && result.Native[0].Command == "printf UNAPPROVED") || result.Contents[0].Snapshot != "source" {
 					t.Fatalf("%+v %v", result, err)
 				}
 				return

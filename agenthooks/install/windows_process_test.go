@@ -4,6 +4,7 @@ package install
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"errors"
 	"io"
@@ -13,6 +14,7 @@ import (
 	"reflect"
 	"strings"
 	"testing"
+	"time"
 )
 
 func TestM3A17WindowsChildHelper(t *testing.T) {
@@ -43,11 +45,13 @@ func TestM3A17WindowsShellPreservesProcessContract(t *testing.T) {
 	command := windowsHookCommand(append([]string{os.Args[0], "-test.run=^TestM3A17WindowsChildHelper$", "--"}, args...))
 	for _, shell := range []string{"cmd.exe", "powershell.exe"} {
 		t.Run(shell, func(t *testing.T) {
+			ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+			defer cancel()
 			var cmd *exec.Cmd
 			if shell == "cmd.exe" {
-				cmd = exec.Command(shell, "/d", "/s", "/c", command)
+				cmd = exec.CommandContext(ctx, shell, "/d", "/s", "/c", command)
 			} else {
-				cmd = exec.Command(shell, "-NoProfile", "-NonInteractive", "-Command", command)
+				cmd = exec.CommandContext(ctx, shell, "-NoProfile", "-NonInteractive", "-Command", command+"; exit $LASTEXITCODE")
 			}
 			cmd.Dir = root
 			cmd.Env = append(os.Environ(), "STYLE_WINDOWS_PROCESS_HELPER=1", "PATH="+root+string(os.PathListSeparator)+os.Getenv("PATH"))

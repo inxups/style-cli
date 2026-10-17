@@ -8,6 +8,7 @@ import (
 	"os"
 	"path/filepath"
 	"reflect"
+	"runtime"
 	"strings"
 	"testing"
 	"time"
@@ -180,7 +181,11 @@ func TestM3A3CommitRejectsStaleInputs(t *testing.T) {
 				}
 				switch kind {
 				case "config-mode":
-					if err := os.Chmod(target, 0o600); err != nil {
+					mode := os.FileMode(0o600)
+					if runtime.GOOS == "windows" {
+						mode = 0444
+					}
+					if err := os.Chmod(target, mode); err != nil {
 						t.Fatal(err)
 					}
 				case "same-bytes-new-inode":

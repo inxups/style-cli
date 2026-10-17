@@ -14,6 +14,7 @@ import (
 )
 
 const RefreshLockWait = 20 * time.Millisecond
+const refreshGateName = ".refresh-gate.lock"
 
 // RefreshGuard serializes the whole runtime operation, including shared
 // session facts and claim rollback. The inode is permanent until cold cleanup;
@@ -24,6 +25,8 @@ type RefreshGuard struct {
 	file     *os.File
 	rootInfo os.FileInfo
 	fileInfo os.FileInfo
+	gate     *os.File
+	gateInfo os.FileInfo
 	session  string
 	closed   bool
 }
@@ -54,7 +57,26 @@ func (s *Store) BeginRefresh(ctx context.Context, sessionID string) (*RefreshGua
 }
 
 func openRefreshGuard(ctx context.Context, s *Store, root *os.Root, session string, shared bool) (*RefreshGuard, error) {
-	fail := func(err error) (*RefreshGuard, error) { root.Close(); return nil, err }
+	return openRefreshGuardGated(ctx, s, root, session, shared, true)
+}
+func openRefreshGuardGated(ctx context.Context, s *Store, root *os.Root, session string, shared, gated bool) (*RefreshGuard, error) {
+	var gate *os.File
+	var gateInfo os.FileInfo
+	fail := func(err error) (*RefreshGuard, error) {
+		if gate != nil {
+			unlockRefresh(gate)
+			gate.Close()
+		}
+		root.Close()
+		return nil, err
+	}
+	if gated {
+		var err error
+		gate, gateInfo, err = platformRefreshGate(ctx, root, false, !shared)
+		if err != nil {
+			return fail(err)
+		}
+	}
 	path := filepath.Join(session, "refresh.lock")
 	if err := saferead.CheckDirectories(root, path); err != nil {
 		return fail(err)
@@ -86,33 +108,34 @@ func openRefreshGuard(ctx context.Context, s *Store, root *os.Root, session stri
 		f.Close()
 		return fail(err)
 	}
-	g := &RefreshGuard{store: s, root: root, file: f, rootInfo: ri, fileInfo: info, session: session}
+	g := &RefreshGuard{store: s, root: root, file: f, rootInfo: ri, fileInfo: info, session: session, gate: gate, gateInfo: gateInfo}
+	if err := lockRefreshFile(ctx, f, shared); err != nil {
+		g.Close()
+		return nil, err
+	}
+	if err := g.Check(); err != nil {
+		g.Close()
+		return nil, err
+	}
+	return g, nil
+}
+
+func lockRefreshFile(ctx context.Context, file *os.File, shared bool) error {
 	deadline := time.Now().Add(RefreshLockWait)
 	for {
 		if err := ctx.Err(); err != nil {
-			g.Close()
-			return nil, err
+			return err
 		}
-		acquired, err := tryRefreshLock(f, shared)
+		acquired, err := tryRefreshLock(file, shared)
 		if err != nil {
-			g.Close()
-			return nil, err
+			return err
 		}
 		if acquired {
-			if err := ctx.Err(); err != nil {
-				g.Close()
-				return nil, err
-			}
-			if err := g.Check(); err != nil {
-				g.Close()
-				return nil, err
-			}
-			return g, nil
+			return ctx.Err()
 		}
 		left := time.Until(deadline)
 		if left <= 0 {
-			g.Close()
-			return nil, fmt.Errorf("state: refresh lock busy")
+			return fmt.Errorf("state: refresh lock busy")
 		}
 		if left > time.Millisecond {
 			left = time.Millisecond
@@ -121,8 +144,7 @@ func openRefreshGuard(ctx context.Context, s *Store, root *os.Root, session stri
 		select {
 		case <-ctx.Done():
 			timer.Stop()
-			g.Close()
-			return nil, ctx.Err()
+			return ctx.Err()
 		case <-timer.C:
 		}
 	}
@@ -135,6 +157,12 @@ func (g *RefreshGuard) Check() error {
 	info, err := os.Lstat(g.root.Name())
 	if err != nil || !info.IsDir() || !os.SameFile(info, g.rootInfo) || info.Mode() != g.rootInfo.Mode() {
 		return saferead.ErrChanged
+	}
+	if g.gate != nil {
+		info, err := g.root.Lstat(refreshGateName)
+		if err != nil || !info.Mode().IsRegular() || info.Size() != 0 || !os.SameFile(info, g.gateInfo) {
+			return saferead.ErrChanged
+		}
 	}
 	path := filepath.Join(g.session, "refresh.lock")
 	if err := saferead.CheckDirectories(g.root, path); err != nil {
@@ -152,9 +180,20 @@ func (g *RefreshGuard) Close() error {
 		return nil
 	}
 	g.closed = true
-	err := unlockRefresh(g.file)
-	if e := g.file.Close(); err == nil {
-		err = e
+	var err error
+	if g.file != nil {
+		err = unlockRefresh(g.file)
+		if e := g.file.Close(); err == nil {
+			err = e
+		}
+	}
+	if g.gate != nil {
+		if e := unlockRefresh(g.gate); err == nil {
+			err = e
+		}
+		if e := g.gate.Close(); err == nil {
+			err = e
+		}
 	}
 	if e := g.root.Close(); err == nil {
 		err = e

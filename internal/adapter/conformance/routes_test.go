@@ -145,7 +145,7 @@ func checkRouteLifecycle(t *testing.T, withNative bool) {
 					if got := read(t, path); !bytes.Equal(got, raw) {
 						t.Errorf("foreign bytes changed in %s\ngot %q\nwant %q", filepath.Base(path), got, raw)
 					}
-					if info, err := os.Stat(path); err != nil || info.Mode().Perm() != 0o640 {
+					if info, err := os.Stat(path); err != nil || info.Mode().Perm() != fixtureForeignMode() {
 						t.Errorf("foreign mode changed: %v %v", info, err)
 					}
 				}
@@ -166,4 +166,11 @@ func checkRouteLifecycle(t *testing.T, withNative bool) {
 			})
 		}
 	}
+}
+
+func fixtureForeignMode() os.FileMode {
+	if runtime.GOOS == "windows" {
+		return 0666
+	}
+	return 0640
 }

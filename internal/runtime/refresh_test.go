@@ -73,7 +73,7 @@ func TestRefreshRuntimeClockOnlyAndNativeWire(t *testing.T) {
 					}
 				}
 			}
-			data, err := os.ReadFile(filepath.Join(root, fixtureStateComponent("s"), fixtureStateComponent("main"), "refresh", string(provider)+".json"))
+			data, err := os.ReadFile(filepath.Join(root, fixtureStateComponent("s"), fixtureStateComponent("main"), "refresh", fixtureStateComponent(string(provider))+".json"))
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -84,7 +84,7 @@ func TestRefreshRuntimeClockOnlyAndNativeWire(t *testing.T) {
 			if clock.Q != 3 {
 				t.Fatal(string(data))
 			}
-			stats, err := os.ReadFile(filepath.Join(root, "s", "main", "stats.jsonl"))
+			stats, err := os.ReadFile(filepath.Join(root, fixtureStateComponent("s"), fixtureStateComponent("main"), "stats.jsonl"))
 			if err != nil {
 				t.Fatal(err)
 			}

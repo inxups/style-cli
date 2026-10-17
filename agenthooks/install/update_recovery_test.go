@@ -93,7 +93,7 @@ func TestM3A4FileRestoreFailureRetainsBackup(t *testing.T) {
 		t.Fatalf("backup=%q %v", data, err)
 	}
 	info, _ := os.Stat(backups[0])
-	if info.Mode().Perm() != 0o640 {
+	if info.Mode().Perm() != fixtureMode(0o640) {
 		t.Fatal("backup lost original mode")
 	}
 	staged, _ := filepath.Glob(filepath.Join(root, ".agenthooks-stage-*"))

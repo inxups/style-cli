@@ -91,7 +91,7 @@ func TestDoctorChecksIndexLockSettingsAndRouteIntegrity(t *testing.T) {
 					t.Fatal(err)
 				}
 			case "missing-route":
-				if err := os.Remove(filepath.Join(home, "adapters", "codex", "plugin", "hooks", "hooks.json")); err != nil {
+				if err := os.Remove(doctorFixtureHooks(home)); err != nil {
 					t.Fatal(err)
 				}
 			}
@@ -102,7 +102,7 @@ func TestDoctorChecksIndexLockSettingsAndRouteIntegrity(t *testing.T) {
 			if result.Healthy != (scenario == "healthy") {
 				t.Fatalf("healthy=%v diagnostics=%+v", result.Healthy, result.Diagnostics)
 			}
-			if scenario == "healthy" && !doctorHas(result, "route-trust-unverified") {
+			if scenario == "healthy" && runtime.GOOS != "windows" && !doctorHas(result, "route-trust-unverified") {
 				t.Fatal("plugin trust must remain unverified")
 			}
 			if scenario != "healthy" && scenario != "missing-route" && !doctorHas(result, "index-invalid") {
@@ -233,4 +233,11 @@ func TestDoctorCostsUseHistoricalMetadataAndSevenDayWindow(t *testing.T) {
 	if err != nil || len(costs) != 3 || legacy != 1 || costs[0].Rule != "pkg/big" || costs[1].EstimatedTokens != 30 || !costs[1].RepeatedBody || costs[1].Emits != 3 || costs[2].Rule != "pkg/small" {
 		t.Fatalf("costs = %+v, legacy=%d err=%v", costs, legacy, err)
 	}
+}
+
+func doctorFixtureHooks(home string) string {
+	if runtime.GOOS == "windows" {
+		return filepath.Join(filepath.Dir(home), "codex", "hooks.json")
+	}
+	return filepath.Join(home, "adapters", "codex", "plugin", "hooks", "hooks.json")
 }

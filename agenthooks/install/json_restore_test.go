@@ -10,6 +10,7 @@ import (
 	"testing"
 
 	"github.com/speakeasy-api/agenthooks"
+	"github.com/speakeasy-api/agenthooks/privatefs"
 )
 
 func restoreFixture(t *testing.T, original []byte) (Manifest, Target, string, string) {
@@ -32,16 +33,17 @@ func TestJSONRestorationKeepsOriginalBytesAcrossUpdates(t *testing.T) {
 	for _, original := range []string{`{}`, "{\"hooks\":{}}\r\n", "{ \"env\" : {\"KEEP\":\"\\u4fdd\\u7559\"} }\n\n"} {
 		t.Run(original, func(t *testing.T) {
 			manifest, target, path, recordPath := restoreFixture(t, []byte(original))
-			if info, err := os.Stat(recordPath); err != nil || info.Mode().Perm() != 0o600 {
+			if info, err := os.Stat(recordPath); err != nil || info.Mode().Perm() != fixtureMode(0o600) || privatefs.CheckPath(recordPath) != nil {
 				t.Fatalf("record permissions: %v %v", info, err)
 			}
-			if err := os.Chmod(recordPath, 0o644); err != nil {
-				t.Fatal(err)
+			exposeFixtureFile(t, recordPath)
+			if privatefs.CheckPath(recordPath) == nil {
+				t.Fatal("permission fault did not expose restoration record")
 			}
 			if err := Install(context.Background(), manifest, target); err != nil {
 				t.Fatal(err)
 			}
-			if info, err := os.Stat(recordPath); err != nil || info.Mode().Perm() != 0o600 {
+			if info, err := os.Stat(recordPath); err != nil || info.Mode().Perm() != fixtureMode(0o600) || privatefs.CheckPath(recordPath) != nil {
 				t.Fatal("record permissions were not repaired")
 			}
 			manifest.Command = []string{"/new/style", "with spaces"}

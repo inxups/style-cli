@@ -12,6 +12,8 @@ import (
 
 	"github.com/inxups/style-cli/internal/adapter"
 	"github.com/inxups/style-cli/internal/adapter/claude"
+	"github.com/inxups/style-cli/internal/testfs"
+	"runtime"
 )
 
 func a7Service(t *testing.T, config string, legacy bool) *Service {
@@ -218,6 +220,9 @@ func TestA7LegacyMigrationEveryRebuildEntrypoint(t *testing.T) {
 }
 
 func TestA7MigrationTrustKeepsOtherUnapprovedSourceAndNative(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		t.Skip("D11: author native migration fixture requires POSIX")
+	}
 	for _, link := range []bool{false, true} {
 		t.Run(fmt.Sprint(link), func(t *testing.T) {
 			root := t.TempDir()
@@ -351,7 +356,9 @@ func TestA7MigrationConflictsLeaveFullTransactionUnchanged(t *testing.T) {
 				if err := os.MkdirAll(filepath.Dir(path), 0o500); err != nil {
 					t.Fatal(err)
 				}
-				defer os.Chmod(filepath.Dir(path), 0o700)
+				writable := testfs.WritableDirectory(t, filepath.Dir(path))
+				writable(false)
+				defer writable(true)
 			}
 			s := a7Service(t, config, false)
 			before := a7Tree(t, home, config, outside)

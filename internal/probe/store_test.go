@@ -11,7 +11,9 @@ import (
 	"testing"
 	"time"
 
+	"github.com/inxups/style-cli/internal/testfs"
 	"github.com/speakeasy-api/agenthooks"
+	"github.com/speakeasy-api/agenthooks/privatefs"
 )
 
 func a2Binding(harness string) Binding {
@@ -60,12 +62,12 @@ func a2WriteReceipt(t *testing.T, home string, lease Lease, name string, value a
 func TestM3A2LeaseAcquisitionBusyAndRollback(t *testing.T) {
 	session, home, _ := a2Session(t, "codex")
 	info, err := os.Stat(filepath.Join(home, "probes", "codex.lease.json"))
-	if err != nil || info.Mode().Perm() != 0o600 {
+	if err != nil || privatefs.CheckPath(filepath.Join(home, "probes", "codex.lease.json")) != nil {
 		t.Fatalf("private lease: %v %v", info, err)
 	}
 	for _, name := range []string{"probes", "probes/runs", "probes/runs/" + session.RunID, "probes/" + session.Lease("codex").ReceiptDir} {
 		info, err := os.Stat(filepath.Join(home, name))
-		if err != nil || info.Mode().Perm() != 0o700 {
+		if err != nil || privatefs.CheckPath(filepath.Join(home, name)) != nil {
 			t.Fatalf("private directory: %s %v %v", name, info, err)
 		}
 	}
@@ -348,7 +350,7 @@ func TestM3A2ReceiptsStrictBoundsAndWhitelist(t *testing.T) {
 			case "oversize":
 				os.WriteFile(path, bytes.Repeat([]byte(" "), MaxReceiptBytes+1), 0o600)
 			case "mode":
-				os.Chmod(path, 0o644)
+				testfs.MakePublic(t, path, 0o644)
 			case "symlink":
 				os.Rename(path, filepath.Join(home, "external"))
 				os.Symlink(filepath.Join(home, "external"), path)
@@ -401,7 +403,7 @@ func TestM3A2ProbeFilesystemRefusal(t *testing.T) {
 				case "lease-symlink":
 					os.Symlink(sentinel, filepath.Join(home, "probes", "codex.lease.json"))
 				case "probes-public":
-					os.Chmod(filepath.Join(home, "probes"), 0o755)
+					testfs.MakePublic(t, filepath.Join(home, "probes"), 0o755)
 				case "lease-public":
 					os.WriteFile(filepath.Join(home, "probes", "codex.lease.json"), []byte(`{}`), 0o644)
 				case "lease-directory":
@@ -453,7 +455,7 @@ func TestM3A17LeaseIdentityRemainsPinnedUntilCleanup(t *testing.T) {
 	if result.Complete {
 		t.Fatal("replacement cleanup should be conservative")
 	}
-	if _, err := held.pin.Stat(); !errors.Is(err, os.ErrClosed) {
+	if err := held.pin.Close(); !errors.Is(err, os.ErrClosed) {
 		t.Fatal("cleanup leaked lease handle", err)
 	}
 	data, err := os.ReadFile(path)

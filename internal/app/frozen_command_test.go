@@ -15,6 +15,13 @@ import (
 )
 
 func a5Golden(t *testing.T, name, output, root, digest string) {
+	if runtime.GOOS == "windows" {
+		t.Run("POSIX-golden/"+name, func(t *testing.T) {
+			t.Skip("D11: POSIX native plan and path golden; Windows command semantics asserted by parent and native CLI checks")
+		})
+		return
+	}
+
 	t.Helper()
 	canonical, err := filepath.EvalSymlinks(root)
 	if err != nil {
@@ -89,7 +96,7 @@ func TestM3A5CommandGoldenAndSingleJSON(t *testing.T) {
 					if decoder.Decode(new(any)) != io.EOF || result.Format != 1 || result.Command != "install --frozen" || !result.LockedSource || result.LockSHA256 != digest || errOut.Len() != 0 {
 						t.Fatalf("JSON=%s stderr=%s", &out, &errOut)
 					}
-					if phase != "error" && len(result.Native) != 2 {
+					if phase != "error" && len(result.Native) != fixtureNativeCount(2) {
 						t.Fatal("native disclosure omitted")
 					}
 				} else if phase != "error" && !strings.Contains(out.String(), digest) {
