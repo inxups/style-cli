@@ -187,6 +187,18 @@ static 仍只提供 index 的位置/摘要/估算，不证明原生已加载；n
    M2-D4/D5 的 [迁移与回退契约](../review/M2-D4-D5-DESIGN-2026-10-17.md) 已于 2026-10-17 获用户批准；T40 已实现 `claude_rules`。旧产物 `claude_md` 继续按旧布局解释，首次成功重建路线时迁移，单纯搬迁不需额外 trust。锁文件的可选 `static_layout` / `static_files` 保存冷路径布局和生成文件摘要；批准快照仍保留源字节和静态编译表示。没有安装归属的同名文件不接管；缺失、摘要/格式漂移、symlink 或损坏旧标记阻止事务。C1/C3 真实交互已确认生产规则加载一次及卸载后的新会话还原，见 [C3 证据](../review/M2-C3-CLAUDE-2026-10-17.json)；记录顺序不构成更高优先级保证。
 5. 改过的 md 不会自动生效：要 `style sync` 重新编译，并经 `style trust <名字>` 确认。这补上了 Codex 信任哈希不覆盖 md 内容的缺口。`--link` 开发包第一次 `trust` 之后，后续改动只在 `sync` 时显示差异摘要，不阻塞。
 
+### 10.1 M3-D2 锁定重建评审稿
+
+本节为等待用户评审的 [D2 契约](../review/M3-D2-SOURCES-2026-10-17.md)，尚未实现。D1 的 index/state/explain format=1 继续有效；D2 只拟在首次成功 Git 安装时引入 lock format=2，新版读取 1/2，纯本地旧锁仍写 1。Git URL/ref/object_format/commit/tree 或 blob 及内容摘要属于冷路径锁和缓存，不加入 runtime index，不使 hook 启动 Git。
+
+index.packages 的 lock 仍按排序包路径、NUL、逐文件 SHA256 和换行聚合；相同字节不因 ref/commit 变化产生新内容身份，来源变化仍在管理锁与预览中披露。Git 单文件与目录来源通过 core 的既有不可变快照校验，与本地包共用 requires/settings/native/预算/跨包去重与解释说明生成。
+
+update 拟将明确选择的候选和未选批准基线联合编译；未选包的批准渲染/native 效果变化先阻止，--all 才覆盖联合批准。包目录、approved/settings、index/explain、lock 和路线产物由 app 协调同一管理事务，复用 agenthooks 渲染/owner/Before 保护；失败逆序回滚并报告恢复错误，不承诺多文件断电原子。
+
+frozen 拟在当前整锁与绑定下离线重建，逐文件、Git 内容身份、名称/版本、批准表示、surface/rendered/static 布局均须相符；锁精确字节不变，不联网或以新 ref/default 重算旧批准。管理/批准字节和完整 Git 缓存可提供锁定内容，link 必须 live 精确匹配且已授权。settings 值不进入锁，现有值必须能重现批准效果；缺基线、要求迁移/重定位或输出差异给明确失败。
+
+缺失可推导产物只在原 owner 计划允许时恢复，不接管外来同名文件或改过的托管块；现有 native/replace 确认与状态隔离继续有效。A3/A4/A5 各 12 组断言、旧锁与三路线回归尚待实现执行，真实投递、Windows 和跨平台 CI 不随设计关闭。
+
 ## 11. 依赖的 fork 改动
 
 本文的语义依赖下面几项 fork 改动。完整清单（原因、源码位置、里程碑）见 CLI 设计第 13 节，编号以那里为准。

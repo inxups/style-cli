@@ -1,0 +1,734 @@
+{
+  "task": "M3-D2",
+  "date": "2026-10-17",
+  "scope": "design investigation and documentation validation only",
+  "status": "draft_awaiting_user_review",
+  "source_base": "a8fad75a17d0dbc1a38cc5825ec17cfda5b780ab",
+  "verification": {
+    "command": "PYTHONDONTWRITEBYTECODE=1 python3 /tmp/style-m3-d2-doc-check-20261017.py --base a8fad75a17d0dbc1a38cc5825ec17cfda5b780ab --closed",
+    "exit_code": 0,
+    "checker_sha256": "1d8247d56a7ccccc38fbbcb6a0bb2199b43fd346ffd211d3d1c5923acb02dd29",
+    "result": {
+      "base": "a8fad75a17d0dbc1a38cc5825ec17cfda5b780ab",
+      "documents_checked": 8,
+      "local_links_and_anchors": 145,
+      "official_external_basis_links": 6,
+      "shell_blocks_syntax_checked": 4,
+      "JSON_examples_checked": 0,
+      "task_entries": 44,
+      "test_entries": 39,
+      "task_test_mappings_valid": true,
+      "dependencies_acyclic": true,
+      "architecture_prerequisite_checked": true,
+      "full_scope_present": true,
+      "design_status": "draft awaiting user review",
+      "A3_subcases_pending": 12,
+      "A4_subcases_pending": 12,
+      "A5_subcases_pending": 12,
+      "progress_prefix_unchanged": true,
+      "progress_prefix_sha256": "e4b488a272192fed264c8c5a3e2e9dff2778fa862ab26c0a3805a276c8e16b64",
+      "historical_archives_unchanged": 77,
+      "only_documentation_changed": true,
+      "source_files_checked": 19,
+      "source_facts_checked": 62,
+      "design_Git_probe_checks_passed": 12,
+      "design_Git_commands": 41,
+      "design_Git_expected_failed_commands": 2,
+      "fixture_setup_failures_preserved": 2,
+      "completed_tasks": [
+        "M3-00",
+        "M3-01",
+        "M3-D0",
+        "M3-D1",
+        "M3-RV-01",
+        "M3-T00",
+        "M3-T10",
+        "M3-T11"
+      ],
+      "completed_tests": [
+        "M3-00",
+        "M3-A0",
+        "M3-A1",
+        "M3-A2",
+        "M3-BASE-01"
+      ],
+      "new_Go_or_feature_or_real_environment_tests_executed": false,
+      "diff_check": "passed"
+    }
+  },
+  "document_sha256": {
+    "AGENTS.md": "f405ef8b1d31f01ba43d3f07950db847e770956a79372f212fd30482d3e463c9",
+    "docs/PROGRESS.md": "c5e71b4f966726403714c8135498b62d3b50a6aab207c32187bb6a19bd436fa7",
+    "docs/STYLE-M3-TASKS.md": "c89bbe24cdedd847e0f77efc639aaccda16a6ecd948deb4c1ab65b4e8ee005f9",
+    "docs/STYLE-M3-TESTS.md": "46737e78ec103b70d2d12a0ee49f732e277e33ad13651fdc8aadfbfba268c1b9",
+    "docs/review/M3-D2-SOURCES-2026-10-17.md": "6503f0ba70609894fe657d46aa0635a1ca838c11b2f0eb43796ca6f23c8a1e98",
+    "docs/spec/STYLE-cli-design.md": "de09262808adf82ecd7cac567581094057a05fa7e5c035c5e9a44e4ce7c93e1a",
+    "docs/spec/STYLE-spec-compiled.md": "d29b1fa6e8ffa920e7e74ee58a6e4d436cf7fd11f14f1db00ad2c99532923378",
+    "docs/spec/STYLE-spec-package.md": "5a3fdc35c9abd936027dc4e251b1ee0b99afb65b929719e4898da144c6117ccf"
+  },
+  "audited_sources": [
+    {
+      "path": "internal/app/entry.go",
+      "sha256": "fe651a751ad73db786ed6fdecd9f528d9a7b2bea60bd8a31a170e09f10a71e5b",
+      "facts": [
+        {
+          "text": "case \"install\":",
+          "first_line": 71
+        },
+        {
+          "text": "case \"sync\", \"trust\":",
+          "first_line": 75
+        },
+        {
+          "text": "case \"probe\":",
+          "first_line": 79
+        }
+      ]
+    },
+    {
+      "path": "internal/app/lifecycle_command.go",
+      "sha256": "8eb118d451608591120c5aed317837815fd17762bf8661efee79e3247919659d",
+      "facts": [
+        {
+          "text": "request.Source = filepath.Join(workDir, request.Source)",
+          "first_line": 27
+        },
+        {
+          "text": "func parseInstallArgs(",
+          "first_line": 105
+        }
+      ]
+    },
+    {
+      "path": "internal/app/command.go",
+      "sha256": "cbfd97f085e3259f0f09292a041f4a4b1c1562c49b31fa201994991c9d6fbdec",
+      "facts": [
+        {
+          "text": "source = filepath.Join(workDir, source)",
+          "first_line": 29
+        },
+        {
+          "text": "func parsePlanArgs(",
+          "first_line": 128
+        }
+      ]
+    },
+    {
+      "path": "internal/app/lifecycle_store.go",
+      "sha256": "176cff4b0ba0b41c2a78c2df5df84c28b32bd1a1b1026cb432f02077904d884d",
+      "facts": [
+        {
+          "text": "lockFormat          = 1",
+          "first_line": 21
+        },
+        {
+          "text": "type lockSource struct {",
+          "first_line": 43
+        },
+        {
+          "text": "if document.Format != lockFormat {",
+          "first_line": 98
+        },
+        {
+          "text": "func snapshotPackage(",
+          "first_line": 153
+        },
+        {
+          "text": "func ignoredPackageEntry(",
+          "first_line": 226
+        },
+        {
+          "text": "func hashPackageFiles(",
+          "first_line": 234
+        },
+        {
+          "text": "digestInput.WriteByte(0)",
+          "first_line": 247
+        },
+        {
+          "text": "func (swap *packageSwap) rollback() {",
+          "first_line": 381
+        }
+      ]
+    },
+    {
+      "path": "internal/app/install.go",
+      "sha256": "6e30127c8562f95c916c59ec200c808f6d381b60be8c4392a22b51d0fceedcc8",
+      "facts": [
+        {
+          "text": "files, single, sourcePath, err := snapshotPackage(request.Source)",
+          "first_line": 107
+        },
+        {
+          "text": "spec.LoadSnapshot(sourcePath, files, singleName)",
+          "first_line": 115
+        },
+        {
+          "text": "Source: lockSource{Kind: sourceKind(single), Path: sourcePath, Link: request.Link}",
+          "first_line": 209
+        },
+        {
+          "text": "if !confirmed && request.Confirm != nil {",
+          "first_line": 280
+        },
+        {
+          "text": "confirmed, err = request.Confirm(preview)",
+          "first_line": 284
+        },
+        {
+          "text": "install.ApplyFiles(ctx, plannedChanges)",
+          "first_line": 312
+        },
+        {
+          "text": "func packageLockHash(",
+          "first_line": 813
+        }
+      ]
+    },
+    {
+      "path": "internal/app/package_snapshot.go",
+      "sha256": "b0fd253805867b194169998daeb4d4095af5a40d172867a33bbb500cfdaa79b1",
+      "facts": [
+        {
+          "text": "func installedSnapshot(",
+          "first_line": 14
+        },
+        {
+          "text": "func (s *Service) parseInstalledSnapshot(",
+          "first_line": 32
+        },
+        {
+          "text": "spec.LoadSnapshot(lockedPackagePath(home, item), files, name)",
+          "first_line": 40
+        }
+      ]
+    },
+    {
+      "path": "internal/app/approval_store.go",
+      "sha256": "7707a1927e42556a4690d3de02f0e241770060062282dd3ba0818dce2a1e9ef5",
+      "facts": [
+        {
+          "text": "type approvedSnapshot struct {",
+          "first_line": 16
+        },
+        {
+          "text": "Rendered map[string][]byte",
+          "first_line": 19
+        },
+        {
+          "text": "if item.Approval != \"\" && hashBytes(data) != item.Approval {",
+          "first_line": 63
+        },
+        {
+          "text": "hashes, _ := hashPackageFiles(result.Files)",
+          "first_line": 70
+        }
+      ]
+    },
+    {
+      "path": "internal/app/sync_prepare.go",
+      "sha256": "269f9048b9c252ca921e8a8d975bc6d87964e24401c888404409eb0b6073edfc",
+      "facts": [
+        {
+          "text": "func (s *Service) prepareSync(",
+          "first_line": 14
+        },
+        {
+          "text": "baselines[item.Name], baselineAvailable[item.Name] = baseline, available",
+          "first_line": 62
+        },
+        {
+          "text": "nativeChanged = beforeErr != nil || afterErr != nil || before != after",
+          "first_line": 74
+        },
+        {
+          "text": "snapshots[item.Name] = baseline.Files",
+          "first_line": 108
+        },
+        {
+          "text": "parsed.lock.LinkTrusted = true",
+          "first_line": 129
+        },
+        {
+          "text": "s.compileInstalled(ctx, packages, adapters, request.Name)",
+          "first_line": 137
+        }
+      ]
+    },
+    {
+      "path": "internal/app/sync.go",
+      "sha256": "e6f37250b69c7444039e58aa538d02228d60d406030eb399b4199d8b243b796e",
+      "facts": [
+        {
+          "text": "func applySync(",
+          "first_line": 60
+        },
+        {
+          "text": "install.ApplyFiles(ctx, prepared.files)",
+          "first_line": 64
+        }
+      ]
+    },
+    {
+      "path": "internal/app/trust.go",
+      "sha256": "95acc48a1a6a40d0f88c3a4a1b3b3721b5c3c5181fdaa2d61c557898664db9e7",
+      "facts": [
+        {
+          "text": "func (s *Service) Trust(",
+          "first_line": 17
+        },
+        {
+          "text": "request.Confirm",
+          "first_line": 26
+        }
+      ]
+    },
+    {
+      "path": "internal/app/uninstall.go",
+      "sha256": "913d027c85c82a8bb0a65fb3d15f2486753bbd0f37dc68ec14e74ca0c8d2447b",
+      "facts": [
+        {
+          "text": "func (s *Service) lockedAdapters(",
+          "first_line": 222
+        },
+        {
+          "text": "ConfigDir: lock.Harnesses[raw].ConfigDir",
+          "first_line": 246
+        },
+        {
+          "text": "route = bindRoute(route, installation, home, staticStateFor(lock, provider))",
+          "first_line": 247
+        }
+      ]
+    },
+    {
+      "path": "internal/app/install_routes.go",
+      "sha256": "f4933568b0322bff283077e74564eaa223620f0d22a41db64f078fd326e27cb9",
+      "facts": [
+        {
+          "text": "func bindRoute(",
+          "first_line": 12
+        },
+        {
+          "text": "func planInstallRoutes(",
+          "first_line": 25
+        },
+        {
+          "text": "func withStaticState(",
+          "first_line": 105
+        }
+      ]
+    },
+    {
+      "path": "internal/app/list.go",
+      "sha256": "cd7daa231b86fe929907d7431bb91d3e2a50b86fe20ed042a1c7827f18389eab",
+      "facts": [
+        {
+          "text": "func lockedPackagePath(",
+          "first_line": 97
+        },
+        {
+          "text": "if pkg.Source.Kind == \"file\" {",
+          "first_line": 101
+        },
+        {
+          "text": "baseline.Native",
+          "first_line": 69
+        }
+      ]
+    },
+    {
+      "path": "internal/app/native.go",
+      "sha256": "543b2b185d91c3b9ffc61cc378d7bb18722717e83ca5146599fdd4856bcf12ce",
+      "facts": [
+        {
+          "text": "func nativeSourceFingerprint(",
+          "first_line": 103
+        },
+        {
+          "text": "func loadNativeSource(",
+          "first_line": 128
+        },
+        {
+          "text": "spec.LoadSnapshot(item.Source.Path, files, singleName)",
+          "first_line": 133
+        }
+      ]
+    },
+    {
+      "path": "core/spec/snapshot.go",
+      "sha256": "ce0b53eeba9ebc7cd3e4d8868f985840c415484026bcb3379c01933d44c4b92c",
+      "facts": [
+        {
+          "text": "func LoadSnapshot(root string, input map[string][]byte, singleFile string)",
+          "first_line": 14
+        }
+      ]
+    },
+    {
+      "path": "core/spec/package_files.go",
+      "sha256": "7b3b4e814c56a6d5e0bb5ec02759580d74b4e8cce7cba30636f7d79884d9ecc8",
+      "facts": [
+        {
+          "text": "func readPackageFile(",
+          "first_line": 16
+        },
+        {
+          "text": "func cleanRelativePath(",
+          "first_line": 62
+        },
+        {
+          "text": "func expandFromNames(",
+          "first_line": 114
+        }
+      ]
+    },
+    {
+      "path": "core/compile/types.go",
+      "sha256": "c11064f20de70080c8ef93b88d4e5a16b1d0e7b34a4db5d7191bb83cb8cf94b7",
+      "facts": [
+        {
+          "text": "Format = 1",
+          "first_line": 13
+        },
+        {
+          "text": "type Index struct",
+          "first_line": 27
+        }
+      ]
+    },
+    {
+      "path": "core/compile/dedup.go",
+      "sha256": "002ef465dd2e54a9603f3ba00e6938e0d39366eb65e370170a7cdfda0bfaa519",
+      "facts": [
+        {
+          "text": "result.Deduplicated = append(result.Deduplicated, relation)",
+          "first_line": 147
+        },
+        {
+          "text": "result.Index.Static[harness] = kept",
+          "first_line": 178
+        }
+      ]
+    },
+    {
+      "path": "agenthooks/install/plan_files.go",
+      "sha256": "2a0a28b6d9224b553e8fb01044d073b1ca2db5e92dc2cbb2398a5e277dd486fc",
+      "facts": [
+        {
+          "text": "func ApplyFiles(ctx context.Context, changes []PlannedFile) error {",
+          "first_line": 173
+        },
+        {
+          "text": "rollback := func() error {",
+          "first_line": 194
+        },
+        {
+          "text": "rollback failed: %s",
+          "first_line": 222
+        }
+      ]
+    }
+  ],
+  "design_Git_probe": {
+    "report_path": "/tmp/style-m3-d2-20261017.bgb7zb5l/git-probe.json",
+    "report_sha256": "c86a8b9eebc1a4052d92783aa99d1c180e5015802fefd150c53ee84c7a03b572",
+    "report": {
+      "task": "M3-D2",
+      "source_base": "a8fad75a17d0dbc1a38cc5825ec17cfda5b780ab",
+      "date": "2026-10-17",
+      "status": "passed",
+      "scope": "design investigation only; not T20/T21/T22 or A3/A4/A5 acceptance",
+      "private_artifacts": "/tmp/style-m3-d2-20261017.bgb7zb5l",
+      "git": "git version 2.54.0",
+      "os": "macOS-27.0.1-arm64-arm-64bit-Mach-O",
+      "script": "/tmp/style-m3-d2-git-probe-20261017.py",
+      "script_sha256": "4aa58dd9d741653f01f667a8c4b5c018c5c49ef466e51547a39af8c7b16065a8",
+      "commands_log": "/tmp/style-m3-d2-20261017.bgb7zb5l/commands.json",
+      "commands_sha256": "382662108f49aff0014c3af8750585223dad948b84c8fba49c6e6aa0befa8f23",
+      "command_count": 41,
+      "expected_failed_command_count": 2,
+      "checks": [
+        {
+          "id": "GIT-01",
+          "status": "passed",
+          "assertion": "固定 SHA-1 commit、object format 与 default HEAD 的规范 branch ref",
+          "commit": "4f3cdcd2285383fbca2b3884c309f7343e0e2c19",
+          "object_format": "sha1"
+        },
+        {
+          "id": "GIT-02",
+          "status": "passed",
+          "assertion": "规范 branch/tag 避免同名歧义；annotated tag 固定 peel 后 commit",
+          "tag_commit": "4f3cdcd2285383fbca2b3884c309f7343e0e2c19",
+          "branch_commit": "18eea16e21b0bb5a4660be45274d97250ec115a6"
+        },
+        {
+          "id": "GIT-03",
+          "status": "passed",
+          "assertion": "分支推进不改变旧 commit 的原始 blob 字节",
+          "old_sha256": "29e888e0c26d4be4625db313bd32bbd17146efc6dd481c8ae1fca20496fa6ab1",
+          "new_sha256": "921d1b0a29e13bf426244ac6a64d7e0257ac7d63bb06a32587b9d83510e0e9c5"
+        },
+        {
+          "id": "GIT-04",
+          "status": "passed",
+          "assertion": "archive 受 export-ignore/export-subst 影响，不能替代原始 blob 基线",
+          "archive_omits_committed_file": true,
+          "archive_substitution": true
+        },
+        {
+          "id": "GIT-06",
+          "status": "passed",
+          "assertion": "ls-tree -z 保留 UTF-8/空格/控制字符路径，并区分 symlink/gitlink 供取得层拒绝",
+          "tree_entries": 10,
+          "symlink_mode": "120000",
+          "gitlink_mode": "160000"
+        },
+        {
+          "id": "GIT-05",
+          "status": "passed",
+          "assertion": "不带 filters/textconv 的 cat-file 保留原始换行且不调用 smudge",
+          "raw_sha256": "e9024f1a07d29d52ad3aa5e1a18e94db1f3a9fd32b89e39d47c472cd99071e13",
+          "filter_canary_executed": false
+        },
+        {
+          "id": "GIT-07",
+          "status": "passed",
+          "assertion": "显式 GIT_CONFIG_GLOBAL/系统空文件屏蔽宿主 insteadOf/helper/hooks 配置",
+          "global_config_empty": true
+        },
+        {
+          "id": "GIT-08",
+          "status": "passed",
+          "assertion": "受控 bare fetch 不建立工作区、不调用 checkout/filter/local packObjectsHook canary",
+          "commit": "64b0ae821649670d76e0362dc956df22d8e5f419",
+          "canary_executed": false,
+          "worktree_created": false
+        },
+        {
+          "id": "GIT-09",
+          "status": "passed",
+          "assertion": "同一 commit 可明确选择目录 tree 或单文件 blob",
+          "directory_object": "67ed39ec6e4fe2b713d20c338289e6bd60d88c45",
+          "single_sha256": "45913807302bcca3397425a6bb05b4fea7e0ef413503619cb5daedbfb1a24987"
+        },
+        {
+          "id": "GIT-10",
+          "status": "passed",
+          "assertion": "protocol.allow=never 拒绝 ext helper，未执行 canary",
+          "expected_exit_code": 128
+        },
+        {
+          "id": "GIT-11",
+          "status": "passed",
+          "assertion": "显式缺失 revision 的 fetch 返回失败；未实现 resolver 回退策略的验收仍待执行",
+          "expected_exit_code": 128
+        },
+        {
+          "id": "GIT-12",
+          "status": "passed",
+          "assertion": "Git object format 与包内容 SHA256 分开；SHA-256 仓库保留完整 64 位 OID",
+          "object_format": "sha256",
+          "commit": "c5c5a8709e96688d329a9e1b4881716a873aafbed255494e474ae36f958471d8",
+          "same_package_bytes": true
+        }
+      ],
+      "no_canary_execution": true,
+      "network_requests": 0,
+      "real_harness_requests": 0,
+      "boundaries": [
+        "controlled local Git fixtures only",
+        "HTTPS/TLS/authentication/redirect integration and full hostile local-config matrix remain A3 pending",
+        "no production source resolver implemented",
+        "no new Go feature test run"
+      ],
+      "environment": {
+        "system_global_config_isolated": true,
+        "no_inherited_git_variables": true,
+        "CODEX_HOME_CODEX_SANDBOX_cleared": true,
+        "no_harness_configuration_read": true,
+        "settings": [
+          "core.hooksPath=/tmp/style-m3-d2-20261017.bgb7zb5l/empty-hooks",
+          "credential.helper=",
+          "core.askPass=",
+          "core.fsmonitor=false",
+          "protocol.allow=never",
+          "protocol.file.allow=always",
+          "protocol.https.allow=always",
+          "http.followRedirects=false",
+          "gc.auto=0",
+          "maintenance.auto=false",
+          "fetch.recurseSubmodules=false",
+          "transfer.fsckObjects=true"
+        ]
+      }
+    },
+    "expected_failed_commands": [
+      {
+        "arguments": [
+          "--git-dir=/tmp/style-m3-d2-20261017.bgb7zb5l/acquired.git",
+          "fetch",
+          "--quiet",
+          "--no-tags",
+          "--recurse-submodules=no",
+          "--",
+          "ext::/tmp/style-m3-d2-20261017.bgb7zb5l/canary.sh",
+          "HEAD"
+        ],
+        "cwd": "/tmp/style-m3-d2-20261017.bgb7zb5l",
+        "exit_code": 128,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "dbabe1b986c38162df81bc2da571aa060f46562bdd09173ae94e7888473f81a7",
+        "stdout": "",
+        "stderr": "fatal: transport 'ext' not allowed\n"
+      },
+      {
+        "arguments": [
+          "--git-dir=/tmp/style-m3-d2-20261017.bgb7zb5l/acquired.git",
+          "fetch",
+          "--quiet",
+          "--depth=1",
+          "--no-tags",
+          "--recurse-submodules=no",
+          "--",
+          "file:///tmp/style-m3-d2-20261017.bgb7zb5l/source",
+          "ffffffffffffffffffffffffffffffffffffffff"
+        ],
+        "cwd": "/tmp/style-m3-d2-20261017.bgb7zb5l",
+        "exit_code": 128,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "32bd3994888c120b3f40c526edee106b90e4c20cf7ed66cb15b81cd201564b68",
+        "stdout": "",
+        "stderr": "fatal: git upload-pack: not our ref ffffffffffffffffffffffffffffffffffffffff\nfatal: remote error: upload-pack: not our ref ffffffffffffffffffffffffffffffffffffffff\n"
+      }
+    ],
+    "earlier_fixture_setup_failures": [
+      {
+        "task": "M3-D2",
+        "attempt": "first",
+        "status": "fixture setup failed",
+        "script": "/tmp/style-m3-d2-git-probe-first-20261017.py",
+        "script_sha256": "be9adb02c1956ef809e95f567480e072b3386b546cf14d784dbb8399678b99fb",
+        "private_roots": [
+          "/tmp/style-m3-d2-20261017.mkrtk6_b"
+        ],
+        "failed_arguments": [
+          "update-index",
+          "--add",
+          "--cacheinfo",
+          "160000,<fixture-A-commit>,bad/module"
+        ],
+        "exit_code": 128,
+        "observed_error": "fatal: pkg/raw.txt: clean filter 'probe' failed",
+        "cause": "The raw-blob probe enabled a required smudge-only filter before later index mutations; Git refreshed another fixture path while setting the gitlink.",
+        "correction": "Finish gitlink/index fixture construction before enabling the hostile filter. Persist command records after each invocation.",
+        "limitations": "The first script did not flush its commands before abort; no missing command log is reconstructed.",
+        "evidence_path": "/tmp/style-m3-d2-first-failure-20261017.json",
+        "evidence_sha256": "4580ea671b2df68725953069781ebf48f140fb9b979ed6453511482bb79eccff"
+      },
+      {
+        "task": "M3-D2",
+        "attempt": "second",
+        "status": "fixture setup failed",
+        "script": "/tmp/style-m3-d2-git-probe-second-20261017.py",
+        "script_sha256": "8bb84611b3740852c2696a9aa2c8d3f5bf7d1f83304ab61bdf588134b47b6c8e",
+        "private_root": "/tmp/style-m3-d2-20261017.2e94ay_u",
+        "command_log": "/tmp/style-m3-d2-20261017.2e94ay_u/commands.json",
+        "observed_error": "Traceback (most recent call last):\n  File \"/tmp/style-m3-d2-git-probe-20261017.py\", line 93, in <module>\n    (repo/'.git'/'hooks'/'post-checkout').write_bytes(helper.read_bytes())\n    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^\n  File \"/Library/Frameworks/Python.framework/Versions/3.14/lib/python3.14/pathlib/__init__.py\", line 796, in write_bytes\n    with self.open(mode='wb') as f:\n         ~~~~~~~~~^^^^^^^^^^^\n  File \"/Library/Frameworks/Python.framework/Versions/3.14/lib/python3.14/pathlib/__init__.py\", line 771, in open\n    return io.open(self, mode, buffering, encoding, errors, newline)\n           ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: '/tmp/style-m3-d2-20261017.2e94ay_u/source/.git/hooks/post-checkout'\n",
+        "cause": "The explicit empty Git template creates no hooks directory; the hostile hook fixture assumed it existed.",
+        "correction": "Create the private hooks directory before writing the canary.",
+        "evidence_path": "/tmp/style-m3-d2-second-failure-20261017.json",
+        "evidence_sha256": "074112d085e055c59ab7564b163f85397eb77f05a861a2508e88ad912dfc41c7",
+        "command_log_sha256": "fcd2a9f137448f7829fb9135baa465ec764186009e7b9f115bbc9fe8fcda2688"
+      }
+    ]
+  },
+  "official_basis": {
+    "consulted_on": "2026-10-17",
+    "basis": "official primary Git documentation and controlled local Git 2.54.0 fixtures",
+    "urls": [
+      "https://git-scm.com/docs/git-archive/2.54.0",
+      "https://git-scm.com/docs/git-cat-file",
+      "https://git-scm.com/docs/git-config/2.54.0",
+      "https://git-scm.com/docs/git-ls-tree",
+      "https://git-scm.com/docs/git/2.54.0",
+      "https://git-scm.com/docs/gitattributes/2.54.0"
+    ],
+    "links_statically_checked_only_in_this_audit": true
+  },
+  "pending_acceptance": {
+    "A3": [
+      "A3-01",
+      "A3-02",
+      "A3-03",
+      "A3-04",
+      "A3-05",
+      "A3-06",
+      "A3-07",
+      "A3-08",
+      "A3-09",
+      "A3-10",
+      "A3-11",
+      "A3-12"
+    ],
+    "A4": [
+      "A4-01",
+      "A4-02",
+      "A4-03",
+      "A4-04",
+      "A4-05",
+      "A4-06",
+      "A4-07",
+      "A4-08",
+      "A4-09",
+      "A4-10",
+      "A4-11",
+      "A4-12"
+    ],
+    "A5": [
+      "A5-01",
+      "A5-02",
+      "A5-03",
+      "A5-04",
+      "A5-05",
+      "A5-06",
+      "A5-07",
+      "A5-08",
+      "A5-09",
+      "A5-10",
+      "A5-11",
+      "A5-12"
+    ]
+  },
+  "unchanged_states": {
+    "M3-D2": "draft awaiting user review",
+    "M3-T20": "not_started",
+    "M3-T21": "not_started",
+    "M3-T22": "not_started",
+    "M3-A3": "not_executed",
+    "M3-A4": "not_executed",
+    "M3-A5": "not_executed",
+    "real_harness_and_Windows_CI": "unchanged pending",
+    "M3-CARRY-01": {
+      "status": "nonblocking_pending",
+      "codex": "0/40",
+      "claude-code": "0/40"
+    }
+  },
+  "not_executed": [
+    "new Go tests/builds",
+    "production Git source/update/frozen acceptance",
+    "HTTPS/TLS/authentication integration and complete hostile config matrix",
+    "real harness/native sessions",
+    "model requests",
+    "official token counting",
+    "Windows",
+    "remote CI"
+  ],
+  "compatibility": {
+    "M1_M2_archives_unchanged": true,
+    "PROGRESS_append_only": true,
+    "production_tests_agenthooks_dependencies_old_fixtures_goldens_workflows_unchanged": true
+  }
+}

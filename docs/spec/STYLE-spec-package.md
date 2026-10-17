@@ -127,6 +127,16 @@ rules:
 | 每个文件 | 不超过 256 KiB；合法 UTF-8；不含 NUL | `file-too-large`、`bad-encoding` |
 | 正文内容 | 不能出现 STYLE 的静态块标记 `<!-- style:`（卸载时靠它定位） | `marker-in-body` |
 
+### 1.8 M3-D2 来源快照评审稿
+
+本节是等待用户评审的 [D2 来源方案](../review/M3-D2-SOURCES-2026-10-17.md)，尚未实现，不改变 style/v0.3 包字段。来源取得由 app/internal source 冷路径负责；core/spec 继续消费已捕获的目录/单文件字节、完整注册表目录与原有校验，不导入 Git 或具体 adapter。
+
+Git 输入拟以规范 URL/ref/包路径解析一次并固定 commit，目录取 tree、单文件取 blob 原始内容；包中不新增 Git frontmatter，也不执行 checkout/filter/仓库代码。单文件 basename、规则路径/from/glob 的相对语义与现有包一致。忽略既有 VCS/Finder 元数据，其余选中普通文件全部进入逐文件摘要；`.gitattributes` 仅作数据，不触发归档替换/忽略或换行转换。
+
+Git 导出拒绝 symlink/gitlink、逃逸/控制字符路径和大小写折叠碰撞，并限制 1,024 文件、16 MiB 合计、每文件 256 KiB；既有 UTF-8/NUL/正文标记、包名/版本、requires、native、模板与预算门禁继续适用。旧本地来源不新增总量限制。来源 commit 与包内容 SHA256 独立，下载或缓存命中不能代替安装/更新批准。
+
+更新时名称与存储类型须保持，seq/settings 按 D2 保留或校验；未选包只取批准基线。Git 管理副本是锁定导出，不能经 trust 将编辑后的内容继续声称来自原 commit。来源表达、lock 1/2、批准/恢复及失败测试见 [CLI §4.2](STYLE-cli-design.md#42-m3-d2-来源与锁定评审稿) 与 D2 的 A3–A5；本轮没有关闭这些验收。
+
 ## 2. 顶层字段
 
 | 字段 | 必填 | 说明 |
