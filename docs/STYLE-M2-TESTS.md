@@ -46,6 +46,8 @@ env -u CODEX_HOME -u CODEX_SANDBOX \
 
 - [?] **M2-CARRY-01**（原 M1 FINAL-09）：两家官方 token 计数接口对固定 40 条语料的同结构基线增量，与生产 CLI 估算逐条对照。当前两家 API key 缺失，0/40；有 key 时按 `testdata/manual/` README 重跑。证据：`docs/review/M1-FINAL-09-COUNTING-BLOCKED-2026-10-16.json`。
 
+- [x] **M2-ALT-01**：固定中英各 20 条、生产 CLI 估算与两份具名本地编码对照完成；编码表 ID/字节摘要、语料/程序摘要固定，暖缓存禁用 Python 网络连接重跑逐字节相同。STYLE 合计 1,205，o200k_base 816、cl100k_base 972；逐条平均绝对相对偏差分别 49.8051% / 36.5474%，只描述该语料/编码，不构成模型误差保证。六个已验收的 Claude 订阅会话、八个真实 usage 响应摘要核对与白名单统计通过，未新增模型请求；59 项采集器通过。官方计数仍 0/40/家。证据：[替代验证报告](review/M2-ALT-01-2026-10-17.md)。
+
 ## M2a：离线验收
 
 - [x] **M2-A1 native validate**（M2-T10，按规则 3.10）：结果：`core/spec` 的 `TestNativeRuleValidationMatchesAcrossPackageFormats`（49 例，目录/单文件逐例比对）及默认值、`from` 覆盖、非 native 键、注册表注入、`NativeRules` 解析测试；`TestA1ValidateExampleAndEveryInvalidFixture` 含六个新 fixture；`internal/app` 的 `TestNativeCatalogComesFromRegisteredAdapters`；双 module test/vet 通过，见 `docs/PROGRESS.md` M2-T10。示例 `codex-only-notify` 已符合 3.10，正文说明随 T11 的 golden 一起更新。

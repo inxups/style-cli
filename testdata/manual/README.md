@@ -92,6 +92,37 @@ PYTHONDONTWRITEBYTECODE=1 python3 testdata/manual/calibrate_tokens.py \
 
 已核对官方 [OpenAI counting tokens](https://developers.openai.com/api/docs/guides/token-counting) 和 [Claude token counting](https://platform.claude.com/docs/en/build-with-claude/token-counting)。计数接口的结果按其语义记录，不代表实际会话账单；计数模型若不可用，保留失败，另起有明确模型的新报告。
 
+
+### 无 API key 的补充对照（M2-ALT-01）
+
+`compare_tokens_offline.py` 对同一 40 条语料读取生产 CLI 估算，分别比较具名本地编码 `o200k_base` / `cl100k_base` 的纯正文计数及固定前缀的本地文本增量。它不假设模型映射，不包含请求封装/工具/隐藏指令，不代表 Claude 官方分词。`completed` 仅说明对照完整；没有准确性通过阈值。生产估算系数保持不变，官方校准继续 pending。
+
+可选依赖仅安装到临时 venv，不加入产品或普通 CI 依赖。首次加载编码表需下载公共数据；预热后可离线运行，编码表摘要写入报告。
+
+```sh
+token_ref_dir=$(mktemp -d /tmp/style-token-reference.XXXXXXXX)
+python3 -m venv "$token_ref_dir/venv"
+"$token_ref_dir/venv/bin/python" -m pip install --index-url https://pypi.org/simple tiktoken==0.12.0
+env -u CODEX_HOME -u CODEX_SANDBOX GOPATH=/tmp/style-cli-gopath \
+  GOMODCACHE=/tmp/style-cli-gomodcache GOCACHE=/tmp/style-cli-gocache \
+  go build -trimpath -buildvcs=false -o "$token_ref_dir/style" ./cmd/style
+PYTHONDONTWRITEBYTECODE=1 TIKTOKEN_CACHE_DIR="$token_ref_dir/encoding-cache" \
+  "$token_ref_dir/venv/bin/python" testdata/manual/compare_tokens_offline.py \
+  --style "$token_ref_dir/style" --output "$token_ref_dir/local-token-reference.json"
+```
+
+`summarize_claude_acceptance_usage.py` 只读取已通过的白名单报告所引用、摘要完全匹配的原生 transcript，输出会话 usage。保留每个响应身份的最后快照，不重复累加流式快照或缓存 TTL 子项；不导出正文。需原私有证据仍在本机。
+
+```sh
+PYTHONDONTWRITEBYTECODE=1 python3 testdata/manual/summarize_claude_acceptance_usage.py \
+  --acceptance-report docs/review/M2-C1-CLAUDE-2026-10-17.json \
+  --acceptance-report docs/review/M2-C2-CLAUDE-2026-10-17.json \
+  --acceptance-report docs/review/M2-C4-CLAUDE-2026-10-17.json \
+  --output /tmp/style-m2-subscription-usage.json
+```
+
+2026-10-17 的离线对照与六个已验收订阅会话结果见 [M2-ALT-01](../../docs/review/M2-ALT-01-2026-10-17.md)。会话之间工具、指令、模型/缓存状态不同，不能作受控 A/B 或逐规则成本差分。此补充证据不替代官方计数，M2-CARRY-01 保持待验。
+
 `summarize_session_usage.py` 只读汇总真实报告和 retained Claude transcript/stats。Codex resume 使用最后会话累计 usage/stats，Claude 按响应身份保留最后 usage，避免重复相加；规则估算与整个会话 usage 分列。复现命令、缓存条件、覆盖范围及默认公式假设见 [FINAL-10](../../docs/review/M1-FINAL-10-CACHE-2026-10-16.md)。
 
 `probe_claude_overflow.py` 绕开 STYLE，驱动真实 Claude2.1.300 CLI 和真实 Bash；Messages 服务仅绑定127.0.0.1并返回脚本内容。它捕获原生实际请求，检查完整正文或原生预览文件的精确字节，不用首尾标记猜测完整投递，也不读取/转发日常凭据。stub 的 usage 是协议占位，不是官方计数。复现：

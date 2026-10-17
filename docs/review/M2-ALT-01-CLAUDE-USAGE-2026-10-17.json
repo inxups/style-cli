@@ -1,0 +1,138 @@
+{
+  "item": "M2-ALT-01",
+  "measurement": "Native reported whole-session usage from retained real Claude acceptance sessions.",
+  "sources": [
+    {
+      "path": "docs/review/M2-C1-CLAUDE-2026-10-17.json",
+      "sha256": "b7966b310f7ef86678347229933049a880bfca46723ebe7462e41a8ace70a97c"
+    },
+    {
+      "path": "docs/review/M2-C2-CLAUDE-2026-10-17.json",
+      "sha256": "60f54fe694c954f0accdf372ebddaf299f8c57e241b630bf8013fb90639b18ea"
+    },
+    {
+      "path": "docs/review/M2-C4-CLAUDE-2026-10-17.json",
+      "sha256": "3bf98b7e7762c281207b1a5a4cb806e17a1dbf67d12fbbd4c3ed02043b622ed4"
+    }
+  ],
+  "sessions": [
+    {
+      "session_id": "2e4e01f7-0a27-4b5f-a9e7-5c347937156b",
+      "transcript": "/private/tmp/style-m2-claude-ui-20261016/claude/projects/-private-tmp-style-m2-claude-live-20261017-5fzqcx0b-work/2e4e01f7-0a27-4b5f-a9e7-5c347937156b.jsonl",
+      "transcript_sha256": "bf9ebfccd6428d9109259b45c6be0ce4ced2d48245e49fcd7b3fc7f914c8f936",
+      "usage_snapshot_rows": 2,
+      "usage_responses": 2,
+      "duplicate_snapshot_rows_removed": 0,
+      "models": [
+        "claude-sonnet-5-5"
+      ],
+      "reported_usage": {
+        "input_tokens": 4,
+        "cache_creation_input_tokens": 1334,
+        "cache_read_input_tokens": 26440,
+        "output_tokens": 95,
+        "total_input_including_cache": 27778
+      }
+    },
+    {
+      "session_id": "b9e583ed-805b-4a34-bcb2-6a31b932ff92",
+      "transcript": "/private/tmp/style-m2-claude-ui-20261016/claude/projects/-private-tmp-style-m2-claude-live-20261017-5fzqcx0b-work/b9e583ed-805b-4a34-bcb2-6a31b932ff92.jsonl",
+      "transcript_sha256": "4ddf847ef839f81a22666118b46eb4734f803b9b1da5801511f3f1f9517de0d1",
+      "usage_snapshot_rows": 2,
+      "usage_responses": 2,
+      "duplicate_snapshot_rows_removed": 0,
+      "models": [
+        "claude-sonnet-5-5"
+      ],
+      "reported_usage": {
+        "input_tokens": 4,
+        "cache_creation_input_tokens": 14154,
+        "cache_read_input_tokens": 13940,
+        "output_tokens": 95,
+        "total_input_including_cache": 28098
+      }
+    },
+    {
+      "session_id": "5f94ea4b-8e82-44c6-94fc-a5e15ea8a50b",
+      "transcript": "/private/tmp/style-m2-claude-ui-20261016/claude/projects/-private-tmp-style-m2-claude-ui-20261016-work/5f94ea4b-8e82-44c6-94fc-a5e15ea8a50b.jsonl",
+      "transcript_sha256": "46cdf2aee6ae677c5670f07d06a0c12783fa9008fb8d08836432fc884562dfb2",
+      "usage_snapshot_rows": 1,
+      "usage_responses": 1,
+      "duplicate_snapshot_rows_removed": 0,
+      "models": [
+        "claude-sonnet-5-5"
+      ],
+      "reported_usage": {
+        "input_tokens": 2,
+        "cache_creation_input_tokens": 9373,
+        "cache_read_input_tokens": 0,
+        "output_tokens": 4,
+        "total_input_including_cache": 9375
+      }
+    },
+    {
+      "session_id": "7f4d63ae-c1bc-4bac-bf4b-11e97e13cdf7",
+      "transcript": "/private/tmp/style-m2-claude-ui-20261016/claude/projects/-private-tmp-style-m2-claude-ui-20261016-work/7f4d63ae-c1bc-4bac-bf4b-11e97e13cdf7.jsonl",
+      "transcript_sha256": "b52bbfad2810ca9b9b22bb9028f3798d1af6404b102d51dbc3facd5961531d2a",
+      "usage_snapshot_rows": 1,
+      "usage_responses": 1,
+      "duplicate_snapshot_rows_removed": 0,
+      "models": [
+        "claude-sonnet-5-5"
+      ],
+      "reported_usage": {
+        "input_tokens": 2,
+        "cache_creation_input_tokens": 9528,
+        "cache_read_input_tokens": 0,
+        "output_tokens": 4,
+        "total_input_including_cache": 9530
+      }
+    },
+    {
+      "session_id": "bb1a07ae-7112-43cb-8908-5df5786f93d1",
+      "transcript": "/private/tmp/style-m2-claude-ui-20261016/claude/projects/-private-tmp-style-m2-claude-ui-20261016-work/bb1a07ae-7112-43cb-8908-5df5786f93d1.jsonl",
+      "transcript_sha256": "d08b2c6546d8cf5ac7313443b35a3b66657769971f9760238f0642a0c3df901e",
+      "usage_snapshot_rows": 1,
+      "usage_responses": 1,
+      "duplicate_snapshot_rows_removed": 0,
+      "models": [
+        "claude-sonnet-5-5"
+      ],
+      "reported_usage": {
+        "input_tokens": 2,
+        "cache_creation_input_tokens": 8484,
+        "cache_read_input_tokens": 0,
+        "output_tokens": 4,
+        "total_input_including_cache": 8486
+      }
+    },
+    {
+      "session_id": "be71bac4-c468-4cbe-8323-f1fe68714d74",
+      "transcript": "/private/tmp/style-m2-claude-ui-20261016/claude/projects/-private-tmp-style-m2-claude-ui-20261016-work/be71bac4-c468-4cbe-8323-f1fe68714d74.jsonl",
+      "transcript_sha256": "eaa6ceb373484748a282d319c04c8211bc19c4ea726bd5074d793fd7e5557858",
+      "usage_snapshot_rows": 1,
+      "usage_responses": 1,
+      "duplicate_snapshot_rows_removed": 0,
+      "models": [
+        "claude-sonnet-5-5"
+      ],
+      "reported_usage": {
+        "input_tokens": 2,
+        "cache_creation_input_tokens": 729,
+        "cache_read_input_tokens": 7755,
+        "output_tokens": 4,
+        "total_input_including_cache": 8486
+      }
+    }
+  ],
+  "session_count": 6,
+  "usage_responses": 8,
+  "limits": [
+    "No new model requests, login changes, credential reads or API counting.",
+    "Last usage per response identity is retained; duplicate streaming snapshots are not summed.",
+    "Cache creation/read categories are included once in total input; cache TTL subdivisions are excluded.",
+    "Sessions differ in tools, instructions, model and cache state; this is not a controlled rule-cost comparison.",
+    "No per-rule attribution, billing verification, retry or separate subagent coverage is claimed."
+  ],
+  "completed": true
+}

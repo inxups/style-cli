@@ -42,6 +42,7 @@ M1 中已记录的已知限制（如 force-push 示例规则对 `--push-option` 
 ## 遗留项
 
 - [?] **M2-CARRY-01 官方 token 计数（原 M1-FINAL-09）**：固定 40 条中英各半语料、正文/请求哈希和生产 CLI 估算已记录；两家官方 API key 缺失，实际计数 0/40。有 key 时按 `testdata/manual/` README 的命令重跑，不用登录态、合成 usage 或其他估算器替代。不阻塞 M2 其他条目；M2 关闭时须再次显式说明状态。证据：`docs/review/M1-FINAL-09-COUNTING-BLOCKED-2026-10-16.json`。测试：M2-CARRY-01。
+- [x] **M2-ALT-01 无 API key 的补充验证**：用户于 2026-10-17 批准离线对照并沿用订阅实测。固定 40 条语料由生产 CLI 估算，对照 tiktoken 0.12.0 的 o200k_base/cl100k_base；预热缓存后禁用 Python 网络连接重跑，报告逐字节相同。六个已有 Claude 订阅会话的八个真实 usage 响应经摘要核对、按身份去重后白名单归档；不增加模型请求。59 项采集器通过。不改系数、不承诺误差范围，不关闭 M2-CARRY-01。证据：[替代验证报告](review/M2-ALT-01-2026-10-17.md)。
 
 ## 设计定稿
 

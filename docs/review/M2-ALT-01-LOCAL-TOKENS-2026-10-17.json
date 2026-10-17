@@ -1,0 +1,1034 @@
+{
+  "item": "M2-ALT-01",
+  "format": 1,
+  "measurement": "Local text-only encoding comparison; no model mapping or API request accounting is assumed.",
+  "corpus_sha256": "e73e9f3b638495de3836a1861d4639a20d9d6b82a2c23ace24f8355e3dc3afd5",
+  "style_binary_sha256": "32aef36dcb67d8cd0c57e123016094e1f82e5cce8adca37a9b6ae56c990cf81d",
+  "collector_sha256": "b6957d625508937a30e2beb56f332b16ddc42679e410a17b572d9499af1cedec",
+  "tiktoken_version": "0.12.0",
+  "encodings": [
+    {
+      "encoding": {
+        "name": "o200k_base",
+        "n_vocab": 200019,
+        "defined_token_ids": 200000,
+        "token_id_bytes_sha256": "d519cf7688c4f75233aff5d70abe3ceccfda880fd8b1f5f82be62e60b43f4abd"
+      },
+      "local_prefix_tokens": 6,
+      "rules": [
+        {
+          "id": "en-review-format",
+          "language": "en",
+          "body_sha256": "41d012ed5d942d136951794ab78eb1627f19dbfaed999148cf488aaebf96aa9f",
+          "style_estimate": {
+            "tokens": 29,
+            "chars": 98
+          },
+          "local_body_tokens": 20,
+          "local_prefixed_text_delta": 20
+        },
+        {
+          "id": "en-force-push",
+          "language": "en",
+          "body_sha256": "02ba9bc3e7a52b19f50884749dcc6d8909168fbee866ec372470a9534b35955c",
+          "style_estimate": {
+            "tokens": 25,
+            "chars": 83
+          },
+          "local_body_tokens": 16,
+          "local_prefixed_text_delta": 16
+        },
+        {
+          "id": "en-test-evidence",
+          "language": "en",
+          "body_sha256": "e0654852545cc55fe534aff5186bd9bfadcd3a31e3e36331266d224be4bc219d",
+          "style_estimate": {
+            "tokens": 32,
+            "chars": 107
+          },
+          "local_body_tokens": 21,
+          "local_prefixed_text_delta": 21
+        },
+        {
+          "id": "en-small-diff",
+          "language": "en",
+          "body_sha256": "889fdd22eaf4d3796ba8f8c127bdbe59979d0cec7968fcc6fb5ff1d6c44271f7",
+          "style_estimate": {
+            "tokens": 29,
+            "chars": 97
+          },
+          "local_body_tokens": 17,
+          "local_prefixed_text_delta": 17
+        },
+        {
+          "id": "en-error-context",
+          "language": "en",
+          "body_sha256": "6e0878da88bcba2de36d858f963a525d32ff5a0a08165e049edaaac19ec57f21",
+          "style_estimate": {
+            "tokens": 28,
+            "chars": 94
+          },
+          "local_body_tokens": 16,
+          "local_prefixed_text_delta": 16
+        },
+        {
+          "id": "en-credentials",
+          "language": "en",
+          "body_sha256": "6b83483d72861855faec3222cd38b97d2063d47736a086f0d3be378cc1337d8f",
+          "style_estimate": {
+            "tokens": 34,
+            "chars": 117
+          },
+          "local_body_tokens": 20,
+          "local_prefixed_text_delta": 20
+        },
+        {
+          "id": "en-api-compatibility",
+          "language": "en",
+          "body_sha256": "de8f31b739dc078cfacccf603e6e8e18d0f68ceb3eadbe73b79b2236e3fa863b",
+          "style_estimate": {
+            "tokens": 30,
+            "chars": 104
+          },
+          "local_body_tokens": 17,
+          "local_prefixed_text_delta": 17
+        },
+        {
+          "id": "en-file-safety",
+          "language": "en",
+          "body_sha256": "c38ae69c7d27758a58d0ab6a29a19ec0208a0ed01f6c215df09a5930eefc90b7",
+          "style_estimate": {
+            "tokens": 30,
+            "chars": 101
+          },
+          "local_body_tokens": 19,
+          "local_prefixed_text_delta": 19
+        },
+        {
+          "id": "en-transaction",
+          "language": "en",
+          "body_sha256": "012764c98b6c2494933f9dfe1e92ce8d60d7a306fc98b7a3ab4ae970f558db95",
+          "style_estimate": {
+            "tokens": 32,
+            "chars": 107
+          },
+          "local_body_tokens": 19,
+          "local_prefixed_text_delta": 19
+        },
+        {
+          "id": "en-concurrency",
+          "language": "en",
+          "body_sha256": "b187f03e684c86fe5b4ee7d5938a446105985a46a68d32d10efe758e079bb10c",
+          "style_estimate": {
+            "tokens": 28,
+            "chars": 98
+          },
+          "local_body_tokens": 16,
+          "local_prefixed_text_delta": 16
+        },
+        {
+          "id": "en-subprocess",
+          "language": "en",
+          "body_sha256": "22480eac3b6e1b8e5d4e510b37004e7f5a58d7f5e6c874df794bb740b33b4793",
+          "style_estimate": {
+            "tokens": 30,
+            "chars": 104
+          },
+          "local_body_tokens": 18,
+          "local_prefixed_text_delta": 18
+        },
+        {
+          "id": "en-boundaries",
+          "language": "en",
+          "body_sha256": "6ec8be9f7a19d5d9ede56a656b294bd4b45334a5676caff4adf862b9c2353f66",
+          "style_estimate": {
+            "tokens": 32,
+            "chars": 110
+          },
+          "local_body_tokens": 19,
+          "local_prefixed_text_delta": 19
+        },
+        {
+          "id": "en-evidence",
+          "language": "en",
+          "body_sha256": "f42d5403724e957eea579c7bf4bcb21be0bb8de9ef2387951870ccac0047b1ba",
+          "style_estimate": {
+            "tokens": 32,
+            "chars": 110
+          },
+          "local_body_tokens": 18,
+          "local_prefixed_text_delta": 18
+        },
+        {
+          "id": "en-performance",
+          "language": "en",
+          "body_sha256": "bec0a0b1679930aec4cbaac55d3537b630df2adea39d1cc1f19900457c07ba5a",
+          "style_estimate": {
+            "tokens": 34,
+            "chars": 116
+          },
+          "local_body_tokens": 19,
+          "local_prefixed_text_delta": 19
+        },
+        {
+          "id": "en-unknown-values",
+          "language": "en",
+          "body_sha256": "e1555038eb75d02455d2944ad604e92eb08a62c248123047f7f5625aa8d659b7",
+          "style_estimate": {
+            "tokens": 34,
+            "chars": 115
+          },
+          "local_body_tokens": 19,
+          "local_prefixed_text_delta": 19
+        },
+        {
+          "id": "en-documentation",
+          "language": "en",
+          "body_sha256": "bb0d1533d6a30ff47a39ba49c6be0b7d412ea994db7245a92d85b30a36274258",
+          "style_estimate": {
+            "tokens": 36,
+            "chars": 120
+          },
+          "local_body_tokens": 24,
+          "local_prefixed_text_delta": 24
+        },
+        {
+          "id": "en-local-remote",
+          "language": "en",
+          "body_sha256": "1174287488d4bbd10b193289e42d6a2712a7e3851ef3b30f9ef03cc61c6a8e5b",
+          "style_estimate": {
+            "tokens": 31,
+            "chars": 106
+          },
+          "local_body_tokens": 19,
+          "local_prefixed_text_delta": 19
+        },
+        {
+          "id": "en-cost-report",
+          "language": "en",
+          "body_sha256": "22af1f413e45b65ace803dc2a49d6f0a8b942aff26407eedf663fe82125fa1f5",
+          "style_estimate": {
+            "tokens": 33,
+            "chars": 115
+          },
+          "local_body_tokens": 18,
+          "local_prefixed_text_delta": 18
+        },
+        {
+          "id": "en-cache",
+          "language": "en",
+          "body_sha256": "e5767762697a064f0c9662c174b5771daea6082ff15edd7395cfeb882af79298",
+          "style_estimate": {
+            "tokens": 34,
+            "chars": 114
+          },
+          "local_body_tokens": 22,
+          "local_prefixed_text_delta": 22
+        },
+        {
+          "id": "en-handoff",
+          "language": "en",
+          "body_sha256": "e9dea4c910e53886ea0a80095dde885d33b9f3524834879fb77340f016a7c80b",
+          "style_estimate": {
+            "tokens": 33,
+            "chars": 112
+          },
+          "local_body_tokens": 20,
+          "local_prefixed_text_delta": 20
+        },
+        {
+          "id": "zh-review-format",
+          "language": "zh",
+          "body_sha256": "3714c0e84a30c6db8f5e86fc7b207ee748e1eade77b68104ca125bda57f57186",
+          "style_estimate": {
+            "tokens": 28,
+            "chars": 29
+          },
+          "local_body_tokens": 21,
+          "local_prefixed_text_delta": 21
+        },
+        {
+          "id": "zh-force-push",
+          "language": "zh",
+          "body_sha256": "51a7c003d60f935e38d6ca0d4adf77dd98efc4abcfdad2f3fd98e38a42543702",
+          "style_estimate": {
+            "tokens": 25,
+            "chars": 26
+          },
+          "local_body_tokens": 18,
+          "local_prefixed_text_delta": 18
+        },
+        {
+          "id": "zh-test-evidence",
+          "language": "zh",
+          "body_sha256": "6193de45f913ac74acf9cbe89628b491a6c6fffd024c096683fb518b9c496ff8",
+          "style_estimate": {
+            "tokens": 26,
+            "chars": 27
+          },
+          "local_body_tokens": 17,
+          "local_prefixed_text_delta": 17
+        },
+        {
+          "id": "zh-small-diff",
+          "language": "zh",
+          "body_sha256": "1378914fe5faf6c60bf4409de04e46b38132be101b4aa5dc554d739aa8b6134b",
+          "style_estimate": {
+            "tokens": 22,
+            "chars": 23
+          },
+          "local_body_tokens": 18,
+          "local_prefixed_text_delta": 18
+        },
+        {
+          "id": "zh-error-context",
+          "language": "zh",
+          "body_sha256": "ff2b002d2fd1a9952898bce3abdfe6996fbd3f004b78620d911511a0272eba0b",
+          "style_estimate": {
+            "tokens": 27,
+            "chars": 28
+          },
+          "local_body_tokens": 19,
+          "local_prefixed_text_delta": 19
+        },
+        {
+          "id": "zh-credentials",
+          "language": "zh",
+          "body_sha256": "e4930ebf6148c0c6c294029f1b47dd248172d992620e2040ca4566deeb86ab03",
+          "style_estimate": {
+            "tokens": 30,
+            "chars": 31
+          },
+          "local_body_tokens": 22,
+          "local_prefixed_text_delta": 22
+        },
+        {
+          "id": "zh-api-compatibility",
+          "language": "zh",
+          "body_sha256": "1ebd46329e59424633de57abb695c024b6f9d2e94ebcfb9ada40ae2d6b80458f",
+          "style_estimate": {
+            "tokens": 28,
+            "chars": 29
+          },
+          "local_body_tokens": 20,
+          "local_prefixed_text_delta": 20
+        },
+        {
+          "id": "zh-file-safety",
+          "language": "zh",
+          "body_sha256": "d832cd65d508aa01c3f03779e178a2b7401d84de5c658f7b1abdf80bc90f3f60",
+          "style_estimate": {
+            "tokens": 27,
+            "chars": 28
+          },
+          "local_body_tokens": 19,
+          "local_prefixed_text_delta": 19
+        },
+        {
+          "id": "zh-transaction",
+          "language": "zh",
+          "body_sha256": "b0ebf9c20470cc67c84a972581828cdb8667988e740213ebac3c491d19e9b4c9",
+          "style_estimate": {
+            "tokens": 28,
+            "chars": 29
+          },
+          "local_body_tokens": 19,
+          "local_prefixed_text_delta": 19
+        },
+        {
+          "id": "zh-concurrency",
+          "language": "zh",
+          "body_sha256": "99c84dbeb6f1e5932d9880fe01b528deb562fe54edd2bf72d3680063582e0e62",
+          "style_estimate": {
+            "tokens": 26,
+            "chars": 27
+          },
+          "local_body_tokens": 19,
+          "local_prefixed_text_delta": 19
+        },
+        {
+          "id": "zh-subprocess",
+          "language": "zh",
+          "body_sha256": "dae70d205bc90b0a91000ad944f4d8d3072666158d06986efcfa688893766c73",
+          "style_estimate": {
+            "tokens": 27,
+            "chars": 32
+          },
+          "local_body_tokens": 21,
+          "local_prefixed_text_delta": 21
+        },
+        {
+          "id": "zh-boundaries",
+          "language": "zh",
+          "body_sha256": "610cf27c5de179b7062bff9ffe55d6378ba130bb11a23a953d7eee8067498de8",
+          "style_estimate": {
+            "tokens": 30,
+            "chars": 31
+          },
+          "local_body_tokens": 22,
+          "local_prefixed_text_delta": 22
+        },
+        {
+          "id": "zh-evidence",
+          "language": "zh",
+          "body_sha256": "60536f53cb36dee8d86dc041957d96d3196c8cdea4620ac92f37d9e730ceeada",
+          "style_estimate": {
+            "tokens": 32,
+            "chars": 37
+          },
+          "local_body_tokens": 28,
+          "local_prefixed_text_delta": 28
+        },
+        {
+          "id": "zh-performance",
+          "language": "zh",
+          "body_sha256": "08ec72fecaaa723966d85548765797281e20129ccdba7bf5ec5f37fc6a8ff216",
+          "style_estimate": {
+            "tokens": 29,
+            "chars": 30
+          },
+          "local_body_tokens": 24,
+          "local_prefixed_text_delta": 24
+        },
+        {
+          "id": "zh-unknown-values",
+          "language": "zh",
+          "body_sha256": "cc27fcbcce1a916fcee47ceb4f7037f3869d2f009f56ca18c6a811078a240120",
+          "style_estimate": {
+            "tokens": 29,
+            "chars": 30
+          },
+          "local_body_tokens": 23,
+          "local_prefixed_text_delta": 23
+        },
+        {
+          "id": "zh-documentation",
+          "language": "zh",
+          "body_sha256": "55e16aa3a4ee8b2ec4634f37114d381462aeff91f0b03cd9067e0b7fc18dea41",
+          "style_estimate": {
+            "tokens": 35,
+            "chars": 36
+          },
+          "local_body_tokens": 27,
+          "local_prefixed_text_delta": 27
+        },
+        {
+          "id": "zh-local-remote",
+          "language": "zh",
+          "body_sha256": "20890e7d400f95abc1ff3e8f24a1272791da666d94daf60c662dc8c92721510e",
+          "style_estimate": {
+            "tokens": 32,
+            "chars": 40
+          },
+          "local_body_tokens": 25,
+          "local_prefixed_text_delta": 25
+        },
+        {
+          "id": "zh-cost-report",
+          "language": "zh",
+          "body_sha256": "5864b1a65cc8df6f076d681084d320ff1a7f4770b5fbe21b664ad99eefc2bc4c",
+          "style_estimate": {
+            "tokens": 32,
+            "chars": 42
+          },
+          "local_body_tokens": 26,
+          "local_prefixed_text_delta": 26
+        },
+        {
+          "id": "zh-cache",
+          "language": "zh",
+          "body_sha256": "8a14b17dab0c42b0d29a15e6abd80853fd0c6799f0e7de1bd2fc5f7279869fec",
+          "style_estimate": {
+            "tokens": 36,
+            "chars": 37
+          },
+          "local_body_tokens": 25,
+          "local_prefixed_text_delta": 25
+        },
+        {
+          "id": "zh-handoff",
+          "language": "zh",
+          "body_sha256": "ca4f973c5e3ab388053182694cbc6441ad9c6cccfb7c7836a58a30f858ef0f40",
+          "style_estimate": {
+            "tokens": 30,
+            "chars": 32
+          },
+          "local_body_tokens": 26,
+          "local_prefixed_text_delta": 26
+        }
+      ],
+      "summary": {
+        "local_body_tokens": {
+          "all": {
+            "rules": 40,
+            "style_estimated_tokens": 1205,
+            "local_reference_tokens": 816,
+            "mean_signed_relative_error": 0.49805125724876864,
+            "mean_absolute_relative_error": 0.49805125724876864,
+            "max_absolute_relative_error": 0.8333333333333334
+          },
+          "en": {
+            "rules": 20,
+            "style_estimated_tokens": 626,
+            "local_reference_tokens": 377,
+            "mean_signed_relative_error": 0.6669012409589035,
+            "mean_absolute_relative_error": 0.6669012409589035,
+            "max_absolute_relative_error": 0.8333333333333334
+          },
+          "zh": {
+            "rules": 20,
+            "style_estimated_tokens": 579,
+            "local_reference_tokens": 439,
+            "mean_signed_relative_error": 0.3292012735386339,
+            "mean_absolute_relative_error": 0.3292012735386339,
+            "max_absolute_relative_error": 0.5294117647058824
+          }
+        },
+        "local_prefixed_text_delta": {
+          "all": {
+            "rules": 40,
+            "style_estimated_tokens": 1205,
+            "local_reference_tokens": 816,
+            "mean_signed_relative_error": 0.49805125724876864,
+            "mean_absolute_relative_error": 0.49805125724876864,
+            "max_absolute_relative_error": 0.8333333333333334
+          },
+          "en": {
+            "rules": 20,
+            "style_estimated_tokens": 626,
+            "local_reference_tokens": 377,
+            "mean_signed_relative_error": 0.6669012409589035,
+            "mean_absolute_relative_error": 0.6669012409589035,
+            "max_absolute_relative_error": 0.8333333333333334
+          },
+          "zh": {
+            "rules": 20,
+            "style_estimated_tokens": 579,
+            "local_reference_tokens": 439,
+            "mean_signed_relative_error": 0.3292012735386339,
+            "mean_absolute_relative_error": 0.3292012735386339,
+            "max_absolute_relative_error": 0.5294117647058824
+          }
+        }
+      }
+    },
+    {
+      "encoding": {
+        "name": "cl100k_base",
+        "n_vocab": 100277,
+        "defined_token_ids": 100261,
+        "token_id_bytes_sha256": "23941fcfd42f17ea21143063ec8a9473cce2abe0cba34c4c342d821c28581cea"
+      },
+      "local_prefix_tokens": 6,
+      "rules": [
+        {
+          "id": "en-review-format",
+          "language": "en",
+          "body_sha256": "41d012ed5d942d136951794ab78eb1627f19dbfaed999148cf488aaebf96aa9f",
+          "style_estimate": {
+            "tokens": 29,
+            "chars": 98
+          },
+          "local_body_tokens": 20,
+          "local_prefixed_text_delta": 20
+        },
+        {
+          "id": "en-force-push",
+          "language": "en",
+          "body_sha256": "02ba9bc3e7a52b19f50884749dcc6d8909168fbee866ec372470a9534b35955c",
+          "style_estimate": {
+            "tokens": 25,
+            "chars": 83
+          },
+          "local_body_tokens": 16,
+          "local_prefixed_text_delta": 16
+        },
+        {
+          "id": "en-test-evidence",
+          "language": "en",
+          "body_sha256": "e0654852545cc55fe534aff5186bd9bfadcd3a31e3e36331266d224be4bc219d",
+          "style_estimate": {
+            "tokens": 32,
+            "chars": 107
+          },
+          "local_body_tokens": 21,
+          "local_prefixed_text_delta": 21
+        },
+        {
+          "id": "en-small-diff",
+          "language": "en",
+          "body_sha256": "889fdd22eaf4d3796ba8f8c127bdbe59979d0cec7968fcc6fb5ff1d6c44271f7",
+          "style_estimate": {
+            "tokens": 29,
+            "chars": 97
+          },
+          "local_body_tokens": 17,
+          "local_prefixed_text_delta": 17
+        },
+        {
+          "id": "en-error-context",
+          "language": "en",
+          "body_sha256": "6e0878da88bcba2de36d858f963a525d32ff5a0a08165e049edaaac19ec57f21",
+          "style_estimate": {
+            "tokens": 28,
+            "chars": 94
+          },
+          "local_body_tokens": 16,
+          "local_prefixed_text_delta": 16
+        },
+        {
+          "id": "en-credentials",
+          "language": "en",
+          "body_sha256": "6b83483d72861855faec3222cd38b97d2063d47736a086f0d3be378cc1337d8f",
+          "style_estimate": {
+            "tokens": 34,
+            "chars": 117
+          },
+          "local_body_tokens": 20,
+          "local_prefixed_text_delta": 20
+        },
+        {
+          "id": "en-api-compatibility",
+          "language": "en",
+          "body_sha256": "de8f31b739dc078cfacccf603e6e8e18d0f68ceb3eadbe73b79b2236e3fa863b",
+          "style_estimate": {
+            "tokens": 30,
+            "chars": 104
+          },
+          "local_body_tokens": 17,
+          "local_prefixed_text_delta": 17
+        },
+        {
+          "id": "en-file-safety",
+          "language": "en",
+          "body_sha256": "c38ae69c7d27758a58d0ab6a29a19ec0208a0ed01f6c215df09a5930eefc90b7",
+          "style_estimate": {
+            "tokens": 30,
+            "chars": 101
+          },
+          "local_body_tokens": 19,
+          "local_prefixed_text_delta": 19
+        },
+        {
+          "id": "en-transaction",
+          "language": "en",
+          "body_sha256": "012764c98b6c2494933f9dfe1e92ce8d60d7a306fc98b7a3ab4ae970f558db95",
+          "style_estimate": {
+            "tokens": 32,
+            "chars": 107
+          },
+          "local_body_tokens": 19,
+          "local_prefixed_text_delta": 19
+        },
+        {
+          "id": "en-concurrency",
+          "language": "en",
+          "body_sha256": "b187f03e684c86fe5b4ee7d5938a446105985a46a68d32d10efe758e079bb10c",
+          "style_estimate": {
+            "tokens": 28,
+            "chars": 98
+          },
+          "local_body_tokens": 16,
+          "local_prefixed_text_delta": 16
+        },
+        {
+          "id": "en-subprocess",
+          "language": "en",
+          "body_sha256": "22480eac3b6e1b8e5d4e510b37004e7f5a58d7f5e6c874df794bb740b33b4793",
+          "style_estimate": {
+            "tokens": 30,
+            "chars": 104
+          },
+          "local_body_tokens": 18,
+          "local_prefixed_text_delta": 18
+        },
+        {
+          "id": "en-boundaries",
+          "language": "en",
+          "body_sha256": "6ec8be9f7a19d5d9ede56a656b294bd4b45334a5676caff4adf862b9c2353f66",
+          "style_estimate": {
+            "tokens": 32,
+            "chars": 110
+          },
+          "local_body_tokens": 20,
+          "local_prefixed_text_delta": 20
+        },
+        {
+          "id": "en-evidence",
+          "language": "en",
+          "body_sha256": "f42d5403724e957eea579c7bf4bcb21be0bb8de9ef2387951870ccac0047b1ba",
+          "style_estimate": {
+            "tokens": 32,
+            "chars": 110
+          },
+          "local_body_tokens": 19,
+          "local_prefixed_text_delta": 19
+        },
+        {
+          "id": "en-performance",
+          "language": "en",
+          "body_sha256": "bec0a0b1679930aec4cbaac55d3537b630df2adea39d1cc1f19900457c07ba5a",
+          "style_estimate": {
+            "tokens": 34,
+            "chars": 116
+          },
+          "local_body_tokens": 19,
+          "local_prefixed_text_delta": 19
+        },
+        {
+          "id": "en-unknown-values",
+          "language": "en",
+          "body_sha256": "e1555038eb75d02455d2944ad604e92eb08a62c248123047f7f5625aa8d659b7",
+          "style_estimate": {
+            "tokens": 34,
+            "chars": 115
+          },
+          "local_body_tokens": 19,
+          "local_prefixed_text_delta": 19
+        },
+        {
+          "id": "en-documentation",
+          "language": "en",
+          "body_sha256": "bb0d1533d6a30ff47a39ba49c6be0b7d412ea994db7245a92d85b30a36274258",
+          "style_estimate": {
+            "tokens": 36,
+            "chars": 120
+          },
+          "local_body_tokens": 24,
+          "local_prefixed_text_delta": 24
+        },
+        {
+          "id": "en-local-remote",
+          "language": "en",
+          "body_sha256": "1174287488d4bbd10b193289e42d6a2712a7e3851ef3b30f9ef03cc61c6a8e5b",
+          "style_estimate": {
+            "tokens": 31,
+            "chars": 106
+          },
+          "local_body_tokens": 19,
+          "local_prefixed_text_delta": 19
+        },
+        {
+          "id": "en-cost-report",
+          "language": "en",
+          "body_sha256": "22af1f413e45b65ace803dc2a49d6f0a8b942aff26407eedf663fe82125fa1f5",
+          "style_estimate": {
+            "tokens": 33,
+            "chars": 115
+          },
+          "local_body_tokens": 19,
+          "local_prefixed_text_delta": 19
+        },
+        {
+          "id": "en-cache",
+          "language": "en",
+          "body_sha256": "e5767762697a064f0c9662c174b5771daea6082ff15edd7395cfeb882af79298",
+          "style_estimate": {
+            "tokens": 34,
+            "chars": 114
+          },
+          "local_body_tokens": 22,
+          "local_prefixed_text_delta": 22
+        },
+        {
+          "id": "en-handoff",
+          "language": "en",
+          "body_sha256": "e9dea4c910e53886ea0a80095dde885d33b9f3524834879fb77340f016a7c80b",
+          "style_estimate": {
+            "tokens": 33,
+            "chars": 112
+          },
+          "local_body_tokens": 20,
+          "local_prefixed_text_delta": 20
+        },
+        {
+          "id": "zh-review-format",
+          "language": "zh",
+          "body_sha256": "3714c0e84a30c6db8f5e86fc7b207ee748e1eade77b68104ca125bda57f57186",
+          "style_estimate": {
+            "tokens": 28,
+            "chars": 29
+          },
+          "local_body_tokens": 25,
+          "local_prefixed_text_delta": 25
+        },
+        {
+          "id": "zh-force-push",
+          "language": "zh",
+          "body_sha256": "51a7c003d60f935e38d6ca0d4adf77dd98efc4abcfdad2f3fd98e38a42543702",
+          "style_estimate": {
+            "tokens": 25,
+            "chars": 26
+          },
+          "local_body_tokens": 26,
+          "local_prefixed_text_delta": 26
+        },
+        {
+          "id": "zh-test-evidence",
+          "language": "zh",
+          "body_sha256": "6193de45f913ac74acf9cbe89628b491a6c6fffd024c096683fb518b9c496ff8",
+          "style_estimate": {
+            "tokens": 26,
+            "chars": 27
+          },
+          "local_body_tokens": 22,
+          "local_prefixed_text_delta": 22
+        },
+        {
+          "id": "zh-small-diff",
+          "language": "zh",
+          "body_sha256": "1378914fe5faf6c60bf4409de04e46b38132be101b4aa5dc554d739aa8b6134b",
+          "style_estimate": {
+            "tokens": 22,
+            "chars": 23
+          },
+          "local_body_tokens": 27,
+          "local_prefixed_text_delta": 27
+        },
+        {
+          "id": "zh-error-context",
+          "language": "zh",
+          "body_sha256": "ff2b002d2fd1a9952898bce3abdfe6996fbd3f004b78620d911511a0272eba0b",
+          "style_estimate": {
+            "tokens": 27,
+            "chars": 28
+          },
+          "local_body_tokens": 26,
+          "local_prefixed_text_delta": 26
+        },
+        {
+          "id": "zh-credentials",
+          "language": "zh",
+          "body_sha256": "e4930ebf6148c0c6c294029f1b47dd248172d992620e2040ca4566deeb86ab03",
+          "style_estimate": {
+            "tokens": 30,
+            "chars": 31
+          },
+          "local_body_tokens": 33,
+          "local_prefixed_text_delta": 33
+        },
+        {
+          "id": "zh-api-compatibility",
+          "language": "zh",
+          "body_sha256": "1ebd46329e59424633de57abb695c024b6f9d2e94ebcfb9ada40ae2d6b80458f",
+          "style_estimate": {
+            "tokens": 28,
+            "chars": 29
+          },
+          "local_body_tokens": 29,
+          "local_prefixed_text_delta": 29
+        },
+        {
+          "id": "zh-file-safety",
+          "language": "zh",
+          "body_sha256": "d832cd65d508aa01c3f03779e178a2b7401d84de5c658f7b1abdf80bc90f3f60",
+          "style_estimate": {
+            "tokens": 27,
+            "chars": 28
+          },
+          "local_body_tokens": 28,
+          "local_prefixed_text_delta": 28
+        },
+        {
+          "id": "zh-transaction",
+          "language": "zh",
+          "body_sha256": "b0ebf9c20470cc67c84a972581828cdb8667988e740213ebac3c491d19e9b4c9",
+          "style_estimate": {
+            "tokens": 28,
+            "chars": 29
+          },
+          "local_body_tokens": 22,
+          "local_prefixed_text_delta": 22
+        },
+        {
+          "id": "zh-concurrency",
+          "language": "zh",
+          "body_sha256": "99c84dbeb6f1e5932d9880fe01b528deb562fe54edd2bf72d3680063582e0e62",
+          "style_estimate": {
+            "tokens": 26,
+            "chars": 27
+          },
+          "local_body_tokens": 25,
+          "local_prefixed_text_delta": 25
+        },
+        {
+          "id": "zh-subprocess",
+          "language": "zh",
+          "body_sha256": "dae70d205bc90b0a91000ad944f4d8d3072666158d06986efcfa688893766c73",
+          "style_estimate": {
+            "tokens": 27,
+            "chars": 32
+          },
+          "local_body_tokens": 31,
+          "local_prefixed_text_delta": 31
+        },
+        {
+          "id": "zh-boundaries",
+          "language": "zh",
+          "body_sha256": "610cf27c5de179b7062bff9ffe55d6378ba130bb11a23a953d7eee8067498de8",
+          "style_estimate": {
+            "tokens": 30,
+            "chars": 31
+          },
+          "local_body_tokens": 31,
+          "local_prefixed_text_delta": 31
+        },
+        {
+          "id": "zh-evidence",
+          "language": "zh",
+          "body_sha256": "60536f53cb36dee8d86dc041957d96d3196c8cdea4620ac92f37d9e730ceeada",
+          "style_estimate": {
+            "tokens": 32,
+            "chars": 37
+          },
+          "local_body_tokens": 34,
+          "local_prefixed_text_delta": 34
+        },
+        {
+          "id": "zh-performance",
+          "language": "zh",
+          "body_sha256": "08ec72fecaaa723966d85548765797281e20129ccdba7bf5ec5f37fc6a8ff216",
+          "style_estimate": {
+            "tokens": 29,
+            "chars": 30
+          },
+          "local_body_tokens": 33,
+          "local_prefixed_text_delta": 33
+        },
+        {
+          "id": "zh-unknown-values",
+          "language": "zh",
+          "body_sha256": "cc27fcbcce1a916fcee47ceb4f7037f3869d2f009f56ca18c6a811078a240120",
+          "style_estimate": {
+            "tokens": 29,
+            "chars": 30
+          },
+          "local_body_tokens": 29,
+          "local_prefixed_text_delta": 29
+        },
+        {
+          "id": "zh-documentation",
+          "language": "zh",
+          "body_sha256": "55e16aa3a4ee8b2ec4634f37114d381462aeff91f0b03cd9067e0b7fc18dea41",
+          "style_estimate": {
+            "tokens": 35,
+            "chars": 36
+          },
+          "local_body_tokens": 36,
+          "local_prefixed_text_delta": 36
+        },
+        {
+          "id": "zh-local-remote",
+          "language": "zh",
+          "body_sha256": "20890e7d400f95abc1ff3e8f24a1272791da666d94daf60c662dc8c92721510e",
+          "style_estimate": {
+            "tokens": 32,
+            "chars": 40
+          },
+          "local_body_tokens": 34,
+          "local_prefixed_text_delta": 34
+        },
+        {
+          "id": "zh-cost-report",
+          "language": "zh",
+          "body_sha256": "5864b1a65cc8df6f076d681084d320ff1a7f4770b5fbe21b664ad99eefc2bc4c",
+          "style_estimate": {
+            "tokens": 32,
+            "chars": 42
+          },
+          "local_body_tokens": 32,
+          "local_prefixed_text_delta": 32
+        },
+        {
+          "id": "zh-cache",
+          "language": "zh",
+          "body_sha256": "8a14b17dab0c42b0d29a15e6abd80853fd0c6799f0e7de1bd2fc5f7279869fec",
+          "style_estimate": {
+            "tokens": 36,
+            "chars": 37
+          },
+          "local_body_tokens": 37,
+          "local_prefixed_text_delta": 37
+        },
+        {
+          "id": "zh-handoff",
+          "language": "zh",
+          "body_sha256": "ca4f973c5e3ab388053182694cbc6441ad9c6cccfb7c7836a58a30f858ef0f40",
+          "style_estimate": {
+            "tokens": 30,
+            "chars": 32
+          },
+          "local_body_tokens": 32,
+          "local_prefixed_text_delta": 32
+        }
+      ],
+      "summary": {
+        "local_body_tokens": {
+          "all": {
+            "rules": 40,
+            "style_estimated_tokens": 1205,
+            "local_reference_tokens": 972,
+            "mean_signed_relative_error": 0.32036389100063045,
+            "mean_absolute_relative_error": 0.36547424931622496,
+            "max_absolute_relative_error": 0.7894736842105263
+          },
+          "en": {
+            "rules": 20,
+            "style_estimated_tokens": 626,
+            "local_reference_tokens": 380,
+            "mean_signed_relative_error": 0.6531877906665058,
+            "mean_absolute_relative_error": 0.6531877906665058,
+            "max_absolute_relative_error": 0.7894736842105263
+          },
+          "zh": {
+            "rules": 20,
+            "style_estimated_tokens": 579,
+            "local_reference_tokens": 592,
+            "mean_signed_relative_error": -0.012460008665244876,
+            "mean_absolute_relative_error": 0.07776070796594417,
+            "max_absolute_relative_error": 0.2727272727272727
+          }
+        },
+        "local_prefixed_text_delta": {
+          "all": {
+            "rules": 40,
+            "style_estimated_tokens": 1205,
+            "local_reference_tokens": 972,
+            "mean_signed_relative_error": 0.32036389100063045,
+            "mean_absolute_relative_error": 0.36547424931622496,
+            "max_absolute_relative_error": 0.7894736842105263
+          },
+          "en": {
+            "rules": 20,
+            "style_estimated_tokens": 626,
+            "local_reference_tokens": 380,
+            "mean_signed_relative_error": 0.6531877906665058,
+            "mean_absolute_relative_error": 0.6531877906665058,
+            "max_absolute_relative_error": 0.7894736842105263
+          },
+          "zh": {
+            "rules": 20,
+            "style_estimated_tokens": 579,
+            "local_reference_tokens": 592,
+            "mean_signed_relative_error": -0.012460008665244876,
+            "mean_absolute_relative_error": 0.07776070796594417,
+            "max_absolute_relative_error": 0.2727272727272727
+          }
+        }
+      }
+    }
+  ],
+  "official_calibration": {
+    "status": "pending",
+    "completed_per_provider": 0,
+    "required_per_provider": 40
+  },
+  "limits": [
+    "Local encodings are not the official OpenAI or Claude request counter.",
+    "No Claude tokenizer equivalence or model-specific accuracy is claimed.",
+    "Message framing, tools, hidden instructions and cache costs are excluded.",
+    "No error threshold is asserted and production coefficients are unchanged.",
+    "Initial encoding-table setup can download public data; warm-cache runs need no network."
+  ],
+  "completed": true
+}

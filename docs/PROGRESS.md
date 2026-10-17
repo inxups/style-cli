@@ -1579,3 +1579,12 @@ PY
 - docs/review/M2-CI-01-2026-10-17.json 保留首轮 38999049830 的失败、同环境本地前后对照，追加成功 run 的完整逐步骤元数据、两个 job 的日志断言、源码树对象和 SHA256。原日志留 /tmp/style-m2-ci.tD4GCHgQ；可用 gh run view 38999430973 --repo inxups/style-cli --json headSha,status,conclusion,jobs,url 和 --log 重查。
 - 关闭 M2-CI-01/M2-FINAL，当前教程、adapter 总览、设计、手册及任务/测试状态同步。官方计数仍因缺两家独立 API key 保持 M2-CARRY-01 [?]、0/40；M2-RV-01 既有风险未改，总文档与里程碑收尾仍单列。本次结果记录只改文档/证据，生产实现、测试和 workflow 与已通过的 2aded84 相同；提交发布后继续核对文档 HEAD 的远端 CI。
 - 提交前核对两轮 JSON/五份实际证据摘要及修正测试摘要、已测源码树对象、PROGRESS 追加前缀、M1 归档未变；14 份 M2 当前 Markdown 的 193 个本地链接/锚点和围栏、git diff --check 全通过。没有以文档提交触发额外模型请求或官方计数。
+
+### 2026-10-17 — M2-ALT-01 无 API key 的离线/订阅补充验证 `[x]`
+
+- 接 clean 81b1a4f。用户无两家官方 API key，批准“本地分词对照＋沿用订阅实测、继续 M2 收尾”的方案；官方计数独立保留，不标通过。新增两个手工采集器，仅依赖临时 venv 的可选 tiktoken，不改 Go 生产代码、agenthooks、工作流或产品依赖。
+- 临时目录 /tmp/style-m2-token-alt.UFcIgt7y，以临时 Go 三缓存并清理 CODEX_HOME/CODEX_SANDBOX 重新构建，二进制 SHA256 32aef36dcb67d8cd0c57e123016094e1f82e5cce8adca37a9b6ae56c990cf81d 与最终生产构建相同。系统 Python3.14.7 的裸 urllib 访问 PyPI 因本地证书链失败；标准 pip 在临时 venv 保持 TLS 校验安装 tiktoken0.12.0 成功，没有关闭 TLS 检查。
+- 固定 40 条正文/哈希全部复核，生产 CLI 的逐条估算合计 1,205。o200k_base 的纯正文/固定前缀增量均合计 816，逐条 MAPE49.8051%；cl100k_base 均合计972，MAPE36.5474%。语言子组、每条数据及两张完整 token-ID/bytes 映射摘要归档；这些偏差仅相对具名本地编码，不能推断 Claude 或具体 OpenAI 模型准确性、账单或误差上界。生产系数不改。
+- 编码表首次下载后，在全新 Python 进程将 socket.socket.connect 替换为抛错，暖缓存真实执行完整离线采集；与首次结果逐字节相同，SHA256 c25ce49e7ca6e07765ca4ec7c5cddd90f515f9d76644a25eb30bc3b788aeef50。语料、旧官方校准器和原始真实验收报告未改。
+- 从 C1/C2/C4 报告引用的六个原生 transcript 重新核对精确 SHA256，白名单提取八个真实 usage 响应；每个响应只留最后快照，缓存创建/读取不重复相加。只读私有会话，不读凭据、不重新登录、不新增模型请求。会话工具/指令/缓存状态不同，不用安装前后差分推断逐规则成本。
+- 59 项采集器通过（新增六项覆盖平均误差与总量区别、丢语料/正文漂移拒绝、非正参考拒绝、响应去重/缓存/正文白名单、原始日志摘要漂移拒绝）。结果见 docs/review/M2-ALT-01-2026-10-17.md 及两份 JSON；文档/证据核对和 diff-check 通过后提交。M2-CARRY-01 仍 [?]、0/40/家；总文档收尾单独完成。
