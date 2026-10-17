@@ -113,8 +113,11 @@ func decodeLock(data []byte) (lockDocument, error) {
 	if err := decoder.Decode(new(any)); err != io.EOF {
 		return lockDocument{}, fmt.Errorf("decode lock: expected one YAML document")
 	}
-	if document.Format != projectLockFormat && document.Project != nil || document.Format == projectLockFormat && document.Project == nil {
+	if document.Format != projectLockFormat && document.Project != nil || document.Format == projectLockFormat && document.Project == nil && document.Harnesses["claude-code"].Route != "claude-plugin" {
 		return lockDocument{}, fmt.Errorf("project binding requires lock format 3")
+	}
+	if document.Harnesses["claude-code"].Route == "claude-plugin" && (document.Format != projectLockFormat || document.Project != nil) {
+		return lockDocument{}, fmt.Errorf("claude-plugin requires user lock format 3")
 	}
 	if document.Format == lockFormat {
 		var node yaml.Node

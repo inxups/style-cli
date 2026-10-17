@@ -187,12 +187,19 @@ func InspectRuntime(m Manifest, t Target, read func(string) ([]byte, error)) (Ru
 		}
 	}
 	if t.Scope == ScopePlugin {
-		for _, path := range []string{"bin/style", ".codex-plugin/plugin.json"} {
+		artifacts := []string{"bin/style", ".codex-plugin/plugin.json"}
+		if t.Provider == agenthooks.ProviderClaudeCode {
+			artifacts = []string{".claude-plugin/plugin.json"}
+			if t.LocalMarketplaceName != "" {
+				artifacts = append(artifacts, "scripts/style", ".claude-plugin/marketplace.json")
+			}
+		}
+		for _, path := range artifacts {
 			expected, err := fs.ReadFile(rendered, path)
 			if err != nil {
 				return result, err
 			}
-			actual, err := read(filepath.Join(t.Dir, filepath.FromSlash(path)))
+			actual, err := read(filepath.Join(renderedRoot(t, path), filepath.FromSlash(path)))
 			if err != nil {
 				return result, err
 			}

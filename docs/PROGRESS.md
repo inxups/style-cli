@@ -1826,3 +1826,15 @@ PY
 - 临时三缓存及清理 CODEX_HOME/CODEX_SANDBOX/STYLE_HOME/Claude/录制等外部变量，runner 全文见 [A7 报告](review/M3-A7-2026-10-17.json)。9 个新函数，54 条含分组 pass，专项 race 同 54 pass；根 module fresh `go test ./... -count=1 -json` 为 2,989 pass/0 fail，2 项既有 opt-in/helper skip 单列；vet、40 smoke、8 项 built CLI 通过。后者实际调用导出配置中的普通与 portable native fixture，缺依赖返回 127，缺 runner、篡改无回落，并核对原安装/仓库不被 runtime 写入。
 - 首轮 test helper 参数数目错误；第二轮两项 fixture 预期（native 条数、state 路径）修正，并发现 export 忽略额外 settings 键的真实缺口，已加入精确键校验。所有失败与修正后日志摘要保留。逐检查点取消与多包/部分/最后卸载覆盖失败恢复；确认回调拿到 detached 预览，漂移或取消不写部分产物。
 - 当前仅关闭 T31/A7，A7-01–A7-06 全部通过。真实托管云端 C3、其他真实 B/C、exact、Windows、远端 CI 与两家各 0/40 官方计数不据此关闭。下一项 T32/A8 Claude 插件。文档链接/锚点/围栏、归档/历史 JSON 原样、PROGRESS 仅追加、源码摘要、gofmt/Python 语法及 diff --check 见本轮文档检查。
+
+## 2026-10-17 — 用户延期特殊环境真实验收 [?]
+
+- 已询问 Claude 托管云会话、Windows 入口及 Anthropic 独立 API 安全配置位置，用户明确回复“这些等以后再测试，先排除这些，继续”。这是范围授权调整，不是验收结果。
+- C3、W1/REAL-04 及 Anthropic API 的 TOKEN-01/REAL-03 子项保留待验，退出本次 M3 FINAL 必过集合；相关实现、离线验收、跨平台 CI、本地 exact 编码和其他真实 B/C 继续。最终报告须列出延期和用户决定，不把本地或 stub 结果替代真实环境。
+
+## 2026-10-17 M3-T32 / M3-A8 Claude 本地 marketplace
+
+- 按 D3 定稿增加显式 claude-plugin；agenthooks 渲染相对来源 marketplace、manifest/hooks 与固定 executable launcher，并负责只读原生登记检查。默认 user 不变，静态仍在用户 rules；原生数据库不由 STYLE 写入。启用/未知登记阻止删除或切换，生成成功但待登记报告 registration-required/退出 1；元数据启用不代表投递或信任。
+- 互斥 user/plugin 切换、多包/native 更新与批准、部分/最后卸载、外来 handler 与原生数据库保全、取消检查点恢复、probe 来源、安装级 fail-closed 普通 wire 均有测试。用户 plugin 采用 project 为空的 lock 3，真正 A9 旧程序在管理写入前拒绝；切回 user 恢复适用 lock 1/2。
+- 验证：[A8 报告](review/M3-A8-2026-10-17.json)固定源码/二进制摘要与命令；11 个新函数、56 条新 pass，双 module fresh test 3,555 pass/0 fail（25 条既有 opt-in/helper skip 单列），双 module vet、app/adapter 与 agenthooks/install race、8 插件 CLI、8 云端 CLI、40 smoke、16 真旧迁移和 12 replace 回退均通过。Go 沿临时三缓存、清理外部检测/云端/插件变量；完整来源测试需 localhost TLS 监听，使用批准的沙箱放行。初次 fixture 的不存在 CLI 参数和等价 shell 引用断言错误修正后重跑，失败记录保留。
+- [文档检查](review/M3-A8-DOCS-2026-10-17.json)核对链接/锚点、围栏、Python 语法、追加日志、历史归档/JSON 与 diff；只关闭 T32/A8，真实 C4 留待本地原生验收。用户明确延期的 C3、W1 和 Anthropic 独立 API 保持待验且不阻塞本次 FINAL。

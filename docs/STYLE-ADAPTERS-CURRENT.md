@@ -1,6 +1,6 @@
 # STYLE 当前 adapter 实现总览
 
-更新时间：2026-10-17。生产源码核对基线：`16d5c1c`（M2 native、stats、跨包去重、Claude rules/迁移），replace 回退验收 `4976713`，Claude 最终隔离准备 `5dd6742`。Codex M2 B1–B4 双路线证据归档至 `e6dd778`；D4/D5 已由 Claude 2.1.301 的 C1–C4 真实交互验收闭合；M2 已完成并关闭，远端 Ubuntu/macOS CI 在 `154506f` 全部通过（run `39000483969`，59 项采集器）。无 key 补充对照已完成；官方 token 计数仍各 0/40、待独立 API key，承接为 M3-CARRY-01 非阻塞待验。M3-T00 已统一注册表名称校验并通过 [M3-A0](review/M3-A0-2026-10-17.json)，关闭 M3-RV-01；T00 源码由该报告的完整摘要固定。M3-T10 的 [explain 离线验收](review/M3-A1-2026-10-17.json) 已通过，新增隔离重放与可选编译说明；M3-T11 的 [probe 离线验收](review/M3-A2-2026-10-17.json) 也已通过，观察既有 STYLE runtime 回调；M3-T20 的 [Git 来源验收](review/M3-A3-2026-10-17.json) 已通过，取得与锁定留在管理冷路径，真实验收状态不变。M3-T30 已提供两条显式项目路线并通过 [M3-A6](review/M3-A6-2026-10-17.json)，见 [项目安装说明](STYLE-PROJECTS.md)；云端和 Claude 插件继续暂缓。用户现要求继续其他阶段，已确认 [M3-D4 refresh 契约](review/M3-D4-REFRESH-2026-10-17.md)；T40 已实现动态 system、按需 Claude 时钟订阅、独立时钟/游标和 index 2，支持现有五条路线的 macOS/Linux 离线运行，见 [说明](STYLE-REFRESH.md) 与 [A9](review/M3-A9-2026-10-17.json)。agenthooks 协议、事件表和渲染保持原职责；真实 B3/C5 和 Windows 原生结果继续待验。
+更新时间：2026-10-17。生产源码核对基线：`16d5c1c`（M2 native、stats、跨包去重、Claude rules/迁移），replace 回退验收 `4976713`，Claude 最终隔离准备 `5dd6742`。Codex M2 B1–B4 双路线证据归档至 `e6dd778`；D4/D5 已由 Claude 2.1.301 的 C1–C4 真实交互验收闭合；M2 已完成并关闭，远端 Ubuntu/macOS CI 在 `154506f` 全部通过（run `39000483969`，59 项采集器）。无 key 补充对照已完成；官方 token 计数仍各 0/40、待独立 API key，承接为 M3-CARRY-01 非阻塞待验。M3-T00 已统一注册表名称校验并通过 [M3-A0](review/M3-A0-2026-10-17.json)，关闭 M3-RV-01；T00 源码由该报告的完整摘要固定。M3-T10 的 [explain 离线验收](review/M3-A1-2026-10-17.json) 已通过，新增隔离重放与可选编译说明；M3-T11 的 [probe 离线验收](review/M3-A2-2026-10-17.json) 也已通过，观察既有 STYLE runtime 回调；M3-T20 的 [Git 来源验收](review/M3-A3-2026-10-17.json) 已通过，取得与锁定留在管理冷路径，真实验收状态不变。M3-T30 已提供两条显式项目路线并通过 [M3-A6](review/M3-A6-2026-10-17.json)，见 [项目安装说明](STYLE-PROJECTS.md)；云端 export 已通过 A7，Claude 插件已通过 [A8](review/M3-A8-2026-10-17.json)，见[插件说明](STYLE-CLAUDE-PLUGIN.md)。用户现要求继续其他阶段，已确认 [M3-D4 refresh 契约](review/M3-D4-REFRESH-2026-10-17.md)；T40 已实现动态 system、按需 Claude 时钟订阅、独立时钟/游标和 index 2，支持现有五条路线的 macOS/Linux 离线运行，见 [说明](STYLE-REFRESH.md) 与 [A9](review/M3-A9-2026-10-17.json)。agenthooks 协议、事件表和渲染保持原职责；真实 B3/C5 和 Windows 原生结果继续待验。
 
 本文总结当前仓库的实现，不代表 Claude Code / Codex 所有版本的完整产品能力。能力声明、安装配置、运行时可接收事件和真实验收结果分别说明；未修改现有 fallback 语义。
 
@@ -65,11 +65,12 @@ M3-T00 的 `Registry.ValidationCatalog()` 返回独立的名称 slice 与 native
 |---|---|---|
 | `codex-plugin` | 插件默认在 `$STYLE_HOME/adapters/codex/plugin`；包含插件清单、hook 和指向固定程序的 POSIX 启动器；静态指令及 hook 信任配置仍关联 Codex 配置目录 | `user-confirmation`，不会因文件存在就宣称已信任 |
 | `codex-user` | Codex 配置目录的 `hooks.json` 和 `config.toml` | `preseed`，生成 hook 信任状态；配置满足安装检查时可报告 trusted |
+| `claude-plugin` | 用户 STYLE_HOME 下本地 marketplace，原生 user scope 手动登记；静态仍在用户 rules | `user-confirmation`，只读元数据状态与实际加载/投递分别判断 |
 | `claude-user` | Claude 配置目录的 `settings.json` 和每包 `rules/style-<名字>.md`；重建时迁移旧 `CLAUDE.md` 块 | `workspace`，`Status.Trusted` 保守返回 false，无法从配置文件推断工作区信任 |
 | `codex-project` | 显式项目范围的 `R/.codex/hooks.json`，定义哈希信任在用户 CODEX_HOME；静态沿 session.start/compact 降级 | 仍需原生 workspace trust 和规范路径启动，STYLE 不写项目信任 |
 | `claude-project` | 显式项目范围的 `R/.claude/settings.json` 与 `R/.claude/rules/style-<名字>.md` | 动态要求根目录启动；文件存在不代表交互 trust 或真实投递 |
 
-用户范围的 Codex Definition 声明顺序仍是 plugin、user，Claude 为 user；显式 --project 构造仅含对应项目路线的范围。实际选择还受路线参数、已安装锁定信息和可用性影响。项目路线要求已知 Codex >=0.159.3 / Claude >=2.1.301；PATH runner、STYLE_HOME 和 harness 用户配置须与批准绑定一致。Claude 插件路线尚未实现。
+用户范围的 Codex Definition 声明顺序仍是 plugin、user，Claude 为 user、plugin；显式 --project 构造仅含对应项目路线的范围。实际选择还受路线参数、已安装锁定信息和可用性影响。项目路线要求已知 Codex >=0.159.3 / Claude >=2.1.301；PATH runner、STYLE_HOME 和 harness 用户配置须与批准绑定一致。Claude 插件路线要求已知 >=2.1.301 与 POSIX shell，默认仍是 user。
 
 Codex 插件的 marketplace 登记/启用尚未由 STYLE 自动完成；已有真实验收采用手动管理命令，不能把生成插件文件等同于 Codex 已加载插件。
 
@@ -487,3 +488,5 @@ U9控制配置补测已完成，见 [THINKING](review/M1-FINAL-06-THINKING-2026-
 本轮原生补测绑定 Codex 0.159.3 / Claude Code 2.1.301，仅以回环 stub 请求中的固定标记核对加载；未调用真实模型。该调查不替代 A6；A6 现已另行完成，A7/A8、B2/C2–C4、Windows、远端 CI 和官方两家各 0/40 仍待验，复核证据见 [D3 报告](review/M3-D3-DOCS-2026-10-17.json)。
 
 M3-T31 已提供 [Claude 云端 bundle 导出与入口](STYLE-CLOUD.md)，通过 [A7 离线验收](review/M3-A7-2026-10-17.json)。使用已批准的 claude-project 配置、预置 PATH runner、显式 remote 分支及私有 HOME 状态；实际托管 C3 仍待验。Claude 插件 T32 已恢复实施，尚未验收。
+
+Claude plugin 的可选 `RegistrationInspector` 给出登记状态/原生命令/残留；`TransitionPlanner` 原子切换 user/plugin，active 或 unknown 登记阻止删除源目录。agenthooks 增加显式本地 marketplace 目标字段、渲染器与只读原生登记检查，零值保留既有 renderer 行为。锁允许仅 Claude plugin 的用户 format 3；项目仍须完整 binding。

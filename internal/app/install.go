@@ -49,20 +49,21 @@ type InstallRequest struct {
 
 // InstallResult is the stable summary written after an install transaction.
 type InstallResult struct {
-	ProjectPackages      []ProjectPackagePreview   `json:"project_packages,omitempty"`
-	ProjectAdoption      bool                      `json:"project_adoption,omitempty"`
-	Source               *SourceReport             `json:"source,omitempty"`
-	StaticMigrations     []adapter.StaticMigration `json:"static_migrations,omitempty"`
-	Package              string                    `json:"package"`
-	Version              string                    `json:"version"`
-	Changed              bool                      `json:"changed"`
-	Link                 bool                      `json:"link"`
-	Replace              bool                      `json:"replace"`
-	Routes               []string                  `json:"routes"`
-	Reports              []PlanReport              `json:"reports"`
-	Diagnostics          []Diagnostic              `json:"diagnostics,omitempty"`
-	Native               []NativeHookReport        `json:"native_hooks,omitempty"`
-	AwaitingConfirmation bool                      `json:"awaiting_confirmation,omitempty"`
+	Registration         []adapter.RegistrationReport `json:"registration,omitempty"`
+	ProjectPackages      []ProjectPackagePreview      `json:"project_packages,omitempty"`
+	ProjectAdoption      bool                         `json:"project_adoption,omitempty"`
+	Source               *SourceReport                `json:"source,omitempty"`
+	StaticMigrations     []adapter.StaticMigration    `json:"static_migrations,omitempty"`
+	Package              string                       `json:"package"`
+	Version              string                       `json:"version"`
+	Changed              bool                         `json:"changed"`
+	Link                 bool                         `json:"link"`
+	Replace              bool                         `json:"replace"`
+	Routes               []string                     `json:"routes"`
+	Reports              []PlanReport                 `json:"reports"`
+	Diagnostics          []Diagnostic                 `json:"diagnostics,omitempty"`
+	Native               []NativeHookReport           `json:"native_hooks,omitempty"`
+	AwaitingConfirmation bool                         `json:"awaiting_confirmation,omitempty"`
 }
 
 type installPackage struct {
@@ -375,6 +376,10 @@ func (s *Service) Install(ctx context.Context, request InstallRequest) (final In
 		return InstallResult{}, err
 	}
 	if err = inputs.planned(plannedChanges); err != nil {
+		return result, err
+	}
+	result.Registration, err = registrations(ctx, adapters)
+	if err != nil {
 		return result, err
 	}
 	confirmed := request.Yes

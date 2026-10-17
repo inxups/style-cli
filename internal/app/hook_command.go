@@ -128,6 +128,10 @@ func runHook(ctx context.Context, args []string, in io.Reader, out, errOut io.Wr
 		return invalid("cannot initialize runtime")
 	}
 	runtime.CodecStateDir = filepath.Join(home, "cache", "agenthooks")
-	runtime.Observer = probe.NewObserver(home, harnessHome, string(provider), os.Getenv("PLUGIN_ROOT"))
+	pluginRoot := os.Getenv("PLUGIN_ROOT")
+	if provider == agenthooks.ProviderClaudeCode {
+		pluginRoot = os.Getenv("CLAUDE_PLUGIN_ROOT")
+	}
+	runtime.Observer = probe.NewObserver(home, harnessHome, string(provider), pluginRoot)
 	return runtime.Run(ctx, args, in, out, errOut)
 }

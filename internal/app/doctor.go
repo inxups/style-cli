@@ -121,6 +121,11 @@ func (s *Service) Doctor(ctx context.Context, request DoctorRequest) (DoctorResu
 	result.Adapters = inventory.Adapters
 	result.checkRoutes(lock)
 	for _, report := range result.Adapters {
+		for _, route := range report.Routes {
+			if route.Name == lock.Harnesses[report.Provider].Route && route.Registration != nil && route.Registration.State != "enabled" {
+				result.add("registration-required", "error", route.Name+": "+route.Registration.State+"; use the listed native registration commands; static user rules remain active")
+			}
+		}
 		if !report.Detected {
 			continue
 		}

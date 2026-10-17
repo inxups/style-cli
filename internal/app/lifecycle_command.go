@@ -81,6 +81,9 @@ func runInstall(ctx context.Context, service *Service, workDir string, args []st
 			fmt.Fprintf(errOut, "style install: encode report: %v\n", err)
 			return ExitInvalid
 		}
+		if registrationRequired(result.Registration) {
+			return ExitInvalid
+		}
 		return ExitOK
 	}
 	if !previewWritten {
@@ -103,10 +106,19 @@ func runInstall(ctx context.Context, service *Service, workDir string, args []st
 	for _, diagnostic := range result.Diagnostics {
 		fmt.Fprintf(out, "warning %s: %s\n", diagnostic.Code, diagnostic.Message)
 	}
+	if registrationRequired(result.Registration) {
+		return ExitInvalid
+	}
 	return ExitOK
 }
 
 func writeInstallPreview(out io.Writer, result InstallResult) {
+	for _, registration := range result.Registration {
+		fmt.Fprintf(out, "plugin registration: %s (generation is not delivery)\n", registration.State)
+		for _, command := range registration.Commands {
+			fmt.Fprintln(out, command)
+		}
+	}
 	if result.ProjectAdoption {
 		fmt.Fprintln(out, "project adoption: existing declared STYLE effects become owned by this clone and are removed on uninstall")
 	}

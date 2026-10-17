@@ -36,9 +36,13 @@ const (
 // Target names a provider plus scope; Dir is the filesystem root Install
 // writes under (ignored by Render, which returns a relative fs.FS).
 type Target struct {
-	Provider agenthooks.Provider
-	Scope    Scope
-	Dir      string
+	// LocalMarketplaceName opts Claude plugin targets into a portable launcher
+	// and an explicit local directory marketplace, owned by this renderer.
+	LocalMarketplaceName string
+	LocalMarketplaceDir  string
+	Provider             agenthooks.Provider
+	Scope                Scope
+	Dir                  string
 	// HarnessVersion is the detected provider version. Claude Code requires
 	// this to be known and at least 2.1.295 before rendering fail-closed
 	// PreToolUse hooks, which rely on its onFailure setting.
@@ -264,10 +268,7 @@ func planWithReader(m Manifest, t Target, readFile func(string) ([]byte, error))
 			return nil, err
 		}
 		mode := info.Mode().Perm()
-		root := t.Dir
-		if t.Provider == agenthooks.ProviderCodex && (t.Scope == ScopePlugin || t.Scope == ScopeProject) && p == "config.toml" {
-			root = t.ConfigDir
-		}
+		root := renderedRoot(t, p)
 		dest := filepath.Join(root, filepath.FromSlash(p))
 		existing, readErr := readFile(dest)
 		switch {
@@ -425,6 +426,9 @@ func (s *pairSort) Swap(i, j int) {
 }
 
 func renderedRoot(t Target, path string) string {
+	if t.Provider == agenthooks.ProviderClaudeCode && t.Scope == ScopePlugin && t.LocalMarketplaceName != "" && path == ".claude-plugin/marketplace.json" {
+		return t.LocalMarketplaceDir
+	}
 	if t.Provider == agenthooks.ProviderCodex && (t.Scope == ScopePlugin || t.Scope == ScopeProject) && path == "config.toml" {
 		return t.ConfigDir
 	}

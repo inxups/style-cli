@@ -20,6 +20,7 @@ import (
 )
 
 const (
+	PluginRouteName   = "claude-plugin"
 	ProjectRouteName  = "claude-project"
 	ProviderName      = agenthooks.ProviderClaudeCode
 	Owner             = "style"
@@ -347,7 +348,7 @@ func DefinitionForInstallation(installation adapter.Installation) adapter.Defini
 		Detector:        Detector{},
 		Facts:           facts,
 		StaticPositions: facts,
-		Routes:          []adapter.Route{NewUserRouteForInstallation(installation.ConfigDir, installation.Version, "", &facts)},
+		Routes:          []adapter.Route{NewUserRouteForInstallation(installation.ConfigDir, installation.Version, "", &facts), NewPluginRouteForInstallation(installation.ConfigDir, installation.Version, "", &facts)},
 		Limits:          adapter.Limits{Input: tokens.InputLimit{Value: DefaultInputChars, Unit: tokens.CharsUnit}, Approximate: false, Source: "Claude Code hook input limit", Overflow: adapter.OverflowFilePreview},
 		Compact:         adapter.CompactSignal{Event: agenthooks.KindSessionStart, SessionSource: "compact", Deferred: true},
 		Native:          NativeSurface{},

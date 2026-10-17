@@ -2,8 +2,11 @@ package install
 
 import (
 	"errors"
+	"fmt"
 	"io/fs"
+	"path/filepath"
 	"regexp"
+	"runtime"
 	"strconv"
 	"strings"
 
@@ -63,6 +66,15 @@ func renderClaudeForUninstall(m Manifest, t Target) (fs.FS, error) {
 }
 
 func renderClaudeConfig(m Manifest, t Target) (fs.FS, error) {
+	localPlugin := t.Scope == ScopePlugin && t.LocalMarketplaceName != ""
+	if localPlugin {
+		if runtime.GOOS == "windows" {
+			return nil, errors.New("install: local Claude plugin launcher requires POSIX")
+		}
+		if !regexp.MustCompile(`^[a-z0-9][a-z0-9-]{0,95}$`).MatchString(t.LocalMarketplaceName) || !regexp.MustCompile(`^[a-z0-9][a-z0-9-]{0,63}$`).MatchString(m.Identity.Name) || t.LocalMarketplaceDir == "" || filepath.Clean(t.Dir) != filepath.Join(filepath.Clean(t.LocalMarketplaceDir), "plugins", m.Identity.Name) {
+			return nil, errors.New("install: invalid local Claude marketplace binding")
+		}
+	}
 	hooks := map[string][]claudeMatcherEntry{}
 	for _, spec := range m.Hooks {
 		event, ok := spec.NativeEvent, spec.NativeEvent != ""
@@ -86,6 +98,10 @@ func renderClaudeConfig(m Manifest, t Target) (fs.FS, error) {
 		if len(m.Command) > 0 {
 			command = m.Command[0]
 			args = append(args, m.Command[1:]...)
+		}
+		if localPlugin {
+			command = "/bin/sh"
+			args = []string{"${CLAUDE_PLUGIN_ROOT}/scripts/style"}
 		}
 		args = append(args, hookArgs(m, agenthooks.ProviderClaudeCode, spec)...)
 		onFailure := ""
@@ -132,10 +148,21 @@ func renderClaudeConfig(m Manifest, t Target) (fs.FS, error) {
 		files[".claude-plugin/plugin.json"] = pluginJSON
 		// Must be at hooks/hooks.json, not the plugin root (§7).
 		files["hooks/hooks.json"] = hooksJSON
+		if localPlugin {
+			files["scripts/style"] = []byte(codexPluginLauncher(m.Command))
+			market, err := jsonFile(map[string]any{"name": t.LocalMarketplaceName, "owner": map[string]string{"name": "STYLE"}, "plugins": []map[string]string{{"name": m.Identity.Name, "source": "./plugins/" + m.Identity.Name, "description": m.Identity.Description}}})
+			if err != nil {
+				return nil, fmt.Errorf("install: marketplace: %w", err)
+			}
+			files[".claude-plugin/marketplace.json"] = market
+		}
 	case ScopeProject:
 		files[".claude/settings.json"] = hooksJSON
 	default: // ScopeUser: Target.Dir is ~/.claude
 		files["settings.json"] = hooksJSON
+	}
+	if localPlugin {
+		return memFSWithModes(files, map[string]fs.FileMode{"scripts/style": 0o755}), nil
 	}
 	return memFS(files), nil
 }

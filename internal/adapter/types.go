@@ -309,3 +309,18 @@ func (definition Definition) Detect(ctx context.Context) (Installation, bool, er
 	installation.Provider = definition.ID
 	return installation, true, nil
 }
+
+// RegistrationReport separates generated files from native enablement and delivery.
+type RegistrationReport struct {
+	Route       string   `json:"route"`
+	State       string   `json:"state"`
+	Marketplace string   `json:"marketplace"`
+	Plugin      string   `json:"plugin"`
+	Registered  bool     `json:"registered"`
+	Enabled     bool     `json:"enabled"`
+	Commands    []string `json:"commands"`
+	Residue     []string `json:"native_residue,omitempty"`
+}
+type RegistrationInspector interface {
+	Registration(context.Context, func(string) ([]byte, error)) (*RegistrationReport, error)
+}

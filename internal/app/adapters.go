@@ -10,16 +10,17 @@ import (
 )
 
 type RouteReport struct {
-	Name         string            `json:"name"`
-	Available    bool              `json:"available"`
-	Installed    bool              `json:"installed"`
-	Trusted      bool              `json:"trusted"`
-	Trust        adapter.TrustKind `json:"trust"`
-	StableKey    bool              `json:"stable_key"`
-	TrustSummary string            `json:"trust_summary"`
-	Detail       string            `json:"detail"`
-	LastEvent    *time.Time        `json:"last_event,omitempty"`
-	Error        string            `json:"error,omitempty"`
+	Registration *adapter.RegistrationReport `json:"registration,omitempty"`
+	Name         string                      `json:"name"`
+	Available    bool                        `json:"available"`
+	Installed    bool                        `json:"installed"`
+	Trusted      bool                        `json:"trusted"`
+	Trust        adapter.TrustKind           `json:"trust"`
+	StableKey    bool                        `json:"stable_key"`
+	TrustSummary string                      `json:"trust_summary"`
+	Detail       string                      `json:"detail"`
+	LastEvent    *time.Time                  `json:"last_event,omitempty"`
+	Error        string                      `json:"error,omitempty"`
 }
 
 type CapabilityReport struct {
@@ -126,6 +127,13 @@ func inspectRoute(ctx context.Context, route adapter.Route, installation adapter
 	status, statusErr := route.Status(ctx, installation)
 	report.Available = detected && available && status.Available
 	report.Installed, report.Trusted, report.Detail = status.Installed, status.Trusted, status.Detail
+	if inspector, ok := route.(adapter.RegistrationInspector); ok {
+		value, err := inspector.Registration(ctx, nil)
+		report.Registration = value
+		if err != nil {
+			report.Error = err.Error()
+		}
+	}
 	if report.Detail == "" {
 		report.Detail = reason
 	}

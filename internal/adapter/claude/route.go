@@ -16,6 +16,7 @@ import (
 )
 
 type route struct {
+	plugin         bool
 	project        bool
 	configUser     string
 	name           string
@@ -54,6 +55,12 @@ func (r *route) Available(_ context.Context, installation adapter.Installation) 
 	if r.dir == "" {
 		return false, "Claude Code config directory is required", nil
 	}
+	if r.plugin {
+		if !adapter.VersionAtLeast(installation.Version, "2.1.301") {
+			return false, "local plugin route requires known Claude Code >= 2.1.301", nil
+		}
+		return true, "manual local marketplace registration required; static user rules remain active when plugin hooks are disabled", nil
+	}
 	if r.project {
 		if !adapter.VersionAtLeast(installation.Version, "2.1.301") {
 			return false, "project hooks require known Claude Code >= 2.1.301", nil
@@ -64,10 +71,16 @@ func (r *route) Available(_ context.Context, installation adapter.Installation) 
 }
 
 func (r *route) Trust() adapter.TrustInfo {
+	if r.plugin {
+		return adapter.TrustInfo{Kind: adapter.TrustUserConfirmation, StableKey: true, Summary: "manually register and enable the local marketplace plugin; native workspace trust and actual loading are separate"}
+	}
 	return adapter.TrustInfo{Kind: adapter.TrustWorkspace, StableKey: true, Summary: "Claude Code workspace trust controls hook execution"}
 }
 
 func (r *route) target() install.Target {
+	if r.plugin {
+		return install.Target{Provider: ProviderName, Scope: install.ScopePlugin, Dir: r.pluginRoot(), ConfigDir: r.dir, HarnessVersion: r.harnessVersion, LocalMarketplaceName: r.marketplaceName(), LocalMarketplaceDir: r.marketplaceRoot()}
+	}
 	if r.project {
 		return install.Target{Provider: ProviderName, Scope: install.ScopeProject, Dir: filepath.Dir(r.dir), HarnessVersion: r.harnessVersion}
 	}
@@ -99,6 +112,9 @@ func (r *route) InspectNative(_ context.Context, hooks []adapter.HookSpec) ([]ad
 }
 
 func (r *route) Status(ctx context.Context, installation adapter.Installation) (adapter.RouteStatus, error) {
+	if r.plugin {
+		return r.pluginStatus(ctx, installation)
+	}
 	available, detail, err := r.Available(ctx, installation)
 	if err != nil || !available {
 		return adapter.RouteStatus{Available: available, Detail: detail}, err
@@ -121,7 +137,10 @@ func (r *route) Status(ctx context.Context, installation adapter.Installation) (
 	}, nil
 }
 
-func (r *route) Plan(_ context.Context, hooks []adapter.HookSpec, blocks []adapter.StaticBlock) (adapter.Changeset, error) {
+func (r *route) Plan(ctx context.Context, hooks []adapter.HookSpec, blocks []adapter.StaticBlock) (adapter.Changeset, error) {
+	if r.plugin {
+		return r.planPlugin(ctx, hooks, blocks)
+	}
 	if len(blocks) > 0 && !r.facts.StaticAppendAvailable {
 		return adapter.Changeset{}, errors.New("claude route: static instructions are unavailable")
 	}
@@ -166,6 +185,17 @@ func (r *route) Apply(ctx context.Context, changes adapter.Changeset) error {
 	planned := make([]install.PlannedFile, 0, len(changes.Files))
 	for _, change := range changes.Files {
 		rel, err := filepath.Rel(r.dir, change.Path)
+		if r.plugin {
+			root := r.dir
+			if withinPluginRoot(r.marketplaceRoot(), change.Path) {
+				root = r.marketplaceRoot()
+			}
+			if !withinPluginRoot(root, change.Path) {
+				return fmt.Errorf("claude plugin destination escaped")
+			}
+			planned = append(planned, install.PlannedFile{Root: root, Path: change.Path, Before: change.Before, After: change.After, Mode: change.Mode, Remove: change.Remove})
+			continue
+		}
 		if err != nil || rel == ".." || strings.HasPrefix(rel, ".."+string(filepath.Separator)) || filepath.IsAbs(rel) {
 			return fmt.Errorf("claude route: destination %q is outside route root %q", change.Path, r.dir)
 		}
@@ -180,7 +210,10 @@ func (r *route) Apply(ctx context.Context, changes adapter.Changeset) error {
 	return nil
 }
 
-func (r *route) Remove(_ context.Context, owner adapter.Owner) (adapter.Changeset, error) {
+func (r *route) Remove(ctx context.Context, owner adapter.Owner) (adapter.Changeset, error) {
+	if r.plugin {
+		return r.removePlugin(ctx, owner)
+	}
 	planned, err := install.PlanUninstallFiles(r.manifest(nil), r.target())
 	if err != nil {
 		return adapter.Changeset{}, err

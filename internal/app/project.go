@@ -533,6 +533,16 @@ func (s *Service) projectFiles(home string, old lockDocument, next *lockDocument
 		return nil, err
 	}
 	if s.project == nil {
+		if next.Harnesses["claude-code"].Route == claude.PluginRouteName {
+			next.Format = projectLockFormat
+		} else if next.Format == projectLockFormat && next.Project == nil {
+			next.Format = lockFormat
+			for _, pkg := range next.Packages {
+				if pkg.Source.Git != nil {
+					next.Format = gitLockFormat
+				}
+			}
+		}
 		return files, nil
 	}
 	p := s.project

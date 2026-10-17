@@ -8,6 +8,9 @@ import (
 
 func (r *route) ManagementPaths() ([]string, error) {
 	paths, err := install.ManagementPaths(r.manifest(nil), r.target())
+	if r.plugin {
+		paths = append(paths, filepath.Join(r.dir, "settings.json"), filepath.Join(r.dir, "plugins/known_marketplaces.json"), filepath.Join(r.dir, "plugins/installed_plugins.json"))
+	}
 	return append(paths, filepath.Join(r.dir, "CLAUDE.md"), filepath.Join(r.dir, "rules")), err
 }
 
