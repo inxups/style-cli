@@ -272,3 +272,5 @@ M1 的 `skipped-m2` 状态取消。token 一节单列"native hook 输出不估�
 ## M3-D8 规则级失败策略
 
 已定稿[规则级失败契约](../review/M3-D8-FAIL-CLOSED-2026-10-18.md)：fail: closed 仅在可 deny 的直接运行时评估点使用；故障保护按整个原生事件范围保守选择，正常未命中不拦。index 7 与严格最低格式锁保护语义；index 不可读/宿主终止需安装级机制，agenthooks 保留协议职责。T45/A14 已实现并通过[离线验收](../review/M3-A14-2026-10-18.json)，见[使用说明](../STYLE-FAIL-CLOSED.md)；B3/C5 后续独立。
+
+T60/A16 已落实扩展拒绝原因与四字段兼容，见[指南](../STYLE-NATIVE.md)及[验收](../review/M3-A16-2026-10-18.json)。原生配置/归属继续由 agenthooks 负责，未扩展透传未知字段。

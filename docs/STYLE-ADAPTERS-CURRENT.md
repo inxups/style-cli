@@ -504,3 +504,5 @@ M3-T50 已提供显式 `count/plan/explain --count=exact`，通过[A15](review/M
 ## M3-D10 native 扩展边界
 
 [D10 定稿](review/M3-D10-NATIVE-EXTENSIONS-2026-10-18.md)保留 event/matcher/command/timeout 四字段。async、onFailure、HTTP/MCP/prompt/agent 等扩展逐项评估后明确拒绝；不把异步后续投递或模型/网络授权冒充已有 native 管理能力。六组隔离真 CLI/本地 stub 证据不代替真实模型投递。
+
+T60/A16 已落实扩展拒绝原因与四字段兼容，见[指南](STYLE-NATIVE.md)及[验收](review/M3-A16-2026-10-18.json)。原生配置/归属继续由 agenthooks 负责，未扩展透传未知字段。

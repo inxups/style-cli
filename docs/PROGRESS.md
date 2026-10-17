@@ -1920,3 +1920,11 @@ PY
 T50/A15 已完成后，固定官方 hooks.md 与 Claude 2.1.301 六组隔离原生探针；unset/continue/block 分别有 1/1/0 请求，block 时 CLI 仍退出0；异步 2 秒工作在 timeout1 下完成且未进初次请求，HTTP 事件实际收到且返回上下文。全部只连接本地 stub、没有远端模型或真实凭据；白名单[报告](review/M3-D10-NATIVE-PROBE-2026-10-18.json)、[来源](review/M3-D10-SOURCES-2026-10-18.json)固定摘要。
 
 [D10 定稿](review/M3-D10-NATIVE-EXTENSIONS-2026-10-18.md)按评估任务范围决定 M3 保留四字段 native，拒绝后台生命周期、原生故障策略和非命令类型扩展，说明所需归属/信任/版本与独立授权。此结论不把未支持能力标为实现；T60 负责安全诊断与旧四字段/外部扩展条目的兼容验收。只关闭 D10，B4/C6 保持独立。文档检查见[D10-DOCS](review/M3-D10-DOCS-2026-10-18.json)。
+
+## 2026-10-18 M3-T60 / M3-A16 native 扩展结论落地
+
+依 D10 保留 command 四字段，已知扩展 native-field 增加固定安全原因，不回显字段值；不把 async/onFailure/HTTP/MCP/prompt/agent 宣称为 STYLE 新能力。泛化名称校验继续适用于 future-harness，普通未知字段消息不变，agenthooks/协议/锁/index/state 和指纹均未改。
+
+[A16](review/M3-A16-2026-10-18.json)保留临时三缓存与清环境命令、源码/二进制摘要及失败历史：3 个新函数/135 专项和 race pass，126 字段/格式/注册表组合、from 整体覆盖、六路线 108 次命令零写入/不执行作者代码和批准四字段 frozen 恢复通过；根 fresh test 3,880 pass/0 fail、2 既有 skip 单列，vet、24 agenthooks native renderer pass、40 五路线 built CLI 与 40 smoke 通过。实际旧 T50 二进制的计划/配置字节兼容，sync 与卸载保留外部 HTTP/MCP/prompt/agent/异步 command。
+
+初期新安装同名 guard、update 存储完整性/安全候选分类、sync 的 trust/3 gate 预期先后问题均已修正 fixture 并保留原行为；没有为测试放宽安全检查。[文档检查](review/M3-A16-DOCS-2026-10-18.json)通过，日志只追加、归档/历史 JSON/旧 testdata/agenthooks/依赖不变。关闭 T60/A16，按依赖进入 D11/T70；B4/C6 后续实际验收。

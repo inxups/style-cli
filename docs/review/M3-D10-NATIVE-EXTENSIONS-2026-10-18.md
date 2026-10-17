@@ -19,7 +19,7 @@ M3 保留 native 的 `event`、`matcher`、`command`、`timeout` 四字段，不
 
 ## 接口、数据流与失败
 
-保持 `native-field` 诊断码与退出1；目录、单文件、from/整体映射覆盖走同一校验。已知扩展字段增加固定安全原因，原值不回显；普通未知字段的旧消息保持。validate/plan/install/update/sync/trust 必须在任何执行或管理写入前拒绝不支持字段，不能以 fallback:skip 绕过形状校验。冻结重建只承认已经批准的四字段源。
+形状校验保持 `native-field` 诊断码与退出1；目录、单文件、from/整体映射覆盖走同一校验。已知扩展字段增加固定安全原因，原值不回显；普通未知字段的旧消息保持。validate/plan/install/update/sync/trust 必须在任何执行或管理写入前拒绝不支持字段；既有 update 候选分类和 sync 先要求 trust 的退出3保持，后续 trust 仍须通过形状校验，不能以 fallback:skip 绕过形状校验。冻结重建只承认已经批准的四字段源。
 
 四字段校验、计划状态/JSON、命令披露、NativeRule 指纹、timeout、owner 标记、锁/index/state 及真实协议不变。native 不经过 STYLE engine、不进 stats、不估算输出；与普通规则同时安装仍独立执行/授权，不去重作者命令。已有外部非 STYLE hooks，包括扩展类型，必须在合并和卸载中原样保留，不因本产品不开放而删除。
 
@@ -33,7 +33,9 @@ agenthooks 继续独占协议/config renderer/owner/文件事务；本任务不�
 
 | 编号 | 状态 | T60/A16 断言 |
 |---|---|---|
-| A16-01 | [ ] | 全部扩展字段/类型、错类型、目录/单文件/from 覆盖与安全诊断；未知字段旧消息和命令四字段兼容 |
-| A16-02 | [ ] | validate/plan/install/update/sync/trust 拒绝且保全文件，不执行作者命令；frozen 使用批准四字段 |
-| A16-03 | [ ] | 四字段新旧 CLI 计划/配置逐字节对照、owner/授权/卸载与外部扩展 hooks 保全、stats/token 排除 |
-| A16-04 | [ ] | 相关 fresh test/vet/race、构建/CLI、文档/归档与追加日志检查 |
+| A16-01 | [x] | 全部扩展字段/类型、错类型、目录/单文件/from 覆盖与安全诊断；未知字段旧消息和命令四字段兼容 |
+| A16-02 | [x] | validate/plan/install/update/sync/trust 拒绝且保全文件，不执行作者命令；frozen 使用批准四字段 |
+| A16-03 | [x] | 四字段新旧 CLI 计划/配置逐字节对照、owner/授权/卸载与外部扩展 hooks 保全、stats/token 排除 |
+| A16-04 | [x] | 相关 fresh test/vet/race、构建/CLI、文档/归档与追加日志检查 |
+
+四组均已通过 [A16 验收](M3-A16-2026-10-18.json)；使用与管理 gate 说明见[指南](../STYLE-NATIVE.md)。B4/C6 真实模型投递仍待收尾执行。

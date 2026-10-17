@@ -97,7 +97,11 @@ func (v *validator) validateNativeRule(rule Rule, source string) {
 func (v *validator) validateNativeMapping(harness string, mapping map[string]any, source string) {
 	for _, key := range sortedMapKeys(mapping) {
 		if !nativeMappingFields[key] {
-			v.add("native-field", source, fmt.Sprintf("native %s hook field %q is not supported", harness, key))
+			message := fmt.Sprintf("native %s hook field %q is not supported", harness, key)
+			if reason := nativeExtensionReason(key); reason != "" {
+				message += "; " + reason
+			}
+			v.add("native-field", source, message)
 		}
 	}
 	if event, ok := mapping["event"].(string); !ok || event == "" {
@@ -296,4 +300,19 @@ func NativeRules(rule Rule) []NativeRule {
 		result = append(result, native)
 	}
 	return result
+}
+
+// Native extensions stay outside the four-field contract evaluated in M3-D10.
+// Reasons describe the rejected field, never the supplied (possibly secret)
+// value. Keep generic unknown-field diagnostics unchanged.
+func nativeExtensionReason(field string) string {
+	switch field {
+	case "async", "asyncRewake":
+		return "background native execution and later-turn delivery are not managed; use the synchronous command contract"
+	case "onFailure":
+		return "native event/version failure policies are not supported; installation and rule failure guards apply only to the STYLE runtime"
+	case "type", "args", "shell", "url", "headers", "allowedEnvVars", "prompt", "model", "server", "tool", "input":
+		return "only event, matcher, command and timeout are supported; typed HTTP, MCP, prompt, agent and exec extensions require separate ownership and authorization"
+	}
+	return ""
 }

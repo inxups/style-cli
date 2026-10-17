@@ -1,0 +1,49 @@
+{
+  "baseline": "2ffd18b",
+  "documents": 8,
+  "local_links_and_anchors": 389,
+  "archives_unchanged": 59,
+  "historical_json_unchanged": 109,
+  "progress_prefix_sha256": "b5e7f04b03524ee7295b6e4b43cf0b78f04d0138d12c015259d857e36df34b16",
+  "changed_files": [
+    "core/spec/native.go",
+    "core/spec/native_extensions_test.go",
+    "docs/PROGRESS.md",
+    "docs/STYLE-ADAPTERS-CURRENT.md",
+    "docs/STYLE-M3-TASKS.md",
+    "docs/STYLE-M3-TESTS.md",
+    "docs/STYLE-NATIVE.md",
+    "docs/review/M3-A16-2026-10-18.json",
+    "docs/review/M3-A16-DOCS-2026-10-18.json",
+    "docs/review/M3-D10-NATIVE-EXTENSIONS-2026-10-18.md",
+    "docs/spec/STYLE-cli-design.md",
+    "docs/spec/STYLE-spec-rules.md",
+    "internal/app/native_extensions_test.go",
+    "scripts/check_m3_native_extensions.py"
+  ],
+  "checks": "pass",
+  "protected_testdata_agenthooks_dependencies_unchanged": 565,
+  "gofmt": "pass",
+  "groups": [
+    {
+      "id": "A16-01",
+      "task": "M3-T60",
+      "state": "passed"
+    },
+    {
+      "id": "A16-02",
+      "task": "M3-T60",
+      "state": "passed"
+    },
+    {
+      "id": "A16-03",
+      "task": "M3-T60",
+      "state": "passed"
+    },
+    {
+      "id": "A16-04",
+      "task": "M3-T60",
+      "state": "passed"
+    }
+  ]
+}
