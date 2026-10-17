@@ -1,0 +1,822 @@
+{
+  "format": 1,
+  "tasks": [
+    "M3-REAL-01",
+    "M3-REAL-02"
+  ],
+  "tests": [
+    "M3-B1",
+    "M3-C1"
+  ],
+  "status": "timeout-and-interruption-subcases-passed; model-delivery-still-separate",
+  "baseline": "a5a9b2429433c555f38468c8a374b3ba3a382fe8",
+  "binary_sha256": "sha256:21fbbd41ca6b7ae279b6b4477b94dfbfff4dd2d70d2b24b5e12663a76fb23f9f",
+  "collector_sha256": "sha256:eb2d5ac427a98c26787464555a762b15952a1e0ab935d98ac971cfc880287ff1",
+  "routes": 6,
+  "probe_cases": 12,
+  "cases": [
+    {
+      "route": "codex-user",
+      "harness_version": "codex-cli 0.159.3",
+      "passed": true,
+      "models_invoked": false,
+      "authentication_profile_read": false,
+      "local_http_server": false,
+      "timeout": {
+        "format": 1,
+        "command": "probe",
+        "run_id": "2b3922bc32c2ebc7978293393995be40",
+        "status": "timed-out",
+        "timeout": "1s",
+        "targets": [
+          {
+            "harness": "codex",
+            "route": "codex-user",
+            "status": "timed-out",
+            "callback_observed": false,
+            "origin": "unverified",
+            "runtime_sha256": "sha256:21fbbd41ca6b7ae279b6b4477b94dfbfff4dd2d70d2b24b5e12663a76fb23f9f",
+            "harness_sha256": "sha256:4d210f7c5a18fd0386434df23b5bdbb8c0e7257d3e8a2b30b0769c8bbe99a878",
+            "index_sha256": "sha256:eb9e61294e6a5b4a5804c0bc58d32cbe3d1e8caa8cd4028d0da7db3d1a99fedd",
+            "index_status": "captured",
+            "execution": "not-assessed",
+            "events": [
+              "PostToolUse",
+              "PreToolUse",
+              "SessionStart",
+              "SubagentStart",
+              "UserPromptSubmit"
+            ]
+          }
+        ],
+        "cleanup": {
+          "complete": true,
+          "remaining": []
+        },
+        "diagnostics": [
+          {
+            "code": "probe-timeout",
+            "severity": "error",
+            "message": "The observation window ended before every target had a verified callback."
+          }
+        ]
+      },
+      "interrupted": {
+        "format": 1,
+        "command": "probe",
+        "run_id": "e89df76d12cbaf05c7a93b2138062cbd",
+        "status": "interrupted",
+        "timeout": "1m0s",
+        "targets": [
+          {
+            "harness": "codex",
+            "route": "codex-user",
+            "status": "waiting",
+            "callback_observed": false,
+            "origin": "unverified",
+            "runtime_sha256": "sha256:21fbbd41ca6b7ae279b6b4477b94dfbfff4dd2d70d2b24b5e12663a76fb23f9f",
+            "harness_sha256": "sha256:4d210f7c5a18fd0386434df23b5bdbb8c0e7257d3e8a2b30b0769c8bbe99a878",
+            "index_sha256": "sha256:eb9e61294e6a5b4a5804c0bc58d32cbe3d1e8caa8cd4028d0da7db3d1a99fedd",
+            "index_status": "captured",
+            "execution": "not-assessed",
+            "events": [
+              "PostToolUse",
+              "PreToolUse",
+              "SessionStart",
+              "SubagentStart",
+              "UserPromptSubmit"
+            ]
+          }
+        ],
+        "cleanup": {
+          "complete": true,
+          "remaining": []
+        },
+        "diagnostics": [
+          {
+            "code": "probe-interrupted",
+            "severity": "error",
+            "message": "Probe was interrupted; observed targets are preserved."
+          }
+        ]
+      },
+      "interrupt_exit": 1,
+      "restoration": {
+        "files": 2,
+        "bytes_and_modes_restored": true
+      },
+      "project_restoration": {
+        "files": 6,
+        "bytes_and_modes_restored": true
+      },
+      "binding_sha256": "sha256:046d4cbd01f8989f134462ed9eefb18b9e2a8bfa3157ed1f69caaa54fb6ea3ab",
+      "binding_files": 1021,
+      "private_report_sha256": "sha256:4614548124d8674919f4df5487e7fb63b872d5056b9c67dbbe687b36e288720a"
+    },
+    {
+      "route": "codex-plugin",
+      "harness_version": "codex-cli 0.159.3",
+      "passed": true,
+      "models_invoked": false,
+      "authentication_profile_read": false,
+      "local_http_server": false,
+      "timeout": {
+        "format": 1,
+        "command": "probe",
+        "run_id": "bf509ba56668c0218c32013745a363f5",
+        "status": "timed-out",
+        "timeout": "1s",
+        "targets": [
+          {
+            "harness": "codex",
+            "route": "codex-plugin",
+            "status": "timed-out",
+            "callback_observed": false,
+            "origin": "unverified",
+            "runtime_sha256": "sha256:21fbbd41ca6b7ae279b6b4477b94dfbfff4dd2d70d2b24b5e12663a76fb23f9f",
+            "harness_sha256": "sha256:4d210f7c5a18fd0386434df23b5bdbb8c0e7257d3e8a2b30b0769c8bbe99a878",
+            "index_sha256": "sha256:0550d35780112acf14aab74cc7d49b5a5a387f73c1e213117475930aff5af565",
+            "index_status": "captured",
+            "execution": "not-assessed",
+            "events": [
+              "PostToolUse",
+              "PreToolUse",
+              "SessionStart",
+              "SubagentStart",
+              "UserPromptSubmit"
+            ]
+          }
+        ],
+        "cleanup": {
+          "complete": true,
+          "remaining": []
+        },
+        "diagnostics": [
+          {
+            "code": "probe-timeout",
+            "severity": "error",
+            "message": "The observation window ended before every target had a verified callback."
+          }
+        ]
+      },
+      "interrupted": {
+        "format": 1,
+        "command": "probe",
+        "run_id": "09b43b96b7524e1857d9f185d68c8ce5",
+        "status": "interrupted",
+        "timeout": "1m0s",
+        "targets": [
+          {
+            "harness": "codex",
+            "route": "codex-plugin",
+            "status": "waiting",
+            "callback_observed": false,
+            "origin": "unverified",
+            "runtime_sha256": "sha256:21fbbd41ca6b7ae279b6b4477b94dfbfff4dd2d70d2b24b5e12663a76fb23f9f",
+            "harness_sha256": "sha256:4d210f7c5a18fd0386434df23b5bdbb8c0e7257d3e8a2b30b0769c8bbe99a878",
+            "index_sha256": "sha256:0550d35780112acf14aab74cc7d49b5a5a387f73c1e213117475930aff5af565",
+            "index_status": "captured",
+            "execution": "not-assessed",
+            "events": [
+              "PostToolUse",
+              "PreToolUse",
+              "SessionStart",
+              "SubagentStart",
+              "UserPromptSubmit"
+            ]
+          }
+        ],
+        "cleanup": {
+          "complete": true,
+          "remaining": []
+        },
+        "diagnostics": [
+          {
+            "code": "probe-interrupted",
+            "severity": "error",
+            "message": "Probe was interrupted; observed targets are preserved."
+          }
+        ]
+      },
+      "interrupt_exit": 1,
+      "restoration": {
+        "files": 2,
+        "bytes_and_modes_restored": true
+      },
+      "project_restoration": {
+        "files": 6,
+        "bytes_and_modes_restored": true
+      },
+      "binding_sha256": "sha256:046d4cbd01f8989f134462ed9eefb18b9e2a8bfa3157ed1f69caaa54fb6ea3ab",
+      "binding_files": 1021,
+      "private_report_sha256": "sha256:87f7b0f882564e0bf610566f40b88b92e34745cf3d75a72154c9c08a9e9cbe31"
+    },
+    {
+      "route": "codex-project",
+      "harness_version": "codex-cli 0.159.3",
+      "passed": true,
+      "models_invoked": false,
+      "authentication_profile_read": false,
+      "local_http_server": false,
+      "timeout": {
+        "cleanup": {
+          "complete": true,
+          "remaining": []
+        },
+        "command": "probe",
+        "diagnostics": [
+          {
+            "code": "probe-timeout",
+            "message": "The observation window ended before every target had a verified callback.",
+            "severity": "error"
+          }
+        ],
+        "format": 1,
+        "run_id": "dd34ea197e5305cad3f2b4a1b9aa0e26",
+        "scope": {
+          "base_home": "/private/tmp/style-m3-complete-20261017/negative-final02-codex-project/store",
+          "budget_scope": "selected installation only; active user packages have a separate budget and state",
+          "coexisting_user_packages": {},
+          "external_prerequisites": [
+            "style must be available on the harness PATH",
+            "harness workspace trust remains external",
+            "launch Claude Code at the project root",
+            "launch Codex through the canonical project path"
+          ],
+          "home": "/private/tmp/style-m3-complete-20261017/negative-final02-codex-project/store/projects/14377ce9bdb6bcbe0ceacb7e5bb4d8fb8d7af568e42aa8a59fd3e37669f560ac",
+          "kind": "project",
+          "root": "/private/tmp/style-m3-complete-20261017/negative-final02-codex-project/work"
+        },
+        "status": "timed-out",
+        "targets": [
+          {
+            "callback_observed": false,
+            "events": [
+              "PostToolUse",
+              "PreToolUse",
+              "SessionStart",
+              "SubagentStart",
+              "UserPromptSubmit"
+            ],
+            "execution": "not-assessed",
+            "harness": "codex",
+            "harness_sha256": "sha256:4d210f7c5a18fd0386434df23b5bdbb8c0e7257d3e8a2b30b0769c8bbe99a878",
+            "index_sha256": "sha256:37b2a43918c7af4aefc00558cd51fed744f1f271d667ce5c89750a499fccb63e",
+            "index_status": "captured",
+            "origin": "unverified",
+            "route": "codex-project",
+            "runtime_sha256": "sha256:21fbbd41ca6b7ae279b6b4477b94dfbfff4dd2d70d2b24b5e12663a76fb23f9f",
+            "status": "timed-out"
+          }
+        ],
+        "timeout": "1s"
+      },
+      "interrupted": {
+        "cleanup": {
+          "complete": true,
+          "remaining": []
+        },
+        "command": "probe",
+        "diagnostics": [
+          {
+            "code": "probe-interrupted",
+            "message": "Probe was interrupted; observed targets are preserved.",
+            "severity": "error"
+          }
+        ],
+        "format": 1,
+        "run_id": "6e8024044ed064a25d9311f0470d97b2",
+        "scope": {
+          "base_home": "/private/tmp/style-m3-complete-20261017/negative-final02-codex-project/store",
+          "budget_scope": "selected installation only; active user packages have a separate budget and state",
+          "coexisting_user_packages": {},
+          "external_prerequisites": [
+            "style must be available on the harness PATH",
+            "harness workspace trust remains external",
+            "launch Claude Code at the project root",
+            "launch Codex through the canonical project path"
+          ],
+          "home": "/private/tmp/style-m3-complete-20261017/negative-final02-codex-project/store/projects/14377ce9bdb6bcbe0ceacb7e5bb4d8fb8d7af568e42aa8a59fd3e37669f560ac",
+          "kind": "project",
+          "root": "/private/tmp/style-m3-complete-20261017/negative-final02-codex-project/work"
+        },
+        "status": "interrupted",
+        "targets": [
+          {
+            "callback_observed": false,
+            "events": [
+              "PostToolUse",
+              "PreToolUse",
+              "SessionStart",
+              "SubagentStart",
+              "UserPromptSubmit"
+            ],
+            "execution": "not-assessed",
+            "harness": "codex",
+            "harness_sha256": "sha256:4d210f7c5a18fd0386434df23b5bdbb8c0e7257d3e8a2b30b0769c8bbe99a878",
+            "index_sha256": "sha256:37b2a43918c7af4aefc00558cd51fed744f1f271d667ce5c89750a499fccb63e",
+            "index_status": "captured",
+            "origin": "unverified",
+            "route": "codex-project",
+            "runtime_sha256": "sha256:21fbbd41ca6b7ae279b6b4477b94dfbfff4dd2d70d2b24b5e12663a76fb23f9f",
+            "status": "waiting"
+          }
+        ],
+        "timeout": "1m0s"
+      },
+      "interrupt_exit": 1,
+      "restoration": {
+        "files": 2,
+        "bytes_and_modes_restored": true
+      },
+      "project_restoration": {
+        "files": 6,
+        "bytes_and_modes_restored": true
+      },
+      "binding_sha256": "sha256:046d4cbd01f8989f134462ed9eefb18b9e2a8bfa3157ed1f69caaa54fb6ea3ab",
+      "binding_files": 1021,
+      "private_report_sha256": "sha256:a6745d688ce60151589700837409dfd7ec705a39c31f1e26f7f5cadd970f9595"
+    },
+    {
+      "route": "claude-user",
+      "harness_version": "2.1.301 (Claude Code)",
+      "passed": true,
+      "models_invoked": false,
+      "authentication_profile_read": false,
+      "local_http_server": false,
+      "timeout": {
+        "format": 1,
+        "command": "probe",
+        "run_id": "ac2738f37d394fc9c955a164043bbd44",
+        "status": "timed-out",
+        "timeout": "1s",
+        "targets": [
+          {
+            "harness": "claude-code",
+            "route": "claude-user",
+            "status": "timed-out",
+            "callback_observed": false,
+            "origin": "unverified",
+            "runtime_sha256": "sha256:21fbbd41ca6b7ae279b6b4477b94dfbfff4dd2d70d2b24b5e12663a76fb23f9f",
+            "harness_sha256": "sha256:1f04c69e1c24e4d0a716a863af0aad8fc64d49a499334c29701f073700276b99",
+            "index_sha256": "sha256:e79b5c2c37dff3be2d5787be6232683f56ceef5e5ada70533df9df57ed6627eb",
+            "index_status": "captured",
+            "execution": "not-assessed",
+            "events": [
+              "PreToolUse",
+              "SessionStart",
+              "UserPromptSubmit"
+            ]
+          }
+        ],
+        "cleanup": {
+          "complete": true,
+          "remaining": []
+        },
+        "diagnostics": [
+          {
+            "code": "probe-timeout",
+            "severity": "error",
+            "message": "The observation window ended before every target had a verified callback."
+          }
+        ]
+      },
+      "interrupted": {
+        "format": 1,
+        "command": "probe",
+        "run_id": "86bee0ab5cb0b1f2ea8ee4b6f2e92da3",
+        "status": "interrupted",
+        "timeout": "1m0s",
+        "targets": [
+          {
+            "harness": "claude-code",
+            "route": "claude-user",
+            "status": "waiting",
+            "callback_observed": false,
+            "origin": "unverified",
+            "runtime_sha256": "sha256:21fbbd41ca6b7ae279b6b4477b94dfbfff4dd2d70d2b24b5e12663a76fb23f9f",
+            "harness_sha256": "sha256:1f04c69e1c24e4d0a716a863af0aad8fc64d49a499334c29701f073700276b99",
+            "index_sha256": "sha256:e79b5c2c37dff3be2d5787be6232683f56ceef5e5ada70533df9df57ed6627eb",
+            "index_status": "captured",
+            "execution": "not-assessed",
+            "events": [
+              "PreToolUse",
+              "SessionStart",
+              "UserPromptSubmit"
+            ]
+          }
+        ],
+        "cleanup": {
+          "complete": true,
+          "remaining": []
+        },
+        "diagnostics": [
+          {
+            "code": "probe-interrupted",
+            "severity": "error",
+            "message": "Probe was interrupted; observed targets are preserved."
+          }
+        ]
+      },
+      "interrupt_exit": 1,
+      "restoration": {
+        "files": 4,
+        "bytes_and_modes_restored": true
+      },
+      "project_restoration": {
+        "files": 6,
+        "bytes_and_modes_restored": true
+      },
+      "binding_sha256": "sha256:28f72255c2ff34f91c99bcf5b1820274c471321eee8fbe7bdbec9bed54e46b3b",
+      "binding_files": 1021,
+      "private_report_sha256": "sha256:231ed4f29a6dc47c1c48faacfe70a3d4eab30c43ecea6e317c3813d073131257"
+    },
+    {
+      "route": "claude-plugin",
+      "harness_version": "2.1.301 (Claude Code)",
+      "passed": true,
+      "models_invoked": false,
+      "authentication_profile_read": false,
+      "local_http_server": false,
+      "timeout": {
+        "format": 1,
+        "command": "probe",
+        "run_id": "990800b8d57518375d853ea1304ada13",
+        "status": "timed-out",
+        "timeout": "1s",
+        "targets": [
+          {
+            "harness": "claude-code",
+            "route": "claude-plugin",
+            "status": "timed-out",
+            "callback_observed": false,
+            "origin": "unverified",
+            "runtime_sha256": "sha256:21fbbd41ca6b7ae279b6b4477b94dfbfff4dd2d70d2b24b5e12663a76fb23f9f",
+            "harness_sha256": "sha256:1f04c69e1c24e4d0a716a863af0aad8fc64d49a499334c29701f073700276b99",
+            "index_sha256": "sha256:26e4e2baec64968528b1255d5d69560f43812da8c33cc30b11645ca91875453d",
+            "index_status": "captured",
+            "execution": "not-assessed",
+            "events": [
+              "PreToolUse",
+              "SessionStart",
+              "UserPromptSubmit"
+            ]
+          }
+        ],
+        "cleanup": {
+          "complete": true,
+          "remaining": []
+        },
+        "diagnostics": [
+          {
+            "code": "probe-timeout",
+            "severity": "error",
+            "message": "The observation window ended before every target had a verified callback."
+          }
+        ]
+      },
+      "interrupted": {
+        "format": 1,
+        "command": "probe",
+        "run_id": "58b7b5b3a7899bfdd83a288ffead080d",
+        "status": "interrupted",
+        "timeout": "1m0s",
+        "targets": [
+          {
+            "harness": "claude-code",
+            "route": "claude-plugin",
+            "status": "waiting",
+            "callback_observed": false,
+            "origin": "unverified",
+            "runtime_sha256": "sha256:21fbbd41ca6b7ae279b6b4477b94dfbfff4dd2d70d2b24b5e12663a76fb23f9f",
+            "harness_sha256": "sha256:1f04c69e1c24e4d0a716a863af0aad8fc64d49a499334c29701f073700276b99",
+            "index_sha256": "sha256:26e4e2baec64968528b1255d5d69560f43812da8c33cc30b11645ca91875453d",
+            "index_status": "captured",
+            "execution": "not-assessed",
+            "events": [
+              "PreToolUse",
+              "SessionStart",
+              "UserPromptSubmit"
+            ]
+          }
+        ],
+        "cleanup": {
+          "complete": true,
+          "remaining": []
+        },
+        "diagnostics": [
+          {
+            "code": "probe-interrupted",
+            "severity": "error",
+            "message": "Probe was interrupted; observed targets are preserved."
+          }
+        ]
+      },
+      "interrupt_exit": 1,
+      "restoration": {
+        "files": 4,
+        "bytes_and_modes_restored": true
+      },
+      "project_restoration": {
+        "files": 6,
+        "bytes_and_modes_restored": true
+      },
+      "binding_sha256": "sha256:28f72255c2ff34f91c99bcf5b1820274c471321eee8fbe7bdbec9bed54e46b3b",
+      "binding_files": 1021,
+      "private_report_sha256": "sha256:3dbac6a91ec1e032159c94113ce7707f2082bfe9c482b7e17791a402dd00be1f"
+    },
+    {
+      "route": "claude-project",
+      "harness_version": "2.1.301 (Claude Code)",
+      "passed": true,
+      "models_invoked": false,
+      "authentication_profile_read": false,
+      "local_http_server": false,
+      "timeout": {
+        "cleanup": {
+          "complete": true,
+          "remaining": []
+        },
+        "command": "probe",
+        "diagnostics": [
+          {
+            "code": "probe-timeout",
+            "message": "The observation window ended before every target had a verified callback.",
+            "severity": "error"
+          }
+        ],
+        "format": 1,
+        "run_id": "e0aaa8b15b7fcd93a70cdc39b9b9ce89",
+        "scope": {
+          "base_home": "/private/tmp/style-m3-complete-20261017/negative-final02-claude-project/store",
+          "budget_scope": "selected installation only; active user packages have a separate budget and state",
+          "coexisting_user_packages": {},
+          "external_prerequisites": [
+            "style must be available on the harness PATH",
+            "harness workspace trust remains external",
+            "launch Claude Code at the project root",
+            "launch Codex through the canonical project path"
+          ],
+          "home": "/private/tmp/style-m3-complete-20261017/negative-final02-claude-project/store/projects/4e1568038fe748365d5ed923bcdae300620f8b2da1e2231be2c5ccfaff828c8a",
+          "kind": "project",
+          "root": "/private/tmp/style-m3-complete-20261017/negative-final02-claude-project/work"
+        },
+        "status": "timed-out",
+        "targets": [
+          {
+            "callback_observed": false,
+            "events": [
+              "PreToolUse",
+              "SessionStart",
+              "UserPromptSubmit"
+            ],
+            "execution": "not-assessed",
+            "harness": "claude-code",
+            "harness_sha256": "sha256:1f04c69e1c24e4d0a716a863af0aad8fc64d49a499334c29701f073700276b99",
+            "index_sha256": "sha256:1e5ba7bc5541839c39ff97fde3f7a0d16836ce8ebc9bd1b048a3a51db73ca283",
+            "index_status": "captured",
+            "origin": "unverified",
+            "route": "claude-project",
+            "runtime_sha256": "sha256:21fbbd41ca6b7ae279b6b4477b94dfbfff4dd2d70d2b24b5e12663a76fb23f9f",
+            "status": "timed-out"
+          }
+        ],
+        "timeout": "1s"
+      },
+      "interrupted": {
+        "cleanup": {
+          "complete": true,
+          "remaining": []
+        },
+        "command": "probe",
+        "diagnostics": [
+          {
+            "code": "probe-interrupted",
+            "message": "Probe was interrupted; observed targets are preserved.",
+            "severity": "error"
+          }
+        ],
+        "format": 1,
+        "run_id": "c074c29700bb6ff34a567d1ae39f31ae",
+        "scope": {
+          "base_home": "/private/tmp/style-m3-complete-20261017/negative-final02-claude-project/store",
+          "budget_scope": "selected installation only; active user packages have a separate budget and state",
+          "coexisting_user_packages": {},
+          "external_prerequisites": [
+            "style must be available on the harness PATH",
+            "harness workspace trust remains external",
+            "launch Claude Code at the project root",
+            "launch Codex through the canonical project path"
+          ],
+          "home": "/private/tmp/style-m3-complete-20261017/negative-final02-claude-project/store/projects/4e1568038fe748365d5ed923bcdae300620f8b2da1e2231be2c5ccfaff828c8a",
+          "kind": "project",
+          "root": "/private/tmp/style-m3-complete-20261017/negative-final02-claude-project/work"
+        },
+        "status": "interrupted",
+        "targets": [
+          {
+            "callback_observed": false,
+            "events": [
+              "PreToolUse",
+              "SessionStart",
+              "UserPromptSubmit"
+            ],
+            "execution": "not-assessed",
+            "harness": "claude-code",
+            "harness_sha256": "sha256:1f04c69e1c24e4d0a716a863af0aad8fc64d49a499334c29701f073700276b99",
+            "index_sha256": "sha256:1e5ba7bc5541839c39ff97fde3f7a0d16836ce8ebc9bd1b048a3a51db73ca283",
+            "index_status": "captured",
+            "origin": "unverified",
+            "route": "claude-project",
+            "runtime_sha256": "sha256:21fbbd41ca6b7ae279b6b4477b94dfbfff4dd2d70d2b24b5e12663a76fb23f9f",
+            "status": "waiting"
+          }
+        ],
+        "timeout": "1m0s"
+      },
+      "interrupt_exit": 1,
+      "restoration": {
+        "files": 4,
+        "bytes_and_modes_restored": true
+      },
+      "project_restoration": {
+        "files": 6,
+        "bytes_and_modes_restored": true
+      },
+      "binding_sha256": "sha256:28f72255c2ff34f91c99bcf5b1820274c471321eee8fbe7bdbec9bed54e46b3b",
+      "binding_files": 1021,
+      "private_report_sha256": "sha256:90ff7b4d0ff7919453ad34f01ce03544400f8a08836ab796308c6b8eb76a828b"
+    }
+  ],
+  "runs": [
+    {
+      "command": [
+        "python3",
+        "testdata/manual/probe_m3_negative.py",
+        "--style",
+        "/tmp/style-m3-complete-20261017/style-m3-final",
+        "--harness-binary",
+        "/Users/inxups/.nvm/versions/node/v24.21.0/lib/node_modules/@openai/codex/node_modules/@openai/codex-darwin-arm64/vendor/aarch64-apple-darwin/bin/codex",
+        "--harness",
+        "codex",
+        "--route",
+        "codex-user",
+        "--scratch",
+        "/tmp/style-m3-complete-20261017/negative-final02-codex-user",
+        "--output",
+        "/tmp/style-m3-complete-20261017/negative-final02-codex-user-report.json"
+      ],
+      "exit_code": 0,
+      "seconds": 1.998,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      }
+    },
+    {
+      "command": [
+        "python3",
+        "testdata/manual/probe_m3_negative.py",
+        "--style",
+        "/tmp/style-m3-complete-20261017/style-m3-final",
+        "--harness-binary",
+        "/Users/inxups/.nvm/versions/node/v24.21.0/lib/node_modules/@openai/codex/node_modules/@openai/codex-darwin-arm64/vendor/aarch64-apple-darwin/bin/codex",
+        "--harness",
+        "codex",
+        "--route",
+        "codex-plugin",
+        "--scratch",
+        "/tmp/style-m3-complete-20261017/negative-final02-codex-plugin",
+        "--output",
+        "/tmp/style-m3-complete-20261017/negative-final02-codex-plugin-report.json"
+      ],
+      "exit_code": 0,
+      "seconds": 2.025,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      }
+    },
+    {
+      "command": [
+        "python3",
+        "testdata/manual/probe_m3_negative.py",
+        "--style",
+        "/tmp/style-m3-complete-20261017/style-m3-final",
+        "--harness-binary",
+        "/Users/inxups/.nvm/versions/node/v24.21.0/lib/node_modules/@openai/codex/node_modules/@openai/codex-darwin-arm64/vendor/aarch64-apple-darwin/bin/codex",
+        "--harness",
+        "codex",
+        "--route",
+        "codex-project",
+        "--scratch",
+        "/tmp/style-m3-complete-20261017/negative-final02-codex-project",
+        "--output",
+        "/tmp/style-m3-complete-20261017/negative-final02-codex-project-report.json"
+      ],
+      "exit_code": 0,
+      "seconds": 2.017,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      }
+    },
+    {
+      "command": [
+        "python3",
+        "testdata/manual/probe_m3_negative.py",
+        "--style",
+        "/tmp/style-m3-complete-20261017/style-m3-final",
+        "--harness-binary",
+        "/Users/inxups/.nvm/versions/node/v24.21.0/lib/node_modules/@anthropic-ai/claude-code/bin/claude.exe",
+        "--harness",
+        "claude-code",
+        "--route",
+        "claude-user",
+        "--scratch",
+        "/tmp/style-m3-complete-20261017/negative-final02-claude-user",
+        "--output",
+        "/tmp/style-m3-complete-20261017/negative-final02-claude-user-report.json"
+      ],
+      "exit_code": 0,
+      "seconds": 1.959,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      }
+    },
+    {
+      "command": [
+        "python3",
+        "testdata/manual/probe_m3_negative.py",
+        "--style",
+        "/tmp/style-m3-complete-20261017/style-m3-final",
+        "--harness-binary",
+        "/Users/inxups/.nvm/versions/node/v24.21.0/lib/node_modules/@anthropic-ai/claude-code/bin/claude.exe",
+        "--harness",
+        "claude-code",
+        "--route",
+        "claude-plugin",
+        "--scratch",
+        "/tmp/style-m3-complete-20261017/negative-final02-claude-plugin",
+        "--output",
+        "/tmp/style-m3-complete-20261017/negative-final02-claude-plugin-report.json"
+      ],
+      "exit_code": 0,
+      "seconds": 2.506,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      }
+    },
+    {
+      "command": [
+        "python3",
+        "testdata/manual/probe_m3_negative.py",
+        "--style",
+        "/tmp/style-m3-complete-20261017/style-m3-final",
+        "--harness-binary",
+        "/Users/inxups/.nvm/versions/node/v24.21.0/lib/node_modules/@anthropic-ai/claude-code/bin/claude.exe",
+        "--harness",
+        "claude-code",
+        "--route",
+        "claude-project",
+        "--scratch",
+        "/tmp/style-m3-complete-20261017/negative-final02-claude-project",
+        "--output",
+        "/tmp/style-m3-complete-20261017/negative-final02-claude-project-report.json"
+      ],
+      "exit_code": 0,
+      "seconds": 1.987,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      }
+    }
+  ],
+  "boundary": "Actual native CLI versions and local plugin management in empty profiles; no model entry point or authenticated profile. This establishes no-trigger timeout, SIGINT, complete probe cleanup and explicit managed file baseline restoration; it does not establish callback source or model delivery."
+}

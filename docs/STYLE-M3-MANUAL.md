@@ -40,6 +40,14 @@ python3 testdata/manual/probe_m3_live_claude.py --style /tmp/style-m3 --claude /
 
 插件首次 STYLE install 退出 1 且 changed=true、registration-required 属预期；按返回命令原生登记并启用后再运行。删除前先原生 uninstall/移除 marketplace，再 STYLE uninstall。原生元数据允许保留空容器；采集器在该私有 profile 中恢复明确列出的配置基线，另验证新会话没有 STYLE/native 回调或正文。
 
+## 未触发与中断
+
+```sh
+python3 testdata/manual/probe_m3_negative.py --style /tmp/style-m3 --harness-binary /absolute/native/codex --harness codex --route codex-user --scratch /tmp/m3-negative-codex-user --output /tmp/m3-negative-codex-user-report.json
+```
+
+Codex 的 user/plugin/project 和 Claude 的 user/plugin/project 分别使用新空目录；Claude 指定 `--harness claude-code` 与实际原生 Claude 二进制。该采集器只允许原生 version/plugin 管理命令，不读取登录 profile、不启动 HTTP server 或模型。每条路线安装真实 CLI 支持的配置，核对有效 index 为 captured，未触发时 1s 超时与 SIGINT 中断均为失败状态且完整清理；再卸载并恢复显式配置基线。此检查不计原生回调或模型投递；最终六路线证据见[报告](review/M3-PROBE-NEGATIVE-2026-10-18.json)。
+
 ## 每条路线的判定与恢复
 
 1. 首次 SessionStart 前状态为空，固定原 payload、index、绑定 facts；explain 的完整 wire 正文必须出现在实际原生请求。probe 收据还须与独立原生事件、session、路线、时间及两份二进制摘要对应。仅 observed 不代表模型投递。
