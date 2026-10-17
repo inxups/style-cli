@@ -1,0 +1,31 @@
+{
+  "format": 1,
+  "task": "M3-D6",
+  "amendment": "unknown compatibility gate",
+  "date": "2026-10-17",
+  "baseline": "c865ef97ac05edf128d2bdb679ce5bd5dfe04366",
+  "old_binary_sha256": "c8ce82ad5bf8b396597cc7043dfcb509868108c670b5d90e431b5073d39496b4",
+  "cases": [
+    {
+      "action": "old-index4-missing",
+      "accepted": true,
+      "emitted": false
+    },
+    {
+      "action": "old-index4-literal",
+      "accepted": true,
+      "emitted": true
+    },
+    {
+      "action": "old-sync-downgrades-unmarked-index",
+      "before_format": 4,
+      "after_format": 1
+    },
+    {
+      "action": "strict-lock-marker-refuses-old-manager",
+      "exit": 1,
+      "zero_write": true
+    }
+  ],
+  "probe_source": "import hashlib,json,subprocess,sys,tempfile\nfrom pathlib import Path\nsys.path.insert(0,str(Path('scripts').resolve()))\nfrom check_m3_update import fixture,run,snapshot\nold=Path('/tmp/style-m3-complete-20261017/style-provider');cases=[]\nwith tempfile.TemporaryDirectory(prefix='style-unknown-design-') as temp:\n root=Path(temp).resolve();env,home,codex,claude,stub=fixture(root)\n source=root/'source';source.mkdir();(source/'STYLE.yaml').write_text('spec: style/v0.3\\nname: missing-model\\nversion: 1.0.0\\ndescription: compatibility probe\\nreads: {model: true}\\nrules:\\n  - {id: r, target: event, event: tool.pre, when: {model: unknown}, text: UNKNOWN_CONTRACT_PROBE}\\n')\n run(old,env,'install',source,'--harness','codex','--route','codex=codex-user','--yes','--json')\n index=home/'build/index.json';value=json.loads(index.read_text());assert value['format']==1;value['format']=4;index.write_text(json.dumps(value))\n for mode in ['missing','literal']:\n  payload=dict(session_id='s',hook_event_name='PreToolUse',tool_name='Bash',tool_input={'command':'true'})\n  if mode=='literal':payload['model']='unknown'\n  p=root/'payload.json';p.write_text(json.dumps(payload));result=json.loads(run(old,env,'explain','--harness','codex','--event','PreToolUse','--payload',p,'--index',index,'--json').stdout)\n  emitted='UNKNOWN_CONTRACT_PROBE' in result['wire']['stdout'];assert emitted==(mode=='literal')\n  cases.append(dict(action='old-index4-'+mode,accepted=result['status']=='ok',emitted=emitted))\n before=snapshot(home,codex,claude)\n result=run(old,env,'sync','--json');after=json.loads(index.read_text());assert after['format']==1\n cases.append(dict(action='old-sync-downgrades-unmarked-index',before_format=4,after_format=after['format']))\n lock=home/'style.lock.yaml';text=lock.read_text().replace('format: 1','format: 2',1);lock.write_text('min_index_format: 5\\n'+text)\n before=snapshot(home,codex,claude);blocked=run(old,env,'sync','--json',want=1);assert snapshot(home,codex,claude)==before\n cases.append(dict(action='strict-lock-marker-refuses-old-manager',exit=blocked.returncode,zero_write=True))\nreport=dict(format=1,task='M3-D6',amendment='unknown compatibility gate',date='2026-10-17',baseline='c865ef97ac05edf128d2bdb679ce5bd5dfe04366',old_binary_sha256=hashlib.sha256(old.read_bytes()).hexdigest(),cases=cases,probe_source=Path(__file__).read_text())\nPath('docs/review/M3-D6-UNKNOWN-COMPAT-2026-10-17.json').write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\\n');print(json.dumps(cases))\n"
+}

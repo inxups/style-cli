@@ -1,0 +1,16 @@
+{
+  "baseline": "c865ef97ac05edf128d2bdb679ce5bd5dfe04366",
+  "documents": 3,
+  "local_links_and_anchors": 56,
+  "archives_unchanged": 59,
+  "historical_json_unchanged": 92,
+  "progress_prefix_sha256": "9e75dafb8fec512c5226e250d411b4466783e4f94dfbd02c0bc691163cc74571",
+  "changed_files": [
+    "docs/PROGRESS.md",
+    "docs/review/M3-D6-PROVIDER-UNKNOWN-2026-10-17.md",
+    "docs/review/M3-D6-UNKNOWN-COMPAT-2026-10-17.json",
+    "docs/review/M3-D6-UNKNOWN-DOCS-2026-10-17.json",
+    "docs/spec/STYLE-spec-compiled.md"
+  ],
+  "checks": "pass"
+}

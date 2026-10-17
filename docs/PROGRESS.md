@@ -1864,3 +1864,9 @@ PY
 - [A11 报告](review/M3-A11-2026-10-17.json)固定最终源码/二进制/fixture 与全部运行摘要。15 新函数、95 条含分组 pass（根 89、agenthooks 6），根专项 race 同 89 通过；双 module fresh test 3,179+528=3,707 pass/0 fail，25 既有 opt-in/helper skip 单列；双 vet、35 provider CLI、35 事件兼容、40 smoke 通过。沿临时三缓存和清理 CODEX_HOME/CODEX_SANDBOX/Claude 服务选择及端点等变量；全量来源 TLS fixture 使用已批准本机监听。原 golden/依赖、agenthooks codec/event/renderer/owner 不改。
 - 保留失败与修正：编辑脚本匹配模式、测试状态常量/缺数据状态/双 harness helper、桌面 Codex 祖先影响假设、Python argv 重写、smoke 参数错误。使用明确标识的 Go 祖先 fixture 后离线 CLI 可复跑，不把它或版本 stub 当真实 harness 投递。
 - 当前规范/使用说明/adapter 总览同步，[文档检查](review/M3-A11-DOCS-2026-10-17.json)检查链接/锚点/围栏、PROGRESS 追加、归档/历史 JSON、旧 golden、源码格式和 diff。仅关闭 T42/A11；继续 T43/A12。用户延期的 C3、W1/REAL-04、Anthropic API 保留待验，官方校准两家各 0/40 非阻塞不变。
+
+## 2026-10-17 M3-D6 unknown 兼容门禁修订
+
+- 从 clean `c865ef97ac05edf128d2bdb679ce5bd5dfe04366` 对实际 T42 二进制运行[四项探针](review/M3-D6-UNKNOWN-COMPAT-2026-10-17.json)：format 4 中 model: unknown 只匹配原始字面量，不匹配缺值；旧 sync 还会重编译成 format 1。这是实际观察，不是根据源码推测。
+- 据此修订已批准 D6：provider 维持 index 4，unknown 独立使用 index 5；锁按需增加 min_index_format: 5，普通用户锁升既有严格 format 2，项目/插件仍 3。探针确认旧管理器在严格锁标记前零写入拒绝。无新语法不加字段，移除最后一条后清标记；frozen 不升级锁。用户已批准全部设计，直接按修订继续 T43，无需再次确认。
+- 本次仅文档/探针证据，T43/A12 仍待实现；检查链接/围栏、追加日志/历史归档原样及 diff，见[修订检查](review/M3-D6-UNKNOWN-DOCS-2026-10-17.json)。

@@ -26,7 +26,9 @@
 
 只有 index 需要 provider 才开启额外来源解析及可选 session 字段 model_provider/provider_resolved/provider_source；纯旧规则的热路径和 state JSON 保持。来源使用固定码，trace 只报告可用性及来源，不含配置、环境原文或 URL。explain 新增绑定 payload SHA256 的可选 model_provider 事实；缺该事实按缺值重放，绝不读取本机 provider 配置/环境。snapshot 保留可选安全字段，真实运行和 explain 使用同一匹配路径。
 
-使用 provider 条件/变量或第 5 节 unknown 的产物整体采用 index format 4。旧 runner 拒绝整份 index；新 runner 继续读 1/2/3。旧 index 的 provider 条件保留旧永不满足行为或严格拒绝新语义，绝不能在旧 format 下悄悄启用；实现采用严格拒绝有 provider 条件的旧 index，需要从原包重新编译。doctor 提示新 runner，refresh/event 同时使用取最高格式。不改锁、owner 或原生 codec/event/renderer 的职责。
+provider 条件/变量整体采用 index format 4；unknown 在独立 T43 交付时采用 **format 5**，保护已经支持 format 4 的 T42 runner。新 runner 继续读合法 1/2/3/4，旧格式不能承载新语义；所有入口严格拒绝旧格式的 provider/unknown 规则。doctor 提示升级，refresh/event/provider/unknown 同时使用取最高格式。
+
+2026-10-17 [实际兼容探针](M3-D6-UNKNOWN-COMPAT-2026-10-17.json)证明 T42 二进制接受 format 4 的 model: unknown，但只匹配模型字面量 unknown，且旧 sync 能把未标记的新 index 重新编译降为 format 1。仅 bump index 不足以保护管理冷路径。因此新增锁的可选 **min_index_format: 5**：有有效 unknown 产物才写入，用户普通锁至少采用既有严格 format 2，项目/Claude 插件仍 format 3；旧程序在任何管理写入前因未知锁字段拒绝。没有 unknown 的锁不加字段；移除最后一个 unknown 后清除标记（可保留合法 format 2）。sync/update/install 按本次完整编译重新计算，frozen 只允许锁标记与批准编译一致，不自动升级锁。此前“不改锁”的提议据实际降级风险修订；owner 与原生 codec/event/renderer 职责不变。
 
 ## 5. unknown 的唯一含义
 
@@ -55,6 +57,6 @@
 | A12-01 | [ ] | 四字段缺失/空/非空、未知 effort 原值、列表 OR/跨字段 AND |
 | A12-02 | [ ] | 模型 glob/effort 比较、其他字段和否定条件不扩展 |
 | A12-03 | [ ] | plan 不错误移除缺值规则、reads 与 var-no-default、compile/engine/trace/explain 一致 |
-| A12-04 | [ ] | format 4 和旧缺值兼容、fixture/golden 与 built CLI；真实 B3/C5 后续独立 |
+| A12-04 | [ ] | format 5/锁标记和旧缺值兼容、fixture/golden 与 built CLI；真实 B3/C5 后续独立 |
 
 T42/A11 六组均通过[验收报告](M3-A11-2026-10-17.json)，具体接口见[使用说明](../STYLE-PROVIDER.md)。A12 四组仍待实施，真实投递未据此关闭。
