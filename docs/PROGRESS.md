@@ -2072,3 +2072,8 @@ Codex 0.159.3 与实际配置模型服务、固定生产 STYLE 二进制，在�
 - Claude 2.1.301 本地插件经原生 marketplace 登记/启用，UI 明确信任且正常退出，实际 root 与固定 direct plugin root 相符。整轮 probe/explain 完整正文、refresh/围栏/provider/effort/unknown、正常工具/坏 state 拒绝/恢复、native 更新正文替换、frozen、原生取消登记和卸载/配置恢复通过，[插件报告](review/M3-C-CLAUDE-PLUGIN-2026-10-18.json)保留摘要。
 - [本地总报告](review/M3-REAL-02-LOCAL-2026-10-18.json)固定 user/project/plugin 各自完整证据；三路线共 28 次调用、37 次实际 claude-haiku-5-5 请求，本地 stub 共0，外部显式配置 bytes/mode 还原。关闭 C1/C4/C5/C6，C2 已独立关闭；REAL-02 只因用户延期云端 C3 保留混合 `[~]`，本次本地适用范围全部完成。
 - 最终采集器 78 项通过；M1/M2 及已存在 golden 未改、日志仅追加。三平台最终 CI 和总收尾继续；C3/W1/API 与官方两家各0/40均未标记通过。
+
+## 2026-10-18 M3-CI-01 最终三平台 CI
+
+- 最终受验源码 2c24e5f9、run 39064157115 的 Ubuntu/macOS/Windows 三 job 全部成功。POSIX 各35个有测试 package fresh/无 cached、双 vet/构建、78采集器、生产 smoke、六路线准备、12 replace、16真实旧二进制迁移及36组合验收均通过。
+- Windows 双 module fresh 结果、逐 skip 原因、25 项原生 STYLE CLI、amd64/arm64 构建及原始 artifact/log SHA 见[报告](review/M3-CI-01-2026-10-18.json)。CI 使用版本 stub，不计用户延期的实际 harness W1；三缓存/环境清理与 GOWORK=off 沿工作流执行。关闭 CI-01；后续只提交收尾文档，按源码等价性核对，不改已验实现。
