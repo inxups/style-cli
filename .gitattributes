@@ -1,2 +1,3 @@
 # Preserve exact CLI output, including intentional space-only report lines.
 testdata/update/*.txt whitespace=-blank-at-eol
+testdata/frozen/*.txt whitespace=-blank-at-eol

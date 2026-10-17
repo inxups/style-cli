@@ -96,6 +96,7 @@ func printUsage(out io.Writer) {
 	fmt.Fprintln(out, "style validate [source] [--ref ref] [--path repo-path] [--json]")
 	fmt.Fprintln(out, "style plan <source> [--ref ref] [--path repo-path] [--harness auto|codex,claude-code] [--assume-requests N] [--assume-triggers N] [--json]")
 	fmt.Fprintln(out, "style install <source> [--ref ref] [--path repo-path] [--harness h] [--route h=r] [--set k=v] [--link] [--allow-replace] [--fail-closed h] [--yes] [--json]")
+	fmt.Fprintln(out, frozenUsage)
 	fmt.Fprintln(out, updateUsage)
 	fmt.Fprintln(out, "style uninstall <name|--all> [--yes] [--json]")
 	fmt.Fprintln(out, "style list [--json]")

@@ -271,3 +271,29 @@ func publishCache(ctx context.Context, home string, snapshot Snapshot) error {
 	}
 	return fail("source-cache-invalid", "concurrent source cache publication did not settle")
 }
+
+// ReadLocked reads and verifies one complete existing export. It never starts
+// Git, creates directories, repairs an entry or publishes cache files.
+func ReadLocked(ctx context.Context, home string, identity Git, kind, p string, hashes map[string]string) (Snapshot, error) {
+	if err := ctx.Err(); err != nil {
+		return Snapshot{}, err
+	}
+	if err := ValidateIdentity(identity, kind, p, hashes); err != nil {
+		return Snapshot{}, err
+	}
+	snapshot, err := readCache(home, identity, kind, p)
+	if err != nil {
+		return Snapshot{}, err
+	}
+	actual, _ := Hashes(snapshot.Files)
+	if !equalHashes(actual, hashes) {
+		return Snapshot{}, fail("source-cache-invalid", "locked cache file hashes differ")
+	}
+	if err := ctx.Err(); err != nil {
+		return Snapshot{}, err
+	}
+	// A shared immutable export may have been acquired under another ref. The
+	// selector belongs to the lock; the cache authenticates its fixed objects.
+	snapshot.Git = identity
+	return snapshot, nil
+}

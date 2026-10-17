@@ -2,7 +2,7 @@
 
 对应规范：[STYLE-spec.md](STYLE-spec.md)（v0.3）。规范定义包格式、运行时语义、token 预算、安全约束和 `index.json`；本文定义命令、本地布局、编译和运行时流程、Claude Code 与 Codex 两个适配器、token 估算器、fork 改动、里程碑、验收和未决项。冲突时，格式和语义以规范为准，实现细节以本文为准。
 
-状态（2026-10-17）：M1、M2 已关闭并只读归档；M2 的 native、stats、跨包去重、Claude rules/迁移与 replace 回退已验收，Codex/Claude 真实环境、本地回归和最终 Ubuntu/macOS CI 均通过，历史证据见 [M2 任务清单](../STYLE-M2-TASKS.md)、[测试矩阵](../STYLE-M2-TESTS.md)。当前里程碑为 M3，任务、依赖和验收状态以 [M3 任务清单](../STYLE-M3-TASKS.md)、[测试矩阵](../STYLE-M3-TESTS.md) 为准；建档和隔离环境基线已完成，D0 已获用户确认，T00 注册表校验修复和 A0 验收已完成；[D1 诊断契约评审稿](../review/M3-D1-DIAGNOSTICS-2026-10-17.md) 已获用户确认，explain 已实现并通过 [M3-A1](../review/M3-A1-2026-10-17.json)，probe 也已实现并通过 [M3-A2](../review/M3-A2-2026-10-17.json)；[D2 来源与锁定评审稿](../review/M3-D2-SOURCES-2026-10-17.md) 已于 2026-10-17 获用户确认，Git 来源已由 T20 实现并通过 [M3-A3](../review/M3-A3-2026-10-17.json)，update 已由 T21 实现并通过 [M3-A4](../review/M3-A4-2026-10-17.json)，frozen 待 T22。官方 token 计数仍各 0/40，承接为 M3-CARRY-01 非阻塞待验；本地编码/订阅 usage 作为补充，不提供误差范围保证。核心名称校验硬编码风险 M3-RV-01 已随 T00/A0 关闭；engine 既有输出安全特例仍按 D8 评估。当前仅支持 **Claude Code** 和 **Codex**；本文接口代码为设计示意，当前接口与职责见 [adapter 总览](../STYLE-ADAPTERS-CURRENT.md)。
+状态（2026-10-17）：M1、M2 已关闭并只读归档；M2 的 native、stats、跨包去重、Claude rules/迁移与 replace 回退已验收，Codex/Claude 真实环境、本地回归和最终 Ubuntu/macOS CI 均通过，历史证据见 [M2 任务清单](../STYLE-M2-TASKS.md)、[测试矩阵](../STYLE-M2-TESTS.md)。当前里程碑为 M3，任务、依赖和验收状态以 [M3 任务清单](../STYLE-M3-TASKS.md)、[测试矩阵](../STYLE-M3-TESTS.md) 为准；建档和隔离环境基线已完成，D0 已获用户确认，T00 注册表校验修复和 A0 验收已完成；[D1 诊断契约评审稿](../review/M3-D1-DIAGNOSTICS-2026-10-17.md) 已获用户确认，explain 已实现并通过 [M3-A1](../review/M3-A1-2026-10-17.json)，probe 也已实现并通过 [M3-A2](../review/M3-A2-2026-10-17.json)；[D2 来源与锁定评审稿](../review/M3-D2-SOURCES-2026-10-17.md) 已于 2026-10-17 获用户确认，Git 来源已由 T20 实现并通过 [M3-A3](../review/M3-A3-2026-10-17.json)，update 已由 T21 实现并通过 [M3-A4](../review/M3-A4-2026-10-17.json)，frozen 已由 T22 实现并通过 [M3-A5](../review/M3-A5-2026-10-17.json)。官方 token 计数仍各 0/40，承接为 M3-CARRY-01 非阻塞待验；本地编码/订阅 usage 作为补充，不提供误差范围保证。核心名称校验硬编码风险 M3-RV-01 已随 T00/A0 关闭；engine 既有输出安全特例仍按 D8 评估。当前仅支持 **Claude Code** 和 **Codex**；本文接口代码为设计示意，当前接口与职责见 [adapter 总览](../STYLE-ADAPTERS-CURRENT.md)。
 
 **依据**：
 - agenthooks `3f734c7` 源码，历史整理资料为 `agenthooks-codex.md`（外部资料，本仓库未收录）；
@@ -181,7 +181,7 @@ core 只消费通用目录/能力端口；agenthooks 继续负责协议、配置
 | `style probe [--harness h] [--timeout 60s] [--json]` | 等待已安装 STYLE hook 的关联回调；T11/A2 离线验收已完成；[使用说明](../STYLE-PROBE.md) | M3 |
 | `style validate/plan/install <git+https://…> [--ref …] [--path …]` | T20/A3 已完成：显式 Git 来源、固定 commit 原始快照（§4.2）；[使用说明](../STYLE-SOURCES.md) | M3 |
 | `style update <name>` / `style update --all` | T21/A4 已完成：明确选择、预览/确认、多包事务（§4.2）；[使用说明](../STYLE-SOURCES.md#明确选包更新) | M3 |
-| `style install --frozen [--yes] [--json] [--allow-replace]` | D2 定稿：当前整锁/绑定下离线恢复；尚未实现（§4.2） | M3 |
+| `style install --frozen [--yes] [--json] [--allow-replace]` | T22/A5 已完成：当前整锁/绑定下离线恢复（§4.2）；[使用说明](../STYLE-SOURCES.md#整锁离线恢复) | M3 |
 | `install --project`、`--count=exact` | 分别待 D3/D9 定稿 | M3 |
 
 **选项说明**：
@@ -216,7 +216,7 @@ trace 与普通求值共用实现，覆盖 selector/source/when 短路、缺值�
 
 ### 4.2 M3-D2 来源与锁定评审稿
 
-本节设计已于 2026-10-17 获用户确认。Git 来源由 T20 实现，A3-01–A3-12 已通过 [验收](../review/M3-A3-2026-10-17.json)，入口与限制见 [使用说明](../STYLE-SOURCES.md)；update 已实现并通过 [A4](../review/M3-A4-2026-10-17.json)，frozen 待 T22。具体字段、资源限制、失败行为及 A5 待执行断言见 [D2 方案](../review/M3-D2-SOURCES-2026-10-17.md)。D2 的 12 项设计探针与文档检查保留在 [原报告](../review/M3-D2-DOCS-2026-10-17.json)。
+本节设计已于 2026-10-17 获用户确认。Git 来源由 T20 实现，A3-01–A3-12 已通过 [验收](../review/M3-A3-2026-10-17.json)，入口与限制见 [使用说明](../STYLE-SOURCES.md)；update 已实现并通过 [A4](../review/M3-A4-2026-10-17.json)，frozen 已由 T22 实现并通过 [M3-A5](../review/M3-A5-2026-10-17.json)。具体字段、资源限制、失败行为及 A5 已验收断言见 [D2 方案](../review/M3-D2-SOURCES-2026-10-17.md)。D2 的 12 项设计探针与文档检查保留在 [原报告](../review/M3-D2-DOCS-2026-10-17.json)。
 
 **来源**：保留本地目录/单文件及 link；validate/plan/install 已支持显式公共 `git+https`，`--ref` 接规范 branch/tag 或完整 OID，默认解析 HEAD 后锁定 branch/commit；`--path` 选目录或单文件。Git 不接受 --link，生产 CLI 不开放 file/SSH/凭据/helper。取得在私有 bare 中固定 commit，通过 tree/blob 原始字节导出，不 checkout/archive/filter/submodule；沿用 core 完整包/注册表/native/预算校验。Git validate/plan 可写私有完整来源缓存，已安装文件保持只读；原有本地 plan 不改文件的保证不变。
 
@@ -225,6 +225,8 @@ trace 与普通求值共用实现，覆盖 selector/source/when 短路、缺值�
 **update**（T21/A4 已完成）：必须一个包名或 --all，默认预览，--yes 应用同次捕获的候选；--ref 仅对单个 Git 包显式换目标。Git 按原 ref、复制包按原路径、link 按当前源取得；保留 seq/settings，名称或类型变化、缺必填、新 replace 未授权、预算/能力阻止均失败。未选包只使用批准快照，即便 link 已授权也不带入新字节；未选渲染/native 表示变化先阻止，--all 才批准联合效果。app 协调所有包和文件的提交 guard/Before/逆序回滚，报告恢复失败；agenthooks 的渲染/owner/文件事务职责保留。
 
 **frozen**：无位置来源，读取当前 STYLE_HOME 的整锁，零 Git/网络/来源缓存写入，锁精确字节不变。需要完整锁定源内容、settings 和可验证批准表示；管理/批准快照或 Git 缓存均可提供内容，不强制缓存存在。link 必须 live 内容精确匹配且已 trust。固定路线/版本/根/渲染和静态布局，不 Detect/重定位/迁移；缺基线或输出不匹配明确失败。仅在既有 owner 计划允许时恢复派生产物，仍披露 native/replace 并确认；不声称跨根或真实 harness 已接受。项目可移植性由 D3 定义。
+
+T22/A5 的恢复实现与 [使用说明](../STYLE-SOURCES.md#整锁离线恢复) 一致：显式非空锁、完整批准/精确 settings 键和逐包完整内容；共享管理事务保全锁 bytes/mode/mtime/身份。现有 rendered 为变更集摘要，无法重现的部分配置修复与缺失 Claude 已登记 rules 保守拒绝；程序路径变更须先由普通管理更新绑定，不扩大 owner 权限。项目/跨根仍由 D3 定义，开始前按用户要求通知。
 
 退出码沿用 0/1/4，3 仍只属于 sync；新报告和诊断细节以 D2 §7 为准。按定稿依次由 T20/A3 → T21/A4 → T22/A5 单独实现与验收。
 

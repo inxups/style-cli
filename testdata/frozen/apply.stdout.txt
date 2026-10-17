@@ -1,0 +1,50 @@
+Lock: $LOCK_SHA256; locked_source=true
+  first: snapshot=managed storage_repair=false
+Frozen install: confirmation-required; selected=["first"]
+first (seq=1):
+  before: version="0.1.0" source="$FIXTURE/source" kind=dir link=false link_trusted=false replace=false content=sha256:2760c098c961c6bd86637154f7ebfed700c3d41bf4da56bb87b4b6d48284fa8c
+  after: version="0.1.0" source="$FIXTURE/source" kind=dir link=false link_trusted=false replace=false content=sha256:2760c098c961c6bd86637154f7ebfed700c3d41bf4da56bb87b4b6d48284fa8c
+  settings added=[] removed=[]; approval_changed=false configuration_repair=false
+Source diff:
+Rendered diff (static values substituted; event variables remain runtime fragments):
+Previous approved native order:
+Native commands:
+  codex first/earlier: event=PreToolUse matcher="^Bash$" timeout=60s
+    command: printf earlier
+    route: codex-user; trust=preseed; Codex hooks.state is pre-seeded
+  codex first/later: event=PreToolUse matcher="^Bash$" timeout=19s
+    command: printf later
+    route: codex-user; trust=preseed; Codex hooks.state is pre-seeded
+Plan: first
+ 
+
+Harness: codex
+Preferred route: codex-user (availability checked during install)
+Package: first
+Adapter: codex
+- runtime: native (inject tool)
+  needs: agent
+  -> tool.pre inject (native); capabilities: add-context
+- later: native-hook (native)
+  -> native PreToolUse matcher ^Bash$; timeout 19s
+- earlier: native-hook (native)
+  -> native PreToolUse matcher ^Bash$; timeout 60s
+Token (estimated; calibration pending):
+  native input limit: 2500 tokens (approximate); overflow=file-preview; source=Codex additionalContext default
+  budget: per_rule 400; per_event 1200; always_on 600 tokens
+  always-on: 0 tokens / 0 chars
+  per-rule:
+    runtime: 4 tokens / 11 chars (native)
+  PreToolUse Bash: 4 tokens / 11 chars
+  native hook output not estimated: later (PreToolUse), earlier (PreToolUse)
+  session cost (requests=60 triggers=3): 0.0 always-on + 17.0 triggered = 17.0 units
+  scenario only: 1.25x cache write + 0.1x later hits; assumes an eligible unchanged prefix within cache lifetime; not billing
+Locked routes: ["codex=codex-user"]
+Native commands:
+  codex first/earlier: event=PreToolUse matcher="^Bash$" timeout=60s
+    command: printf earlier
+    route: codex-user; trust=preseed; Codex hooks.state is pre-seeded
+  codex first/later: event=PreToolUse matcher="^Bash$" timeout=19s
+    command: printf later
+    route: codex-user; trust=preseed; Codex hooks.state is pre-seeded
+frozen install applied (changed=true)

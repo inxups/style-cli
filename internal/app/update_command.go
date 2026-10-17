@@ -102,7 +102,11 @@ func parseUpdateArgs(args []string) (UpdateRequest, bool, error) {
 }
 
 func writeUpdatePreview(out io.Writer, result UpdateResult) {
-	fmt.Fprintf(out, "Update: %s; selected=%q\n", result.Status, result.Selected)
+	writeSourceTransactionPreview(out, result, "Update")
+}
+
+func writeSourceTransactionPreview(out io.Writer, result UpdateResult, heading string) {
+	fmt.Fprintf(out, "%s: %s; selected=%q\n", heading, result.Status, result.Selected)
 	for _, change := range result.Changes {
 		fmt.Fprintf(out, "%s (seq=%d):\n", change.Package, change.Sequence)
 		for _, side := range []struct {

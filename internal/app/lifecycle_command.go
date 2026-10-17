@@ -12,8 +12,12 @@ import (
 )
 
 func runInstall(ctx context.Context, service *Service, workDir string, args []string, out, errOut io.Writer) int {
+	if frozenInvocation(args) {
+		return runFrozen(ctx, service, args, out, errOut)
+	}
 	if isHelp(args) {
 		fmt.Fprintln(out, "style install <source> [--ref ref] [--path repo-path] [--harness h] [--route h=r] [--set k=v] [--link] [--allow-replace] [--fail-closed h] [--yes] [--json]")
+		fmt.Fprintln(out, frozenUsage)
 		return ExitOK
 	}
 	request, jsonOutput, err := parseInstallArgs(args)

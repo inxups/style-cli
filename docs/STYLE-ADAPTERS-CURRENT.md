@@ -432,7 +432,7 @@ M3-A1 的 26 个新函数/145 个叶子用例、两家 JSON golden、29 组普�
 
 ### 11.5 M3 Git 来源离线与受控 TLS 验收
 
-[Git 来源](STYLE-SOURCES.md) 的 validate/plan/install 在私有 Git 进程环境中固定 advertised OID，读取选中 tree/blob 原始字节并完整校验；cache_hit 仍核对远端，update 已由 T21/A4 完成，frozen 待 T22/A5。core、普通 hook 和原生协议不读 Git 来源。lock format=2 及批准快照绑定 Git 身份，sync/trust 拒绝管理副本漂移。
+[Git 来源](STYLE-SOURCES.md) 的 validate/plan/install 在私有 Git 进程环境中固定 advertised OID，读取选中 tree/blob 原始字节并完整校验；cache_hit 仍核对远端，update 已由 T21/A4 完成，frozen 已由 T22/A5 完成。core、普通 hook 和原生协议不读 Git 来源。lock format=2 及批准快照绑定 Git 身份，sync/trust 拒绝管理副本漂移。
 
 app 在提交时持有共享进程身份 guard，重新核对捕获的包/锁/批准/settings/index/说明和路线输入，协调包交换与 ApplyFiles 回滚。adapter 新增可选 ManagementInputs 路径端口，agenthooks 的 ManagementPaths 枚举 renderer 输入及 owner 恢复路径，包括未改变的文件；配置格式、owner/trust 合并、渲染和文件事务仍归 agenthooks。
 
@@ -445,6 +445,12 @@ app 在提交时持有共享进程身份 guard，重新核对捕获的包/锁/�
 agenthooks 继续负责协议、配置渲染、owner/trust 与文件事务；ApplyFiles 新增类型化恢复错误，备份保留原 mode/mtime，恢复失败保留备份及路径。app 包回滚也使用类型化错误；这些变化使多包失败可准确报告恢复不完整，不改变配置格式或 wire。
 
 [A4](review/M3-A4-2026-10-17.json) 的 31 个新函数/244 个叶子用例、逐包/逐文件恢复、三路线 native/旧批准/旧锁、24 项 built CLI 及基线 runtime 对照通过；真实投递、Windows 和远端 CI 保持待验。
+
+### 11.7 M3 frozen 离线验收
+
+M3-T22/A5 的 [`InstallFrozen`](../internal/app/frozen.go) 复用锁定 adapter、共享管理 guard/输入复核与 T21 多包事务；[`ReadLocked`](../internal/source/cache.go) 只校验既有完整缓存。agenthooks 的协议、配置渲染、owner/trust 和 ApplyFiles 保持原职责，无新增修改。恢复的固定绑定、批准和部分产物保守失败边界见 [使用说明](STYLE-SOURCES.md#整锁离线恢复)。D3 尚未开始。
+
+[A5](review/M3-A5-2026-10-17.json) 的 21 个新函数/209 个叶子用例、16 份 golden、30 项 built CLI、三路线 owner 恢复与拒绝、app/source race 和完整兼容回归通过。旧 rendered 变更集摘要无法重现的部分修复保守失败；真实投递、Windows 和远端 CI 另验。
 
 ## 12. 已知边界与后续工作
 
