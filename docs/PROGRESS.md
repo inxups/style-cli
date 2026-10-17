@@ -2024,3 +2024,9 @@ Codex 0.159.3 与实际配置模型服务、固定生产 STYLE 二进制，在�
 - 真实用户 probe 的 index 7 被旧版 header.Format == 1 误报 invalid。改用共享 compile.Index reader，避免维护另一份索引版本判断；不改变回调来源或 execution=not-assessed 边界。
 - 临时三缓存、GOWORK=off，清理检测/provider 环境后的 A2 专项与新增 10 格式子项、根 module vet 和生产 trimpath build 全过。[报告](review/M3-A2-INDEX-FOLLOWUP-2026-10-18.json)固定源码与新二进制摘要。
 - 原用户路线真实正文证据保留；新版二进制的最终真实验收继续待执行。插件批量命令及拆分后的单次命令均在自动审批复核截止前未启动，未给出安全拒绝原因，不据此标记通过；本地修复与验证继续完成。
+
+## 2026-10-18 M3-REAL-03 / TOKEN-01 本地编码验收
+
+- 使用 A2 补充修复后的最终生产二进制，重跑 scripts/check_m3_exact.py：137 份固定 UTF-8 文本 × o200k_base/cl100k_base 共 274 计数、旧默认/estimate 字节兼容与 plan/explain 文本范围，共 287 CLI 项通过；完整词表与独立 tiktoken 参考的 Go 对照另行重跑通过。
+- 临时三缓存、GOWORK=off，清理检测/provider 环境；[本地报告](review/M3-TOKEN-LOCAL-2026-10-18.json)记录命令、实现/参考版本、文本/二进制摘要和逐项结果。此为编码文本精度，不外推请求/账单。
+- 本次必过的 local 子项完成；独立 Anthropic API 仍依用户决定延期 `[?]`，实际请求 0；REAL-03/TOKEN-01 汇总 `[~]` 保留混合状态。M3-CARRY-01 仍两家各 0/40、独立非阻塞。
