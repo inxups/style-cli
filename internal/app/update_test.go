@@ -539,6 +539,9 @@ func TestM3A4AuthenticatedBaselinesRequired(t *testing.T) {
 func TestM3A4UnselectedEffectsRequireAll(t *testing.T) {
 	for _, effect := range []string{"dedup", "settings", "native-configuration", "native-trust"} {
 		t.Run(effect, func(t *testing.T) {
+			if strings.HasPrefix(effect, "native-") {
+				requirePOSIXFixture(t, "unselected author native effects require POSIX")
+			}
 			s, home, config, first := a4Setup(t, "codex-user", a4Manifest("first", "First."), false)
 			manifest := a4Manifest("second", "Second.")
 			if effect == "settings" {
@@ -743,12 +746,14 @@ func TestM3A4GitCaptureAndDetachedPreview(t *testing.T) {
 		preview.Changes[0].After.Settings = append(preview.Changes[0].After.Settings, "intruder")
 		preview.Selected[0] = "intruder"
 		preview.Changes[0].SourceDiff[0].Diff = "mutated"
-		preview.Native[0].Command = "printf mutated-preview"
+		if len(preview.Native) > 0 {
+			preview.Native[0].Command = "printf mutated-preview"
+		}
 		preview.Reports[0].Plan.Rules[0].ID = "mutated"
 		moved = f.MakeCommit([]testgit.Entry{{Path: "pkg/STYLE.yaml", Data: []byte(strings.ReplaceAll(manifest, "printf captured", "printf moved-after-confirm"))}})
 		return true, nil
 	}})
-	if err != nil || !result.Changed || previewCalls != 1 || result.Selected[0] != "native-test" || result.Changes[0].After.Source.Git.Commit != captured || captured == moved || result.Native[0].Command != "printf captured" {
+	if err != nil || !result.Changed || previewCalls != 1 || result.Selected[0] != "native-test" || result.Changes[0].After.Source.Git.Commit != captured || captured == moved || (len(result.Native) > 0 && result.Native[0].Command != "printf captured") {
 		t.Fatalf("capture=%+v %v calls=%d", result, err, previewCalls)
 	}
 	lock := mustA4Lock(t, home)

@@ -1968,3 +1968,11 @@ run 39051809495 固定 `7ea3819`，Ubuntu/macOS 全部通过；Windows 14 项生
 Windows 实测证明持子锁句柄时移动目录失败；根级共享/独占协调锁覆盖关闭子句柄到隔离重命名的窗口，并补互斥、损坏/取消测试。权限 fixture 改用真实 DACL 拒绝/恢复及公有 ACL 拒绝检查；状态文件路径使用全部摘要分量，快照读取句柄实际元数据，保留 readonly 校验。支持路线仍执行生命周期/回滚，POSIX 作者 native/项目/插件及其管理 golden 明确单列 skip，未整体跳过用户路线或协议 golden；Windows built CLI 增补 frozen 精确恢复、路线拒绝和外部配置字节还原。
 
 [阶段报告](review/M3-A17-GATE-2026-10-18.json)保留初次 fixture 编译错误与修正、macOS fresh 双模块、追加权限/陈旧输入、race、双 vet 与 Windows 双模块交叉编译/vet。新增 Windows 测试仍需原生 runner 执行；T70/A17 保持部分完成。[文档检查](review/M3-A17-GATE-DOCS-2026-10-18.json)核对归档、追加日志、链接/围栏与 diff。
+
+## 2026-10-18 M3-A17 第五轮平台兼容 fixture
+
+run 39053520023 固定 `50c666e`：Ubuntu 通过；macOS 仅离线 probe 的 codex-plugin 单次回调偶发丢收据，按 5ms best-effort 契约改为有界八次真实 fixture 子进程回调，十轮专项通过，不改变生产预算。Windows 25 项 CLI 通过，清理/权限/状态原有失败消除；根模块 3,154 pass/143 fail/263 skip，agenthooks 517 pass/4 fail/35 skip。根模块比上一轮执行更远，update native preview 越界后未执行的条目继续保留未验。
+
+修正 .exe 元数据 fixture、编码命令/原生信任路径和实际 drift 注入；普通 user 安装、来源、更新、frozen、dedup 与陈旧输入仍运行，POSIX 作者 native/插件路线有明确单项前提。stats 故障改用真正拒绝读取的 DACL，settings 与恢复记录校验私有 ACL；Windows 对示例 Codex plan 显式核对 native 拒绝，Claude 原 golden 继续比较。
+
+[兼容修正报告](review/M3-A17-COMPAT-2026-10-18.json)记录 app fresh、agenthooks fresh、双 vet、Windows 双模块编译/vet、补充专项和最初测试命令/unused import 失败。新增准备工具仍为另项草稿，不混入本提交。仅完成本阶段 fixture 修正，T70/A17 继续待原生重跑；[文档检查](review/M3-A17-COMPAT-DOCS-2026-10-18.json)通过。

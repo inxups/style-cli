@@ -19,6 +19,7 @@ import (
 	"github.com/inxups/style-cli/internal/adapter/codex"
 	"github.com/inxups/style-cli/internal/probe"
 	"github.com/speakeasy-api/agenthooks"
+	"runtime"
 )
 
 type a2Fixture struct {
@@ -34,8 +35,14 @@ func (d a2RejectDetector) Detect(context.Context) (adapter.Installation, bool, e
 }
 func a2Install(t *testing.T, selection string) *a2Fixture {
 	t.Helper()
+	requireFixtureRoute(t, selection)
 	root := t.TempDir()
 	fixture := &a2Fixture{root: root, home: filepath.Join(root, "style"), runtime: filepath.Join(root, "runtime"), codexExe: filepath.Join(root, "native-codex"), claudeExe: filepath.Join(root, "native-claude"), plugin: filepath.Join(root, "plugin"), codexConfig: filepath.Join(root, "codex"), claudeConfig: filepath.Join(root, "claude"), now: time.Now().UTC()}
+	if runtime.GOOS == "windows" {
+		fixture.runtime += ".exe"
+		fixture.codexExe += ".exe"
+		fixture.claudeExe += ".exe"
+	}
 	for path, value := range map[string]string{fixture.runtime: "fixture runtime\x00" + probe.Protocol, fixture.codexExe: "native codex fixture", fixture.claudeExe: "native claude fixture"} {
 		if err := os.WriteFile(path, []byte(value), 0o700); err != nil {
 			t.Fatal(err)
@@ -373,7 +380,7 @@ func TestM3A2ProbePreflightRefusals(t *testing.T) {
 			case "command-drift":
 				path := filepath.Join(f.codexConfig, "hooks.json")
 				data := readSyncFile(t, path)
-				data = bytes.ReplaceAll(data, []byte(f.runtime), []byte("/unbound/runtime"))
+				data = fixtureChangedHook(t, data)
 				os.WriteFile(path, data, 0o600)
 				expected = "probe-installation-unavailable"
 			case "old-runtime":

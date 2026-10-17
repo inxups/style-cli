@@ -1,0 +1,469 @@
+{
+  "baseline": "50c666eddb4a1bdd10a5ef52eb5e209cfc6a71d9",
+  "status": "partial; Windows native rerun required",
+  "ci5": {
+    "id": 39053520023,
+    "head_sha": "50c666eddb4a1bdd10a5ef52eb5e209cfc6a71d9",
+    "jobs": [
+      {
+        "name": "Test (windows-latest)",
+        "id": 117456737293,
+        "conclusion": "failure"
+      },
+      {
+        "name": "Test (ubuntu-latest)",
+        "id": 117456737396,
+        "conclusion": "success"
+      },
+      {
+        "name": "Test (macos-latest)",
+        "id": 117456737426,
+        "conclusion": "failure"
+      }
+    ],
+    "root": {
+      "pass": 3154,
+      "fail": 143,
+      "skip": 263
+    },
+    "agenthooks": {
+      "pass": 517,
+      "fail": 4,
+      "skip": 35
+    },
+    "cli": {
+      "platform": "win32",
+      "checks": [
+        {
+          "check": "install both user routes: ",
+          "pass": true
+        },
+        {
+          "check": "Codex encoded launcher",
+          "pass": true
+        },
+        {
+          "check": "native hook exit codex: Obj S=\"progress\" RefId=\"0\"><TN RefId=\"0\"><T>System.Management.Automation.PSCustomObject</T><T>System.Object</T></TN><MS><I64 N=\"SourceId\">1</I64><PR N=\"Record\"><AV>Preparing modules for first use.</AV><AI>0</AI><Nil /><PI>-1</PI><PC>-1</PC><T>Completed</T><SR>-1</SR><SD> </SD></PR></MS></Obj></Objs>",
+          "pass": true
+        },
+        {
+          "check": "native hook deny codex",
+          "pass": true
+        },
+        {
+          "check": "Claude exec form",
+          "pass": true
+        },
+        {
+          "check": "native hook exit claude-code: time=2026-10-17T17:27:40.276Z level=INFO msg=\"STYLE rule evaluated\" provider=claude-code event=PreToolUse point=tool.pre entry=terse-reviewer/no-force-push@tool.pre action=block result=blocked\n",
+          "pass": true
+        },
+        {
+          "check": "native hook deny claude-code",
+          "pass": true
+        },
+        {
+          "check": "sync both user routes",
+          "pass": true
+        },
+        {
+          "check": "offline frozen restoration: ",
+          "pass": true
+        },
+        {
+          "check": "frozen restores exact locked package bytes",
+          "pass": true
+        },
+        {
+          "check": "frozen preserves exact lock bytes",
+          "pass": true
+        },
+        {
+          "check": "explicit unsupported Windows route codex-project",
+          "pass": true
+        },
+        {
+          "check": "explicit unsupported Windows route codex-plugin",
+          "pass": true
+        },
+        {
+          "check": "explicit unsupported Windows route claude-project",
+          "pass": true
+        },
+        {
+          "check": "explicit unsupported Windows route claude-plugin",
+          "pass": true
+        },
+        {
+          "check": "unsupported routes preserve lock",
+          "pass": true
+        },
+        {
+          "check": "doctor --json:  point\"\n        }\n      ],\n      \"static\": [\n        {\n          \"name\": \"claude_rules\",\n          \"mode\": \"append\",\n          \"supported\": true,\n          \"reason\": \"\"\n        }\n      ],\n      \"limit\": {\n        \"value\": 10000,\n        \"unit\": \"chars\",\n        \"approximate\": false,\n        \"source\": \"Claude Code hook input limit\",\n        \"overflow\": \"file-preview\"\n      }\n    }\n  ],\n  \"diagnostics\": [\n    {\n      \"code\": \"effort-unknown\",\n      \"severity\": \"warning\",\n      \"message\": \"claude-code: effort is unavailable; conditional effort rules will not match\"\n    },\n    {\n      \"code\": \"effort-unknown\",\n      \"severity\": \"warning\",\n      \"message\": \"codex: effort is unavailable; conditional effort rules will not match\"\n    },\n    {\n      \"code\": \"route-trust-unverified\",\n      \"severity\": \"warning\",\n      \"message\": \"claude-user: Claude Code workspace trust controls hook execution; external confirmation cannot be inferred from generated files\"\n    }\n  ],\n  \"effort\": [\n    {\n      \"provider\": \"codex\",\n      \"source\": \"unknown\",\n      \"raw\": \"\",\n      \"tier\": \"\",\n      \"approximate\": null,\n      \"detail\": \"configuration fallback only; launch overrides/session values are available in hooks; project layer skipped without a trust decision\"\n    },\n    {\n      \"provider\": \"claude-code\",\n      \"source\": \"unknown\",\n      \"raw\": \"\",\n      \"tier\": \"\",\n      \"approximate\": null,\n      \"detail\": \"environment fallback only; event/session values are available in hooks\"\n    }\n  ],\n  \"top_rules\": [\n    {\n      \"provider\": \"claude-code\",\n      \"rule\": \"terse-reviewer/no-force-push\",\n      \"estimated_tokens\": 12,\n      \"emits\": 1,\n      \"distinct_body_hashes\": 1,\n      \"repeated_body\": false\n    },\n    {\n      \"provider\": \"codex\",\n      \"rule\": \"terse-reviewer/no-force-push\",\n      \"estimated_tokens\": 12,\n      \"emits\": 1,\n      \"distinct_body_hashes\": 1,\n      \"repeated_body\": false\n    }\n  ],\n  \"legacy_stats_without_estimate\": 0,\n  \"expired_sessions\": 0,\n  \"state_reset\": false\n}\n",
+          "pass": true
+        },
+        {
+          "check": "list --json: {\n  \"packages\": [\n    {\n      \"name\": \"terse-reviewer\",\n      \"version\": \"0.3.0\",\n      \"seq\": 1,\n      \"source\": \"D:\\\\a\\\\style-cli\\\\style-cli\\\\example\\\\terse-reviewer\",\n      \"source_kind\": \"dir\",\n      \"link\": \"no\",\n      \"hash_matches\": true,\n      \"changed_files\": [],\n      \"native_count\": 0\n    }\n  ]\n}\n",
+          "pass": true
+        },
+        {
+          "check": "stats --json: {\n  \"format\": 1,\n  \"by\": \"rule\",\n  \"window\": {\n    \"since\": \"2026-10-10T17:27:40.7030236Z\",\n    \"until\": \"2026-10-17T17:27:40.7030236Z\"\n  },\n  \"totals\": {\n    \"outputs\": 0,\n    \"blocks\": 2,\n    \"dedup\": 0,\n    \"cap_drops\": 0,\n    \"estimated_tokens\": 24,\n    \"unestimated\": 0\n  },\n  \"rows\": [\n    {\n      \"provider\": \"claude-code\",\n      \"rule\": \"terse-reviewer/no-force-push\",\n      \"outputs\": 0,\n      \"blocks\": 1,\n      \"dedup\": 0,\n      \"cap_drops\": 0,\n      \"estimated_tokens\": 12,\n      \"unestimated\": 0\n    },\n    {\n      \"provider\": \"codex\",\n      \"rule\": \"terse-reviewer/no-force-push\",\n      \"outputs\": 0,\n      \"blocks\": 1,\n      \"dedup\": 0,\n      \"cap_drops\": 0,\n      \"estimated_tokens\": 12,\n      \"unestimated\": 0\n    }\n  ],\n  \"quality\": {\n    \"partial\": false,\n    \"invalid_lines\": 0,\n    \"oversized_lines\": 0,\n    \"skipped_symlinks\": 0\n  }\n}\n",
+          "pass": true
+        },
+        {
+          "check": "exact o200k_base: ",
+          "pass": true
+        },
+        {
+          "check": "exact cl100k_base: ",
+          "pass": true
+        },
+        {
+          "check": "uninstall",
+          "pass": true
+        },
+        {
+          "check": "external config exact restoration config.toml",
+          "pass": true
+        },
+        {
+          "check": "external config exact restoration settings.json",
+          "pass": true
+        },
+        {
+          "check": "remove created Codex hooks after uninstall",
+          "pass": true
+        }
+      ],
+      "passed": 25,
+      "boundary": "Native Windows STYLE CLI with version-only harness stubs; not W1 real harness acceptance."
+    },
+    "limitation": "new app preview panic stopped later root cases; not counted as passed",
+    "logs": {
+      "a17-ci5-macos.log": "4498f7d49adf4c25809554ee7f31c2b95453f8815bb3d15c3191573d799830ef",
+      "a17-ci5-windows.log": "0f67bb8564da782ca48b6adc57373ee18740272aded9297b3b1735694efe5570"
+    }
+  },
+  "changes": [
+    "Probe offline fixtures use .exe identity on Windows; encoded configuration drift changes actual command values",
+    "Encoded Windows arguments and executable assertions retain filename and timeout/owner/trust checks",
+    "Keep normal Windows install/update/frozen/dedup/source lifecycle tests; explicitly mark POSIX author native/routes",
+    "Actual DACL read denial for stats failure; private settings ACL and external bytes restoration checked",
+    "Bounded native fixture callback sequence accounts for documented best-effort 5ms observer without changing production budget"
+  ],
+  "commands": {
+    "a17-probe-sequence": {
+      "command": [
+        "go",
+        "test",
+        "-count=10",
+        "./internal/app",
+        "-run",
+        "^TestM3A2KernelAncestryOfflineCallbacks$"
+      ],
+      "exit_code": 0,
+      "seconds": 47.876,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "log_sha256": "28d96baa31091b22487ec79e1ab13edd1f14a76d8b57a00febd5f6144057c089"
+    },
+    "a17-ci5-target": {
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "./internal/app",
+        "./agenthooks/install"
+      ],
+      "exit_code": 1,
+      "seconds": 0.271,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "log_sha256": "79e7ef84d8eb70a7a35e98c6b15a2cf57bcf639973f32a145f5de6d928c34b16"
+    },
+    "a17-ci5-app": {
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "./internal/app"
+      ],
+      "exit_code": 0,
+      "seconds": 113.99,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "log_sha256": "db241a9fe92f1722d75feb5d674097a24cdcb2cc890e45e879bd1bdff8740b32",
+      "test_events": {
+        "pass": 1590,
+        "fail": 0,
+        "skip": 0
+      }
+    },
+    "a17-ci5-agent": {
+      "command": [
+        "go",
+        "test",
+        "-C",
+        "agenthooks",
+        "-count=1",
+        "-json",
+        "./..."
+      ],
+      "exit_code": 0,
+      "seconds": 10.836,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "log_sha256": "51599a2ec66bcd0a4869446dbdd48caaf4e9607c486350d9838d813be3052966",
+      "test_events": {
+        "pass": 531,
+        "fail": 0,
+        "skip": 23
+      }
+    },
+    "a17-ci5-agent-vet": {
+      "command": [
+        "go",
+        "vet",
+        "-C",
+        "agenthooks",
+        "./..."
+      ],
+      "exit_code": 0,
+      "seconds": 0.243,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "a17-ci5-cross": {
+      "command": [
+        "env",
+        "GOOS=windows",
+        "GOARCH=amd64",
+        "go",
+        "test",
+        "-exec=/usr/bin/true",
+        "./...",
+        "-run",
+        "^$"
+      ],
+      "exit_code": 0,
+      "seconds": 2.645,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "log_sha256": "314e31a2500eeb3baea16bbe2c28ff020c8f95d040e24480f08889b4155406d2"
+    },
+    "a17-ci5-agent-cross": {
+      "command": [
+        "env",
+        "GOOS=windows",
+        "GOARCH=amd64",
+        "go",
+        "test",
+        "-C",
+        "agenthooks",
+        "-exec=/usr/bin/true",
+        "./...",
+        "-run",
+        "^$"
+      ],
+      "exit_code": 0,
+      "seconds": 0.633,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "log_sha256": "88f93ed540eb466a5eb12d6db24511f70fc66342b06192f247fc0d02786391c8"
+    },
+    "a17-ci5-win-vet": {
+      "command": [
+        "env",
+        "GOOS=windows",
+        "GOARCH=amd64",
+        "go",
+        "vet",
+        "./..."
+      ],
+      "exit_code": 0,
+      "seconds": 0.494,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "a17-ci5-agent-win-vet": {
+      "command": [
+        "env",
+        "GOOS=windows",
+        "GOARCH=amd64",
+        "go",
+        "vet",
+        "-C",
+        "agenthooks",
+        "./..."
+      ],
+      "exit_code": 0,
+      "seconds": 0.282,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "a17-ci5-root-vet": {
+      "command": [
+        "go",
+        "vet",
+        "./..."
+      ],
+      "exit_code": 0,
+      "seconds": 0.42,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "a17-ci5-final-target": {
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "./internal/app",
+        "-run",
+        "TestInstallSettingsArePersisted|TestExamplePlanMatchesProviderGoldens|TestA2NativePlanReports"
+      ],
+      "exit_code": 0,
+      "seconds": 2.463,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "log_sha256": "f87eac07121ef729bb4bdfd6b974f4c0f38a1807cca72ec217c2664f77a92ab1"
+    },
+    "a17-ci5-final-cross": {
+      "command": [
+        "env",
+        "GOOS=windows",
+        "GOARCH=amd64",
+        "go",
+        "test",
+        "-exec=/usr/bin/true",
+        "./internal/app",
+        "-run",
+        "^$"
+      ],
+      "exit_code": 0,
+      "seconds": 1.285,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "log_sha256": "63c3bc8c79924ba0aa66ab5f35ff2a57c8a18d78464dfbb24ce7c2e90ae27b03"
+    },
+    "a17-ci5-final-vet": {
+      "command": [
+        "go",
+        "vet",
+        "./..."
+      ],
+      "exit_code": 0,
+      "seconds": 0.402,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "source_sha256": {
+    "agenthooks/install/install_test.go": "6dfc1400f6dd48ce690c470724b191bdcbf3e3fb7ecdd2c4ecc79ffc6a63155a",
+    "agenthooks/install/plan_after_test.go": "97de3893c39e7e2638c461564ad477d60f5be606a7cbd993e07483003d6ba89d",
+    "agenthooks/install/platform_test.go": "33979bf5ab2a82758fd80c48b36e55d573594a8ecf935cf7d3ceac6fe5ae2231",
+    "agenthooks/install/runtime_status_test.go": "c37408cc40ad29ff0aab12ae3dfff78b46e16201092e303518f379a9c04f9d56",
+    "internal/app/frozen_transaction_test.go": "8112e8fb4cb6ca4ca23beb09b50cf23b43f84bd21245fd77c5c6934c34d0abd1",
+    "internal/app/git_source_test.go": "c170c6738c248668d1d24776f8664b18e03e76779dc5c5b0e8b68a2b7f2f0de2",
+    "internal/app/install_dedup_test.go": "efb6d9bc2cb9bdf8614be1d874cfa06f13b4a1d918728d09e8349263e5f53bf9",
+    "internal/app/install_routes_test.go": "fa5437a3aca2725b064d2cc66d13aff09967916972ec4f69814c9237bf8a565c",
+    "internal/app/install_test.go": "6e2a5e1641c85ce53c7fe8c7811d8b31d74b6f0bd8a381841e2ad83b2fece413",
+    "internal/app/native_install_test.go": "7fe1266eb4b1e6a8d9fb10b1cb3db3a186661badab827321539a23bc55c370b9",
+    "internal/app/native_lifecycle_test.go": "8d408ee77630be1fe176a77788a93804ae34f9e76cf5d16537da924a73d32fd3",
+    "internal/app/native_plan_test.go": "e3806940a8e879a11e96730add5088395470916758ebfc4745b7d980ae167523",
+    "internal/app/plan_golden_test.go": "9b12db1d48921aea0757b5c65e5cd1071a2c233e8ab170221823fc62ea529e3d",
+    "internal/app/platform_test.go": "c81a9d06539fdfdd17d71314c1ff68cb0938164472ded89f7b65fdcee9646665",
+    "internal/app/probe_process_test.go": "a2e73a5a77a6a9da535496ef95a89841a837fce88a172003a851aa2a68ed45c0",
+    "internal/app/probe_test.go": "53f64cf19acce85cb64f4443918c8fb9a167c1b2441596368154917a52d95816",
+    "internal/app/stats_test.go": "f7a6aeae1d29dd88f378ddd4b39b2db824059dd0b1623ca3d060556701842738",
+    "internal/app/uninstall_test.go": "9af8ce9b6ffecc3aa5a51733b31f3e3222df223e8c5875bcb2cb1dba646f44fc",
+    "internal/app/update_compat_test.go": "5832c313068bdd00d9793fdaa55b4d1469d154be65c5aa9d30a7509c6a6c88d9",
+    "internal/app/update_test.go": "cd49323208cc27bc339dfaa44325cd85e7c83342de6b93771c2598346e26f93b",
+    "internal/testfs/permissions_unix.go": "8e7e0940b21a2904a77d167eff94a4db003994e22b14af470579dd47467af068",
+    "internal/testfs/permissions_windows.go": "0d2883a1b268611ad15bd985a23f2ddc0045ba8f9bf1465b9e2671e1955c47e2"
+  },
+  "production_behavior_changes": false
+}

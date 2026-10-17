@@ -53,7 +53,7 @@ func TestUninstallRemovesOnlyStyleOwnerAndRestoresLastRoute(t *testing.T) {
 }
 
 func TestUninstallCodexConfigWithoutGeneratedNewlineResidue(t *testing.T) {
-	for _, route := range []string{"codex-plugin", "codex-user"} {
+	for _, route := range fixtureRoutes(t, []string{"codex-plugin", "codex-user"}) {
 		for _, original := range []struct {
 			name string
 			data []byte
@@ -81,7 +81,7 @@ func TestUninstallCodexConfigWithoutGeneratedNewlineResidue(t *testing.T) {
 				if route == otherRoute {
 					otherRoute = "codex-plugin"
 				}
-				for _, selected := range []string{route, route, otherRoute, route} {
+				for _, selected := range fixtureRoutes(t, []string{route, route, otherRoute, route}) {
 					if _, err := service.Install(context.Background(), InstallRequest{Source: source, Home: home, Harnesses: []string{"codex"}, Routes: map[string]string{"codex": selected}, Yes: true}); err != nil {
 						t.Fatal(err)
 					}

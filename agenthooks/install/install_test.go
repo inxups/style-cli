@@ -515,7 +515,7 @@ func TestRenderCodexAsyncAndTrust(t *testing.T) {
 	}
 	sessionEndEntry := cfg.Hooks["SessionEnd"][0]
 	sessionEnd := sessionEndEntry.Hooks[0]
-	if sessionEnd.Timeout != 3 || !strings.HasSuffix(sessionEnd.Command, " --async") {
+	if sessionEnd.Timeout != 3 || !strings.Contains(fixtureCommandText(sessionEnd.Command), "--async") {
 		t.Errorf("SessionEnd must detach within Codex's 3-second teardown budget: %+v", sessionEnd)
 	}
 
@@ -524,7 +524,10 @@ func TestRenderCodexAsyncAndTrust(t *testing.T) {
 	// path is OS-native (filepath.Join, like Codex's own canonicalization),
 	// so build the expectation the same way and TOML-escape it.
 	trust := string(readRendered(t, fsys, "config.toml"))
-	source := filepath.Join("/codex-home", "hooks.json")
+	source, err := filepath.Abs(filepath.Join("/codex-home", "hooks.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
 	if !strings.Contains(trust, `[hooks.state.`+tomlString(source+":pre_tool_use:0:0")+`]`) {
 		t.Errorf("trust seeding missing pre_tool_use state key:\n%s", trust)
 	}

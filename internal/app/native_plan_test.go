@@ -16,6 +16,7 @@ import (
 	"github.com/inxups/style-cli/internal/adapter"
 	"github.com/inxups/style-cli/internal/adapter/codex"
 	"github.com/speakeasy-api/agenthooks"
+	"runtime"
 )
 
 // TestA2NativePlanReports checks the M2-A2 plan contract for the example
@@ -46,6 +47,15 @@ func TestA2NativePlanReports(t *testing.T) {
 		}
 		t.Fatalf("%s plan has no codex-only-notify", report.Provider)
 		return plan.RulePlan{}
+	}
+	if runtime.GOOS == "windows" {
+		for _, report := range reports {
+			rule := native(report)
+			if rule.Status != plan.Skipped || rule.Native != nil || (report.Provider == "codex" && !strings.Contains(strings.Join(rule.Reasons, " "), "POSIX")) || len(report.Tokens.Unestimated) != 0 {
+				t.Fatal("Windows native boundary", rule)
+			}
+		}
+		return
 	}
 	codexRule := native(reports["codex"])
 	if codexRule.Status != plan.NativeHook || codexRule.Action != "" || codexRule.Needs != nil ||

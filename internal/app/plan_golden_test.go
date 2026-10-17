@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
+	"strings"
 	"testing"
 )
 
@@ -29,6 +30,12 @@ func TestExamplePlanMatchesProviderGoldens(t *testing.T) {
 			}, &output, &errOutput)
 			if code != ExitOK {
 				t.Fatalf("plan exit = %d, stderr=%s, stdout=%s", code, errOutput.String(), output.String())
+			}
+			if runtime.GOOS == "windows" && test.provider == "codex" {
+				if !strings.Contains(output.String(), "POSIX") {
+					t.Fatal("Windows native boundary missing", output.String())
+				}
+				return
 			}
 			golden, err := os.ReadFile(filepath.Join(root, "testdata", "golden", test.golden))
 			if err != nil {

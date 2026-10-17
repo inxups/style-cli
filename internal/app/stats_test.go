@@ -15,6 +15,7 @@ import (
 	"time"
 
 	"github.com/inxups/style-cli/core/state"
+	"github.com/inxups/style-cli/internal/testfs"
 )
 
 func statsClock() time.Time { return time.Date(2026, 10, 16, 0, 0, 0, 0, time.UTC) }
@@ -347,8 +348,8 @@ func TestA5StatsFatalErrorsHaveNoSuccessOutput(t *testing.T) {
 					t.Skip("root bypasses read permissions")
 				}
 				path := putAppStats(t, home, appStatsLine(t, "codex", 12))
-				os.Chmod(path, 0)
-				t.Cleanup(func() { os.Chmod(path, 0o600) })
+				readable := testfs.ReadableFile(t, path)
+				readable(false)
 			case "overflow-row", "overflow-totals":
 				if int64(int(math.MaxInt64)) != math.MaxInt64 {
 					t.Skip("log token field uses platform int")

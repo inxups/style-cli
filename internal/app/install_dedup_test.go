@@ -90,7 +90,7 @@ func a6AssertDoctor(t *testing.T, service *Service, home string) {
 }
 
 func TestA6DedupInstallReportsAndRouteLifecycle(t *testing.T) {
-	for _, route := range []string{"codex-plugin", "codex-user", "claude-user"} {
+	for _, route := range fixtureRoutes(t, []string{"codex-plugin", "codex-user", "claude-user"}) {
 		for _, remove := range []string{"first", "second"} {
 			t.Run(route+"/remove-"+remove, func(t *testing.T) {
 				service, home, _, source, foreign := nativeInstallFixture(t, route)
@@ -166,7 +166,7 @@ func TestA6DedupInstallReportsAndRouteLifecycle(t *testing.T) {
 				a6AssertDoctor(t, service, home)
 				// Route switching consumes the same effective index and static text.
 				if provider == "codex" {
-					for _, selected := range []string{"codex-user", "codex-plugin"} {
+					for _, selected := range fixtureRoutes(t, []string{"codex-user", "codex-plugin"}) {
 						request.Routes[provider] = selected
 						if _, err := service.Install(context.Background(), request); err != nil {
 							t.Fatal(err)

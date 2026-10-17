@@ -78,14 +78,23 @@ func TestProbeSubprocessHelper(t *testing.T) {
 		if mode == "version" {
 			fmt.Fprintln(os.Stdout, "offline version fixture; no hook")
 		} else {
-			child := exec.Command(f.Runtime, "-test.run=^TestProbeSubprocessHelper$")
-			child.Env = a2HelperEnvironment(f, "hook")
-			if mode == "invalid-hook" {
-				child.Env = a2HelperEnvironment(f, "decode-error")
+			attempts := 1
+			if mode == "harness" {
+				// Receipt observation is best effort within 5ms. Exercise a
+				// bounded sequence of genuine fixture callbacks, as a caller
+				// may do after a cold or heavily scheduled invocation loses it.
+				attempts = 8
 			}
-			child.Stdout, child.Stderr = os.Stdout, os.Stderr
-			if err := child.Run(); err != nil {
-				t.Fatal(err)
+			for attempt := 0; attempt < attempts; attempt++ {
+				child := exec.Command(f.Runtime, "-test.run=^TestProbeSubprocessHelper$")
+				child.Env = a2HelperEnvironment(f, "hook")
+				if mode == "invalid-hook" {
+					child.Env = a2HelperEnvironment(f, "decode-error")
+				}
+				child.Stdout, child.Stderr = os.Stdout, os.Stderr
+				if err := child.Run(); err != nil {
+					t.Fatal(err)
+				}
 			}
 		}
 		fmt.Fprintln(os.Stdout, "offline harness ready")

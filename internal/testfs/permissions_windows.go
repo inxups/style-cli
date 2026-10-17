@@ -10,6 +10,10 @@ import (
 // Deny creates the same actual write failure as POSIX directory chmod. An
 // explicitly opened WRITE_DAC handle restores the exact original DACL.
 func WritableDirectory(t testing.TB, path string) func(bool) {
+	return permissionSwitch(t, path, "0x46")
+}
+func ReadableFile(t testing.TB, path string) func(bool) { return permissionSwitch(t, path, "0x1") }
+func permissionSwitch(t testing.TB, path, mask string) func(bool) {
 	t.Helper()
 	name, err := windows.UTF16PtrFromString(path)
 	if err != nil {
@@ -41,7 +45,7 @@ func WritableDirectory(t testing.TB, path string) func(bool) {
 		windows.CloseHandle(handle)
 		t.Fatal(err)
 	}
-	deny, err := windows.SecurityDescriptorFromString("D:P(D;;0x46;;;" + user.User.Sid.String() + ")(A;OICI;FA;;;" + user.User.Sid.String() + ")(A;OICI;FA;;;SY)(A;OICI;FA;;;BA)")
+	deny, err := windows.SecurityDescriptorFromString("D:P(D;;" + mask + ";;;" + user.User.Sid.String() + ")(A;OICI;FA;;;" + user.User.Sid.String() + ")(A;OICI;FA;;;SY)(A;OICI;FA;;;BA)")
 	if err != nil {
 		windows.CloseHandle(handle)
 		t.Fatal(err)

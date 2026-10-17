@@ -12,6 +12,7 @@ import (
 	"github.com/inxups/style-cli/internal/adapter"
 	"github.com/inxups/style-cli/internal/adapter/claude"
 	"github.com/inxups/style-cli/internal/adapter/codex"
+	"runtime"
 )
 
 func TestRunInstallSwitchesRoutesWithoutResidueAndKeepsExternalConfig(t *testing.T) {
@@ -39,7 +40,7 @@ func TestRunInstallSwitchesRoutesWithoutResidueAndKeepsExternalConfig(t *testing
 	}
 	t.Setenv("STYLE_HOME", home)
 	source := writeInstallPackage(t, filepath.Join(root, "source"), "spec: style/v0.3\nname: route-test\nversion: 0.1.0\ndescription: test\nrules:\n  - id: base\n    target: system\n    text: Keep responses concise.\n")
-	for _, route := range []string{"codex-plugin", "codex-user", "codex-plugin", "codex-user"} {
+	for _, route := range fixtureRoutes(t, []string{"codex-plugin", "codex-user", "codex-plugin", "codex-user"}) {
 		var stdout, stderr bytes.Buffer
 		args := []string{"install", source, "--harness=codex", "--route=codex=" + route, "--yes", "--json"}
 		code := RunWithService(context.Background(), service, root, args, &stdout, &stderr)
@@ -61,8 +62,11 @@ func TestRunInstallSwitchesRoutesWithoutResidueAndKeepsExternalConfig(t *testing
 			t.Fatalf("%s plugin residue: %v", route, pluginErr)
 		}
 		hooks, _ := os.ReadFile(hooksPath)
-		if !bytes.Contains(hooks, []byte("--owner=other")) || bytes.Contains(hooks, []byte("--owner=style")) != (route == "codex-user") {
+		if !bytes.Contains(hooks, []byte("--owner=other")) || bytes.Contains(hooks, []byte("agenthooks")) != (route == "codex-user") && runtime.GOOS != "windows" {
 			t.Fatalf("%s hook owner residue: %s", route, hooks)
+		}
+		if runtime.GOOS == "windows" && strings.Contains(string(hooks), "EncodedCommand") != (route == "codex-user") {
+			t.Fatal("Windows runtime owner residue", string(hooks))
 		}
 		stdout.Reset()
 		if code := RunWithService(context.Background(), service, root, args, &stdout, &stderr); code != 0 {

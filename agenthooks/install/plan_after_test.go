@@ -75,11 +75,11 @@ func TestPlanFilesAfterComposesSharedConfigWithoutWrites(t *testing.T) {
 			for _, group := range v.([]any) {
 				for _, h := range group.(map[string]any)["hooks"].([]any) {
 					c := h.(map[string]any)["command"].(string)
-					value, ok := windowsDecodedCommand(c)
+					_, ok := windowsDecodedCommand(c)
 					if !ok {
 						t.Fatal("invalid encoded command")
 					}
-					decoded = append(decoded, value)
+					decoded = append(decoded, fixtureCommandText(c))
 				}
 			}
 		}

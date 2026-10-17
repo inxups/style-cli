@@ -111,7 +111,7 @@ func TestM3A2RuntimeConfigurationDriftAndNativeOnly(t *testing.T) {
 			handler := handlers[0].(map[string]any)
 			switch mode {
 			case "command":
-				handler["command"] = strings.Replace(handler["command"].(string), "/fixture/style", "/other/style", 1)
+				handler["command"] = "other-runtime --owner=style"
 			case "args":
 				handler["args"] = []string{"agenthooks", "run", "--owner=style", "--provider=claude-code", "--style-home=/other"}
 			case "type":

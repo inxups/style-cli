@@ -14,6 +14,8 @@ import (
 	"github.com/inxups/style-cli/internal/adapter/claude"
 	"github.com/inxups/style-cli/internal/adapter/codex"
 	"github.com/speakeasy-api/agenthooks"
+	"github.com/speakeasy-api/agenthooks/privatefs"
+	"runtime"
 )
 
 type fixedDetector struct {
@@ -92,21 +94,30 @@ func TestInstallWritesPackageLockIndexAndProviderRoute(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !result.Changed || result.Package != "terse-reviewer" || len(result.Routes) != 1 || result.Routes[0] != "codex=codex-plugin" {
+	expectedRoute := "codex-plugin"
+	if runtime.GOOS == "windows" {
+		expectedRoute = "codex-user"
+	}
+	if !result.Changed || result.Package != "terse-reviewer" || len(result.Routes) != 1 || result.Routes[0] != "codex="+expectedRoute {
 		t.Fatalf("install result = %#v", result)
 	}
 	for _, path := range []string{
 		filepath.Join(styleHome, "style.lock.yaml"),
 		filepath.Join(styleHome, "build", "index.json"),
 		filepath.Join(styleHome, "packages", "terse-reviewer", "STYLE.yaml"),
-		filepath.Join(pluginDir, ".codex-plugin", "plugin.json"),
+		func() string {
+			if runtime.GOOS == "windows" {
+				return filepath.Join(configDir, "hooks.json")
+			}
+			return filepath.Join(pluginDir, ".codex-plugin", "plugin.json")
+		}(),
 	} {
 		if _, err := os.Stat(path); err != nil {
 			t.Fatalf("expected install output %s: %v", path, err)
 		}
 	}
 	lock, err := os.ReadFile(filepath.Join(styleHome, "style.lock.yaml"))
-	if err != nil || !strings.Contains(string(lock), "name: terse-reviewer") || !strings.Contains(string(lock), "route: codex-plugin") {
+	if err != nil || !strings.Contains(string(lock), "name: terse-reviewer") || !strings.Contains(string(lock), "route: "+expectedRoute) {
 		t.Fatalf("lock = %q, err=%v", lock, err)
 	}
 	if !strings.Contains(string(lock), "config_dir: "+configDir) {
@@ -168,7 +179,7 @@ func TestInstallSettingsArePersisted(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if info.Mode().Perm() != 0o600 {
+	if info.Mode().Perm() != fixtureMode(0o600, false) || privatefs.CheckPath(settingsPath) != nil {
 		t.Fatalf("settings mode = %v, want 0600", info.Mode().Perm())
 	}
 	lock, err := os.ReadFile(filepath.Join(styleHome, "style.lock.yaml"))

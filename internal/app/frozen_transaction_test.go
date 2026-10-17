@@ -397,7 +397,11 @@ func TestM3A5BindingAndOwnershipFailures(t *testing.T) {
 				want = "frozen-binding-mismatch"
 			case "edited-hook":
 				path := filepath.Join(config, "hooks.json")
-				writeSyncFile(t, path, strings.ReplaceAll(string(readSyncFile(t, path)), "printf earlier", "printf edited"))
+				if runtime.GOOS == "windows" {
+					writeSyncFile(t, path, string(fixtureChangedHook(t, readSyncFile(t, path))))
+				} else {
+					writeSyncFile(t, path, strings.ReplaceAll(string(readSyncFile(t, path)), "printf earlier", "printf edited"))
+				}
 			case "foreign-hook":
 				writeSyncFile(t, filepath.Join(config, "hooks.json"), `{"external":true}`)
 			case "corrupt-owner":

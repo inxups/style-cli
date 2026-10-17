@@ -15,6 +15,7 @@ import (
 	"github.com/inxups/style-cli/internal/adapter/codex"
 	"github.com/pelletier/go-toml/v2"
 	"github.com/speakeasy-api/agenthooks/install"
+	"runtime"
 )
 
 func nativeInstallFixture(t *testing.T, route string) (*Service, string, string, string, map[string][]byte) {
@@ -154,6 +155,12 @@ func assertNativeInstalled(t *testing.T, home, config, route string, packages ..
 				t.Fatalf("native trust mismatch: key=%s config=%s", key, trust)
 			}
 		}
+	}
+	if runtime.GOOS == "windows" {
+		if len(tags) != 0 {
+			t.Fatal("Windows author native command installed")
+		}
+		return
 	}
 	var expected []string
 	for _, id := range []string{"earlier", "later"} {

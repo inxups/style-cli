@@ -119,7 +119,7 @@ func TestM3A3GitCLIAndLifecycle(t *testing.T) {
 			}
 			request := a3Request(home, route)
 			result, err := s.Install(ctx, request)
-			if err != nil || !result.Changed || result.Source == nil || len(result.Native) != 2 {
+			if err != nil || !result.Changed || result.Source == nil || len(result.Native) != fixtureNativeCount(2) {
 				t.Fatalf("%+v %v", result, err)
 			}
 			lock := mustLoadNativeLock(t, home)
@@ -131,7 +131,7 @@ func TestM3A3GitCLIAndLifecycle(t *testing.T) {
 				t.Fatal("aggregate differs from existing lock algorithm")
 			}
 			info, err := os.Stat(filepath.Join(home, "packages", "native-test", "notes.txt"))
-			if err != nil || info.Mode().Perm() != 0o600 {
+			if err != nil || info.Mode().Perm() != fixtureMode(0o600, false) {
 				t.Fatal("Git executable bit was retained")
 			}
 			before := a3Installed(t, home, config)
@@ -309,6 +309,7 @@ func TestM3A3GitReinstallIdentityAndCandidateCapture(t *testing.T) {
 			case "revision-only":
 				f.MakeCommit([]testgit.Entry{{Path: "pkg/STYLE.yaml", Data: []byte(nativePackageYAML("native-test"))}, {Path: "pkg/notes.txt", Mode: "100755", Data: []byte("ordinary data\n")}})
 			case "route":
+				requireFixtureRoute(t, "codex-plugin")
 				r.Ref = ""
 				r.Routes = map[string]string{"codex": "codex-plugin"}
 			case "local-conversion":

@@ -15,6 +15,7 @@ import (
 	"github.com/inxups/style-cli/internal/source"
 	"github.com/inxups/style-cli/internal/testgit"
 	"gopkg.in/yaml.v3"
+	"runtime"
 )
 
 func a4WriteRawLock(t *testing.T, home string, lock lockDocument) {
@@ -259,6 +260,12 @@ func TestM3A4ConfirmationDeclineErrorAndRepeatCapture(t *testing.T) {
 }
 
 func a4Golden(t *testing.T, name, text, root string) {
+	if runtime.GOOS == "windows" {
+		t.Run("POSIX-golden/"+name, func(t *testing.T) {
+			t.Skip("D11: POSIX native preview and path golden; parent asserts command lifecycle and JSON")
+		})
+		return
+	}
 	t.Helper()
 	canonical, err := filepath.EvalSymlinks(root)
 	if err != nil {
@@ -416,7 +423,7 @@ func TestM3A4LockedHarnessesAndLayout(t *testing.T) {
 				a4AssertState(t, before, home, config)
 				return
 			}
-			if err != nil || !result.Changed || len(result.Routes) != 2 || len(result.Reports) != 2 || len(result.Native) != 4 {
+			if err != nil || !result.Changed || len(result.Routes) != 2 || len(result.Reports) != 2 || len(result.Native) != fixtureNativeCount(4) {
 				t.Fatalf("multi binding=%+v %v", result, err)
 			}
 			updated := mustA4Lock(t, home)

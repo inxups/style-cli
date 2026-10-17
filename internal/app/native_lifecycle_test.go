@@ -30,6 +30,7 @@ func nativeHookPath(home, config, route string) string {
 }
 
 func TestA4NativeInstallDisclosesBeforeConfirmationWithoutWriting(t *testing.T) {
+	requirePOSIXFixture(t, "author native lifecycle requires POSIX")
 	for _, route := range []string{"codex-plugin", "codex-user", "claude-user"} {
 		for _, jsonOutput := range []bool{false, true} {
 			t.Run(fmt.Sprintf("%s/json=%t", route, jsonOutput), func(t *testing.T) {
@@ -84,6 +85,7 @@ func TestA4NativeInstallDisclosesBeforeConfirmationWithoutWriting(t *testing.T) 
 }
 
 func TestA4NativeSourceChangesRequireTrustForOrdinaryAndLinkedPackages(t *testing.T) {
+	requirePOSIXFixture(t, "author native lifecycle requires POSIX")
 	mutations := []struct {
 		name          string
 		change        func(string) string
@@ -179,6 +181,7 @@ func mustLoadNativeLock(t *testing.T, home string) lockDocument {
 }
 
 func TestA4DoctorNativeStatesAndConfirmedRepairs(t *testing.T) {
+	requirePOSIXFixture(t, "author native lifecycle requires POSIX")
 	for _, route := range []string{"codex-plugin", "codex-user", "claude-user"} {
 		for _, scenario := range []string{"ok", "missing", "command", "matcher", "timeout", "event", "duplicate", "trust"} {
 			if scenario == "trust" && route != "codex-user" {
@@ -296,6 +299,7 @@ func TestA4DoctorNativeStatesAndConfirmedRepairs(t *testing.T) {
 }
 
 func TestA4NativeConfirmationUsesCapturedBytesAndDetachedReports(t *testing.T) {
+	requirePOSIXFixture(t, "author native lifecycle requires POSIX")
 	service, home, config, source, _ := nativeInstallFixture(t, "codex-user")
 	original := nativePackageYAML("native-test")
 	approved := strings.ReplaceAll(original, "printf earlier", "printf approved")
@@ -359,6 +363,7 @@ func TestA4NativeConfirmationUsesCapturedBytesAndDetachedReports(t *testing.T) {
 }
 
 func TestA4TrustKeepsOtherLinkedNativeChangesUnapproved(t *testing.T) {
+	requirePOSIXFixture(t, "author native lifecycle requires POSIX")
 	service, home, config, first, _ := nativeInstallFixture(t, "codex-user")
 	second := writeInstallPackage(t, filepath.Join(filepath.Dir(first), "second"), nativePackageYAML("second"))
 	for _, source := range []string{first, second} {
@@ -394,6 +399,7 @@ func TestA4TrustKeepsOtherLinkedNativeChangesUnapproved(t *testing.T) {
 }
 
 func TestA4LinkedNativePackageStillAutoSyncsOrdinaryEdits(t *testing.T) {
+	requirePOSIXFixture(t, "author native lifecycle requires POSIX")
 	service, home, config, source, _ := nativeInstallFixture(t, "codex-user")
 	if _, err := service.Install(context.Background(), InstallRequest{Home: home, Source: source, Yes: true, Link: true, Harnesses: []string{"codex"}, Routes: map[string]string{"codex": "codex-user"}}); err != nil {
 		t.Fatal(err)
@@ -413,6 +419,7 @@ func TestA4LinkedNativePackageStillAutoSyncsOrdinaryEdits(t *testing.T) {
 }
 
 func TestA4ClampedNativeTimeoutChangeStillRequiresTrust(t *testing.T) {
+	requirePOSIXFixture(t, "author native lifecycle requires POSIX")
 	service, home, _, source, _ := nativeInstallFixture(t, "codex-user")
 	manifest := "spec: style/v0.3\nname: native-test\nversion: 0.1.0\ndescription: cap\nrules:\n  - id: end\n    target: native\n    codex: {event: SessionEnd, command: 'true', timeout: 10}\n"
 	writeSyncFile(t, filepath.Join(source, "STYLE.yaml"), manifest)
