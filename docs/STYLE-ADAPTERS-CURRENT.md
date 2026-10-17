@@ -1,6 +1,6 @@
 # STYLE 当前 adapter 实现总览
 
-更新时间：2026-10-17。生产源码核对基线：`16d5c1c`（M2 native、stats、跨包去重、Claude rules/迁移），replace 回退验收 `4976713`，Claude 最终隔离准备 `5dd6742`。Codex M2 B1–B4 双路线证据归档至 `e6dd778`；D4/D5 已由 Claude 2.1.301 的 C1–C4 真实交互验收闭合；远端 Ubuntu/macOS CI 已在 `2aded84` 全部通过（run `38999430973`）；官方 token 计数仍待独立 API key。
+更新时间：2026-10-17。生产源码核对基线：`16d5c1c`（M2 native、stats、跨包去重、Claude rules/迁移），replace 回退验收 `4976713`，Claude 最终隔离准备 `5dd6742`。Codex M2 B1–B4 双路线证据归档至 `e6dd778`；D4/D5 已由 Claude 2.1.301 的 C1–C4 真实交互验收闭合；M2 已完成并关闭，远端 Ubuntu/macOS CI 在 `154506f` 全部通过（run `39000483969`，59 项采集器）。无 key 补充对照已完成；官方 token 计数仍各 0/40、待独立 API key，RV-01 保留非阻塞风险。
 
 本文总结当前仓库的实现，不代表 Claude Code / Codex 所有版本的完整产品能力。能力声明、安装配置、运行时可接收事件和真实验收结果分别说明；未修改现有 fallback 语义。
 
@@ -422,12 +422,12 @@ M1b 实测版本为 Codex 0.159.3、Claude Code 2.1.300。M1b 的 B/C 条目已�
 | Codex plugin | marketplace 登记/启用须手动执行；完整登记、更新、移除和切换已实测 |
 | Codex skill / 子 agent | 云端 skill 不支持且 plan 提示；原生工具名未采集。FINAL-07 已覆盖 fresh/fork/depth2 子 agent context、工具注入/阻断与独立 scope |
 | Claude | workspace trust 无法自动确认；Read新订阅热更新已测。所测环境未实现实际关闭思考，保留不产出none；六事件USER可见，clear来源启动USER未显示；SubagentStart不支持上下文注入 |
-| 成本与超限 | 官方计数待API key；真实会话统计不代表典型账单。两家原生文件预览已测，字符边界不等于token校准，Claude ASCII结果不外推Unicode边界 |
+| 成本与超限 | 官方计数仍各0/40、待API key；本地两编码对照不等于模型校准，真实订阅会话统计不代表逐规则成本或典型账单。两家原生文件预览已测，字符边界不等于token校准，Claude ASCII结果不外推Unicode边界 |
 | 路线与 provider | 项目级路线、Claude 插件路线、其他 STYLE provider adapter 尚未实现 |
 | M2 Claude | C1–C4 真实交互通过，用户 rules/生产静态/去重/native/matcher/卸载恢复均有原生证据；D5 回退方案生效。新 rules compact 行为不由本次新会话验收外推 |
 | 未来能力 | provider 条件等按 M3/M4 backlog 规划 |
 
-当前 M2 最终回归/CI 已通过，官方计数遗留与总文档状态见 [M2 任务清单](STYLE-M2-TASKS.md)；Claude 隔离验收与复现步骤见 [M2 手册](STYLE-M2-MANUAL.md)，M1 界面历史见 [隔离 runbook](review/M1-FINAL-06-CLAUDE-RUNBOOK.md)，成本与缓存证据见 [FINAL-10](review/M1-FINAL-10-CACHE-2026-10-16.md)。
+当前 M2 已完成并关闭，最终回归/CI 和[无 key 补充对照](review/M2-ALT-01-2026-10-17.md)已通过；官方计数遗留与 RV-01 风险见 [M2 任务清单](STYLE-M2-TASKS.md)；Claude 隔离验收与复现步骤见 [M2 手册](STYLE-M2-MANUAL.md)，M1 界面历史见 [隔离 runbook](review/M1-FINAL-06-CLAUDE-RUNBOOK.md)，成本与缓存证据见 [FINAL-10](review/M1-FINAL-10-CACHE-2026-10-16.md)。
 
 FINAL-06 补验收（2026-10-16）：六类已声明事件的 USER 标记在界面可见；clear 虽输出启动标记，界面未显示。启动/提示/显式技能没有 effort，工具前/后/失败带 effort.level 与 CLAUDE_EFFORT；观察到 high→medium，所测 Opus5.5 界面无关闭思考选项，未验证 off 原值。新增 Read matcher 在未重启进程中实际触发，热更新成立。原 Glob 探针没有原生调用，不能计通过。Native failure 使用 `error`，codec 已补归一化并保留 `tool_error` 兼容；公开 M1 `tool.output` 仍只用于 tool.post。证据见 [FINAL-06](review/M1-FINAL-06-BOUNDARY-2026-10-16.json)，最终 C9 已通过，见追加证据。
 

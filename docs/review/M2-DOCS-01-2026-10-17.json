@@ -1,0 +1,773 @@
+{
+  "item": "M2-DOCS-01",
+  "date": "2026-10-17",
+  "passed": true,
+  "status": "completed",
+  "milestone": "M2",
+  "milestone_disposition": "closed with explicit nonblocking carryovers",
+  "tested_source_head": "154506fc072bc4066081e6a0b94d20ce604fc479",
+  "branch": "codex/m2-remote-ci-20261017",
+  "ci": {
+    "run": {
+      "conclusion": "success",
+      "databaseId": 39000483969,
+      "headSha": "154506fc072bc4066081e6a0b94d20ce604fc479",
+      "jobs": [
+        {
+          "completedAt": "2026-10-17T03:54:07Z",
+          "conclusion": "success",
+          "databaseId": 117302159360,
+          "name": "Test (macos-latest)",
+          "startedAt": "2026-10-17T03:53:18Z",
+          "status": "completed",
+          "steps": [
+            {
+              "completedAt": "2026-10-17T03:53:20Z",
+              "conclusion": "success",
+              "name": "Set up job",
+              "number": 1,
+              "startedAt": "2026-10-17T03:53:19Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-17T03:53:22Z",
+              "conclusion": "success",
+              "name": "Run actions/checkout@v6",
+              "number": 2,
+              "startedAt": "2026-10-17T03:53:20Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-17T03:53:38Z",
+              "conclusion": "success",
+              "name": "Set up Go",
+              "number": 3,
+              "startedAt": "2026-10-17T03:53:22Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-17T03:53:38Z",
+              "conclusion": "success",
+              "name": "Check formatting",
+              "number": 4,
+              "startedAt": "2026-10-17T03:53:38Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-17T03:53:41Z",
+              "conclusion": "success",
+              "name": "Vet",
+              "number": 5,
+              "startedAt": "2026-10-17T03:53:38Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-17T03:53:58Z",
+              "conclusion": "success",
+              "name": "Test",
+              "number": 6,
+              "startedAt": "2026-10-17T03:53:41Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-17T03:54:00Z",
+              "conclusion": "success",
+              "name": "Test acceptance collectors",
+              "number": 7,
+              "startedAt": "2026-10-17T03:53:58Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-17T03:54:02Z",
+              "conclusion": "success",
+              "name": "Build",
+              "number": 8,
+              "startedAt": "2026-10-17T03:54:00Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-17T03:54:02Z",
+              "conclusion": "success",
+              "name": "Smoke test built binary",
+              "number": 9,
+              "startedAt": "2026-10-17T03:54:02Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-17T03:54:03Z",
+              "conclusion": "success",
+              "name": "Check replace fallback and user style preservation",
+              "number": 10,
+              "startedAt": "2026-10-17T03:54:02Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-17T03:54:03Z",
+              "conclusion": "success",
+              "name": "Post Set up Go",
+              "number": 19,
+              "startedAt": "2026-10-17T03:54:03Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-17T03:54:04Z",
+              "conclusion": "success",
+              "name": "Post Run actions/checkout@v6",
+              "number": 20,
+              "startedAt": "2026-10-17T03:54:03Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-17T03:54:04Z",
+              "conclusion": "success",
+              "name": "Complete job",
+              "number": 21,
+              "startedAt": "2026-10-17T03:54:04Z",
+              "status": "completed"
+            }
+          ],
+          "url": "https://github.com/inxups/style-cli/actions/runs/39000483969/job/117302159360"
+        },
+        {
+          "completedAt": "2026-10-17T03:53:46Z",
+          "conclusion": "success",
+          "databaseId": 117302159484,
+          "name": "Test (ubuntu-latest)",
+          "startedAt": "2026-10-17T03:53:14Z",
+          "status": "completed",
+          "steps": [
+            {
+              "completedAt": "2026-10-17T03:53:15Z",
+              "conclusion": "success",
+              "name": "Set up job",
+              "number": 1,
+              "startedAt": "2026-10-17T03:53:15Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-17T03:53:16Z",
+              "conclusion": "success",
+              "name": "Run actions/checkout@v6",
+              "number": 2,
+              "startedAt": "2026-10-17T03:53:15Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-17T03:53:25Z",
+              "conclusion": "success",
+              "name": "Set up Go",
+              "number": 3,
+              "startedAt": "2026-10-17T03:53:16Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-17T03:53:25Z",
+              "conclusion": "success",
+              "name": "Check formatting",
+              "number": 4,
+              "startedAt": "2026-10-17T03:53:25Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-17T03:53:27Z",
+              "conclusion": "success",
+              "name": "Vet",
+              "number": 5,
+              "startedAt": "2026-10-17T03:53:25Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-17T03:53:41Z",
+              "conclusion": "success",
+              "name": "Test",
+              "number": 6,
+              "startedAt": "2026-10-17T03:53:27Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-17T03:53:42Z",
+              "conclusion": "success",
+              "name": "Test acceptance collectors",
+              "number": 7,
+              "startedAt": "2026-10-17T03:53:41Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-17T03:53:43Z",
+              "conclusion": "success",
+              "name": "Build",
+              "number": 8,
+              "startedAt": "2026-10-17T03:53:42Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-17T03:53:44Z",
+              "conclusion": "success",
+              "name": "Smoke test built binary",
+              "number": 9,
+              "startedAt": "2026-10-17T03:53:43Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-17T03:53:44Z",
+              "conclusion": "success",
+              "name": "Check replace fallback and user style preservation",
+              "number": 10,
+              "startedAt": "2026-10-17T03:53:44Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-17T03:53:44Z",
+              "conclusion": "success",
+              "name": "Post Set up Go",
+              "number": 19,
+              "startedAt": "2026-10-17T03:53:44Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-17T03:53:45Z",
+              "conclusion": "success",
+              "name": "Post Run actions/checkout@v6",
+              "number": 20,
+              "startedAt": "2026-10-17T03:53:44Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-17T03:53:45Z",
+              "conclusion": "success",
+              "name": "Complete job",
+              "number": 21,
+              "startedAt": "2026-10-17T03:53:45Z",
+              "status": "completed"
+            }
+          ],
+          "url": "https://github.com/inxups/style-cli/actions/runs/39000483969/job/117302159484"
+        }
+      ],
+      "status": "completed",
+      "url": "https://github.com/inxups/style-cli/actions/runs/39000483969"
+    },
+    "log": {
+      "path": "/tmp/style-m2-token-alt.UFcIgt7y/ci-run.log",
+      "sha256": "f2dc5a3119755789f7c87f1b569f573389f29778fe1f5457417b74f3574f637a"
+    },
+    "assertions": [
+      {
+        "job": "Test (macos-latest)",
+        "all_required_steps_success": true,
+        "collectors_passed": 59,
+        "smoke_checks_passed": 40,
+        "replace_cases_passed": 12,
+        "both_module_tests": true,
+        "go_codex_environment_cleared": true
+      },
+      {
+        "job": "Test (ubuntu-latest)",
+        "all_required_steps_success": true,
+        "collectors_passed": 59,
+        "smoke_checks_passed": 40,
+        "replace_cases_passed": 12,
+        "both_module_tests": true,
+        "go_codex_environment_cleared": true
+      }
+    ]
+  },
+  "source_objects": {
+    "core": "9afe1da160b58e147b89fcda58e5ae0127c5bdb2",
+    "internal": "3b427a44759d71419b66b5a2d8611724bc8347d9",
+    "agenthooks": "d2d06e6b8a8af1d82162c53ca8d2a30b2f8a88dc",
+    "cmd": "b19ea1baf1d381ac99983073eeb589ff866ea3da",
+    ".github": "8974e054f999cc72a5623befe140a1d31db251d8",
+    "scripts": "ad7cc257968a40fec777566b8f3488569b7ab8f5",
+    "testdata": "f3acd5d6a4b12848efd358c71418a97e9ea632e6",
+    "go.mod": "c72f2310df0c81600993bf62579be55b70c168c8",
+    "go.sum": "2be2c62c26006eaf7c1891b03411b81ef0c96aa0",
+    "go.work": "0df81a3f30063ebdc948400f6af5debdb9beb257"
+  },
+  "evidence_reports": [
+    {
+      "path": "docs/review/M2-A7-RULES-MIGRATION-2026-10-17.json",
+      "sha256": "1cde7de5ad27c3f35c233c8a4818981d6ebbaff08075c9f21091f740815156d9"
+    },
+    {
+      "path": "docs/review/M2-A8-REPLACE-FALLBACK-2026-10-17.json",
+      "sha256": "45a8d4d1a99c0b448bfcf8717d10f8d48189c02920f81b60ab8689f198e1eb51"
+    },
+    {
+      "path": "docs/review/M2-A9-LOCAL-REGRESSION-2026-10-17.json",
+      "sha256": "a8daf49429bd341fa830bf16ea28e061a5c2e1a99530055a732314660bf23167"
+    },
+    {
+      "path": "docs/review/M2-ALT-01-CLAUDE-USAGE-2026-10-17.json",
+      "sha256": "4c0d39c5b48df1dfb824d59e8097994f9203a9e78cee658104d9ce13a9aff4e2"
+    },
+    {
+      "path": "docs/review/M2-ALT-01-LOCAL-TOKENS-2026-10-17.json",
+      "sha256": "c25ce49e7ca6e07765ca4ec7c5cddd90f515f9d76644a25eb30bc3b788aeef50"
+    },
+    {
+      "path": "docs/review/M2-B1-CODEX-2026-10-17.json",
+      "sha256": "3d4253af2f21fc5e8a9609ea4715d347f43d3791f9c87df19a9cdad72089a6e5"
+    },
+    {
+      "path": "docs/review/M2-B2-CODEX-2026-10-17.json",
+      "sha256": "70f9b2d0038f6783a37791b57fbaa151ab1d890a57b6703db84ff6ddc6871f00"
+    },
+    {
+      "path": "docs/review/M2-B3-CODEX-2026-10-17.json",
+      "sha256": "105fd28bab600500e668dd050a08b9ef90a03d8a14904ac7eccc6294f2f4bd94"
+    },
+    {
+      "path": "docs/review/M2-B4-CODEX-2026-10-17.json",
+      "sha256": "a2e811fb10335d6e6c1508c1f48fd962d390de625c78f655eab01868178e862a"
+    },
+    {
+      "path": "docs/review/M2-C1-CLAUDE-2026-10-17.json",
+      "sha256": "b7966b310f7ef86678347229933049a880bfca46723ebe7462e41a8ace70a97c"
+    },
+    {
+      "path": "docs/review/M2-C2-CLAUDE-2026-10-17.json",
+      "sha256": "60f54fe694c954f0accdf372ebddaf299f8c57e241b630bf8013fb90639b18ea"
+    },
+    {
+      "path": "docs/review/M2-C3-CLAUDE-2026-10-17.json",
+      "sha256": "2c47365d50a89ea7c555c144ba4710bcab7b7732461f9aa0f77d344b90331159"
+    },
+    {
+      "path": "docs/review/M2-C4-CLAUDE-2026-10-17.json",
+      "sha256": "3bf98b7e7762c281207b1a5a4cb806e17a1dbf67d12fbbd4c3ed02043b622ed4"
+    },
+    {
+      "path": "docs/review/M2-CI-01-2026-10-17.json",
+      "sha256": "83d016ef713178b2641fdc1f5c74d924b87ff214673f46d195d964a4a31f4a28"
+    },
+    {
+      "path": "docs/review/M2-D4-D5-PROTOCOL-2026-10-16.json",
+      "sha256": "9d23d962b8e3f517ac4015d8778322975a37c7e742832104295a71829d3dcc7e"
+    },
+    {
+      "path": "docs/review/M2-DOCS-02-2026-10-17.json",
+      "sha256": "9c09c8897ec919bb4b3c9ee236517704897032774a726285317e8edbec3392c3"
+    },
+    {
+      "path": "docs/review/M2-PREP-01-AUTH-2026-10-17.json",
+      "sha256": "3d3e8c205e9f31969504cfb29b19d8ba1af03119b00ba9fd82d53028d63e8d0f"
+    },
+    {
+      "path": "docs/review/M2-PREP-03-CLAUDE-2026-10-17.json",
+      "sha256": "f8813419017e18ed60a4e46326624fece80ae0432f2395928b20a2f7b312cf80"
+    },
+    {
+      "path": "docs/review/M1-FINAL-09-COUNTING-BLOCKED-2026-10-16.json",
+      "sha256": "ea4a0552e11e3819a2fd419e18a6f2745487bb0d754cb97db6b47677b2fa17dc"
+    },
+    {
+      "path": "docs/review/M1-FINAL-10-USAGE-2026-10-16.json",
+      "sha256": "2504c53f480df66a765cab8042b2c04099d751b61116a175b0bf643466890b7d"
+    }
+  ],
+  "current_markdown": [
+    {
+      "path": "docs/PROGRESS.md",
+      "sha256": "7c2a69d2439f327dc332ee85cc6d8b9e7a7f9504643af4c631d31bbe153fd8ff"
+    },
+    {
+      "path": "docs/STYLE-ADAPTERS-CURRENT.md",
+      "sha256": "71a4ae38ce12b6eb18aafbadc61f6be07d64c4fd8f6f82a9a5b74a52cd095032"
+    },
+    {
+      "path": "docs/STYLE-M2-MANUAL.md",
+      "sha256": "018a4f3d91885a750b9f57db02ee8f08048e515d04bce807c1b361e849d4d14b"
+    },
+    {
+      "path": "docs/STYLE-M2-TASKS.md",
+      "sha256": "95422bb51bcac9452f71c278be92244d891a246ea0d307e472f1f513215c9f39"
+    },
+    {
+      "path": "docs/STYLE-M2-TESTS.md",
+      "sha256": "4415c5a4c4da9fd35bb8c510c783919d062c2f9474398cc31e6fde03cc37a034"
+    },
+    {
+      "path": "docs/STYLE-TUTORIAL.md",
+      "sha256": "879259dd3b1f17eeae26b113304c5477b4625f81927d4fa6c68bbfe5a7c86356"
+    },
+    {
+      "path": "docs/review/M2-ALT-01-2026-10-17.md",
+      "sha256": "09269b464ca46ddbf60cc31af17f9136d490d353d295ffd67e7e2675c3618e35"
+    },
+    {
+      "path": "docs/review/M2-D4-D5-DESIGN-2026-10-17.md",
+      "sha256": "336b95d8b0e757e2f1fc79c9d7afb46e1e913ea728072163df4570113d98430e"
+    },
+    {
+      "path": "docs/spec/STYLE-cli-design.md",
+      "sha256": "7189a608e7d9c004366e4b45ccefed9a5dd4d78d76435d8a1e1514d0a74f634e"
+    },
+    {
+      "path": "docs/spec/STYLE-spec-compiled.md",
+      "sha256": "a215c5035b2db591fe3a21299472c0c57d2dff8337af5e90ba9dbc1c8f6ce26f"
+    },
+    {
+      "path": "docs/spec/STYLE-spec-rules.md",
+      "sha256": "553e52ff1cc16ebbb491b07b67ee870c0735e95f4e9e78edc7fd8af90c12e016"
+    },
+    {
+      "path": "docs/spec/STYLE-spec-runtime.md",
+      "sha256": "c5cd25997eddd6f1926ba9ebd87639e0d95dc6592c32c9998f50454e50efbb47"
+    },
+    {
+      "path": "example/terse-reviewer/rules/codex-only-notify.md",
+      "sha256": "82837220a7e97ef8ba623cfef08b88e1f68b92c00cefb7f1384f5afcd9dd7cbf"
+    },
+    {
+      "path": "testdata/manual/README.md",
+      "sha256": "007be17463ae71e132f9e0df372f9e423ebe891a0ea460a3f865393ed4cef11b"
+    },
+    {
+      "path": "testdata/stats/m2/README.md",
+      "sha256": "3d6ac4718bd886c8a576664367f5cc53581ee505a0413b9d6b5aa764f9d6d65b"
+    }
+  ],
+  "claude_retained_source_checks": [
+    {
+      "report": "docs/review/M2-C1-CLAUDE-2026-10-17.json",
+      "path": "/Users/inxups/.nvm/versions/node/v24.21.0/bin/claude",
+      "expected_sha256": "1f04c69e1c24e4d0a716a863af0aad8fc64d49a499334c29701f073700276b99",
+      "verification": "exact"
+    },
+    {
+      "report": "docs/review/M2-C1-CLAUDE-2026-10-17.json",
+      "path": "/private/tmp/style-m2-claude-ui-20261016/claude/projects/-private-tmp-style-m2-claude-ui-20261016-work/5f94ea4b-8e82-44c6-94fc-a5e15ea8a50b.jsonl",
+      "expected_sha256": "46cdf2aee6ae677c5670f07d06a0c12783fa9008fb8d08836432fc884562dfb2",
+      "verification": "exact"
+    },
+    {
+      "report": "docs/review/M2-C1-CLAUDE-2026-10-17.json",
+      "path": "/private/tmp/style-m2-claude-ui-20261016/instructions.jsonl",
+      "expected_sha256": "ae00c446a21f3da46ba70f92bfa6563b901629c103b22132a502ade279cb611c",
+      "verification": "append-only-prefix"
+    },
+    {
+      "report": "docs/review/M2-C2-CLAUDE-2026-10-17.json",
+      "path": "/private/tmp/style-m2-claude-ui-20261016/claude/projects/-private-tmp-style-m2-claude-live-20261017-5fzqcx0b-work/b9e583ed-805b-4a34-bcb2-6a31b932ff92.jsonl",
+      "expected_sha256": "4ddf847ef839f81a22666118b46eb4734f803b9b1da5801511f3f1f9517de0d1",
+      "verification": "exact"
+    },
+    {
+      "report": "docs/review/M2-C2-CLAUDE-2026-10-17.json",
+      "path": "/private/tmp/style-m2-claude-live-20261017.5fzqcx0b/native-observations.jsonl",
+      "expected_sha256": "fb522da6fe5260f15acfa69eb2166c1a21054efb710db78ecfebe53f3bcaf2b5",
+      "verification": "exact"
+    },
+    {
+      "report": "docs/review/M2-C2-CLAUDE-2026-10-17.json",
+      "path": "/private/tmp/style-m2-claude-live-20261017.5fzqcx0b/installed-terminal.txt",
+      "expected_sha256": "8554f7842fb61bb3301dbe29884d6a88ea8de06c360504b8b06171ecbfb9eacc",
+      "verification": "exact"
+    },
+    {
+      "report": "docs/review/M2-C2-CLAUDE-2026-10-17.json",
+      "path": "/private/tmp/style-m2-claude-ui-20261016/claude/settings.json",
+      "expected_sha256": "2e7e085cf187f62243363909d2ab5ea410c431cd1b76656b6b2f72daa611a4c7",
+      "verification": "exact"
+    },
+    {
+      "report": "docs/review/M2-C2-CLAUDE-2026-10-17.json",
+      "path": "/private/tmp/style-m2-claude-ui-20261016/claude/CLAUDE.md",
+      "expected_sha256": "7f43194a6f23d888f9aa40bed9660a526e8e33e5d1ba607142c06beaf93c578b",
+      "verification": "exact"
+    },
+    {
+      "report": "docs/review/M2-C2-CLAUDE-2026-10-17.json",
+      "path": "/private/tmp/style-m2-claude-ui-20261016/claude/rules/style-m2-user-probe.md",
+      "expected_sha256": "c4af952ef58fa2cf2db7b684b5680a6ad12164ddd46d1e94c6bea228813cc9f7",
+      "verification": "exact"
+    },
+    {
+      "report": "docs/review/M2-C2-CLAUDE-2026-10-17.json",
+      "path": "/private/tmp/style-m2-claude-ui-20261016/claude/output-styles/M2Existing.md",
+      "expected_sha256": "e64c17ec25b00a3a23fe8ae12d57837c9be2af3b1d6c254674bbbd32ca5a0e41",
+      "verification": "exact"
+    },
+    {
+      "report": "docs/review/M2-C2-CLAUDE-2026-10-17.json",
+      "path": "/private/tmp/style-m2-claude-ui-20261016/claude/output-styles/M2Keep.md",
+      "expected_sha256": "913a3e44117d2ccdf3921672883b1512d9531fb64ed4d9760ec62fe763dee513",
+      "verification": "exact"
+    },
+    {
+      "report": "docs/review/M2-C2-CLAUDE-2026-10-17.json",
+      "path": "/private/tmp/style-m2-claude-ui-20261016/claude/output-styles/M2Replace.md",
+      "expected_sha256": "cdfe1e3ee4536d06264fa7dba95d21a873e31f1a105a26c2b9b8895beb766677",
+      "verification": "exact"
+    },
+    {
+      "report": "docs/review/M2-C2-CLAUDE-2026-10-17.json",
+      "path": "/private/tmp/style-m2-claude-ui-20261016/claude/projects/-private-tmp-style-m2-claude-live-20261017-5fzqcx0b-work/2e4e01f7-0a27-4b5f-a9e7-5c347937156b.jsonl",
+      "expected_sha256": "bf9ebfccd6428d9109259b45c6be0ce4ced2d48245e49fcd7b3fc7f914c8f936",
+      "verification": "exact"
+    },
+    {
+      "report": "docs/review/M2-C2-CLAUDE-2026-10-17.json",
+      "path": "/private/tmp/style-m2-claude-live-20261017.5fzqcx0b/uninstalled-terminal.txt",
+      "expected_sha256": "171c00b80393c83fafcc6df0454f67d56d13785c8301efc6994ee01e6b7e6e5a",
+      "verification": "exact"
+    },
+    {
+      "report": "docs/review/M2-C2-CLAUDE-2026-10-17.json",
+      "path": "/private/tmp/style-m2-claude-live-20261017.5fzqcx0b/prepare_claude_m2_acceptance.py",
+      "expected_sha256": "109c5c5458778a82cc4f7ffafd41437cece035ac5e724efcbf99dcf7414fe244",
+      "verification": "exact"
+    },
+    {
+      "report": "docs/review/M2-C2-CLAUDE-2026-10-17.json",
+      "path": "/private/tmp/style-m2-claude-live-20261017.5fzqcx0b/probe_claude_m2_design.py",
+      "expected_sha256": "0dc8bcaf6eb011a1a63abebcaa29fb73ca90ef12491d7a2080c9116008111854",
+      "verification": "exact"
+    },
+    {
+      "report": "docs/review/M2-C2-CLAUDE-2026-10-17.json",
+      "path": "/private/tmp/style-m2-claude-live-20261017.5fzqcx0b/claude_probe_support.py",
+      "expected_sha256": "8993b0f141301ea9f460e4e6c87c38e855fcda8aeaecba85ca3bb8be20a0a37c",
+      "verification": "exact"
+    },
+    {
+      "report": "docs/review/M2-C3-CLAUDE-2026-10-17.json",
+      "path": "/private/tmp/style-m2-claude-live-20261017.5fzqcx0b/style/build/index.json",
+      "expected_sha256": "ead5a32b1115df6a20c438a30f208d4cdbe68615b53a339beb68983f6937b168",
+      "verification": "expected absent after verified uninstall; original installed digest retained, not rehashed"
+    },
+    {
+      "report": "docs/review/M2-C3-CLAUDE-2026-10-17.json",
+      "path": "/private/tmp/style-m2-claude-ui-20261016/claude/rules/style-m2-claude-first.md",
+      "expected_sha256": "8d3136a038bb4a89ded01f2c0ed3cfb66e022d2ce100b3b1a25f150f2ef1edc0",
+      "verification": "expected absent after verified uninstall; original installed digest retained, not rehashed"
+    },
+    {
+      "report": "docs/review/M2-C3-CLAUDE-2026-10-17.json",
+      "path": "/private/tmp/style-m2-claude-ui-20261016/claude/projects/-private-tmp-style-m2-claude-live-20261017-5fzqcx0b-work/b9e583ed-805b-4a34-bcb2-6a31b932ff92.jsonl",
+      "expected_sha256": "4ddf847ef839f81a22666118b46eb4734f803b9b1da5801511f3f1f9517de0d1",
+      "verification": "exact"
+    },
+    {
+      "report": "docs/review/M2-C3-CLAUDE-2026-10-17.json",
+      "path": "/private/tmp/style-m2-claude-live-20261017.5fzqcx0b/native-observations.jsonl",
+      "expected_sha256": "fb522da6fe5260f15acfa69eb2166c1a21054efb710db78ecfebe53f3bcaf2b5",
+      "verification": "exact"
+    },
+    {
+      "report": "docs/review/M2-C3-CLAUDE-2026-10-17.json",
+      "path": "/private/tmp/style-m2-claude-live-20261017.5fzqcx0b/installed-terminal.txt",
+      "expected_sha256": "8554f7842fb61bb3301dbe29884d6a88ea8de06c360504b8b06171ecbfb9eacc",
+      "verification": "exact"
+    },
+    {
+      "report": "docs/review/M2-C3-CLAUDE-2026-10-17.json",
+      "path": "/private/tmp/style-m2-claude-live-20261017.5fzqcx0b/m2-claude-first/STYLE.yaml",
+      "expected_sha256": "1b669370a540d235a45f982937ab2dbe82937b425c3d0bdcb8d95c3f45382456",
+      "verification": "exact"
+    },
+    {
+      "report": "docs/review/M2-C3-CLAUDE-2026-10-17.json",
+      "path": "/private/tmp/style-m2-claude-live-20261017.5fzqcx0b/m2-claude-second/STYLE.yaml",
+      "expected_sha256": "3bfafa8552d40f1af97a907156f92857ba1cc1520558e43d9a34a171c39bc390",
+      "verification": "exact"
+    },
+    {
+      "report": "docs/review/M2-C3-CLAUDE-2026-10-17.json",
+      "path": "/private/tmp/style-m2-claude-ui-20261016/claude/settings.json",
+      "expected_sha256": "2e7e085cf187f62243363909d2ab5ea410c431cd1b76656b6b2f72daa611a4c7",
+      "verification": "exact"
+    },
+    {
+      "report": "docs/review/M2-C3-CLAUDE-2026-10-17.json",
+      "path": "/private/tmp/style-m2-claude-ui-20261016/claude/CLAUDE.md",
+      "expected_sha256": "7f43194a6f23d888f9aa40bed9660a526e8e33e5d1ba607142c06beaf93c578b",
+      "verification": "exact"
+    },
+    {
+      "report": "docs/review/M2-C3-CLAUDE-2026-10-17.json",
+      "path": "/private/tmp/style-m2-claude-ui-20261016/claude/rules/style-m2-user-probe.md",
+      "expected_sha256": "c4af952ef58fa2cf2db7b684b5680a6ad12164ddd46d1e94c6bea228813cc9f7",
+      "verification": "exact"
+    },
+    {
+      "report": "docs/review/M2-C3-CLAUDE-2026-10-17.json",
+      "path": "/private/tmp/style-m2-claude-ui-20261016/claude/output-styles/M2Existing.md",
+      "expected_sha256": "e64c17ec25b00a3a23fe8ae12d57837c9be2af3b1d6c254674bbbd32ca5a0e41",
+      "verification": "exact"
+    },
+    {
+      "report": "docs/review/M2-C3-CLAUDE-2026-10-17.json",
+      "path": "/private/tmp/style-m2-claude-ui-20261016/claude/output-styles/M2Keep.md",
+      "expected_sha256": "913a3e44117d2ccdf3921672883b1512d9531fb64ed4d9760ec62fe763dee513",
+      "verification": "exact"
+    },
+    {
+      "report": "docs/review/M2-C3-CLAUDE-2026-10-17.json",
+      "path": "/private/tmp/style-m2-claude-ui-20261016/claude/output-styles/M2Replace.md",
+      "expected_sha256": "cdfe1e3ee4536d06264fa7dba95d21a873e31f1a105a26c2b9b8895beb766677",
+      "verification": "exact"
+    },
+    {
+      "report": "docs/review/M2-C3-CLAUDE-2026-10-17.json",
+      "path": "/private/tmp/style-m2-claude-ui-20261016/claude/projects/-private-tmp-style-m2-claude-live-20261017-5fzqcx0b-work/2e4e01f7-0a27-4b5f-a9e7-5c347937156b.jsonl",
+      "expected_sha256": "bf9ebfccd6428d9109259b45c6be0ce4ced2d48245e49fcd7b3fc7f914c8f936",
+      "verification": "exact"
+    },
+    {
+      "report": "docs/review/M2-C3-CLAUDE-2026-10-17.json",
+      "path": "/private/tmp/style-m2-claude-live-20261017.5fzqcx0b/uninstalled-terminal.txt",
+      "expected_sha256": "171c00b80393c83fafcc6df0454f67d56d13785c8301efc6994ee01e6b7e6e5a",
+      "verification": "exact"
+    },
+    {
+      "report": "docs/review/M2-C4-CLAUDE-2026-10-17.json",
+      "path": "/private/tmp/style-m2-claude-live-20261017.5fzqcx0b/existing-terminal.txt",
+      "expected_sha256": "f3ff4b43e12651e42e07477072df3d9bb5f27a9a12dddeaa877fbfbe660cbde3",
+      "verification": "exact"
+    },
+    {
+      "report": "docs/review/M2-C4-CLAUDE-2026-10-17.json",
+      "path": "/private/tmp/style-m2-claude-ui-20261016/claude/projects/-private-tmp-style-m2-claude-ui-20261016-work/bb1a07ae-7112-43cb-8908-5df5786f93d1.jsonl",
+      "expected_sha256": "d08b2c6546d8cf5ac7313443b35a3b66657769971f9760238f0642a0c3df901e",
+      "verification": "exact"
+    },
+    {
+      "report": "docs/review/M2-C4-CLAUDE-2026-10-17.json",
+      "path": "/private/tmp/style-m2-claude-live-20261017.5fzqcx0b/replace-terminal.txt",
+      "expected_sha256": "cf75f12f1134e5e5b99bdfb3deac7ac37202e11e096652fe3b92fe4f50929f3c",
+      "verification": "exact"
+    },
+    {
+      "report": "docs/review/M2-C4-CLAUDE-2026-10-17.json",
+      "path": "/private/tmp/style-m2-claude-ui-20261016/claude/projects/-private-tmp-style-m2-claude-ui-20261016-work/be71bac4-c468-4cbe-8323-f1fe68714d74.jsonl",
+      "expected_sha256": "eaa6ceb373484748a282d319c04c8211bc19c4ea726bd5074d793fd7e5557858",
+      "verification": "exact"
+    },
+    {
+      "report": "docs/review/M2-C4-CLAUDE-2026-10-17.json",
+      "path": "/private/tmp/style-m2-claude-live-20261017.5fzqcx0b/keep-terminal.txt",
+      "expected_sha256": "2f9f28698b162141f8aa0b1ac505a579eb5eeab98d2b2bc54d1fe7bdffa8d15b",
+      "verification": "exact"
+    },
+    {
+      "report": "docs/review/M2-C4-CLAUDE-2026-10-17.json",
+      "path": "/private/tmp/style-m2-claude-ui-20261016/claude/projects/-private-tmp-style-m2-claude-ui-20261016-work/7f4d63ae-c1bc-4bac-bf4b-11e97e13cdf7.jsonl",
+      "expected_sha256": "b52bbfad2810ca9b9b22bb9028f3798d1af6404b102d51dbc3facd5961531d2a",
+      "verification": "exact"
+    },
+    {
+      "report": "docs/review/M2-C4-CLAUDE-2026-10-17.json",
+      "path": "/private/tmp/style-m2-claude-ui-20261016/claude/settings.json",
+      "expected_sha256": "2e7e085cf187f62243363909d2ab5ea410c431cd1b76656b6b2f72daa611a4c7",
+      "verification": "exact"
+    },
+    {
+      "report": "docs/review/M2-C4-CLAUDE-2026-10-17.json",
+      "path": "/private/tmp/style-m2-claude-ui-20261016/claude/CLAUDE.md",
+      "expected_sha256": "7f43194a6f23d888f9aa40bed9660a526e8e33e5d1ba607142c06beaf93c578b",
+      "verification": "exact"
+    },
+    {
+      "report": "docs/review/M2-C4-CLAUDE-2026-10-17.json",
+      "path": "/private/tmp/style-m2-claude-ui-20261016/claude/rules/style-m2-user-probe.md",
+      "expected_sha256": "c4af952ef58fa2cf2db7b684b5680a6ad12164ddd46d1e94c6bea228813cc9f7",
+      "verification": "exact"
+    },
+    {
+      "report": "docs/review/M2-C4-CLAUDE-2026-10-17.json",
+      "path": "/private/tmp/style-m2-claude-ui-20261016/claude/output-styles/M2Existing.md",
+      "expected_sha256": "e64c17ec25b00a3a23fe8ae12d57837c9be2af3b1d6c254674bbbd32ca5a0e41",
+      "verification": "exact"
+    },
+    {
+      "report": "docs/review/M2-C4-CLAUDE-2026-10-17.json",
+      "path": "/private/tmp/style-m2-claude-ui-20261016/claude/output-styles/M2Keep.md",
+      "expected_sha256": "913a3e44117d2ccdf3921672883b1512d9531fb64ed4d9760ec62fe763dee513",
+      "verification": "exact"
+    },
+    {
+      "report": "docs/review/M2-C4-CLAUDE-2026-10-17.json",
+      "path": "/private/tmp/style-m2-claude-ui-20261016/claude/output-styles/M2Replace.md",
+      "expected_sha256": "cdfe1e3ee4536d06264fa7dba95d21a873e31f1a105a26c2b9b8895beb766677",
+      "verification": "exact"
+    }
+  ],
+  "local_supplement": {
+    "collectors_passed": 59,
+    "encoding_reference_runs_byte_identical": true,
+    "warm_cache_python_socket_connect_disabled": true,
+    "style_binary_sha256": "32aef36dcb67d8cd0c57e123016094e1f82e5cce8adca37a9b6ae56c990cf81d",
+    "new_model_requests": 0
+  },
+  "checks": {
+    "current_links_anchors_fences": {
+      "passed": true,
+      "files": 15,
+      "links_and_anchors": 215
+    },
+    "append_only_progress": true,
+    "m1_archives_unchanged_since_m2_start": true,
+    "documentation_only_after_tested_source": true,
+    "evidence_json_parses": true,
+    "remaining_statuses_explicit": true,
+    "diff_check": true
+  },
+  "remaining_statuses": {
+    "docs/STYLE-M2-TASKS.md": [
+      {
+        "status": "?",
+        "item": "M2-CARRY-01"
+      },
+      {
+        "status": "!",
+        "item": "M2-RV-01"
+      },
+      {
+        "status": " ",
+        "item": "M3"
+      },
+      {
+        "status": " ",
+        "item": "M4"
+      }
+    ],
+    "docs/STYLE-M2-TESTS.md": [
+      {
+        "status": "?",
+        "item": "M2-CARRY-01"
+      }
+    ]
+  },
+  "carryovers": [
+    {
+      "item": "M2-CARRY-01",
+      "status": "pending official keys",
+      "completed_per_provider": 0,
+      "required_per_provider": 40,
+      "nonblocking": true,
+      "supplement_does_not_replace_official_calibration": true
+    },
+    {
+      "item": "M2-RV-01",
+      "status": "unresolved known architecture risk",
+      "nonblocking": true,
+      "next_step": "User to prioritize registered-harness validation refactor during next milestone planning."
+    }
+  ],
+  "scope": "M2 scope, real harness acceptance, final CI and documentation close; no official calibration, new rules compact behavior, whole-system replace or supplemental API replay success claimed.",
+  "reproduce_commands": [
+    "python3 -c 'import json; exec(json.load(open(\"docs/review/M2-DOCS-01-2026-10-17.json\"))[\"documentation_checker\"][\"source\"])'",
+    "git diff --check",
+    "gh run view 39000483969 --repo inxups/style-cli --json headSha,status,conclusion,jobs,url",
+    "gh run view 39000483969 --repo inxups/style-cli --log",
+    "env -u CODEX_HOME -u CODEX_SANDBOX PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s testdata/manual -p 'test_*.py'"
+  ],
+  "documentation_checker": {
+    "source": "from pathlib import Path\nimport re, subprocess, urllib.parse, unicodedata\nroot=Path.cwd()\npaths=[root/p for p in subprocess.check_output(['git','diff','--name-only','6ec25f6'],text=True).splitlines() if p.endswith('.md')]\nlinks=0\nfor path in paths:\n text=path.read_text()\n fences=re.findall(r'^\\s*(`{3,}|~{3,})',text,re.M)\n assert len(fences)%2==0, ('fence',path)\n for match in re.finditer(r'\\[[^\\]\\n]+\\]\\(([^)]+)\\)',text):\n  target=match.group(1).split(' \"')[0].strip('<>')\n  if '://' in target or target.startswith(('mailto:', '/')): continue\n  name, _, anchor=target.partition('#')\n  dest=(path.parent/urllib.parse.unquote(name)).resolve() if name else path\n  assert dest.exists(), ('missing',path,target)\n  if anchor and dest.suffix=='.md':\n   slugs=set()\n   counts={}\n   for heading in re.findall(r'^#{1,6}\\s+(.+?)\\s*#*$',dest.read_text(),re.M):\n    heading=re.sub(r'\\[([^]]+)\\]\\([^)]+\\)',r'\\1',heading)\n    slug=''.join(c for c in heading.lower() if not unicodedata.category(c).startswith(('P','S')) or c in '-_')\n    slug=re.sub(r'\\s','-',slug)\n    count=counts.get(slug,0); counts[slug]=count+1\n    slugs.add(slug+(f'-{count}' if count else ''))\n   assert urllib.parse.unquote(anchor) in slugs, ('anchor',path,target)\n  links+=1\nprint(f'{len(paths)} changed Markdown files: {links} local links/anchors and fences passed')\n",
+    "sha256": "ec94316532a9c74f4da91f0aa0c4b4d1e87191f1e4493270fbf89dc828adbed9",
+    "actual_result": "15 changed Markdown files: 215 local links/anchors and fences passed",
+    "base_revision": "6ec25f6"
+  }
+}

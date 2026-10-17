@@ -1,6 +1,6 @@
 # STYLE CLI 使用教程
 
-更新时间：2026-10-17。生产源码核对基线：`16d5c1c`（M2 native、stats、跨包去重、Claude rules/迁移），replace 回退验收 `4976713`，支持 Claude Code 与 Codex。Codex M2 B1–B4 已在两条路线通过；Claude 2.1.301 的 C1–C4 真实交互验收已通过，D4 符合预期、D5 回退方案生效。当前状态见 [M2 任务清单](STYLE-M2-TASKS.md)；M1 结果只作为历史证据。M2 远端 Ubuntu/macOS CI 已在 `2aded84` 全部通过；官方计数遗留与总文档收尾仍按清单单列。
+更新时间：2026-10-17。生产源码核对基线：`16d5c1c`（M2 native、stats、跨包去重、Claude rules/迁移），replace 回退验收 `4976713`，支持 Claude Code 与 Codex。Codex M2 B1–B4 已在两条路线通过；Claude 2.1.301 的 C1–C4 真实交互验收已通过，D4 符合预期、D5 回退方案生效。当前状态见 [M2 任务清单](STYLE-M2-TASKS.md)；M1 结果只作为历史证据。M2 已完成并关闭；`154506f` 的远端 Ubuntu/macOS CI 全部通过。无 key 的[本地编码/订阅补充验证](review/M2-ALT-01-2026-10-17.md)已完成；两家官方计数仍各 0/40，估算不承诺误差范围，非阻塞遗留见任务清单。
 
 本教程面向第一次使用 `style` 的人，从构建到卸载走完整个生命周期。文中命令输出是在隔离沙箱里运行得到的（路径已缩写）；新增 M2 示例只有命令和配置，其验证见 M2 进度日志。规则语义的权威定义在 [docs/spec](spec/STYLE-spec.md)，adapter 的实现细节见 [STYLE-ADAPTERS-CURRENT.md](STYLE-ADAPTERS-CURRENT.md)，当前真实环境验收步骤见 [STYLE-M2-MANUAL.md](STYLE-M2-MANUAL.md)。
 

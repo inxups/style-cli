@@ -2,7 +2,7 @@
 
 对应规范：[STYLE-spec.md](STYLE-spec.md)（v0.3）。规范定义包格式、运行时语义、token 预算、安全约束和 `index.json`；本文定义命令、本地布局、编译和运行时流程、Claude Code 与 Codex 两个适配器、token 估算器、fork 改动、里程碑、验收和未决项。冲突时，格式和语义以规范为准，实现细节以本文为准。
 
-状态（2026-10-16）：M1a 离线验收已完成，M1b B/C 历史条目按各自记录范围通过，全部 M1 补验收仍进行中。FINAL-01–08、10–11 已闭合，官方计数仍待验证，最终Ubuntu/macOS CI已通过（FINAL-12）；逐项证据以 [任务清单](../STYLE-M1-TASKS.md) 和 [测试矩阵](../STYLE-M1-TESTS.md) 为准。M1 只做 **Claude Code** 和 **Codex**。本文接口代码为设计示意；当前接口与职责见 [adapter 总览](../STYLE-ADAPTERS-CURRENT.md)。
+状态（2026-10-17）：M1 已关闭并只读归档；M2 的 native、stats、跨包去重、Claude rules/迁移与 replace 回退已验收，Codex/Claude 真实环境、本地回归和最终 Ubuntu/macOS CI 均通过，M2 文档收尾完成并关闭。官方 token 计数仍各0/40；本地编码/订阅 usage 作为补充，不提供误差范围保证，RV-01 核心硬编码保留非阻塞风险。状态和证据以 [M2 任务清单](../STYLE-M2-TASKS.md)、[测试矩阵](../STYLE-M2-TESTS.md) 为准。当前仅支持 **Claude Code** 和 **Codex**；本文接口代码为设计示意，当前接口与职责见 [adapter 总览](../STYLE-ADAPTERS-CURRENT.md)。
 
 **依据**：
 - agenthooks `3f734c7` 源码，历史整理资料为 `agenthooks-codex.md`（外部资料，本仓库未收录）；
@@ -813,7 +813,7 @@ F1–F4、F10 是安装和协议层的问题，最好也提给上游。F5–F9 �
 | M3 | `explain`、`probe`、`update`、git 来源、`--frozen`、项目级路线（含 Claude 云端会话）、Claude 插件路线、`--count=exact`、`refresh`（token 设计 T4）、事件内容带围栏进模板、`provider`、规则级 `fail: closed`、用户自定义 effort 映射、`unknown` 匹配、Windows |
 | M4 | 其他 harness（Gemini、OpenCode、Cursor、Copilot、Kimi…），每家一个适配器；资料见规范附录 A |
 
-M2 当前进展（2026-10-17）：native、stats、跨包语义去重与 Claude 每包 rules/旧布局迁移已实现，Codex B1–B4 在 user/plugin 两路线通过。output style 未开放 replace，D5 保留现有 fallback；Claude C1–C4 真实交互验收已通过，D4 符合预期、D5 回退方案生效。M2 本地最终回归和远端 Ubuntu/macOS CI 已通过（`2aded84`，run `38999430973`）；官方计数遗留及总文档收尾继续单列，状态以 [M2 任务清单](../STYLE-M2-TASKS.md) 和 [测试矩阵](../STYLE-M2-TESTS.md) 为准。
+M2 最终状态（2026-10-17）：native、stats、跨包语义去重与 Claude 每包 rules/旧布局迁移已实现，Codex B1–B4 在 user/plugin 两路线通过。output style 未开放 replace，D5 保留现有 fallback；Claude C1–C4 真实交互验收已通过，D4 符合预期、D5 回退方案生效。M2 本地最终回归、远端 Ubuntu/macOS CI（`154506f`，run `39000483969`，59 项采集器）和总文档验收通过，M2 完成并关闭。无 key 补充对照已完成；官方计数仍各0/40、RV-01 仍为非阻塞已知风险，下一步规划处理，详见 [M2 任务清单](../STYLE-M2-TASKS.md) 和 [测试矩阵](../STYLE-M2-TESTS.md)。
 
 ## 15. 未决项
 
@@ -836,11 +836,11 @@ Claude U9、U-C1/C2/C3/C5 已由用户界面观察、原生请求/hook及state�
 | U-C1 | `$CLAUDE_EFFORT` 在 SessionStart、UserPromptSubmit 的 hook 进程里是否存在 | 第一次工具调用之前能否拿到强度 | 探针 hook 打印环境变量 | 认为存在；不存在就等工具事件，靠 3.7 的重新评估补上 | 不影响通过 | FINAL-06逐事件采集：启动/提示/显式技能无effort及环境值，工具前/后/失败含effort.level与CLAUDE_EFFORT；观察high→medium，启动缺值保持unknown，后续按既定动态重新评估补齐 |
 | U-C2 | 改了 `settings.json` 的 hooks 后，运行中的会话是否马上生效 | 报告怎么写 | 会话运行中装一个包 | 报告写"新会话生效" | 不影响通过 | FINAL-06当前进程新增Read matcher，实际Read调用、原生hook输出、stats和用户HOT_READ可见性一致；原Glob尝试实际Bash，未计通过 |
 | U-C3 | `/clear` 后 `session_id` 是否变化、`model` 是否缺失 | 状态和去重 | 探针 | gen +1 兼容两种情况；model 缺失时保留旧值 | 不影响通过 | FINAL-06：clear创建新session，原生无model、effort和环境值，新state不沿用旧model；后续工具补medium。SessionStart USER已输出但用户未见 |
-| U-C4 | 用户级 `~/.claude/rules/*.md` 是否生效 | 静态位置选哪个 | 放一个文件，看 `InstructionsLoaded` | 用 `CLAUDE.md` | 生效 → M2 切换 | 未测（M2） |
+| U-C4 | 用户级 `~/.claude/rules/*.md` 是否生效 | 静态位置选哪个 | 放一个文件，看 `InstructionsLoaded` | 原回退为 `CLAUDE.md` | 生效 → M2 切换 | M2-C1/C3 已通过：真实用户 rules 发现、生产每包 rules 加载一次、卸载后六文件还原；T40/A7 迁移完成，见 M2 任务/测试与原生报告 |
 | U-C5 | Claude 各事件上的 `systemMessage` 是否显示给用户 | `warn` 给用户的那份 | 每个事件返回一条 | 认为 PreToolUse、PostToolUse、UserPromptSubmit、UserPromptExpansion 都显示 | 不显示的事件在适配器里去掉 `system-message` 能力，`warn` 只剩模型那句 | FINAL-06六类事件USER标记均可见；clear来源的SessionStart标记虽输出但用户未见，文档明确边界，不宣称所有来源均可见 |
 | U-T1 | resume、fork 之后，之前注入的文字是否还在上下文里（两家） | `sources` 的默认值 | 恢复后让模型复述 | resume 不注入、fork 注入 | fork 也保留 → 默认去掉 `fork`；Codex resume 不保留 → Codex 适配器把 `resume` 当 `startup` 处理 | Codex FINAL-07：resume/fork 的真实请求保留原 context；startup-only 探针没有补发，默认 sources 的 fork 条目按既定策略仍投递一次。Claude FINAL-07真实认证CLI也保留startup-only标记，resume无重注、fork默认规则投递一次；两家sources默认值均不改 |
 | U-T2 | 压缩后 hook 注入的文字是否被摘要保留 | `reinject_on_compact` 的默认值 | `/compact` 后复述 | 认为丢失（`system` 默认补发） | 保留 → 默认值是否改成 false 由用户决定 | Codex FINAL-07 实测：关闭 reinject 且 startup-only 的专用探针，compact 后 epoch=1、输出仍各一次，真实请求中两条动态标记均消失；支持保留补发默认值。Claude FINAL-07专用关闭补发探针也测到两标记消失：native手动compact边界3307→775、epoch1、历史输出仍各一次；不以模型复述替代请求核对 |
-| U-T3 | 估算器校准 | 误差范围、系数 | 固定 40 条中英各半规则，两家官方接口相同结构基线增量 | 不承诺误差范围 | 保留现有系数，真实校准后再议 | FINAL-09：语料/正文哈希、模型和请求摘要已固定，生产 CLI 估算已记录；两家官方 API key 缺失，真实计数均 0/40，保持待验；删除 CLI ±25% 未验证保证 |
+| U-T3 | 估算器校准 | 误差范围、系数 | 固定 40 条中英各半规则，两家官方接口相同结构基线增量 | 不承诺误差范围 | 保留现有系数，真实校准后再议 | FINAL-09：语料/正文哈希、模型和请求摘要已固定，生产 CLI 估算已记录；两家官方 API key 缺失，真实计数均 0/40，保持待验；删除 CLI ±25% 未验证保证。M2-ALT-01 补充两种具名本地编码与既有订阅 usage，不能替代官方校准；不阻塞 M2 关闭，后续有 key 再补。 |
 | U-T4 | 真实会话请求、规则注入/去重与总 usage | 成本模型参数、预算默认值 | stats 与原生 usage 分层统计 | 60 次请求、3 次触发；预算 400 / 1,200 / 600 | 有代表性数据再调默认值 | 已统计：FINAL-10 两条 Codex 路线各 17 会话/31 请求，Claude 历史会话 108 个带 usage 响应；累计快照及重复消息已去重。规则 token 仍为估算，验收负载不代表典型账单，默认值不变 |
 | U-T5 | 超限时两家如何处理 | `T003` 的严重程度 | 原生 raw hook 绕开 STYLE，分别记录完整/预览/丢弃/报错 | 保留 STYLE 保护 | 不影响通过 | FINAL-08：两家 STYLE T003 写入前拒绝；Codex SessionStart 12k/50k 与 PreToolUse 12k 实际落盘并传头尾预览及路径，文件逐字节等于 raw body；不等于静默丢弃。Claude2.1.300向本地协议stub的8组实际请求确认：9,999/10,000字符完整，10,001/12k/50k和prompt/pre/post12k均落盘预览，文件逐字节相等；无远程推理或官方token计数结论 |
 | U-T6 | OpenAI / Codex 的提示词缓存条件与 usage | 成本公式的适用范围 | 核对官方文档及真实 usage 字段 | 公式只作明确假设的比较 | 不影响通过 | 已核对：FINAL-10 记录官方资料、模型门槛/生命周期及 usage 字段；CLI 标注情景，不把自定义服务 usage 或规则估算当实际账单 |

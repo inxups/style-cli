@@ -156,4 +156,11 @@ PYTHONDONTWRITEBYTECODE=1 python3 testdata/manual/prepare_claude_m2_acceptance.p
 
 Claude 2.1.301 的 C1–C4 已通过。C1/D4 确认用户级 rules 发现，C2 核对真实原生 hook/matcher 和卸载后零触发，C3 核对生产每包规则/去重/加载顺序/六文件还原，C4/D5 核对样式切换并以回退方案生效关闭。六个独立交互会话均实际调用 first-party 模型，原始终端/会话在私有目录保留；四份白名单报告见测试矩阵。
 
-附加 `replay_requests` 未通过本次 native API blob 的哈希校验，未绕过校验，也未用作 C2/C3 的请求正文证据。C2/C3 按矩阵使用 `hook_success`、完整 fixture 的 `hook_additional_context`、`InstructionsLoaded`、原生 `instructions` 附件和卸载恢复。新 rules 的 compact 行为未在本轮声明。官方 token 计数需要独立 API key，订阅认证恢复不关闭该遗留；远端 CI 已由 M2-CI-01 在 Ubuntu/macOS 全部通过，M2 总文档收尾仍单列。
+附加 `replay_requests` 未通过本次 native API blob 的哈希校验，未绕过校验，也未用作 C2/C3 的请求正文证据。C2/C3 按矩阵使用 `hook_success`、完整 fixture 的 `hook_additional_context`、`InstructionsLoaded`、原生 `instructions` 附件和卸载恢复。新 rules 的 compact 行为未在本轮声明。官方 token 计数仍各 0/40，需要独立 API key，订阅认证恢复不关闭该遗留。M2 已完成并关闭，远端 Ubuntu/macOS CI 在 `154506f` 全部通过（run `39000483969`）；官方计数与 RV-01 作为非阻塞遗留保留。
+
+
+## 7. 无 API key 的补充验证与收尾
+
+用户于 2026-10-17 批准使用本地分词对照并沿用已有订阅会话，继续 M2 收尾。[M2-ALT-01](review/M2-ALT-01-2026-10-17.md) 固定同一 40 条语料、生产 CLI 估算和 tiktoken0.12.0 的两种具名编码；暖缓存禁用 Python 网络连接重跑逐字节一致。六个原生已验收 transcript 经摘要核对，八个真实 usage 响应只导出白名单统计，未新增请求。
+
+本地编码不假设当前模型映射，也不代表 Claude 官方计数；现有订阅会话不是受控 A/B，不相减计算规则成本。官方计数仍各0/40，生产估算系数不改、不提供误差范围保证。复现命令见 [采集器 README](../testdata/manual/README.md#无-api-key-的补充对照m2-alt-01)；最终文档、双平台 CI 与遗留交接见 [总验收报告](review/M2-DOCS-01-2026-10-17.json)。

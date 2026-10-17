@@ -4,7 +4,7 @@
 
 本文件记录 M2 测试矩阵和每项当前状态。测试通过必须有命令输出、fixture/golden 文件或真实环境记录作为证据。任务清单见 [STYLE-M2-TASKS.md](STYLE-M2-TASKS.md)，M1 测试矩阵已只读归档（[STYLE-M1-TESTS.md](STYLE-M1-TESTS.md)）。
 
-当前状态：M2-BASE-01、A1–A9 离线验收和 Codex B1–B4 已通过。2026-10-17 用户报告 Claude 恢复并授权 agent 通过交互终端代跑；既有隔离目录认证及真实请求成功，C1 的用户级 rules 加载通过。C4 样式界面通过，结论为回退方案生效；C2 native 与 C3 静态安装/卸载均通过，Claude C1–C4 已闭合。远端 Ubuntu/macOS CI 在 `2aded84` 全部通过（run `38999430973`）；官方计数仍 0/40，等待两家独立 API key。
+当前状态：M2 于 2026-10-17 完成并关闭。M2-BASE-01、A1–A9、Codex B1–B4 双路线、Claude C1–C4 与 D4/D5 均已按记录范围通过。补充本地编码/订阅 usage 的 M2-ALT-01 通过；`154506f` 的远端 Ubuntu/macOS CI（run `39000483969`）均通过 59 项采集器及其余全部检查，DOCS-01 总验收完成。两家官方计数仍各 0/40、M2-CARRY-01 待验；RV-01 非阻塞风险见任务清单，均未标为通过。
 
 ## 状态约定
 
@@ -44,7 +44,7 @@ env -u CODEX_HOME -u CODEX_SANDBOX \
 
 ## 遗留项
 
-- [?] **M2-CARRY-01**（原 M1 FINAL-09）：两家官方 token 计数接口对固定 40 条语料的同结构基线增量，与生产 CLI 估算逐条对照。当前两家 API key 缺失，0/40；有 key 时按 `testdata/manual/` README 重跑。证据：`docs/review/M1-FINAL-09-COUNTING-BLOCKED-2026-10-16.json`。
+- [?] **M2-CARRY-01**（原 M1 FINAL-09）：两家官方 token 计数接口对固定 40 条语料的同结构基线增量，与生产 CLI 估算逐条对照。两家 API key 缺失，仍各 0/40；用户批准 M2-ALT-01 补充验证并继续收尾，该补充不替代本项。M2 关闭时明确作为非阻塞遗留保留，后续有 key 按 `testdata/manual/` README 重跑。证据：`docs/review/M1-FINAL-09-COUNTING-BLOCKED-2026-10-16.json`。
 
 - [x] **M2-ALT-01**：固定中英各 20 条、生产 CLI 估算与两份具名本地编码对照完成；编码表 ID/字节摘要、语料/程序摘要固定，暖缓存禁用 Python 网络连接重跑逐字节相同。STYLE 合计 1,205，o200k_base 816、cl100k_base 972；逐条平均绝对相对偏差分别 49.8051% / 36.5474%，只描述该语料/编码，不构成模型误差保证。六个已验收的 Claude 订阅会话、八个真实 usage 响应摘要核对与白名单统计通过，未新增模型请求；59 项采集器通过。官方计数仍 0/40/家。证据：[替代验证报告](review/M2-ALT-01-2026-10-17.md)。
 
@@ -112,8 +112,8 @@ Codex 真实配置由 agent 执行，步骤见 M2-PREP 建立的 `docs/STYLE-M2-
 
 ## 持续集成与文档核对
 
-- [x] **M2-CI-01**：专用分支 `codex/m2-remote-ci-20261017` 的 GitHub Actions `38999430973`（`2aded84`）在 Ubuntu/macOS 全部 success：format、vet、双 module test、53 项采集器、build、40 项 smoke 和 12 组 replace 回退逐步骤通过。runner 实际为 ubuntu-24.04 / macos-26-arm64，Go 1.25.0；临时三缓存与 Codex 变量清理符合约定。首轮 `38999049830` 的两台 A2 失败保留：JSON 调用漏选 harness，空 HOME/PATH 下复现并修正测试后通过，生产代码/workflow 未变。证据：[CI 报告](review/M2-CI-01-2026-10-17.json)。
-- [~] **M2-DOCS-01**：已实现功能和 D4/D5、最终离线结果检查通过（DOCS-02/03），M2 修改过的当前文档链接/锚点/围栏已核对；Claude 最终结果和 DOCS-04 同步已通过；CI 最终结果已补齐；官方计数遗留及里程碑关闭说明仍待总项收尾。
+- [x] **M2-CI-01**：专用分支 `codex/m2-remote-ci-20261017` 的 GitHub Actions `38999430973`（`2aded84`）在 Ubuntu/macOS 全部 success：format、vet、双 module test、53 项采集器、build、40 项 smoke 和 12 组 replace 回退逐步骤通过。runner 实际为 ubuntu-24.04 / macos-26-arm64，Go 1.25.0；临时三缓存与 Codex 变量清理符合约定。首轮 `38999049830` 的两台 A2 失败保留：JSON 调用漏选 harness，空 HOME/PATH 下复现并修正测试后通过，生产代码/workflow 未变。证据：[CI 报告](review/M2-CI-01-2026-10-17.json)。 追加 M2-ALT-01 后，`154506f` 的 run `39000483969` 在两台 runner 再次全部 success，采集器增至 59 项，smoke 仍 40、回退仍 12；[总验收报告](review/M2-DOCS-01-2026-10-17.json) 记录完整元数据和日志断言。
+- [x] **M2-DOCS-01**：DOCS-02/03/04、Claude 最终事实、远端 CI、无 key 本地编码/订阅 usage 与遗留状态全部同步；M2 修改过的当前 Markdown 链接/锚点/围栏、JSON/私有来源摘要、源码树和只追加日志/只读归档核对通过。M2 完成并关闭，官方计数与 RV-01 保持原待验/风险状态。证据：[总验收报告](review/M2-DOCS-01-2026-10-17.json)。
 - [x] **M2-DOCS-03**：当前 rules/回退规范、教程/总览、C2/C3 手册、A1–A9 状态与证据 JSON 同步；全部本轮 M2 当前 Markdown 的本地链接/锚点/围栏和 diff-check 通过，M1 归档未改。见 `docs/PROGRESS.md` M2-A9/DOCS-03。
 - [x] **M2-DOCS-02**：教程 §4.4 新包 validate/两家 native-hook plan/install/uninstall 退出 0，原有配置字节与 0640 权限还原、Codex hooks 无残留；§10.4 三个 stats 示例为空记录成功，`--since 7d` 退出 1 且 stdout 为空。四份内容文档的 116 个本地链接/锚点和围栏通过；原有三处仓库未分发材料的失效链接改为明确的历史材料名。证据：[文档示例报告](review/M2-DOCS-02-2026-10-17.json)。仅本地 CLI 示例，不代替真实 harness 触发或 M2 最终回归。
 
