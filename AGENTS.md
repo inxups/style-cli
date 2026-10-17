@@ -2,8 +2,8 @@
 
 ## 任务记录
 
-- 当前里程碑的 `docs/STYLE-M<n>-TASKS.md` 是任务清单，`docs/STYLE-M<n>-TESTS.md` 是测试矩阵，`docs/PROGRESS.md` 是追加式证据日志。当前里程碑为 M2：`docs/STYLE-M2-TASKS.md`、`docs/STYLE-M2-TESTS.md`。
-- 已关闭里程碑的文档（如 `docs/STYLE-M1-*.md`）只读归档；遗留项和补充记录写进当前里程碑文档。
+- 当前里程碑的 `docs/STYLE-M<n>-TASKS.md` 是任务清单，`docs/STYLE-M<n>-TESTS.md` 是测试矩阵，`docs/PROGRESS.md` 是追加式证据日志。当前里程碑为 M3：`docs/STYLE-M3-TASKS.md`、`docs/STYLE-M3-TESTS.md`。
+- 已关闭里程碑的文档（如 `docs/STYLE-M1-*.md`、`docs/STYLE-M2-*.md`）只读归档；遗留项和补充记录写进当前里程碑文档。
 - 开始工作前先读取相关文档；完成一个任务或测试条目后，立即更新对应状态和证据。
 - 只能在有可重复命令、fixture、golden 文件或真实运行结果支撑时标记 `[x]`。阻塞、风险和等待真实环境验证分别使用约定的 `[~]`、`[!]`、`[?]`。
 - 文档是任务状态的持久记录，不依赖对话上下文。

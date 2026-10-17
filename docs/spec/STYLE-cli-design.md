@@ -2,7 +2,7 @@
 
 对应规范：[STYLE-spec.md](STYLE-spec.md)（v0.3）。规范定义包格式、运行时语义、token 预算、安全约束和 `index.json`；本文定义命令、本地布局、编译和运行时流程、Claude Code 与 Codex 两个适配器、token 估算器、fork 改动、里程碑、验收和未决项。冲突时，格式和语义以规范为准，实现细节以本文为准。
 
-状态（2026-10-17）：M1 已关闭并只读归档；M2 的 native、stats、跨包去重、Claude rules/迁移与 replace 回退已验收，Codex/Claude 真实环境、本地回归和最终 Ubuntu/macOS CI 均通过，M2 文档收尾完成并关闭。官方 token 计数仍各0/40；本地编码/订阅 usage 作为补充，不提供误差范围保证，RV-01 核心硬编码保留非阻塞风险。状态和证据以 [M2 任务清单](../STYLE-M2-TASKS.md)、[测试矩阵](../STYLE-M2-TESTS.md) 为准。当前仅支持 **Claude Code** 和 **Codex**；本文接口代码为设计示意，当前接口与职责见 [adapter 总览](../STYLE-ADAPTERS-CURRENT.md)。
+状态（2026-10-17）：M1、M2 已关闭并只读归档；M2 的 native、stats、跨包去重、Claude rules/迁移与 replace 回退已验收，Codex/Claude 真实环境、本地回归和最终 Ubuntu/macOS CI 均通过，历史证据见 [M2 任务清单](../STYLE-M2-TASKS.md)、[测试矩阵](../STYLE-M2-TESTS.md)。当前里程碑为 M3，任务、依赖和验收状态以 [M3 任务清单](../STYLE-M3-TASKS.md)、[测试矩阵](../STYLE-M3-TESTS.md) 为准；本轮建立文档，具体接口逐项设计定稿，尚未实现 M3 功能。官方 token 计数仍各 0/40，承接为 M3-CARRY-01 非阻塞待验；本地编码/订阅 usage 作为补充，不提供误差范围保证。核心硬编码风险承接为 M3-RV-01，用户已确定为 M3 前置必修，当前尚未修复。当前仅支持 **Claude Code** 和 **Codex**；本文接口代码为设计示意，当前接口与职责见 [adapter 总览](../STYLE-ADAPTERS-CURRENT.md)。
 
 **依据**：
 - agenthooks `3f734c7` 源码，历史整理资料为 `agenthooks-codex.md`（外部资料，本仓库未收录）；
@@ -814,6 +814,8 @@ F1–F4、F10 是安装和协议层的问题，最好也提给上游。F5–F9 �
 | M4 | 其他 harness（Gemini、OpenCode、Cursor、Copilot、Kimi…），每家一个适配器；资料见规范附录 A |
 
 M2 最终状态（2026-10-17）：native、stats、跨包语义去重与 Claude 每包 rules/旧布局迁移已实现，Codex B1–B4 在 user/plugin 两路线通过。output style 未开放 replace，D5 保留现有 fallback；Claude C1–C4 真实交互验收已通过，D4 符合预期、D5 回退方案生效。M2 本地最终回归、远端 Ubuntu/macOS CI（`154506f`，run `39000483969`，59 项采集器）和总文档验收通过，M2 完成并关闭。无 key 补充对照已完成；官方计数仍各0/40、RV-01 仍为非阻塞已知风险，下一步规划处理，详见 [M2 任务清单](../STYLE-M2-TASKS.md) 和 [测试矩阵](../STYLE-M2-TESTS.md)。
+
+M3 启动（2026-10-17）：用户已确认完整建档、按依赖分阶段推进；官方计数作为 M3-CARRY-01 继续待验，核心硬编码作为 M3-RV-01 由 M3-D0/M3-T00 前置处理。任务和测试入口见 [M3 任务清单](../STYLE-M3-TASKS.md)、[测试矩阵](../STYLE-M3-TESTS.md)。native 的 `async`/`onFailure`/非 command hook 另列设计评估，Windows 归属/命令语义随平台设计确定；本次建档不预先开放这些能力。
 
 ## 15. 未决项
 
