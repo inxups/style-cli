@@ -138,6 +138,9 @@ func (s *Service) prepareFrozen(ctx context.Context, request FrozenRequest) (p p
 	if err != nil {
 		return p, err
 	}
+	if lock.MinIndexFormat != minimumIndex(compilation.index.Format) {
+		return fail("minimum runtime requirement differs from the approved lock; use normal management to upgrade", nil)
+	}
 	p.result.Diagnostics = append(p.result.Diagnostics, compilation.diagnostics...)
 	for i, candidate := range tx.candidates {
 		current, err := approvalBytes(compilation, candidate.old.Name, candidate.item.pkg.Files, candidate.old.Source.Git)

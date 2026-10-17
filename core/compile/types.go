@@ -14,6 +14,7 @@ const (
 	RefreshFormat  = 2
 	EventFormat    = 3
 	ProviderFormat = 4
+	UnknownFormat  = 5
 )
 
 // PackageInfo identifies one installed package in the index. Seq is the

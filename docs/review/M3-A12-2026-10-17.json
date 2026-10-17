@@ -1,0 +1,731 @@
+{
+  "format": 1,
+  "task": "M3-T43",
+  "acceptance": "M3-A12",
+  "baseline": "8e1bf0e1507df502138f236b62e8fcb88468785a",
+  "date": "2026-10-17",
+  "status": "passed-offline",
+  "runner_source": "import json,os,subprocess,sys,time\nfrom pathlib import Path\nroot=Path('/tmp/style-m3-complete-20261017');name=sys.argv[1];cmd=sys.argv[2:];env=os.environ.copy()\nfor key in ['CLAUDE_CODE_USE_BEDROCK','CLAUDE_CODE_USE_VERTEX','CLAUDE_CODE_USE_FOUNDRY','CLAUDE_CODE_PROVIDER_MANAGED_BY_HOST','CLAUDE_CODE_HOST_MANAGED','ANTHROPIC_BASE_URL','ANTHROPIC_BEDROCK_BASE_URL','ANTHROPIC_VERTEX_BASE_URL','ANTHROPIC_FOUNDRY_BASE_URL','ANTHROPIC_AWS_BASE_URL','CLAUDE_CODE_USE_MANTLE','ANTHROPIC_AWS_USE_MANTLE','CLAUDE_CODE_USE_ANTHROPIC_AWS','CODEX_HOME','CODEX_SANDBOX','STYLE_HOME','CLAUDE_CONFIG_DIR','CLAUDE_CODE_CONFIG_DIR','CLAUDE_CODE_EFFORT_LEVEL','CLAUDE_EFFORT','CLAUDE_CODE_REMOTE','CLAUDE_PLUGIN_ROOT','PLUGIN_ROOT','STYLE_PERF','STYLE_PERF_OUTPUT','STYLE_M3_A6_RECORD','STYLE_UPDATE_GOLDENS','STYLE_REFRESH_HELPER','STYLE_REFRESH_TURN','STYLE_REFRESH_WORKER']:env.pop(key,None)\nfor key,value in {'GOPATH':'gopath','GOMODCACHE':'modcache','GOCACHE':'gocache'}.items():env[key]=str(Path('/tmp/style-m3-project-20261017')/value)\nenv['GOPROXY']='off';env['GOFLAGS']='-mod=readonly';env['GOWORK']='off';start=time.time()\nwith (root/(name+'.log')).open('wb') as f:p=subprocess.run(cmd,env=env,stdout=f,stderr=subprocess.STDOUT)\nresult={'command':cmd,'exit_code':p.returncode,'seconds':round(time.time()-start,3),'environment':{key:env[key] for key in ['GOPATH','GOMODCACHE','GOCACHE','GOPROXY','GOFLAGS','GOWORK']}}\n(root/(name+'.json')).write_text(json.dumps(result,indent=2)+'\\n');print(json.dumps(result))\nif p.returncode:\n lines=(root/(name+'.log')).read_text().splitlines();events=[]\n for line in lines:\n  try:events.append(json.loads(line))\n  except:pass\n failed=[v.get('Test') for v in events if v.get('Action')=='fail' and v.get('Test')]\n if failed:\n  for test in failed:print(test, ''.join(v.get('Output','') for v in events if v.get('Test')==test)[-2200:])\n else: print('\\n'.join(lines[-35:]))\nsys.exit(p.returncode)\n",
+  "source_sha256": {
+    "core/compile/build.go": "f56dc0162bcb73534f75df337f3c318f66142c57518249d5f4b906d6b7fdf977",
+    "core/compile/json.go": "ea51af140f3f50aa91bfd38b36e0c940da968ba59d5658b5b1df1a1b5a905718",
+    "core/compile/types.go": "8db9e7edf16e555da1b6c20e3e18c16429f23f8e01e2698a11560f453350bf14",
+    "core/compile/unknown_test.go": "3df37a35faf799bb53531d91c046dd7b5cf33d307dd0d5c9780471b49c466955",
+    "core/engine/load.go": "1a8fb40106903b645a43d46f7047200799baf89a6fe323ef09b95e6b29af80c0",
+    "core/engine/unknown_test.go": "0a701878d3edec4865b2eb6be6d91b8dfdf07406fa2d2d174b10b221fe44de46",
+    "core/plan/policy.go": "89394a0b8af192de6f7249419127f3c71ffef0233c490eb5ecec994b8ac64a74",
+    "core/plan/requirements.go": "a5396e674561fa4fb95d54cf1fc3d09dd6a9acd6d31e0f2a4b25a13be44a962f",
+    "core/plan/types.go": "c3b27d23c279cbe77df5911596b63a263430300a1ff967de9c32bfd159cdb719",
+    "core/plan/unknown_test.go": "9d72b80e3d11be20c2d26bfb506870092f9e2b704155d4b0945834502163d72f",
+    "core/spec/provider_test.go": "9ffdcddd3e834d56d522080618297de1a3ef1ca67f92c3ba140a974236b3168a",
+    "core/spec/unknown_test.go": "b9e98a31a7e67c3b2035c0eaccec06ae93ea3a540122183d390c37079dc2eb00",
+    "core/spec/validate_conditions.go": "9dcef24281c3b9724cf87290d5a6ed818fbc221f436330bebcdd3cb93da85a5a",
+    "core/spec/validate_template.go": "5ad5cb8c14ce213a8b964356bfe367d5fca62d31cc316e9063d02b4527f24bc2",
+    "core/when/effort.go": "7c29e94dfc9159181d36dc83b76af4e742c5312dcb95f9bf00de0c4fabfb40b1",
+    "core/when/match.go": "5e9524f1dd1a3afac0552e1a440b5cc7c1a6816b085ac10cd8ecb04e4555c64c",
+    "core/when/provider_test.go": "9bf7fc1026cbe96bf0b4a50f1ab8978734d89e231364deee28006f1dc790e0aa",
+    "core/when/unknown.go": "8a5212778e73ad776fb40762a0b2064edf232925cb3785bd7083c5d61a5a3b80",
+    "core/when/unknown_test.go": "f540bdd6a8f18b5af6d20a11e75a0e211165a90966667e5ebbbb0acd081cbe4f",
+    "internal/app/doctor.go": "efd5f9c0b038e89f49d6688d825d0cbd853735723cee18803168537bb77820a7",
+    "internal/app/frozen_prepare.go": "8bc8285fbdc5531870d94c5d6863c32f9c5ad94abb7f60be8e0511fd9e4c8e47",
+    "internal/app/lifecycle_store.go": "fdc43dae64a456f2b376f642ebfcb3b28ebc1f29b6664360df02b17874bcef30",
+    "internal/app/project.go": "b10400340aabb748c7192ab9cf7cb8e84a15dd884554ee85b42c04dac425da55",
+    "internal/app/runtime_minimum.go": "8ad985a29001fbc6157b81d792eb161682bf7aeba716850705cfb999fa2be790",
+    "internal/app/unknown_test.go": "0dde0efd1b5ad936357095fce3819487c748f328e0bbb4a2d7176f3b2900f015",
+    "schema/index.schema.json": "1df7dedc99d4204cac212134cb654c284f3cf460659ffd65c88957a1b6235536",
+    "scripts/check_m3_unknown.py": "138691076072175e496b79913e7c6508859bb00ea3e56c43728560ed891faa48"
+  },
+  "binary_sha256": "8b8d8c31463d0d7fe9ca12559a149880306336095da2685b1c55d86bc9d3c7fe",
+  "old_binary_sha256": "c8ce82ad5bf8b396597cc7043dfcb509868108c670b5d90e431b5073d39496b4",
+  "runs": [
+    {
+      "command": [
+        "go",
+        "test",
+        "./core/...",
+        "./internal/app",
+        "-run",
+        "^TestM3A1[12]",
+        "-count=1",
+        "-json"
+      ],
+      "exit_code": 0,
+      "seconds": 3.265,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "name": "a12-first",
+      "log_sha256": "4e929881d156757e58577ddfaba526dc080f087321af4a1b33f3dc9c2995e0e3",
+      "counts": {
+        "pass": 41
+      }
+    },
+    {
+      "command": [
+        "go",
+        "test",
+        "./core/...",
+        "-run",
+        "^TestM3A12",
+        "-count=1",
+        "-json"
+      ],
+      "exit_code": 0,
+      "seconds": 1.37,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "name": "a12-target1",
+      "log_sha256": "1ee924136c9ecf9502d526d21fcd41a465766f3ab069b491464367b2d275ae1a",
+      "counts": {
+        "pass": 47
+      }
+    },
+    {
+      "command": [
+        "go",
+        "test",
+        "./internal/app",
+        "-run",
+        "^TestM3A12",
+        "-count=1",
+        "-json"
+      ],
+      "exit_code": 1,
+      "seconds": 3.145,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "name": "a12-app1",
+      "log_sha256": "3cdc2dbfe975fce587b13e4d793b9dd2cdd3b3cb43d5d12f9c08d8ee2f9e9190",
+      "counts": {
+        "pass": 16,
+        "fail": 27
+      }
+    },
+    {
+      "command": [
+        "go",
+        "test",
+        "./core/...",
+        "./internal/app",
+        "-run",
+        "^TestM3A12",
+        "-count=1",
+        "-json"
+      ],
+      "exit_code": 0,
+      "seconds": 3.233,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "name": "a12-target2",
+      "log_sha256": "179320b1f7f4ce434631fc437a5e54337920766707eec7462daa56e29b0894e0",
+      "counts": {
+        "pass": 90
+      }
+    },
+    {
+      "command": [
+        "go",
+        "build",
+        "-o",
+        "/tmp/style-m3-complete-20261017/style-unknown",
+        "./cmd/style"
+      ],
+      "exit_code": 0,
+      "seconds": 0.638,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "name": "a12-build",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "counts": {}
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/check_m3_unknown.py",
+        "--binary",
+        "/tmp/style-m3-complete-20261017/style-unknown",
+        "--old-binary",
+        "/tmp/style-m3-complete-20261017/style-provider",
+        "--report",
+        "/tmp/style-m3-complete-20261017/a12-cli-report.json"
+      ],
+      "exit_code": 0,
+      "seconds": 5.965,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "name": "a12-cli1",
+      "log_sha256": "6b3e595daedae6528e6528161eae9c1007e480a0bd2a5d176ec3c6a185e1e02b",
+      "counts": {}
+    },
+    {
+      "command": [
+        "go",
+        "test",
+        "./...",
+        "-count=1",
+        "-json"
+      ],
+      "exit_code": 0,
+      "seconds": 109.545,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "name": "a12-root",
+      "log_sha256": "5f189286a51fd535b8f3b459bec9ee3d95a8c1d528726920d78a3708b8061241",
+      "counts": {
+        "pass": 3269,
+        "skip": 2
+      }
+    },
+    {
+      "command": [
+        "go",
+        "test",
+        "-race",
+        "./core/...",
+        "./internal/app",
+        "-run",
+        "^TestM3A12",
+        "-count=1",
+        "-json"
+      ],
+      "exit_code": 0,
+      "seconds": 7.776,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "name": "a12-race",
+      "log_sha256": "a407f465d552abeecc53501629b3209fb286e6a13e81d95db5ae9ae659b298eb",
+      "counts": {
+        "pass": 90
+      }
+    },
+    {
+      "command": [
+        "go",
+        "vet",
+        "./..."
+      ],
+      "exit_code": 0,
+      "seconds": 0.665,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "name": "a12-vet",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "counts": {}
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/check_m3_provider.py",
+        "--binary",
+        "/tmp/style-m3-complete-20261017/style-unknown",
+        "--old-binary",
+        "/tmp/style-m3-complete-20261017/style-event",
+        "--codex-ancestor",
+        "/tmp/style-m3-complete-20261017/codex-fixture",
+        "--report",
+        "/tmp/style-m3-complete-20261017/a12-provider-compat-report.json"
+      ],
+      "exit_code": 0,
+      "seconds": 4.596,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "name": "a12-provider-compat",
+      "log_sha256": "6b3e595daedae6528e6528161eae9c1007e480a0bd2a5d176ec3c6a185e1e02b",
+      "counts": {}
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/smoke.py",
+        "/tmp/style-m3-complete-20261017/style-unknown"
+      ],
+      "exit_code": 0,
+      "seconds": 1.399,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "name": "a12-smoke",
+      "log_sha256": "5039b6cbbaa0d673d3772dfa18b0e24352159e7f2ddf65dd8cdabcbff5e08b63",
+      "counts": {}
+    }
+  ],
+  "groups": [
+    {
+      "id": "A12-01",
+      "status": "passed",
+      "evidence": [
+        "core/when/unknown_test.go",
+        "internal/app/unknown_test.go:TestM3A12UnknownExplainCanonicalValuesAndSnapshot"
+      ]
+    },
+    {
+      "id": "A12-02",
+      "status": "passed",
+      "evidence": [
+        "core/when/unknown_test.go:TestM3A12UnknownComparisonsGlobAndUnchangedLiterals",
+        "core/spec/unknown_test.go"
+      ]
+    },
+    {
+      "id": "A12-03",
+      "status": "passed",
+      "evidence": [
+        "core/plan/unknown_test.go",
+        "core/spec/unknown_test.go",
+        "core/engine/unknown_test.go",
+        "internal/app/unknown_test.go"
+      ]
+    },
+    {
+      "id": "A12-04",
+      "status": "passed",
+      "evidence": [
+        "core/compile/unknown_test.go",
+        "internal/app/unknown_test.go:TestM3A12SixRouteUnknownLifecycleAndMarkerRemoval",
+        "internal/app/unknown_test.go:TestM3A12FrozenMarkerMismatchIsReadOnly",
+        "scripts/check_m3_unknown.py"
+      ]
+    }
+  ],
+  "cli": {
+    "format": 1,
+    "binary_sha256": "8b8d8c31463d0d7fe9ca12559a149880306336095da2685b1c55d86bc9d3c7fe",
+    "old_binary_sha256": "c8ce82ad5bf8b396597cc7043dfcb509868108c670b5d90e431b5073d39496b4",
+    "real_harness": false,
+    "cases": [
+      {
+        "route": "codex-user",
+        "action": "preview-zero-write",
+        "status": "passed"
+      },
+      {
+        "route": "codex-user",
+        "action": "index5-strict-lock-marker",
+        "status": "passed"
+      },
+      {
+        "route": "codex-user",
+        "action": "missing-empty-known-literal-readonly-explain-actual-codec-dedup",
+        "status": "passed"
+      },
+      {
+        "route": "codex-user",
+        "action": "actual-T42-runtime-six-management-commands-refuse-zero-write",
+        "status": "passed"
+      },
+      {
+        "route": "codex-user",
+        "action": "new-management-frozen-exact-lock-rebuild-doctor",
+        "status": "passed"
+      },
+      {
+        "route": "codex-user",
+        "action": "remove-last-unknown-clears-marker-old-manager-compatible",
+        "status": "passed"
+      },
+      {
+        "route": "codex-user",
+        "action": "uninstall",
+        "status": "passed"
+      },
+      {
+        "route": "codex-plugin",
+        "action": "preview-zero-write",
+        "status": "passed"
+      },
+      {
+        "route": "codex-plugin",
+        "action": "index5-strict-lock-marker",
+        "status": "passed"
+      },
+      {
+        "route": "codex-plugin",
+        "action": "missing-empty-known-literal-readonly-explain-actual-codec-dedup",
+        "status": "passed"
+      },
+      {
+        "route": "codex-plugin",
+        "action": "actual-T42-runtime-six-management-commands-refuse-zero-write",
+        "status": "passed"
+      },
+      {
+        "route": "codex-plugin",
+        "action": "new-management-frozen-exact-lock-rebuild-doctor",
+        "status": "passed"
+      },
+      {
+        "route": "codex-plugin",
+        "action": "remove-last-unknown-clears-marker-old-manager-compatible",
+        "status": "passed"
+      },
+      {
+        "route": "codex-plugin",
+        "action": "uninstall",
+        "status": "passed"
+      },
+      {
+        "route": "claude-user",
+        "action": "preview-zero-write",
+        "status": "passed"
+      },
+      {
+        "route": "claude-user",
+        "action": "index5-strict-lock-marker",
+        "status": "passed"
+      },
+      {
+        "route": "claude-user",
+        "action": "missing-empty-known-literal-readonly-explain-actual-codec-dedup",
+        "status": "passed"
+      },
+      {
+        "route": "claude-user",
+        "action": "actual-T42-runtime-six-management-commands-refuse-zero-write",
+        "status": "passed"
+      },
+      {
+        "route": "claude-user",
+        "action": "new-management-frozen-exact-lock-rebuild-doctor",
+        "status": "passed"
+      },
+      {
+        "route": "claude-user",
+        "action": "remove-last-unknown-clears-marker-old-manager-compatible",
+        "status": "passed"
+      },
+      {
+        "route": "claude-user",
+        "action": "uninstall",
+        "status": "passed"
+      },
+      {
+        "route": "codex-project",
+        "action": "preview-zero-write",
+        "status": "passed"
+      },
+      {
+        "route": "codex-project",
+        "action": "index5-strict-lock-marker",
+        "status": "passed"
+      },
+      {
+        "route": "codex-project",
+        "action": "missing-empty-known-literal-readonly-explain-actual-codec-dedup",
+        "status": "passed"
+      },
+      {
+        "route": "codex-project",
+        "action": "actual-T42-runtime-six-management-commands-refuse-zero-write",
+        "status": "passed"
+      },
+      {
+        "route": "codex-project",
+        "action": "new-management-frozen-exact-lock-rebuild-doctor",
+        "status": "passed"
+      },
+      {
+        "route": "codex-project",
+        "action": "remove-last-unknown-clears-marker-old-manager-compatible",
+        "status": "passed"
+      },
+      {
+        "route": "codex-project",
+        "action": "uninstall",
+        "status": "passed"
+      },
+      {
+        "route": "claude-project",
+        "action": "preview-zero-write",
+        "status": "passed"
+      },
+      {
+        "route": "claude-project",
+        "action": "index5-strict-lock-marker",
+        "status": "passed"
+      },
+      {
+        "route": "claude-project",
+        "action": "missing-empty-known-literal-readonly-explain-actual-codec-dedup",
+        "status": "passed"
+      },
+      {
+        "route": "claude-project",
+        "action": "actual-T42-runtime-six-management-commands-refuse-zero-write",
+        "status": "passed"
+      },
+      {
+        "route": "claude-project",
+        "action": "new-management-frozen-exact-lock-rebuild-doctor",
+        "status": "passed"
+      },
+      {
+        "route": "claude-project",
+        "action": "remove-last-unknown-clears-marker-old-manager-compatible",
+        "status": "passed"
+      },
+      {
+        "route": "claude-project",
+        "action": "uninstall",
+        "status": "passed"
+      }
+    ]
+  },
+  "provider_compatibility": {
+    "format": 1,
+    "binary_sha256": "8b8d8c31463d0d7fe9ca12559a149880306336095da2685b1c55d86bc9d3c7fe",
+    "old_binary_sha256": "2e8ed5b9d5e687f162f1961dcb3b89f262aaa347bcd9c73c36e64bf250486630",
+    "real_harness": false,
+    "cases": [
+      {
+        "route": "codex-user",
+        "action": "preview-zero-write",
+        "status": "passed"
+      },
+      {
+        "route": "codex-user",
+        "action": "dynamic-index4",
+        "status": "passed"
+      },
+      {
+        "route": "codex-user",
+        "action": "configured-hook-service-selector-default-conflict-readonly-explain-dedup",
+        "status": "passed",
+        "modes": 2
+      },
+      {
+        "route": "codex-user",
+        "action": "state-stats-no-endpoint",
+        "status": "passed"
+      },
+      {
+        "route": "codex-user",
+        "action": "actual-old-runtime-and-management-refuse-zero-write",
+        "status": "passed"
+      },
+      {
+        "route": "codex-user",
+        "action": "new-management-frozen-rebuild-and-doctor",
+        "status": "passed"
+      },
+      {
+        "route": "codex-user",
+        "action": "uninstall",
+        "status": "passed"
+      },
+      {
+        "route": "codex-plugin",
+        "action": "preview-zero-write",
+        "status": "passed"
+      },
+      {
+        "route": "codex-plugin",
+        "action": "dynamic-index4",
+        "status": "passed"
+      },
+      {
+        "route": "codex-plugin",
+        "action": "configured-hook-service-selector-default-conflict-readonly-explain-dedup",
+        "status": "passed",
+        "modes": 2
+      },
+      {
+        "route": "codex-plugin",
+        "action": "state-stats-no-endpoint",
+        "status": "passed"
+      },
+      {
+        "route": "codex-plugin",
+        "action": "actual-old-runtime-and-management-refuse-zero-write",
+        "status": "passed"
+      },
+      {
+        "route": "codex-plugin",
+        "action": "new-management-frozen-rebuild-and-doctor",
+        "status": "passed"
+      },
+      {
+        "route": "codex-plugin",
+        "action": "uninstall",
+        "status": "passed"
+      },
+      {
+        "route": "claude-user",
+        "action": "preview-zero-write",
+        "status": "passed"
+      },
+      {
+        "route": "claude-user",
+        "action": "dynamic-index4",
+        "status": "passed"
+      },
+      {
+        "route": "claude-user",
+        "action": "configured-hook-service-selector-default-conflict-readonly-explain-dedup",
+        "status": "passed",
+        "modes": 6
+      },
+      {
+        "route": "claude-user",
+        "action": "state-stats-no-endpoint",
+        "status": "passed"
+      },
+      {
+        "route": "claude-user",
+        "action": "actual-old-runtime-and-management-refuse-zero-write",
+        "status": "passed"
+      },
+      {
+        "route": "claude-user",
+        "action": "new-management-frozen-rebuild-and-doctor",
+        "status": "passed"
+      },
+      {
+        "route": "claude-user",
+        "action": "uninstall",
+        "status": "passed"
+      },
+      {
+        "route": "codex-project",
+        "action": "preview-zero-write",
+        "status": "passed"
+      },
+      {
+        "route": "codex-project",
+        "action": "dynamic-index4",
+        "status": "passed"
+      },
+      {
+        "route": "codex-project",
+        "action": "configured-hook-service-selector-default-conflict-readonly-explain-dedup",
+        "status": "passed",
+        "modes": 2
+      },
+      {
+        "route": "codex-project",
+        "action": "state-stats-no-endpoint",
+        "status": "passed"
+      },
+      {
+        "route": "codex-project",
+        "action": "actual-old-runtime-and-management-refuse-zero-write",
+        "status": "passed"
+      },
+      {
+        "route": "codex-project",
+        "action": "new-management-frozen-rebuild-and-doctor",
+        "status": "passed"
+      },
+      {
+        "route": "codex-project",
+        "action": "uninstall",
+        "status": "passed"
+      },
+      {
+        "route": "claude-project",
+        "action": "preview-zero-write",
+        "status": "passed"
+      },
+      {
+        "route": "claude-project",
+        "action": "dynamic-index4",
+        "status": "passed"
+      },
+      {
+        "route": "claude-project",
+        "action": "configured-hook-service-selector-default-conflict-readonly-explain-dedup",
+        "status": "passed",
+        "modes": 6
+      },
+      {
+        "route": "claude-project",
+        "action": "state-stats-no-endpoint",
+        "status": "passed"
+      },
+      {
+        "route": "claude-project",
+        "action": "actual-old-runtime-and-management-refuse-zero-write",
+        "status": "passed"
+      },
+      {
+        "route": "claude-project",
+        "action": "new-management-frozen-rebuild-and-doctor",
+        "status": "passed"
+      },
+      {
+        "route": "claude-project",
+        "action": "uninstall",
+        "status": "passed"
+      }
+    ]
+  },
+  "failures_retained": {
+    "a12-app1": "New snapshot fixture accidentally inspected an empty path for cases without seed state. Assigned an isolated empty state directory for every replay. Production code was unchanged by this correction."
+  },
+  "compatibility": "Index5 and strict optional min_index_format5; old T42 binary rejects runtime and sync/update/trust/frozen/install/uninstall with zero writes. Removing last unknown clears marker and permits actual T42 sync again. Historical A11 test assertions now permit the newly supported selector, but data IDs still reserve unknown; historical evidence is immutable. Original testdata, dependency files and agenthooks unchanged.",
+  "verification_boundary": "Fresh whole root module plus focused race and vet; agenthooks unchanged, no claim of a new agenthooks run. Built CLI/version stubs/native codecs are offline fixtures, not real harness delivery.",
+  "remaining": "Continue D7/T44 and later M3 tasks. Real B3/C5 pending; user-deferred C3/W1/Anthropic API stay [?]; official calibration each 0/40."
+}

@@ -1870,3 +1870,11 @@ PY
 - 从 clean `c865ef97ac05edf128d2bdb679ce5bd5dfe04366` 对实际 T42 二进制运行[四项探针](review/M3-D6-UNKNOWN-COMPAT-2026-10-17.json)：format 4 中 model: unknown 只匹配原始字面量，不匹配缺值；旧 sync 还会重编译成 format 1。这是实际观察，不是根据源码推测。
 - 据此修订已批准 D6：provider 维持 index 4，unknown 独立使用 index 5；锁按需增加 min_index_format: 5，普通用户锁升既有严格 format 2，项目/插件仍 3。探针确认旧管理器在严格锁标记前零写入拒绝。无新语法不加字段，移除最后一条后清标记；frozen 不升级锁。用户已批准全部设计，直接按修订继续 T43，无需再次确认。
 - 本次仅文档/探针证据，T43/A12 仍待实现；检查链接/围栏、追加日志/历史归档原样及 diff，见[修订检查](review/M3-D6-UNKNOWN-DOCS-2026-10-17.json)。
+
+## 2026-10-17 M3-T43 / M3-A12 unknown 匹配
+
+- 基线 `8e1bf0e`，四字段显式 unknown 匹配 canonical 缺失/空值；单字段 OR、跨字段 AND，模型 glob/effort 比较与其他字段原有语义保持。未知 raw effort、已缓存已知 model/effort、两家原 codec 的 explain、缺值 trace、reads 和模板 presence 推断有固定测试。plan 保留有意匹配缺值的规则，needs 不遗漏。
+- 新产物 index 5，schema/严格 JSON/engine constructor 共同拒绝旧格式的新语义；混合 refresh/event/provider 取最高格式。按完整编译计算严格锁 min_index_format: 5，用户普通锁最低 2、项目/Claude 插件仍 3；六路线 install/sync/update/frozen/doctor、移除最后 unknown 清标记与 cloud bundle 覆盖。frozen 缺标记/非法标记零写入失败。
+- [A12 报告](review/M3-A12-2026-10-17.json)固定源码/二进制和命令：10 个新函数，专项及 race 各 90 pass；根 module fresh test 3,269 pass/0 fail，2 项既有 opt-in/helper skip 单列；vet、35 unknown CLI、35 provider 兼容 CLI 与 40 smoke 通过。实际 T42 二进制运行入口及 sync/update/trust/frozen/install/uninstall 拒绝新语义且文件不变；清标记后实际旧 sync 可运行。Go 沿临时三缓存和外部环境清理，全量本机 TLS 来源 fixture 按既有授权放行。agenthooks/依赖/旧 testdata 未改，没有重复宣称运行未变的 module。
+- 新 snapshot fixture 首轮对无 seed 的空路径做 lstat，修正为隔离空状态目录后重跑；失败摘要保留，生产代码不因此更改。A11 的两项当前断言随支持 unknown 选择器前移，provider 数据 ID 仍拒绝保留字；历史 A11 报告不改。
+- [文档检查](review/M3-A12-DOCS-2026-10-17.json)核对链接/锚点/围栏、PROGRESS 仅追加、归档/历史 JSON/旧 testdata 原样、格式与 diff。仅关闭 T43/A12，继续 D7/T44。真实 B3/C5 尚待后续；用户延期 C3、W1/REAL-04、Anthropic 独立 API 及两家各 0/40 非阻塞官方计数保持。

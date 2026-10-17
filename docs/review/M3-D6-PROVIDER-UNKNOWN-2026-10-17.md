@@ -54,9 +54,9 @@ provider 条件/变量整体采用 index format 4；unknown 在独立 T43 交付
 | A11-04 | [x] | 按需解析、会话缓存及新会话、state/snapshot、两家实际 codec 和来源 trace |
 | A11-05 | [x] | 离线 explain facts 绑定、无环境/配置泄漏、缺事实不偷读、普通输出一致 |
 | A11-06 | [x] | index 4/schema/严格旧格式门禁、真旧 runner、生命周期/refresh/event/旧 golden 与 CLI |
-| A12-01 | [ ] | 四字段缺失/空/非空、未知 effort 原值、列表 OR/跨字段 AND |
-| A12-02 | [ ] | 模型 glob/effort 比较、其他字段和否定条件不扩展 |
-| A12-03 | [ ] | plan 不错误移除缺值规则、reads 与 var-no-default、compile/engine/trace/explain 一致 |
-| A12-04 | [ ] | format 5/锁标记和旧缺值兼容、fixture/golden 与 built CLI；真实 B3/C5 后续独立 |
+| A12-01 | [x] | 四字段缺失/空/非空、未知 effort 原值、列表 OR/跨字段 AND |
+| A12-02 | [x] | 模型 glob/effort 比较、其他字段和否定条件不扩展 |
+| A12-03 | [x] | plan 不错误移除缺值规则、reads 与 var-no-default、compile/engine/trace/explain 一致 |
+| A12-04 | [x] | format 5/锁标记和旧缺值兼容、fixture/golden 与 built CLI；真实 B3/C5 后续独立 |
 
-T42/A11 六组均通过[验收报告](M3-A11-2026-10-17.json)，具体接口见[使用说明](../STYLE-PROVIDER.md)。A12 四组仍待实施，真实投递未据此关闭。
+T42/A11 六组均通过[验收报告](M3-A11-2026-10-17.json)，具体接口见[使用说明](../STYLE-PROVIDER.md)。A12 四组也通过[离线验收](M3-A12-2026-10-17.json)，见[缺值说明](../STYLE-UNKNOWN.md)；真实投递未据此关闭。

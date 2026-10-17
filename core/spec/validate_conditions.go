@@ -55,7 +55,7 @@ func (v *validator) validateWhen(value any, rule Rule, source string) {
 				v.add("invalid-schema", source, "when.provider must be a string or list of strings")
 			} else {
 				for _, id := range stringValues(item) {
-					if !stylewhen.ValidProviderID(id) {
+					if id != "unknown" && !stylewhen.ValidProviderID(id) {
 						v.add("bad-provider-id", source, "when.provider requires bounded service identifiers")
 					}
 				}
@@ -98,7 +98,7 @@ func validEffortExpression(value any) bool {
 			level := strings.TrimSpace(text[2:])
 			return effortLevels[level]
 		}
-		return effortLevels[text] || text == "open"
+		return effortLevels[text] || text == "open" || text == "unknown"
 	}
 	values, ok := value.([]any)
 	if !ok || len(values) == 0 {
@@ -110,7 +110,7 @@ func validEffortExpression(value any) bool {
 			return false
 		}
 		level = strings.ToLower(strings.TrimSpace(level))
-		if !effortLevels[level] && level != "open" {
+		if !effortLevels[level] && level != "open" && level != "unknown" {
 			return false
 		}
 	}

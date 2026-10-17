@@ -22,7 +22,7 @@ when:
 - **组合**：同一字段的多个值是"或"，不同字段之间是"且"。**所有条件都满足才注入**，没有"任一满足"的写法。
 - **取不到就不满足**：某个条件需要的数据这次取不到（harness 没给、档位为空、`tool.added` 在这个工具上不存在），这个条件算不满足，规则不触发。安装时 plan 按第 6 节的表提前告警，例如"Codex 上没配置 `model_reasoning_effort` 时，规则 X 永远不会触发"。
 - **`model`**：glob，不区分大小写，匹配 **harness 报告的模型字符串**（STYLE 分不清别名）。`*` 不跨 `/`；`**/` 前缀匹配零段或多段，所以 `**/claude-*` 既匹配 `claude-opus-5-5`，也匹配 `anthropic/claude-x`。
-- **`provider`**：M3-T42 已按 [D6](../review/M3-D6-PROVIDER-UNKNOWN-2026-10-17.md)实现可核验的模型服务配置请求。单值/列表按大小写精确匹配，须 reads.provider；动态模板同名。缺值不满足，不能由模型名/harness/URL 猜测。来源限制见[说明](../STYLE-PROVIDER.md)，unknown 由 T43 单独实施。
+- **`provider`**：M3-T42 已按 [D6](../review/M3-D6-PROVIDER-UNKNOWN-2026-10-17.md)实现可核验的模型服务配置请求。单值/列表按大小写精确匹配，须 reads.provider；动态模板同名。缺值不满足，不能由模型名/harness/URL 猜测。来源限制见[说明](../STYLE-PROVIDER.md)，显式 unknown 缺值语义见[说明](../STYLE-UNKNOWN.md)。
 - **`thinking_effort`**：写法只有四种：单值（`high`）、列表（`[minimal, low]`）、`>=档位`、`<=档位`，不区分大小写；其他写法报错 `bad-effort-expr`。别名（如 `ultra`）不能写在 `when` 里，只在映射层用。取值和比较规则见 4.2。
 - **`thinking_effort_approx`**：`true` / `false`，要求档位是或不是近似值。M1 两个适配器的已知映射均为 `false`；未知档位同时清除 approx，不沿用旧值。字段留给以后的预算型 harness。
 - **`harness.name`**：由当前 Service 的注册表提供合法名称全集，当前生产默认注册 `claude-code`、`codex`，与 `requires.harness`、`recommends` 一致，按 canonical ID 精确匹配；不从全部 agenthooks Provider 常量或本机检测结果推导。M3-T00 已于 2026-10-17 实现并通过 M3-A0，接口和兼容选择见 [设计 §3.1](STYLE-cli-design.md#31-m3-d0-注册表校验边界)。`harness.permission_mode` 继续使用 harness 原生取值，reads 与缺值匹配行为不变。
@@ -319,4 +319,4 @@ D5 模板字段/可用事件沿 §4 条件字段定义；`reads.event` 精确列
 
 ## M3-D6 provider 与 unknown
 
-[D6 契约](../review/M3-D6-PROVIDER-UNKNOWN-2026-10-17.md)规定 Codex 明确启动参数或文件 profile/用户层，provider 排除项目层，不照搬 effort；Claude 使用服务环境白名单，托管/自定义端点/冲突为缺值。只解析显式需要的 provider，来源固定码；explain 仅用绑定事实。unknown 只在 model/provider/thinking_effort/harness.permission_mode 显式匹配空 canonical 值，普通规则缺值不满足。使用 index 4；T42/A11 已通过[离线验收](../review/M3-A11-2026-10-17.json)，T43/A12 尚待实现。
+[D6 契约](../review/M3-D6-PROVIDER-UNKNOWN-2026-10-17.md)规定 Codex 明确启动参数或文件 profile/用户层，provider 排除项目层，不照搬 effort；Claude 使用服务环境白名单，托管/自定义端点/冲突为缺值。只解析显式需要的 provider，来源固定码；explain 仅用绑定事实。unknown 只在 model/provider/thinking_effort/harness.permission_mode 显式匹配空 canonical 值，普通规则缺值不满足。provider 使用 index 4，unknown 使用 index 5 与按需严格锁标记；T42/A11 和 T43/A12 均通过离线验收。四字段列表/缺值/缓存和旧版本保护见[说明](../STYLE-UNKNOWN.md)与[A12 证据](../review/M3-A12-2026-10-17.json)。

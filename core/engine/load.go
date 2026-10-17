@@ -80,6 +80,9 @@ func newValidated(index compile.Index, store *state.Store) (*Engine, error) {
 				if entry.Refresh > 0 && (index.Format < compile.RefreshFormat || entry.Repeat != "session" || entry.Action == "block" || point == "subagent.start") {
 					return nil, fmt.Errorf("engine: invalid refresh policy")
 				}
+				if entry.When.UsesUnknown() && index.Format < compile.UnknownFormat {
+					return nil, fmt.Errorf("engine: explicit unknown requires index format 5")
+				}
 				if entry.HasProvider() && index.Format < compile.ProviderFormat {
 					return nil, fmt.Errorf("engine: provider requires index format 4")
 				}

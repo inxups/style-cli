@@ -6,6 +6,7 @@ import (
 
 	"github.com/inxups/style-cli/core/spec"
 	"github.com/inxups/style-cli/core/template"
+	stylewhen "github.com/inxups/style-cli/core/when"
 )
 
 const (
@@ -64,19 +65,31 @@ func RequirementFor(rule spec.Rule) (Requirement, error) {
 	if _, exists := when["provider"]; exists {
 		requirement.ProviderCondition = true
 		requirement.Needs = append(requirement.Needs, "provider")
-		requirement.ConditionNeeds = append(requirement.ConditionNeeds, "provider")
+		if stylewhen.AllowsUnknown("provider", when["provider"]) {
+			requirement.UnknownNeeds = append(requirement.UnknownNeeds, "provider")
+		} else {
+			requirement.ConditionNeeds = append(requirement.ConditionNeeds, "provider")
+		}
 	}
 	requirement.Needs = append(requirement.Needs, "agent")
 	requirement.ConditionNeeds = append(requirement.ConditionNeeds, "agent")
 	if value, exists := when["model"]; exists {
 		if value != nil {
 			requirement.Needs = append(requirement.Needs, "model")
-			requirement.ConditionNeeds = append(requirement.ConditionNeeds, "model")
+			if stylewhen.AllowsUnknown("model", when["model"]) {
+				requirement.UnknownNeeds = append(requirement.UnknownNeeds, "model")
+			} else {
+				requirement.ConditionNeeds = append(requirement.ConditionNeeds, "model")
+			}
 		}
 	}
 	if _, exists := when["thinking_effort"]; exists {
 		requirement.Needs = append(requirement.Needs, "thinking_effort")
-		requirement.ConditionNeeds = append(requirement.ConditionNeeds, "thinking_effort")
+		if stylewhen.AllowsUnknown("thinking_effort", when["thinking_effort"]) {
+			requirement.UnknownNeeds = append(requirement.UnknownNeeds, "thinking_effort")
+		} else {
+			requirement.ConditionNeeds = append(requirement.ConditionNeeds, "thinking_effort")
+		}
 	}
 	if _, exists := when["thinking_effort_approx"]; exists {
 		requirement.Needs = append(requirement.Needs, "thinking_effort_approx")
@@ -88,7 +101,11 @@ func RequirementFor(rule spec.Rule) (Requirement, error) {
 	}
 	for key := range stringMap(when["harness"]) {
 		requirement.Needs = append(requirement.Needs, "harness."+key)
-		requirement.ConditionNeeds = append(requirement.ConditionNeeds, "harness."+key)
+		if stylewhen.AllowsUnknown("harness."+key, stringMap(when["harness"])[key]) {
+			requirement.UnknownNeeds = append(requirement.UnknownNeeds, "harness."+key)
+		} else {
+			requirement.ConditionNeeds = append(requirement.ConditionNeeds, "harness."+key)
+		}
 	}
 	if conditions, ok := when["conditions"].([]any); ok {
 		for _, condition := range conditions {

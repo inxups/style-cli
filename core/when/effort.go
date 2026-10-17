@@ -26,7 +26,7 @@ func ExpandEffort(value any) ([]string, error) {
 			}
 			return append([]string(nil), effortTiers[:index+1]...), nil
 		}
-		if text == "open" || effortIndex(text) >= 0 {
+		if text == "open" || text == "unknown" || effortIndex(text) >= 0 {
 			return []string{text}, nil
 		}
 		return nil, fmt.Errorf("unknown effort tier %q", text)
@@ -40,7 +40,7 @@ func ExpandEffort(value any) ([]string, error) {
 	}
 	for i := range values {
 		values[i] = strings.ToLower(strings.TrimSpace(values[i]))
-		if values[i] != "open" && effortIndex(values[i]) < 0 {
+		if values[i] != "open" && values[i] != "unknown" && effortIndex(values[i]) < 0 {
 			return nil, fmt.Errorf("unknown effort tier %q", values[i])
 		}
 	}

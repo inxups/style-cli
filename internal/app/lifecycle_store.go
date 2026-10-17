@@ -26,10 +26,11 @@ const (
 )
 
 type lockDocument struct {
-	Project   *projectBinding        `yaml:"project,omitempty"`
-	Format    int                    `yaml:"format"`
-	Packages  []lockPackage          `yaml:"packages"`
-	Harnesses map[string]lockHarness `yaml:"harnesses,omitempty"`
+	MinIndexFormat int                    `yaml:"min_index_format,omitempty"`
+	Project        *projectBinding        `yaml:"project,omitempty"`
+	Format         int                    `yaml:"format"`
+	Packages       []lockPackage          `yaml:"packages"`
+	Harnesses      map[string]lockHarness `yaml:"harnesses,omitempty"`
 }
 
 type lockPackage struct {
@@ -104,6 +105,9 @@ func decodeLock(data []byte) (lockDocument, error) {
 	if document.Format != lockFormat && document.Format != gitLockFormat && document.Format != projectLockFormat {
 		return lockDocument{}, fmt.Errorf("unsupported lock format %d", document.Format)
 	}
+	if document.MinIndexFormat != 0 && (document.Format < gitLockFormat || !validMinimumIndex(document.MinIndexFormat)) {
+		return lockDocument{}, fmt.Errorf("invalid minimum runtime index requirement")
+	}
 	decoder := yaml.NewDecoder(bytes.NewReader(data))
 	decoder.KnownFields(document.Format >= gitLockFormat)
 	var checked lockDocument
@@ -170,6 +174,9 @@ var lockedNamePattern = regexp.MustCompile(`^[a-z0-9][a-z0-9-]{0,63}$`)
 var lockedHashPattern = regexp.MustCompile(`^sha256:[0-9a-f]{64}$`)
 
 func writeLock(home string, document lockDocument) error {
+	if document.MinIndexFormat != 0 && document.Format < gitLockFormat {
+		document.Format = gitLockFormat
+	}
 	if document.Format == 0 {
 		document.Format = lockFormat
 	}

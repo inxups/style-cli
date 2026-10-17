@@ -1,6 +1,9 @@
 package plan
 
-import "strings"
+import (
+	"slices"
+	"strings"
+)
 
 type eventResult struct {
 	placement   Placement
@@ -20,7 +23,11 @@ func evaluate(req Requirement, adapter Adapter, event string) eventResult {
 	}
 	for _, need := range req.Needs {
 		if !hard[need] && !adapter.DataSource(event, need) {
-			p.Warnings = append(p.Warnings, "runtime value "+need+" is unavailable; its template default or empty text will be used")
+			if slices.Contains(req.UnknownNeeds, need) {
+				p.Warnings = append(p.Warnings, "runtime value "+need+" is unavailable; its explicit unknown selector may match")
+			} else {
+				p.Warnings = append(p.Warnings, "runtime value "+need+" is unavailable; its template default or empty text will be used")
+			}
 		}
 	}
 	if len(p.MissingData) > 0 {

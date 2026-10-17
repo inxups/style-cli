@@ -107,6 +107,7 @@ type Requirement struct {
 	AnyCapabilities   []Capability
 	Needs             []string
 	ConditionNeeds    []string
+	UnknownNeeds      []string
 	Fallback          string
 	Mode              string
 	Repeat            string

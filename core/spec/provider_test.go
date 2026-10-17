@@ -14,7 +14,7 @@ func TestM3A11ProviderReadsAndValidation(t *testing.T) {
 		{"wrong type", "reads: {provider: [openai]}\n", "  - {id: r, target: system, text: ok}\n", "invalid-schema"},
 		{"unused", "reads: {provider: true}\n", "  - {id: r, target: system, text: ok}\n", "reads-unused"},
 		{"URL", "reads: {provider: true}\n", "  - {id: r, target: system, when: {provider: 'https://private.invalid'}, text: ok}\n", "bad-provider-id"},
-		{"reserved unknown", "reads: {provider: true}\n", "  - {id: r, target: system, when: {provider: unknown}, text: ok}\n", "bad-provider-id"},
+		{"explicit unknown", "reads: {provider: true}\n", "  - {id: r, target: system, when: {provider: unknown}, text: ok}\n", ""},
 		{"unconditional warning", "reads: {provider: true}\n", "  - {id: r, target: system, text: '{{provider}}'}\n", "var-no-default"},
 		{"default", "reads: {provider: true}\n", "  - {id: r, target: system, text: '{{provider | default: \"missing\"}}'}\n", ""},
 	} {

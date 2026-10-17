@@ -25,7 +25,7 @@ func Compile(rule Rule) (*Matcher, error) {
 		}
 	}
 	for _, id := range rule.Provider {
-		if !ValidProviderID(id) {
+		if id != "unknown" && !ValidProviderID(id) {
 			return nil, fmt.Errorf("when.provider: invalid service identifier")
 		}
 	}
@@ -93,23 +93,23 @@ func (m *Matcher) match(input Input, checks *[]Check) bool {
 				}
 			}
 			result := "pass"
-			if !available {
+			if !available && !matched {
 				result = "missing-data"
 			} else if !matched {
 				result = "predicate-false"
 			}
 			*checks = append(*checks, Check{Field: field, Available: available, Result: result, Source: source})
 		}
-		return available && matched
+		return matched
 	}
 	rule := m.rule
-	if rule.Provider != nil && !check("provider", input.Provider != "", input.Provider != "" && contains(rule.Provider, input.Provider)) {
+	if rule.Provider != nil && !check("provider", input.Provider != "", matchSelector("provider", rule.Provider, input.Provider)) {
 		return false
 	}
-	if rule.Model != nil && !check("model", input.Model != "", input.Model != "" && anyModelMatches(rule.Model, input.Model)) {
+	if rule.Model != nil && !check("model", input.Model != "", matchSelector("model", rule.Model, input.Model)) {
 		return false
 	}
-	if rule.ThinkingEffort != nil && !check("thinking_effort", input.ThinkingEffort != "", input.ThinkingEffort != "" && containsFold(rule.ThinkingEffort, input.ThinkingEffort)) {
+	if rule.ThinkingEffort != nil && !check("thinking_effort", input.ThinkingEffort != "", matchSelector("thinking_effort", rule.ThinkingEffort, input.ThinkingEffort)) {
 		return false
 	}
 	if rule.ThinkingEffortApprox != nil && !check("thinking_effort_approx", input.ThinkingEffortApprox != nil, input.ThinkingEffortApprox != nil && *rule.ThinkingEffortApprox == *input.ThinkingEffortApprox) {
@@ -117,7 +117,11 @@ func (m *Matcher) match(input Input, checks *[]Check) bool {
 	}
 	for _, key := range m.harnessKeys {
 		actual, ok := input.Harness[key]
-		if !check("harness."+key, ok && actual != "", ok && actual != "" && contains(rule.Harness[key], actual)) {
+		matched := ok && actual != "" && contains(rule.Harness[key], actual)
+		if key == "permission_mode" {
+			matched = matchSelector("harness.permission_mode", rule.Harness[key], actual)
+		}
+		if !check("harness."+key, ok && actual != "", matched) {
 			return false
 		}
 	}

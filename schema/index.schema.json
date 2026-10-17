@@ -5,9 +5,9 @@
   "type": "object",
   "required": ["format", "style_version", "packages", "static", "harnesses"],
   "additionalProperties": false,
-  "allOf": [{"if": {"properties": {"format": {"const": 1}}}, "then": {"properties": {"harnesses": {"additionalProperties": {"additionalProperties": {"items": {"not": {"required": ["refresh"]}}}}}}}}, {"if": {"properties": {"format": {"enum": [1, 2]}}}, "then": {"properties": {"harnesses": {"additionalProperties": {"additionalProperties": {"items": {"properties": {"body": {"$ref": "#/$defs/legacyBody"}, "model_body": {"$ref": "#/$defs/legacyBody"}}}}}}}}}, {"if": {"properties": {"format": {"enum": [1, 2, 3]}}}, "then": {"properties": {"harnesses": {"additionalProperties": {"additionalProperties": {"items": {"properties": {"when": {"not": {"required": ["provider"]}}, "needs": {"not": {"contains": {"const": "provider"}}}, "body": {"$ref": "#/$defs/preProviderBody"}, "model_body": {"$ref": "#/$defs/preProviderBody"}}}}}}}}}],
+  "allOf": [{"if": {"properties": {"format": {"const": 1}}}, "then": {"properties": {"harnesses": {"additionalProperties": {"additionalProperties": {"items": {"not": {"required": ["refresh"]}}}}}}}}, {"if": {"properties": {"format": {"enum": [1, 2]}}}, "then": {"properties": {"harnesses": {"additionalProperties": {"additionalProperties": {"items": {"properties": {"body": {"$ref": "#/$defs/legacyBody"}, "model_body": {"$ref": "#/$defs/legacyBody"}}}}}}}}}, {"if": {"properties": {"format": {"enum": [1, 2, 3]}}}, "then": {"properties": {"harnesses": {"additionalProperties": {"additionalProperties": {"items": {"properties": {"when": {"not": {"required": ["provider"]}}, "needs": {"not": {"contains": {"const": "provider"}}}, "body": {"$ref": "#/$defs/preProviderBody"}, "model_body": {"$ref": "#/$defs/preProviderBody"}}}}}}}}}, {"if": {"properties": {"format": {"enum": [1, 2, 3, 4]}}}, "then": {"properties": {"harnesses": {"additionalProperties": {"additionalProperties": {"items": {"properties": {"when": {"properties": {"model": {"not": {"contains": {"pattern": "^[uU][nN][kK][nN][oO][wW][nN]$"}}}, "provider": {"not": {"contains": {"const": "unknown"}}}, "thinking_effort": {"not": {"contains": {"pattern": "^\\s*[uU][nN][kK][nN][oO][wW][nN]\\s*$"}}}, "harness": {"properties": {"permission_mode": {"not": {"contains": {"const": "unknown"}}}}}}}}}}}}}}}],
   "properties": {
-    "format": {"enum": [1, 2, 3, 4]},
+    "format": {"enum": [1, 2, 3, 4, 5]},
     "style_version": {"type": "string", "minLength": 1},
     "packages": {
       "type": "array",
@@ -112,7 +112,7 @@
       "additionalProperties": false,
       "properties": {
         "model": {"type": "array", "items": {"type": "string"}},
-        "provider": {"type": "array", "items": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,63}$", "not": {"const": "unknown"}}},
+        "provider": {"type": "array", "items": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,63}$"}},
         "thinking_effort": {"type": "array", "items": {"type": "string"}},
         "thinking_effort_approx": {"type": ["boolean", "null"]},
         "harness": {

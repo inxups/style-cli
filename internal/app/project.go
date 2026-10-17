@@ -532,6 +532,7 @@ func (s *Service) projectFiles(home string, old lockDocument, next *lockDocument
 	if err := s.projectCollision(home, *next, inputs); err != nil {
 		return nil, err
 	}
+	next.MinIndexFormat = minimumIndex(compilation.index.Format)
 	if s.project == nil {
 		if next.Harnesses["claude-code"].Route == claude.PluginRouteName {
 			next.Format = projectLockFormat
@@ -542,6 +543,9 @@ func (s *Service) projectFiles(home string, old lockDocument, next *lockDocument
 					next.Format = gitLockFormat
 				}
 			}
+		}
+		if next.MinIndexFormat != 0 && next.Format < gitLockFormat {
+			next.Format = gitLockFormat
 		}
 		return files, nil
 	}

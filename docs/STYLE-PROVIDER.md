@@ -25,4 +25,4 @@ Claude 每个 hook 事件读取服务环境白名单，分别识别三个服务�
 
 使用这些条件或模板会生成 index 4，doctor 提醒升级所有配置的 STYLE runner。旧 runner 拒绝整份新产物；新 runner 仍支持合法 index 1/2/3，但这些旧格式不再接受 provider 条件，须从原包重编译。没有新语法的旧规则、预算及热路径保持；provider 的估算包括标识符最坏标点宽度和显式 default，运行时仍按实际完整输出执行上限。
 
-T42 的离线证据见 [A11 报告](review/M3-A11-2026-10-17.json)与 [D6 契约](review/M3-D6-PROVIDER-UNKNOWN-2026-10-17.md)。四字段 `unknown` 选择器由 T43 单独实施；真实 B3/C5 仍独立验收。隐藏 hook 入口、旧 stats/log 中的 provider 字段仍表示 harness，保持兼容。
+T42 的离线证据见 [A11 报告](review/M3-A11-2026-10-17.json)与 [D6 契约](review/M3-D6-PROVIDER-UNKNOWN-2026-10-17.md)。四字段 `unknown` 选择器已由 T43 实施，组合使用会升级为 index 5 并增加严格锁标记，见[说明](STYLE-UNKNOWN.md)；真实 B3/C5 仍独立验收。隐藏 hook 入口、旧 stats/log 中的 provider 字段仍表示 harness，保持兼容。

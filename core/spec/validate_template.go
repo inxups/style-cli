@@ -4,6 +4,7 @@ import (
 	"strings"
 
 	styletemplate "github.com/inxups/style-cli/core/template"
+	stylewhen "github.com/inxups/style-cli/core/when"
 )
 
 var eventTemplateNames = []string{"prompt", "tool.name", "tool.input", "tool.added", "tool.output", "mcp.server", "mcp.tool", "skill.name"}
@@ -115,13 +116,13 @@ func (v *validator) whenGuarantees(rule Rule, name string) bool {
 	}
 	switch name {
 	case "model", "provider":
-		return when[name] != nil
+		return when[name] != nil && !stylewhen.AllowsUnknown(name, when[name])
 	case "thinking_effort", "thinking_effort_raw":
-		return when["thinking_effort"] != nil
+		return when["thinking_effort"] != nil && !stylewhen.AllowsUnknown("thinking_effort", when["thinking_effort"])
 	default:
 		if strings.HasPrefix(name, "harness.") {
 			harness := asStringMap(when["harness"])
-			return harness[strings.TrimPrefix(name, "harness.")] != nil
+			return harness[strings.TrimPrefix(name, "harness.")] != nil && !stylewhen.AllowsUnknown(name, harness[strings.TrimPrefix(name, "harness.")])
 		}
 	}
 	return false

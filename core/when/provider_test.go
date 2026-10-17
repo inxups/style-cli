@@ -28,7 +28,7 @@ func TestM3A11ProviderExactIDsMissingAndTrace(t *testing.T) {
 			}
 		})
 	}
-	for _, id := range []string{"unknown", "", "https://private.invalid", "a b", strings.Repeat("a", 65), "x\nsecret"} {
+	for _, id := range []string{"", "https://private.invalid", "a b", strings.Repeat("a", 65), "x\nsecret"} {
 		if _, err := Normalize(map[string]any{"provider": id}, "tool.pre"); err == nil {
 			t.Fatal("accepted invalid provider")
 		}
