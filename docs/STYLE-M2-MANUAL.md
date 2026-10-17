@@ -116,7 +116,7 @@ PYTHONDONTWRITEBYTECODE=1 python3 testdata/manual/probe_codex_m2.py \
 
 脚本不修改日常安装；插件使用隔离 marketplace 登记，卸载前由原生命令移除登记。`passed` 和四个 `checks` 都为 true 才可标通过。失败报告保留错误类型和已收集事实，原始日志仍在 scratch；不将 exec 对哈希/插件信任的接受等同于首次 TUI 工作区信任提示。三项新增采集器测试覆盖全文/角色/重复/失败拒绝、stats 行与总量/折叠行核对、原生观察器白名单，全部采集器共 50 项。
 
-2026-10-17 实际结果：固定 codex-cli 0.159.3、T30 STYLE SHA256 `c35d85bd…ab8c`，codex-user/plugin 两路线各运行三次真实模型会话，B1–B4 全部通过；每路线共存场景两份 STYLE 输出与 26 估算 token，native 两份注入单列。完整证据分别为 [B1](review/M2-B1-CODEX-2026-10-17.json)、[B2](review/M2-B2-CODEX-2026-10-17.json)、[B3](review/M2-B3-CODEX-2026-10-17.json)、[B4](review/M2-B4-CODEX-2026-10-17.json)。原始日志和连接配置保留在 `/private/tmp/style-m2-codex-user-20261017`、`/private/tmp/style-m2-codex-plugin-20261017`，不入库。Claude C1–C4 后续已通过真实交互，M2 仍待最终远端 CI 与官方计数遗留状态闭合。
+2026-10-17 实际结果：固定 codex-cli 0.159.3、T30 STYLE SHA256 `c35d85bd…ab8c`，codex-user/plugin 两路线各运行三次真实模型会话，B1–B4 全部通过；每路线共存场景两份 STYLE 输出与 26 估算 token，native 两份注入单列。完整证据分别为 [B1](review/M2-B1-CODEX-2026-10-17.json)、[B2](review/M2-B2-CODEX-2026-10-17.json)、[B3](review/M2-B3-CODEX-2026-10-17.json)、[B4](review/M2-B4-CODEX-2026-10-17.json)。原始日志和连接配置保留在 `/private/tmp/style-m2-codex-user-20261017`、`/private/tmp/style-m2-codex-plugin-20261017`，不入库。Claude C1–C4 后续已通过真实交互；最终远端 Ubuntu/macOS CI 也已在 `2aded84` 通过，官方计数遗留状态仍单列。
 
 ## 5. Claude C2/C3 最终安装验收
 
@@ -156,4 +156,4 @@ PYTHONDONTWRITEBYTECODE=1 python3 testdata/manual/prepare_claude_m2_acceptance.p
 
 Claude 2.1.301 的 C1–C4 已通过。C1/D4 确认用户级 rules 发现，C2 核对真实原生 hook/matcher 和卸载后零触发，C3 核对生产每包规则/去重/加载顺序/六文件还原，C4/D5 核对样式切换并以回退方案生效关闭。六个独立交互会话均实际调用 first-party 模型，原始终端/会话在私有目录保留；四份白名单报告见测试矩阵。
 
-附加 `replay_requests` 未通过本次 native API blob 的哈希校验，未绕过校验，也未用作 C2/C3 的请求正文证据。C2/C3 按矩阵使用 `hook_success`、完整 fixture 的 `hook_additional_context`、`InstructionsLoaded`、原生 `instructions` 附件和卸载恢复。新 rules 的 compact 行为未在本轮声明。官方 token 计数需要独立 API key，订阅认证恢复不关闭该遗留；远端 CI 亦单列，M2 尚未整体完成。
+附加 `replay_requests` 未通过本次 native API blob 的哈希校验，未绕过校验，也未用作 C2/C3 的请求正文证据。C2/C3 按矩阵使用 `hook_success`、完整 fixture 的 `hook_additional_context`、`InstructionsLoaded`、原生 `instructions` 附件和卸载恢复。新 rules 的 compact 行为未在本轮声明。官方 token 计数需要独立 API key，订阅认证恢复不关闭该遗留；远端 CI 已由 M2-CI-01 在 Ubuntu/macOS 全部通过，M2 总文档收尾仍单列。

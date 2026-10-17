@@ -813,7 +813,7 @@ F1–F4、F10 是安装和协议层的问题，最好也提给上游。F5–F9 �
 | M3 | `explain`、`probe`、`update`、git 来源、`--frozen`、项目级路线（含 Claude 云端会话）、Claude 插件路线、`--count=exact`、`refresh`（token 设计 T4）、事件内容带围栏进模板、`provider`、规则级 `fail: closed`、用户自定义 effort 映射、`unknown` 匹配、Windows |
 | M4 | 其他 harness（Gemini、OpenCode、Cursor、Copilot、Kimi…），每家一个适配器；资料见规范附录 A |
 
-M2 当前进展（2026-10-17）：native、stats、跨包语义去重与 Claude 每包 rules/旧布局迁移已实现，Codex B1–B4 在 user/plugin 两路线通过。output style 未开放 replace，D5 保留现有 fallback；Claude C1–C4 真实交互验收已通过，D4 符合预期、D5 回退方案生效。M2 本地最终回归已通过，远端 Ubuntu/macOS CI、官方计数遗留及总文档状态仍未闭合，状态以 [M2 任务清单](../STYLE-M2-TASKS.md) 和 [测试矩阵](../STYLE-M2-TESTS.md) 为准。
+M2 当前进展（2026-10-17）：native、stats、跨包语义去重与 Claude 每包 rules/旧布局迁移已实现，Codex B1–B4 在 user/plugin 两路线通过。output style 未开放 replace，D5 保留现有 fallback；Claude C1–C4 真实交互验收已通过，D4 符合预期、D5 回退方案生效。M2 本地最终回归和远端 Ubuntu/macOS CI 已通过（`2aded84`，run `38999430973`）；官方计数遗留及总文档收尾继续单列，状态以 [M2 任务清单](../STYLE-M2-TASKS.md) 和 [测试矩阵](../STYLE-M2-TESTS.md) 为准。
 
 ## 15. 未决项
 

@@ -1,8 +1,8 @@
 {
   "item": "M2-CI-01",
   "date": "2026-10-17",
-  "passed": false,
-  "status": "rerun_pending",
+  "passed": true,
+  "status": "completed",
   "repository": "inxups/style-cli",
   "branch": "codex/m2-remote-ci-20261017",
   "trigger": "workflow_dispatch",
@@ -266,6 +266,298 @@
         "message": "plan --json exit=1 stderr=style plan: no harness selected",
         "runner_count": 2
       }
+    },
+    {
+      "run": {
+        "conclusion": "success",
+        "createdAt": "2026-10-17T03:36:23Z",
+        "databaseId": 38999430973,
+        "event": "workflow_dispatch",
+        "headBranch": "codex/m2-remote-ci-20261017",
+        "headSha": "2aded84d5e5b8dd4cc5ce5ead19343260dc55c3f",
+        "jobs": [
+          {
+            "completedAt": "2026-10-17T03:37:11Z",
+            "conclusion": "success",
+            "databaseId": 117299017213,
+            "name": "Test (macos-latest)",
+            "startedAt": "2026-10-17T03:36:30Z",
+            "status": "completed",
+            "steps": [
+              {
+                "completedAt": "2026-10-17T03:36:31Z",
+                "conclusion": "success",
+                "name": "Set up job",
+                "number": 1,
+                "startedAt": "2026-10-17T03:36:30Z",
+                "status": "completed"
+              },
+              {
+                "completedAt": "2026-10-17T03:36:33Z",
+                "conclusion": "success",
+                "name": "Run actions/checkout@v6",
+                "number": 2,
+                "startedAt": "2026-10-17T03:36:31Z",
+                "status": "completed"
+              },
+              {
+                "completedAt": "2026-10-17T03:36:45Z",
+                "conclusion": "success",
+                "name": "Set up Go",
+                "number": 3,
+                "startedAt": "2026-10-17T03:36:33Z",
+                "status": "completed"
+              },
+              {
+                "completedAt": "2026-10-17T03:36:46Z",
+                "conclusion": "success",
+                "name": "Check formatting",
+                "number": 4,
+                "startedAt": "2026-10-17T03:36:45Z",
+                "status": "completed"
+              },
+              {
+                "completedAt": "2026-10-17T03:36:48Z",
+                "conclusion": "success",
+                "name": "Vet",
+                "number": 5,
+                "startedAt": "2026-10-17T03:36:46Z",
+                "status": "completed"
+              },
+              {
+                "completedAt": "2026-10-17T03:37:02Z",
+                "conclusion": "success",
+                "name": "Test",
+                "number": 6,
+                "startedAt": "2026-10-17T03:36:48Z",
+                "status": "completed"
+              },
+              {
+                "completedAt": "2026-10-17T03:37:04Z",
+                "conclusion": "success",
+                "name": "Test acceptance collectors",
+                "number": 7,
+                "startedAt": "2026-10-17T03:37:02Z",
+                "status": "completed"
+              },
+              {
+                "completedAt": "2026-10-17T03:37:05Z",
+                "conclusion": "success",
+                "name": "Build",
+                "number": 8,
+                "startedAt": "2026-10-17T03:37:04Z",
+                "status": "completed"
+              },
+              {
+                "completedAt": "2026-10-17T03:37:06Z",
+                "conclusion": "success",
+                "name": "Smoke test built binary",
+                "number": 9,
+                "startedAt": "2026-10-17T03:37:05Z",
+                "status": "completed"
+              },
+              {
+                "completedAt": "2026-10-17T03:37:06Z",
+                "conclusion": "success",
+                "name": "Check replace fallback and user style preservation",
+                "number": 10,
+                "startedAt": "2026-10-17T03:37:06Z",
+                "status": "completed"
+              },
+              {
+                "completedAt": "2026-10-17T03:37:06Z",
+                "conclusion": "success",
+                "name": "Post Set up Go",
+                "number": 19,
+                "startedAt": "2026-10-17T03:37:06Z",
+                "status": "completed"
+              },
+              {
+                "completedAt": "2026-10-17T03:37:07Z",
+                "conclusion": "success",
+                "name": "Post Run actions/checkout@v6",
+                "number": 20,
+                "startedAt": "2026-10-17T03:37:06Z",
+                "status": "completed"
+              },
+              {
+                "completedAt": "2026-10-17T03:37:07Z",
+                "conclusion": "success",
+                "name": "Complete job",
+                "number": 21,
+                "startedAt": "2026-10-17T03:37:07Z",
+                "status": "completed"
+              }
+            ],
+            "url": "https://github.com/inxups/style-cli/actions/runs/38999430973/job/117299017213"
+          },
+          {
+            "completedAt": "2026-10-17T03:36:59Z",
+            "conclusion": "success",
+            "databaseId": 117299017323,
+            "name": "Test (ubuntu-latest)",
+            "startedAt": "2026-10-17T03:36:27Z",
+            "status": "completed",
+            "steps": [
+              {
+                "completedAt": "2026-10-17T03:36:28Z",
+                "conclusion": "success",
+                "name": "Set up job",
+                "number": 1,
+                "startedAt": "2026-10-17T03:36:27Z",
+                "status": "completed"
+              },
+              {
+                "completedAt": "2026-10-17T03:36:29Z",
+                "conclusion": "success",
+                "name": "Run actions/checkout@v6",
+                "number": 2,
+                "startedAt": "2026-10-17T03:36:28Z",
+                "status": "completed"
+              },
+              {
+                "completedAt": "2026-10-17T03:36:38Z",
+                "conclusion": "success",
+                "name": "Set up Go",
+                "number": 3,
+                "startedAt": "2026-10-17T03:36:29Z",
+                "status": "completed"
+              },
+              {
+                "completedAt": "2026-10-17T03:36:38Z",
+                "conclusion": "success",
+                "name": "Check formatting",
+                "number": 4,
+                "startedAt": "2026-10-17T03:36:38Z",
+                "status": "completed"
+              },
+              {
+                "completedAt": "2026-10-17T03:36:39Z",
+                "conclusion": "success",
+                "name": "Vet",
+                "number": 5,
+                "startedAt": "2026-10-17T03:36:38Z",
+                "status": "completed"
+              },
+              {
+                "completedAt": "2026-10-17T03:36:54Z",
+                "conclusion": "success",
+                "name": "Test",
+                "number": 6,
+                "startedAt": "2026-10-17T03:36:39Z",
+                "status": "completed"
+              },
+              {
+                "completedAt": "2026-10-17T03:36:55Z",
+                "conclusion": "success",
+                "name": "Test acceptance collectors",
+                "number": 7,
+                "startedAt": "2026-10-17T03:36:54Z",
+                "status": "completed"
+              },
+              {
+                "completedAt": "2026-10-17T03:36:56Z",
+                "conclusion": "success",
+                "name": "Build",
+                "number": 8,
+                "startedAt": "2026-10-17T03:36:55Z",
+                "status": "completed"
+              },
+              {
+                "completedAt": "2026-10-17T03:36:56Z",
+                "conclusion": "success",
+                "name": "Smoke test built binary",
+                "number": 9,
+                "startedAt": "2026-10-17T03:36:56Z",
+                "status": "completed"
+              },
+              {
+                "completedAt": "2026-10-17T03:36:56Z",
+                "conclusion": "success",
+                "name": "Check replace fallback and user style preservation",
+                "number": 10,
+                "startedAt": "2026-10-17T03:36:56Z",
+                "status": "completed"
+              },
+              {
+                "completedAt": "2026-10-17T03:36:56Z",
+                "conclusion": "success",
+                "name": "Post Set up Go",
+                "number": 19,
+                "startedAt": "2026-10-17T03:36:56Z",
+                "status": "completed"
+              },
+              {
+                "completedAt": "2026-10-17T03:36:57Z",
+                "conclusion": "success",
+                "name": "Post Run actions/checkout@v6",
+                "number": 20,
+                "startedAt": "2026-10-17T03:36:56Z",
+                "status": "completed"
+              },
+              {
+                "completedAt": "2026-10-17T03:36:57Z",
+                "conclusion": "success",
+                "name": "Complete job",
+                "number": 21,
+                "startedAt": "2026-10-17T03:36:57Z",
+                "status": "completed"
+              }
+            ],
+            "url": "https://github.com/inxups/style-cli/actions/runs/38999430973/job/117299017323"
+          }
+        ],
+        "status": "completed",
+        "updatedAt": "2026-10-17T03:37:12Z",
+        "url": "https://github.com/inxups/style-cli/actions/runs/38999430973",
+        "workflowName": "CI"
+      },
+      "log": {
+        "path": "/tmp/style-m2-ci.tD4GCHgQ/run-38999430973.log",
+        "sha256": "0db534388e2953ed5f94c7aa18b69e6dc067c7ce6b5a61c7360296f48a79e22f"
+      },
+      "assertions": [
+        {
+          "job": "Test (macos-latest)",
+          "runner_image": "macos-26-arm64",
+          "go_version": "go1.25.0 darwin/arm64",
+          "required_steps_success": [
+            "Check formatting",
+            "Vet",
+            "Test",
+            "Test acceptance collectors",
+            "Build",
+            "Smoke test built binary",
+            "Check replace fallback and user style preservation"
+          ],
+          "root_and_agenthooks_tests": true,
+          "collector_tests": 53,
+          "smoke_checks": 40,
+          "replace_fallback_cases": 12,
+          "temporary_go_caches": true,
+          "host_codex_variables_cleared": true
+        },
+        {
+          "job": "Test (ubuntu-latest)",
+          "runner_image": "ubuntu-24.04",
+          "go_version": "go1.25.0 linux/amd64",
+          "required_steps_success": [
+            "Check formatting",
+            "Vet",
+            "Test",
+            "Test acceptance collectors",
+            "Build",
+            "Smoke test built binary",
+            "Check replace fallback and user style preservation"
+          ],
+          "root_and_agenthooks_tests": true,
+          "collector_tests": 53,
+          "smoke_checks": 40,
+          "replace_fallback_cases": 12,
+          "temporary_go_caches": true,
+          "host_codex_variables_cleared": true
+        }
+      ]
     }
   ],
   "cause": "The JSON CLI call omitted --harness and depended on automatic detection of host harness binaries/configuration; GitHub runners have neither.",
@@ -322,5 +614,25 @@
       }
     ]
   },
-  "scope": "No remote CI success claimed until both complete jobs pass; original failed run retained. Official token calibration remains pending API keys."
+  "scope": "Both Ubuntu/macOS jobs and every required step pass at tested_source_head. The first failed run and local before/after evidence are retained. Subsequent record/state edits are documentation only. Official token calibration remains 0/40 pending independent API keys; real harness acceptance is covered by separate B/C reports.",
+  "tested_source_head": "2aded84d5e5b8dd4cc5ce5ead19343260dc55c3f",
+  "verified_git_objects": [
+    "040000 tree 58a83e74c27b2cc15ce4f185d6df08150d100a9d\t.github/workflows",
+    "040000 tree d2d06e6b8a8af1d82162c53ca8d2a30b2f8a88dc\tagenthooks",
+    "040000 tree b19ea1baf1d381ac99983073eeb589ff866ea3da\tcmd",
+    "040000 tree 9afe1da160b58e147b89fcda58e5ae0127c5bdb2\tcore",
+    "040000 tree d1971f7574097599874d84c2c3f6efdb14977fc0\texample",
+    "100644 blob c72f2310df0c81600993bf62579be55b70c168c8\tgo.mod",
+    "100644 blob 2be2c62c26006eaf7c1891b03411b81ef0c96aa0\tgo.sum",
+    "100644 blob 0df81a3f30063ebdc948400f6af5debdb9beb257\tgo.work",
+    "040000 tree 3b427a44759d71419b66b5a2d8611724bc8347d9\tinternal",
+    "040000 tree 9dab28082ab7140f4a11db5d325564bff8282c63\tschema",
+    "040000 tree ad7cc257968a40fec777566b8f3488569b7ab8f5\tscripts",
+    "040000 tree 223aa42c9694cb1d7e2449002ff2984d7c3d0543\ttestdata"
+  ],
+  "reproduce_commands": [
+    "gh run view 38999430973 --repo inxups/style-cli --json databaseId,headSha,status,conclusion,jobs,url",
+    "gh run view 38999430973 --repo inxups/style-cli --log",
+    "gh run view 38999049830 --repo inxups/style-cli --log-failed"
+  ]
 }

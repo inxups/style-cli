@@ -1570,3 +1570,12 @@ PY
 - 原因是 A2 的 Service.Plan 已显式选择两家，而 JSON CLI 调用漏了 --harness，默认 auto 依赖本机已安装的 harness/用户配置。隔离编译旧 app.test，再以 env -i、空 HOME/PATH 执行同一测试，稳定退出 1 并复现同一报错；不是生产计划能力失效。
 - 原测试补空 HOME/PATH、清理 CODEX_HOME/CODEX_SANDBOX/CLAUDE_CONFIG_DIR，并对 JSON 命令显式 --harness=codex,claude-code。相同隔离条件下新 app.test 退出 0；标准临时 Go 三缓存、清理宿主 Codex 变量，go test -count=1 ./internal/app（16.561s）及 go vet ./internal/app 均通过。生产代码、agenthooks 和 workflow 未改。
 - 原始远端日志、元数据及本地前后对照留在 /tmp/style-m2-ci.tD4GCHgQ；白名单运行/逐步骤元数据、日志摘要、原因与验证归档 docs/review/M2-CI-01-2026-10-17.json。M2-CI-01 保持 [~]，提交修正后重跑；不覆盖失败事实，不提前关闭最终回归或官方计数。
+
+### 2026-10-17 — M2-CI-01 / M2-FINAL 远端 Ubuntu/macOS 通过 `[x]`
+
+- 修正提交 2aded84d5e5b8dd4cc5ce5ead19343260dc55c3f 快进发布至专用分支 codex/m2-remote-ci-20261017，gh workflow run ci.yml --repo inxups/style-cli --ref codex/m2-remote-ci-20261017 触发 run 38999430973。gh run view 的 headSha 精确相同，整个 run 与两个 job 均 completed/success。
+- 两台 runner 的 Check formatting、Vet、Test、Test acceptance collectors、Build、Smoke test built binary、Check replace fallback and user style preservation 全部 success。逐 job 日志分别核对 root/agenthooks 的测试输出、Ran 53 tests/OK、40 条 smoke ok/smoke passed、M2-A8: 12/12 replace fallback cases passed；没有把跳过或旧 run 结果当成功。
+- 实际镜像 ubuntu-24.04 / macos-26-arm64，工具链 go1.25.0 linux/amd64 / darwin/arm64（按 go.mod 设置）；Go 三缓存为 /tmp/style-cli-gopath、/tmp/style-cli-gomodcache、/tmp/style-cli-gocache。vet/test/build 命令均 env -u CODEX_HOME -u CODEX_SANDBOX，GOFLAGS=-mod=readonly。未改 CI 条件或减少检查。
+- docs/review/M2-CI-01-2026-10-17.json 保留首轮 38999049830 的失败、同环境本地前后对照，追加成功 run 的完整逐步骤元数据、两个 job 的日志断言、源码树对象和 SHA256。原日志留 /tmp/style-m2-ci.tD4GCHgQ；可用 gh run view 38999430973 --repo inxups/style-cli --json headSha,status,conclusion,jobs,url 和 --log 重查。
+- 关闭 M2-CI-01/M2-FINAL，当前教程、adapter 总览、设计、手册及任务/测试状态同步。官方计数仍因缺两家独立 API key 保持 M2-CARRY-01 [?]、0/40；M2-RV-01 既有风险未改，总文档与里程碑收尾仍单列。本次结果记录只改文档/证据，生产实现、测试和 workflow 与已通过的 2aded84 相同；提交发布后继续核对文档 HEAD 的远端 CI。
+- 提交前核对两轮 JSON/五份实际证据摘要及修正测试摘要、已测源码树对象、PROGRESS 追加前缀、M1 归档未变；14 份 M2 当前 Markdown 的 193 个本地链接/锚点和围栏、git diff --check 全通过。没有以文档提交触发额外模型请求或官方计数。
