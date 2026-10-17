@@ -4,7 +4,7 @@
 
 本文件记录 M3 测试矩阵与当前证据状态，任务及依赖见 [STYLE-M3-TASKS.md](STYLE-M3-TASKS.md)，运行记录追加到 [PROGRESS.md](PROGRESS.md)。[M1 测试](STYLE-M1-TESTS.md)、[M2 测试](STYLE-M2-TESTS.md) 已只读归档；历史通过结果不替代 M3 的新验收。
 
-当前状态：M3-00 建档检查已通过；M3-BASE-01、A0–A18、准备、CI 和最终文档验收尚未执行。Codex B1–B4、Claude C1–C6、exact TOKEN-01 与 Windows W1 均待真实环境。M3-CARRY-01 官方校准仍两家各 0/40；核心硬编码风险尚未修复，M3-A0 为功能开发前置必做验收。
+当前状态：M3-00 建档检查、M3-BASE-01 新基线已通过；A0–A18、准备、CI 和最终文档验收尚未执行。Codex B1–B4、Claude C1–C6、exact TOKEN-01 与 Windows W1 均待真实环境。M3-CARRY-01 官方校准仍两家各 0/40；核心硬编码风险尚未修复，M3-A0 为功能开发前置必做验收。
 
 ## 状态与验收规则
 
@@ -60,8 +60,8 @@ PYTHONDONTWRITEBYTECODE=1 python3 scripts/check_m2_rules_migration.py \
 
 ## 文档与基线
 
-- [x] **M3-00 文档建档验收**（M3-00）：新任务/测试文档覆盖主设计完整 M3 清单及 native 评估；所有任务有目标、依赖、产出和对应测试。五份当前文档的 50 个本地链接/锚点与围栏、三段 POSIX 命令的 `zsh -n`、44 项任务与 39 项测试的编号/映射、依赖无环和架构前置关系检查通过；当前入口与状态一致，77 份 M1/M2 历史文档/证据未变，进度日志仅追加，生产源码未改，`git diff --check` 通过。命令和结果见 `docs/PROGRESS.md` M3-00；本轮仅关闭本编号，未运行 Go 基线或真实模型请求。
-- [ ] **M3-BASE-01 起点回归**（M3-01）：在建档提交 HEAD 执行上述双 module fresh test/vet、采集器、固定构建和三份脚本，记录提交与二进制 SHA256。对照 M2 的 59 项采集器、40 项 smoke、16 组旧 rules 迁移、12 组 replace 回退，出现数量变化时说明原因；不能复用 M2 结果标通过。
+- [x] **M3-00 文档建档验收**（M3-00）：新任务/测试文档覆盖主设计完整 M3 清单及 native 评估；所有任务有目标、依赖、产出和对应测试。五份当前文档的 50 个本地链接/锚点与围栏、三段 POSIX 命令的 `zsh -n`、44 项任务与 39 项测试的编号/映射、依赖无环和架构前置关系检查通过；当前入口与状态一致，77 份 M1/M2 历史文档/证据未变，进度日志仅追加，生产源码未改，`git diff --check` 通过。命令和结果见 `docs/PROGRESS.md` M3-00；建档时仅关闭本编号，未运行 Go 基线或真实模型请求。
+- [x] **M3-BASE-01 起点回归**（M3-01）：在 clean 建档提交 `7586cca5744c697c1cc84a7cc0409e20cc39af40`、macOS 27.0.1 arm64 / Go 1.27.0 / Python 3.14.7 执行上述标准环境命令。双 module fresh test（30 个有测试的 package，均非 cached）与 vet 通过，采集器 59/59、smoke 40/40、`74a473d` 真实旧二进制迁移 16/16、replace 回退 12/12，数量未变。临时三缓存及宿主变量清理、逐步命令/退出码/日志摘要与 fixture 结果见 [新报告](review/M3-BASE-01-2026-10-17.json)。采集器首轮因 `127.0.0.1:0` 监听被沙箱拒绝而 58 过、1 错；仅采集器放行重跑后 59/59，原失败不覆盖。三份脚本统一使用 `GOWORK=off` 二进制 SHA256 `66ed7d4c21eb1e03a6b4b1c93269535ed96be58cc694d90c57dd5843582103c4`；另用 workspace 构建对照，与 M2 `32aef36d…cf81d` 逐字节相同。测试前后工作树干净，未变更源码/golden、未调用真实 harness 或远端 CI。
 
 ## 遗留项
 
