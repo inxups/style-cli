@@ -203,7 +203,7 @@ T22/A5 的恢复实现与 [使用说明](../STYLE-SOURCES.md#整锁离线恢复)
 
 ### 10.2 M3-D3 范围与交付产物评审稿
 
-本节为待确认提案，尚未实现，完整定义见 [D3 §3–7](../review/M3-D3-ROUTES-2026-10-17.md#3-存储根身份与兼容)。用户布局继续有效；项目的 lock/packages/approved/settings/build/state/cache/probes 分别位于用户基根 projects/规范路径摘要，项目声明和 hook 文件不包含机器绑定参数或私有 settings。两个 clone 的安装/信任独立，新 clone 只有重现候选并重新确认才能采用既有受管产物。
+本节项目部分已获用户确认，云端/插件仍为待评审提案；均尚未实现，完整定义见 [D3 §3–7](../review/M3-D3-ROUTES-2026-10-17.md#3-存储根身份与兼容)。用户布局继续有效；项目的 lock/packages/approved/settings/build/state/cache/probes 分别位于用户基根 projects/规范路径摘要，项目声明和 hook 文件不包含机器绑定参数或私有 settings。两个 clone 的安装/信任独立，新 clone 只有重现候选并重新确认才能采用既有受管产物。
 
 新路线使用 lock format=3 和显式 scope/binding，旧三路线保留 1/2，index format=1 不因项目增加字段；运行时不读取原锁/包。Codex 项目 append 静态槽位不可用，沿既有动态降级；Claude 项目写项目 rules。用户/项目同一 harness 同名包拒绝，不进行跨根编译去重或合并 state。
 

@@ -1,0 +1,61 @@
+{
+  "format": 1,
+  "task": "M3-D3",
+  "date": "2026-10-17",
+  "status": "project_contract_approved_other_routes_deferred",
+  "source_base": "4e5305fb7566377546c5420a9015204fa80eea5d",
+  "authorization": "先只做项目级吧，继续",
+  "approved": [
+    "D3 sections 2-5 and project portion of section 8",
+    "T30/A6 implementation; A6-01 through A6-12 remain pending"
+  ],
+  "deferred": [
+    "Claude cloud T31/A7",
+    "Claude plugin T32/A8"
+  ],
+  "verification": {
+    "status": "passed",
+    "local_links_and_anchors": 263,
+    "external_reference_links": 10,
+    "shell_blocks_checked": 9,
+    "task_entries": 44,
+    "test_entries": 39,
+    "dependency_graph": "acyclic; project portion satisfies T30 dependency",
+    "task_and_test_states_unchanged": true,
+    "PROGRESS_append_only": true,
+    "PROGRESS_prefix_sha256": "01324bed741d1ad375efee74e190b914caf4b9aaae663b13407489c0a2daa303",
+    "historical_archives_unchanged": 77,
+    "protected_baseline_files_unchanged": 945,
+    "git_diff_check": "passed",
+    "Go_tests_executed": false,
+    "reason": "Documentation-only approval and scope deferral"
+  },
+  "document_sha256": {
+    "AGENTS.md": "f405ef8b1d31f01ba43d3f07950db847e770956a79372f212fd30482d3e463c9",
+    "docs/STYLE-M3-TASKS.md": "650db6fa7350077d8a833de5c4b5d305347ceccc7efbee3f6bb0786b765aa0f4",
+    "docs/STYLE-M3-TESTS.md": "8f8f2f19e676e23a1ef48059589cc2d88de1ea9b82cc3a16b6fa3c59ece77ece",
+    "docs/PROGRESS.md": "62017282a49bd485f44a129e4836059462f67cc9a293cabab73c601408632a5f",
+    "docs/STYLE-ADAPTERS-CURRENT.md": "15002515f2fba3bf2ecaedb8dea31304f7005fbc8e4f05319eb29e2b0a91b3ba",
+    "docs/spec/STYLE-cli-design.md": "04b0b154570b90facc00c4068a6efaea9e351b6a13f0d40ad46c4ea9651dca16",
+    "docs/spec/STYLE-spec-compiled.md": "19a857efa3eb3f23fcc12b01b0d4f43a3e1c271a0c23098a3b433044fd5f3652",
+    "docs/spec/STYLE-spec-runtime.md": "c153c976afa8655610f2103a13eb32df144cc8b426c9a10509e72ffd5400a03c",
+    "docs/review/M3-D3-ROUTES-2026-10-17.md": "00c9f76f11a2c4af190693021cb61ace599d526a0d003701558787ee06247cbe"
+  },
+  "changed_paths": [
+    "docs/PROGRESS.md",
+    "docs/STYLE-ADAPTERS-CURRENT.md",
+    "docs/STYLE-M3-TASKS.md",
+    "docs/STYLE-M3-TESTS.md",
+    "docs/review/M3-D3-PROJECT-APPROVED-2026-10-17.json",
+    "docs/review/M3-D3-ROUTES-2026-10-17.md",
+    "docs/spec/STYLE-cli-design.md",
+    "docs/spec/STYLE-spec-compiled.md",
+    "docs/spec/STYLE-spec-runtime.md"
+  ],
+  "remaining": {
+    "D3": "partial; cloud and plugin await review",
+    "T30_A6": "implementation pending",
+    "B2_C2": "pending real environment",
+    "official_counting": "both 0/40; nonblocking"
+  }
+}

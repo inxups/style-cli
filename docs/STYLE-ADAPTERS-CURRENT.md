@@ -448,7 +448,7 @@ agenthooks 继续负责协议、配置渲染、owner/trust 与文件事务；App
 
 ### 11.7 M3 frozen 离线验收
 
-M3-T22/A5 的 [`InstallFrozen`](../internal/app/frozen.go) 复用锁定 adapter、共享管理 guard/输入复核与 T21 多包事务；[`ReadLocked`](../internal/source/cache.go) 只校验既有完整缓存。agenthooks 的协议、配置渲染、owner/trust 和 ApplyFiles 保持原职责，无新增修改。恢复的固定绑定、批准和部分产物保守失败边界见 [使用说明](STYLE-SOURCES.md#整锁离线恢复)。D3 尚未开始。
+M3-T22/A5 的 [`InstallFrozen`](../internal/app/frozen.go) 复用锁定 adapter、共享管理 guard/输入复核与 T21 多包事务；[`ReadLocked`](../internal/source/cache.go) 只校验既有完整缓存。agenthooks 的协议、配置渲染、owner/trust 和 ApplyFiles 保持原职责，无新增修改。恢复的固定绑定、批准和部分产物保守失败边界见 [使用说明](STYLE-SOURCES.md#整锁离线恢复)。D3 的项目部分现已另获用户确认，T30/A6 待实施。
 
 [A5](review/M3-A5-2026-10-17.json) 的 21 个新函数/209 个叶子用例、16 份 golden、30 项 built CLI、三路线 owner 恢复与拒绝、app/source race 和完整兼容回归通过。旧 rendered 变更集摘要无法重现的部分修复保守失败；真实投递、Windows 和远端 CI 另验。
 
@@ -480,6 +480,6 @@ U9控制配置补测已完成，见 [THINKING](review/M1-FINAL-06-THINKING-2026-
 
 ## 12. M3-D3 路线评审边界
 
-[安装范围与交付路线评审稿](review/M3-D3-ROUTES-2026-10-17.md)已结合 Claude Code 调查和本轮静态加载补测回写规范，等待用户确认。`codex-project`、`claude-project`、cloud export 与 `claude-plugin` 均未实现；本页前述三条现有路线仍是当前实现。新项目路线拟使用私有独立安装根、显式 --project、lock 3 与可移植入口；Codex 项目静态降级以免覆盖用户 developer_instructions，Claude 项目静态 rules 与 hook 发现分开报告。Claude 插件拟为手动登记的本地 marketplace hook 载体，静态继续在用户 rules，原生缓存残留单列。
+[安装范围与交付路线评审稿](review/M3-D3-ROUTES-2026-10-17.md)已结合 Claude Code 调查和静态加载补测回写规范；用户已确认先做项目级，本轮只进入 T30/A6，云端/插件暂缓。`codex-project`、`claude-project`、cloud export 与 `claude-plugin` 均未实现；本页前述三条现有路线仍是当前实现。新项目路线拟使用私有独立安装根、显式 --project、lock 3 与可移植入口；Codex 项目静态降级以免覆盖用户 developer_instructions，Claude 项目静态 rules 与 hook 发现分开报告。Claude 插件拟为手动登记的本地 marketplace hook 载体，静态继续在用户 rules，原生缓存残留单列。
 
 本轮原生补测绑定 Codex 0.159.3 / Claude Code 2.1.301，仅以回环 stub 请求中的固定标记核对加载；未调用真实模型。A6–A8、B2/C2–C4、Windows、远端 CI 和官方两家各 0/40 状态不变，复核证据见 [D3 报告](review/M3-D3-DOCS-2026-10-17.json)。
