@@ -557,6 +557,9 @@ func commandHasOwner(command, owner string) bool {
 	if command == "" || owner == "" {
 		return false
 	}
+	if decoded, ok := windowsDecodedCommand(command); ok {
+		command = decoded
+	}
 	want := "--owner=" + owner
 	for _, field := range strings.Fields(command) {
 		if strings.Trim(field, `"'`) == want {
@@ -585,6 +588,13 @@ func handlerHasOwner(command string, args []string, owner string) bool {
 func hookCommand(m Manifest, p agenthooks.Provider, spec HookSpec) string {
 	if spec.RawCommand != "" {
 		return rawHookCommand(m, spec)
+	}
+	if runtime.GOOS == "windows" && p == agenthooks.ProviderCodex {
+		argv := append(append([]string{}, m.Command...), hookArgs(m, p, spec)...)
+		if !spec.Blocking {
+			argv = append(argv, "--async")
+		}
+		return windowsHookCommand(argv)
 	}
 	parts := make([]string, 0, len(m.Command)+5)
 	for _, c := range m.Command {

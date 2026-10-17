@@ -52,6 +52,9 @@ func renderClaude(m Manifest, t Target) (fs.FS, error) {
 	if len(m.Command) == 0 || strings.TrimSpace(m.Command[0]) == "" {
 		return nil, errors.New("install: Claude Code command executable is required")
 	}
+	if runtime.GOOS == "windows" && (strings.EqualFold(filepath.Ext(m.Command[0]), ".cmd") || strings.EqualFold(filepath.Ext(m.Command[0]), ".bat")) {
+		return nil, errors.New("install: Windows Claude exec form requires an executable, not a cmd/bat shim")
+	}
 	if needsClaudeFailClosed(m) && !claudeSupportsOnFailure(t.HarnessVersion) {
 		return nil, claudeVersionError(t.HarnessVersion)
 	}

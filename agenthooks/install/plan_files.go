@@ -5,6 +5,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/speakeasy-api/agenthooks/privatefs"
 	"io/fs"
 	"os"
 	"path/filepath"
@@ -311,6 +312,12 @@ func ApplyFiles(ctx context.Context, changes []PlannedFile) error {
 				cleanup()
 				return err
 			}
+			if err := privatefs.Prepare(backup); err != nil {
+				backup.Close()
+				staged = append(staged, item)
+				cleanup()
+				return err
+			}
 			if _, err := backup.Write(change.Before); err != nil {
 				backup.Close()
 				staged = append(staged, item)
@@ -347,6 +354,14 @@ func ApplyFiles(ctx context.Context, changes []PlannedFile) error {
 				staged = append(staged, item)
 				cleanup()
 				return err
+			}
+			if change.Mode == 0o600 {
+				if err := privatefs.Prepare(temp); err != nil {
+					temp.Close()
+					staged = append(staged, item)
+					cleanup()
+					return err
+				}
 			}
 			if _, err := temp.Write(change.After); err != nil {
 				temp.Close()

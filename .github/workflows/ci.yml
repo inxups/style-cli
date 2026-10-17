@@ -73,3 +73,61 @@ jobs:
         env:
           PYTHONDONTWRITEBYTECODE: "1"
         run: python3 scripts/check_m2_replace.py "$RUNNER_TEMP/style"
+
+  windows:
+    name: Test (windows-latest)
+    runs-on: windows-latest
+    env:
+      GOFLAGS: -mod=readonly
+      GOWORK: "off"
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-go@v6
+        with:
+          go-version-file: go.mod
+          cache: false
+      - name: Isolate caches and external environment
+        shell: pwsh
+        run: |
+          foreach ($key in @('GOPATH','GOMODCACHE','GOCACHE')) {
+            "$key=$env:RUNNER_TEMP\style-$key" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          }
+          foreach ($item in Get-ChildItem Env:) {
+            if ($item.Name -match '^(CODEX_|CLAUDE_|STYLE_|ANTHROPIC_|OPENAI_)') {
+              "$($item.Name)=" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+            }
+          }
+      - name: Check formatting
+        shell: pwsh
+        run: |
+          $files = git ls-files '*.go'
+          $bad = & gofmt -l $files
+          if ($bad) { $bad; exit 1 }
+      - name: Vet both modules
+        shell: pwsh
+        run: |
+          go vet ./...
+          if ($LASTEXITCODE) { exit $LASTEXITCODE }
+          go vet -C agenthooks ./...
+          exit $LASTEXITCODE
+      - name: Native Windows fresh tests
+        run: python scripts/run_m3_windows.py
+      - name: Build native and arm64 binaries
+        shell: pwsh
+        run: |
+          go build -trimpath -o "$env:RUNNER_TEMP\style.exe" ./cmd/style
+          if ($LASTEXITCODE) { exit $LASTEXITCODE }
+          go build -trimpath -o "$env:RUNNER_TEMP\harness.exe" ./testdata/windows-helper/main.go
+          if ($LASTEXITCODE) { exit $LASTEXITCODE }
+          $env:GOARCH = 'arm64'
+          go build -trimpath -o "$env:RUNNER_TEMP\style-arm64.exe" ./cmd/style
+          exit $LASTEXITCODE
+      - name: Native Windows CLI smoke
+        run: python scripts/check_m3_windows.py "${{ runner.temp }}\style.exe" "${{ runner.temp }}\harness.exe" "${{ runner.temp }}\style-windows-evidence\cli.json"
+      - name: Preserve Windows evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: style-windows-evidence
+          path: ${{ runner.temp }}/style-windows-evidence

@@ -1,0 +1,240 @@
+{
+  "baseline": "8fa7bb968f1c8ca5165ae3c23f8ed32e1cc95d68",
+  "status": "partial; Windows CI required; A17 not closed",
+  "commands": {
+    "a17-compile": {
+      "command": [
+        "go",
+        "test",
+        "./...",
+        "-run",
+        "^$"
+      ],
+      "exit_code": 1,
+      "seconds": 2.539,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "log_sha256": "2aa074d1d55fd8855b657bac6476260cb44a0bbbc471b5bb3fd8b0ecde8badd6"
+    },
+    "a17-compile2": {
+      "command": [
+        "go",
+        "test",
+        "./...",
+        "-run",
+        "^$"
+      ],
+      "exit_code": 0,
+      "seconds": 2.38,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "log_sha256": "f4e03372a81c63cc5a4ce9fe7c2694c704f17b486939595cbb95cb3dcba0fa87"
+    },
+    "a17-compile-win2": {
+      "command": [
+        "env",
+        "GOOS=windows",
+        "GOARCH=amd64",
+        "go",
+        "test",
+        "-exec=/usr/bin/true",
+        "./...",
+        "-run",
+        "^$"
+      ],
+      "exit_code": 0,
+      "seconds": 1.926,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "log_sha256": "20299e3cc3e58aa9a6f81f995a4693d10f5ac85ef510f557daedc4916d910469"
+    },
+    "a17-win-agent2": {
+      "command": [
+        "env",
+        "GOOS=windows",
+        "GOARCH=amd64",
+        "go",
+        "test",
+        "-C",
+        "agenthooks",
+        "-exec=/usr/bin/true",
+        "./...",
+        "-run",
+        "^$"
+      ],
+      "exit_code": 0,
+      "seconds": 0.958,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "log_sha256": "8e9182bce3c6261175b6c20c089a71e44685d8d56ada35c1654fbc821b1419f9"
+    },
+    "a17-root-first": {
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "./..."
+      ],
+      "exit_code": 0,
+      "seconds": 116.467,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "log_sha256": "5e329f01ba43ac497bc1be52567c389049013e3ab1f9de7bc8ede1788167cb42",
+      "tests": {
+        "pass": 3880,
+        "fail": 0,
+        "skip": 2
+      }
+    },
+    "a17-agent-local-final": {
+      "command": [
+        "go",
+        "test",
+        "-C",
+        "agenthooks",
+        "-count=1",
+        "-json",
+        "./..."
+      ],
+      "exit_code": 0,
+      "seconds": 12.585,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "log_sha256": "66976201f6a5a9828d90eb2d332d161407dbed07165112bf735bde445a3b23f8",
+      "tests": {
+        "pass": 530,
+        "fail": 0,
+        "skip": 23
+      }
+    },
+    "a17-vet-first": {
+      "command": [
+        "go",
+        "vet",
+        "./..."
+      ],
+      "exit_code": 0,
+      "seconds": 1.066,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "a17-agent-vet": {
+      "command": [
+        "go",
+        "vet",
+        "-C",
+        "agenthooks",
+        "./..."
+      ],
+      "exit_code": 0,
+      "seconds": 0.686,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "a17-win-vet": {
+      "command": [
+        "env",
+        "GOOS=windows",
+        "GOARCH=amd64",
+        "go",
+        "vet",
+        "./..."
+      ],
+      "exit_code": 0,
+      "seconds": 2.023,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "a17-win-agent-vet": {
+      "command": [
+        "env",
+        "GOOS=windows",
+        "GOARCH=amd64",
+        "go",
+        "vet",
+        "-C",
+        "agenthooks",
+        "./..."
+      ],
+      "exit_code": 0,
+      "seconds": 0.266,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "boundary": "Cross compilation and cross vet are not Windows runtime evidence. macOS tests do not close Windows cases. W1 real harness is separately user-deferred.",
+  "changes": [
+    "Windows kernel process birth/file ID",
+    "Windows LockFileEx refresh",
+    "privatefs DACL and POSIX validation",
+    "encoded PowerShell Codex user launcher and owner",
+    "early Windows unsupported route/native planning",
+    "native Windows CI, process tests and built CLI checks"
+  ],
+  "known_first_failure": "probe verifyRun local info declaration accidentally replaced; corrected; full regression passed"
+}

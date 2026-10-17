@@ -1932,3 +1932,9 @@ T50/A15 已完成后，固定官方 hooks.md 与 Claude 2.1.301 六组隔离原�
 ## 2026-10-18 M3-D11 Windows 定稿
 
 在 T60/A16 clean `2ddb678` 上核对 Windows 不支持的现有 refresh/进程身份、POSIX 权限位检查与已有插件/native renderer 边界。[D11](review/M3-D11-WINDOWS-2026-10-18.md)按授权固定两家 Windows user 路线、真实 exe/编码启动器、owner/定义 hash、内核身份/DACL/锁与文件事务及 A17 四组验收。Windows 项目/插件与作者 POSIX native 明确不可用，不静默生成 sh 脚本；W1 已由用户延期，Windows CI 仍必做。Microsoft 网页抓取 TLS 失败单列，API 签名依据已锁定的官方 x/sys 源码，见[来源](review/M3-D11-SOURCES-2026-10-18.json)。仅关闭 D11；T70/A17 待实现和 Windows 自动化证据。文档检查见[D11-DOCS](review/M3-D11-DOCS-2026-10-18.json)。
+
+## 2026-10-18 M3-T70 第一阶段：平台原语与原生 CI 接线
+
+实现 Windows GetProcessTimes/文件 ID、LockFileEx refresh、按真实 DACL 校验和私有化的 privatefs、Codex 编码 PowerShell 启动器/owner 和异步参数、Claude exec shim 拒绝及平台路线/native 规划边界。协议、事件、渲染、归属、事务仍由 agenthooks 承担；core 只调整 Windows 会话路径分量和系统锁。
+
+[阶段报告](review/M3-A17-INITIAL-2026-10-18.json)记录 macOS 根模块/agenthooks fresh 回归、双 vet、Windows 交叉编译/vet 和首轮编译 fixture 失误修正。Windows 进程 stdin/argv/退出码与 DACL 拒绝用例、版本-only harness 和原生 built CLI 脚本已接入独立 Windows CI job。交叉编译不计 Windows 运行成功；T70 部分完成、A17 保持未关闭，须在临时验证分支实际运行 Windows CI 后逐项修正。文档/归档检查见[阶段 DOCS](review/M3-A17-INITIAL-DOCS-2026-10-18.json)。

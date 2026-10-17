@@ -73,7 +73,11 @@ func ExecutableIdentity(path string) (string, error) {
 	if !info.Mode().IsRegular() {
 		return "", errors.New("regular executable required")
 	}
-	identity := fmt.Sprintf("%s\x00%s\x00%d\x00%d\x00%d", canonical, processFileID(info), info.Size(), info.Mode(), info.ModTime().UnixNano())
+	fileID, err := processFileID(canonical, info)
+	if err != nil {
+		return "", err
+	}
+	identity := fmt.Sprintf("%s\x00%s\x00%d\x00%d\x00%d", canonical, fileID, info.Size(), info.Mode(), info.ModTime().UnixNano())
 	digest := sha256.Sum256([]byte(identity))
 	return "sha256:" + hex.EncodeToString(digest[:]), nil
 }

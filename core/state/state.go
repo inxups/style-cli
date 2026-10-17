@@ -10,6 +10,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"runtime"
 	"strings"
 	"sync"
 	"time"
@@ -473,7 +474,7 @@ func newestModTime(root string) (time.Time, error) {
 }
 
 func component(value string) string {
-	if safeComponentPattern.MatchString(value) {
+	if runtime.GOOS != "windows" && safeComponentPattern.MatchString(value) {
 		return value
 	}
 	return "!" + sha256Sum(value)

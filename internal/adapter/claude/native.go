@@ -3,6 +3,7 @@ package claude
 import (
 	"fmt"
 	"regexp"
+	"runtime"
 
 	"github.com/inxups/style-cli/core/plan"
 	"github.com/inxups/style-cli/core/spec"
@@ -66,6 +67,9 @@ const defaultNativeTimeout = 60
 // NativeHook resolves one native mapping for planning: the effective timeout
 // is the one the route will write.
 func (f Facts) NativeHook(rule spec.NativeRule) (plan.NativeEntry, error) {
+	if runtime.GOOS == "windows" {
+		return plan.NativeEntry{}, fmt.Errorf("native author commands require POSIX; unavailable on Windows")
+	}
 	if _, ok := nativeEvents[rule.Event]; !ok {
 		return plan.NativeEntry{}, fmt.Errorf("Claude Code has no native event %q", rule.Event)
 	}

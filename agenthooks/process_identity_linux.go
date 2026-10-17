@@ -32,9 +32,9 @@ func processBirth(pid int) (int, string, error) {
 	return parent, fields[19], nil
 }
 func processDoesNotExist(err error) bool { return errors.Is(err, syscall.ESRCH) }
-func processFileID(info os.FileInfo) string {
+func processFileID(_ string, info os.FileInfo) (string, error) {
 	if value, ok := info.Sys().(*syscall.Stat_t); ok {
-		return fmt.Sprintf("%d:%d", value.Dev, value.Ino)
+		return fmt.Sprintf("%d:%d", value.Dev, value.Ino), nil
 	}
-	return ""
+	return "", nil
 }

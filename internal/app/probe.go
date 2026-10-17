@@ -9,6 +9,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"reflect"
+	"runtime"
 	"sort"
 	"strings"
 	"time"
@@ -492,7 +493,7 @@ func captureProbeExecutable(path string, capability bool) (probeExecutable, erro
 	if err != nil {
 		return probeExecutable{}, err
 	}
-	if file.info.Mode().Perm()&0o111 == 0 {
+	if runtime.GOOS != "windows" && file.info.Mode().Perm()&0o111 == 0 || runtime.GOOS == "windows" && !strings.EqualFold(filepath.Ext(canonical), ".exe") {
 		return probeExecutable{}, errors.New("executable required")
 	}
 	if capability && !bytes.Contains(data, []byte(probe.Protocol)) {

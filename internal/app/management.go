@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/speakeasy-api/agenthooks/privatefs"
 	"io/fs"
 	"os"
 	"path/filepath"
@@ -231,6 +232,9 @@ func acquireManagementWith(ctx context.Context, home string, lookup func(int) (a
 	if err := os.MkdirAll(home, 0o700); err != nil {
 		return nil, err
 	}
+	if err := privatefs.PrepareDirectory(home); err != nil {
+		return nil, err
+	}
 	root, err := saferead.AnchorMutable(home)
 	if err != nil {
 		return nil, err
@@ -254,6 +258,10 @@ func acquireManagementWith(ctx context.Context, home string, lookup func(int) (a
 	if err != nil {
 		return nil, err
 	}
+	if err = privatefs.Prepare(f); err != nil {
+		f.Close()
+		return nil, err
+	}
 	_, writeErr := f.Write(data)
 	err = errors.Join(writeErr, f.Close())
 	if err != nil {
@@ -274,7 +282,7 @@ func acquireManagementWith(ctx context.Context, home string, lookup func(int) (a
 		oldData, e := saferead.File(root, managementName, 1024)
 		var old managementOwner
 		info, statErr := root.Lstat(managementName)
-		if e != nil || statErr != nil || info.Mode().Perm() != 0o600 || json.Unmarshal(oldData, &old) != nil || old.PID <= 0 || old.Birth == "" || len(old.Nonce) != 32 {
+		if e != nil || statErr != nil || privatefs.CheckRoot(root, managementName) != nil || json.Unmarshal(oldData, &old) != nil || old.PID <= 0 || old.Birth == "" || len(old.Nonce) != 32 {
 			return nil, errManagementBusy
 		}
 		process, e := lookup(old.PID)

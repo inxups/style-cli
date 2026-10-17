@@ -68,13 +68,16 @@ func renderCodex(m Manifest, t Target) (fs.FS, error) {
 			return nil, fmt.Errorf("install: Codex %s matcher: %w", event, err)
 		}
 		command := hookCommand(m, agenthooks.ProviderCodex, spec)
+		if runtime.GOOS == "windows" && len(command) > 8191 {
+			return nil, fmt.Errorf("install: Windows hook command exceeds safe shell limit")
+		}
 		if plugin && spec.RawCommand == "" {
 			command = codexPluginHookCommand(m, spec)
 		}
 		// Codex parses-but-skips async:true (quirk #10): telemetry hooks get
 		// --async, which makes the runner re-exec itself as a detached worker
 		// and return immediately — no shell involved.
-		if !spec.Blocking && spec.RawCommand == "" {
+		if !spec.Blocking && spec.RawCommand == "" && runtime.GOOS != "windows" {
 			command += " --async"
 		}
 		secs := timeoutSeconds(spec)

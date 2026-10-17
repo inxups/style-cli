@@ -10,7 +10,7 @@ import (
 
 func TestM3A2KernelProcessIdentity(t *testing.T) {
 	identity, err := ReadProcessIdentity(os.Getpid())
-	if runtime.GOOS != "darwin" && runtime.GOOS != "linux" {
+	if runtime.GOOS != "darwin" && runtime.GOOS != "linux" && runtime.GOOS != "windows" {
 		if !errors.Is(err, ErrProcessUnsupported) {
 			t.Fatalf("platform boundary: %v", err)
 		}
@@ -42,7 +42,12 @@ func TestM3A2ExecutableMetadataIdentity(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if err = os.Chmod(path, 0o600); err != nil {
+	if err = os.Chmod(path, func() os.FileMode {
+		if runtime.GOOS == "windows" {
+			return 0o400
+		}
+		return 0o600
+	}()); err != nil {
 		t.Fatal(err)
 	}
 	after, err := ExecutableIdentity(path)

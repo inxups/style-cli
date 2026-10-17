@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"runtime"
 	"sort"
 	"strings"
 
@@ -49,6 +50,9 @@ func (r *route) BindInstallation(installation adapter.Installation) adapter.Rout
 }
 
 func (r *route) Available(_ context.Context, installation adapter.Installation) (bool, string, error) {
+	if runtime.GOOS == "windows" && (r.plugin || r.project) {
+		return false, "Windows supports the user route; project and plugin launchers require POSIX", nil
+	}
 	if installation.Provider != "" && installation.Provider != ProviderName {
 		return false, "wrong provider", nil
 	}

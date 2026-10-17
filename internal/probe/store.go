@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/speakeasy-api/agenthooks/privatefs"
 	"io"
 	"os"
 	"path/filepath"
@@ -159,7 +160,11 @@ func Begin(home string, bindings []Binding, timeout time.Duration, options Optio
 
 func privateDirectory(root *os.Root, name string, create bool) error {
 	if create {
-		if err := root.Mkdir(name, 0o700); err != nil && !errors.Is(err, os.ErrExist) {
+		if err := root.Mkdir(name, 0o700); err == nil {
+			if err = privatefs.PrepareDirectory(filepath.Join(root.Name(), name)); err != nil {
+				return err
+			}
+		} else if !errors.Is(err, os.ErrExist) {
 			return err
 		}
 	}
@@ -170,7 +175,7 @@ func privateDirectory(root *os.Root, name string, create bool) error {
 	if err != nil {
 		return err
 	}
-	if !info.IsDir() || info.Mode()&os.ModeSymlink != 0 || info.Mode().Perm()&0o077 != 0 {
+	if !info.IsDir() || info.Mode()&os.ModeSymlink != 0 || privatefs.CheckRoot(root, name) != nil {
 		return errors.New("private regular probe directory required")
 	}
 	return nil
@@ -181,6 +186,11 @@ func writeNew(root *os.Root, name string, data []byte) (os.FileInfo, error) {
 	}
 	file, err := root.OpenFile(name, os.O_WRONLY|os.O_CREATE|os.O_EXCL, 0o600)
 	if err != nil {
+		return nil, err
+	}
+	if err = privatefs.Prepare(file); err != nil {
+		file.Close()
+		root.Remove(name)
 		return nil, err
 	}
 	written, writeErr := file.Write(data)
@@ -216,7 +226,7 @@ func readLease(root *os.Root, harness string) (heldLease, error) {
 	if err != nil {
 		return heldLease{}, err
 	}
-	if info.Mode().Perm() != 0o600 {
+	if privatefs.CheckRoot(root, leaseName(harness)) != nil {
 		return heldLease{}, ErrBusy
 	}
 	return heldLease{lease, data, info}, nil
@@ -424,8 +434,8 @@ func (s *Session) Receipts(harness string) ([]Receipt, []string) {
 			quality = append(quality, "probe-receipt-invalid")
 			continue
 		}
-		info, err := s.root.Lstat(name)
-		if err != nil || info.Mode().Perm() != 0o600 {
+		_, err = s.root.Lstat(name)
+		if err != nil || privatefs.CheckRoot(s.root, name) != nil {
 			quality = append(quality, "probe-receipt-invalid")
 			continue
 		}

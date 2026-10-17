@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/speakeasy-api/agenthooks/privatefs"
 	"io"
 	"os"
 	"path/filepath"
@@ -92,7 +93,7 @@ func planJSONRestore(root, path, owner string, existing, final []byte, read func
 		state = StateCreate
 	} else if bytes.Equal(before, after) {
 		state = StateUnchanged
-		if info, err := os.Stat(filepath.Join(root, restorePath(path, owner))); err != nil || info.Mode().Perm() != 0o600 {
+		if err := privatefs.CheckPath(filepath.Join(root, restorePath(path, owner))); err != nil {
 			state = StateUpdate
 		}
 	}
