@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/inxups/style-cli/core/compile"
+	"github.com/inxups/style-cli/core/state"
 	"github.com/inxups/style-cli/core/when"
 )
 
@@ -22,28 +23,29 @@ type RenderSummary struct {
 	SHA256 string `json:"sha256"`
 }
 type EntryTrace struct {
-	Rule                string        `json:"rule"`
-	Entry               string        `json:"entry"`
-	Point               string        `json:"point"`
-	Order               compile.Order `json:"order"`
-	Action              string        `json:"action"`
-	Needs               []string      `json:"needs"`
-	Source              string        `json:"source"`
-	Selector            string        `json:"selector"`
-	Sources             string        `json:"sources"`
-	When                string        `json:"when"`
-	Conditions          []when.Check  `json:"conditions"`
-	Render              string        `json:"render"`
-	Model               RenderSummary `json:"model"`
-	User                RenderSummary `json:"user"`
-	Block               string        `json:"block"`
-	Repeat              string        `json:"repeat"`
-	RepeatKeySHA256     string        `json:"repeat_key_sha256,omitempty"`
-	Generation          uint64        `json:"gen"`
-	Epoch               uint64        `json:"epoch"`
-	TurnSource          string        `json:"turn_source,omitempty"`
-	Output              string        `json:"output"`
-	ReservationReleased bool          `json:"reservation_released"`
+	Refresh             *state.RefreshTrace `json:"refresh,omitempty"`
+	Rule                string              `json:"rule"`
+	Entry               string              `json:"entry"`
+	Point               string              `json:"point"`
+	Order               compile.Order       `json:"order"`
+	Action              string              `json:"action"`
+	Needs               []string            `json:"needs"`
+	Source              string              `json:"source"`
+	Selector            string              `json:"selector"`
+	Sources             string              `json:"sources"`
+	When                string              `json:"when"`
+	Conditions          []when.Check        `json:"conditions"`
+	Render              string              `json:"render"`
+	Model               RenderSummary       `json:"model"`
+	User                RenderSummary       `json:"user"`
+	Block               string              `json:"block"`
+	Repeat              string              `json:"repeat"`
+	RepeatKeySHA256     string              `json:"repeat_key_sha256,omitempty"`
+	Generation          uint64              `json:"gen"`
+	Epoch               uint64              `json:"epoch"`
+	TurnSource          string              `json:"turn_source,omitempty"`
+	Output              string              `json:"output"`
+	ReservationReleased bool                `json:"reservation_released"`
 }
 
 func newEntryTrace(e compile.Entry, point string) *EntryTrace {

@@ -2,7 +2,7 @@
 
 对应规范：[STYLE-spec.md](STYLE-spec.md)（v0.3）。规范定义包格式、运行时语义、token 预算、安全约束和 `index.json`；本文定义命令、本地布局、编译和运行时流程、Claude Code 与 Codex 两个适配器、token 估算器、fork 改动、里程碑、验收和未决项。冲突时，格式和语义以规范为准，实现细节以本文为准。
 
-状态（2026-10-17）：M1、M2 已关闭并只读归档；M2 的 native、stats、跨包去重、Claude rules/迁移与 replace 回退已验收，Codex/Claude 真实环境、本地回归和最终 Ubuntu/macOS CI 均通过，历史证据见 [M2 任务清单](../STYLE-M2-TASKS.md)、[测试矩阵](../STYLE-M2-TESTS.md)。当前里程碑为 M3，任务、依赖和验收状态以 [M3 任务清单](../STYLE-M3-TASKS.md)、[测试矩阵](../STYLE-M3-TESTS.md) 为准；建档和隔离环境基线已完成，D0 已获用户确认，T00 注册表校验修复和 A0 验收已完成；[D1 诊断契约评审稿](../review/M3-D1-DIAGNOSTICS-2026-10-17.md) 已获用户确认，explain 已实现并通过 [M3-A1](../review/M3-A1-2026-10-17.json)，probe 也已实现并通过 [M3-A2](../review/M3-A2-2026-10-17.json)；[D2 来源与锁定评审稿](../review/M3-D2-SOURCES-2026-10-17.md) 已于 2026-10-17 获用户确认，Git 来源已由 T20 实现并通过 [M3-A3](../review/M3-A3-2026-10-17.json)，update 已由 T21 实现并通过 [M3-A4](../review/M3-A4-2026-10-17.json)，frozen 已由 T22 实现并通过 [M3-A5](../review/M3-A5-2026-10-17.json)。[D3 安装范围与交付路线评审稿](../review/M3-D3-ROUTES-2026-10-17.md)的项目部分已获用户确认，T30 已实现并通过 [A6](../review/M3-A6-2026-10-17.json)，见 [项目安装说明](../STYLE-PROJECTS.md)；云端/插件 T31/T32 暂缓。用户已要求继续其他 M3 阶段，现进入 [D4 refresh 评审稿](../review/M3-D4-REFRESH-2026-10-17.md)，新增契约已获用户确认，T40/A9 尚待独立实现验收。官方 token 计数仍各 0/40，承接为 M3-CARRY-01 非阻塞待验；本地编码/订阅 usage 作为补充，不提供误差范围保证。核心名称校验硬编码风险 M3-RV-01 已随 T00/A0 关闭；engine 既有输出安全特例仍按 D8 评估。当前仅支持 **Claude Code** 和 **Codex**；本文接口代码为设计示意，当前接口与职责见 [adapter 总览](../STYLE-ADAPTERS-CURRENT.md)。
+状态（2026-10-17）：M1、M2 已关闭并只读归档；M2 的 native、stats、跨包去重、Claude rules/迁移与 replace 回退已验收，Codex/Claude 真实环境、本地回归和最终 Ubuntu/macOS CI 均通过，历史证据见 [M2 任务清单](../STYLE-M2-TASKS.md)、[测试矩阵](../STYLE-M2-TESTS.md)。当前里程碑为 M3，任务、依赖和验收状态以 [M3 任务清单](../STYLE-M3-TASKS.md)、[测试矩阵](../STYLE-M3-TESTS.md) 为准；建档和隔离环境基线已完成，D0 已获用户确认，T00 注册表校验修复和 A0 验收已完成；[D1 诊断契约评审稿](../review/M3-D1-DIAGNOSTICS-2026-10-17.md) 已获用户确认，explain 已实现并通过 [M3-A1](../review/M3-A1-2026-10-17.json)，probe 也已实现并通过 [M3-A2](../review/M3-A2-2026-10-17.json)；[D2 来源与锁定评审稿](../review/M3-D2-SOURCES-2026-10-17.md) 已于 2026-10-17 获用户确认，Git 来源已由 T20 实现并通过 [M3-A3](../review/M3-A3-2026-10-17.json)，update 已由 T21 实现并通过 [M3-A4](../review/M3-A4-2026-10-17.json)，frozen 已由 T22 实现并通过 [M3-A5](../review/M3-A5-2026-10-17.json)。[D3 安装范围与交付路线评审稿](../review/M3-D3-ROUTES-2026-10-17.md)的项目部分已获用户确认，T30 已实现并通过 [A6](../review/M3-A6-2026-10-17.json)，见 [项目安装说明](../STYLE-PROJECTS.md)；云端/插件 T31/T32 暂缓。用户已要求继续其他 M3 阶段，现进入 [D4 refresh 评审稿](../review/M3-D4-REFRESH-2026-10-17.md)，新增契约已获用户确认，T40 已实现，验收见 [A9](../review/M3-A9-2026-10-17.json) 和 [周期补发说明](../STYLE-REFRESH.md)。官方 token 计数仍各 0/40，承接为 M3-CARRY-01 非阻塞待验；本地编码/订阅 usage 作为补充，不提供误差范围保证。核心名称校验硬编码风险 M3-RV-01 已随 T00/A0 关闭；engine 既有输出安全特例仍按 D8 评估。当前仅支持 **Claude Code** 和 **Codex**；本文接口代码为设计示意，当前接口与职责见 [adapter 总览](../STYLE-ADAPTERS-CURRENT.md)。
 
 **依据**：
 - agenthooks `3f734c7` 源码，历史整理资料为 `agenthooks-codex.md`（外部资料，本仓库未收录）；
@@ -391,11 +391,11 @@ T8 的实施契约见 [运行时 §7.5](STYLE-spec-runtime.md#75-m2-d3-跨包去
 
 ### 8.1 M3-D4 refresh 评审稿
 
-本节是已获用户确认的 [D4 契约](../review/M3-D4-REFRESH-2026-10-17.md)，T40 尚未实现。用户要求在项目路线完成后继续其他阶段，因此 D4 前置改为 T30；Claude 云端/插件仍暂缓，现有五条路线是 T40 的实施范围。
+本节是已获用户确认的 [D4 契约](../review/M3-D4-REFRESH-2026-10-17.md)，T40 已实现，离线验收见 [A9](../review/M3-A9-2026-10-17.json)。用户要求在项目路线完成后继续其他阶段，因此 D4 前置改为 T30；Claude 云端/插件仍暂缓，现有五条路线是 T40 的实施范围。
 
-提议规则/defaults/from 可写 `refresh: N`（整数 0–1,000,000，0/省略关闭），只与 inject/warn 的 repeat session 搭配。system 自动转动态；同正文首次命中即发，之后按实际收到的 prompt.submitted 距上次保留输出满 N 回合、再次符合条件时补一次。工具次数不推进周期；原生不透明 ID 防重复，缺 ID 披露按回调计数。生命周期、迟到事件、正文切换和旧 seen 的保守升级按契约执行。
+规则/defaults/from 可写 `refresh: N`（整数 0–1,000,000，0/省略关闭），只与 inject/warn 的 repeat session 搭配。system 自动转动态；同正文首次命中即发，之后按实际收到的 prompt.submitted 距上次保留输出满 N 回合、再次符合条件时补一次。工具次数不推进周期；原生不透明 ID 防重复，缺 ID 披露按回调计数。生命周期、迟到事件、正文切换和旧 seen 的保守升级按契约执行。
 
-有效 refresh 的 harness 使用独立时钟/游标和跨进程状态保护，Claude 按需补 UserPromptSubmit 时钟入口，订阅/渲染/owner/信任仍交 agenthooks。无有效 refresh 继续旧热路径和 format 1；新能力写 index 2，旧 runner 明确拒绝。预算按一次全文而非除以 N；stats 沿用结果和估算字段，到期原因由 explain 安全 trace 说明。A9-01–A9-12 全部待验；用户现已批准进入 T40，本段不关闭 A9 或真实 B3/C5。
+有效 refresh 的 harness 使用独立时钟/游标和跨进程状态保护，Claude 按需补 UserPromptSubmit 时钟入口，订阅/渲染/owner/信任仍交 agenthooks。无有效 refresh 继续旧热路径和 format 1；新能力写 index 2，旧 runner 明确拒绝。预算按一次全文而非除以 N；stats 沿用结果和估算字段，到期原因由 explain 安全 trace 说明。A9-01–A9-12 的结果见 [A9 报告](../review/M3-A9-2026-10-17.json)，当前支持 macOS/Linux；真实 B3/C5、Windows 与远端 CI 继续待验。
 
 ## 9. Codex 适配器
 
@@ -932,6 +932,6 @@ Claude U9、U-C1/C2/C3/C5 已由用户界面观察、原生请求/hook及state�
 
 ### 15.3 设计层面留到以后的
 
-- `refresh`（隔 N 个回合补一次，token 设计 T4）、事件内容带围栏进模板、`--count=exact`、用户自定义 effort 映射、"取不到"能否用 `unknown` 匹配、`provider` 的数据来源、规则级 `fail: closed`：M3。
+- `refresh` 已由 T40 按 [D4](../review/M3-D4-REFRESH-2026-10-17.md) 实现；事件内容带围栏进模板、`--count=exact`、用户自定义 effort 映射、"取不到"能否用 `unknown` 匹配、`provider` 的数据来源、规则级 `fail: closed`：M3。
 - Codex 会话中途 `/model` 改强度看不到，这是"只读配置"的代价；要不要补办法，M3 之后再说。
 - 只有开关的模型（Kimi、GLM）的开关从哪读：跟着这些 harness 一起推迟到 M4。

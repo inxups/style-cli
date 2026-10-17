@@ -112,7 +112,7 @@ func (v *validator) validateRuleFields(rule Rule, source string) {
 			continue // Reported once as native-field.
 		}
 		if !validRuleFieldValue(key, rule.Overrides[key]) {
-			v.add("invalid-schema", source, fmt.Sprintf("invalid value type for from override %s", key))
+			v.add(ruleValueCode(key), source, fmt.Sprintf("invalid value type for from override %s", key))
 		}
 	}
 	for _, key := range sortedMapKeys(fields) {
@@ -121,7 +121,7 @@ func (v *validator) validateRuleFields(rule Rule, source string) {
 			continue // Harness mappings and native-field are checked by validateNativeRule.
 		}
 		if !validRuleFieldValue(key, value) {
-			v.add("invalid-schema", source, fmt.Sprintf("invalid value type for rule field %s", key))
+			v.add(ruleValueCode(key), source, fmt.Sprintf("invalid value type for rule field %s", key))
 		}
 		if key == "when" {
 			if _, overridden := rule.Overrides["when"]; !overridden {
@@ -175,6 +175,7 @@ func (v *validator) validateRuleFields(rule Rule, source string) {
 		v.validateNativeRule(rule, source)
 		return
 	}
+	v.validateRefresh(rule, source)
 	if target := v.effectiveRuleString(rule, "target", ""); target == "event" {
 		event := v.effectiveRuleString(rule, "event", "")
 		if !validEvents[event] {
@@ -272,6 +273,9 @@ func (v *validator) validateTargetSelectors(rule Rule, target, source string) {
 
 func validRuleFieldValue(key string, value any) bool {
 	switch key {
+	case "refresh":
+		_, ok := RefreshInterval(value)
+		return ok
 	case "id", "target", "file", "text", "model_text", "action", "at", "repeat", "fallback", "mode", "reason", "from", "event":
 		_, ok := value.(string)
 		return ok

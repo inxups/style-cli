@@ -51,17 +51,18 @@ type Report struct {
 
 // RulePlan is one user rule and its resulting runtime or static placements.
 type RulePlan struct {
-	DeduplicatedInto string       `json:"deduplicated_into,omitempty"`
-	ID               string       `json:"id"`
-	Source           string       `json:"source"`
-	Target           string       `json:"target"`
-	Action           string       `json:"action,omitempty"` // empty for native rules
-	Status           Status       `json:"status"`
-	Needs            []string     `json:"needs,omitempty"`
-	Native           *NativeEntry `json:"native,omitempty"`
-	Placements       []Placement  `json:"placements,omitempty"`
-	Reasons          []string     `json:"reasons,omitempty"`
-	Fatal            bool         `json:"fatal,omitempty"`
+	Refresh          *RefreshPolicy `json:"refresh,omitempty"`
+	DeduplicatedInto string         `json:"deduplicated_into,omitempty"`
+	ID               string         `json:"id"`
+	Source           string         `json:"source"`
+	Target           string         `json:"target"`
+	Action           string         `json:"action,omitempty"` // empty for native rules
+	Status           Status         `json:"status"`
+	Needs            []string       `json:"needs,omitempty"`
+	Native           *NativeEntry   `json:"native,omitempty"`
+	Placements       []Placement    `json:"placements,omitempty"`
+	Reasons          []string       `json:"reasons,omitempty"`
+	Fatal            bool           `json:"fatal,omitempty"`
 }
 
 // Placement is one event hook or static slot selected by the planner.
@@ -97,6 +98,7 @@ const (
 // Requirement is the adapter-independent demand derived from a merged rule.
 // AnyCapabilities is an OR set; AllCapabilities must all be present.
 type Requirement struct {
+	Refresh           int
 	RuleID            string
 	Target            string
 	Action            string
@@ -112,4 +114,18 @@ type Requirement struct {
 	StaticBody        bool
 	HasWhen           bool
 	ProviderCondition bool
+}
+
+// RefreshPolicy describes submitted-prompt cadence without revealing content.
+type RefreshPolicy struct {
+	Interval    int      `json:"interval"`
+	Clock       string   `json:"clock"`
+	Cadence     string   `json:"cadence"`
+	MatchedOnly bool     `json:"matched_only"`
+	Limits      []string `json:"limits"`
+}
+
+func DescribeRefresh(interval int) *RefreshPolicy {
+	return &RefreshPolicy{Interval: interval, Clock: "prompt.submitted", Cadence: "first match, then N submitted turns since last emission", MatchedOnly: true,
+		Limits: []string{"prompt-count-fallback without native turn IDs", "no child cadence without child prompt callbacks", "due output waits for its original matching point", "full per-emission budget"}}
 }

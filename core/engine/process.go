@@ -43,6 +43,9 @@ func (e *Engine) process(input Input, limit tokens.InputLimit, trace *Trace) (Ou
 	if input.Harness == "" || input.Scope.SessionID == "" || input.Scope.AgentID == "" {
 		return Output{}, fmt.Errorf("engine: harness and session scope are required")
 	}
+	if input.Refresh != nil && !input.Refresh.Matches(input.Scope, input.Harness) {
+		return Output{}, fmt.Errorf("engine: refresh frame does not match harness and scope")
+	}
 	if limit.Value < 0 || (limit.Value > 0 && limit.Unit != tokens.TokensUnit && limit.Unit != tokens.CharsUnit) {
 		return Output{}, fmt.Errorf("engine: invalid input limit")
 	}
@@ -212,9 +215,16 @@ func (e *Engine) process(input Input, limit tokens.InputLimit, trace *Trace) (Ou
 			continue
 		}
 		claim := state.ClaimInput{
+			Refresh: item.entry.Refresh, RefreshFrame: input.Refresh,
 			Scope: input.Scope, Repeat: item.entry.Repeat, Action: item.entry.Action,
 			Event: item.point.Name, Rule: item.entry.Rule, TurnID: input.TurnID,
 			Body: modelText, ReinjectOnCompact: item.entry.ReinjectOnCompact,
+		}
+		if item.entry.Refresh > 0 {
+			claim.RefreshTrace = &state.RefreshTrace{}
+			if item.trace != nil {
+				item.trace.Refresh = claim.RefreshTrace
+			}
 		}
 		reservation, allowed, err := e.store.Claim(claim)
 		if item.trace != nil {

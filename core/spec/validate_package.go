@@ -13,8 +13,8 @@ var (
 )
 
 var packageFields = stringSet("spec", "name", "version", "description", "authors", "requires", "reads", "vars", "settings", "recommends", "priority", "budget", "defaults", "rules")
-var ruleFields = stringSet("id", "target", "file", "text", "model_text", "action", "at", "when", "repeat", "reinject_on_compact", "sources", "fallback", "priority", "max_tokens", "reason", "from", "enabled", "mode", "tool", "names", "mcp", "skill", "event", "reads")
-var defaultsFields = stringSet("action", "at", "repeat", "reinject_on_compact", "sources", "fallback", "priority", "max_tokens")
+var ruleFields = stringSet("id", "target", "file", "text", "model_text", "action", "at", "when", "repeat", "refresh", "reinject_on_compact", "sources", "fallback", "priority", "max_tokens", "reason", "from", "enabled", "mode", "tool", "names", "mcp", "skill", "event", "reads")
+var defaultsFields = stringSet("action", "at", "repeat", "refresh", "reinject_on_compact", "sources", "fallback", "priority", "max_tokens")
 
 func (v *validator) packageSource() string {
 	if v.pkg.SingleFile && len(v.pkg.Rules) > 0 && v.pkg.Rules[0].Source != "" {
@@ -71,6 +71,8 @@ func (v *validator) validatePackage() {
 			for _, key := range sortedMapKeys(fields) {
 				if !defaultsFields[key] {
 					v.add("defaults-field", v.packageSource(), fmt.Sprintf("defaults cannot set %q", key))
+				} else if key == "refresh" && !validRuleFieldValue(key, fields[key]) {
+					v.add("refresh-invalid", v.packageSource(), "defaults.refresh must be an integer from 0 to 1000000")
 				} else if !validRuleFieldValue(key, fields[key]) {
 					v.add("invalid-schema", v.packageSource(), fmt.Sprintf("invalid value type for defaults.%s", key))
 				} else if !validRuleFieldEnum(key, fields[key]) {

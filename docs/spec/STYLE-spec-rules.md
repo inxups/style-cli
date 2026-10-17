@@ -263,8 +263,8 @@ M1 的 `skipped-m2` 状态取消。token 一节单列"native hook 输出不估�
 
 ### 3.11 M3-D4 refresh 评审稿
 
-以下是已获用户确认的 [D4 方案](../review/M3-D4-REFRESH-2026-10-17.md)，当前规则格式尚不接受该字段。提议在规则、defaults 和 from 覆盖中加入整数 `refresh: N`；0/省略关闭，正数不超过 1,000,000，只适用于 inject/warn 与 repeat session。block、repeat every/turn、subagent.start、system replace 不兼容；native 显式声明仍为 native-field。warn 的默认 every 不变，继承规则和 0 关闭详见方案 §2。
+以下是已获用户确认的 [D4 方案](../review/M3-D4-REFRESH-2026-10-17.md)，T40 已实现，在规则、defaults 和 from 覆盖中接受整数 `refresh: N`；0/省略关闭，正数不超过 1,000,000，只适用于 inject/warn 与 repeat session。block、repeat every/turn、subagent.start、system replace 不兼容；native 显式声明仍为 native-field。warn 的默认 every 不变，继承规则和 0 关闭详见方案 §2。
 
 开启后同一作用域/代/按需纪元/规则/模型正文，首次正常命中就发，之后距离上次保留输出满 N 个实际提交回合才可再次发；不按命中次数计、不补欠账，未命中/空输出/block 优先/cap-drop 不消费机会。system 走动态双点，其他 target 保留原匹配入口；正文变更、A→B→A、clear/compact/resume/fork 与旧 seen 升级按方案 §3–6。每次仍发送完整正文；reason 继续只用于成本告警。
 
-该提案不改变上文已经实现的 repeat、sources、静态位置或 native 语义；D4 已确认，待 T40/A9 通过后再同步实施状态。
+无有效 refresh 时，上文既有 repeat、sources、静态位置和 native 语义保持。用法与升级边界见 [周期补发说明](../STYLE-REFRESH.md)，实现验收见 [M3-A9](../review/M3-A9-2026-10-17.json)。

@@ -64,6 +64,15 @@ func Build(request Request) (Result, error) {
 	if err := deduplicate(&result, request.Packages); err != nil {
 		return Result{}, err
 	}
+	for _, events := range result.Index.Harnesses {
+		for _, entries := range events {
+			for _, entry := range entries {
+				if entry.Refresh > 0 {
+					result.Index.Format = RefreshFormat
+				}
+			}
+		}
+	}
 	return result, nil
 }
 

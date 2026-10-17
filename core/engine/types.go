@@ -28,6 +28,7 @@ type Point struct {
 
 // Input contains provider-neutral facts for one hook invocation.
 type Input struct {
+	Refresh    *state.RefreshFrame
 	Harness    string
 	Source     string
 	TurnSource string

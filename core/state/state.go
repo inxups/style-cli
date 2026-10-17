@@ -2,6 +2,7 @@ package state
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -12,6 +13,9 @@ import (
 	"strings"
 	"sync"
 	"time"
+	"unicode/utf8"
+
+	"github.com/inxups/style-cli/internal/saferead"
 )
 
 const DefaultExpiry = 7 * 24 * time.Hour
@@ -71,6 +75,19 @@ func New(root string) (*Store, error) {
 // PromptCount is incremented before returning, making it a suitable fallback
 // turn identifier for a prompt.submitted event without a native turn ID.
 func (s *Store) Update(sessionID, agentID string, update EventUpdate) (Session, Scope, error) {
+	return s.update(sessionID, agentID, update, nil)
+}
+
+// UpdateLocked preserves the legacy schemas and counters while confining
+// refresh-enabled writes to the guard's anchored state root.
+func (s *Store) UpdateLocked(sessionID, agentID string, update EventUpdate, guard *RefreshGuard) (Session, Scope, error) {
+	if guard == nil || guard.store != s || guard.session != component(sessionID) {
+		return Session{}, Scope{}, fmt.Errorf("state: refresh guard mismatch")
+	}
+	return s.update(sessionID, agentID, update, guard)
+}
+
+func (s *Store) update(sessionID, agentID string, update EventUpdate, guard *RefreshGuard) (Session, Scope, error) {
 	if s == nil {
 		return Session{}, Scope{}, fmt.Errorf("state: nil store")
 	}
@@ -82,25 +99,65 @@ func (s *Store) Update(sessionID, agentID string, update EventUpdate) (Session, 
 	}
 	s.mu.Lock()
 	defer s.mu.Unlock()
+	ensure := ensurePrivatePath
+	read := readStateJSON
+	write := writeJSON
+	removeAll := os.RemoveAll
+	touch := os.Chtimes
+	if guard != nil {
+		if err := guard.Check(); err != nil {
+			return Session{}, Scope{}, err
+		}
+		rel := func(path string) string { name, _ := filepath.Rel(s.root, path); return name }
+		ensure = func(_ string, parts ...string) error {
+			for i := range parts {
+				if err := guard.directory(filepath.Join(parts[:i+1]...)); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+		read = func(path string, target any) (bool, error) {
+			data, err := saferead.File(guard.root, rel(path), 64<<10)
+			if errors.Is(err, os.ErrNotExist) {
+				return false, nil
+			}
+			if err != nil {
+				return false, err
+			}
+			return true, decodeState(data, target)
+		}
+		write = func(path string, value any) error { return guard.write(rel(path), value) }
+		removeAll = func(path string) error {
+			name := rel(path)
+			if info, err := guard.root.Lstat(name); err == nil && !info.IsDir() {
+				return fmt.Errorf("state: regular directory required")
+			} else if err != nil && !errors.Is(err, os.ErrNotExist) {
+				return err
+			}
+			return guard.root.RemoveAll(name)
+		}
+		touch = func(path string, a, b time.Time) error { return guard.root.Chtimes(rel(path), a, b) }
+	}
 
 	now := s.now().UTC()
 	sessionDir := filepath.Join(s.root, component(sessionID))
-	if err := ensurePrivatePath(s.root, component(sessionID)); err != nil {
+	if err := ensure(s.root, component(sessionID)); err != nil {
 		return Session{}, Scope{}, fmt.Errorf("state: create session directory: %w", err)
 	}
 	agentDir := filepath.Join(sessionDir, component(agentID))
-	if err := ensurePrivatePath(s.root, component(sessionID), component(agentID)); err != nil {
+	if err := ensure(s.root, component(sessionID), component(agentID)); err != nil {
 		return Session{}, Scope{}, fmt.Errorf("state: create agent directory: %w", err)
 	}
 
 	sessionPath, scopePath := filepath.Join(sessionDir, "session.json"), filepath.Join(agentDir, "scope.json")
 	var session Session
-	sessionExists, err := readStateJSON(sessionPath, &session)
+	sessionExists, err := read(sessionPath, &session)
 	if err != nil {
 		return Session{}, Scope{}, fmt.Errorf("state: read session: %w", err)
 	}
 	var scope Scope
-	scopeExists, err := readStateJSON(scopePath, &scope)
+	scopeExists, err := read(scopePath, &scope)
 	if err != nil {
 		return Session{}, Scope{}, fmt.Errorf("state: read scope: %w", err)
 	}
@@ -111,7 +168,7 @@ func (s *Store) Update(sessionID, agentID string, update EventUpdate) (Session, 
 	case "startup":
 		// Startup starts a fresh scope even if a provider reuses its ID.
 		scope.Generation, scope.Epoch, scope.PromptCount = 0, 0, 0
-		if err := os.RemoveAll(filepath.Join(agentDir, "seen")); err != nil {
+		if err := removeAll(filepath.Join(agentDir, "seen")); err != nil {
 			return Session{}, Scope{}, fmt.Errorf("state: reset startup reservations: %w", err)
 		}
 	case "clear":
@@ -168,17 +225,22 @@ func (s *Store) Update(sessionID, agentID string, update EventUpdate) (Session, 
 	// still refreshed so Cleanup sees the session as active.
 	if !sessionExists || !sameSession(session, sessionBefore) {
 		session.UpdatedAt = now
-		if err := writeJSON(sessionPath, session); err != nil {
+		if err := write(sessionPath, session); err != nil {
 			return Session{}, Scope{}, fmt.Errorf("state: write session: %w", err)
 		}
 	}
 	if !scopeExists || !sameScope(scope, scopeBefore) {
 		scope.UpdatedAt = now
-		if err := writeJSON(scopePath, scope); err != nil {
+		if err := write(scopePath, scope); err != nil {
 			return Session{}, Scope{}, fmt.Errorf("state: write scope: %w", err)
 		}
-	} else if err := os.Chtimes(scopePath, now, now); err != nil {
+	} else if err := touch(scopePath, now, now); err != nil {
 		return Session{}, Scope{}, fmt.Errorf("state: refresh scope time: %w", err)
+	}
+	if guard != nil {
+		if err := guard.Check(); err != nil {
+			return Session{}, Scope{}, err
+		}
 	}
 	return session, scope, nil
 }
@@ -271,6 +333,54 @@ func (s *Store) Cleanup(maxAge time.Duration) (int, error) {
 		if err != nil {
 			return removed, fmt.Errorf("state: inspect %q: %w", entry.Name(), err)
 		}
+		if latest.IsZero() || !latest.Before(cutoff) {
+			continue
+		}
+		if RefreshSupported() {
+			// Lock every expired candidate, including an old session that may
+			// enable refresh concurrently. Quarantine so waiting old inode
+			// holders fail their identity check, then close before unlinking.
+			root, err := saferead.AnchorMutable(s.root)
+			if err != nil {
+				return removed, err
+			}
+			guard, err := openRefreshGuard(context.Background(), s, root, entry.Name(), false)
+			if err != nil {
+				if strings.Contains(err.Error(), "lock busy") {
+					continue
+				}
+				return removed, err
+			}
+			latest, err := newestStateFileTime(path)
+			if err != nil {
+				guard.Close()
+				return removed, err
+			}
+			if !latest.IsZero() && !latest.Before(cutoff) {
+				guard.Close()
+				continue
+			}
+			cleanupRoot, err := guard.root.OpenRoot(".")
+			if err != nil {
+				guard.Close()
+				return removed, err
+			}
+			quarantine := ".expired-" + randomReservation()
+			err = guard.Check()
+			if err == nil {
+				err = guard.root.Rename(entry.Name(), quarantine)
+			}
+			guard.Close()
+			if err == nil {
+				err = cleanupRoot.RemoveAll(quarantine)
+			}
+			cleanupRoot.Close()
+			if err != nil {
+				return removed, err
+			}
+			removed++
+			continue
+		}
 		if !latest.IsZero() && latest.Before(cutoff) {
 			if err := os.RemoveAll(path); err != nil {
 				return removed, fmt.Errorf("state: remove expired session %q: %w", entry.Name(), err)
@@ -279,6 +389,30 @@ func (s *Store) Cleanup(maxAge time.Duration) (int, error) {
 		}
 	}
 	return removed, nil
+}
+
+// Creating a cleanup guard changes the session directory and lock mtimes.
+// Recheck the actual state files under the lock so a first refresh writer is
+// observed without making a newly created guard keep an expired session alive.
+func newestStateFileTime(root string) (time.Time, error) {
+	var latest time.Time
+	err := filepath.WalkDir(root, func(path string, entry os.DirEntry, walkErr error) error {
+		if walkErr != nil {
+			return walkErr
+		}
+		if entry.IsDir() || entry.Type()&os.ModeSymlink != 0 || path == filepath.Join(root, "refresh.lock") {
+			return nil
+		}
+		info, err := entry.Info()
+		if err != nil {
+			return err
+		}
+		if info.ModTime().After(latest) {
+			latest = info.ModTime()
+		}
+		return nil
+	})
+	return latest, err
 }
 
 func newestModTime(root string) (time.Time, error) {
@@ -324,15 +458,23 @@ func readStateJSON(path string, target any) (bool, error) {
 	if err != nil {
 		return false, err
 	}
+	return true, decodeState(data, target)
+}
+
+func decodeState(data []byte, target any) error {
+	trimmed := bytes.TrimSpace(data)
+	if len(trimmed) == 0 || trimmed[0] != '{' || !utf8.Valid(data) {
+		return fmt.Errorf("state: invalid JSON object")
+	}
 	decoder := json.NewDecoder(bytes.NewReader(data))
 	decoder.DisallowUnknownFields()
 	if err := decoder.Decode(target); err != nil {
-		return true, err
+		return err
 	}
 	if err := decoder.Decode(new(any)); err != io.EOF {
-		return true, fmt.Errorf("unexpected trailing JSON")
+		return fmt.Errorf("unexpected trailing JSON")
 	}
-	return true, nil
+	return nil
 }
 
 func writeJSON(path string, value any) error {

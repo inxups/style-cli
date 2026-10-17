@@ -36,6 +36,9 @@ func appendPlacement(result *Result, pkg *spec.ResolvedPackage, info PackageInfo
 		return fmt.Errorf("source bytes for %q are unavailable", source)
 	}
 	if placement.StaticSlot != "" {
+		if n, _ := spec.RefreshInterval(rule.Effective["refresh"]); n > 0 {
+			return fmt.Errorf("refresh cannot use a static placement")
+		}
 		if placement.Event != "" || !knownStaticSlot(placement.StaticSlot) {
 			return fmt.Errorf("placement for %q uses invalid static slot %q", id, placement.StaticSlot)
 		}
@@ -117,6 +120,10 @@ func makeEntry(pkg *spec.ResolvedPackage, rule spec.Rule, planned plan.RulePlan,
 		Repeat: repeat, ReinjectOnCompact: boolValue(effective["reinject_on_compact"]),
 		Reevaluate: placement.Reevaluate, Needs: sortedStrings(planned.Needs), Body: body,
 		Estimate: tokens.Estimate{}, DegradedFrom: optionalString(placement.DegradedFrom)}
+	entry.Refresh, _ = spec.RefreshInterval(effective["refresh"])
+	if entry.Refresh > 0 && (repeat != "session" || placement.Action == "block" || placement.Event == plan.SubagentStart) {
+		return Entry{}, fmt.Errorf("incompatible refresh placement")
+	}
 	if placement.Event == plan.SessionStart {
 		sources, err := stringsValue(effective["sources"])
 		if err != nil {

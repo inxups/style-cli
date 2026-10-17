@@ -13,13 +13,19 @@ import (
 
 // Reservation is a successful exclusive claim on a repeat key.
 type Reservation struct {
-	path string
-	once sync.Once
-	err  error
+	release   func() error
+	releaseMu sync.Mutex
+	released  bool
+	path      string
+	once      sync.Once
+	err       error
 }
 
 // ClaimInput describes the rule, rendered body, and event scope to reserve.
 type ClaimInput struct {
+	Refresh           int
+	RefreshFrame      *RefreshFrame
+	RefreshTrace      *RefreshTrace
 	Scope             Scope
 	Repeat            string
 	Action            string
@@ -37,11 +43,17 @@ func (s *Store) Claim(input ClaimInput) (*Reservation, bool, error) {
 	if s == nil {
 		return nil, false, fmt.Errorf("state: nil store")
 	}
+	if input.Refresh > 0 {
+		return s.claimRefresh(input)
+	}
 	if input.Action == "block" || input.Repeat == "every" || input.Event == "subagent.start" {
 		return nil, true, nil
 	}
 	if input.Scope.SessionID == "" || input.Scope.AgentID == "" || input.Rule == "" {
 		return nil, false, fmt.Errorf("state: session, agent, and rule are required for repeat claim")
+	}
+	if input.RefreshFrame != nil {
+		return s.claimOrdinaryLocked(input)
 	}
 	if input.Repeat != "session" && input.Repeat != "turn" {
 		return nil, false, fmt.Errorf("state: unsupported repeat value %q", input.Repeat)
@@ -72,6 +84,18 @@ func (r *Reservation) Release() error {
 	if r == nil {
 		return nil
 	}
+	if r.release != nil {
+		r.releaseMu.Lock()
+		defer r.releaseMu.Unlock()
+		if r.released {
+			return nil
+		}
+		err := r.release()
+		if err == nil {
+			r.released = true
+		}
+		return err
+	}
 	r.once.Do(func() {
 		if err := os.Remove(r.path); !errors.Is(err, os.ErrNotExist) {
 			r.err = err
@@ -92,6 +116,9 @@ func sha256Sum(value string) string {
 
 // RepeatKeySHA256 identifies the logical claim without exposing filesystem paths.
 func RepeatKeySHA256(input ClaimInput) string {
+	if input.Refresh > 0 {
+		return "sha256:" + sha256Sum(refreshRepeatName(input))
+	}
 	if input.Action == "block" || input.Repeat == "every" || input.Event == "subagent.start" {
 		return ""
 	}

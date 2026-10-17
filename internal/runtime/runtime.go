@@ -167,21 +167,35 @@ func (r *Runtime) Register(runner *agenthooks.Runner) error {
 		}
 		return decision, nil
 	})
-	runner.OnOther("PostModelSwitch", func(_ context.Context, event *agenthooks.Event) error {
+	runner.OnOther("PostModelSwitch", func(ctx context.Context, event *agenthooks.Event) error {
 		if r.InitializationError != nil {
 			return r.InitializationError
+		}
+		if r.loadErr != nil || r.Engine == nil {
+			return fmt.Errorf("runtime: index is unavailable")
 		}
 		if event == nil {
 			return fmt.Errorf("runtime: missing model-switch event")
 		}
-		previous, err := r.State.ReadSession(event.Session.ID)
+		guard, err := r.refreshGuard(ctx, event)
+		if err != nil {
+			return fmt.Errorf("runtime: refresh state unavailable")
+		}
+		if guard != nil {
+			defer guard.Close()
+			if err := guard.Preflight(runtimeAgentID(event), string(r.Provider)); err != nil {
+				r.logError(event, "state-error")
+				return fmt.Errorf("runtime: refresh state invalid")
+			}
+		}
+		previous, err := r.readSession(event.Session.ID, guard)
 		if err != nil {
 			r.logError(event, "state-error")
 			return fmt.Errorf("runtime: model-switch state read failed")
 		}
 		update := r.Adapter.StateUpdate(event, event, previous)
 		applySessionFacts(&update, event.Session)
-		if _, _, err := r.State.Update(event.Session.ID, runtimeAgentID(event), update); err != nil {
+		if _, _, err := r.updateState(event.Session.ID, runtimeAgentID(event), update, guard); err != nil {
 			r.logError(event, "state-error")
 			return fmt.Errorf("runtime: model-switch state update failed")
 		}
@@ -236,7 +250,19 @@ func (r *Runtime) process(ctx context.Context, event *agenthooks.Event, typed an
 		r.logError(event, "index-invalid")
 		return engine.Output{}, fmt.Errorf("runtime: index is unavailable")
 	}
-	previous, err := r.State.ReadSession(event.Session.ID)
+	guard, err := r.refreshGuard(ctx, event)
+	if err != nil {
+		r.logError(event, "state-error")
+		return engine.Output{}, fmt.Errorf("runtime: refresh state unavailable")
+	}
+	if guard != nil {
+		defer guard.Close()
+		if err := guard.Preflight(runtimeAgentID(event), string(r.Provider)); err != nil {
+			r.logError(event, "state-error")
+			return engine.Output{}, fmt.Errorf("runtime: refresh state invalid")
+		}
+	}
+	previous, err := r.readSession(event.Session.ID, guard)
 	if err != nil {
 		r.logError(event, "state-error")
 		return engine.Output{}, fmt.Errorf("runtime: state read failed")
@@ -253,7 +279,7 @@ func (r *Runtime) process(ctx context.Context, event *agenthooks.Event, typed an
 	if event.Agent != nil {
 		agentID = event.Agent.ID
 	}
-	session, scope, err := r.State.Update(event.Session.ID, agentID, update)
+	session, scope, err := r.updateState(event.Session.ID, agentID, update, guard)
 	if err != nil {
 		r.logError(event, "state-error")
 		return engine.Output{}, fmt.Errorf("runtime: state update failed")
@@ -266,6 +292,13 @@ func (r *Runtime) process(ctx context.Context, event *agenthooks.Event, typed an
 	input.Harness = string(r.Provider)
 	input.Source = update.Source
 	input.Scope = scope
+	if guard != nil {
+		input.Refresh, err = guard.Advance(scope, string(r.Provider), update, event.Session.TurnID)
+		if err != nil {
+			r.logError(event, "state-error")
+			return engine.Output{}, fmt.Errorf("runtime: refresh clock unavailable")
+		}
+	}
 	if input.Variables == nil {
 		input.Variables = make(map[string]string)
 	}
@@ -312,6 +345,20 @@ func (r *Runtime) process(ctx context.Context, event *agenthooks.Event, typed an
 	}
 	r.record(event, output)
 	return output, nil
+}
+
+func (r *Runtime) refreshGuard(ctx context.Context, event *agenthooks.Event) (*state.RefreshGuard, error) {
+	if r.Engine == nil || !r.Engine.HasRefresh(string(r.Provider)) {
+		return nil, nil
+	}
+	return r.State.BeginRefresh(ctx, event.Session.ID)
+}
+
+func (r *Runtime) updateState(sessionID, agentID string, update state.EventUpdate, guard *state.RefreshGuard) (state.Session, state.Scope, error) {
+	if guard != nil {
+		return r.State.UpdateLocked(sessionID, agentID, update, guard)
+	}
+	return r.State.Update(sessionID, agentID, update)
 }
 
 func applySessionFacts(update *state.EventUpdate, session agenthooks.SessionInfo) {
@@ -424,4 +471,11 @@ func runtimeAgentID(event *agenthooks.Event) string {
 		return "main"
 	}
 	return event.Agent.ID
+}
+
+func (r *Runtime) readSession(sessionID string, guard *state.RefreshGuard) (state.Session, error) {
+	if guard != nil {
+		return guard.ReadSession()
+	}
+	return r.State.ReadSession(sessionID)
 }

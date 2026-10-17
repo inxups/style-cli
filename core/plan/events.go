@@ -49,7 +49,7 @@ func planEvents(req Requirement, result RulePlan, adapter Adapter) RulePlan {
 	}
 	canStatic := req.Target == "tool" || req.Target == "mcp" || req.Target == "skill"
 	// Runtime conditions cannot be preserved by an always-on instruction.
-	if canStatic && len(events) > 0 && req.Fallback == "degrade" && req.Action == "inject" && req.StaticBody && !req.HasWhen {
+	if canStatic && req.Refresh == 0 && len(events) > 0 && req.Fallback == "degrade" && req.Action == "inject" && req.StaticBody && !req.HasWhen {
 		if slot, supported := adapter.StaticLocation("append"); supported && slot != "" {
 			result.Status = Degraded
 			result.Placements = []Placement{{Action: "inject", Status: Degraded,

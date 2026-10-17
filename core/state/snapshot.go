@@ -12,6 +12,7 @@ import (
 	"path/filepath"
 	"regexp"
 	"sort"
+	"strings"
 	"unicode/utf8"
 
 	"github.com/inxups/style-cli/internal/saferead"
@@ -39,6 +40,32 @@ func CopySnapshot(ctx context.Context, source, destination, sessionID, agentID s
 	session := component(sessionID)
 	agent := filepath.Join(session, component(agentID))
 	seen := filepath.Join(agent, "seen")
+	refreshDir := filepath.Join(agent, "refresh")
+	refreshPresent := func() (bool, error) {
+		if err := saferead.CheckDirectories(root, filepath.Join(refreshDir, "placeholder")); err != nil {
+			if errors.Is(err, os.ErrNotExist) {
+				return false, nil
+			}
+			return false, err
+		}
+		return true, nil
+	}
+	hasRefresh, err := refreshPresent()
+	if err != nil {
+		return Snapshot{}, err
+	}
+	var guard *RefreshGuard
+	if hasRefresh {
+		anchor, err := saferead.AnchorMutable(source)
+		if err != nil {
+			return Snapshot{}, err
+		}
+		guard, err = openRefreshGuard(ctx, nil, anchor, session, true)
+		if err != nil {
+			return Snapshot{}, err
+		}
+		defer guard.Close()
+	}
 	type item struct {
 		Name   string      `json:"name"`
 		SHA256 string      `json:"sha256"`
@@ -46,10 +73,45 @@ func CopySnapshot(ctx context.Context, source, destination, sessionID, agentID s
 		Info   os.FileInfo `json:"-"`
 	}
 	capture := func() ([]item, bool, error) {
+		present, err := refreshPresent()
+		if err != nil {
+			return nil, false, err
+		}
+		if present != hasRefresh {
+			return nil, false, saferead.ErrChanged
+		}
+		if guard != nil {
+			if err := guard.Check(); err != nil {
+				return nil, false, err
+			}
+		}
 		result := make([]item, 0)
 		scopeExists := false
 		total := 0
 		names := []string{filepath.Join(session, "session.json"), filepath.Join(agent, "scope.json")}
+		refreshNames := map[string]bool{}
+		if hasRefresh {
+			dir, err := root.Open(refreshDir)
+			if err != nil {
+				return nil, false, err
+			}
+			children, readErr := dir.ReadDir(10001)
+			_ = dir.Close()
+			if readErr != nil && !errors.Is(readErr, io.EOF) {
+				return nil, false, readErr
+			}
+			if len(children) > 10000 {
+				return nil, false, fmt.Errorf("snapshot refresh file limit")
+			}
+			for _, entry := range children {
+				name := strings.TrimSuffix(entry.Name(), ".json")
+				if entry.Name() != name+".json" || !(safeComponentPattern.MatchString(name) || len(name) == 65 && name[0] == '!' && refreshHash.MatchString(name[1:])) {
+					return nil, false, fmt.Errorf("invalid snapshot refresh name")
+				}
+				full := filepath.Join(refreshDir, entry.Name())
+				refreshNames[full] = true
+			}
+		}
 		if err := saferead.CheckDirectories(root, filepath.Join(seen, "placeholder")); err != nil && !errors.Is(err, os.ErrNotExist) {
 			return nil, false, err
 		}
@@ -72,6 +134,12 @@ func CopySnapshot(ctx context.Context, source, destination, sessionID, agentID s
 		} else if !errors.Is(err, os.ErrNotExist) {
 			return nil, false, err
 		}
+		for name := range refreshNames {
+			names = append(names, name)
+		}
+		if len(names) > 10000 {
+			return nil, false, fmt.Errorf("snapshot file limit")
+		}
 		for i, name := range names {
 			if err := ctx.Err(); err != nil {
 				return nil, false, err
@@ -79,6 +147,9 @@ func CopySnapshot(ctx context.Context, source, destination, sessionID, agentID s
 			limit := int64(64 << 10)
 			if i >= 2 {
 				limit = 0
+			}
+			if refreshNames[name] {
+				limit = maxRefreshBytes
 			}
 			info, statErr := root.Lstat(name)
 			data, err := saferead.File(root, name, limit)
@@ -108,6 +179,11 @@ func CopySnapshot(ctx context.Context, source, destination, sessionID, agentID s
 				}
 				if decoder.Decode(new(any)) != io.EOF {
 					return nil, false, fmt.Errorf("trailing snapshot state")
+				}
+			}
+			if refreshNames[name] {
+				if _, err := decodeRefreshState(data); err != nil {
+					return nil, false, err
 				}
 			}
 			total += len(data)
@@ -144,6 +220,14 @@ func CopySnapshot(ctx context.Context, source, destination, sessionID, agentID s
 			return Snapshot{}, err
 		}
 		if err := os.WriteFile(target, it.Data, 0600); err != nil {
+			return Snapshot{}, err
+		}
+	}
+	if present, err := refreshPresent(); err != nil || present != hasRefresh {
+		return Snapshot{}, saferead.ErrChanged
+	}
+	if guard != nil {
+		if err := guard.Check(); err != nil {
 			return Snapshot{}, err
 		}
 	}

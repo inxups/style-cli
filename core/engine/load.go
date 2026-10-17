@@ -77,6 +77,9 @@ func newValidated(index compile.Index, store *state.Store) (*Engine, error) {
 		for point, entries := range events {
 			compiled := make([]compiledEntry, 0, len(entries))
 			for _, entry := range entries {
+				if entry.Refresh > 0 && (index.Format != compile.RefreshFormat || entry.Repeat != "session" || entry.Action == "block" || point == "subagent.start") {
+					return nil, fmt.Errorf("engine: invalid refresh policy")
+				}
 				if entry.Reevaluate && (entry.Target != "system" || point != "prompt.submitted") {
 					return nil, fmt.Errorf("engine: reeval is only valid for dynamic system entries at prompt.submitted")
 				}
@@ -93,6 +96,21 @@ func newValidated(index compile.Index, store *state.Store) (*Engine, error) {
 		}
 	}
 	return engine, nil
+}
+
+// HasRefresh enables extra clock/locking I/O only for the active harness.
+func (e *Engine) HasRefresh(harness string) bool {
+	if e == nil {
+		return false
+	}
+	for _, entries := range e.entries[harness] {
+		for _, entry := range entries {
+			if entry.entry.Refresh > 0 {
+				return true
+			}
+		}
+	}
+	return false
 }
 
 // LoadIndexBytes loads a bounded byte slice using the same schema checks.

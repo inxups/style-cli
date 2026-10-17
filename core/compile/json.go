@@ -49,8 +49,25 @@ func (index *Index) UnmarshalJSON(data []byte) error {
 	if err := decodeStrict(data, &decoded); err != nil {
 		return err
 	}
-	if decoded.Format != Format {
+	if decoded.Format != Format && decoded.Format != RefreshFormat {
 		return fmt.Errorf("compile: unsupported index format %d", decoded.Format)
+	}
+	if decoded.Format == Format {
+		var wire struct {
+			Harnesses map[string]map[string][]map[string]json.RawMessage `json:"harnesses"`
+		}
+		if err := json.Unmarshal(data, &wire); err != nil {
+			return err
+		}
+		for _, events := range wire.Harnesses {
+			for _, entries := range events {
+				for _, entry := range entries {
+					if _, exists := entry["refresh"]; exists {
+						return fmt.Errorf("compile: refresh requires index format 2")
+					}
+				}
+			}
+		}
 	}
 	for _, events := range decoded.Harnesses {
 		for event, entries := range events {

@@ -10,7 +10,8 @@ import (
 
 const (
 	// Format is the stable on-disk index format emitted by M1.
-	Format = 1
+	Format        = 1
+	RefreshFormat = 2
 )
 
 // PackageInfo identifies one installed package in the index. Seq is the
@@ -44,6 +45,7 @@ type StaticEntry struct {
 // Entry is one runtime evaluation point. The body is represented as static
 // text or literal/variable fragments so the hot path never reparses Markdown.
 type Entry struct {
+	Refresh                int             `json:"refresh,omitempty"`
 	Rule                   string          `json:"rule"`
 	Entry                  string          `json:"entry"`
 	Source                 string          `json:"src"`

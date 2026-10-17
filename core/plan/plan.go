@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/inxups/style-cli/core/spec"
+	"github.com/inxups/style-cli/core/state"
 )
 
 // Build plans an already-validated, merged package for one adapter. Adapters
@@ -53,6 +54,8 @@ func planRule(rule spec.Rule, adapterName string, adapter Adapter) (RulePlan, er
 	case req.ProviderCondition:
 		result.Status = Never
 		result.Reasons = []string{"when.provider is not evaluated in M1"}
+	case req.Refresh > 0 && !state.RefreshSupported():
+		result = failedPlan(result, req, "refresh-unsupported-platform: refresh session locking is unavailable on this platform")
 	default:
 		reason, blind := adapter.BlindSpot(rule)
 		if blind {
@@ -68,6 +71,9 @@ func planRule(rule spec.Rule, adapterName string, adapter Adapter) (RulePlan, er
 				result = planEvents(req, result, adapter)
 			}
 		}
+	}
+	if req.Refresh > 0 {
+		result.Refresh = DescribeRefresh(req.Refresh)
 	}
 	return result, nil
 }

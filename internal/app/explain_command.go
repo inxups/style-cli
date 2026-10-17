@@ -122,6 +122,13 @@ func writeExplainText(out io.Writer, result ExplainResult) {
 	}
 	for _, entry := range result.Entries {
 		fmt.Fprintf(out, "entry %s point=%s source=%s action=%s selector=%s sources=%s when=%s render=%s block=%s repeat=%s output=%s\n", quote(entry.Entry), quote(entry.Point), quote(entry.Source), quote(entry.Action), entry.Selector, entry.Sources, entry.When, entry.Render, entry.Block, entry.Repeat, entry.Output)
+		if entry.Refresh != nil {
+			fmt.Fprintf(out, "  refresh interval=%d current=%d clock=%s reason=%s", entry.Refresh.Interval, entry.Refresh.Current, entry.Refresh.Clock, entry.Refresh.Reason)
+			if entry.Refresh.Last != nil {
+				fmt.Fprintf(out, " last=%d", *entry.Refresh.Last)
+			}
+			fmt.Fprintln(out)
+		}
 		for _, check := range entry.Conditions {
 			fmt.Fprintf(out, "  when %s: %s available=%t source=%s\n", quote(check.Field), check.Result, check.Available, check.Source)
 		}

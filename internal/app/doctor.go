@@ -12,9 +12,11 @@ import (
 	"reflect"
 	"time"
 
+	"github.com/inxups/style-cli/core/compile"
 	"github.com/inxups/style-cli/core/engine"
 	"github.com/inxups/style-cli/core/state"
 	"github.com/inxups/style-cli/internal/adapter"
+	"github.com/inxups/style-cli/internal/saferead"
 )
 
 type DoctorRequest struct {
@@ -81,6 +83,15 @@ func (s *Service) Doctor(ctx context.Context, request DoctorRequest) (DoctorResu
 				code = "route-drift"
 			}
 			result.add(code, "error", err.Error())
+		}
+		if data, err := saferead.ReadFile(filepath.Join(home, "build", "index.json"), 16<<20); err == nil {
+			var index compile.Index
+			if json.Unmarshal(data, &index) == nil && index.Format == compile.RefreshFormat {
+				result.add("refresh-index-2", "warning", "refresh uses index format 2; upgrade every configured STYLE runner before sync; old runners conservatively reject the whole index")
+				if !state.RefreshSupported() {
+					result.add("refresh-unsupported-platform", "error", "refresh session locking is unavailable on this platform")
+				}
+			}
 		}
 		for provider, harness := range lock.Harnesses {
 			if definition, ok := s.definitions[adapter.ProviderID(provider)]; ok && harness.StaticLayout == "" {

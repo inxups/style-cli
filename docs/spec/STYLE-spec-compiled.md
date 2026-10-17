@@ -169,9 +169,9 @@ static 仍只提供 index 的位置/摘要/估算，不证明原生已加载；n
 
 ### 9.8 M3-D4 refresh 产物评审稿
 
-以下为已获用户确认的 [D4 §8](../review/M3-D4-REFRESH-2026-10-17.md#8-编译与旧安装兼容)，当前生产 index 仍为 format 1。提议新版 engine 严格读取 1/2：只有最终有效 runtime entry 含正数 refresh 才生成 format 2 并附该字段；无有效 refresh 和显式 0 继续 format 1，旧 golden 保持。format 1 禁止夹带 refresh；旧 runner 必须拒绝整份新格式，不部分运行或忽略周期。
+以下为已获用户确认的 [D4 §8](../review/M3-D4-REFRESH-2026-10-17.md#8-编译与旧安装兼容)，T40 已实现新版 engine 严格读取 1/2：只有最终有效 runtime entry 含正数 refresh 才生成 format 2 并附该字段；无有效 refresh 和显式 0 继续 format 1，旧 golden 保持。format 1 禁止夹带 refresh；旧 runner 必须拒绝整份新格式，不部分运行或忽略周期。
 
-session/scope/旧 seen 与 lock 1/2/3 保持现有格式，新增 scope refresh 状态使用独立 format 1，snapshot 需要同时捕获。build/explain.json 可选说明加入安全周期元数据并和 index 同事务、绑定实际摘要；旧说明缺失回退与冻结重现边界保持。跨包等价比较必须包含完整周期/placement，项目 effects 与批准快照必须覆盖新效果。A9-09/A9-11/A9-12 验证旧二进制门禁、只读重放与五路线事务；本节不代表已完成。
+session/scope/旧 seen 与 lock 1/2/3 保持现有格式，新增 scope refresh 状态使用独立 format 1，snapshot 需要同时捕获。build/explain.json 可选说明加入安全周期元数据并和 index 同事务、绑定实际摘要；旧说明缺失回退与冻结重现边界保持。跨包等价比较必须包含完整周期/placement，项目 effects 与批准快照必须覆盖新效果。A9-09/A9-11/A9-12 的旧二进制门禁、只读重放与五路线事务见 [A9 报告](../review/M3-A9-2026-10-17.json)。先升级配置中实际调用的 runner，再重编译；doctor 提供 format 2 升级提示，旧程序错误信息及失败策略沿原行为。用法见 [周期补发说明](../STYLE-REFRESH.md)。
 
 ## 10. 安装后的状态和静态位置
 
@@ -182,7 +182,7 @@ session/scope/旧 seen 与 lock 1/2/3 保持现有格式，新增 scope refresh 
 3. 每个目标 harness 上装着普通规则的 hook，命令为 `style agenthooks run --provider=<harness>`；native 命令另按规则 3.10 写入，不经过运行时：
    - **Codex**：一组**固定**的 hook（订阅面不随规则变化），哪条规则命中由运行时读 index 判断。装、卸、更新包通常只改 index 和静态块，不改 hook 定义，也就不用重新信任。默认装成插件 `style-runtime`。
    - **Claude Code**：订阅面**跟着规则走**（Claude 没有逐个 hook 的哈希信任，只有工作区信任【文档】），装、卸包时重写 `settings.json` 里 STYLE 的条目。
-4. 无条件、正文静态的 `system` 规则写在静态位置：
+4. 无条件、正文静态且未开启正数 refresh 的 `system` 规则写在静态位置：
 
    | harness | `append` | `replace` |
    |---|---|---|
@@ -238,7 +238,7 @@ cloud manifest format=1 与管理锁分开：相对路径/生成器与 runner �
 - **U-C5**：Claude 各事件上的 `systemMessage` 是否真的显示给用户（3.2、第 5 节）。
 - **U9**：Claude 的 hook 能否知道思考被关闭（4.2）。
 - **U-T3**：估算器误差；预算默认值（7.2）都是起点，要用真实规则校准。
-- **M3 再定**：`provider` 的数据来源；事件内容带围栏进模板；"取不到"能否在列表里写 `unknown` 匹配；用户自定义 effort 映射；`refresh`（已确认 [D4 方案](../review/M3-D4-REFRESH-2026-10-17.md)，尚未实现）；规则级 `fail: closed`。
+- **M3 再定**：`provider` 的数据来源；事件内容带围栏进模板；"取不到"能否在列表里写 `unknown` 匹配；用户自定义 effort 映射；规则级 `fail: closed`。
 
 ## 附录 A：推迟的 harness 备忘
 

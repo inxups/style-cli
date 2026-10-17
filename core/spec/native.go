@@ -34,7 +34,7 @@ const maxNativeTimeout = 600
 
 // nativeEngineFields are rule fields that only the rule engine interprets.
 // Writing one on a native rule is an error; inherited defaults are ignored.
-var nativeEngineFields = stringSet("action", "at", "when", "repeat", "reinject_on_compact", "sources", "model_text", "max_tokens", "mode", "reason", "tool", "names", "mcp", "skill", "event")
+var nativeEngineFields = stringSet("action", "at", "when", "repeat", "refresh", "reinject_on_compact", "sources", "model_text", "max_tokens", "mode", "reason", "tool", "names", "mcp", "skill", "event")
 
 var nativeMappingFields = stringSet("event", "matcher", "command", "timeout")
 

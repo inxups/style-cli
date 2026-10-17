@@ -1,0 +1,3913 @@
+{
+  "format": 1,
+  "task": "M3-T40",
+  "test": "M3-A9",
+  "date": "2026-10-17",
+  "status": "passed",
+  "source_base": "c2afa6b0cd089c3c9408fe7e20f623d0562c32b7",
+  "production_baseline": "22551eed12b27a5db2a2fc4d1a26da5f67538c63",
+  "meaning": "offline implementation acceptance, real OS processes and genuine old CLI; no real harness delivery",
+  "authorization": {
+    "user_reply": "ok",
+    "approved_contract": "docs/review/M3-D4-REFRESH-2026-10-17.md",
+    "approval_commit": "c2afa6b0cd089c3c9408fe7e20f623d0562c32b7"
+  },
+  "environment": {
+    "os": "macOS-27.0.1-arm64-arm-64bit-Mach-O",
+    "machine": "arm64",
+    "python": "3.14.7",
+    "go": "go version go1.27.0 darwin/arm64",
+    "git": "git version 2.54.0"
+  },
+  "scope": {
+    "routes": [
+      "codex-user",
+      "codex-plugin",
+      "claude-user",
+      "codex-project",
+      "claude-project"
+    ],
+    "runtime_platforms_implemented": [
+      "darwin",
+      "linux"
+    ],
+    "native_platform_executed": "darwin/arm64",
+    "cross_build_only": [
+      "linux/amd64",
+      "windows/amd64"
+    ],
+    "unsupported_refresh_platforms": "all others; Windows pending D11/T70"
+  },
+  "implementation": {
+    "clock": "independent per root/harness/session/agent, hashed native IDs, prompt-only advancement, fallback disclosed",
+    "cursor": "full SHA256 strategy identity for generation/optional epoch/rule/rendered model body/N, nonce-protected rollback",
+    "guard": "permanent session inode, OS-released flock, 20ms/deadline/cancellation, cold cleanup locks even first-enable candidates then quarantines before close/unlink",
+    "state_limits": {
+      "bytes_per_namespace": 4194304,
+      "receipts_plus_cursors": 40000,
+      "snapshot_bytes_all_state": 16777216,
+      "snapshot_files_all_state": 10000
+    },
+    "compiled": "format 2 only final positive runtime entries; otherwise format 1; provenance optional and digest-bound",
+    "agenthooks": "protocol, event tables, config rendering, owner and trust unchanged; STYLE selects extra Claude clock inputs",
+    "compatibility": "existing session/scope/seen, lock 1/2/3, project declaration/binding formats, stats fields/results and prior golden files unchanged"
+  },
+  "new_acceptance": {
+    "passing_functions": 29,
+    "leaf_cases": 85,
+    "pass_events_including_groups": 98,
+    "fail": 0,
+    "helper": {
+      "function": "TestRefreshProcessHelper",
+      "top_level_non_worker_mode": "skip, separately reported",
+      "actual_execution": "spawned by synchronized-process/crash parent tests; real exit codes and output/q/receipt counts asserted",
+      "busy_retry": "test coordinator retries only explicit busy; production remains capped at 20ms"
+    },
+    "test_functions": {
+      "core/compile/refresh_test.go": [
+        "TestRefreshCompiledFormatAndPolicyEquivalence"
+      ],
+      "core/engine/refresh_test.go": [
+        "TestRefreshRejectsMismatchedFrame",
+        "TestRefreshCapRollbackAndBlockPrecedence",
+        "TestRefreshRenderedBodiesWarnAndMultiplePoints",
+        "TestRefreshUnmatchedSourcesAndCompactFalse"
+      ],
+      "core/plan/refresh_test.go": [
+        "TestRefreshSystemRequiresDynamicPrompt",
+        "TestRefreshOtherTargetsNeverBecomeStatic"
+      ],
+      "core/spec/refresh_test.go": [
+        "TestRefreshValidation",
+        "TestRefreshDefaultsFromAndSingleFile"
+      ],
+      "core/state/refresh_fault_test.go": [
+        "TestRefreshCleanupPreservesActiveLock",
+        "TestRefreshStrictRequiredStateFields",
+        "TestRefreshCleanupFirstEnableAndLegacyCandidates",
+        "TestRefreshWriteAndRollbackFailuresPreservePriorClaims",
+        "TestRefreshStaleReleaseDoesNotUndoOtherInvocation",
+        "TestRefreshSnapshotCombinedFileAndByteLimits"
+      ],
+      "core/state/refresh_test.go": [
+        "TestRefreshRollingCadenceAndClock",
+        "TestRefreshNativeReplayLateUnknownAndFallback",
+        "TestRefreshLifecycleAndScopeIsolation",
+        "TestRefreshBodyMigrationIntervalsAndRollback",
+        "TestRefreshLockDeadlineIdentityAndSnapshot",
+        "TestRefreshRejectsCorruptionSymlinksAndOverflow",
+        "TestRefreshProcessHelper",
+        "TestRefreshSynchronizedProcessesAndCrash"
+      ],
+      "core/tokens/refresh_test.go": [
+        "TestRefreshBudgetsUseFullEmission"
+      ],
+      "internal/app/refresh_test.go": [
+        "TestM3A9FiveRouteLifecycleAndSurface",
+        "TestM3A9ExplainSnapshotMatchesRuntimeReadOnly",
+        "TestM3A9PolicyChangesApprovalAndTransactionRollback"
+      ],
+      "internal/runtime/refresh_test.go": [
+        "TestRefreshRuntimeClockOnlyAndNativeWire",
+        "TestRefreshDisabledHasNoClockOrGuardAndActiveHarnessOnly",
+        "TestRefreshBusyUsesExistingFailPolicy"
+      ]
+    }
+  },
+  "regression": {
+    "root": {
+      "pass": 2935,
+      "skip": 2
+    },
+    "agenthooks": {
+      "pass": 510,
+      "skip": 23
+    },
+    "combined_pass_events": 3445,
+    "existing_opt_in_skips": 24,
+    "additional_helper_top_level_skip": 1,
+    "cached_test_results": false,
+    "vets": "both modules passed",
+    "race": {
+      "race-state-release": {
+        "pass": 98,
+        "skip": 1
+      },
+      "race-engine-runtime-release": {
+        "pass": 77
+      },
+      "race-app-release": {
+        "pass": 1338
+      }
+    },
+    "collectors": 68,
+    "smoke": 40,
+    "old_cli_gates": {
+      "migration": {
+        "cases": 16,
+        "report_sha256": "6132f376f5fa860329b0e142912294d871cbc6f5a6e051813b074cb5dededcd9",
+        "result": {
+          "test": "M2-A7 actual binary upgrade",
+          "scope": "offline CLI, harness version stubs; no real Claude session",
+          "old_binary_sha256": "4b2a46049758faef4c0a7e7e3045b877fe0503d0479b349fc5bf929adff8d958",
+          "binary_sha256": "5894f0ad248c3fe218ca91191ce6c5afdec48905fa837db0b680d63d79a8ef5c",
+          "cases": [
+            {
+              "entrypoint": "install",
+              "legacy_fixture": "lf",
+              "passed": true,
+              "read_only_commands": 5,
+              "migrated_owners": 2,
+              "repeat_sync_changed": false,
+              "doctor_healthy_before_and_after": true,
+              "external_bytes_and_mode_restored": true
+            },
+            {
+              "entrypoint": "install",
+              "legacy_fixture": "crlf",
+              "passed": true,
+              "read_only_commands": 5,
+              "migrated_owners": 2,
+              "repeat_sync_changed": false,
+              "doctor_healthy_before_and_after": true,
+              "external_bytes_and_mode_restored": true
+            },
+            {
+              "entrypoint": "install",
+              "legacy_fixture": "no-newline",
+              "passed": true,
+              "read_only_commands": 5,
+              "migrated_owners": 2,
+              "repeat_sync_changed": false,
+              "doctor_healthy_before_and_after": true,
+              "external_bytes_and_mode_restored": true
+            },
+            {
+              "entrypoint": "install",
+              "legacy_fixture": "absent",
+              "passed": true,
+              "read_only_commands": 5,
+              "migrated_owners": 2,
+              "repeat_sync_changed": false,
+              "doctor_healthy_before_and_after": true,
+              "external_bytes_and_mode_restored": true
+            },
+            {
+              "entrypoint": "sync",
+              "legacy_fixture": "lf",
+              "passed": true,
+              "read_only_commands": 5,
+              "migrated_owners": 2,
+              "repeat_sync_changed": false,
+              "doctor_healthy_before_and_after": true,
+              "external_bytes_and_mode_restored": true
+            },
+            {
+              "entrypoint": "sync",
+              "legacy_fixture": "crlf",
+              "passed": true,
+              "read_only_commands": 5,
+              "migrated_owners": 2,
+              "repeat_sync_changed": false,
+              "doctor_healthy_before_and_after": true,
+              "external_bytes_and_mode_restored": true
+            },
+            {
+              "entrypoint": "sync",
+              "legacy_fixture": "no-newline",
+              "passed": true,
+              "read_only_commands": 5,
+              "migrated_owners": 2,
+              "repeat_sync_changed": false,
+              "doctor_healthy_before_and_after": true,
+              "external_bytes_and_mode_restored": true
+            },
+            {
+              "entrypoint": "sync",
+              "legacy_fixture": "absent",
+              "passed": true,
+              "read_only_commands": 5,
+              "migrated_owners": 2,
+              "repeat_sync_changed": false,
+              "doctor_healthy_before_and_after": true,
+              "external_bytes_and_mode_restored": true
+            },
+            {
+              "entrypoint": "trust",
+              "legacy_fixture": "lf",
+              "passed": true,
+              "read_only_commands": 5,
+              "migrated_owners": 2,
+              "repeat_sync_changed": false,
+              "doctor_healthy_before_and_after": true,
+              "external_bytes_and_mode_restored": true
+            },
+            {
+              "entrypoint": "trust",
+              "legacy_fixture": "crlf",
+              "passed": true,
+              "read_only_commands": 5,
+              "migrated_owners": 2,
+              "repeat_sync_changed": false,
+              "doctor_healthy_before_and_after": true,
+              "external_bytes_and_mode_restored": true
+            },
+            {
+              "entrypoint": "trust",
+              "legacy_fixture": "no-newline",
+              "passed": true,
+              "read_only_commands": 5,
+              "migrated_owners": 2,
+              "repeat_sync_changed": false,
+              "doctor_healthy_before_and_after": true,
+              "external_bytes_and_mode_restored": true
+            },
+            {
+              "entrypoint": "trust",
+              "legacy_fixture": "absent",
+              "passed": true,
+              "read_only_commands": 5,
+              "migrated_owners": 2,
+              "repeat_sync_changed": false,
+              "doctor_healthy_before_and_after": true,
+              "external_bytes_and_mode_restored": true
+            },
+            {
+              "entrypoint": "uninstall",
+              "legacy_fixture": "lf",
+              "passed": true,
+              "read_only_commands": 5,
+              "migrated_owners": 2,
+              "repeat_sync_changed": false,
+              "doctor_healthy_before_and_after": true,
+              "external_bytes_and_mode_restored": true
+            },
+            {
+              "entrypoint": "uninstall",
+              "legacy_fixture": "crlf",
+              "passed": true,
+              "read_only_commands": 5,
+              "migrated_owners": 2,
+              "repeat_sync_changed": false,
+              "doctor_healthy_before_and_after": true,
+              "external_bytes_and_mode_restored": true
+            },
+            {
+              "entrypoint": "uninstall",
+              "legacy_fixture": "no-newline",
+              "passed": true,
+              "read_only_commands": 5,
+              "migrated_owners": 2,
+              "repeat_sync_changed": false,
+              "doctor_healthy_before_and_after": true,
+              "external_bytes_and_mode_restored": true
+            },
+            {
+              "entrypoint": "uninstall",
+              "legacy_fixture": "absent",
+              "passed": true,
+              "read_only_commands": 5,
+              "migrated_owners": 2,
+              "repeat_sync_changed": false,
+              "doctor_healthy_before_and_after": true,
+              "external_bytes_and_mode_restored": true
+            }
+          ],
+          "passed": 16,
+          "source_revision": "c2afa6b0cd089c3c9408fe7e20f623d0562c32b7",
+          "source_includes_uncommitted_T40": true
+        }
+      },
+      "replace": {
+        "cases": 12,
+        "report_sha256": "104a860edf9eb1e1dfa7eda5fcf094e45aa16476364d37ab300cfa48960446cb",
+        "result": {
+          "test": "M2-A8 replace fallback",
+          "scope": "offline built CLI with version stubs; C4 UI acceptance remains pending",
+          "binary_sha256": "5894f0ad248c3fe218ca91191ce6c5afdec48905fa837db0b680d63d79a8ef5c",
+          "source_revision": "c2afa6b0cd089c3c9408fe7e20f623d0562c32b7",
+          "cases": [
+            {
+              "provider": "codex",
+              "fallback": "degrade",
+              "format": "text",
+              "plan_status": "skipped",
+              "plan_exit": 0,
+              "unauthorized_install_exit": 1,
+              "authorized_install_exit": 0,
+              "placements": 0,
+              "user_style_tree_preserved": true,
+              "passed": true
+            },
+            {
+              "provider": "codex",
+              "fallback": "degrade",
+              "format": "json",
+              "plan_status": "skipped",
+              "plan_exit": 0,
+              "unauthorized_install_exit": 1,
+              "authorized_install_exit": 0,
+              "placements": 0,
+              "user_style_tree_preserved": true,
+              "passed": true
+            },
+            {
+              "provider": "codex",
+              "fallback": "skip",
+              "format": "text",
+              "plan_status": "skipped",
+              "plan_exit": 0,
+              "unauthorized_install_exit": 1,
+              "authorized_install_exit": 0,
+              "placements": 0,
+              "user_style_tree_preserved": true,
+              "passed": true
+            },
+            {
+              "provider": "codex",
+              "fallback": "skip",
+              "format": "json",
+              "plan_status": "skipped",
+              "plan_exit": 0,
+              "unauthorized_install_exit": 1,
+              "authorized_install_exit": 0,
+              "placements": 0,
+              "user_style_tree_preserved": true,
+              "passed": true
+            },
+            {
+              "provider": "codex",
+              "fallback": "error",
+              "format": "text",
+              "plan_status": "install-error",
+              "plan_exit": 4,
+              "unauthorized_install_exit": 1,
+              "authorized_install_exit": 4,
+              "placements": 0,
+              "user_style_tree_preserved": true,
+              "passed": true
+            },
+            {
+              "provider": "codex",
+              "fallback": "error",
+              "format": "json",
+              "plan_status": "install-error",
+              "plan_exit": 4,
+              "unauthorized_install_exit": 1,
+              "authorized_install_exit": 4,
+              "placements": 0,
+              "user_style_tree_preserved": true,
+              "passed": true
+            },
+            {
+              "provider": "claude-code",
+              "fallback": "degrade",
+              "format": "text",
+              "plan_status": "skipped",
+              "plan_exit": 0,
+              "unauthorized_install_exit": 1,
+              "authorized_install_exit": 0,
+              "placements": 0,
+              "user_style_tree_preserved": true,
+              "passed": true
+            },
+            {
+              "provider": "claude-code",
+              "fallback": "degrade",
+              "format": "json",
+              "plan_status": "skipped",
+              "plan_exit": 0,
+              "unauthorized_install_exit": 1,
+              "authorized_install_exit": 0,
+              "placements": 0,
+              "user_style_tree_preserved": true,
+              "passed": true
+            },
+            {
+              "provider": "claude-code",
+              "fallback": "skip",
+              "format": "text",
+              "plan_status": "skipped",
+              "plan_exit": 0,
+              "unauthorized_install_exit": 1,
+              "authorized_install_exit": 0,
+              "placements": 0,
+              "user_style_tree_preserved": true,
+              "passed": true
+            },
+            {
+              "provider": "claude-code",
+              "fallback": "skip",
+              "format": "json",
+              "plan_status": "skipped",
+              "plan_exit": 0,
+              "unauthorized_install_exit": 1,
+              "authorized_install_exit": 0,
+              "placements": 0,
+              "user_style_tree_preserved": true,
+              "passed": true
+            },
+            {
+              "provider": "claude-code",
+              "fallback": "error",
+              "format": "text",
+              "plan_status": "install-error",
+              "plan_exit": 4,
+              "unauthorized_install_exit": 1,
+              "authorized_install_exit": 4,
+              "placements": 0,
+              "user_style_tree_preserved": true,
+              "passed": true
+            },
+            {
+              "provider": "claude-code",
+              "fallback": "error",
+              "format": "json",
+              "plan_status": "install-error",
+              "plan_exit": 4,
+              "unauthorized_install_exit": 1,
+              "authorized_install_exit": 4,
+              "placements": 0,
+              "user_style_tree_preserved": true,
+              "passed": true
+            }
+          ],
+          "passed": 12
+        }
+      },
+      "git": {
+        "cases": 17,
+        "report_sha256": "8fcb258fcb9cb694550ece809ba34336e8a3ed8497fff731b3aa2672d5390bcb",
+        "result": {
+          "status": "passed",
+          "new_binary_sha256": "5894f0ad248c3fe218ca91191ce6c5afdec48905fa837db0b680d63d79a8ef5c",
+          "old_binary_sha256": "4b2a46049758faef4c0a7e7e3045b877fe0503d0479b349fc5bf929adff8d958",
+          "format_two_fixture": "real TestM3A3ExportFormatTwoFixture production Install output",
+          "cases": [
+            {
+              "command": "list",
+              "exit_code": 1,
+              "unsupported_format_2": true,
+              "tree_identity_bytes_modes_mtimes_preserved": true
+            },
+            {
+              "command": "sync",
+              "exit_code": 1,
+              "unsupported_format_2": true,
+              "tree_identity_bytes_modes_mtimes_preserved": true
+            },
+            {
+              "command": "trust",
+              "exit_code": 1,
+              "unsupported_format_2": true,
+              "tree_identity_bytes_modes_mtimes_preserved": true
+            },
+            {
+              "command": "uninstall",
+              "exit_code": 1,
+              "unsupported_format_2": true,
+              "tree_identity_bytes_modes_mtimes_preserved": true
+            },
+            {
+              "command": "install",
+              "exit_code": 1,
+              "unsupported_format_2": true,
+              "tree_identity_bytes_modes_mtimes_preserved": true
+            },
+            {
+              "command": "doctor",
+              "exit_code": 1,
+              "unsupported_format_2": true,
+              "tree_identity_bytes_modes_mtimes_preserved": true
+            },
+            {
+              "command": "new-list",
+              "exit_code": 0,
+              "git_metadata_present": true,
+              "read_only": true
+            },
+            {
+              "command": "old-new-runtime",
+              "exit_code": 0,
+              "wire_identical": true,
+              "stdout_sha256": "df3f42cbabfeb54c850d2baebe9d772f2e626d34da6ac91663b82be899c2d106",
+              "index_format": 1,
+              "lock_format": 2
+            },
+            {
+              "command": "validate",
+              "input_class": "invalid_remote_or_combination",
+              "exit_code": 1,
+              "no_git_no_home_write": true,
+              "secret_absent": true
+            },
+            {
+              "command": "validate",
+              "input_class": "invalid_remote_or_combination",
+              "exit_code": 1,
+              "no_git_no_home_write": true,
+              "secret_absent": true
+            },
+            {
+              "command": "validate",
+              "input_class": "invalid_remote_or_combination",
+              "exit_code": 1,
+              "no_git_no_home_write": true,
+              "secret_absent": true
+            },
+            {
+              "command": "plan",
+              "input_class": "invalid_remote_or_combination",
+              "exit_code": 1,
+              "no_git_no_home_write": true,
+              "secret_absent": true
+            },
+            {
+              "command": "plan",
+              "input_class": "invalid_remote_or_combination",
+              "exit_code": 1,
+              "no_git_no_home_write": true,
+              "secret_absent": true
+            },
+            {
+              "command": "plan",
+              "input_class": "invalid_remote_or_combination",
+              "exit_code": 1,
+              "no_git_no_home_write": true,
+              "secret_absent": true
+            },
+            {
+              "command": "install",
+              "input_class": "invalid_remote_or_combination",
+              "exit_code": 1,
+              "no_git_no_home_write": true,
+              "secret_absent": true
+            },
+            {
+              "command": "install",
+              "input_class": "invalid_remote_or_combination",
+              "exit_code": 1,
+              "no_git_no_home_write": true,
+              "secret_absent": true
+            },
+            {
+              "command": "install",
+              "input_class": "invalid_remote_or_combination",
+              "exit_code": 1,
+              "no_git_no_home_write": true,
+              "secret_absent": true
+            }
+          ]
+        }
+      },
+      "update": {
+        "cases": 24,
+        "report_sha256": "812d35b5b7e74d450d901741056854e7669505a52be82fdf190da7bbf4223130",
+        "result": {
+          "format": 1,
+          "test": "M3-A4-built-cli",
+          "status": "passed",
+          "binary_sha256": "5894f0ad248c3fe218ca91191ce6c5afdec48905fa837db0b680d63d79a8ef5c",
+          "old_binary_sha256": "4b2a46049758faef4c0a7e7e3045b877fe0503d0479b349fc5bf929adff8d958",
+          "baseline_binary_sha256": "175979dcf6bf2317e4c2b67917a7bf28e848456bd218e6b012c7cc57bda32150",
+          "cases": [
+            {
+              "route": "codex-user",
+              "action": "json-preview",
+              "status": "passed",
+              "unchanged": true,
+              "native_disclosed": true
+            },
+            {
+              "route": "codex-user",
+              "action": "text-preview",
+              "status": "passed",
+              "unchanged": true,
+              "before_after_disclosed": true
+            },
+            {
+              "route": "codex-user",
+              "action": "apply",
+              "status": "passed",
+              "version": "0.5.0",
+              "seq": 1,
+              "runtime_format": 1
+            },
+            {
+              "route": "codex-user",
+              "action": "unchanged",
+              "status": "passed",
+              "bytes_mode_mtime_inode_preserved": true
+            },
+            {
+              "route": "codex-user",
+              "action": "single-error-json",
+              "status": "passed",
+              "unchanged": true
+            },
+            {
+              "route": "codex-user",
+              "action": "usage-errors",
+              "status": "passed",
+              "stdout_empty": true,
+              "combinations": 3
+            },
+            {
+              "route": "codex-user",
+              "action": "baseline-new-runtime-wire",
+              "status": "passed",
+              "identical": true,
+              "wire_sha256": "2c99375ec381c512c8d429a5c2a0fc389b7822f148d0ee7d3dca337370b01cd0",
+              "zero_detection_git": true
+            },
+            {
+              "route": "codex-plugin",
+              "action": "json-preview",
+              "status": "passed",
+              "unchanged": true,
+              "native_disclosed": true
+            },
+            {
+              "route": "codex-plugin",
+              "action": "text-preview",
+              "status": "passed",
+              "unchanged": true,
+              "before_after_disclosed": true
+            },
+            {
+              "route": "codex-plugin",
+              "action": "apply",
+              "status": "passed",
+              "version": "0.5.0",
+              "seq": 1,
+              "runtime_format": 1
+            },
+            {
+              "route": "codex-plugin",
+              "action": "unchanged",
+              "status": "passed",
+              "bytes_mode_mtime_inode_preserved": true
+            },
+            {
+              "route": "codex-plugin",
+              "action": "single-error-json",
+              "status": "passed",
+              "unchanged": true
+            },
+            {
+              "route": "codex-plugin",
+              "action": "usage-errors",
+              "status": "passed",
+              "stdout_empty": true,
+              "combinations": 3
+            },
+            {
+              "route": "codex-plugin",
+              "action": "baseline-new-runtime-wire",
+              "status": "passed",
+              "identical": true,
+              "wire_sha256": "2c99375ec381c512c8d429a5c2a0fc389b7822f148d0ee7d3dca337370b01cd0",
+              "zero_detection_git": true
+            },
+            {
+              "route": "claude-user",
+              "action": "json-preview",
+              "status": "passed",
+              "unchanged": true,
+              "native_disclosed": true
+            },
+            {
+              "route": "claude-user",
+              "action": "text-preview",
+              "status": "passed",
+              "unchanged": true,
+              "before_after_disclosed": true
+            },
+            {
+              "route": "claude-user",
+              "action": "apply",
+              "status": "passed",
+              "version": "0.5.0",
+              "seq": 1,
+              "runtime_format": 1
+            },
+            {
+              "route": "claude-user",
+              "action": "unchanged",
+              "status": "passed",
+              "bytes_mode_mtime_inode_preserved": true
+            },
+            {
+              "route": "claude-user",
+              "action": "single-error-json",
+              "status": "passed",
+              "unchanged": true
+            },
+            {
+              "route": "claude-user",
+              "action": "usage-errors",
+              "status": "passed",
+              "stdout_empty": true,
+              "combinations": 3
+            },
+            {
+              "route": "claude-user",
+              "action": "baseline-new-runtime-wire",
+              "status": "passed",
+              "identical": true,
+              "wire_sha256": "2c99375ec381c512c8d429a5c2a0fc389b7822f148d0ee7d3dca337370b01cd0",
+              "zero_detection_git": true
+            },
+            {
+              "route": "codex-user",
+              "action": "real-old-install-update-lifecycle",
+              "status": "passed",
+              "legacy_format": 1
+            },
+            {
+              "route": "claude-user",
+              "action": "old-layout-update-refused",
+              "status": "passed",
+              "unchanged": true
+            },
+            {
+              "route": "claude-user",
+              "action": "real-old-install-update-lifecycle",
+              "status": "passed",
+              "legacy_format": 1
+            }
+          ],
+          "passed": 24,
+          "failed": 0,
+          "boundary": "Version stubs, private files and raw runtime invocation; no real harness delivery, native command execution, credentials or remote Git."
+        }
+      },
+      "frozen": {
+        "cases": 30,
+        "report_sha256": "8c277664c00c4dc5d74178f0cd6d88e99d4c2b9a20363fc2c5673fe6702052f2",
+        "result": {
+          "format": 1,
+          "test": "M3-A5-built-cli",
+          "status": "passed",
+          "binary_sha256": "5894f0ad248c3fe218ca91191ce6c5afdec48905fa837db0b680d63d79a8ef5c",
+          "baseline_binary_sha256": "abb2ce7ba60b11cf51ae02d85e8b248b06d7c7e2e004aa5509054863774ece6f",
+          "old_binary_sha256": "4b2a46049758faef4c0a7e7e3045b877fe0503d0479b349fc5bf929adff8d958",
+          "cases": [
+            {
+              "route": "codex-user",
+              "action": "binary-path-binding-change-refused",
+              "status": "passed",
+              "readonly": true
+            },
+            {
+              "route": "codex-user",
+              "action": "same-binding-noop",
+              "status": "passed",
+              "preserved": true
+            },
+            {
+              "route": "codex-user",
+              "action": "json-preview",
+              "status": "passed",
+              "approved_snapshot": true,
+              "readonly": true
+            },
+            {
+              "route": "codex-user",
+              "action": "text-preview",
+              "status": "passed",
+              "native_disclosed": true,
+              "readonly": true
+            },
+            {
+              "route": "codex-user",
+              "action": "restore",
+              "status": "passed",
+              "index_explain_identical": true,
+              "lock_bytes_mode_mtime_inode": true
+            },
+            {
+              "route": "codex-user",
+              "action": "repeat",
+              "status": "passed",
+              "zero_installation_changes": true
+            },
+            {
+              "route": "codex-user",
+              "action": "usage-refusal",
+              "status": "passed",
+              "combinations": 6
+            },
+            {
+              "route": "codex-user",
+              "action": "baseline-runtime-wire",
+              "status": "passed",
+              "identical": true,
+              "zero_detection_git": true,
+              "cache_unchanged": true,
+              "wire_sha256": "215b670950741fe4fa7dba1c0c1cdb16079f819f21bb0cc10ee49de4ea0adcfb"
+            },
+            {
+              "route": "codex-plugin",
+              "action": "binary-path-binding-change-refused",
+              "status": "passed",
+              "readonly": true
+            },
+            {
+              "route": "codex-plugin",
+              "action": "same-binding-noop",
+              "status": "passed",
+              "preserved": true
+            },
+            {
+              "route": "codex-plugin",
+              "action": "json-preview",
+              "status": "passed",
+              "approved_snapshot": true,
+              "readonly": true
+            },
+            {
+              "route": "codex-plugin",
+              "action": "text-preview",
+              "status": "passed",
+              "native_disclosed": true,
+              "readonly": true
+            },
+            {
+              "route": "codex-plugin",
+              "action": "restore",
+              "status": "passed",
+              "index_explain_identical": true,
+              "lock_bytes_mode_mtime_inode": true
+            },
+            {
+              "route": "codex-plugin",
+              "action": "repeat",
+              "status": "passed",
+              "zero_installation_changes": true
+            },
+            {
+              "route": "codex-plugin",
+              "action": "usage-refusal",
+              "status": "passed",
+              "combinations": 6
+            },
+            {
+              "route": "codex-plugin",
+              "action": "baseline-runtime-wire",
+              "status": "passed",
+              "identical": true,
+              "zero_detection_git": true,
+              "cache_unchanged": true,
+              "wire_sha256": "215b670950741fe4fa7dba1c0c1cdb16079f819f21bb0cc10ee49de4ea0adcfb"
+            },
+            {
+              "route": "claude-user",
+              "action": "binary-path-binding-change-refused",
+              "status": "passed",
+              "readonly": true
+            },
+            {
+              "route": "claude-user",
+              "action": "same-binding-noop",
+              "status": "passed",
+              "preserved": true
+            },
+            {
+              "route": "claude-user",
+              "action": "json-preview",
+              "status": "passed",
+              "approved_snapshot": true,
+              "readonly": true
+            },
+            {
+              "route": "claude-user",
+              "action": "text-preview",
+              "status": "passed",
+              "native_disclosed": true,
+              "readonly": true
+            },
+            {
+              "route": "claude-user",
+              "action": "restore",
+              "status": "passed",
+              "index_explain_identical": true,
+              "lock_bytes_mode_mtime_inode": true
+            },
+            {
+              "route": "claude-user",
+              "action": "repeat",
+              "status": "passed",
+              "zero_installation_changes": true
+            },
+            {
+              "route": "claude-user",
+              "action": "usage-refusal",
+              "status": "passed",
+              "combinations": 6
+            },
+            {
+              "route": "claude-user",
+              "action": "baseline-runtime-wire",
+              "status": "passed",
+              "identical": true,
+              "zero_detection_git": true,
+              "cache_unchanged": true,
+              "wire_sha256": "215b670950741fe4fa7dba1c0c1cdb16079f819f21bb0cc10ee49de4ea0adcfb"
+            },
+            {
+              "route": "codex-user",
+              "action": "real-M1-incomplete-baseline-refused",
+              "status": "passed",
+              "codes": [
+                "frozen-build-mismatch"
+              ]
+            },
+            {
+              "route": "codex-user",
+              "action": "normal-management-establishes-baseline",
+              "status": "passed",
+              "frozen_unchanged": true
+            },
+            {
+              "route": "codex-user",
+              "action": "real-M1-recovery-and-uninstall",
+              "status": "passed",
+              "exact_lock": true
+            },
+            {
+              "route": "claude-user",
+              "action": "real-M1-incomplete-baseline-refused",
+              "status": "passed",
+              "codes": [
+                "frozen-build-mismatch"
+              ]
+            },
+            {
+              "route": "claude-user",
+              "action": "normal-management-establishes-baseline",
+              "status": "passed",
+              "frozen_unchanged": true
+            },
+            {
+              "route": "claude-user",
+              "action": "real-M1-recovery-and-uninstall",
+              "status": "passed",
+              "exact_lock": true
+            }
+          ],
+          "passed": 30,
+          "failed": 0,
+          "boundary": "Private version fixtures, no native execution, real harness delivery, model or remote Git."
+        }
+      },
+      "project": {
+        "cases": 18,
+        "report_sha256": "ef41f66576a1820a664c361b64c2f11b94883814d01fb5d11bd5ac566ac8b32b",
+        "result": {
+          "format": 1,
+          "binary_sha256": "5894f0ad248c3fe218ca91191ce6c5afdec48905fa837db0b680d63d79a8ef5c",
+          "old_binary_sha256": "abb2ce7ba60b11cf51ae02d85e8b248b06d7c7e2e004aa5509054863774ece6f",
+          "status": "passed",
+          "real_harness": false,
+          "cases": [
+            {
+              "route": "codex-project",
+              "action": "preview-zero-write",
+              "status": "passed"
+            },
+            {
+              "route": "codex-project",
+              "action": "install-format3-private-scope",
+              "status": "passed"
+            },
+            {
+              "route": "codex-project",
+              "action": "management-scope-consistency",
+              "status": "passed",
+              "commands": 7
+            },
+            {
+              "route": "codex-project",
+              "action": "old-binary-format3-refusal",
+              "status": "passed",
+              "commands": 6,
+              "bytes_mode_mtime_inode": true
+            },
+            {
+              "route": "codex-project",
+              "action": "configured-entry-runtime-wire",
+              "status": "passed",
+              "real_harness": false
+            },
+            {
+              "route": "codex-project",
+              "action": "native-fixture-command-unchanged",
+              "status": "passed"
+            },
+            {
+              "route": "codex-project",
+              "action": "unbound-clone-no-user-fallback",
+              "status": "passed"
+            },
+            {
+              "route": "codex-project",
+              "action": "clone-explicit-activation-independent-state",
+              "status": "passed",
+              "real_git_worktree": true
+            },
+            {
+              "route": "codex-project",
+              "action": "clone-uninstall-original-preserved",
+              "status": "passed"
+            },
+            {
+              "route": "claude-project",
+              "action": "preview-zero-write",
+              "status": "passed"
+            },
+            {
+              "route": "claude-project",
+              "action": "install-format3-private-scope",
+              "status": "passed"
+            },
+            {
+              "route": "claude-project",
+              "action": "management-scope-consistency",
+              "status": "passed",
+              "commands": 7
+            },
+            {
+              "route": "claude-project",
+              "action": "old-binary-format3-refusal",
+              "status": "passed",
+              "commands": 6,
+              "bytes_mode_mtime_inode": true
+            },
+            {
+              "route": "claude-project",
+              "action": "configured-entry-runtime-wire",
+              "status": "passed",
+              "real_harness": false
+            },
+            {
+              "route": "claude-project",
+              "action": "native-fixture-command-unchanged",
+              "status": "passed"
+            },
+            {
+              "route": "claude-project",
+              "action": "unbound-clone-no-user-fallback",
+              "status": "passed"
+            },
+            {
+              "route": "claude-project",
+              "action": "clone-explicit-activation-independent-state",
+              "status": "passed",
+              "real_git_worktree": true
+            },
+            {
+              "route": "claude-project",
+              "action": "clone-uninstall-original-preserved",
+              "status": "passed"
+            }
+          ]
+        }
+      }
+    }
+  },
+  "refresh_built_cli": {
+    "report_sha256": "8a713543775dcf503abd5209886dcd510109a089de5e0575039623e2b52a8f48",
+    "status": "passed",
+    "binary_sha256": "5894f0ad248c3fe218ca91191ce6c5afdec48905fa837db0b680d63d79a8ef5c",
+    "old_binary_sha256": "31ed26797e2849a160ede978e43c108371fa31fc948039e8976a26e8509e0866",
+    "cases": [
+      {
+        "route": "codex-user",
+        "action": "preview-zero-write",
+        "status": "passed"
+      },
+      {
+        "route": "codex-user",
+        "action": "index2-provenance-and-original-output-point",
+        "status": "passed"
+      },
+      {
+        "route": "codex-user",
+        "action": "clock-only-replay-late-tool",
+        "status": "passed"
+      },
+      {
+        "route": "codex-user",
+        "action": "readonly-explain-runtime-wire",
+        "status": "passed"
+      },
+      {
+        "route": "codex-user",
+        "action": "hashed-native-receipts",
+        "status": "passed"
+      },
+      {
+        "route": "codex-user",
+        "action": "actual-old-runner-format2-whole-index-refusal",
+        "status": "passed"
+      },
+      {
+        "route": "codex-user",
+        "action": "actual-old-management-conservative-zero-write",
+        "status": "passed",
+        "commands": 4
+      },
+      {
+        "route": "codex-user",
+        "action": "new-management-and-upgrade-guidance",
+        "status": "passed"
+      },
+      {
+        "route": "codex-user",
+        "action": "frozen-exact-policy-clock-preserved",
+        "status": "passed"
+      },
+      {
+        "route": "codex-user",
+        "action": "uninstall-and-process-latency",
+        "status": "passed"
+      },
+      {
+        "route": "codex-plugin",
+        "action": "preview-zero-write",
+        "status": "passed"
+      },
+      {
+        "route": "codex-plugin",
+        "action": "index2-provenance-and-original-output-point",
+        "status": "passed"
+      },
+      {
+        "route": "codex-plugin",
+        "action": "clock-only-replay-late-tool",
+        "status": "passed"
+      },
+      {
+        "route": "codex-plugin",
+        "action": "readonly-explain-runtime-wire",
+        "status": "passed"
+      },
+      {
+        "route": "codex-plugin",
+        "action": "hashed-native-receipts",
+        "status": "passed"
+      },
+      {
+        "route": "codex-plugin",
+        "action": "actual-old-runner-format2-whole-index-refusal",
+        "status": "passed"
+      },
+      {
+        "route": "codex-plugin",
+        "action": "actual-old-management-conservative-zero-write",
+        "status": "passed",
+        "commands": 4
+      },
+      {
+        "route": "codex-plugin",
+        "action": "new-management-and-upgrade-guidance",
+        "status": "passed"
+      },
+      {
+        "route": "codex-plugin",
+        "action": "frozen-exact-policy-clock-preserved",
+        "status": "passed"
+      },
+      {
+        "route": "codex-plugin",
+        "action": "uninstall-and-process-latency",
+        "status": "passed"
+      },
+      {
+        "route": "claude-user",
+        "action": "preview-zero-write",
+        "status": "passed"
+      },
+      {
+        "route": "claude-user",
+        "action": "index2-provenance-and-original-output-point",
+        "status": "passed"
+      },
+      {
+        "route": "claude-user",
+        "action": "clock-only-replay-late-tool",
+        "status": "passed"
+      },
+      {
+        "route": "claude-user",
+        "action": "readonly-explain-runtime-wire",
+        "status": "passed"
+      },
+      {
+        "route": "claude-user",
+        "action": "hashed-native-receipts",
+        "status": "passed"
+      },
+      {
+        "route": "claude-user",
+        "action": "actual-old-runner-format2-whole-index-refusal",
+        "status": "passed"
+      },
+      {
+        "route": "claude-user",
+        "action": "actual-old-management-conservative-zero-write",
+        "status": "passed",
+        "commands": 4
+      },
+      {
+        "route": "claude-user",
+        "action": "new-management-and-upgrade-guidance",
+        "status": "passed"
+      },
+      {
+        "route": "claude-user",
+        "action": "frozen-exact-policy-clock-preserved",
+        "status": "passed"
+      },
+      {
+        "route": "claude-user",
+        "action": "uninstall-and-process-latency",
+        "status": "passed"
+      },
+      {
+        "route": "codex-project",
+        "action": "preview-zero-write",
+        "status": "passed"
+      },
+      {
+        "route": "codex-project",
+        "action": "index2-provenance-and-original-output-point",
+        "status": "passed"
+      },
+      {
+        "route": "codex-project",
+        "action": "clock-only-replay-late-tool",
+        "status": "passed"
+      },
+      {
+        "route": "codex-project",
+        "action": "readonly-explain-runtime-wire",
+        "status": "passed"
+      },
+      {
+        "route": "codex-project",
+        "action": "hashed-native-receipts",
+        "status": "passed"
+      },
+      {
+        "route": "codex-project",
+        "action": "actual-old-runner-format2-whole-index-refusal",
+        "status": "passed"
+      },
+      {
+        "route": "codex-project",
+        "action": "actual-old-management-conservative-zero-write",
+        "status": "passed",
+        "commands": 4
+      },
+      {
+        "route": "codex-project",
+        "action": "new-management-and-upgrade-guidance",
+        "status": "passed"
+      },
+      {
+        "route": "codex-project",
+        "action": "frozen-exact-policy-clock-preserved",
+        "status": "passed"
+      },
+      {
+        "route": "codex-project",
+        "action": "uninstall-and-process-latency",
+        "status": "passed"
+      },
+      {
+        "route": "claude-project",
+        "action": "preview-zero-write",
+        "status": "passed"
+      },
+      {
+        "route": "claude-project",
+        "action": "index2-provenance-and-original-output-point",
+        "status": "passed"
+      },
+      {
+        "route": "claude-project",
+        "action": "clock-only-replay-late-tool",
+        "status": "passed"
+      },
+      {
+        "route": "claude-project",
+        "action": "readonly-explain-runtime-wire",
+        "status": "passed"
+      },
+      {
+        "route": "claude-project",
+        "action": "hashed-native-receipts",
+        "status": "passed"
+      },
+      {
+        "route": "claude-project",
+        "action": "actual-old-runner-format2-whole-index-refusal",
+        "status": "passed"
+      },
+      {
+        "route": "claude-project",
+        "action": "actual-old-management-conservative-zero-write",
+        "status": "passed",
+        "commands": 4
+      },
+      {
+        "route": "claude-project",
+        "action": "new-management-and-upgrade-guidance",
+        "status": "passed"
+      },
+      {
+        "route": "claude-project",
+        "action": "frozen-exact-policy-clock-preserved",
+        "status": "passed"
+      },
+      {
+        "route": "claude-project",
+        "action": "uninstall-and-process-latency",
+        "status": "passed"
+      }
+    ],
+    "performance": [
+      {
+        "route": "codex-user",
+        "samples": 50,
+        "p95_ms": 13.962,
+        "median_ms": 12.459
+      },
+      {
+        "route": "codex-plugin",
+        "samples": 50,
+        "p95_ms": 16.919,
+        "median_ms": 15.965
+      },
+      {
+        "route": "claude-user",
+        "samples": 50,
+        "p95_ms": 9.269,
+        "median_ms": 8.38
+      },
+      {
+        "route": "codex-project",
+        "samples": 50,
+        "p95_ms": 13.597,
+        "median_ms": 12.592
+      },
+      {
+        "route": "claude-project",
+        "samples": 50,
+        "p95_ms": 13.623,
+        "median_ms": 12.643
+      }
+    ],
+    "real_harness": false,
+    "old_binary_source": "22551eed12b27a5db2a2fc4d1a26da5f67538c63",
+    "old_management_boundary": "sync/trust/update/frozen must compile or authenticate unsupported source and reject without writes; pure uninstall-all is not a recompilation promise about immutable old code"
+  },
+  "acceptance_groups": [
+    {
+      "id": "A9-01",
+      "status": "passed",
+      "files": [
+        "core/spec/refresh_test.go"
+      ],
+      "tests": [
+        "TestRefreshValidation",
+        "TestRefreshDefaultsFromAndSingleFile"
+      ],
+      "assertions": "source validation, inheritance, single-file and native/combination boundaries"
+    },
+    {
+      "id": "A9-02",
+      "status": "passed",
+      "files": [
+        "core/plan/refresh_test.go",
+        "internal/app/refresh_test.go"
+      ],
+      "tests": [
+        "TestRefreshSystemRequiresDynamicPrompt",
+        "TestRefreshOtherTargetsNeverBecomeStatic",
+        "TestM3A9FiveRouteLifecycleAndSurface"
+      ],
+      "assertions": "dynamic placement and clock-only Claude surface on all five routes"
+    },
+    {
+      "id": "A9-03",
+      "status": "passed",
+      "files": [
+        "core/state/refresh_test.go",
+        "core/engine/refresh_test.go"
+      ],
+      "tests": [
+        "TestRefreshRollingCadenceAndClock",
+        "TestRefreshUnmatchedSourcesAndCompactFalse",
+        "TestRefreshCapRollbackAndBlockPrecedence"
+      ],
+      "assertions": "rolling intervals, first emission, no backlog and non-consuming unmatched/empty/capped cases"
+    },
+    {
+      "id": "A9-04",
+      "status": "passed",
+      "files": [
+        "core/state/refresh_test.go",
+        "internal/runtime/refresh_test.go"
+      ],
+      "tests": [
+        "TestRefreshNativeReplayLateUnknownAndFallback",
+        "TestRefreshRejectsCorruptionSymlinksAndOverflow",
+        "TestRefreshRuntimeClockOnlyAndNativeWire"
+      ],
+      "assertions": "native ID replay/late/unknown/fallback, overflow and no skill/model-switch increment"
+    },
+    {
+      "id": "A9-05",
+      "status": "passed",
+      "files": [
+        "core/state/refresh_test.go",
+        "core/engine/refresh_test.go"
+      ],
+      "tests": [
+        "TestRefreshLifecycleAndScopeIsolation",
+        "TestRefreshUnmatchedSourcesAndCompactFalse"
+      ],
+      "assertions": "startup/clear/compact/resume/fork, child and separate roots"
+    },
+    {
+      "id": "A9-06",
+      "status": "passed",
+      "files": [
+        "core/compile/refresh_test.go",
+        "core/engine/refresh_test.go",
+        "internal/app/refresh_test.go"
+      ],
+      "tests": [
+        "TestRefreshCompiledFormatAndPolicyEquivalence",
+        "TestRefreshRenderedBodiesWarnAndMultiplePoints",
+        "TestM3A9FiveRouteLifecycleAndSurface"
+      ],
+      "assertions": "rendered identity, warn channels, multiple points, full-policy folding and retained package after uninstall"
+    },
+    {
+      "id": "A9-07",
+      "status": "passed",
+      "files": [
+        "core/state/refresh_test.go",
+        "core/state/refresh_fault_test.go",
+        "internal/runtime/refresh_test.go"
+      ],
+      "tests": [
+        "TestRefreshSynchronizedProcessesAndCrash",
+        "TestRefreshLockDeadlineIdentityAndSnapshot",
+        "TestRefreshCleanupPreservesActiveLock",
+        "TestRefreshCleanupFirstEnableAndLegacyCandidates",
+        "TestRefreshBusyUsesExistingFailPolicy"
+      ],
+      "assertions": "six real worker processes at a barrier: same ID once / six IDs six ordered claims, crash unlock, 20ms/cancellation and cold cleanup"
+    },
+    {
+      "id": "A9-08",
+      "status": "passed",
+      "files": [
+        "core/state/refresh_fault_test.go",
+        "core/engine/refresh_test.go",
+        "internal/app/refresh_test.go"
+      ],
+      "tests": [
+        "TestRefreshWriteAndRollbackFailuresPreservePriorClaims",
+        "TestRefreshStaleReleaseDoesNotUndoOtherInvocation",
+        "TestRefreshCapRollbackAndBlockPrecedence",
+        "TestM3A9PolicyChangesApprovalAndTransactionRollback"
+      ],
+      "assertions": "actual read-only-directory I/O failures, retryable release, prior claims, stale nonce protection and applied-build cancellation rollback"
+    },
+    {
+      "id": "A9-09",
+      "status": "passed",
+      "files": [
+        "core/compile/refresh_test.go",
+        "core/state/refresh_test.go",
+        "scripts/check_m3_refresh.py"
+      ],
+      "tests": [
+        "TestRefreshCompiledFormatAndPolicyEquivalence",
+        "TestRefreshBodyMigrationIntervalsAndRollback"
+      ],
+      "assertions": "strict formats, old ordinary seed and interval reuse; actual A6 runner/management refusal without file changes"
+    },
+    {
+      "id": "A9-10",
+      "status": "passed",
+      "files": [
+        "core/tokens/refresh_test.go",
+        "internal/runtime/refresh_test.go",
+        "internal/app/refresh_test.go"
+      ],
+      "tests": [
+        "TestRefreshBudgetsUseFullEmission",
+        "TestRefreshRuntimeClockOnlyAndNativeWire",
+        "TestM3A9ExplainSnapshotMatchesRuntimeReadOnly"
+      ],
+      "assertions": "full budgets, unchanged stats schema/readers, optional safe planning/provenance/trace and output accounting"
+    },
+    {
+      "id": "A9-11",
+      "status": "passed",
+      "files": [
+        "core/state/refresh_fault_test.go",
+        "core/state/refresh_test.go",
+        "internal/app/refresh_test.go"
+      ],
+      "tests": [
+        "TestRefreshSnapshotCombinedFileAndByteLimits",
+        "TestRefreshStrictRequiredStateFields",
+        "TestRefreshLockDeadlineIdentityAndSnapshot",
+        "TestRefreshRejectsCorruptionSymlinksAndOverflow",
+        "TestM3A9ExplainSnapshotMatchesRuntimeReadOnly"
+      ],
+      "assertions": "read-only guarded capture, existing snapshot drift tests, strict/bounded state, no raw ID/body metadata and exact runtime wire"
+    },
+    {
+      "id": "A9-12",
+      "status": "passed",
+      "files": [
+        "internal/app/refresh_test.go",
+        "scripts/check_m3_refresh.py"
+      ],
+      "tests": [
+        "TestM3A9FiveRouteLifecycleAndSurface",
+        "TestM3A9PolicyChangesApprovalAndTransactionRollback"
+      ],
+      "assertions": "five-route lifecycle and effect/approval rollback, actual CLI compatibility, fresh modules/vet/race/process and latency"
+    }
+  ],
+  "failed_attempts_preserved": [
+    {
+      "run": "cli-gate",
+      "reason": "codex-plugin fixture omitted PLUGIN_ROOT required by the generated launcher",
+      "exit_code": 1,
+      "log_sha256": "36ae797947099f61be20749fa36e5bee2d3c2f36239eefa6b1036f482482d51a"
+    },
+    {
+      "run": "collectors-final",
+      "reason": "sandbox refused local HTTP listener and pseudo-terminals; identical offline suite passed with local fixture access",
+      "exit_code": 1,
+      "log_sha256": "ca956b48e2c71b6f420d8381d4785640d1ef5a93f05f94cf23093d863fe8a9f2"
+    },
+    {
+      "run": "full-root",
+      "reason": "same unused app test import",
+      "exit_code": 1,
+      "log_sha256": "0603ce75e92dc932b81d0906a1da9d1382be2ed4b51bf829b7b566ebd8ab431b"
+    },
+    {
+      "run": "race-final",
+      "reason": "compiled before the frozen fixture detector restore; state/engine/runtime packages passed, app fixture failed",
+      "exit_code": 1,
+      "log_sha256": "de3fbe416fd8d55a06e8792a7fc6861f3332a213d208a1ae3f9c616eaecc0c2e"
+    },
+    {
+      "run": "refresh-app-2",
+      "reason": "unused test import",
+      "exit_code": 1,
+      "log_sha256": "06f11827eedcc41124238b52332bde3b7e62f9be2a0d10a8da4e3caa8b7ab263"
+    },
+    {
+      "run": "refresh-app",
+      "reason": "test used a nonexistent Runtime field on ExplainRequest",
+      "exit_code": 1,
+      "log_sha256": "e55aa8eba4962d6fceb028242e37075bda55eff49904b8bec7d3265e9c830bc1"
+    },
+    {
+      "run": "refresh-changes-2",
+      "reason": "test referenced a nonexistent binding effects field; corrected to the declaration digest",
+      "exit_code": 1,
+      "log_sha256": "07e3ed0a0c565e5be812839c40578a08e9d75a9d080917bcea722375a2141036"
+    },
+    {
+      "run": "refresh-changes-3",
+      "reason": "test tried Install to replace an already installed package; corrected to explicit Update",
+      "exit_code": 1,
+      "log_sha256": "746bae918b5f939c8b5bc512b137b1d1f174bdd0215deb02cbfafa6ac105bfa8"
+    },
+    {
+      "run": "refresh-changes",
+      "reason": "test referenced a nonexistent project declaration effects field",
+      "exit_code": 1,
+      "log_sha256": "9e4804aa618c67616be69e2ca70422570f0db0b80e0222f7856d1620d96a0186"
+    },
+    {
+      "run": "refresh-engine-2",
+      "reason": "assertion assumed output record precedes the dedup record",
+      "exit_code": 1,
+      "log_sha256": "8e0e45424df7a762976f17bac61c5c975e5902a4861f247e782ea95e47e16d29"
+    },
+    {
+      "run": "refresh-engine",
+      "reason": "skill.explicit fixture omitted required match selector",
+      "exit_code": 1,
+      "log_sha256": "8890bb413bbf2a25b31bd365e2e6d7ab65c19163310e19270b9e9f01392f0a68"
+    },
+    {
+      "run": "refresh-final-targeted",
+      "reason": "new mismatch test supplied a null harness map invalid under the existing index schema",
+      "exit_code": 1,
+      "log_sha256": "4b8ef5e5cc2b22144e3b2c36e4f5de45178db3772e92cfec6e88467cd050f4f8"
+    },
+    {
+      "run": "refresh-process-repeat",
+      "reason": "reproduced synchronized macOS O_CREATE open ENOENT",
+      "exit_code": 1,
+      "log_sha256": "bb7002c3627339e736c4047fdb6f69e6a90eb63bc98f5a625a9f2c7987aa2e29"
+    },
+    {
+      "run": "refresh-process-unsandboxed",
+      "reason": "same synchronized failure outside sandbox; fixed production creation to O_EXCL then open winner",
+      "exit_code": 1,
+      "log_sha256": "a2d0749ab858e0ae1459699e7a990ef991026ad5c54f2042a55d37f3a601e7a0"
+    },
+    {
+      "run": "refresh-runtime",
+      "reason": "fixture incorrectly required empty stderr despite normal agenthooks INFO logs",
+      "exit_code": 1,
+      "log_sha256": "1fe7e8a8aedae6d4f275fd6bb0fa66cd070c676d74fd6098224e987422e2d5bb"
+    },
+    {
+      "run": "refresh-state-2",
+      "reason": "unused test-loop variable after correcting fixture",
+      "exit_code": 1,
+      "log_sha256": "9d530aa32639eb5e70fd0821488a46b1e210c340fa3a2ca3c3c73a805061619b"
+    },
+    {
+      "run": "refresh-state-3",
+      "reason": "synchronized macOS O_CREATE open returned ENOENT",
+      "exit_code": 1,
+      "log_sha256": "9f9e4e9c23128e37e1041a980b757562891580fc6d941b52e709c52e48477f8e"
+    },
+    {
+      "run": "refresh-state",
+      "reason": "fixture initially assumed harness-scoped ordinary legacy claims, and permission fixture preparation attempted an ordinary update while a guard was active; process lock creation also failed",
+      "exit_code": 1,
+      "log_sha256": "d0c130b1f47f560afe885c37ab2d99ee6035475de59cd1c2733f605616a0ac90"
+    },
+    {
+      "run": "refresh-targeted-2",
+      "reason": "five-route test reused a deliberately forbidden detector after frozen verification; fixture now restores definitions/source fetcher",
+      "exit_code": 1,
+      "log_sha256": "10a6e0de09593f377ad95c6cb8271d8811bc361b14d25df82ee9e410afb48e06"
+    },
+    {
+      "run": "test-root-final",
+      "reason": "compiled before the frozen fixture detector restore; same known fixture failure",
+      "exit_code": 1,
+      "log_sha256": "acfa29b680badfea7966d9f3e4b12d19edfdf77f9ff7728a56271a1205e8d216"
+    }
+  ],
+  "runs": {
+    "build-cli": {
+      "command": [
+        "go",
+        "build",
+        "-trimpath",
+        "-buildvcs=false",
+        "-o",
+        "/tmp/style-m3-a9-20261017/style",
+        "./cmd/style"
+      ],
+      "exit_code": 0,
+      "seconds": 1.277,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "metadata_sha256": "97d114acb759ab872213ec9dd5aaf412f415427983b9600df5e2da18e350d983",
+      "private_log": "/tmp/style-m3-a9-20261017/build-cli.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "build-final": {
+      "command": [
+        "go",
+        "build",
+        "-trimpath",
+        "-buildvcs=false",
+        "-o",
+        "/tmp/style-m3-a9-20261017/style-final",
+        "./cmd/style"
+      ],
+      "exit_code": 0,
+      "seconds": 1.607,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "metadata_sha256": "afc440e572be74e459aee7484cf53c915abec7c865dfb7c6d9df1157c0814279",
+      "private_log": "/tmp/style-m3-a9-20261017/build-final.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "build-linux-release": {
+      "command": [
+        "env",
+        "GOOS=linux",
+        "GOARCH=amd64",
+        "go",
+        "build",
+        "-trimpath",
+        "-buildvcs=false",
+        "-o",
+        "/tmp/style-m3-a9-20261017/style-linux-release",
+        "./cmd/style"
+      ],
+      "exit_code": 0,
+      "seconds": 4.791,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "metadata_sha256": "a59b040b1d417909a520b3d8d88ad3b63d7608db990542d1cfb2abe73510f813",
+      "private_log": "/tmp/style-m3-a9-20261017/build-linux-release.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "build-release": {
+      "command": [
+        "go",
+        "build",
+        "-trimpath",
+        "-buildvcs=false",
+        "-o",
+        "/tmp/style-m3-a9-20261017/style-release",
+        "./cmd/style"
+      ],
+      "exit_code": 0,
+      "seconds": 1.916,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "metadata_sha256": "1d0536bcb1dea74161803cd7b36bcc9453313fbcd7d80aad8c8e3dd3f4433fcd",
+      "private_log": "/tmp/style-m3-a9-20261017/build-release.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "build-windows-final": {
+      "command": [
+        "env",
+        "GOOS=windows",
+        "GOARCH=amd64",
+        "go",
+        "build",
+        "-trimpath",
+        "-buildvcs=false",
+        "-o",
+        "/tmp/style-m3-a9-20261017/style-windows.exe",
+        "./cmd/style"
+      ],
+      "exit_code": 0,
+      "seconds": 4.554,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "metadata_sha256": "53d0b0e1581db8bd7d06036e295ca0b13414c370f93eb7e8119d7fdb331d48cb",
+      "private_log": "/tmp/style-m3-a9-20261017/build-windows-final.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "build-windows-release": {
+      "command": [
+        "env",
+        "GOOS=windows",
+        "GOARCH=amd64",
+        "go",
+        "build",
+        "-trimpath",
+        "-buildvcs=false",
+        "-o",
+        "/tmp/style-m3-a9-20261017/style-windows-release.exe",
+        "./cmd/style"
+      ],
+      "exit_code": 0,
+      "seconds": 1.902,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "metadata_sha256": "8fbf718cb36ffd698e508027b18abc3224a354cddb82836e4ecd744f4bcb792e",
+      "private_log": "/tmp/style-m3-a9-20261017/build-windows-release.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "cleanup-final": {
+      "command": [
+        "go",
+        "test",
+        "./core/state",
+        "-run",
+        "Refresh|Cleanup",
+        "-count=1",
+        "-json"
+      ],
+      "exit_code": 0,
+      "seconds": 3.229,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "metadata_sha256": "3884d36c0c6f747c21495b2e4b04017abb504e29a1a50af8f71251828c206566",
+      "private_log": "/tmp/style-m3-a9-20261017/cleanup-final.log",
+      "log_sha256": "f4819202e28ac045a88e9706683d28489245e10c73d9ac3bf5712e3ff7b58c6d",
+      "test_events": {
+        "pass": 33,
+        "skip": 1
+      },
+      "tested_packages": [
+        "github.com/inxups/style-cli/core/state"
+      ],
+      "skipped_tests": [
+        "github.com/inxups/style-cli/core/state:TestRefreshProcessHelper"
+      ]
+    },
+    "cli-gate-2": {
+      "command": [
+        "python3",
+        "scripts/check_m3_refresh.py",
+        "--binary",
+        "/tmp/style-m3-a9-20261017/style",
+        "--old-binary",
+        "/tmp/style-m3-project-20261017/style-final",
+        "--report",
+        "/tmp/style-m3-a9-20261017/cli-results.json"
+      ],
+      "exit_code": 0,
+      "seconds": 12.414,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "metadata_sha256": "c0e9f45c8088beb32df2c0966ac901fdf381490a9c2b6aa19b27347bb6388f54",
+      "private_log": "/tmp/style-m3-a9-20261017/cli-gate-2.log",
+      "log_sha256": "4b71e83c1a5be68707ced60714072801cefa89d67f23b8312d0017c8abea1d0c"
+    },
+    "cli-gate": {
+      "command": [
+        "python3",
+        "scripts/check_m3_refresh.py",
+        "--binary",
+        "/tmp/style-m3-a9-20261017/style",
+        "--old-binary",
+        "/tmp/style-m3-project-20261017/style-final",
+        "--report",
+        "/tmp/style-m3-a9-20261017/cli-results.json"
+      ],
+      "exit_code": 1,
+      "seconds": 3.048,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "metadata_sha256": "f8b62439abdb3216249774cbcc9ffbfe02f08b2935731dee859f73e4c5d8984b",
+      "private_log": "/tmp/style-m3-a9-20261017/cli-gate.log",
+      "log_sha256": "36ae797947099f61be20749fa36e5bee2d3c2f36239eefa6b1036f482482d51a"
+    },
+    "collectors-final-2": {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "testdata/manual",
+        "-p",
+        "test_*.py"
+      ],
+      "exit_code": 0,
+      "seconds": 40.266,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "metadata_sha256": "876a8245b5a733dc8d909aa4a874a0ef1f6d63a5a4e30b16dc6146263be247f6",
+      "private_log": "/tmp/style-m3-a9-20261017/collectors-final-2.log",
+      "log_sha256": "47e24c247c2132571b0154f8cca99a0ed6b8f10c42ec30ee25ae7d0719828498"
+    },
+    "collectors-final": {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "testdata/manual",
+        "-p",
+        "test_*.py"
+      ],
+      "exit_code": 1,
+      "seconds": 4.834,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "metadata_sha256": "b83dd59b8b38f037ed6075643ec66945ea990a5c20df481066760ae182aa8813",
+      "private_log": "/tmp/style-m3-a9-20261017/collectors-final.log",
+      "log_sha256": "ca956b48e2c71b6f420d8381d4785640d1ef5a93f05f94cf23093d863fe8a9f2"
+    },
+    "compile-final": {
+      "command": [
+        "go",
+        "test",
+        "./core/...",
+        "./internal/runtime",
+        "./internal/app",
+        "./schema",
+        "-run",
+        "Refresh|M3A9",
+        "-count=1",
+        "-json"
+      ],
+      "exit_code": 0,
+      "seconds": 2.827,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "metadata_sha256": "02ebd98ad7aecccd4ba6822fbda75467e04f4d7d7ffd96514dce083fc54d25ad",
+      "private_log": "/tmp/style-m3-a9-20261017/compile-final.log",
+      "log_sha256": "be63d5710fceca4b19ab918e0c4af0594b31d90cfe47832dd8e8d46518c0e33a",
+      "test_events": {
+        "pass": 80,
+        "skip": 1
+      },
+      "tested_packages": [
+        "github.com/inxups/style-cli/core/template",
+        "github.com/inxups/style-cli/core/warn",
+        "github.com/inxups/style-cli/core/when",
+        "github.com/inxups/style-cli/core/spec",
+        "github.com/inxups/style-cli/core/compile",
+        "github.com/inxups/style-cli/core/tokens",
+        "github.com/inxups/style-cli/core/plan",
+        "github.com/inxups/style-cli/core/engine",
+        "github.com/inxups/style-cli/core/state",
+        "github.com/inxups/style-cli/internal/runtime",
+        "github.com/inxups/style-cli/schema",
+        "github.com/inxups/style-cli/internal/app"
+      ],
+      "skipped_tests": [
+        "github.com/inxups/style-cli/core/state:TestRefreshProcessHelper"
+      ]
+    },
+    "environment-release": {
+      "command": [
+        "python3",
+        "-c",
+        "import json,platform,subprocess; print(json.dumps({\"os\":platform.platform(),\"machine\":platform.machine(),\"python\":platform.python_version(),\"go\":subprocess.check_output([\"go\",\"version\"],text=True).strip(),\"git\":subprocess.check_output([\"git\",\"--version\"],text=True).strip()}))"
+      ],
+      "exit_code": 0,
+      "seconds": 0.062,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "metadata_sha256": "8ad9ce1e283ab386e3a6300280c743249c20f141bedf9bc2a8f39882f41e035c",
+      "private_log": "/tmp/style-m3-a9-20261017/environment-release.log",
+      "log_sha256": "ef3797ef7e48588c9b32e0376a8bf5fd3b1371899d567530e03f1e5d55c157fe"
+    },
+    "first-compile": {
+      "command": [
+        "go",
+        "test",
+        "./core/spec",
+        "./core/plan",
+        "./core/compile",
+        "./core/state",
+        "./core/engine",
+        "./internal/runtime",
+        "./schema",
+        "-count=1",
+        "-json"
+      ],
+      "exit_code": 0,
+      "seconds": 3.075,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "metadata_sha256": "dd7eb98b2d1294302211f064a483a672b4bd9a21fa43bbed908109c970be38d5",
+      "private_log": "/tmp/style-m3-a9-20261017/first-compile.log",
+      "log_sha256": "798f1d9a8dbb31f0399d1ff745cfc8563e8d702ce26763cc31f053ca6ea22c38",
+      "test_events": {
+        "pass": 682
+      },
+      "tested_packages": [
+        "github.com/inxups/style-cli/core/plan",
+        "github.com/inxups/style-cli/schema",
+        "github.com/inxups/style-cli/core/compile",
+        "github.com/inxups/style-cli/core/engine",
+        "github.com/inxups/style-cli/internal/runtime",
+        "github.com/inxups/style-cli/core/spec",
+        "github.com/inxups/style-cli/core/state"
+      ],
+      "skipped_tests": []
+    },
+    "frozen-final": {
+      "command": [
+        "python3",
+        "scripts/check_m3_frozen.py",
+        "--binary",
+        "/tmp/style-m3-a9-20261017/style-final",
+        "--old-binary",
+        "/tmp/style-m3-a3-20261017/style-legacy",
+        "--baseline-binary",
+        "/tmp/style-m3-a5-20261017/style",
+        "--report",
+        "/tmp/style-m3-a9-20261017/frozen-results.json"
+      ],
+      "exit_code": 0,
+      "seconds": 2.449,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "metadata_sha256": "c927914f924e4bf0a0b116adb03650e1d56252d5e75913c9412b66668a81ca7c",
+      "private_log": "/tmp/style-m3-a9-20261017/frozen-final.log",
+      "log_sha256": "9dd86af629992d3b4e35746eafc10c6d21ab4b779c222a72846f06ebd3141ea6"
+    },
+    "frozen-release": {
+      "command": [
+        "python3",
+        "scripts/check_m3_frozen.py",
+        "--binary",
+        "/tmp/style-m3-a9-20261017/style-release",
+        "--old-binary",
+        "/tmp/style-m3-a3-20261017/style-legacy",
+        "--baseline-binary",
+        "/tmp/style-m3-a5-20261017/style",
+        "--report",
+        "/tmp/style-m3-a9-20261017/frozen-results-release.json"
+      ],
+      "exit_code": 0,
+      "seconds": 2.867,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "metadata_sha256": "0353d9da29c5ef76042c867583257e2dac42e336aab354864dcb8d0cec24dd51",
+      "private_log": "/tmp/style-m3-a9-20261017/frozen-release.log",
+      "log_sha256": "63f56eca926987fab2c6595b26035ba6813ebf8208e864c6524be4d0dce093bb"
+    },
+    "full-root-2": {
+      "command": [
+        "go",
+        "test",
+        "./...",
+        "-count=1",
+        "-json"
+      ],
+      "exit_code": 0,
+      "seconds": 101.848,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "metadata_sha256": "8d33f92d98f6c4aee0f4fda6603536947817f609bd592919af8dec79d884588f",
+      "private_log": "/tmp/style-m3-a9-20261017/full-root-2.log",
+      "log_sha256": "b5ab4a6b7b9ce5896f1a39387b11fc1d6075d0ee1592d3fffb3be667c2ddc6a7",
+      "test_events": {
+        "pass": 2925,
+        "skip": 2
+      },
+      "tested_packages": [
+        "github.com/inxups/style-cli/core/template",
+        "github.com/inxups/style-cli/core/warn",
+        "github.com/inxups/style-cli/core/plan",
+        "github.com/inxups/style-cli/core/tokens",
+        "github.com/inxups/style-cli/core/when",
+        "github.com/inxups/style-cli/core/compile",
+        "github.com/inxups/style-cli/internal/adapter",
+        "github.com/inxups/style-cli/core/engine",
+        "github.com/inxups/style-cli/internal/adapter/codex",
+        "github.com/inxups/style-cli/internal/adapter/claude",
+        "github.com/inxups/style-cli/internal/agenthookscheck",
+        "github.com/inxups/style-cli/internal/adapter/effortmap",
+        "github.com/inxups/style-cli/core/spec",
+        "github.com/inxups/style-cli/internal/saferead",
+        "github.com/inxups/style-cli/schema",
+        "github.com/inxups/style-cli/internal/tokenestimate",
+        "github.com/inxups/style-cli/internal/probe",
+        "github.com/inxups/style-cli/internal/runtime",
+        "github.com/inxups/style-cli/internal/adapter/conformance",
+        "github.com/inxups/style-cli/core/state",
+        "github.com/inxups/style-cli/internal/source",
+        "github.com/inxups/style-cli/internal/app"
+      ],
+      "skipped_tests": [
+        "github.com/inxups/style-cli/internal/adapter/conformance:TestHookProcessLatency",
+        "github.com/inxups/style-cli/core/state:TestRefreshProcessHelper"
+      ]
+    },
+    "full-root": {
+      "command": [
+        "go",
+        "test",
+        "./...",
+        "-count=1",
+        "-json"
+      ],
+      "exit_code": 1,
+      "seconds": 11.742,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "metadata_sha256": "f7eb094272cd192be9c00f4f4b459561182760fa9a1a90c31ccc91ddefcca959",
+      "private_log": "/tmp/style-m3-a9-20261017/full-root.log",
+      "log_sha256": "0603ce75e92dc932b81d0906a1da9d1382be2ed4b51bf829b7b566ebd8ab431b",
+      "test_events": {
+        "pass": 1584,
+        "skip": 2
+      },
+      "tested_packages": [
+        "github.com/inxups/style-cli/core/plan",
+        "github.com/inxups/style-cli/internal/adapter",
+        "github.com/inxups/style-cli/core/when",
+        "github.com/inxups/style-cli/core/template",
+        "github.com/inxups/style-cli/core/warn",
+        "github.com/inxups/style-cli/core/compile",
+        "github.com/inxups/style-cli/core/tokens",
+        "github.com/inxups/style-cli/core/engine",
+        "github.com/inxups/style-cli/internal/adapter/effortmap",
+        "github.com/inxups/style-cli/internal/agenthookscheck",
+        "github.com/inxups/style-cli/internal/saferead",
+        "github.com/inxups/style-cli/internal/adapter/codex",
+        "github.com/inxups/style-cli/internal/adapter/claude",
+        "github.com/inxups/style-cli/core/spec",
+        "github.com/inxups/style-cli/internal/tokenestimate",
+        "github.com/inxups/style-cli/schema",
+        "github.com/inxups/style-cli/internal/probe",
+        "github.com/inxups/style-cli/internal/runtime",
+        "github.com/inxups/style-cli/core/state",
+        "github.com/inxups/style-cli/internal/adapter/conformance",
+        "github.com/inxups/style-cli/internal/source"
+      ],
+      "skipped_tests": [
+        "github.com/inxups/style-cli/core/state:TestRefreshProcessHelper",
+        "github.com/inxups/style-cli/internal/adapter/conformance:TestHookProcessLatency"
+      ]
+    },
+    "git-final": {
+      "command": [
+        "python3",
+        "scripts/check_m3_git_source.py",
+        "--binary",
+        "/tmp/style-m3-a9-20261017/style-final",
+        "--old-binary",
+        "/tmp/style-m3-a3-20261017/style-legacy",
+        "--fixture",
+        "/tmp/style-m3-project-20261017/format-two-fixture",
+        "--report",
+        "/tmp/style-m3-a9-20261017/git-results.json"
+      ],
+      "exit_code": 0,
+      "seconds": 0.195,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "metadata_sha256": "590606cf703b159499991020ef34e68a4690569b6c303ec0eedcc29eb92d92b4",
+      "private_log": "/tmp/style-m3-a9-20261017/git-final.log",
+      "log_sha256": "f5c8bacbbc70d3fb4019703bea44d25a01e2b429ee55c4bf233d411340b53897"
+    },
+    "git-release": {
+      "command": [
+        "python3",
+        "scripts/check_m3_git_source.py",
+        "--binary",
+        "/tmp/style-m3-a9-20261017/style-release",
+        "--old-binary",
+        "/tmp/style-m3-a3-20261017/style-legacy",
+        "--fixture",
+        "/tmp/style-m3-project-20261017/format-two-fixture",
+        "--report",
+        "/tmp/style-m3-a9-20261017/git-results-release.json"
+      ],
+      "exit_code": 0,
+      "seconds": 0.514,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "metadata_sha256": "424bcceb67687866242efd2c2d3367f2bd17dee0a53a7814a1a169412b720d13",
+      "private_log": "/tmp/style-m3-a9-20261017/git-release.log",
+      "log_sha256": "0b00b57f8c8f521082ee6f8650af4877256f53ae51f101270faee7d538e58ec5"
+    },
+    "migration-final": {
+      "command": [
+        "python3",
+        "scripts/check_m2_rules_migration.py",
+        "--binary",
+        "/tmp/style-m3-a9-20261017/style-final",
+        "--old-binary",
+        "/tmp/style-m3-a3-20261017/style-legacy",
+        "--report",
+        "/tmp/style-m3-a9-20261017/migration-results.json"
+      ],
+      "exit_code": 0,
+      "seconds": 12.9,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "metadata_sha256": "68f1feeeb36ffad0376033cc49abcb107044aee258dda052de652a1863da1efc",
+      "private_log": "/tmp/style-m3-a9-20261017/migration-final.log",
+      "log_sha256": "f44b07d85cd6db9adef12b9e87bf6b29fbfbd11bd6ceb36335e50552c279a375"
+    },
+    "migration-release": {
+      "command": [
+        "python3",
+        "scripts/check_m2_rules_migration.py",
+        "--binary",
+        "/tmp/style-m3-a9-20261017/style-release",
+        "--old-binary",
+        "/tmp/style-m3-a3-20261017/style-legacy",
+        "--report",
+        "/tmp/style-m3-a9-20261017/migration-results-release.json"
+      ],
+      "exit_code": 0,
+      "seconds": 12.104,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "metadata_sha256": "932ab2a3fbc03768aea70aa30d5803ea2cff0ea0c5538ceacf8184fce2006c9d",
+      "private_log": "/tmp/style-m3-a9-20261017/migration-release.log",
+      "log_sha256": "f44b07d85cd6db9adef12b9e87bf6b29fbfbd11bd6ceb36335e50552c279a375"
+    },
+    "packages-compile": {
+      "command": [
+        "go",
+        "test",
+        "./core/...",
+        "./internal/runtime",
+        "./internal/app",
+        "./schema",
+        "-run",
+        "^TestLoadIndexChecksSchemaAndPrecompilesMatcher$",
+        "-count=1",
+        "-json"
+      ],
+      "exit_code": 0,
+      "seconds": 2.394,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "metadata_sha256": "80c18c019f5fd31d745390947dac1f2a5e8245d3753cb8ee67106844fa17d45a",
+      "private_log": "/tmp/style-m3-a9-20261017/packages-compile.log",
+      "log_sha256": "076b0904a20e9cca43fa2e563fae1888917fe626a203bde089fd235961a8d177",
+      "test_events": {
+        "pass": 1
+      },
+      "tested_packages": [
+        "github.com/inxups/style-cli/core/warn",
+        "github.com/inxups/style-cli/core/spec",
+        "github.com/inxups/style-cli/core/tokens",
+        "github.com/inxups/style-cli/core/compile",
+        "github.com/inxups/style-cli/core/engine",
+        "github.com/inxups/style-cli/core/template",
+        "github.com/inxups/style-cli/core/when",
+        "github.com/inxups/style-cli/core/plan",
+        "github.com/inxups/style-cli/core/state",
+        "github.com/inxups/style-cli/schema",
+        "github.com/inxups/style-cli/internal/runtime",
+        "github.com/inxups/style-cli/internal/app"
+      ],
+      "skipped_tests": []
+    },
+    "process-final": {
+      "command": [
+        "go",
+        "test",
+        "./core/state",
+        "-run",
+        "^TestRefreshSynchronizedProcessesAndCrash$",
+        "-count=10",
+        "-json"
+      ],
+      "exit_code": 0,
+      "seconds": 1.11,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "metadata_sha256": "9b2b53eea6aca308a568d7e59dd13e1681244711d4fe3958fbd6a96d3dcf1e6b",
+      "private_log": "/tmp/style-m3-a9-20261017/process-final.log",
+      "log_sha256": "8f418010580f744b331d3c3319effa541b431bba7500888b2e13a47af354979f",
+      "test_events": {
+        "pass": 30
+      },
+      "tested_packages": [
+        "github.com/inxups/style-cli/core/state"
+      ],
+      "skipped_tests": []
+    },
+    "project-final": {
+      "command": [
+        "python3",
+        "scripts/check_m3_project.py",
+        "--binary",
+        "/tmp/style-m3-a9-20261017/style-final",
+        "--old-binary",
+        "/tmp/style-m3-a5-20261017/style",
+        "--report",
+        "/tmp/style-m3-a9-20261017/project-results.json"
+      ],
+      "exit_code": 0,
+      "seconds": 2.705,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "metadata_sha256": "c4c0ee5e3cc0277e8270d9c4d62d44d9dba838891c8ff1e10dbfb06c4e8207ac",
+      "private_log": "/tmp/style-m3-a9-20261017/project-final.log",
+      "log_sha256": "5baec74cf9433dba0748724f865dc1fd4eed9fe8f8e1fb8babc354302f8a5318"
+    },
+    "project-release": {
+      "command": [
+        "python3",
+        "scripts/check_m3_project.py",
+        "--binary",
+        "/tmp/style-m3-a9-20261017/style-release",
+        "--old-binary",
+        "/tmp/style-m3-a5-20261017/style",
+        "--report",
+        "/tmp/style-m3-a9-20261017/project-results-release.json"
+      ],
+      "exit_code": 0,
+      "seconds": 2.766,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "metadata_sha256": "30e731fd79c3a1d207b5707b084eb06e3243caa3ecb6758bffd3a2abba8c1c19",
+      "private_log": "/tmp/style-m3-a9-20261017/project-release.log",
+      "log_sha256": "5baec74cf9433dba0748724f865dc1fd4eed9fe8f8e1fb8babc354302f8a5318"
+    },
+    "race-app-final": {
+      "command": [
+        "go",
+        "test",
+        "-race",
+        "./internal/app",
+        "-count=1",
+        "-json"
+      ],
+      "exit_code": 0,
+      "seconds": 154.159,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "metadata_sha256": "9d184c5dfd407a440b2015c19460b4e48582f383f5c8dcb4e7fcfcfb35c964e8",
+      "private_log": "/tmp/style-m3-a9-20261017/race-app-final.log",
+      "log_sha256": "161de3e6d47000a9ece813c0baf5f1fc3301b292801ecd87975f6bec0ddacc83",
+      "test_events": {
+        "pass": 1338
+      },
+      "tested_packages": [
+        "github.com/inxups/style-cli/internal/app"
+      ],
+      "skipped_tests": []
+    },
+    "race-app-release": {
+      "command": [
+        "go",
+        "test",
+        "-race",
+        "./internal/app",
+        "-count=1",
+        "-json"
+      ],
+      "exit_code": 0,
+      "seconds": 150.712,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "metadata_sha256": "57d0565c2ce9e57c15fab8f381eebc3bd8a2c8df4c0ee9600bac905f2fa2044f",
+      "private_log": "/tmp/style-m3-a9-20261017/race-app-release.log",
+      "log_sha256": "2625ebd08ae0c7c0b3b27a94373f10c4b385273d19b2157381b3b7335e151a79",
+      "test_events": {
+        "pass": 1338
+      },
+      "tested_packages": [
+        "github.com/inxups/style-cli/internal/app"
+      ],
+      "skipped_tests": []
+    },
+    "race-engine-runtime-release": {
+      "command": [
+        "go",
+        "test",
+        "-race",
+        "./core/engine",
+        "./internal/runtime",
+        "-count=1",
+        "-json"
+      ],
+      "exit_code": 0,
+      "seconds": 4.405,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "metadata_sha256": "026782df86da56ad813a4b4fdcdb186168039323cae939830d7bee6ab79506eb",
+      "private_log": "/tmp/style-m3-a9-20261017/race-engine-runtime-release.log",
+      "log_sha256": "5254de04af2383b730eff565c93ac3b04327befc8cc5a0f9a4ecd457b0a9f423",
+      "test_events": {
+        "pass": 77
+      },
+      "tested_packages": [
+        "github.com/inxups/style-cli/internal/runtime",
+        "github.com/inxups/style-cli/core/engine"
+      ],
+      "skipped_tests": []
+    },
+    "race-final": {
+      "command": [
+        "go",
+        "test",
+        "-race",
+        "./core/state",
+        "./core/engine",
+        "./internal/runtime",
+        "./internal/app",
+        "-count=1",
+        "-json"
+      ],
+      "exit_code": 1,
+      "seconds": 175.83,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "metadata_sha256": "d4b691b6c2feef6aac61af06e61d1e396a04d88c70772e829e28382300d62e7f",
+      "private_log": "/tmp/style-m3-a9-20261017/race-final.log",
+      "log_sha256": "de3fbe416fd8d55a06e8792a7fc6861f3332a213d208a1ae3f9c616eaecc0c2e",
+      "test_events": {
+        "pass": 1506,
+        "skip": 1,
+        "fail": 6
+      },
+      "tested_packages": [
+        "github.com/inxups/style-cli/internal/runtime",
+        "github.com/inxups/style-cli/core/engine",
+        "github.com/inxups/style-cli/core/state"
+      ],
+      "skipped_tests": [
+        "github.com/inxups/style-cli/core/state:TestRefreshProcessHelper"
+      ]
+    },
+    "race-state-release": {
+      "command": [
+        "go",
+        "test",
+        "-race",
+        "./core/state",
+        "-count=1",
+        "-json"
+      ],
+      "exit_code": 0,
+      "seconds": 18.984,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "metadata_sha256": "b3a2e4d3328f3c96811258a068a731c2ddd966428696c61843b2fab2bdb2254b",
+      "private_log": "/tmp/style-m3-a9-20261017/race-state-release.log",
+      "log_sha256": "f06933bfcd9d264ee210d12a8381d018fcaa95fb6a58b0ffa1a5c608bce14002",
+      "test_events": {
+        "pass": 98,
+        "skip": 1
+      },
+      "tested_packages": [
+        "github.com/inxups/style-cli/core/state"
+      ],
+      "skipped_tests": [
+        "github.com/inxups/style-cli/core/state:TestRefreshProcessHelper"
+      ]
+    },
+    "refresh-app-2": {
+      "command": [
+        "go",
+        "test",
+        "./internal/app",
+        "-run",
+        "M3A9",
+        "-count=1",
+        "-json"
+      ],
+      "exit_code": 1,
+      "seconds": 0.195,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "metadata_sha256": "5966ed34420e7afda197269e359ba485b095186b2a15e3ce1b6f73fe79a2b6d7",
+      "private_log": "/tmp/style-m3-a9-20261017/refresh-app-2.log",
+      "log_sha256": "06f11827eedcc41124238b52332bde3b7e62f9be2a0d10a8da4e3caa8b7ab263",
+      "test_events": {},
+      "tested_packages": [],
+      "skipped_tests": []
+    },
+    "refresh-app-3": {
+      "command": [
+        "go",
+        "test",
+        "./internal/app",
+        "-run",
+        "M3A9",
+        "-count=1",
+        "-json"
+      ],
+      "exit_code": 0,
+      "seconds": 2.147,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "metadata_sha256": "cd89a3f0bd48e8e2ac9517610be63675b3194251b36ec322c1120cfdbfc9b6b2",
+      "private_log": "/tmp/style-m3-a9-20261017/refresh-app-3.log",
+      "log_sha256": "ed8cca3d815f14b593350d3255929d0dddf610c330683ba488e69f2304e387b4",
+      "test_events": {
+        "pass": 9
+      },
+      "tested_packages": [
+        "github.com/inxups/style-cli/internal/app"
+      ],
+      "skipped_tests": []
+    },
+    "refresh-app": {
+      "command": [
+        "go",
+        "test",
+        "./internal/app",
+        "./internal/runtime",
+        "-run",
+        "M3A9|Refresh",
+        "-count=1",
+        "-json"
+      ],
+      "exit_code": 1,
+      "seconds": 1.205,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "metadata_sha256": "70c147c9262ff818f10789eae97699e3c95dbaedd2ed5daa4f9fecb8ad04e474",
+      "private_log": "/tmp/style-m3-a9-20261017/refresh-app.log",
+      "log_sha256": "e55aa8eba4962d6fceb028242e37075bda55eff49904b8bec7d3265e9c830bc1",
+      "test_events": {
+        "pass": 7
+      },
+      "tested_packages": [
+        "github.com/inxups/style-cli/internal/runtime"
+      ],
+      "skipped_tests": []
+    },
+    "refresh-changes-2": {
+      "command": [
+        "go",
+        "test",
+        "./internal/app",
+        "-run",
+        "M3A9",
+        "-count=1",
+        "-json"
+      ],
+      "exit_code": 1,
+      "seconds": 0.188,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "metadata_sha256": "21180569d1d092b4159232c0b702ced357babe32761652df5848185919d18b83",
+      "private_log": "/tmp/style-m3-a9-20261017/refresh-changes-2.log",
+      "log_sha256": "07e3ed0a0c565e5be812839c40578a08e9d75a9d080917bcea722375a2141036",
+      "test_events": {},
+      "tested_packages": [],
+      "skipped_tests": []
+    },
+    "refresh-changes-3": {
+      "command": [
+        "go",
+        "test",
+        "./internal/app",
+        "-run",
+        "M3A9",
+        "-count=1",
+        "-json"
+      ],
+      "exit_code": 1,
+      "seconds": 3.575,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "metadata_sha256": "9e15c1a18b4c8ccb52579d9853d4c937f5c481fe1c56b3a04ae1c7397efefe30",
+      "private_log": "/tmp/style-m3-a9-20261017/refresh-changes-3.log",
+      "log_sha256": "746bae918b5f939c8b5bc512b137b1d1f174bdd0215deb02cbfafa6ac105bfa8",
+      "test_events": {
+        "pass": 9,
+        "fail": 6
+      },
+      "tested_packages": [],
+      "skipped_tests": []
+    },
+    "refresh-changes": {
+      "command": [
+        "go",
+        "test",
+        "./internal/app",
+        "-run",
+        "M3A9",
+        "-count=1",
+        "-json"
+      ],
+      "exit_code": 1,
+      "seconds": 0.535,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "metadata_sha256": "79877485fa28e602c48f2b2001a685b5061ca226c74c1369d954616598eb6299",
+      "private_log": "/tmp/style-m3-a9-20261017/refresh-changes.log",
+      "log_sha256": "9e4804aa618c67616be69e2ca70422570f0db0b80e0222f7856d1620d96a0186",
+      "test_events": {},
+      "tested_packages": [],
+      "skipped_tests": []
+    },
+    "refresh-cli-release": {
+      "command": [
+        "python3",
+        "scripts/check_m3_refresh.py",
+        "--binary",
+        "/tmp/style-m3-a9-20261017/style-release",
+        "--old-binary",
+        "/tmp/style-m3-project-20261017/style-final",
+        "--report",
+        "/tmp/style-m3-a9-20261017/cli-results-release.json"
+      ],
+      "exit_code": 0,
+      "seconds": 11.023,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "metadata_sha256": "98cb9d6c6967ec8c347d2c07005f434d73bd53dc0e9270bcad5af914f479f6ea",
+      "private_log": "/tmp/style-m3-a9-20261017/refresh-cli-release.log",
+      "log_sha256": "dd8c7dfadc71e07fca91814cd7a6c7abfeeb90230e38d54a8860d6d13f549d2b"
+    },
+    "refresh-config": {
+      "command": [
+        "go",
+        "test",
+        "./core/spec",
+        "./core/plan",
+        "./core/compile",
+        "-run",
+        "Refresh",
+        "-count=1",
+        "-json"
+      ],
+      "exit_code": 0,
+      "seconds": 1.196,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "metadata_sha256": "d1d1d2960be15840f3f9183aa3def3bf456ddde485813353854a5cd076b7687b",
+      "private_log": "/tmp/style-m3-a9-20261017/refresh-config.log",
+      "log_sha256": "8903e11f0e4345ebed0c8d63a13b452c8d796e5542e9f12887916926f276fd7b",
+      "test_events": {
+        "pass": 36
+      },
+      "tested_packages": [
+        "github.com/inxups/style-cli/core/plan",
+        "github.com/inxups/style-cli/core/compile",
+        "github.com/inxups/style-cli/core/spec"
+      ],
+      "skipped_tests": []
+    },
+    "refresh-core-4": {
+      "command": [
+        "go",
+        "test",
+        "./core/state",
+        "./core/engine",
+        "-run",
+        "Refresh",
+        "-count=1",
+        "-json"
+      ],
+      "exit_code": 0,
+      "seconds": 1.131,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "metadata_sha256": "e098b154264c0b11c2ef918ab7156c478d736cdd939f23ba85ef3034d69fcc73",
+      "private_log": "/tmp/style-m3-a9-20261017/refresh-core-4.log",
+      "log_sha256": "25f1e4360f0364b37d276fb0a38bbd83f7b127f0153b7c650253080b9086c3dc",
+      "test_events": {
+        "pass": 27,
+        "skip": 1
+      },
+      "tested_packages": [
+        "github.com/inxups/style-cli/core/engine",
+        "github.com/inxups/style-cli/core/state"
+      ],
+      "skipped_tests": [
+        "github.com/inxups/style-cli/core/state:TestRefreshProcessHelper"
+      ]
+    },
+    "refresh-engine-2": {
+      "command": [
+        "go",
+        "test",
+        "./core/engine",
+        "-run",
+        "Refresh",
+        "-count=1",
+        "-json"
+      ],
+      "exit_code": 1,
+      "seconds": 0.715,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "metadata_sha256": "7c7806076bf55ba648f8da5c863ba0c318b49efa2a4578e9f5fbaf8f85ccc5d4",
+      "private_log": "/tmp/style-m3-a9-20261017/refresh-engine-2.log",
+      "log_sha256": "8e0e45424df7a762976f17bac61c5c975e5902a4861f247e782ea95e47e16d29",
+      "test_events": {
+        "pass": 2,
+        "fail": 1
+      },
+      "tested_packages": [],
+      "skipped_tests": []
+    },
+    "refresh-engine": {
+      "command": [
+        "go",
+        "test",
+        "./core/engine",
+        "-run",
+        "Refresh",
+        "-count=1",
+        "-json"
+      ],
+      "exit_code": 1,
+      "seconds": 1.262,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "metadata_sha256": "162138ca8ec11faa030e2447e5f63fb130579ce8eb46e5cd162db88ee59b2235",
+      "private_log": "/tmp/style-m3-a9-20261017/refresh-engine.log",
+      "log_sha256": "8890bb413bbf2a25b31bd365e2e6d7ab65c19163310e19270b9e9f01392f0a68",
+      "test_events": {
+        "pass": 2,
+        "fail": 1
+      },
+      "tested_packages": [],
+      "skipped_tests": []
+    },
+    "refresh-faults": {
+      "command": [
+        "go",
+        "test",
+        "./core/state",
+        "./core/tokens",
+        "-run",
+        "Refresh",
+        "-count=1",
+        "-json"
+      ],
+      "exit_code": 0,
+      "seconds": 2.956,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "metadata_sha256": "e14f0ecf741b693503b37789e1de203453349a1717f9b19cf1d5f9870cbe1e14",
+      "private_log": "/tmp/style-m3-a9-20261017/refresh-faults.log",
+      "log_sha256": "3d10f908ba3dd49092b8c5aa918ea3b2ab256aafdebc4935b8c3c4889f812644",
+      "test_events": {
+        "pass": 33,
+        "skip": 1
+      },
+      "tested_packages": [
+        "github.com/inxups/style-cli/core/tokens",
+        "github.com/inxups/style-cli/core/state"
+      ],
+      "skipped_tests": [
+        "github.com/inxups/style-cli/core/state:TestRefreshProcessHelper"
+      ]
+    },
+    "refresh-final-targeted": {
+      "command": [
+        "go",
+        "test",
+        "./core/spec",
+        "./core/plan",
+        "./core/compile",
+        "./core/state",
+        "./core/engine",
+        "./core/tokens",
+        "./internal/runtime",
+        "./internal/app",
+        "-run",
+        "Refresh|M3A9",
+        "-count=1",
+        "-json"
+      ],
+      "exit_code": 1,
+      "seconds": 4.023,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "metadata_sha256": "aee7f932eef74162cb9d99b430e082fb3bc8330075a79ad6da8d9eda425ba04c",
+      "private_log": "/tmp/style-m3-a9-20261017/refresh-final-targeted.log",
+      "log_sha256": "4b8ef5e5cc2b22144e3b2c36e4f5de45178db3772e92cfec6e88467cd050f4f8",
+      "test_events": {
+        "pass": 97,
+        "fail": 1,
+        "skip": 1
+      },
+      "tested_packages": [
+        "github.com/inxups/style-cli/core/plan",
+        "github.com/inxups/style-cli/core/spec",
+        "github.com/inxups/style-cli/core/compile",
+        "github.com/inxups/style-cli/core/tokens",
+        "github.com/inxups/style-cli/internal/runtime",
+        "github.com/inxups/style-cli/core/state",
+        "github.com/inxups/style-cli/internal/app"
+      ],
+      "skipped_tests": [
+        "github.com/inxups/style-cli/core/state:TestRefreshProcessHelper"
+      ]
+    },
+    "refresh-process-repeat": {
+      "command": [
+        "go",
+        "test",
+        "./core/state",
+        "-run",
+        "^TestRefreshSynchronizedProcessesAndCrash$",
+        "-count=10",
+        "-json"
+      ],
+      "exit_code": 1,
+      "seconds": 1.093,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "metadata_sha256": "c59cf076fb5aeba22b68e008cae2c302c1f454b2824bbc8602d38423d6af212f",
+      "private_log": "/tmp/style-m3-a9-20261017/refresh-process-repeat.log",
+      "log_sha256": "bb7002c3627339e736c4047fdb6f69e6a90eb63bc98f5a625a9f2c7987aa2e29",
+      "test_events": {
+        "pass": 11,
+        "fail": 19
+      },
+      "tested_packages": [],
+      "skipped_tests": []
+    },
+    "refresh-process-unsandboxed": {
+      "command": [
+        "go",
+        "test",
+        "./core/state",
+        "-run",
+        "^TestRefreshSynchronizedProcessesAndCrash$",
+        "-count=3",
+        "-json"
+      ],
+      "exit_code": 1,
+      "seconds": 0.641,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "metadata_sha256": "a755986ead40fb1565adbdb2f9b9d206970df8daa766aded569155e8dfba0b1a",
+      "private_log": "/tmp/style-m3-a9-20261017/refresh-process-unsandboxed.log",
+      "log_sha256": "a2d0749ab858e0ae1459699e7a990ef991026ad5c54f2042a55d37f3a601e7a0",
+      "test_events": {
+        "fail": 7,
+        "pass": 2
+      },
+      "tested_packages": [],
+      "skipped_tests": []
+    },
+    "refresh-runtime": {
+      "command": [
+        "go",
+        "test",
+        "./internal/runtime",
+        "-run",
+        "Refresh",
+        "-count=1",
+        "-json"
+      ],
+      "exit_code": 1,
+      "seconds": 1.312,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "metadata_sha256": "1a3011702f1730e35098f58a3de437f4a1a4da80a6e2b6146bf3b5717aaf8388",
+      "private_log": "/tmp/style-m3-a9-20261017/refresh-runtime.log",
+      "log_sha256": "1fe7e8a8aedae6d4f275fd6bb0fa66cd070c676d74fd6098224e987422e2d5bb",
+      "test_events": {
+        "fail": 4,
+        "pass": 3
+      },
+      "tested_packages": [],
+      "skipped_tests": []
+    },
+    "refresh-state-2": {
+      "command": [
+        "go",
+        "test",
+        "./core/state",
+        "-run",
+        "Refresh",
+        "-count=1",
+        "-json"
+      ],
+      "exit_code": 1,
+      "seconds": 0.112,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "metadata_sha256": "aba11139d33508b75dbf19e55e0af946c49731f70d8bc1e582c290ec7bf64d26",
+      "private_log": "/tmp/style-m3-a9-20261017/refresh-state-2.log",
+      "log_sha256": "9d530aa32639eb5e70fd0821488a46b1e210c340fa3a2ca3c3c73a805061619b",
+      "test_events": {},
+      "tested_packages": [],
+      "skipped_tests": []
+    },
+    "refresh-state-3": {
+      "command": [
+        "go",
+        "test",
+        "./core/state",
+        "-run",
+        "Refresh",
+        "-count=1",
+        "-json"
+      ],
+      "exit_code": 1,
+      "seconds": 1.454,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "metadata_sha256": "afb98d36fabe477c02960cbdd0e62d169db72f4202be8edfab37d4b6a91a235f",
+      "private_log": "/tmp/style-m3-a9-20261017/refresh-state-3.log",
+      "log_sha256": "9f9e4e9c23128e37e1041a980b757562891580fc6d941b52e709c52e48477f8e",
+      "test_events": {
+        "pass": 22,
+        "skip": 1,
+        "fail": 2
+      },
+      "tested_packages": [],
+      "skipped_tests": [
+        "github.com/inxups/style-cli/core/state:TestRefreshProcessHelper"
+      ]
+    },
+    "refresh-state": {
+      "command": [
+        "go",
+        "test",
+        "./core/state",
+        "-run",
+        "Refresh",
+        "-count=1",
+        "-json"
+      ],
+      "exit_code": 1,
+      "seconds": 1.29,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "metadata_sha256": "2ec45bbf3bb2b2a465e0299ff018948038e81627be099f8b9214cb26939f904c",
+      "private_log": "/tmp/style-m3-a9-20261017/refresh-state.log",
+      "log_sha256": "d0c130b1f47f560afe885c37ab2d99ee6035475de59cd1c2733f605616a0ac90",
+      "test_events": {
+        "pass": 20,
+        "fail": 4,
+        "skip": 1
+      },
+      "tested_packages": [],
+      "skipped_tests": [
+        "github.com/inxups/style-cli/core/state:TestRefreshProcessHelper"
+      ]
+    },
+    "refresh-targeted-2": {
+      "command": [
+        "go",
+        "test",
+        "./core/spec",
+        "./core/plan",
+        "./core/compile",
+        "./core/state",
+        "./core/engine",
+        "./core/tokens",
+        "./internal/runtime",
+        "./internal/app",
+        "-run",
+        "Refresh|M3A9",
+        "-count=1",
+        "-json"
+      ],
+      "exit_code": 1,
+      "seconds": 3.633,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "metadata_sha256": "368b1e8f181bb223cadadf4f0e17a32502bfc1f1463c5c00b37a76bf14c49fbb",
+      "private_log": "/tmp/style-m3-a9-20261017/refresh-targeted-2.log",
+      "log_sha256": "10a6e0de09593f377ad95c6cb8271d8811bc361b14d25df82ee9e410afb48e06",
+      "test_events": {
+        "pass": 92,
+        "fail": 6,
+        "skip": 1
+      },
+      "tested_packages": [
+        "github.com/inxups/style-cli/core/plan",
+        "github.com/inxups/style-cli/core/compile",
+        "github.com/inxups/style-cli/core/tokens",
+        "github.com/inxups/style-cli/core/spec",
+        "github.com/inxups/style-cli/core/engine",
+        "github.com/inxups/style-cli/internal/runtime",
+        "github.com/inxups/style-cli/core/state"
+      ],
+      "skipped_tests": [
+        "github.com/inxups/style-cli/core/state:TestRefreshProcessHelper"
+      ]
+    },
+    "refresh-targeted-3": {
+      "command": [
+        "go",
+        "test",
+        "./core/spec",
+        "./core/plan",
+        "./core/compile",
+        "./core/state",
+        "./core/engine",
+        "./core/tokens",
+        "./internal/runtime",
+        "./internal/app",
+        "-run",
+        "Refresh|M3A9",
+        "-count=1",
+        "-json"
+      ],
+      "exit_code": 0,
+      "seconds": 7.415,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "metadata_sha256": "1d0212bab05ccfdb548a4f4c3e6c2f51f6a64b602b9ce1618fb1a1dfce7e6404",
+      "private_log": "/tmp/style-m3-a9-20261017/refresh-targeted-3.log",
+      "log_sha256": "b100208aa0838430961a3a1f37ec70b54d25740e70b4068fb63dab50af936ad7",
+      "test_events": {
+        "pass": 98,
+        "skip": 1
+      },
+      "tested_packages": [
+        "github.com/inxups/style-cli/core/plan",
+        "github.com/inxups/style-cli/core/tokens",
+        "github.com/inxups/style-cli/core/compile",
+        "github.com/inxups/style-cli/core/spec",
+        "github.com/inxups/style-cli/internal/runtime",
+        "github.com/inxups/style-cli/core/engine",
+        "github.com/inxups/style-cli/internal/app",
+        "github.com/inxups/style-cli/core/state"
+      ],
+      "skipped_tests": [
+        "github.com/inxups/style-cli/core/state:TestRefreshProcessHelper"
+      ]
+    },
+    "replace-final": {
+      "command": [
+        "python3",
+        "scripts/check_m2_replace.py",
+        "/tmp/style-m3-a9-20261017/style-final",
+        "--report",
+        "/tmp/style-m3-a9-20261017/replace-results.json"
+      ],
+      "exit_code": 0,
+      "seconds": 4.655,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "metadata_sha256": "beb0f3743a8359e1d378ab09089672a7a553fb00b207e8f420d77f8ed29b46ab",
+      "private_log": "/tmp/style-m3-a9-20261017/replace-final.log",
+      "log_sha256": "ca4a7384714f31c2511250703ec0e899128da6048b3cb677adfda8ee6b037050"
+    },
+    "replace-release": {
+      "command": [
+        "python3",
+        "scripts/check_m2_replace.py",
+        "/tmp/style-m3-a9-20261017/style-release",
+        "--report",
+        "/tmp/style-m3-a9-20261017/replace-results-release.json"
+      ],
+      "exit_code": 0,
+      "seconds": 4.064,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "metadata_sha256": "88ab4162f8940183f31de60a60f6ddbf2f9c86b58fc66431504786db6c9fc0b4",
+      "private_log": "/tmp/style-m3-a9-20261017/replace-release.log",
+      "log_sha256": "ca4a7384714f31c2511250703ec0e899128da6048b3cb677adfda8ee6b037050"
+    },
+    "smoke-final": {
+      "command": [
+        "python3",
+        "scripts/smoke.py",
+        "/tmp/style-m3-a9-20261017/style-final"
+      ],
+      "exit_code": 0,
+      "seconds": 1.9,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "metadata_sha256": "a5a044f7accc8b62e62d66cae336061ae169a18244229f4dcddedad07d4a9a06",
+      "private_log": "/tmp/style-m3-a9-20261017/smoke-final.log",
+      "log_sha256": "5039b6cbbaa0d673d3772dfa18b0e24352159e7f2ddf65dd8cdabcbff5e08b63"
+    },
+    "smoke-release": {
+      "command": [
+        "python3",
+        "scripts/smoke.py",
+        "/tmp/style-m3-a9-20261017/style-release"
+      ],
+      "exit_code": 0,
+      "seconds": 1.844,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "metadata_sha256": "0b99434fe5d6bc06c74f7d39e937b24e2a736afe055ee40f5a0faad7fde30649",
+      "private_log": "/tmp/style-m3-a9-20261017/smoke-release.log",
+      "log_sha256": "5039b6cbbaa0d673d3772dfa18b0e24352159e7f2ddf65dd8cdabcbff5e08b63"
+    },
+    "state-test-binary": {
+      "command": [
+        "go",
+        "test",
+        "-c",
+        "-o",
+        "/tmp/style-m3-a9-20261017/state.test",
+        "./core/state"
+      ],
+      "exit_code": 0,
+      "seconds": 0.696,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "metadata_sha256": "f2eade9fb6385b76523295d25bb3f958fe1ec72cbb247d810ec7e7b0c14be7f0",
+      "private_log": "/tmp/style-m3-a9-20261017/state-test-binary.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "test-agenthooks-final": {
+      "command": [
+        "go",
+        "test",
+        "-C",
+        "agenthooks",
+        "./...",
+        "-count=1",
+        "-json"
+      ],
+      "exit_code": 0,
+      "seconds": 12.779,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "metadata_sha256": "5d39e548c3cb5692aa0823bac5d83fd67fb6425fc7902798ba7a6ab877c4429b",
+      "private_log": "/tmp/style-m3-a9-20261017/test-agenthooks-final.log",
+      "log_sha256": "2b7039e99c7b3676071528e3f11fbdfc9b55b6e61b4931e6256b6440df0e9701",
+      "test_events": {
+        "pass": 510,
+        "skip": 23
+      },
+      "tested_packages": [
+        "github.com/speakeasy-api/agenthooks/internal/jsonx",
+        "github.com/speakeasy-api/agenthooks/provider/gemini",
+        "github.com/speakeasy-api/agenthooks/provider/claudecode",
+        "github.com/speakeasy-api/agenthooks/examples/secretguard",
+        "github.com/speakeasy-api/agenthooks/provider/kimicode",
+        "github.com/speakeasy-api/agenthooks/provider/copilot",
+        "github.com/speakeasy-api/agenthooks/e2e",
+        "github.com/speakeasy-api/agenthooks/provider/openclaw",
+        "github.com/speakeasy-api/agenthooks/transcript",
+        "github.com/speakeasy-api/agenthooks/install",
+        "github.com/speakeasy-api/agenthooks"
+      ],
+      "skipped_tests": [
+        "github.com/speakeasy-api/agenthooks/e2e:TestClaudeEvents",
+        "github.com/speakeasy-api/agenthooks/e2e:TestCopilotStopContinuation",
+        "github.com/speakeasy-api/agenthooks/e2e:TestCodexCanonicalShellMatcher",
+        "github.com/speakeasy-api/agenthooks/e2e:TestCodexTrustPreseeding",
+        "github.com/speakeasy-api/agenthooks/e2e:TestCopilotDeny",
+        "github.com/speakeasy-api/agenthooks/e2e:TestGeminiEvents",
+        "github.com/speakeasy-api/agenthooks/e2e:TestCursorDeny",
+        "github.com/speakeasy-api/agenthooks/e2e:TestCopilotPluginScope",
+        "github.com/speakeasy-api/agenthooks/e2e:TestCopilotPreCompact",
+        "github.com/speakeasy-api/agenthooks/e2e:TestCopilotToolFailure",
+        "github.com/speakeasy-api/agenthooks/e2e:TestOpenCodeDeny",
+        "github.com/speakeasy-api/agenthooks/e2e:TestKimiDeny",
+        "github.com/speakeasy-api/agenthooks/e2e:TestKimiEventFields",
+        "github.com/speakeasy-api/agenthooks/e2e:TestGeminiDeny",
+        "github.com/speakeasy-api/agenthooks/e2e:TestCopilotEventFields",
+        "github.com/speakeasy-api/agenthooks/e2e:TestCodexDeny",
+        "github.com/speakeasy-api/agenthooks/e2e:TestCopilotSubagentEvents",
+        "github.com/speakeasy-api/agenthooks/e2e:TestCopilotPascalCaseCompat",
+        "github.com/speakeasy-api/agenthooks/e2e:TestClaudeDeny",
+        "github.com/speakeasy-api/agenthooks/e2e:TestCursorResumeBackfill",
+        "github.com/speakeasy-api/agenthooks/e2e:TestCursorEvents",
+        "github.com/speakeasy-api/agenthooks/e2e:TestCopilotModifiedArgs",
+        "github.com/speakeasy-api/agenthooks/e2e:TestOpenCodeEvents"
+      ]
+    },
+    "test-root-final-2": {
+      "command": [
+        "go",
+        "test",
+        "./...",
+        "-count=1",
+        "-json"
+      ],
+      "exit_code": 0,
+      "seconds": 113.653,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "metadata_sha256": "8226ab3d27f65d9a589a77867e2968baf16d0f180f13e664ef6535489d923646",
+      "private_log": "/tmp/style-m3-a9-20261017/test-root-final-2.log",
+      "log_sha256": "781c599f8f1b0985a16ca143324d53b243f8704bb08d7e62285b1029a3c15b3d",
+      "test_events": {
+        "pass": 2934,
+        "skip": 2
+      },
+      "tested_packages": [
+        "github.com/inxups/style-cli/core/plan",
+        "github.com/inxups/style-cli/core/template",
+        "github.com/inxups/style-cli/core/warn",
+        "github.com/inxups/style-cli/core/when",
+        "github.com/inxups/style-cli/internal/adapter",
+        "github.com/inxups/style-cli/core/tokens",
+        "github.com/inxups/style-cli/core/compile",
+        "github.com/inxups/style-cli/internal/adapter/effortmap",
+        "github.com/inxups/style-cli/internal/agenthookscheck",
+        "github.com/inxups/style-cli/core/engine",
+        "github.com/inxups/style-cli/internal/adapter/codex",
+        "github.com/inxups/style-cli/internal/adapter/claude",
+        "github.com/inxups/style-cli/internal/saferead",
+        "github.com/inxups/style-cli/internal/tokenestimate",
+        "github.com/inxups/style-cli/schema",
+        "github.com/inxups/style-cli/internal/probe",
+        "github.com/inxups/style-cli/core/spec",
+        "github.com/inxups/style-cli/internal/runtime",
+        "github.com/inxups/style-cli/internal/adapter/conformance",
+        "github.com/inxups/style-cli/core/state",
+        "github.com/inxups/style-cli/internal/source",
+        "github.com/inxups/style-cli/internal/app"
+      ],
+      "skipped_tests": [
+        "github.com/inxups/style-cli/internal/adapter/conformance:TestHookProcessLatency",
+        "github.com/inxups/style-cli/core/state:TestRefreshProcessHelper"
+      ]
+    },
+    "test-root-final": {
+      "command": [
+        "go",
+        "test",
+        "./...",
+        "-count=1",
+        "-json"
+      ],
+      "exit_code": 1,
+      "seconds": 112.261,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "metadata_sha256": "8a9973d9964662fdc09ba60c0e83b7126da47c15f754fb8154b5c1c836e4adeb",
+      "private_log": "/tmp/style-m3-a9-20261017/test-root-final.log",
+      "log_sha256": "acfa29b680badfea7966d9f3e4b12d19edfdf77f9ff7728a56271a1205e8d216",
+      "test_events": {
+        "pass": 2928,
+        "skip": 2,
+        "fail": 6
+      },
+      "tested_packages": [
+        "github.com/inxups/style-cli/core/compile",
+        "github.com/inxups/style-cli/core/plan",
+        "github.com/inxups/style-cli/core/tokens",
+        "github.com/inxups/style-cli/core/template",
+        "github.com/inxups/style-cli/core/warn",
+        "github.com/inxups/style-cli/core/when",
+        "github.com/inxups/style-cli/core/engine",
+        "github.com/inxups/style-cli/internal/adapter",
+        "github.com/inxups/style-cli/core/spec",
+        "github.com/inxups/style-cli/internal/adapter/effortmap",
+        "github.com/inxups/style-cli/internal/agenthookscheck",
+        "github.com/inxups/style-cli/internal/adapter/codex",
+        "github.com/inxups/style-cli/internal/saferead",
+        "github.com/inxups/style-cli/internal/adapter/claude",
+        "github.com/inxups/style-cli/internal/tokenestimate",
+        "github.com/inxups/style-cli/schema",
+        "github.com/inxups/style-cli/internal/probe",
+        "github.com/inxups/style-cli/internal/runtime",
+        "github.com/inxups/style-cli/internal/adapter/conformance",
+        "github.com/inxups/style-cli/core/state",
+        "github.com/inxups/style-cli/internal/source"
+      ],
+      "skipped_tests": [
+        "github.com/inxups/style-cli/internal/adapter/conformance:TestHookProcessLatency",
+        "github.com/inxups/style-cli/core/state:TestRefreshProcessHelper"
+      ]
+    },
+    "test-root-release": {
+      "command": [
+        "go",
+        "test",
+        "./...",
+        "-count=1",
+        "-json"
+      ],
+      "exit_code": 0,
+      "seconds": 106.276,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "metadata_sha256": "d8f3fec144a12f24a19ca0c988974d51b2a14d8a8c482fbb9f23d72be69625f6",
+      "private_log": "/tmp/style-m3-a9-20261017/test-root-release.log",
+      "log_sha256": "89bc9598b8171d5e5f01494984a532161202ef4632fa2741ef9e2fd837b21e5b",
+      "test_events": {
+        "pass": 2935,
+        "skip": 2
+      },
+      "tested_packages": [
+        "github.com/inxups/style-cli/core/warn",
+        "github.com/inxups/style-cli/core/template",
+        "github.com/inxups/style-cli/core/plan",
+        "github.com/inxups/style-cli/core/when",
+        "github.com/inxups/style-cli/core/tokens",
+        "github.com/inxups/style-cli/core/compile",
+        "github.com/inxups/style-cli/core/engine",
+        "github.com/inxups/style-cli/internal/adapter",
+        "github.com/inxups/style-cli/internal/adapter/codex",
+        "github.com/inxups/style-cli/internal/adapter/effortmap",
+        "github.com/inxups/style-cli/internal/agenthookscheck",
+        "github.com/inxups/style-cli/internal/adapter/claude",
+        "github.com/inxups/style-cli/core/spec",
+        "github.com/inxups/style-cli/internal/tokenestimate",
+        "github.com/inxups/style-cli/internal/saferead",
+        "github.com/inxups/style-cli/schema",
+        "github.com/inxups/style-cli/internal/probe",
+        "github.com/inxups/style-cli/internal/runtime",
+        "github.com/inxups/style-cli/internal/adapter/conformance",
+        "github.com/inxups/style-cli/core/state",
+        "github.com/inxups/style-cli/internal/source",
+        "github.com/inxups/style-cli/internal/app"
+      ],
+      "skipped_tests": [
+        "github.com/inxups/style-cli/internal/adapter/conformance:TestHookProcessLatency",
+        "github.com/inxups/style-cli/core/state:TestRefreshProcessHelper"
+      ]
+    },
+    "update-final": {
+      "command": [
+        "python3",
+        "scripts/check_m3_update.py",
+        "--binary",
+        "/tmp/style-m3-a9-20261017/style-final",
+        "--old-binary",
+        "/tmp/style-m3-a3-20261017/style-legacy",
+        "--baseline-binary",
+        "/tmp/style-m3-a4-20261017/style-baseline",
+        "--report",
+        "/tmp/style-m3-a9-20261017/update-results.json"
+      ],
+      "exit_code": 0,
+      "seconds": 2.431,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "metadata_sha256": "40ca06eb515d57e9c82aa6d6695335c73b4c09ba3aec82eddba69495e901f310",
+      "private_log": "/tmp/style-m3-a9-20261017/update-final.log",
+      "log_sha256": "f07fa8ddc06ff66726a1d9be1840b1322acb904cc42b37f288ab4aa300bbfd5d"
+    },
+    "update-release": {
+      "command": [
+        "python3",
+        "scripts/check_m3_update.py",
+        "--binary",
+        "/tmp/style-m3-a9-20261017/style-release",
+        "--old-binary",
+        "/tmp/style-m3-a3-20261017/style-legacy",
+        "--baseline-binary",
+        "/tmp/style-m3-a4-20261017/style-baseline",
+        "--report",
+        "/tmp/style-m3-a9-20261017/update-results-release.json"
+      ],
+      "exit_code": 0,
+      "seconds": 2.721,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "metadata_sha256": "797f825ae66dbeb5561cafa5863cff9f4c778fa380bf298bf062368883935e01",
+      "private_log": "/tmp/style-m3-a9-20261017/update-release.log",
+      "log_sha256": "93e474d59facae29bd3127a76328214095d9f0626fefc038e9051b7641e6aaa8"
+    },
+    "vet-agenthooks-final": {
+      "command": [
+        "go",
+        "vet",
+        "-C",
+        "agenthooks",
+        "./..."
+      ],
+      "exit_code": 0,
+      "seconds": 0.256,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "metadata_sha256": "2e49ed28fd6370671660258113c27726cf05f9965c5e0d9b11efeafa1ff7b593",
+      "private_log": "/tmp/style-m3-a9-20261017/vet-agenthooks-final.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "vet-root-final": {
+      "command": [
+        "go",
+        "vet",
+        "./..."
+      ],
+      "exit_code": 0,
+      "seconds": 0.923,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "metadata_sha256": "eaa1e2876980b5d3581ac0b71e6eb63287ed4410941d7ebd9a1ca3fb7823fea1",
+      "private_log": "/tmp/style-m3-a9-20261017/vet-root-final.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "vet-root-release": {
+      "command": [
+        "go",
+        "vet",
+        "./..."
+      ],
+      "exit_code": 0,
+      "seconds": 0.762,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "metadata_sha256": "7220580207a7f4314acdbc24714a91bf9072d2b5e85840d5b4c872ccf59b1d02",
+      "private_log": "/tmp/style-m3-a9-20261017/vet-root-release.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "required_final_runs": [
+    "test-root-release",
+    "test-agenthooks-final",
+    "vet-root-release",
+    "vet-agenthooks-final",
+    "race-state-release",
+    "race-engine-runtime-release",
+    "race-app-release",
+    "collectors-final-2",
+    "build-release",
+    "build-linux-release",
+    "build-windows-release",
+    "refresh-cli-release",
+    "smoke-release",
+    "migration-release",
+    "replace-release",
+    "git-release",
+    "update-release",
+    "frozen-release",
+    "project-release",
+    "process-final",
+    "environment-release"
+  ],
+  "runner": {
+    "source": "import json,os,subprocess,sys,time\nfrom pathlib import Path\nroot=Path('/tmp/style-m3-a9-20261017');name=sys.argv[1];cmd=sys.argv[2:];env=os.environ.copy()\nfor key in ['CODEX_HOME','CODEX_SANDBOX','STYLE_HOME','CLAUDE_CONFIG_DIR','CLAUDE_CODE_CONFIG_DIR','CLAUDE_CODE_EFFORT_LEVEL','CLAUDE_EFFORT','PLUGIN_ROOT','STYLE_PERF','STYLE_PERF_OUTPUT','STYLE_M3_A6_RECORD','STYLE_UPDATE_GOLDENS','STYLE_REFRESH_HELPER','STYLE_REFRESH_TURN','STYLE_REFRESH_WORKER']:env.pop(key,None)\nfor key,value in {'GOPATH':'gopath','GOMODCACHE':'modcache','GOCACHE':'gocache'}.items():env[key]=str(Path('/tmp/style-m3-project-20261017')/value)\nenv['GOPROXY']='off';env['GOFLAGS']='-mod=readonly';env['GOWORK']='off';start=time.time()\nwith (root/(name+'.log')).open('wb') as f:p=subprocess.run(cmd,env=env,stdout=f,stderr=subprocess.STDOUT)\nresult={'command':cmd,'exit_code':p.returncode,'seconds':round(time.time()-start,3),'environment':{key:env[key] for key in ['GOPATH','GOMODCACHE','GOCACHE','GOPROXY','GOFLAGS','GOWORK']}}\n(root/(name+'.json')).write_text(json.dumps(result,indent=2)+'\\n');print(json.dumps(result))\nif p.returncode:\n lines=(root/(name+'.log')).read_text().splitlines();events=[]\n for line in lines:\n  try:events.append(json.loads(line))\n  except:pass\n failed=[v.get('Test') for v in events if v.get('Action')=='fail' and v.get('Test')]\n if failed:\n  for test in failed:print(test, ''.join(v.get('Output','') for v in events if v.get('Test')==test)[-2200:])\n else: print('\\n'.join(lines[-35:]))\nsys.exit(p.returncode)\n",
+    "sha256": "00340c4e43e65f5bc9d5da730cc1d5bd58b38e6ee81a3d2b5733be897d481472",
+    "cache_origin": "existing temporary A6 three caches; tests use -count=1, GOPROXY=off, GOFLAGS=-mod=readonly, GOWORK=off",
+    "external_variables_removed": [
+      "CODEX_HOME",
+      "CODEX_SANDBOX",
+      "STYLE_HOME",
+      "CLAUDE_CONFIG_DIR",
+      "CLAUDE_CODE_CONFIG_DIR",
+      "CLAUDE_CODE_EFFORT_LEVEL",
+      "CLAUDE_EFFORT",
+      "PLUGIN_ROOT",
+      "STYLE_PERF",
+      "STYLE_PERF_OUTPUT",
+      "STYLE_M3_A6_RECORD",
+      "STYLE_UPDATE_GOLDENS",
+      "STYLE_REFRESH_HELPER",
+      "STYLE_REFRESH_TURN",
+      "STYLE_REFRESH_WORKER"
+    ]
+  },
+  "source_sha256": {
+    "core/compile/build.go": "6511a155205e6e865f03110a41083605627a56c3e8cf2934ccc7f5515160ebe0",
+    "core/compile/entries.go": "e1d060fe770826e8d2703c0e17f39e4dd1b17a275e67ba4660972b1817ffc9aa",
+    "core/compile/json.go": "788677f3c4344323684d8e9c7a9913b97cd7714771d5557da0d0faed57e10778",
+    "core/compile/provenance.go": "bcfb3549e6dd545e6e1212cb5092d1b216156cfe9d0edc4a5185feb854f55c93",
+    "core/compile/refresh_test.go": "85feaac46613329276e7f5d14274ce28b4fc77b337063b3b8224510c7cd2b455",
+    "core/compile/types.go": "44ea5eed4492fd2e80a97f625712e2c4a266c09ee5a35b92006ebd43fb38cd4f",
+    "core/engine/load.go": "f0d4943577b293a0b6c1d6da57d6b1319bba0400e112d916da7540fb5d5b85bc",
+    "core/engine/process.go": "1c5cc6bafc0b05be557f6e89ac62924fa84f804ce68fb1448a918fd96984b67e",
+    "core/engine/refresh_test.go": "f2be4e8989e1ff9598628a429323b5018663746c4093dfd839ba270a4e9f2a0e",
+    "core/engine/trace.go": "c984c1c9114f2d71ffef1c89a4a6a1809b7ef348ce110948096d9a1389ea7c9f",
+    "core/engine/types.go": "008d8e0e6756b5f4ab959f5aba3ca9e4f977d61db226d5f62266ad66289bc3d5",
+    "core/plan/events.go": "158a31130134c068fe55750f1f7e770d3fa0c7db05a13bec5c882652b44352a8",
+    "core/plan/plan.go": "741f13d6d8e88b37391e428cbcf48fc5b7d70d6232eb3bbc07318110d0de2496",
+    "core/plan/refresh_test.go": "bcdf30591a6b3139b6a49296d7f411b3f4a95394a0ed45025274ed4b8e00906d",
+    "core/plan/report.go": "c6c37542ccb0a56d29c27fc1f2a62893a81145c0b8159125c89fc7918dc789cf",
+    "core/plan/requirements.go": "c7b4a2fd69a50cc78c445d84a9143d0c0c749dddb3a166e4f1271ce7fd7fc38f",
+    "core/plan/system.go": "cad8397f9234be6b473376251e354b2bbf0fb52f61c5853051a227f49f633540",
+    "core/plan/types.go": "70dcdfae7aa26b14f16078dc16a90b0375f1ee4a2342f988ef3446588a898f31",
+    "core/spec/native.go": "4b75c816edd64f12c355f41dfc1ed001c673fe087ecdb49b71d923e81ed2914e",
+    "core/spec/refresh.go": "2ea9b66948a8b7c736124e17c2c2e43219c8d16b4dd50c0fe8ffc588ed010f5f",
+    "core/spec/refresh_test.go": "2877ab1be589121493f480382d78626067b736663836e89d44646109c63a6ba8",
+    "core/spec/validate_package.go": "30133cf7a68958d4bf8ac52c82a09502988674ec71aae1fb1c0a517b370f4ea4",
+    "core/spec/validate_rules.go": "601ba508c0b5b8a2b8ae9d3754dc3768cfddec6e1564fa96f83352a69629aae3",
+    "core/state/dedup.go": "5d7e1a950c58dbc8b444678a78b6599ac89975f8533ec1fa2d6090aeda34bfe1",
+    "core/state/refresh.go": "18e0bedab888e0dc6a6ec9f4fc76ab8a96df75ec7e58c7aed8b191f9bf02fba1",
+    "core/state/refresh_fault_test.go": "c4e1e331c190d0452f9b14bfb2cd5585380fe8d18c6c944d958755dfc7a883a6",
+    "core/state/refresh_lock.go": "29474b3c79c34d5ced3de0294aa6e7a47d6de8f4bfaf717014600ea416c75f57",
+    "core/state/refresh_lock_other.go": "b1e0ce16b761422e81921e2fc16b28193398fbf8830b23f380ee3e5b1367f18c",
+    "core/state/refresh_lock_unix.go": "08176c693555a769bca7eb3d20711457959b018240d2283c8fbcbac34c35212f",
+    "core/state/refresh_test.go": "a21155902537168e1aa7a7a524a4d7a97bc983775738ac6c3c8165d3d2d88838",
+    "core/state/snapshot.go": "6a0da89f09a64a32a463468c8a6ae175a4a548ce7c691fe8b1447126c89ed140",
+    "core/state/state.go": "48e38f4f30452772a5a9c126d2290fd801e28730973aed78ccc79a0a15f7c2e8",
+    "core/tokens/refresh_test.go": "59f30387c114b1c3c6655f8c9f9dc3ecac1c44c8476eddf796ad726ef1520549",
+    "internal/app/doctor.go": "77f2308cfb712b3cacdc9092567ea08d2e8d5353dd59878e65cfde117a738c50",
+    "internal/app/explain_command.go": "91a9e3b845cd6d00f44078553d0325dbfdfa2b97ed34d35d48836b5b8b405d5d",
+    "internal/app/install.go": "d012db6beb7702a965ca1f0240c34977f960665d315eae7693ec40566fe3b6a8",
+    "internal/app/refresh_test.go": "4776d3bbcfb378c3f3d16679dd215c25eeec7b2c28d0d47e8f0b09bf288db16a",
+    "internal/runtime/refresh_test.go": "7dc0d88a5a38667faafb9e25c04a83d03fdfa63313e79dc0c0ac93864a3cf314",
+    "internal/runtime/runtime.go": "054e04e556048fcecf9b86df3a4c37f05548d09d9e8537332640801ea5c9f40f",
+    "schema/index.schema.json": "5950437ce46627bfd656bf5baae2feaa8623ea6c1996f2145865a82b33d1eb58",
+    "scripts/check_m3_refresh.py": "82cf6c8996915cee069938e0918825f95fab443207ba49f98935256da1a6d81f"
+  },
+  "not_run": [
+    "real Codex or Claude harness/model delivery (B3/C5 pending)",
+    "Claude cloud or plugin (deferred)",
+    "Linux or Windows native execution",
+    "remote CI",
+    "official API counting (both remain 0/40)",
+    "D5 or later implementation"
+  ],
+  "report_builder": {
+    "source": "import collections\nimport hashlib\nimport json\nimport re\nimport subprocess\nfrom pathlib import Path\n\nPRIVATE = Path('/tmp/style-m3-a9-20261017')\nBASE = 'c2afa6b0cd089c3c9408fe7e20f623d0562c32b7'\nREPORT = Path('docs/review/M3-A9-2026-10-17.json')\n\ndef sha(data):\n    return hashlib.sha256(data).hexdigest()\n\ndef git(*args):\n    return subprocess.check_output(['git', *args], text=True)\n\ndef events(name):\n    result = []\n    for line in (PRIVATE / (name + '.log')).read_text().splitlines():\n        try:\n            value = json.loads(line)\n            if isinstance(value, dict) and 'Action' in value:\n                result.append(value)\n        except ValueError:\n            pass\n    return result\n\ndef counts(es):\n    return dict(collections.Counter(e['Action'] for e in es if e.get('Test') and e['Action'] in ('pass', 'fail', 'skip')))\n\nrequired = ['test-root-release', 'test-agenthooks-final', 'vet-root-release', 'vet-agenthooks-final',\n            'race-state-release', 'race-engine-runtime-release', 'race-app-release', 'collectors-final-2',\n            'build-release', 'build-linux-release', 'build-windows-release', 'refresh-cli-release',\n            'smoke-release', 'migration-release', 'replace-release', 'git-release', 'update-release',\n            'frozen-release', 'project-release', 'process-final', 'environment-release']\nruns = {}\nfor path in sorted(PRIVATE.glob('*.json')):\n    value = json.loads(path.read_text())\n    if not isinstance(value, dict) or 'command' not in value or 'exit_code' not in value:\n        continue\n    log = path.with_suffix('.log')\n    value.update(metadata_sha256=sha(path.read_bytes()), private_log=str(log), log_sha256=sha(log.read_bytes()))\n    es = events(path.stem)\n    if es:\n        value['test_events'] = counts(es)\n        value['tested_packages'] = [e['Package'] for e in es if e['Action'] == 'pass' and not e.get('Test')]\n        value['skipped_tests'] = [e['Package'] + ':' + e['Test'] for e in es if e['Action'] == 'skip' and e.get('Test')]\n    runs[path.stem] = value\nfor name in required:\n    assert name in runs and runs[name]['exit_code'] == 0, name\n\nchanged = sorted(set(git('diff', '--name-only', BASE).splitlines()) |\n                 set(git('ls-files', '--others', '--exclude-standard').splitlines()))\nsource = {p: sha(Path(p).read_bytes()) for p in changed if not p.startswith('docs/')}\nnew_tests = {p: re.findall(r'^func (Test\\w+)\\(', Path(p).read_text(), re.M) for p in changed if p.endswith('/refresh_test.go') or p.endswith('/refresh_fault_test.go')}\nnew_keys = {('github.com/inxups/style-cli/' + str(Path(p).parent), name) for p, names in new_tests.items() for name in names}\nroot_events = events('test-root-release')\npasses = [e for e in root_events if e.get('Test') and e['Action'] == 'pass' and (e['Package'], e['Test'].split('/')[0]) in new_keys]\nleaves = [e for e in passes if not any(v['Package'] == e['Package'] and v['Test'].startswith(e['Test'] + '/') for v in passes)]\nfunctions = [e for e in passes if '/' not in e['Test']]\nassert len(functions) == 29 and len(leaves) == 85 and len(passes) == 98\nassert counts(root_events) == {'pass': 2935, 'skip': 2}\nassert counts(events('test-agenthooks-final')) == {'pass': 510, 'skip': 23}\nassert not any('(cached)' in e.get('Output', '') for e in root_events + events('test-agenthooks-final'))\n\ncli = json.loads((PRIVATE / 'cli-results-release.json').read_text())\nassert cli['status'] == 'passed' and len(cli['cases']) == 50 and cli['real_harness'] is False\nassert all(v['samples'] == 50 and v['p95_ms'] < 50 for v in cli['performance'])\nassert cli['binary_sha256'] == sha((PRIVATE / 'style-release').read_bytes())\nassert cli['old_binary_sha256'] == '31ed26797e2849a160ede978e43c108371fa31fc948039e8976a26e8509e0866'\ngates = {}\nfor name, expected in [('migration', 16), ('replace', 12), ('git', 17), ('update', 24), ('frozen', 30), ('project', 18)]:\n    path = PRIVATE / (name + '-results-release.json')\n    result = json.loads(path.read_text())\n    assert len(result['cases']) == expected\n    gates[name] = {'cases': expected, 'report_sha256': sha(path.read_bytes()), 'result': result}\nassert 'Ran 68 tests' in (PRIVATE / 'collectors-final-2.log').read_text()\nassert (PRIVATE / 'collectors-final-2.log').read_text().rstrip().endswith('OK')\nassert (PRIVATE / 'smoke-release.log').read_text().count('ok   ') == 40\n\ngroups = [\n    ('A9-01', ['core/spec/refresh_test.go'], ['TestRefreshValidation', 'TestRefreshDefaultsFromAndSingleFile'], 'source validation, inheritance, single-file and native/combination boundaries'),\n    ('A9-02', ['core/plan/refresh_test.go', 'internal/app/refresh_test.go'], ['TestRefreshSystemRequiresDynamicPrompt', 'TestRefreshOtherTargetsNeverBecomeStatic', 'TestM3A9FiveRouteLifecycleAndSurface'], 'dynamic placement and clock-only Claude surface on all five routes'),\n    ('A9-03', ['core/state/refresh_test.go', 'core/engine/refresh_test.go'], ['TestRefreshRollingCadenceAndClock', 'TestRefreshUnmatchedSourcesAndCompactFalse', 'TestRefreshCapRollbackAndBlockPrecedence'], 'rolling intervals, first emission, no backlog and non-consuming unmatched/empty/capped cases'),\n    ('A9-04', ['core/state/refresh_test.go', 'internal/runtime/refresh_test.go'], ['TestRefreshNativeReplayLateUnknownAndFallback', 'TestRefreshRejectsCorruptionSymlinksAndOverflow', 'TestRefreshRuntimeClockOnlyAndNativeWire'], 'native ID replay/late/unknown/fallback, overflow and no skill/model-switch increment'),\n    ('A9-05', ['core/state/refresh_test.go', 'core/engine/refresh_test.go'], ['TestRefreshLifecycleAndScopeIsolation', 'TestRefreshUnmatchedSourcesAndCompactFalse'], 'startup/clear/compact/resume/fork, child and separate roots'),\n    ('A9-06', ['core/compile/refresh_test.go', 'core/engine/refresh_test.go', 'internal/app/refresh_test.go'], ['TestRefreshCompiledFormatAndPolicyEquivalence', 'TestRefreshRenderedBodiesWarnAndMultiplePoints', 'TestM3A9FiveRouteLifecycleAndSurface'], 'rendered identity, warn channels, multiple points, full-policy folding and retained package after uninstall'),\n    ('A9-07', ['core/state/refresh_test.go', 'core/state/refresh_fault_test.go', 'internal/runtime/refresh_test.go'], ['TestRefreshSynchronizedProcessesAndCrash', 'TestRefreshLockDeadlineIdentityAndSnapshot', 'TestRefreshCleanupPreservesActiveLock', 'TestRefreshCleanupFirstEnableAndLegacyCandidates', 'TestRefreshBusyUsesExistingFailPolicy'], 'six real worker processes at a barrier: same ID once / six IDs six ordered claims, crash unlock, 20ms/cancellation and cold cleanup'),\n    ('A9-08', ['core/state/refresh_fault_test.go', 'core/engine/refresh_test.go', 'internal/app/refresh_test.go'], ['TestRefreshWriteAndRollbackFailuresPreservePriorClaims', 'TestRefreshStaleReleaseDoesNotUndoOtherInvocation', 'TestRefreshCapRollbackAndBlockPrecedence', 'TestM3A9PolicyChangesApprovalAndTransactionRollback'], 'actual read-only-directory I/O failures, retryable release, prior claims, stale nonce protection and applied-build cancellation rollback'),\n    ('A9-09', ['core/compile/refresh_test.go', 'core/state/refresh_test.go', 'scripts/check_m3_refresh.py'], ['TestRefreshCompiledFormatAndPolicyEquivalence', 'TestRefreshBodyMigrationIntervalsAndRollback'], 'strict formats, old ordinary seed and interval reuse; actual A6 runner/management refusal without file changes'),\n    ('A9-10', ['core/tokens/refresh_test.go', 'internal/runtime/refresh_test.go', 'internal/app/refresh_test.go'], ['TestRefreshBudgetsUseFullEmission', 'TestRefreshRuntimeClockOnlyAndNativeWire', 'TestM3A9ExplainSnapshotMatchesRuntimeReadOnly'], 'full budgets, unchanged stats schema/readers, optional safe planning/provenance/trace and output accounting'),\n    ('A9-11', ['core/state/refresh_fault_test.go', 'core/state/refresh_test.go', 'internal/app/refresh_test.go'], ['TestRefreshSnapshotCombinedFileAndByteLimits', 'TestRefreshStrictRequiredStateFields', 'TestRefreshLockDeadlineIdentityAndSnapshot', 'TestRefreshRejectsCorruptionSymlinksAndOverflow', 'TestM3A9ExplainSnapshotMatchesRuntimeReadOnly'], 'read-only guarded capture, existing snapshot drift tests, strict/bounded state, no raw ID/body metadata and exact runtime wire'),\n    ('A9-12', ['internal/app/refresh_test.go', 'scripts/check_m3_refresh.py'], ['TestM3A9FiveRouteLifecycleAndSurface', 'TestM3A9PolicyChangesApprovalAndTransactionRollback'], 'five-route lifecycle and effect/approval rollback, actual CLI compatibility, fresh modules/vet/race/process and latency')\n]\nknown = {name for names in new_tests.values() for name in names}\nfor _, files, names, _ in groups:\n    assert all(Path(p).exists() for p in files) and all(n in known for n in names)\n\ncauses = {\n    'refresh-state': 'fixture initially assumed harness-scoped ordinary legacy claims, and permission fixture preparation attempted an ordinary update while a guard was active; process lock creation also failed',\n    'refresh-state-2': 'unused test-loop variable after correcting fixture',\n    'refresh-state-3': 'synchronized macOS O_CREATE open returned ENOENT',\n    'refresh-process-repeat': 'reproduced synchronized macOS O_CREATE open ENOENT',\n    'refresh-process-unsandboxed': 'same synchronized failure outside sandbox; fixed production creation to O_EXCL then open winner',\n    'refresh-engine': 'skill.explicit fixture omitted required match selector',\n    'refresh-engine-2': 'assertion assumed output record precedes the dedup record',\n    'refresh-runtime': 'fixture incorrectly required empty stderr despite normal agenthooks INFO logs',\n    'refresh-app': 'test used a nonexistent Runtime field on ExplainRequest',\n    'refresh-app-2': 'unused test import',\n    'full-root': 'same unused app test import',\n    'cli-gate': 'codex-plugin fixture omitted PLUGIN_ROOT required by the generated launcher',\n    'refresh-changes': 'test referenced a nonexistent project declaration effects field',\n    'refresh-changes-2': 'test referenced a nonexistent binding effects field; corrected to the declaration digest',\n    'refresh-changes-3': 'test tried Install to replace an already installed package; corrected to explicit Update',\n    'refresh-final-targeted': 'new mismatch test supplied a null harness map invalid under the existing index schema',\n    'refresh-targeted-2': 'five-route test reused a deliberately forbidden detector after frozen verification; fixture now restores definitions/source fetcher',\n    'test-root-final': 'compiled before the frozen fixture detector restore; same known fixture failure',\n    'race-final': 'compiled before the frozen fixture detector restore; state/engine/runtime packages passed, app fixture failed',\n    'collectors-final': 'sandbox refused local HTTP listener and pseudo-terminals; identical offline suite passed with local fixture access'\n}\nfailed = []\nfor name, value in runs.items():\n    if value['exit_code']:\n        assert name in causes, 'unexplained run: ' + name\n        failed.append({'run': name, 'reason': causes[name], 'exit_code': value['exit_code'], 'log_sha256': value['log_sha256']})\n\nreport = {\n    'format': 1, 'task': 'M3-T40', 'test': 'M3-A9', 'date': '2026-10-17', 'status': 'passed',\n    'source_base': BASE, 'production_baseline': '22551eed12b27a5db2a2fc4d1a26da5f67538c63',\n    'meaning': 'offline implementation acceptance, real OS processes and genuine old CLI; no real harness delivery',\n    'authorization': {'user_reply': 'ok', 'approved_contract': 'docs/review/M3-D4-REFRESH-2026-10-17.md', 'approval_commit': BASE},\n    'environment': json.loads((PRIVATE / 'environment-release.log').read_text()),\n    'scope': {'routes': [v['route'] for v in cli['performance']], 'runtime_platforms_implemented': ['darwin', 'linux'], 'native_platform_executed': 'darwin/arm64', 'cross_build_only': ['linux/amd64', 'windows/amd64'], 'unsupported_refresh_platforms': 'all others; Windows pending D11/T70'},\n    'implementation': {'clock': 'independent per root/harness/session/agent, hashed native IDs, prompt-only advancement, fallback disclosed', 'cursor': 'full SHA256 strategy identity for generation/optional epoch/rule/rendered model body/N, nonce-protected rollback', 'guard': 'permanent session inode, OS-released flock, 20ms/deadline/cancellation, cold cleanup locks even first-enable candidates then quarantines before close/unlink', 'state_limits': {'bytes_per_namespace': 4194304, 'receipts_plus_cursors': 40000, 'snapshot_bytes_all_state': 16777216, 'snapshot_files_all_state': 10000}, 'compiled': 'format 2 only final positive runtime entries; otherwise format 1; provenance optional and digest-bound', 'agenthooks': 'protocol, event tables, config rendering, owner and trust unchanged; STYLE selects extra Claude clock inputs', 'compatibility': 'existing session/scope/seen, lock 1/2/3, project declaration/binding formats, stats fields/results and prior golden files unchanged'},\n    'new_acceptance': {'passing_functions': len(functions), 'leaf_cases': len(leaves), 'pass_events_including_groups': len(passes), 'fail': 0, 'helper': {'function': 'TestRefreshProcessHelper', 'top_level_non_worker_mode': 'skip, separately reported', 'actual_execution': 'spawned by synchronized-process/crash parent tests; real exit codes and output/q/receipt counts asserted', 'busy_retry': 'test coordinator retries only explicit busy; production remains capped at 20ms'}, 'test_functions': new_tests},\n    'regression': {'root': counts(root_events), 'agenthooks': counts(events('test-agenthooks-final')), 'combined_pass_events': 3445, 'existing_opt_in_skips': 24, 'additional_helper_top_level_skip': 1, 'cached_test_results': False, 'vets': 'both modules passed', 'race': {name: counts(events(name)) for name in ['race-state-release', 'race-engine-runtime-release', 'race-app-release']}, 'collectors': 68, 'smoke': 40, 'old_cli_gates': gates},\n    'refresh_built_cli': {'report_sha256': sha((PRIVATE / 'cli-results-release.json').read_bytes()), **cli, 'old_binary_source': '22551eed12b27a5db2a2fc4d1a26da5f67538c63', 'old_management_boundary': 'sync/trust/update/frozen must compile or authenticate unsupported source and reject without writes; pure uninstall-all is not a recompilation promise about immutable old code'},\n    'acceptance_groups': [{'id': i, 'status': 'passed', 'files': files, 'tests': names, 'assertions': assertion} for i, files, names, assertion in groups],\n    'failed_attempts_preserved': failed, 'runs': runs, 'required_final_runs': required,\n    'runner': {'source': (PRIVATE / 'run.py').read_text(), 'sha256': sha((PRIVATE / 'run.py').read_bytes()), 'cache_origin': 'existing temporary A6 three caches; tests use -count=1, GOPROXY=off, GOFLAGS=-mod=readonly, GOWORK=off', 'external_variables_removed': ['CODEX_HOME', 'CODEX_SANDBOX', 'STYLE_HOME', 'CLAUDE_CONFIG_DIR', 'CLAUDE_CODE_CONFIG_DIR', 'CLAUDE_CODE_EFFORT_LEVEL', 'CLAUDE_EFFORT', 'PLUGIN_ROOT', 'STYLE_PERF', 'STYLE_PERF_OUTPUT', 'STYLE_M3_A6_RECORD', 'STYLE_UPDATE_GOLDENS', 'STYLE_REFRESH_HELPER', 'STYLE_REFRESH_TURN', 'STYLE_REFRESH_WORKER']},\n    'source_sha256': source,\n    'not_run': ['real Codex or Claude harness/model delivery (B3/C5 pending)', 'Claude cloud or plugin (deferred)', 'Linux or Windows native execution', 'remote CI', 'official API counting (both remain 0/40)', 'D5 or later implementation'],\n    'report_builder': {'source': Path(__file__).read_text(), 'sha256': sha(Path(__file__).read_bytes()), 'reproduction': 'Extract this source and recorded runner to the private directory, rerun listed commands from the repository using the final source/binary hashes, then build this report. Historical logs are private temporary evidence; deterministic fixtures and commands remain in repository.'}\n}\nREPORT.write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\\n')\nprint(json.dumps({'new_functions': len(functions), 'leaf_cases': len(leaves), 'new_pass_events': len(passes), 'full_pass_events': 3445, 'failed_runs_preserved': len(failed), 'binary_sha256': cli['binary_sha256']}, ensure_ascii=False))\n",
+    "sha256": "da65e7449a377ac632bc52f182cd1442035c00a464ad736e475d23b2195b47cf",
+    "reproduction": "Extract this source and recorded runner to the private directory, rerun listed commands from the repository using the final source/binary hashes, then build this report. Historical logs are private temporary evidence; deterministic fixtures and commands remain in repository."
+  }
+}

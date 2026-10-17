@@ -1,7 +1,7 @@
 package plan
 
 func planSystem(req Requirement, result RulePlan, adapter Adapter) RulePlan {
-	staticRule := req.Action == "inject" && req.StaticBody && !req.HasWhen
+	staticRule := req.Action == "inject" && req.StaticBody && !req.HasWhen && req.Refresh == 0
 	if staticRule {
 		if slot, supported := adapter.StaticLocation(req.Mode); supported && slot != "" {
 			result.Status = Native
@@ -20,6 +20,9 @@ func planSystem(req Requirement, result RulePlan, adapter Adapter) RulePlan {
 
 	start := evaluate(req, adapter, SessionStart)
 	prompt := evaluate(req, adapter, PromptSubmitted)
+	if req.Refresh > 0 && !prompt.usable {
+		return failedPlan(result, req, "refresh requires an output-capable prompt.submitted placement: "+prompt.reason)
+	}
 	if start.dataMissing && prompt.dataMissing && req.Fallback != "error" {
 		return neverPlan(result, start.reason, prompt.reason)
 	}

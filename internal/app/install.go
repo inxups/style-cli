@@ -1000,9 +1000,11 @@ func hooksForProvider(provider adapter.ProviderID, index compile.Index) []adapte
 	}
 	var hooks []adapter.HookSpec
 	observeModel := false
+	refresh := false
 	for event, entries := range index.Harnesses[string(provider)] {
 		for _, entry := range entries {
 			observeModel = observeModel || slices.Contains(entry.Needs, "model")
+			refresh = refresh || entry.Refresh > 0
 		}
 		native := ""
 		switch event {
@@ -1072,6 +1074,9 @@ func hooksForProvider(provider adapter.ProviderID, index compile.Index) []adapte
 			}
 			hooks = append(hooks, adapter.HookSpec{NativeEvent: native, Matcher: matcher, Points: []string{event}})
 		}
+	}
+	if refresh {
+		hooks = append(hooks, adapter.HookSpec{NativeEvent: "UserPromptSubmit", Points: []string{plan.PromptSubmitted}}, adapter.HookSpec{NativeEvent: "SessionStart", Points: []string{plan.SessionStart}})
 	}
 	if observeModel {
 		// The switch itself only updates session state. Model-dependent rules

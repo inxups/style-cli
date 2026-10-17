@@ -22,6 +22,12 @@ func (report Report) String() string {
 		if len(rule.Needs) > 0 {
 			fmt.Fprintf(&output, "  needs: %s\n", strings.Join(rule.Needs, ", "))
 		}
+		if rule.Refresh != nil {
+			fmt.Fprintf(&output, "  refresh: every %d submitted turns since last emission; first match immediately; matched points only; full per-emission budget\n", rule.Refresh.Interval)
+			for _, limitation := range rule.Refresh.Limits {
+				fmt.Fprintf(&output, "     %s\n", limitation)
+			}
+		}
 		if rule.DeduplicatedInto != "" {
 			fmt.Fprintf(&output, "  deduplicated into %s; no additional cost\n", rule.DeduplicatedInto)
 		}

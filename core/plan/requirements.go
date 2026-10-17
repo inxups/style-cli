@@ -41,6 +41,7 @@ func RequirementFor(rule spec.Rule) (Requirement, error) {
 		}
 		return requirement, nil
 	}
+	requirement.Refresh, _ = spec.RefreshInterval(effective["refresh"])
 	if requirement.Action == "" {
 		requirement.Action = "inject"
 	}
@@ -127,7 +128,7 @@ func RequirementFor(rule spec.Rule) (Requirement, error) {
 	requirement.ConditionNeeds = sortedUnique(requirement.ConditionNeeds)
 	requirement.AllCapabilities, requirement.AnyCapabilities = capabilitiesFor(requirement.Action)
 	if requirement.Target == "system" {
-		if requirement.Action == "inject" && requirement.StaticBody && !requirement.HasWhen {
+		if requirement.Action == "inject" && requirement.StaticBody && !requirement.HasWhen && requirement.Refresh == 0 {
 			requirement.Events = nil
 		} else {
 			requirement.Events = []string{SessionStart, PromptSubmitted}

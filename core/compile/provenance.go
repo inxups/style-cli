@@ -4,6 +4,7 @@ import (
 	"crypto/sha256"
 	"encoding/json"
 	"fmt"
+	"reflect"
 	"unicode/utf8"
 
 	"github.com/inxups/style-cli/core/plan"
@@ -17,6 +18,7 @@ type Provenance struct {
 	Harnesses   map[string][]ProvenanceRule `json:"harnesses"`
 }
 type ProvenanceRule struct {
+	Refresh          *plan.RefreshPolicy   `json:"refresh,omitempty"`
 	Harness          string                `json:"harness"`
 	Rule             string                `json:"rule"`
 	Source           string                `json:"source"`
@@ -47,6 +49,7 @@ func BuildProvenance(request Request, result Result, indexBytes []byte) ([]byte,
 			}
 			for _, rule := range report.Rules {
 				row := ProvenanceRule{Harness: report.Adapter, Rule: report.Package + "/" + rule.ID, Source: rule.Source, Target: rule.Target, Action: rule.Action, Status: string(rule.Status), Placements: []ProvenancePlacement{}, ReasonCodes: []string{}}
+				row.Refresh = rule.Refresh
 				if rule.Native != nil {
 					v := *rule.Native
 					row.Native = &v
@@ -103,6 +106,9 @@ func (p Provenance) Validate(index Index, indexBytes []byte) error {
 			return fmt.Errorf("invalid provenance harness")
 		}
 		for _, row := range rows {
+			if row.Refresh != nil && (row.Refresh.Interval < 1 || row.Refresh.Interval > 1000000 || !reflect.DeepEqual(row.Refresh, plan.DescribeRefresh(row.Refresh.Interval))) {
+				return fmt.Errorf("invalid provenance refresh metadata")
+			}
 			key := row.Harness + "\x00" + row.Rule
 			if row.Rule == "" || row.Harness != harness || seen[key] || row.Placements == nil || row.ReasonCodes == nil {
 				return fmt.Errorf("invalid provenance rule")
@@ -136,6 +142,13 @@ func (p Provenance) Validate(index Index, indexBytes []byte) error {
 				} else {
 					for _, entry := range index.Harnesses[row.Harness][placement.Event] {
 						if entry.Rule == reference && entry.Action == placement.Action {
+							interval := 0
+							if row.Refresh != nil {
+								interval = row.Refresh.Interval
+							}
+							if interval != entry.Refresh {
+								return fmt.Errorf("provenance refresh policy mismatch")
+							}
 							found = true
 							covered[harness+"\x00runtime\x00"+entry.Entry] = true
 						}

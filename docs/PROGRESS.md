@@ -1794,3 +1794,21 @@ PY
 
 - 用户对 D4 三项产品选择回复“ok”，确认同正文上次保留输出后的提交回合间隔、compact 既有开关及独立时钟、仅有效 refresh 使用 index 2 和单次全文预算。批准范围为 D4 完整契约及 A9-01–A9-12；只关闭 D4，允许进入 T40。T40/A9 和真实 B3/C5 未关闭，D3 云端/插件继续暂缓，D5–D11 不据此批准。
 - 定稿从 clean `ea5456b337b833aa773c46f46e7f76b5b53349c8` 更新当前规范/清单/矩阵和评审稿状态，历史 D4 调查报告保持原样。检查本地链接/锚点/围栏、44 任务/39 测试映射、依赖无环、只有 D4 关闭、12 个 A9 断言仍待验、PROGRESS 仅追加、M1/M2 及历史 M3 报告/生产文件未变、git diff --check；结果见 [批准报告](review/M3-D4-APPROVED-2026-10-17.json)。仅文档定稿，未以旧基线替代新功能验收。
+
+
+## 2026-10-17 — M3-T40 refresh 实现中 [~]
+
+- 从 `c2afa6b0cd089c3c9408fe7e20f623d0562c32b7` 按已批准 D4 实现。配置、plan、format 2、独立提交时钟、跨进程保护与可逆 claim 已接入，当前只表示部分完成；T40/A9 未验收，不关闭真实 B3/C5。
+- 新增离线断言已覆盖配置、周期/回放/迟到/缺 ID、生命周期、迁移与 cap-drop、五路线 surface/lifecycle 和只读 explain 对照；仍在补兼容门禁、故障/边界与完整回归。临时 runner `/tmp/style-m3-a9-20261017/run.py` 继续使用三临时缓存并清理 CODEX_HOME/CODEX_SANDBOX 等外部环境。
+- 初轮测试发现并修正普通去重在 refresh guard 下的路径、测试断言/fixture 编译问题，以及 macOS 多进程同时 O_CREATE 的 ENOENT；锁改为排他创建后打开胜出 inode，绝不删除活动锁。沙箱内外均复现过原失败；修正后的同步屏障多进程/崩溃释放连续 10 轮通过。失败日志保留，最终验收报告将固定摘要。
+
+## 2026-10-17 — M3-T40 / M3-A9 refresh 完成 [x]
+
+- 从 D4 批准提交 `c2afa6b0cd089c3c9408fe7e20f623d0562c32b7` 完成 T40，按 [D4 的 A9-01–A9-12](review/M3-D4-REFRESH-2026-10-17.md#9-a9-待执行验收细化)独立验收。规则/defaults/from 支持整数 0–1,000,000；system 正数走动态，工具等保留原匹配点。独立提交时钟登记原生 ID 的 SHA256，处理重放/迟到/缺 ID；滚动同正文游标保留旧 claim、间隔切换及 compact/resume/clear/子作用域边界，cap-drop 可恢复先前游标。只有最终有效正数生成 index 2；无 refresh 的现有格式、golden 和热路径保持。
+- 新 session 永久锁由 macOS/Linux OS 在进程退出时释放，最多等 20ms/更早取消；安全锚定、严格读取、文件身份与占位 nonce 保护新状态和可重试释放。冷路径清理对所有过期候选先锁定，覆盖旧 session 首次启用竞争；移至隔离名、关闭锁后才移除，不删除活动锁 inode。单份新增状态 4 MiB/40,000 收据与游标，snapshot 合计仍为 16 MiB/10,000 文件，源锁只读取得且不复制。Claude 按需订阅时钟和生命周期；agenthooks 协议/事件表/渲染/owner/信任源码及 module 依赖均未改。
+- 新增 30 个测试函数中，29 个普通验收函数、85 个叶子用例全部通过（98 条含分组 pass）；另一个 helper 在父测试中实际启动为工作进程，顶层非工作模式 skip 单列。受控屏障核对同 ID 的六进程只计一次、不同 ID 的六个相邻回合无丢失且每回合一次 claim，SIGKILL 后复用原锁 inode；相关多进程/崩溃测试另以 `-count=10` 通过。真实权限故障、释放重试/陈旧占位、坏/缺字段与 symlink/溢出、snapshot 总限额、block/空输出/cap-drop、两家 codec 和只读 explain 同 wire 均有 fixture。五路线验证 install/update/sync/trust/uninstall/frozen、项目声明绑定效果、改变/关闭 N 的批准与已应用 build 取消回滚，以及跨包保留方卸载后的重编译。
+- 最终 macOS 27.0.1 arm64 / Go 1.27.0 / Git 2.54.0 / Python 3.14.7，运行 `go test ./... -count=1 -json` 与 `go test -C agenthooks ./... -count=1 -json`：双 module 共 3,445 条 pass、0 fail、33 个有测试 package，无 cached；24 项既有 opt-in skip（23 个真实 e2e、1 个性能）和 helper 顶层 skip 分列。双 module vet、最终 state/engine/runtime/app race、68 项 Python 采集器均通过；Linux/Windows amd64 仅交叉编译，不记为原生验收。Go 命令统一经 `/tmp/style-m3-a9-20261017/run.py`，临时 `GOPATH=/tmp/style-m3-project-20261017/gopath`、`GOMODCACHE=/tmp/style-m3-project-20261017/modcache`、`GOCACHE=/tmp/style-m3-project-20261017/gocache`，`GOPROXY=off GOFLAGS=-mod=readonly GOWORK=off`；清理 CODEX_HOME、CODEX_SANDBOX、STYLE_HOME、Claude 配置/effort、PLUGIN_ROOT、性能/录制/worker 等外部变量，完整 runner 和退出码/日志摘要见 [A9 报告](review/M3-A9-2026-10-17.json)。
+- 最终二进制 SHA256 `5894f0ad248c3fe218ca91191ce6c5afdec48905fa837db0b680d63d79a8ef5c`，以 [check_m3_refresh.py](../scripts/check_m3_refresh.py)通过 50 项 built CLI 检查。真实 A6 旧二进制（源码 `22551eed12b27a5db2a2fc4d1a26da5f67538c63`，SHA256 `31ed26797e2849a160ede978e43c108371fa31fc948039e8976a26e8509e0866`）拒绝整份 index 2，旧 sync/trust/update/frozen 拒绝不兼容源码或批准，bytes/mode/mtime 不变；不外推旧 uninstall-all 的纯移除行为。40 smoke、16 真旧迁移、12 回退、17 Git 来源、24 update、30 frozen、18 项目 CLI 门禁均以最终二进制通过。五路线各 50 次实际配置 hook 进程采样 p95：codex-user 13.962ms、codex-plugin 16.919ms、claude-user 9.269ms、codex-project 13.597ms、claude-project 13.623ms，均低于 50ms；版本 stub 与手工 fixture 回调不等于真实 harness 投递。
+- 20 次失败运行及修正保留在报告：早期配置/状态/engine/runtime/app 的 fixture 或编译错误、同步创建锁的 ENOENT（沙箱内外均复现）、插件 fixture 的 PLUGIN_ROOT、误用 Install 代替 Update、frozen 专用 detector 未还原，以及采集器本机 HTTP/伪终端被沙箱拒绝。后者在允许本地 fixture 后同套 68 项通过；不删失败、不把既有回归或 skip 当新功能成功。最终清理竞争修复再经全量、state race 与 app race 复核。
+- [使用说明](STYLE-REFRESH.md)、规则/编译/运行时规范、主设计和 adapter 总览已同步。文档审计 `python3 /tmp/style-m3-a9-20261017/check-docs-final.py` 检查本地链接/锚点/围栏、44 任务/39 测试双向映射与依赖、12 组 A9 证据、仅 T40/A9 关闭、PROGRESS 仅追加、77 份 M1/M2 归档及历史 M3 JSON/既有 testdata/agenthooks/依赖文件原样、gofmt/Python 语法、所有新增/已跟踪文件空白与 `git diff --check`；结果见 [文档检查](review/M3-A9-DOCS-2026-10-17.json)，提交前另做 staged diff 检查。
+- 本次仅关闭 T40/A9。D3 云端 T31/A7 和 Claude 插件 T32/A8 仍暂缓；真实 B3/C5、Windows、远端 CI 和官方计数两家各 0/40 状态保持。下一项为 D5 事件内容围栏设计，用户评审通过后才进入 T41；未以本次确认批准其他接口。
