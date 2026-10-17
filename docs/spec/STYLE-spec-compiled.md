@@ -189,7 +189,7 @@ static 仍只提供 index 的位置/摘要/估算，不证明原生已加载；n
 
 ### 10.1 M3-D2 锁定重建评审稿
 
-本节为已获用户确认的 [D2 契约](../review/M3-D2-SOURCES-2026-10-17.md)，尚未实现。D1 的 index/state/explain format=1 继续有效；D2 只拟在首次成功 Git 安装时引入 lock format=2，新版读取 1/2，纯本地旧锁仍写 1。Git URL/ref/object_format/commit/tree 或 blob 及内容摘要属于冷路径锁和缓存，不加入 runtime index，不使 hook 启动 Git。
+本节为已获用户确认的 [D2 契约](../review/M3-D2-SOURCES-2026-10-17.md)；Git 安装已由 T20/A3 完成，update/frozen 待 T21/T22。D1 的 index/state/explain format=1 继续有效；首次成功 Git 安装引入 lock format=2，新版读取 1/2，纯本地旧锁仍写 1，非空 format=2 不自动降级。Git URL/ref/object_format/commit/tree 或 blob 及内容摘要属于冷路径锁和缓存，不加入 runtime index，不使 hook 启动 Git。format=2 严格校验来源和字段；format=1 出现 git 字段（含 null）拒绝。approved 的现有 format=1 增加可选 Git 身份绑定，旧本地批准 JSON 不变；后续管理写入核对该绑定，不能仅改锁里的 commit/object 再批准。
 
 index.packages 的 lock 仍按排序包路径、NUL、逐文件 SHA256 和换行聚合；相同字节不因 ref/commit 变化产生新内容身份，来源变化仍在管理锁与预览中披露。Git 单文件与目录来源通过 core 的既有不可变快照校验，与本地包共用 requires/settings/native/预算/跨包去重与解释说明生成。
 
@@ -197,7 +197,7 @@ update 拟将明确选择的候选和未选批准基线联合编译；未选包�
 
 frozen 拟在当前整锁与绑定下离线重建，逐文件、Git 内容身份、名称/版本、批准表示、surface/rendered/static 布局均须相符；锁精确字节不变，不联网或以新 ref/default 重算旧批准。管理/批准字节和完整 Git 缓存可提供锁定内容，link 必须 live 精确匹配且已授权。settings 值不进入锁，现有值必须能重现批准效果；缺基线、要求迁移/重定位或输出差异给明确失败。
 
-缺失可推导产物只在原 owner 计划允许时恢复，不接管外来同名文件或改过的托管块；现有 native/replace 确认与状态隔离继续有效。A3/A4/A5 各 12 组断言、旧锁与三路线回归尚待实现执行，真实投递、Windows 和跨平台 CI 不随设计关闭。
+缺失可推导产物只在原 owner 计划允许时恢复，不接管外来同名文件或改过的托管块；现有 native/replace 确认与状态隔离继续有效。A3 的 12 组断言、旧锁与三路线回归已通过 [本轮验收](../review/M3-A3-2026-10-17.json)；A4/A5 尚待实现执行。真实投递、Windows 和跨平台 CI 保持待验。
 
 ## 11. 依赖的 fork 改动
 

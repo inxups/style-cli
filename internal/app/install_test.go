@@ -262,7 +262,7 @@ func TestInstallRollsBackPackageWhenRouteSnapshotTurnsStale(t *testing.T) {
 		t.Fatal(err)
 	}
 	_, err = service.Install(context.Background(), InstallRequest{Source: packageDir, Home: styleHome, Harnesses: []string{"codex"}, Yes: true})
-	if err == nil || !strings.Contains(err.Error(), "planned file changed before apply") {
+	if err == nil || !strings.Contains(err.Error(), "management-input-changed") {
 		t.Fatalf("install error = %v, want stale route changeset", err)
 	}
 	if _, statErr := os.Stat(filepath.Join(styleHome, "packages", "rollback")); !errors.Is(statErr, os.ErrNotExist) {

@@ -10,6 +10,7 @@ import (
 	"github.com/inxups/style-cli/core/spec"
 	"github.com/inxups/style-cli/core/tokens"
 	"github.com/inxups/style-cli/internal/adapter"
+	"github.com/inxups/style-cli/internal/source"
 )
 
 // Diagnostic is the command-facing form of a parse, schema, lint, or plan
@@ -25,12 +26,14 @@ type Diagnostic struct {
 
 // ValidateRequest selects the source package to inspect.
 type ValidateRequest struct {
-	Source string
+	Source          string
+	Ref, Path, Home string
 }
 
 // Validation contains the diagnostics and, when loading succeeded, the
 // parsed package used by plan.
 type Validation struct {
+	Source      *SourceReport `json:"source,omitempty"`
 	Package     *spec.Package
 	Diagnostics []Diagnostic
 	source      []spec.Diagnostic
@@ -55,12 +58,25 @@ func (s *Service) Validate(ctx context.Context, request ValidateRequest) (Valida
 	if strings.TrimSpace(request.Source) == "" {
 		request.Source = "."
 	}
-	pkg, err := spec.Load(request.Source)
+	var pkg *spec.Package
+	var report *SourceReport
+	var err error
+	if source.Remote(request.Source) {
+		var snapshot source.Snapshot
+		snapshot, report, err = s.acquireGit(ctx, source.Request{Source: request.Source, Ref: request.Ref, Path: request.Path, Home: request.Home})
+		if err == nil {
+			pkg, err = spec.LoadSnapshot(snapshot.Path, snapshot.Files, snapshotName(snapshot.Kind, snapshot.Path))
+		}
+	} else {
+		if err = localSourceOptions(request.Ref, request.Path); err == nil {
+			pkg, err = spec.Load(request.Source)
+		}
+	}
 	if err != nil {
-		return Validation{Diagnostics: []Diagnostic{parseDiagnostic(err)}}, nil
+		return Validation{Source: report, Diagnostics: []Diagnostic{parseDiagnostic(err)}}, nil
 	}
 	source := s.validateSpec(pkg)
-	result := Validation{Package: pkg, Diagnostics: convertDiagnostics(source), source: source}
+	result := Validation{Source: report, Package: pkg, Diagnostics: convertDiagnostics(source), source: source}
 	if hasErrors(result.Diagnostics) {
 		return result, nil
 	}
@@ -99,6 +115,9 @@ func (s *Service) Validate(ctx context.Context, request ValidateRequest) (Valida
 
 func parseDiagnostic(err error) Diagnostic {
 	code := spec.ErrorCode(err)
+	if code == "" {
+		code = source.Code(err)
+	}
 	if code == "" {
 		code = "invalid-package"
 	}

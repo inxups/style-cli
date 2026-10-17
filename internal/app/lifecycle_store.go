@@ -6,19 +6,23 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
+	"io"
 	"io/fs"
 	"os"
 	"path/filepath"
+	"regexp"
 	"sort"
 	"strings"
 
 	"github.com/inxups/style-cli/core/spec"
+	"github.com/inxups/style-cli/internal/source"
 	"gopkg.in/yaml.v3"
 )
 
 const (
 	styleRuntimeVersion = "0.1.0"
 	lockFormat          = 1
+	gitLockFormat       = 2
 )
 
 type lockDocument struct {
@@ -41,9 +45,10 @@ type lockPackage struct {
 }
 
 type lockSource struct {
-	Kind string `yaml:"kind"`
-	Path string `yaml:"path"`
-	Link bool   `yaml:"link"`
+	Kind string      `yaml:"kind"`
+	Path string      `yaml:"path"`
+	Link bool        `yaml:"link"`
+	Git  *source.Git `yaml:"git,omitempty"`
 }
 
 type lockHarness struct {
@@ -95,8 +100,50 @@ func decodeLock(data []byte) (lockDocument, error) {
 	if document.Format == 0 {
 		document.Format = lockFormat
 	}
-	if document.Format != lockFormat {
+	if document.Format != lockFormat && document.Format != gitLockFormat {
 		return lockDocument{}, fmt.Errorf("unsupported lock format %d", document.Format)
+	}
+	decoder := yaml.NewDecoder(bytes.NewReader(data))
+	decoder.KnownFields(document.Format == gitLockFormat)
+	var checked lockDocument
+	if err := decoder.Decode(&checked); err != nil {
+		return lockDocument{}, fmt.Errorf("decode lock: %w", err)
+	}
+	if err := decoder.Decode(new(any)); err != io.EOF {
+		return lockDocument{}, fmt.Errorf("decode lock: expected one YAML document")
+	}
+	if document.Format == lockFormat {
+		var node yaml.Node
+		if yaml.Unmarshal(data, &node) == nil && lockContainsGit(&node) {
+			return lockDocument{}, fmt.Errorf("Git provenance requires lock format 2")
+		}
+	}
+	seen := map[string]bool{}
+	sequences := map[int]bool{}
+	for _, item := range document.Packages {
+		if document.Format == gitLockFormat {
+			if !lockedNamePattern.MatchString(item.Name) || seen[item.Name] || item.Version == "" || item.Seq < 1 || sequences[item.Seq] || item.Source.Path == "" || item.Source.Kind != "dir" && item.Source.Kind != "file" || item.Link != item.Source.Link {
+				return lockDocument{}, fmt.Errorf("invalid lock package identity")
+			}
+			seen[item.Name] = true
+			sequences[item.Seq] = true
+			for _, hash := range item.Files {
+				if !lockedHashPattern.MatchString(hash) {
+					return lockDocument{}, fmt.Errorf("invalid lock file hash")
+				}
+			}
+		}
+		if item.Source.Git != nil {
+			if !lockedHashPattern.MatchString(item.Approval) {
+				return lockDocument{}, fmt.Errorf("Git package requires an approval digest")
+			}
+			if item.Link || item.Source.Link || item.LinkTrusted {
+				return lockDocument{}, fmt.Errorf("Git package cannot be linked or link-trusted")
+			}
+			if err := source.ValidateIdentity(*item.Source.Git, item.Source.Kind, item.Source.Path, item.Files); err != nil {
+				return lockDocument{}, err
+			}
+		}
 	}
 	if document.Packages == nil {
 		document.Packages = []lockPackage{}
@@ -107,14 +154,48 @@ func decodeLock(data []byte) (lockDocument, error) {
 	return document, nil
 }
 
+var lockedNamePattern = regexp.MustCompile(`^[a-z0-9][a-z0-9-]{0,63}$`)
+var lockedHashPattern = regexp.MustCompile(`^sha256:[0-9a-f]{64}$`)
+
 func writeLock(home string, document lockDocument) error {
-	document.Format = lockFormat
+	if document.Format == 0 {
+		document.Format = lockFormat
+	}
+	for _, item := range document.Packages {
+		if item.Source.Git != nil {
+			document.Format = gitLockFormat
+		}
+	}
 	sort.Slice(document.Packages, func(i, j int) bool { return document.Packages[i].Seq < document.Packages[j].Seq })
 	data, err := yaml.Marshal(document)
 	if err != nil {
 		return fmt.Errorf("encode lock: %w", err)
 	}
+	if _, err := decodeLock(data); err != nil {
+		return err
+	}
 	return writeAtomic(filepath.Join(home, "style.lock.yaml"), data, 0o600)
+}
+
+func lockContainsGit(node *yaml.Node) bool {
+	if node.Kind == yaml.MappingNode {
+		for i := 0; i+1 < len(node.Content); i += 2 {
+			if node.Content[i].Value == "source" && node.Content[i+1].Kind == yaml.MappingNode {
+				fields := node.Content[i+1].Content
+				for j := 0; j+1 < len(fields); j += 2 {
+					if fields[j].Value == "git" {
+						return true
+					}
+				}
+			}
+		}
+	}
+	for _, child := range node.Content {
+		if lockContainsGit(child) {
+			return true
+		}
+	}
+	return false
 }
 
 func writeAtomic(path string, data []byte, mode os.FileMode) error {
@@ -352,16 +433,10 @@ func (swap *packageSwap) apply() error {
 	}
 	swap.backupRoot = backupRoot
 	swap.backup = backup
+	swap.applied = true
 	if !swap.remove {
 		if err := os.Rename(swap.staged, swap.target); err != nil {
-			if swap.backup != "" {
-				_ = os.Rename(swap.backup, swap.target)
-			}
-			if swap.backupRoot != "" {
-				_ = os.RemoveAll(swap.backupRoot)
-			}
-			swap.backup, swap.backupRoot = "", ""
-			return err
+			return errors.Join(err, swap.rollback())
 		}
 	}
 	swap.applied = true
@@ -378,28 +453,31 @@ func (swap *packageSwap) commit() {
 	}
 }
 
-func (swap *packageSwap) rollback() {
+func (swap *packageSwap) rollback() error {
 	if swap == nil {
-		return
+		return nil
 	}
 	if swap.committed {
-		return
+		return nil
 	}
 	if !swap.applied {
-		_ = os.RemoveAll(swap.staged)
-		if swap.backupRoot != "" {
-			_ = os.RemoveAll(swap.backupRoot)
-		}
-		return
+		return os.RemoveAll(swap.staged)
 	}
-	_ = os.RemoveAll(swap.target)
+	if err := os.RemoveAll(swap.target); err != nil {
+		return fmt.Errorf("rollback package storage: %w", err)
+	}
 	if swap.backup != "" {
-		_ = os.Rename(swap.backup, swap.target)
+		if err := os.Rename(swap.backup, swap.target); err != nil {
+			return fmt.Errorf("rollback package restore failed; backup retained at %s: %w", swap.backup, err)
+		}
 	}
+	swap.applied = false
+	var cleanupErr error
 	if swap.backupRoot != "" {
-		_ = os.RemoveAll(swap.backupRoot)
+		cleanupErr = os.RemoveAll(swap.backupRoot)
 	}
-	_ = os.RemoveAll(swap.staged)
+	swap.backup, swap.backupRoot = "", ""
+	return errors.Join(cleanupErr, os.RemoveAll(swap.staged))
 }
 
 func readOptionalBytes(path string) ([]byte, error) {

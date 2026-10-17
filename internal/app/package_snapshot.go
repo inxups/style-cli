@@ -9,11 +9,15 @@ import (
 	"github.com/inxups/style-cli/core/spec"
 	"github.com/inxups/style-cli/core/tokens"
 	"github.com/inxups/style-cli/internal/adapter"
+	"github.com/inxups/style-cli/internal/source"
 )
 
 func installedSnapshot(home string, item lockPackage) (map[string][]byte, error) {
 	files, single, _, err := snapshotPackage(lockedPackagePath(home, item))
 	if err != nil {
+		if item.Source.Git != nil {
+			return nil, &source.Error{Code: "git-snapshot-changed", Message: fmt.Sprintf("Git package %q has missing or unreadable locked storage; restore locked bytes", item.Name)}
+		}
 		return nil, fmt.Errorf("snapshot %s: %w", item.Name, err)
 	}
 	if single != (item.Source.Kind == "file") {
@@ -31,6 +35,9 @@ func installedSnapshot(home string, item lockPackage) (map[string][]byte, error)
 
 func (s *Service) parseInstalledSnapshot(ctx context.Context, home string, item lockPackage, files map[string][]byte) (installPackage, error) {
 	if err := checkContext(ctx); err != nil {
+		return installPackage{}, err
+	}
+	if err := checkGitSnapshot(item, files); err != nil {
 		return installPackage{}, err
 	}
 	name := ""

@@ -16,10 +16,11 @@ import (
 // PlanRequest selects one or more provider plan reports. "auto" selects
 // providers detected on the current host.
 type PlanRequest struct {
-	Source         string
-	Harnesses      []string
-	AssumeRequests int
-	AssumeTriggers int
+	Source          string
+	Ref, Path, Home string
+	Harnesses       []string
+	AssumeRequests  int
+	AssumeTriggers  int
 }
 
 // PlanReport combines the core placement report and token report for one
@@ -65,10 +66,11 @@ type SessionCost struct {
 
 // PlanResult is the deterministic output of a plan request.
 type PlanResult struct {
-	Package     string       `json:"package"`
-	Version     string       `json:"version"`
-	Diagnostics []Diagnostic `json:"diagnostics,omitempty"`
-	Reports     []PlanReport `json:"reports"`
+	Source      *SourceReport `json:"source,omitempty"`
+	Package     string        `json:"package"`
+	Version     string        `json:"version"`
+	Diagnostics []Diagnostic  `json:"diagnostics,omitempty"`
+	Reports     []PlanReport  `json:"reports"`
 }
 
 // UsageError identifies a plan request that cannot be interpreted without
@@ -83,11 +85,11 @@ func (s *Service) Plan(ctx context.Context, request PlanRequest) (PlanResult, er
 	if err := checkContext(ctx); err != nil {
 		return PlanResult{}, err
 	}
-	validation, err := s.Validate(ctx, ValidateRequest{Source: request.Source})
+	validation, err := s.Validate(ctx, ValidateRequest{Source: request.Source, Ref: request.Ref, Path: request.Path, Home: request.Home})
 	if err != nil {
 		return PlanResult{}, err
 	}
-	result := PlanResult{Diagnostics: packageDiagnostics(validation.Diagnostics)}
+	result := PlanResult{Source: validation.Source, Diagnostics: packageDiagnostics(validation.Diagnostics)}
 	if validation.Package == nil {
 		return result, nil
 	}

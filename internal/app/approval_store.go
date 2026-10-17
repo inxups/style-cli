@@ -8,12 +8,15 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/inxups/style-cli/internal/source"
+
 	"github.com/speakeasy-api/agenthooks/install"
 )
 
 // An approval retains the bytes and compiled representation that the user
 // accepted. Lock hashes authenticate it; it is never a runtime input.
 type approvedSnapshot struct {
+	Git      *source.Git        `json:"git,omitempty"`
 	Format   int                `json:"format"`
 	Files    map[string][]byte  `json:"files"`
 	Rendered map[string][]byte  `json:"rendered"`
@@ -22,7 +25,7 @@ type approvedSnapshot struct {
 
 func approvalPath(home, name string) string { return filepath.Join(home, "approved", name+".json") }
 
-func approvalBytes(compilation installCompilation, name string, files map[string][]byte) ([]byte, error) {
+func approvalBytes(compilation installCompilation, name string, files map[string][]byte, git ...*source.Git) ([]byte, error) {
 	view := make(map[string][]byte)
 	for provider, events := range compilation.index.Harnesses {
 		for event, entries := range events {
@@ -46,7 +49,11 @@ func approvalBytes(compilation installCompilation, name string, files map[string
 		}
 		view[body.Harness+"/static/"+body.Rule+"/"+body.Slot] = []byte("mode: " + body.Mode + "\n" + body.Body)
 	}
-	return json.Marshal(approvedSnapshot{Format: 1, Files: files, Rendered: view, Native: compilation.nativeReports(name)})
+	var provenance *source.Git
+	if len(git) > 0 {
+		provenance = git[0]
+	}
+	return json.Marshal(approvedSnapshot{Git: provenance, Format: 1, Files: files, Rendered: view, Native: compilation.nativeReports(name)})
 }
 
 func loadApproval(home string, item lockPackage) (approvedSnapshot, bool, error) {
@@ -66,6 +73,9 @@ func loadApproval(home string, item lockPackage) (approvedSnapshot, bool, error)
 	var result approvedSnapshot
 	if err := json.Unmarshal(data, &result); err != nil {
 		return result, false, fmt.Errorf("decode approval baseline %s: %w", item.Name, err)
+	}
+	if item.Source.Git != nil && (result.Git == nil || *result.Git != *item.Source.Git) || item.Source.Git == nil && result.Git != nil {
+		return result, false, fmt.Errorf("approval provenance for %s differs from the lock", item.Name)
 	}
 	hashes, _ := hashPackageFiles(result.Files)
 	if result.Format != 1 || !reflectStringMap(hashes, item.Files) {

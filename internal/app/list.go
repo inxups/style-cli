@@ -6,22 +6,24 @@ import (
 	"sort"
 
 	"github.com/inxups/style-cli/core/spec"
+	"github.com/inxups/style-cli/internal/source"
 )
 
 // ListRequest selects the local installation store without probing providers.
 type ListRequest struct{ Home string }
 
 type InstalledPackage struct {
-	Name         string   `json:"name"`
-	Version      string   `json:"version"`
-	Sequence     int      `json:"seq"`
-	Source       string   `json:"source"`
-	SourceKind   string   `json:"source_kind"`
-	Link         string   `json:"link"`
-	HashMatches  bool     `json:"hash_matches"`
-	ChangedFiles []string `json:"changed_files"`
-	Error        string   `json:"error,omitempty"`
-	NativeCount  int      `json:"native_count"`
+	Git          *source.Git `json:"git,omitempty"`
+	Name         string      `json:"name"`
+	Version      string      `json:"version"`
+	Sequence     int         `json:"seq"`
+	Source       string      `json:"source"`
+	SourceKind   string      `json:"source_kind"`
+	Link         string      `json:"link"`
+	HashMatches  bool        `json:"hash_matches"`
+	ChangedFiles []string    `json:"changed_files"`
+	Error        string      `json:"error,omitempty"`
+	NativeCount  int         `json:"native_count"`
 }
 
 type ListResult struct {
@@ -53,6 +55,10 @@ func listLocked(ctx context.Context, home string, lock lockDocument) (ListResult
 		}
 		item := InstalledPackage{Name: pkg.Name, Version: pkg.Version, Sequence: pkg.Seq,
 			Source: pkg.Source.Path, SourceKind: pkg.Source.Kind, Link: "no", ChangedFiles: []string{}}
+		if pkg.Source.Git != nil {
+			git := *pkg.Source.Git
+			item.Git = &git
+		}
 		if pkg.Link {
 			item.Link = "dev"
 		}

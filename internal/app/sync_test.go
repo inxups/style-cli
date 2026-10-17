@@ -138,7 +138,6 @@ func TestTrustCompilesExactlyTheConfirmedSnapshot(t *testing.T) {
 		if len(preview.Changes[0].SourceDiff) != 1 || !strings.Contains(preview.Changes[0].SourceDiff[0].Diff, "+Approved dynamic") {
 			t.Fatalf("unexpected preview: %+v", preview)
 		}
-		writeSyncFile(t, path, "malformed later source")
 		preview.Changes[0].SourceDiff[0].Diff = "callback mutation"
 		return true, nil
 	}})
@@ -159,6 +158,8 @@ func TestTrustCompilesExactlyTheConfirmedSnapshot(t *testing.T) {
 	if strings.Contains(result.Changes[0].SourceDiff[0].Diff, "callback mutation") {
 		t.Fatal("callback mutated transaction summary")
 	}
+	// D2 now rejects edits during confirmation. A later edit remains pending.
+	writeSyncFile(t, path, "malformed later source")
 	if result, err := service.Sync(context.Background(), SyncRequest{Home: home}); err != nil || len(result.NeedsTrust) != 1 {
 		t.Fatalf("later edit was not detected: %+v, %v", result, err)
 	}

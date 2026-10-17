@@ -1,0 +1,1873 @@
+{
+  "format": 1,
+  "task": "M3-T20",
+  "test": "M3-A3",
+  "date": "2026-10-17",
+  "status": "passed",
+  "source_base": "0308cbc9b7f1993b4eda60c7909192bed970b363",
+  "scope": "Explicit public HTTPS Git sources for validate/plan/install and source-preserving management lifecycle; T21 update and T22 frozen remain unimplemented.",
+  "source_manifest": [
+    {
+      "path": "agenthooks/install/inputs.go",
+      "sha256": "4d7f4d469eaab5deb4f840a7c65ec8da4e40e1a2f9d830cebf71cac80f869857",
+      "lines": 38,
+      "role": "production"
+    },
+    {
+      "path": "agenthooks/install/inputs_test.go",
+      "sha256": "0f5aaeefd6455942a5988d44eaf2541f7f144da57feadcf85b498a23a13a824f",
+      "lines": 58,
+      "role": "test"
+    },
+    {
+      "path": "internal/adapter/claude/management.go",
+      "sha256": "853870326186bb17db34ac151bebbf725c7cfc64572107fb7b890e98c15a6145",
+      "lines": 12,
+      "role": "production"
+    },
+    {
+      "path": "internal/adapter/codex/management.go",
+      "sha256": "69ecef8d3388aab36bd94eace9cef891f4893930b3ddc176f8e5bcfc96699924",
+      "lines": 8,
+      "role": "production"
+    },
+    {
+      "path": "internal/adapter/management.go",
+      "sha256": "c9b7558972ca51390dbaa47a7a8d11bdf0e8a235d93be6c93bb93638ca182c25",
+      "lines": 5,
+      "role": "production"
+    },
+    {
+      "path": "internal/app/approval_store.go",
+      "sha256": "aafd9b4b4c696307a1420ea14933c59f4924aa91c8b88d490bad5dc3b5fe7d0a",
+      "lines": 100,
+      "role": "production"
+    },
+    {
+      "path": "internal/app/command.go",
+      "sha256": "137d034822caa5a9187ee2181bb2f9e0d69a2ef9bce0cd41fc26014d224d0e81",
+      "lines": 295,
+      "role": "production"
+    },
+    {
+      "path": "internal/app/command_test.go",
+      "sha256": "44f914a7e8c5425d07b48015ac2c0a3dd76040282fcb74189a8379c21699ae9b",
+      "lines": 137,
+      "role": "test"
+    },
+    {
+      "path": "internal/app/doctor.go",
+      "sha256": "bb9ecd2224a444ffc946f3e7228d9d445eead64d747185416645c8b7135db1ba",
+      "lines": 279,
+      "role": "production"
+    },
+    {
+      "path": "internal/app/entry.go",
+      "sha256": "9b2d560df84be6db85906b0c2a1f1fc22721855b6d907ab81d355aa184b94e9a",
+      "lines": 106,
+      "role": "production"
+    },
+    {
+      "path": "internal/app/git_source_test.go",
+      "sha256": "a2411d0a378bef2cc7d72b34ee4ed108f96c066437fffef6cd1b16bb55dfcd14",
+      "lines": 607,
+      "role": "test"
+    },
+    {
+      "path": "internal/app/inspect_command.go",
+      "sha256": "075c03a7b68a240f29abe13baf38d7807490bfcdd0cdcd3d3263e748fd5593cd",
+      "lines": 143,
+      "role": "production"
+    },
+    {
+      "path": "internal/app/install.go",
+      "sha256": "4f5e05630724361a2e251c8a199821b63edbb8c04ef686fc65386ffebe47e684",
+      "lines": 1114,
+      "role": "production"
+    },
+    {
+      "path": "internal/app/install_test.go",
+      "sha256": "f4bf302de670ebcb861598c07f868525d792feae281190f84ff3aed7f0dfe93f",
+      "lines": 300,
+      "role": "test"
+    },
+    {
+      "path": "internal/app/lifecycle_command.go",
+      "sha256": "7b30722b0300990f1cc7542e3b20928fed4fc7c9647dd3b2243b2eaaa5250bc8",
+      "lines": 268,
+      "role": "production"
+    },
+    {
+      "path": "internal/app/lifecycle_store.go",
+      "sha256": "660657feaf31386ca311b2161fc096c4db5da46ba01adfb2715fcf4a4d5861cc",
+      "lines": 508,
+      "role": "production"
+    },
+    {
+      "path": "internal/app/list.go",
+      "sha256": "c173b11b331d11d8369b94ee538d41a63b761a38f38d5c4eafac635c4a96c470",
+      "lines": 111,
+      "role": "production"
+    },
+    {
+      "path": "internal/app/management.go",
+      "sha256": "25f724b6b8303e4d359ecf8fb751d1a7fdf827f36b334434123deb7887b47901",
+      "lines": 323,
+      "role": "production"
+    },
+    {
+      "path": "internal/app/management_test.go",
+      "sha256": "8e9bf5c809fbe5c389f979ebdbf58b67be80e84c379b2791a191b47d529bd583",
+      "lines": 347,
+      "role": "test"
+    },
+    {
+      "path": "internal/app/native_lifecycle_test.go",
+      "sha256": "23acba6642318804bb7e853a00e4b4f98a14509b980ddc7ec0b288aa12c99a79",
+      "lines": 437,
+      "role": "test"
+    },
+    {
+      "path": "internal/app/package_snapshot.go",
+      "sha256": "cb0ae4f62317047e9b1db4cfebf00b9bdbfec17627632d8f8577a401a4c070a9",
+      "lines": 94,
+      "role": "production"
+    },
+    {
+      "path": "internal/app/plan.go",
+      "sha256": "4a971b7733eb01f494ff2023bfc9c8a47b2a5d8ffe1d41b8b7c48e106a44f105",
+      "lines": 430,
+      "role": "production"
+    },
+    {
+      "path": "internal/app/service.go",
+      "sha256": "d7e1e3852f751ba6ec774554639f7f557b2b19bb7defdd73d86365601a2640f5",
+      "lines": 68,
+      "role": "production"
+    },
+    {
+      "path": "internal/app/source.go",
+      "sha256": "1d79397fba0aafb94456529369684cbc8aa4e30f1f84200cafe2c590d09ae266",
+      "lines": 107,
+      "role": "production"
+    },
+    {
+      "path": "internal/app/sync.go",
+      "sha256": "d0ff840d1de88c07086f8e45d2808516ceaae5e7e46deef0cc3e50fa36b50c54",
+      "lines": 106,
+      "role": "production"
+    },
+    {
+      "path": "internal/app/sync_prepare.go",
+      "sha256": "cc5de3e5e190f90335276ea548b9dbe0ccce8a21e09c68e7e8215eecbe5b3b47",
+      "lines": 246,
+      "role": "production"
+    },
+    {
+      "path": "internal/app/sync_test.go",
+      "sha256": "63c4d5602f6bb8a80d8dd83acc690b75b6ddba2fb9dba8813338867e79ed3f1f",
+      "lines": 269,
+      "role": "test"
+    },
+    {
+      "path": "internal/app/uninstall.go",
+      "sha256": "94c015053ebdbb0c2805bc2eddbb5e78a5d280508d546200c03681dfe5b75637",
+      "lines": 300,
+      "role": "production"
+    },
+    {
+      "path": "internal/app/validate.go",
+      "sha256": "19874b738a96dc3fab952034713698777eef50ee61fb32106f931a89019c96bf",
+      "lines": 178,
+      "role": "production"
+    },
+    {
+      "path": "internal/source/cache.go",
+      "sha256": "5129955ddf496e0a3dd19c69aa619e6bd96491abf97db57f5c53e5f6fb017a5a",
+      "lines": 273,
+      "role": "production"
+    },
+    {
+      "path": "internal/source/git.go",
+      "sha256": "b37b00c35c811c97460db8f004d2d45fdae8246180dba85cbc808e73d599c4ec",
+      "lines": 419,
+      "role": "production"
+    },
+    {
+      "path": "internal/source/git_test.go",
+      "sha256": "e9a6b7821b2947590d98ec0aee9f227001c915b99d2bda3406a92ba7c1679c1e",
+      "lines": 369,
+      "role": "test"
+    },
+    {
+      "path": "internal/source/identity_test.go",
+      "sha256": "33a37fcc9289e22a67705a6d98721ab6c3827eda311385316a503c3f43125805",
+      "lines": 64,
+      "role": "test"
+    },
+    {
+      "path": "internal/source/process_unix.go",
+      "sha256": "bf30b881f571a0b9f3f09cd74f6d803ce05e4fc0f6397a723e325930616021ae",
+      "lines": 18,
+      "role": "production"
+    },
+    {
+      "path": "internal/source/process_windows.go",
+      "sha256": "d3df723a65f86fd82d6916dfb26535671b069016b222208b395a55c5d8025fac",
+      "lines": 8,
+      "role": "production"
+    },
+    {
+      "path": "internal/source/source.go",
+      "sha256": "b4d324b8221d8f8b675ed4baaea77560afbd675a00774707b7310163337d0846",
+      "lines": 254,
+      "role": "production"
+    },
+    {
+      "path": "internal/source/transport_test.go",
+      "sha256": "5686ccc40fd58e7e893ef9b8c8eb11c40d5762ba97de3a7c5122a7749cefc5bb",
+      "lines": 189,
+      "role": "test"
+    },
+    {
+      "path": "internal/testgit/fixture.go",
+      "sha256": "4d89527378e7559474e577639d6e2bdf3d7b104dfc7c9f4a3c0c2857d9e2b783",
+      "lines": 127,
+      "role": "test"
+    },
+    {
+      "path": "scripts/check_m3_git_source.py",
+      "sha256": "af6ef93ba8e3fa047246cff5e2b227bc0445efd8d8a70cbe1585aa71e9202557",
+      "lines": 146,
+      "role": "verification_script"
+    }
+  ],
+  "source_fingerprint_sha256": "4a62f6110915ddc8925b967c95cb9a2dde5fa386f78093e382af70fba47d5029",
+  "environment": {
+    "os": "macOS 27.0.1",
+    "arch": "arm64",
+    "go": "go1.27.0",
+    "git": "git version 2.54.0",
+    "python": "3.14.7",
+    "workspace": "/Users/inxups/project/style-cli",
+    "test_environment": "temporary GOPATH/GOMODCACHE/GOCACHE, GOWORK=off, cleared CODEX_HOME/CODEX_SANDBOX and detector inputs as listed per run; harness configs isolated by fixtures",
+    "git_environment": "explicit allowlist, private HOME/XDG/bare/template/hooks, system/global config disabled, no inherited GIT/proxy/credentials; trusted runner fixture ports only",
+    "network": "offline repository fixtures and 127.0.0.1 TLS/CGI git-http-backend; no public remote, real harness, credentials, login or keychain"
+  },
+  "verification": [
+    {
+      "argv": [
+        "make",
+        "test-go"
+      ],
+      "cwd": "/Users/inxups/project/style-cli",
+      "started_utc": "2026-10-17T09:12:35.917578+00:00",
+      "elapsed_seconds": 63.279,
+      "exit_code": 0,
+      "log": "/tmp/style-m3-a3-20261017/all-release.log",
+      "log_sha256": "52872651ceb28540bc12c9f2926cabef915579009fbf719eb9be88e2926bb267",
+      "cleared_environment": [
+        "CODEX_HOME",
+        "CODEX_SANDBOX",
+        "STYLE_HOME",
+        "CLAUDE_CODE_EFFORT_LEVEL",
+        "CLAUDE_CODE_CONFIG_DIR",
+        "CLAUDE_CONFIG_DIR",
+        "PLUGIN_ROOT",
+        "STYLE_PERF",
+        "STYLE_PERF_OUTPUT"
+      ],
+      "Go_environment": {
+        "GOPATH": "/tmp/style-cli-gopath",
+        "GOMODCACHE": "/tmp/style-cli-gomodcache",
+        "GOCACHE": "/tmp/style-cli-gocache",
+        "GOWORK": "off",
+        "GOFLAGS": "-mod=readonly -count=1 -json"
+      },
+      "test_events": {
+        "passed": 2666,
+        "failed": 0,
+        "skipped": 24
+      },
+      "failed_tests": [],
+      "id": "all-release"
+    },
+    {
+      "argv": [
+        "make",
+        "vet-go"
+      ],
+      "cwd": "/Users/inxups/project/style-cli",
+      "started_utc": "2026-10-17T09:12:31.975943+00:00",
+      "elapsed_seconds": 0.851,
+      "exit_code": 0,
+      "log": "/tmp/style-m3-a3-20261017/vet-release.log",
+      "log_sha256": "c3e36b766aa965211cced519ace9e08040a4514036bfd8cad99ac6b508125005",
+      "cleared_environment": [
+        "CODEX_HOME",
+        "CODEX_SANDBOX",
+        "STYLE_HOME",
+        "CLAUDE_CODE_EFFORT_LEVEL",
+        "CLAUDE_CODE_CONFIG_DIR",
+        "CLAUDE_CONFIG_DIR",
+        "PLUGIN_ROOT",
+        "STYLE_PERF",
+        "STYLE_PERF_OUTPUT"
+      ],
+      "Go_environment": {
+        "GOPATH": "/tmp/style-cli-gopath",
+        "GOMODCACHE": "/tmp/style-cli-gomodcache",
+        "GOCACHE": "/tmp/style-cli-gocache",
+        "GOWORK": "off",
+        "GOFLAGS": "-mod=readonly"
+      },
+      "id": "vet-release"
+    },
+    {
+      "argv": [
+        "go",
+        "test",
+        "-json",
+        "-race",
+        "-count=1",
+        "./internal/source",
+        "./internal/app",
+        "./internal/saferead",
+        "./internal/adapter/codex",
+        "./internal/adapter/claude"
+      ],
+      "cwd": "/Users/inxups/project/style-cli",
+      "started_utc": "2026-10-17T09:00:28.964772+00:00",
+      "elapsed_seconds": 76.481,
+      "exit_code": 0,
+      "log": "/tmp/style-m3-a3-20261017/race-1.log",
+      "log_sha256": "bcb97a11cb34940a413b9c40c6278a33f8a35f50ba8b9a96bb05a638d61bbe8f",
+      "cleared_environment": [
+        "CODEX_HOME",
+        "CODEX_SANDBOX",
+        "STYLE_HOME",
+        "CLAUDE_CODE_EFFORT_LEVEL",
+        "CLAUDE_CODE_CONFIG_DIR",
+        "CLAUDE_CONFIG_DIR",
+        "PLUGIN_ROOT",
+        "STYLE_PERF",
+        "STYLE_PERF_OUTPUT"
+      ],
+      "Go_environment": {
+        "GOPATH": "/tmp/style-cli-gopath",
+        "GOMODCACHE": "/tmp/style-cli-gomodcache",
+        "GOCACHE": "/tmp/style-cli-gocache",
+        "GOWORK": "off",
+        "GOFLAGS": "-mod=readonly"
+      },
+      "test_events": {
+        "passed": 931,
+        "failed": 0,
+        "skipped": 0
+      },
+      "failed_tests": [],
+      "id": "race-1"
+    },
+    {
+      "argv": [
+        "go",
+        "test",
+        "-json",
+        "-race",
+        "-count=1",
+        "./internal/app"
+      ],
+      "cwd": "/Users/inxups/project/style-cli",
+      "started_utc": "2026-10-17T09:06:07.250771+00:00",
+      "elapsed_seconds": 82.966,
+      "exit_code": 0,
+      "log": "/tmp/style-m3-a3-20261017/race-app-final.log",
+      "log_sha256": "41c08fde56ffc623a2256a0829f67536a47c93977cc0bbd0d8abb1a2cc5060f4",
+      "cleared_environment": [
+        "CODEX_HOME",
+        "CODEX_SANDBOX",
+        "STYLE_HOME",
+        "CLAUDE_CODE_EFFORT_LEVEL",
+        "CLAUDE_CODE_CONFIG_DIR",
+        "CLAUDE_CONFIG_DIR",
+        "PLUGIN_ROOT",
+        "STYLE_PERF",
+        "STYLE_PERF_OUTPUT"
+      ],
+      "Go_environment": {
+        "GOPATH": "/tmp/style-cli-gopath",
+        "GOMODCACHE": "/tmp/style-cli-gomodcache",
+        "GOCACHE": "/tmp/style-cli-gocache",
+        "GOWORK": "off",
+        "GOFLAGS": "-mod=readonly"
+      },
+      "test_events": {
+        "passed": 692,
+        "failed": 0,
+        "skipped": 0
+      },
+      "failed_tests": [],
+      "id": "race-app-final"
+    },
+    {
+      "argv": [
+        "go",
+        "test",
+        "-json",
+        "-race",
+        "-count=1",
+        "./internal/source"
+      ],
+      "cwd": "/Users/inxups/project/style-cli",
+      "started_utc": "2026-10-17T09:12:35.911700+00:00",
+      "elapsed_seconds": 13.81,
+      "exit_code": 0,
+      "log": "/tmp/style-m3-a3-20261017/race-source-release.log",
+      "log_sha256": "544ae27f19e0667ce21cda16238b0ab8f79024d2ff12bc0dee5407568e2ee2af",
+      "cleared_environment": [
+        "CODEX_HOME",
+        "CODEX_SANDBOX",
+        "STYLE_HOME",
+        "CLAUDE_CODE_EFFORT_LEVEL",
+        "CLAUDE_CODE_CONFIG_DIR",
+        "CLAUDE_CONFIG_DIR",
+        "PLUGIN_ROOT",
+        "STYLE_PERF",
+        "STYLE_PERF_OUTPUT"
+      ],
+      "Go_environment": {
+        "GOPATH": "/tmp/style-cli-gopath",
+        "GOMODCACHE": "/tmp/style-cli-gomodcache",
+        "GOCACHE": "/tmp/style-cli-gocache",
+        "GOWORK": "off",
+        "GOFLAGS": "-mod=readonly"
+      },
+      "test_events": {
+        "passed": 114,
+        "failed": 0,
+        "skipped": 0
+      },
+      "failed_tests": [],
+      "id": "race-source-release"
+    },
+    {
+      "argv": [
+        "go",
+        "test",
+        "-C",
+        "agenthooks",
+        "-json",
+        "-race",
+        "-count=1",
+        "./install"
+      ],
+      "cwd": "/Users/inxups/project/style-cli",
+      "started_utc": "2026-10-17T09:00:24.975662+00:00",
+      "elapsed_seconds": 3.31,
+      "exit_code": 0,
+      "log": "/tmp/style-m3-a3-20261017/race-agenthooks-1.log",
+      "log_sha256": "be8b1e9c5170c99186e2a96e0320aabeba9dd9660b4c645ff1a4b0d4c9708dd3",
+      "cleared_environment": [
+        "CODEX_HOME",
+        "CODEX_SANDBOX",
+        "STYLE_HOME",
+        "CLAUDE_CODE_EFFORT_LEVEL",
+        "CLAUDE_CODE_CONFIG_DIR",
+        "CLAUDE_CONFIG_DIR",
+        "PLUGIN_ROOT",
+        "STYLE_PERF",
+        "STYLE_PERF_OUTPUT"
+      ],
+      "Go_environment": {
+        "GOPATH": "/tmp/style-cli-gopath",
+        "GOMODCACHE": "/tmp/style-cli-gomodcache",
+        "GOCACHE": "/tmp/style-cli-gocache",
+        "GOWORK": "off",
+        "GOFLAGS": "-mod=readonly"
+      },
+      "test_events": {
+        "passed": 97,
+        "failed": 0,
+        "skipped": 0
+      },
+      "failed_tests": [],
+      "id": "race-agenthooks-1"
+    },
+    {
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "testdata/manual",
+        "-p",
+        "test_*.py"
+      ],
+      "cwd": "/Users/inxups/project/style-cli",
+      "started_utc": "2026-10-17T08:57:36.899254+00:00",
+      "elapsed_seconds": 4.774,
+      "exit_code": 0,
+      "log": "/tmp/style-m3-a3-20261017/collectors-1.log",
+      "log_sha256": "988b0a55a2603a976c412c21996c971b40faaf6ca4844e6c614b6b958003155f",
+      "cleared_environment": [
+        "CODEX_HOME",
+        "CODEX_SANDBOX",
+        "STYLE_HOME",
+        "CLAUDE_CODE_EFFORT_LEVEL",
+        "CLAUDE_CODE_CONFIG_DIR",
+        "CLAUDE_CONFIG_DIR",
+        "PLUGIN_ROOT",
+        "STYLE_PERF",
+        "STYLE_PERF_OUTPUT"
+      ],
+      "Go_environment": {
+        "GOPATH": "/tmp/style-cli-gopath",
+        "GOMODCACHE": "/tmp/style-cli-gomodcache",
+        "GOCACHE": "/tmp/style-cli-gocache",
+        "GOWORK": "off",
+        "GOFLAGS": "-mod=readonly"
+      },
+      "id": "collectors-1"
+    },
+    {
+      "argv": [
+        "go",
+        "build",
+        "-trimpath",
+        "-buildvcs=false",
+        "-o",
+        "/tmp/style-m3-a3-20261017/style",
+        "./cmd/style"
+      ],
+      "cwd": "/Users/inxups/project/style-cli",
+      "started_utc": "2026-10-17T09:12:31.975951+00:00",
+      "elapsed_seconds": 1.054,
+      "exit_code": 0,
+      "log": "/tmp/style-m3-a3-20261017/build-release.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "cleared_environment": [
+        "CODEX_HOME",
+        "CODEX_SANDBOX",
+        "STYLE_HOME",
+        "CLAUDE_CODE_EFFORT_LEVEL",
+        "CLAUDE_CODE_CONFIG_DIR",
+        "CLAUDE_CONFIG_DIR",
+        "PLUGIN_ROOT",
+        "STYLE_PERF",
+        "STYLE_PERF_OUTPUT"
+      ],
+      "Go_environment": {
+        "GOPATH": "/tmp/style-cli-gopath",
+        "GOMODCACHE": "/tmp/style-cli-gomodcache",
+        "GOCACHE": "/tmp/style-cli-gocache",
+        "GOWORK": "off",
+        "GOFLAGS": "-mod=readonly"
+      },
+      "id": "build-release"
+    },
+    {
+      "argv": [
+        "go",
+        "-C",
+        "/tmp/style-m3-a3-20261017/legacy-source",
+        "build",
+        "-trimpath",
+        "-buildvcs=false",
+        "-o",
+        "/tmp/style-m3-a3-20261017/style-legacy",
+        "./cmd/style"
+      ],
+      "cwd": "/Users/inxups/project/style-cli",
+      "started_utc": "2026-10-17T08:58:09.578471+00:00",
+      "elapsed_seconds": 0.906,
+      "exit_code": 0,
+      "log": "/tmp/style-m3-a3-20261017/build-legacy-1.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "cleared_environment": [
+        "CODEX_HOME",
+        "CODEX_SANDBOX",
+        "STYLE_HOME",
+        "CLAUDE_CODE_EFFORT_LEVEL",
+        "CLAUDE_CODE_CONFIG_DIR",
+        "CLAUDE_CONFIG_DIR",
+        "PLUGIN_ROOT",
+        "STYLE_PERF",
+        "STYLE_PERF_OUTPUT"
+      ],
+      "Go_environment": {
+        "GOPATH": "/tmp/style-cli-gopath",
+        "GOMODCACHE": "/tmp/style-cli-gomodcache",
+        "GOCACHE": "/tmp/style-cli-gocache",
+        "GOWORK": "off",
+        "GOFLAGS": "-mod=readonly"
+      },
+      "id": "build-legacy-1"
+    },
+    {
+      "argv": [
+        "go",
+        "test",
+        "-json",
+        "-count=1",
+        "./internal/app",
+        "-run",
+        "^TestM3A3ExportFormatTwoFixture$"
+      ],
+      "cwd": "/Users/inxups/project/style-cli",
+      "started_utc": "2026-10-17T09:12:49.922919+00:00",
+      "elapsed_seconds": 0.864,
+      "exit_code": 0,
+      "log": "/tmp/style-m3-a3-20261017/export-release.log",
+      "log_sha256": "c1979cf3e1af80d2f5eeb90e9df7b4fce53c66a605e5ebd082b446dbdd53ea26",
+      "cleared_environment": [
+        "CODEX_HOME",
+        "CODEX_SANDBOX",
+        "STYLE_HOME",
+        "CLAUDE_CODE_EFFORT_LEVEL",
+        "CLAUDE_CODE_CONFIG_DIR",
+        "CLAUDE_CONFIG_DIR",
+        "PLUGIN_ROOT",
+        "STYLE_PERF",
+        "STYLE_PERF_OUTPUT"
+      ],
+      "Go_environment": {
+        "GOPATH": "/tmp/style-cli-gopath",
+        "GOMODCACHE": "/tmp/style-cli-gomodcache",
+        "GOCACHE": "/tmp/style-cli-gocache",
+        "GOWORK": "off",
+        "GOFLAGS": "-mod=readonly"
+      },
+      "test_events": {
+        "passed": 1,
+        "failed": 0,
+        "skipped": 0
+      },
+      "failed_tests": [],
+      "id": "export-release",
+      "additional_environment": {
+        "STYLE_M3_A3_EXPORT": "/tmp/style-m3-a3-20261017/format-two-release"
+      }
+    },
+    {
+      "argv": [
+        "python3",
+        "scripts/check_m3_git_source.py",
+        "--old-binary",
+        "/tmp/style-m3-a3-20261017/style-legacy",
+        "--binary",
+        "/tmp/style-m3-a3-20261017/style",
+        "--fixture",
+        "/tmp/style-m3-a3-20261017/format-two-release",
+        "--report",
+        "/tmp/style-m3-a3-20261017/gate-release-cases.json"
+      ],
+      "cwd": "/Users/inxups/project/style-cli",
+      "started_utc": "2026-10-17T09:13:12.171783+00:00",
+      "elapsed_seconds": 0.544,
+      "exit_code": 0,
+      "log": "/tmp/style-m3-a3-20261017/gate-release.log",
+      "log_sha256": "7420d7a9c3bf0f84e30f277e1161a40a988846e4fe42d39e813cf0967893c744",
+      "cleared_environment": [
+        "CODEX_HOME",
+        "CODEX_SANDBOX",
+        "STYLE_HOME",
+        "CLAUDE_CODE_EFFORT_LEVEL",
+        "CLAUDE_CODE_CONFIG_DIR",
+        "CLAUDE_CONFIG_DIR",
+        "PLUGIN_ROOT",
+        "STYLE_PERF",
+        "STYLE_PERF_OUTPUT"
+      ],
+      "Go_environment": {
+        "GOPATH": "/tmp/style-cli-gopath",
+        "GOMODCACHE": "/tmp/style-cli-gomodcache",
+        "GOCACHE": "/tmp/style-cli-gocache",
+        "GOWORK": "off",
+        "GOFLAGS": "-mod=readonly"
+      },
+      "id": "gate-release"
+    },
+    {
+      "argv": [
+        "python3",
+        "scripts/smoke.py",
+        "/tmp/style-m3-a3-20261017/style"
+      ],
+      "cwd": "/Users/inxups/project/style-cli",
+      "started_utc": "2026-10-17T09:13:12.171643+00:00",
+      "elapsed_seconds": 1.689,
+      "exit_code": 0,
+      "log": "/tmp/style-m3-a3-20261017/smoke-release.log",
+      "log_sha256": "5039b6cbbaa0d673d3772dfa18b0e24352159e7f2ddf65dd8cdabcbff5e08b63",
+      "cleared_environment": [
+        "CODEX_HOME",
+        "CODEX_SANDBOX",
+        "STYLE_HOME",
+        "CLAUDE_CODE_EFFORT_LEVEL",
+        "CLAUDE_CODE_CONFIG_DIR",
+        "CLAUDE_CONFIG_DIR",
+        "PLUGIN_ROOT",
+        "STYLE_PERF",
+        "STYLE_PERF_OUTPUT"
+      ],
+      "Go_environment": {
+        "GOPATH": "/tmp/style-cli-gopath",
+        "GOMODCACHE": "/tmp/style-cli-gomodcache",
+        "GOCACHE": "/tmp/style-cli-gocache",
+        "GOWORK": "off",
+        "GOFLAGS": "-mod=readonly"
+      },
+      "id": "smoke-release"
+    },
+    {
+      "argv": [
+        "python3",
+        "scripts/check_m2_rules_migration.py",
+        "--old-binary",
+        "/tmp/style-m3-a3-20261017/style-legacy",
+        "--binary",
+        "/tmp/style-m3-a3-20261017/style",
+        "--report",
+        "/tmp/style-m3-a3-20261017/migration-release-cases.json"
+      ],
+      "cwd": "/Users/inxups/project/style-cli",
+      "started_utc": "2026-10-17T09:13:12.171409+00:00",
+      "elapsed_seconds": 12.527,
+      "exit_code": 0,
+      "log": "/tmp/style-m3-a3-20261017/migration-release.log",
+      "log_sha256": "f44b07d85cd6db9adef12b9e87bf6b29fbfbd11bd6ceb36335e50552c279a375",
+      "cleared_environment": [
+        "CODEX_HOME",
+        "CODEX_SANDBOX",
+        "STYLE_HOME",
+        "CLAUDE_CODE_EFFORT_LEVEL",
+        "CLAUDE_CODE_CONFIG_DIR",
+        "CLAUDE_CONFIG_DIR",
+        "PLUGIN_ROOT",
+        "STYLE_PERF",
+        "STYLE_PERF_OUTPUT"
+      ],
+      "Go_environment": {
+        "GOPATH": "/tmp/style-cli-gopath",
+        "GOMODCACHE": "/tmp/style-cli-gomodcache",
+        "GOCACHE": "/tmp/style-cli-gocache",
+        "GOWORK": "off",
+        "GOFLAGS": "-mod=readonly"
+      },
+      "id": "migration-release"
+    },
+    {
+      "argv": [
+        "python3",
+        "scripts/check_m2_replace.py",
+        "/tmp/style-m3-a3-20261017/style",
+        "--report",
+        "/tmp/style-m3-a3-20261017/replace-release-cases.json"
+      ],
+      "cwd": "/Users/inxups/project/style-cli",
+      "started_utc": "2026-10-17T09:13:12.171683+00:00",
+      "elapsed_seconds": 3.975,
+      "exit_code": 0,
+      "log": "/tmp/style-m3-a3-20261017/replace-release.log",
+      "log_sha256": "ca4a7384714f31c2511250703ec0e899128da6048b3cb677adfda8ee6b037050",
+      "cleared_environment": [
+        "CODEX_HOME",
+        "CODEX_SANDBOX",
+        "STYLE_HOME",
+        "CLAUDE_CODE_EFFORT_LEVEL",
+        "CLAUDE_CODE_CONFIG_DIR",
+        "CLAUDE_CONFIG_DIR",
+        "PLUGIN_ROOT",
+        "STYLE_PERF",
+        "STYLE_PERF_OUTPUT"
+      ],
+      "Go_environment": {
+        "GOPATH": "/tmp/style-cli-gopath",
+        "GOMODCACHE": "/tmp/style-cli-gomodcache",
+        "GOCACHE": "/tmp/style-cli-gocache",
+        "GOWORK": "off",
+        "GOFLAGS": "-mod=readonly"
+      },
+      "id": "replace-release"
+    }
+  ],
+  "new_tests": {
+    "function_count": 30,
+    "leaf_case_count": 202,
+    "passed_events_with_groups": 230,
+    "failed": 0,
+    "skipped": 0,
+    "functions": [
+      "github.com/inxups/style-cli/internal/source/TestM3A3AdvertisementIntegrity",
+      "github.com/inxups/style-cli/internal/source/TestM3A3GitIdentityCombinations",
+      "github.com/inxups/style-cli/internal/source/TestM3A3SourceSyntax",
+      "github.com/inxups/style-cli/internal/source/TestM3A3RealGitFixedRefAndRawObjects",
+      "github.com/inxups/style-cli/internal/source/TestM3A3SelectedTreeLimitsAndModes",
+      "github.com/inxups/style-cli/internal/source/TestM3A3EnvironmentIsolationAndFailures",
+      "github.com/inxups/style-cli/internal/source/TestM3A3CacheRepairAndPreviewIsolation",
+      "github.com/inxups/style-cli/internal/app/TestM3A3GitCLIAndLifecycle",
+      "github.com/inxups/style-cli/internal/source/TestM3A3AcquisitionHonorsShortDeadline",
+      "github.com/inxups/style-cli/internal/app/TestM3A3SingleFileAndLockUpgrade",
+      "github.com/inxups/style-cli/internal/source/TestM3A3LoopbackTLSAndRedirectPolicy",
+      "github.com/inxups/style-cli/internal/source/TestM3A3CacheConcurrentPublishAndDiskFailure",
+      "github.com/inxups/style-cli/internal/source/TestM3A3HostileGitConfigurationNeverExecutes",
+      "github.com/inxups/style-cli/internal/source/TestM3A3ExecCancellationStopsProcessGroup",
+      "github.com/inxups/style-cli/internal/app/TestM3A3GitDriftAndProvenanceForgery",
+      "github.com/inxups/style-cli/internal/app/TestM3A3GitReinstallIdentityAndCandidateCapture",
+      "github.com/inxups/style-cli/internal/app/TestM3A3LockTwoStrictDecoding",
+      "github.com/inxups/style-cli/internal/app/TestM3A3FlagsFailBeforeAcquisition",
+      "github.com/inxups/style-cli/internal/app/TestM3A3GitAdmissionUsesExistingGates",
+      "github.com/inxups/style-cli/internal/app/TestM3A3GitSettingsArePartOfReinstallIdentity",
+      "github.com/inxups/style-cli/internal/app/TestM3A3ExportFormatTwoFixture",
+      "github.com/inxups/style-cli/internal/app/TestM3A3RetainedGitProvenanceAcrossOtherWrites",
+      "github.com/inxups/style-cli/internal/app/TestM3A3SharedManagementGuard",
+      "github.com/inxups/style-cli/internal/app/TestM3A3GuardOwnerRecoveryAndReleaseIdentity",
+      "github.com/inxups/style-cli/internal/app/TestM3A3CommitRejectsStaleInputs",
+      "github.com/inxups/style-cli/internal/app/TestM3A3TrustRejectsSourceChangeDuringConfirmation",
+      "github.com/inxups/style-cli/internal/app/TestM3A3GitPackageAndFileTransactionRollback",
+      "github.com/inxups/style-cli/internal/app/TestM3A3PackageSwapReportsRecoveryFailure",
+      "github.com/inxups/style-cli/internal/app/TestM3A3NoGitDuringNetworkIndependentCommands",
+      "github.com/speakeasy-api/agenthooks/install/TestM3A3ManagementPathsIncludesUnchangedFilesAndRestoreRecords"
+    ],
+    "passed_test_names": [
+      "github.com/inxups/style-cli/internal/source/TestM3A3AdvertisementIntegrity/unborn-head",
+      "github.com/inxups/style-cli/internal/source/TestM3A3AdvertisementIntegrity/detached-head",
+      "github.com/inxups/style-cli/internal/source/TestM3A3AdvertisementIntegrity/ambiguous-head",
+      "github.com/inxups/style-cli/internal/source/TestM3A3AdvertisementIntegrity/duplicate-ref",
+      "github.com/inxups/style-cli/internal/source/TestM3A3AdvertisementIntegrity/noncanonical-head",
+      "github.com/inxups/style-cli/internal/source/TestM3A3AdvertisementIntegrity/missing-ref",
+      "github.com/inxups/style-cli/internal/source/TestM3A3AdvertisementIntegrity/object-format-mismatch",
+      "github.com/inxups/style-cli/internal/source/TestM3A3AdvertisementIntegrity/peel-format-mismatch",
+      "github.com/inxups/style-cli/internal/source/TestM3A3AdvertisementIntegrity/malformed-advert",
+      "github.com/inxups/style-cli/internal/source/TestM3A3AdvertisementIntegrity",
+      "github.com/inxups/style-cli/internal/source/TestM3A3GitIdentityCombinations/wrong-file-basename",
+      "github.com/inxups/style-cli/internal/source/TestM3A3GitIdentityCombinations/multi-file",
+      "github.com/inxups/style-cli/internal/source/TestM3A3GitIdentityCombinations/unknown-kind",
+      "github.com/inxups/style-cli/internal/source/TestM3A3GitIdentityCombinations/empty",
+      "github.com/inxups/style-cli/internal/source/TestM3A3GitIdentityCombinations/invalid-path",
+      "github.com/inxups/style-cli/internal/source/TestM3A3GitIdentityCombinations/unicode-casefold",
+      "github.com/inxups/style-cli/internal/source/TestM3A3GitIdentityCombinations/directory-casefold",
+      "github.com/inxups/style-cli/internal/source/TestM3A3GitIdentityCombinations/metadata",
+      "github.com/inxups/style-cli/internal/source/TestM3A3GitIdentityCombinations",
+      "github.com/inxups/style-cli/internal/source/TestM3A3SourceSyntax/bare-https",
+      "github.com/inxups/style-cli/internal/source/TestM3A3SourceSyntax/ssh",
+      "github.com/inxups/style-cli/internal/source/TestM3A3SourceSyntax/file",
+      "github.com/inxups/style-cli/internal/source/TestM3A3SourceSyntax/http",
+      "github.com/inxups/style-cli/internal/source/TestM3A3SourceSyntax/ext",
+      "github.com/inxups/style-cli/internal/source/TestM3A3SourceSyntax/credentials",
+      "github.com/inxups/style-cli/internal/source/TestM3A3SourceSyntax/query",
+      "github.com/inxups/style-cli/internal/source/TestM3A3SourceSyntax/fragment",
+      "github.com/inxups/style-cli/internal/source/TestM3A3SourceSyntax/empty-host",
+      "github.com/inxups/style-cli/internal/source/TestM3A3SourceSyntax/short-ref",
+      "github.com/inxups/style-cli/internal/source/TestM3A3SourceSyntax/short-oid",
+      "github.com/inxups/style-cli/internal/source/TestM3A3SourceSyntax/revision",
+      "github.com/inxups/style-cli/internal/source/TestM3A3SourceSyntax/peel",
+      "github.com/inxups/style-cli/internal/source/TestM3A3SourceSyntax/range",
+      "github.com/inxups/style-cli/internal/source/TestM3A3SourceSyntax/reflog",
+      "github.com/inxups/style-cli/internal/source/TestM3A3SourceSyntax/lock-ref",
+      "github.com/inxups/style-cli/internal/source/TestM3A3SourceSyntax/dot-ref",
+      "github.com/inxups/style-cli/internal/source/TestM3A3SourceSyntax/absolute",
+      "github.com/inxups/style-cli/internal/source/TestM3A3SourceSyntax/parent",
+      "github.com/inxups/style-cli/internal/source/TestM3A3SourceSyntax/dot",
+      "github.com/inxups/style-cli/internal/source/TestM3A3SourceSyntax/empty-segment",
+      "github.com/inxups/style-cli/internal/source/TestM3A3SourceSyntax/trailing-slash",
+      "github.com/inxups/style-cli/internal/source/TestM3A3SourceSyntax/windows",
+      "github.com/inxups/style-cli/internal/source/TestM3A3SourceSyntax/glob",
+      "github.com/inxups/style-cli/internal/source/TestM3A3SourceSyntax/shell",
+      "github.com/inxups/style-cli/internal/source/TestM3A3SourceSyntax/control",
+      "github.com/inxups/style-cli/internal/source/TestM3A3SourceSyntax/canonical",
+      "github.com/inxups/style-cli/internal/source/TestM3A3SourceSyntax/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "github.com/inxups/style-cli/internal/source/TestM3A3SourceSyntax/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "github.com/inxups/style-cli/internal/source/TestM3A3SourceSyntax/refs/tags/v1",
+      "github.com/inxups/style-cli/internal/source/TestM3A3SourceSyntax",
+      "github.com/inxups/style-cli/internal/source/TestM3A3RealGitFixedRefAndRawObjects/sha1/ref-",
+      "github.com/inxups/style-cli/internal/source/TestM3A3RealGitFixedRefAndRawObjects/sha1/ref-refs/heads/main",
+      "github.com/inxups/style-cli/internal/source/TestM3A3RealGitFixedRefAndRawObjects/sha1/ref-refs/tags/light",
+      "github.com/inxups/style-cli/internal/source/TestM3A3RealGitFixedRefAndRawObjects/sha1/ref-refs/tags/annotated",
+      "github.com/inxups/style-cli/internal/source/TestM3A3RealGitFixedRefAndRawObjects/sha1/ref-c0aa8a7b06f685405f881e7fc4809575886582df",
+      "github.com/inxups/style-cli/internal/source/TestM3A3RealGitFixedRefAndRawObjects/sha1/single",
+      "github.com/inxups/style-cli/internal/source/TestM3A3RealGitFixedRefAndRawObjects/sha1/moving-advertised-tip",
+      "github.com/inxups/style-cli/internal/source/TestM3A3RealGitFixedRefAndRawObjects/sha1/revision-only",
+      "github.com/inxups/style-cli/internal/source/TestM3A3RealGitFixedRefAndRawObjects/sha1/noncommit-tag",
+      "github.com/inxups/style-cli/internal/source/TestM3A3RealGitFixedRefAndRawObjects/sha1/missing-fixed-oid",
+      "github.com/inxups/style-cli/internal/source/TestM3A3RealGitFixedRefAndRawObjects/sha1",
+      "github.com/inxups/style-cli/internal/source/TestM3A3RealGitFixedRefAndRawObjects/sha256/ref-",
+      "github.com/inxups/style-cli/internal/source/TestM3A3RealGitFixedRefAndRawObjects/sha256/ref-refs/heads/main",
+      "github.com/inxups/style-cli/internal/source/TestM3A3RealGitFixedRefAndRawObjects/sha256/ref-refs/tags/light",
+      "github.com/inxups/style-cli/internal/source/TestM3A3RealGitFixedRefAndRawObjects/sha256/ref-refs/tags/annotated",
+      "github.com/inxups/style-cli/internal/source/TestM3A3RealGitFixedRefAndRawObjects/sha256/ref-9f0d491716f108d9310fbda29d615a3d178d2b47afef123d5ddd6d1f4e1ef7ca",
+      "github.com/inxups/style-cli/internal/source/TestM3A3RealGitFixedRefAndRawObjects/sha256/single",
+      "github.com/inxups/style-cli/internal/source/TestM3A3RealGitFixedRefAndRawObjects/sha256/moving-advertised-tip",
+      "github.com/inxups/style-cli/internal/source/TestM3A3RealGitFixedRefAndRawObjects/sha256/revision-only",
+      "github.com/inxups/style-cli/internal/source/TestM3A3RealGitFixedRefAndRawObjects/sha256/noncommit-tag",
+      "github.com/inxups/style-cli/internal/source/TestM3A3RealGitFixedRefAndRawObjects/sha256/missing-fixed-oid",
+      "github.com/inxups/style-cli/internal/source/TestM3A3RealGitFixedRefAndRawObjects/sha256",
+      "github.com/inxups/style-cli/internal/source/TestM3A3RealGitFixedRefAndRawObjects",
+      "github.com/inxups/style-cli/internal/source/TestM3A3SelectedTreeLimitsAndModes/symlink",
+      "github.com/inxups/style-cli/internal/source/TestM3A3SelectedTreeLimitsAndModes/gitlink",
+      "github.com/inxups/style-cli/internal/source/TestM3A3SelectedTreeLimitsAndModes/case-file",
+      "github.com/inxups/style-cli/internal/source/TestM3A3SelectedTreeLimitsAndModes/case-dir",
+      "github.com/inxups/style-cli/internal/source/TestM3A3SelectedTreeLimitsAndModes/control",
+      "github.com/inxups/style-cli/internal/source/TestM3A3SelectedTreeLimitsAndModes/backslash",
+      "github.com/inxups/style-cli/internal/source/TestM3A3SelectedTreeLimitsAndModes/nul",
+      "github.com/inxups/style-cli/internal/source/TestM3A3SelectedTreeLimitsAndModes/utf8",
+      "github.com/inxups/style-cli/internal/source/TestM3A3SelectedTreeLimitsAndModes/oversize",
+      "github.com/inxups/style-cli/internal/source/TestM3A3SelectedTreeLimitsAndModes/file-count",
+      "github.com/inxups/style-cli/internal/source/TestM3A3SelectedTreeLimitsAndModes/total",
+      "github.com/inxups/style-cli/internal/source/TestM3A3SelectedTreeLimitsAndModes/wrong-file",
+      "github.com/inxups/style-cli/internal/app/TestM3A3GitCLIAndLifecycle/codex-user/preview-validate",
+      "github.com/inxups/style-cli/internal/source/TestM3A3SelectedTreeLimitsAndModes/missing",
+      "github.com/inxups/style-cli/internal/source/TestM3A3SelectedTreeLimitsAndModes",
+      "github.com/inxups/style-cli/internal/app/TestM3A3GitCLIAndLifecycle/codex-user/preview-plan",
+      "github.com/inxups/style-cli/internal/app/TestM3A3GitCLIAndLifecycle/codex-user/preview-install",
+      "github.com/inxups/style-cli/internal/source/TestM3A3EnvironmentIsolationAndFailures/stderr-flood",
+      "github.com/inxups/style-cli/internal/source/TestM3A3EnvironmentIsolationAndFailures/stdout-flood",
+      "github.com/inxups/style-cli/internal/source/TestM3A3EnvironmentIsolationAndFailures/fetch-failure",
+      "github.com/inxups/style-cli/internal/source/TestM3A3EnvironmentIsolationAndFailures/canceled",
+      "github.com/inxups/style-cli/internal/source/TestM3A3EnvironmentIsolationAndFailures/missing-git",
+      "github.com/inxups/style-cli/internal/source/TestM3A3EnvironmentIsolationAndFailures/workspace-failure",
+      "github.com/inxups/style-cli/internal/source/TestM3A3EnvironmentIsolationAndFailures",
+      "github.com/inxups/style-cli/internal/app/TestM3A3GitCLIAndLifecycle/codex-user",
+      "github.com/inxups/style-cli/internal/app/TestM3A3GitCLIAndLifecycle/codex-plugin/preview-validate",
+      "github.com/inxups/style-cli/internal/app/TestM3A3GitCLIAndLifecycle/codex-plugin/preview-plan",
+      "github.com/inxups/style-cli/internal/source/TestM3A3CacheRepairAndPreviewIsolation/bytes",
+      "github.com/inxups/style-cli/internal/app/TestM3A3GitCLIAndLifecycle/codex-plugin/preview-install",
+      "github.com/inxups/style-cli/internal/source/TestM3A3CacheRepairAndPreviewIsolation/extra",
+      "github.com/inxups/style-cli/internal/app/TestM3A3GitCLIAndLifecycle/codex-plugin",
+      "github.com/inxups/style-cli/internal/source/TestM3A3CacheRepairAndPreviewIsolation/manifest",
+      "github.com/inxups/style-cli/internal/app/TestM3A3GitCLIAndLifecycle/claude-user/preview-validate",
+      "github.com/inxups/style-cli/internal/app/TestM3A3GitCLIAndLifecycle/claude-user/preview-plan",
+      "github.com/inxups/style-cli/internal/source/TestM3A3CacheRepairAndPreviewIsolation/symlink",
+      "github.com/inxups/style-cli/internal/app/TestM3A3GitCLIAndLifecycle/claude-user/preview-install",
+      "github.com/inxups/style-cli/internal/source/TestM3A3CacheRepairAndPreviewIsolation/permissions",
+      "github.com/inxups/style-cli/internal/source/TestM3A3CacheRepairAndPreviewIsolation/parent-symlink",
+      "github.com/inxups/style-cli/internal/source/TestM3A3CacheRepairAndPreviewIsolation",
+      "github.com/inxups/style-cli/internal/app/TestM3A3GitCLIAndLifecycle/claude-user",
+      "github.com/inxups/style-cli/internal/app/TestM3A3GitCLIAndLifecycle",
+      "github.com/inxups/style-cli/internal/source/TestM3A3AcquisitionHonorsShortDeadline/--version",
+      "github.com/inxups/style-cli/internal/source/TestM3A3AcquisitionHonorsShortDeadline/fetch",
+      "github.com/inxups/style-cli/internal/source/TestM3A3AcquisitionHonorsShortDeadline",
+      "github.com/inxups/style-cli/internal/app/TestM3A3SingleFileAndLockUpgrade",
+      "github.com/inxups/style-cli/internal/app/TestM3A3GitDriftAndProvenanceForgery/bytes",
+      "github.com/inxups/style-cli/internal/source/TestM3A3LoopbackTLSAndRedirectPolicy/https",
+      "github.com/inxups/style-cli/internal/source/TestM3A3LoopbackTLSAndRedirectPolicy/untrusted-certificate",
+      "github.com/inxups/style-cli/internal/source/TestM3A3LoopbackTLSAndRedirectPolicy/redirect",
+      "github.com/inxups/style-cli/internal/source/TestM3A3LoopbackTLSAndRedirectPolicy/auth",
+      "github.com/inxups/style-cli/internal/source/TestM3A3LoopbackTLSAndRedirectPolicy",
+      "github.com/inxups/style-cli/internal/app/TestM3A3GitDriftAndProvenanceForgery/missing",
+      "github.com/inxups/style-cli/internal/source/TestM3A3CacheConcurrentPublishAndDiskFailure/disk-full",
+      "github.com/inxups/style-cli/internal/app/TestM3A3GitDriftAndProvenanceForgery/symlink",
+      "github.com/inxups/style-cli/internal/source/TestM3A3CacheConcurrentPublishAndDiskFailure/cache-not-directory",
+      "github.com/inxups/style-cli/internal/source/TestM3A3CacheConcurrentPublishAndDiskFailure",
+      "github.com/inxups/style-cli/internal/app/TestM3A3GitDriftAndProvenanceForgery/commit-text",
+      "github.com/inxups/style-cli/internal/source/TestM3A3HostileGitConfigurationNeverExecutes",
+      "github.com/inxups/style-cli/internal/source/TestM3A3ExecCancellationStopsProcessGroup",
+      "github.com/inxups/style-cli/internal/app/TestM3A3GitDriftAndProvenanceForgery/object-text",
+      "github.com/inxups/style-cli/internal/app/TestM3A3GitDriftAndProvenanceForgery",
+      "github.com/inxups/style-cli/internal/app/TestM3A3GitReinstallIdentityAndCandidateCapture/selector",
+      "github.com/inxups/style-cli/internal/app/TestM3A3GitReinstallIdentityAndCandidateCapture/revision-only",
+      "github.com/inxups/style-cli/internal/app/TestM3A3GitReinstallIdentityAndCandidateCapture/route",
+      "github.com/inxups/style-cli/internal/app/TestM3A3GitReinstallIdentityAndCandidateCapture/local-conversion",
+      "github.com/inxups/style-cli/internal/app/TestM3A3GitReinstallIdentityAndCandidateCapture/confirmation-does-not-resolve-again",
+      "github.com/inxups/style-cli/internal/app/TestM3A3GitReinstallIdentityAndCandidateCapture",
+      "github.com/inxups/style-cli/internal/app/TestM3A3LockTwoStrictDecoding/unknown-format",
+      "github.com/inxups/style-cli/internal/app/TestM3A3LockTwoStrictDecoding/format-one-git",
+      "github.com/inxups/style-cli/internal/app/TestM3A3LockTwoStrictDecoding/unknown-git-field",
+      "github.com/inxups/style-cli/internal/app/TestM3A3LockTwoStrictDecoding/unknown-package-field",
+      "github.com/inxups/style-cli/internal/app/TestM3A3LockTwoStrictDecoding/bad-url",
+      "github.com/inxups/style-cli/internal/app/TestM3A3LockTwoStrictDecoding/bad-ref",
+      "github.com/inxups/style-cli/internal/app/TestM3A3LockTwoStrictDecoding/bad-commit",
+      "github.com/inxups/style-cli/internal/app/TestM3A3LockTwoStrictDecoding/bad-object-format",
+      "github.com/inxups/style-cli/internal/app/TestM3A3LockTwoStrictDecoding/bad-content-hash",
+      "github.com/inxups/style-cli/internal/app/TestM3A3LockTwoStrictDecoding/bad-file-hash",
+      "github.com/inxups/style-cli/internal/app/TestM3A3LockTwoStrictDecoding/link",
+      "github.com/inxups/style-cli/internal/app/TestM3A3LockTwoStrictDecoding/kind",
+      "github.com/inxups/style-cli/internal/app/TestM3A3LockTwoStrictDecoding/path",
+      "github.com/inxups/style-cli/internal/app/TestM3A3LockTwoStrictDecoding/missing-approval",
+      "github.com/inxups/style-cli/internal/app/TestM3A3LockTwoStrictDecoding/duplicate-package",
+      "github.com/inxups/style-cli/internal/app/TestM3A3LockTwoStrictDecoding/second-document",
+      "github.com/inxups/style-cli/internal/app/TestM3A3LockTwoStrictDecoding/format-one-null-git",
+      "github.com/inxups/style-cli/internal/app/TestM3A3LockTwoStrictDecoding",
+      "github.com/inxups/style-cli/internal/app/TestM3A3FlagsFailBeforeAcquisition/validate[--ref]",
+      "github.com/inxups/style-cli/internal/app/TestM3A3FlagsFailBeforeAcquisition/validate[--path=]",
+      "github.com/inxups/style-cli/internal/app/TestM3A3FlagsFailBeforeAcquisition/validate[--ref=refs/heads/main_--ref=refs/heads/other]",
+      "github.com/inxups/style-cli/internal/app/TestM3A3FlagsFailBeforeAcquisition/validate[--path=pkg_--path=other]",
+      "github.com/inxups/style-cli/internal/app/TestM3A3FlagsFailBeforeAcquisition/plan[--ref]",
+      "github.com/inxups/style-cli/internal/app/TestM3A3FlagsFailBeforeAcquisition/plan[--path=]",
+      "github.com/inxups/style-cli/internal/app/TestM3A3FlagsFailBeforeAcquisition/plan[--ref=refs/heads/main_--ref=refs/heads/other]",
+      "github.com/inxups/style-cli/internal/app/TestM3A3FlagsFailBeforeAcquisition/plan[--path=pkg_--path=other]",
+      "github.com/inxups/style-cli/internal/app/TestM3A3FlagsFailBeforeAcquisition/install[--ref]",
+      "github.com/inxups/style-cli/internal/app/TestM3A3FlagsFailBeforeAcquisition/install[--path=]",
+      "github.com/inxups/style-cli/internal/app/TestM3A3FlagsFailBeforeAcquisition/install[--ref=refs/heads/main_--ref=refs/heads/other]",
+      "github.com/inxups/style-cli/internal/app/TestM3A3FlagsFailBeforeAcquisition/install[--path=pkg_--path=other]",
+      "github.com/inxups/style-cli/internal/app/TestM3A3FlagsFailBeforeAcquisition/validate-local-ref",
+      "github.com/inxups/style-cli/internal/app/TestM3A3FlagsFailBeforeAcquisition/plan-local-ref",
+      "github.com/inxups/style-cli/internal/app/TestM3A3FlagsFailBeforeAcquisition/install-local-ref",
+      "github.com/inxups/style-cli/internal/app/TestM3A3FlagsFailBeforeAcquisition",
+      "github.com/inxups/style-cli/internal/app/TestM3A3GitAdmissionUsesExistingGates/schema",
+      "github.com/inxups/style-cli/internal/app/TestM3A3GitAdmissionUsesExistingGates/requires-runtime",
+      "github.com/inxups/style-cli/internal/app/TestM3A3GitAdmissionUsesExistingGates/requires-harness",
+      "github.com/inxups/style-cli/internal/app/TestM3A3GitAdmissionUsesExistingGates/unknown-harness",
+      "github.com/inxups/style-cli/internal/app/TestM3A3GitAdmissionUsesExistingGates/invalid-native",
+      "github.com/inxups/style-cli/internal/app/TestM3A3GitAdmissionUsesExistingGates/budget",
+      "github.com/inxups/style-cli/internal/app/TestM3A3GitAdmissionUsesExistingGates/input-ceiling",
+      "github.com/inxups/style-cli/internal/app/TestM3A3GitAdmissionUsesExistingGates/replace",
+      "github.com/inxups/style-cli/internal/app/TestM3A3GitAdmissionUsesExistingGates/missing-setting",
+      "github.com/inxups/style-cli/internal/app/TestM3A3GitAdmissionUsesExistingGates/invalid-template",
+      "github.com/inxups/style-cli/internal/app/TestM3A3GitAdmissionUsesExistingGates",
+      "github.com/inxups/style-cli/internal/app/TestM3A3GitSettingsArePartOfReinstallIdentity",
+      "github.com/inxups/style-cli/internal/app/TestM3A3ExportFormatTwoFixture",
+      "github.com/inxups/style-cli/internal/app/TestM3A3RetainedGitProvenanceAcrossOtherWrites/preserve",
+      "github.com/inxups/style-cli/internal/app/TestM3A3RetainedGitProvenanceAcrossOtherWrites/forged-commit",
+      "github.com/inxups/style-cli/internal/app/TestM3A3RetainedGitProvenanceAcrossOtherWrites/forged-object",
+      "github.com/inxups/style-cli/internal/app/TestM3A3RetainedGitProvenanceAcrossOtherWrites",
+      "github.com/inxups/style-cli/internal/app/TestM3A3SharedManagementGuard/install",
+      "github.com/inxups/style-cli/internal/app/TestM3A3SharedManagementGuard/sync",
+      "github.com/inxups/style-cli/internal/app/TestM3A3SharedManagementGuard/trust",
+      "github.com/inxups/style-cli/internal/app/TestM3A3SharedManagementGuard/uninstall",
+      "github.com/inxups/style-cli/internal/app/TestM3A3SharedManagementGuard",
+      "github.com/inxups/style-cli/internal/app/TestM3A3GuardOwnerRecoveryAndReleaseIdentity/live",
+      "github.com/inxups/style-cli/internal/app/TestM3A3GuardOwnerRecoveryAndReleaseIdentity/gone",
+      "github.com/inxups/style-cli/internal/app/TestM3A3GuardOwnerRecoveryAndReleaseIdentity/pid-reuse",
+      "github.com/inxups/style-cli/internal/app/TestM3A3GuardOwnerRecoveryAndReleaseIdentity/unknown",
+      "github.com/inxups/style-cli/internal/app/TestM3A3GuardOwnerRecoveryAndReleaseIdentity/bad-owner",
+      "github.com/inxups/style-cli/internal/app/TestM3A3GuardOwnerRecoveryAndReleaseIdentity/malformed",
+      "github.com/inxups/style-cli/internal/app/TestM3A3GuardOwnerRecoveryAndReleaseIdentity/permissions",
+      "github.com/inxups/style-cli/internal/app/TestM3A3GuardOwnerRecoveryAndReleaseIdentity/replacement-preserved",
+      "github.com/inxups/style-cli/internal/app/TestM3A3GuardOwnerRecoveryAndReleaseIdentity",
+      "github.com/inxups/style-cli/internal/app/TestM3A3CommitRejectsStaleInputs/lock",
+      "github.com/inxups/style-cli/internal/app/TestM3A3CommitRejectsStaleInputs/package",
+      "github.com/inxups/style-cli/internal/app/TestM3A3CommitRejectsStaleInputs/approval",
+      "github.com/inxups/style-cli/internal/app/TestM3A3CommitRejectsStaleInputs/settings",
+      "github.com/inxups/style-cli/internal/app/TestM3A3CommitRejectsStaleInputs/index",
+      "github.com/inxups/style-cli/internal/app/TestM3A3CommitRejectsStaleInputs/explain",
+      "github.com/inxups/style-cli/internal/app/TestM3A3CommitRejectsStaleInputs/unchanged-config",
+      "github.com/inxups/style-cli/internal/app/TestM3A3CommitRejectsStaleInputs/config-mode",
+      "github.com/inxups/style-cli/internal/app/TestM3A3CommitRejectsStaleInputs/same-bytes-new-inode",
+      "github.com/inxups/style-cli/internal/app/TestM3A3CommitRejectsStaleInputs/parent-symlink",
+      "github.com/inxups/style-cli/internal/app/TestM3A3CommitRejectsStaleInputs/new-package",
+      "github.com/inxups/style-cli/internal/app/TestM3A3CommitRejectsStaleInputs",
+      "github.com/inxups/style-cli/internal/app/TestM3A3TrustRejectsSourceChangeDuringConfirmation/copy",
+      "github.com/inxups/style-cli/internal/app/TestM3A3TrustRejectsSourceChangeDuringConfirmation/link",
+      "github.com/inxups/style-cli/internal/app/TestM3A3TrustRejectsSourceChangeDuringConfirmation",
+      "github.com/inxups/style-cli/internal/app/TestM3A3GitPackageAndFileTransactionRollback/codex-user",
+      "github.com/inxups/style-cli/internal/app/TestM3A3GitPackageAndFileTransactionRollback/codex-plugin",
+      "github.com/inxups/style-cli/internal/app/TestM3A3GitPackageAndFileTransactionRollback/claude-user",
+      "github.com/inxups/style-cli/internal/app/TestM3A3GitPackageAndFileTransactionRollback",
+      "github.com/inxups/style-cli/internal/app/TestM3A3PackageSwapReportsRecoveryFailure",
+      "github.com/inxups/style-cli/internal/app/TestM3A3NoGitDuringNetworkIndependentCommands",
+      "github.com/speakeasy-api/agenthooks/install/TestM3A3ManagementPathsIncludesUnchangedFilesAndRestoreRecords/codex/user",
+      "github.com/speakeasy-api/agenthooks/install/TestM3A3ManagementPathsIncludesUnchangedFilesAndRestoreRecords/codex/plugin",
+      "github.com/speakeasy-api/agenthooks/install/TestM3A3ManagementPathsIncludesUnchangedFilesAndRestoreRecords/claude-code/user",
+      "github.com/speakeasy-api/agenthooks/install/TestM3A3ManagementPathsIncludesUnchangedFilesAndRestoreRecords"
+    ]
+  },
+  "full_test_result": {
+    "test_events": {
+      "passed": 2666,
+      "failed": 0,
+      "skipped": 24
+    },
+    "packages_with_tests_passed": 33,
+    "packages_without_tests": 7,
+    "cached_results": 0,
+    "existing_skips": [
+      "github.com/inxups/style-cli/internal/adapter/conformance/TestHookProcessLatency",
+      "github.com/speakeasy-api/agenthooks/e2e/TestClaudeEvents",
+      "github.com/speakeasy-api/agenthooks/e2e/TestCopilotSubagentEvents",
+      "github.com/speakeasy-api/agenthooks/e2e/TestCopilotStopContinuation",
+      "github.com/speakeasy-api/agenthooks/e2e/TestCopilotPascalCaseCompat",
+      "github.com/speakeasy-api/agenthooks/e2e/TestKimiEventFields",
+      "github.com/speakeasy-api/agenthooks/e2e/TestCopilotPluginScope",
+      "github.com/speakeasy-api/agenthooks/e2e/TestCursorDeny",
+      "github.com/speakeasy-api/agenthooks/e2e/TestCursorEvents",
+      "github.com/speakeasy-api/agenthooks/e2e/TestCopilotPreCompact",
+      "github.com/speakeasy-api/agenthooks/e2e/TestCodexCanonicalShellMatcher",
+      "github.com/speakeasy-api/agenthooks/e2e/TestCopilotEventFields",
+      "github.com/speakeasy-api/agenthooks/e2e/TestCodexDeny",
+      "github.com/speakeasy-api/agenthooks/e2e/TestGeminiEvents",
+      "github.com/speakeasy-api/agenthooks/e2e/TestCopilotModifiedArgs",
+      "github.com/speakeasy-api/agenthooks/e2e/TestCodexTrustPreseeding",
+      "github.com/speakeasy-api/agenthooks/e2e/TestOpenCodeDeny",
+      "github.com/speakeasy-api/agenthooks/e2e/TestOpenCodeEvents",
+      "github.com/speakeasy-api/agenthooks/e2e/TestClaudeDeny",
+      "github.com/speakeasy-api/agenthooks/e2e/TestCopilotDeny",
+      "github.com/speakeasy-api/agenthooks/e2e/TestGeminiDeny",
+      "github.com/speakeasy-api/agenthooks/e2e/TestKimiDeny",
+      "github.com/speakeasy-api/agenthooks/e2e/TestCopilotToolFailure",
+      "github.com/speakeasy-api/agenthooks/e2e/TestCursorResumeBackfill"
+    ],
+    "skip_scope": "23 opt-in real e2e and one opt-in process latency test; no A3 skip"
+  },
+  "acceptance": [
+    {
+      "id": "A3-01",
+      "status": "passed",
+      "assertions": "CLI 远程来源先分类、URL/ref/path/组合拒绝，本地行为保留",
+      "test_functions": [
+        "github.com/inxups/style-cli/internal/source/TestM3A3SourceSyntax",
+        "github.com/inxups/style-cli/internal/app/TestM3A3FlagsFailBeforeAcquisition",
+        "github.com/inxups/style-cli/internal/app/TestM3A3GitCLIAndLifecycle"
+      ],
+      "additional_evidence": [
+        "gate-release"
+      ]
+    },
+    {
+      "id": "A3-02",
+      "status": "passed",
+      "assertions": "HEAD/完整 branch/tag/annotated peel/SHA-1/SHA-256 OID 与广告歧义；缺 revision 不回退",
+      "test_functions": [
+        "github.com/inxups/style-cli/internal/source/TestM3A3RealGitFixedRefAndRawObjects",
+        "github.com/inxups/style-cli/internal/source/TestM3A3AdvertisementIntegrity",
+        "github.com/inxups/style-cli/internal/source/TestM3A3GitIdentityCombinations"
+      ],
+      "additional_evidence": []
+    },
+    {
+      "id": "A3-03",
+      "status": "passed",
+      "assertions": "固定 tree/blob/逐文件与聚合身份、分支移动与 revision-only、捕获候选",
+      "test_functions": [
+        "github.com/inxups/style-cli/internal/source/TestM3A3RealGitFixedRefAndRawObjects",
+        "github.com/inxups/style-cli/internal/app/TestM3A3GitReinstallIdentityAndCandidateCapture",
+        "github.com/inxups/style-cli/internal/app/TestM3A3SingleFileAndLockUpgrade"
+      ],
+      "additional_evidence": []
+    },
+    {
+      "id": "A3-04",
+      "status": "passed",
+      "assertions": "原始 blob 保留 CRLF/attributes/LFS pointer，无 checkout/archive/filter/脚本执行",
+      "test_functions": [
+        "github.com/inxups/style-cli/internal/source/TestM3A3RealGitFixedRefAndRawObjects",
+        "github.com/inxups/style-cli/internal/source/TestM3A3HostileGitConfigurationNeverExecutes"
+      ],
+      "additional_evidence": []
+    },
+    {
+      "id": "A3-05",
+      "status": "passed",
+      "assertions": "选中树模式/路径/大小写折叠/编码/256KiB/16MiB/1024 文件门禁",
+      "test_functions": [
+        "github.com/inxups/style-cli/internal/source/TestM3A3SelectedTreeLimitsAndModes",
+        "github.com/inxups/style-cli/internal/source/TestM3A3GitIdentityCombinations",
+        "github.com/inxups/style-cli/internal/source/TestM3A3SourceSyntax"
+      ],
+      "additional_evidence": []
+    },
+    {
+      "id": "A3-06",
+      "status": "passed",
+      "assertions": "宿主 Git 配置/环境/helper/askpass/hooks/proxy/协议/重定向隔离；安全错误",
+      "test_functions": [
+        "github.com/inxups/style-cli/internal/source/TestM3A3EnvironmentIsolationAndFailures",
+        "github.com/inxups/style-cli/internal/source/TestM3A3HostileGitConfigurationNeverExecutes",
+        "github.com/inxups/style-cli/internal/source/TestM3A3LoopbackTLSAndRedirectPolicy"
+      ],
+      "additional_evidence": []
+    },
+    {
+      "id": "A3-07",
+      "status": "passed",
+      "assertions": "真实本地 Git 与回环 TLS、坏证书/401/重定向/磁盘/缺 Git；版本检查及 fetch 取消、进程组终止",
+      "test_functions": [
+        "github.com/inxups/style-cli/internal/source/TestM3A3LoopbackTLSAndRedirectPolicy",
+        "github.com/inxups/style-cli/internal/source/TestM3A3EnvironmentIsolationAndFailures",
+        "github.com/inxups/style-cli/internal/source/TestM3A3AcquisitionHonorsShortDeadline",
+        "github.com/inxups/style-cli/internal/source/TestM3A3ExecCancellationStopsProcessGroup",
+        "github.com/inxups/style-cli/internal/source/TestM3A3CacheConcurrentPublishAndDiskFailure"
+      ],
+      "additional_evidence": []
+    },
+    {
+      "id": "A3-08",
+      "status": "passed",
+      "assertions": "完整导出缓存复验/修复/拒绝 symlink 与额外文件、并发发布；预览只写完整缓存",
+      "test_functions": [
+        "github.com/inxups/style-cli/internal/source/TestM3A3CacheRepairAndPreviewIsolation",
+        "github.com/inxups/style-cli/internal/source/TestM3A3CacheConcurrentPublishAndDiskFailure",
+        "github.com/inxups/style-cli/internal/app/TestM3A3GitCLIAndLifecycle"
+      ],
+      "additional_evidence": []
+    },
+    {
+      "id": "A3-09",
+      "status": "passed",
+      "assertions": "lock1→2/2保留/最后卸载、严格来源与批准绑定；真旧版拒绝2，runtime仍读index1",
+      "test_functions": [
+        "github.com/inxups/style-cli/internal/app/TestM3A3SingleFileAndLockUpgrade",
+        "github.com/inxups/style-cli/internal/app/TestM3A3LockTwoStrictDecoding",
+        "github.com/inxups/style-cli/internal/app/TestM3A3ExportFormatTwoFixture"
+      ],
+      "additional_evidence": [
+        "gate-release",
+        "smoke-release",
+        "migration-release",
+        "replace-release"
+      ]
+    },
+    {
+      "id": "A3-10",
+      "status": "passed",
+      "assertions": "同名来源/settings/安装选择幂等与冲突、完整包/requires/native/budget/replace/输入上限门禁",
+      "test_functions": [
+        "github.com/inxups/style-cli/internal/app/TestM3A3GitReinstallIdentityAndCandidateCapture",
+        "github.com/inxups/style-cli/internal/app/TestM3A3GitAdmissionUsesExistingGates",
+        "github.com/inxups/style-cli/internal/app/TestM3A3GitSettingsArePartOfReinstallIdentity",
+        "github.com/inxups/style-cli/internal/app/TestM3A3GitCLIAndLifecycle"
+      ],
+      "additional_evidence": []
+    },
+    {
+      "id": "A3-11",
+      "status": "passed",
+      "assertions": "Git字节/缺失/symlink/来源元数据伪造拒绝；其他包写入保留来源，list/doctor/explain/probe/普通hook零Git",
+      "test_functions": [
+        "github.com/inxups/style-cli/internal/app/TestM3A3GitDriftAndProvenanceForgery",
+        "github.com/inxups/style-cli/internal/app/TestM3A3RetainedGitProvenanceAcrossOtherWrites",
+        "github.com/inxups/style-cli/internal/app/TestM3A3NoGitDuringNetworkIndependentCommands"
+      ],
+      "additional_evidence": []
+    },
+    {
+      "id": "A3-12",
+      "status": "passed",
+      "assertions": "共享提交guard/PID出生身份/回收/Before与路径漂移/包及文件回滚/恢复错误/三路线/旧安装",
+      "test_functions": [
+        "github.com/inxups/style-cli/internal/app/TestM3A3SharedManagementGuard",
+        "github.com/inxups/style-cli/internal/app/TestM3A3GuardOwnerRecoveryAndReleaseIdentity",
+        "github.com/inxups/style-cli/internal/app/TestM3A3CommitRejectsStaleInputs",
+        "github.com/inxups/style-cli/internal/app/TestM3A3TrustRejectsSourceChangeDuringConfirmation",
+        "github.com/inxups/style-cli/internal/app/TestM3A3GitPackageAndFileTransactionRollback",
+        "github.com/inxups/style-cli/internal/app/TestM3A3PackageSwapReportsRecoveryFailure",
+        "github.com/speakeasy-api/agenthooks/install/TestM3A3ManagementPathsIncludesUnchangedFilesAndRestoreRecords"
+      ],
+      "additional_evidence": [
+        "gate-release",
+        "smoke-release",
+        "migration-release",
+        "replace-release"
+      ]
+    }
+  ],
+  "built_cli": {
+    "binary_sha256": "175979dcf6bf2317e4c2b67917a7bf28e848456bd218e6b012c7cc57bda32150",
+    "old_binary_sha256": "4b2a46049758faef4c0a7e7e3045b877fe0503d0479b349fc5bf929adff8d958",
+    "old_source": {
+      "revision": "74a473d2e238af44c346da3807f46e1c9993176d",
+      "archive_sha256": "993fab002b8480fe00f9d53505aa1eafb8ac3f0bb678ca65734e1e5db126a981",
+      "source_directory": "/tmp/style-m3-a3-20261017/legacy-source"
+    },
+    "format_two_gate_and_wire": {
+      "status": "passed",
+      "new_binary_sha256": "175979dcf6bf2317e4c2b67917a7bf28e848456bd218e6b012c7cc57bda32150",
+      "old_binary_sha256": "4b2a46049758faef4c0a7e7e3045b877fe0503d0479b349fc5bf929adff8d958",
+      "format_two_fixture": "real TestM3A3ExportFormatTwoFixture production Install output",
+      "cases": [
+        {
+          "command": "list",
+          "exit_code": 1,
+          "unsupported_format_2": true,
+          "tree_identity_bytes_modes_mtimes_preserved": true
+        },
+        {
+          "command": "sync",
+          "exit_code": 1,
+          "unsupported_format_2": true,
+          "tree_identity_bytes_modes_mtimes_preserved": true
+        },
+        {
+          "command": "trust",
+          "exit_code": 1,
+          "unsupported_format_2": true,
+          "tree_identity_bytes_modes_mtimes_preserved": true
+        },
+        {
+          "command": "uninstall",
+          "exit_code": 1,
+          "unsupported_format_2": true,
+          "tree_identity_bytes_modes_mtimes_preserved": true
+        },
+        {
+          "command": "install",
+          "exit_code": 1,
+          "unsupported_format_2": true,
+          "tree_identity_bytes_modes_mtimes_preserved": true
+        },
+        {
+          "command": "doctor",
+          "exit_code": 1,
+          "unsupported_format_2": true,
+          "tree_identity_bytes_modes_mtimes_preserved": true
+        },
+        {
+          "command": "new-list",
+          "exit_code": 0,
+          "git_metadata_present": true,
+          "read_only": true
+        },
+        {
+          "command": "old-new-runtime",
+          "exit_code": 0,
+          "wire_identical": true,
+          "stdout_sha256": "df3f42cbabfeb54c850d2baebe9d772f2e626d34da6ac91663b82be899c2d106",
+          "index_format": 1,
+          "lock_format": 2
+        },
+        {
+          "command": "validate",
+          "input_class": "invalid_remote_or_combination",
+          "exit_code": 1,
+          "no_git_no_home_write": true,
+          "secret_absent": true
+        },
+        {
+          "command": "validate",
+          "input_class": "invalid_remote_or_combination",
+          "exit_code": 1,
+          "no_git_no_home_write": true,
+          "secret_absent": true
+        },
+        {
+          "command": "validate",
+          "input_class": "invalid_remote_or_combination",
+          "exit_code": 1,
+          "no_git_no_home_write": true,
+          "secret_absent": true
+        },
+        {
+          "command": "plan",
+          "input_class": "invalid_remote_or_combination",
+          "exit_code": 1,
+          "no_git_no_home_write": true,
+          "secret_absent": true
+        },
+        {
+          "command": "plan",
+          "input_class": "invalid_remote_or_combination",
+          "exit_code": 1,
+          "no_git_no_home_write": true,
+          "secret_absent": true
+        },
+        {
+          "command": "plan",
+          "input_class": "invalid_remote_or_combination",
+          "exit_code": 1,
+          "no_git_no_home_write": true,
+          "secret_absent": true
+        },
+        {
+          "command": "install",
+          "input_class": "invalid_remote_or_combination",
+          "exit_code": 1,
+          "no_git_no_home_write": true,
+          "secret_absent": true
+        },
+        {
+          "command": "install",
+          "input_class": "invalid_remote_or_combination",
+          "exit_code": 1,
+          "no_git_no_home_write": true,
+          "secret_absent": true
+        },
+        {
+          "command": "install",
+          "input_class": "invalid_remote_or_combination",
+          "exit_code": 1,
+          "no_git_no_home_write": true,
+          "secret_absent": true
+        }
+      ]
+    },
+    "smoke_cases": 40,
+    "old_rules_migration": {
+      "test": "M2-A7 actual binary upgrade",
+      "scope": "offline CLI, harness version stubs; no real Claude session",
+      "old_binary_sha256": "4b2a46049758faef4c0a7e7e3045b877fe0503d0479b349fc5bf929adff8d958",
+      "binary_sha256": "175979dcf6bf2317e4c2b67917a7bf28e848456bd218e6b012c7cc57bda32150",
+      "cases": [
+        {
+          "entrypoint": "install",
+          "legacy_fixture": "lf",
+          "passed": true,
+          "read_only_commands": 5,
+          "migrated_owners": 2,
+          "repeat_sync_changed": false,
+          "doctor_healthy_before_and_after": true,
+          "external_bytes_and_mode_restored": true
+        },
+        {
+          "entrypoint": "install",
+          "legacy_fixture": "crlf",
+          "passed": true,
+          "read_only_commands": 5,
+          "migrated_owners": 2,
+          "repeat_sync_changed": false,
+          "doctor_healthy_before_and_after": true,
+          "external_bytes_and_mode_restored": true
+        },
+        {
+          "entrypoint": "install",
+          "legacy_fixture": "no-newline",
+          "passed": true,
+          "read_only_commands": 5,
+          "migrated_owners": 2,
+          "repeat_sync_changed": false,
+          "doctor_healthy_before_and_after": true,
+          "external_bytes_and_mode_restored": true
+        },
+        {
+          "entrypoint": "install",
+          "legacy_fixture": "absent",
+          "passed": true,
+          "read_only_commands": 5,
+          "migrated_owners": 2,
+          "repeat_sync_changed": false,
+          "doctor_healthy_before_and_after": true,
+          "external_bytes_and_mode_restored": true
+        },
+        {
+          "entrypoint": "sync",
+          "legacy_fixture": "lf",
+          "passed": true,
+          "read_only_commands": 5,
+          "migrated_owners": 2,
+          "repeat_sync_changed": false,
+          "doctor_healthy_before_and_after": true,
+          "external_bytes_and_mode_restored": true
+        },
+        {
+          "entrypoint": "sync",
+          "legacy_fixture": "crlf",
+          "passed": true,
+          "read_only_commands": 5,
+          "migrated_owners": 2,
+          "repeat_sync_changed": false,
+          "doctor_healthy_before_and_after": true,
+          "external_bytes_and_mode_restored": true
+        },
+        {
+          "entrypoint": "sync",
+          "legacy_fixture": "no-newline",
+          "passed": true,
+          "read_only_commands": 5,
+          "migrated_owners": 2,
+          "repeat_sync_changed": false,
+          "doctor_healthy_before_and_after": true,
+          "external_bytes_and_mode_restored": true
+        },
+        {
+          "entrypoint": "sync",
+          "legacy_fixture": "absent",
+          "passed": true,
+          "read_only_commands": 5,
+          "migrated_owners": 2,
+          "repeat_sync_changed": false,
+          "doctor_healthy_before_and_after": true,
+          "external_bytes_and_mode_restored": true
+        },
+        {
+          "entrypoint": "trust",
+          "legacy_fixture": "lf",
+          "passed": true,
+          "read_only_commands": 5,
+          "migrated_owners": 2,
+          "repeat_sync_changed": false,
+          "doctor_healthy_before_and_after": true,
+          "external_bytes_and_mode_restored": true
+        },
+        {
+          "entrypoint": "trust",
+          "legacy_fixture": "crlf",
+          "passed": true,
+          "read_only_commands": 5,
+          "migrated_owners": 2,
+          "repeat_sync_changed": false,
+          "doctor_healthy_before_and_after": true,
+          "external_bytes_and_mode_restored": true
+        },
+        {
+          "entrypoint": "trust",
+          "legacy_fixture": "no-newline",
+          "passed": true,
+          "read_only_commands": 5,
+          "migrated_owners": 2,
+          "repeat_sync_changed": false,
+          "doctor_healthy_before_and_after": true,
+          "external_bytes_and_mode_restored": true
+        },
+        {
+          "entrypoint": "trust",
+          "legacy_fixture": "absent",
+          "passed": true,
+          "read_only_commands": 5,
+          "migrated_owners": 2,
+          "repeat_sync_changed": false,
+          "doctor_healthy_before_and_after": true,
+          "external_bytes_and_mode_restored": true
+        },
+        {
+          "entrypoint": "uninstall",
+          "legacy_fixture": "lf",
+          "passed": true,
+          "read_only_commands": 5,
+          "migrated_owners": 2,
+          "repeat_sync_changed": false,
+          "doctor_healthy_before_and_after": true,
+          "external_bytes_and_mode_restored": true
+        },
+        {
+          "entrypoint": "uninstall",
+          "legacy_fixture": "crlf",
+          "passed": true,
+          "read_only_commands": 5,
+          "migrated_owners": 2,
+          "repeat_sync_changed": false,
+          "doctor_healthy_before_and_after": true,
+          "external_bytes_and_mode_restored": true
+        },
+        {
+          "entrypoint": "uninstall",
+          "legacy_fixture": "no-newline",
+          "passed": true,
+          "read_only_commands": 5,
+          "migrated_owners": 2,
+          "repeat_sync_changed": false,
+          "doctor_healthy_before_and_after": true,
+          "external_bytes_and_mode_restored": true
+        },
+        {
+          "entrypoint": "uninstall",
+          "legacy_fixture": "absent",
+          "passed": true,
+          "read_only_commands": 5,
+          "migrated_owners": 2,
+          "repeat_sync_changed": false,
+          "doctor_healthy_before_and_after": true,
+          "external_bytes_and_mode_restored": true
+        }
+      ],
+      "passed": 16,
+      "source_revision": "0308cbc9b7f1993b4eda60c7909192bed970b363",
+      "source_includes_uncommitted_T40": true
+    },
+    "replace_fallback": {
+      "test": "M2-A8 replace fallback",
+      "scope": "offline built CLI with version stubs; C4 UI acceptance remains pending",
+      "binary_sha256": "175979dcf6bf2317e4c2b67917a7bf28e848456bd218e6b012c7cc57bda32150",
+      "source_revision": "0308cbc9b7f1993b4eda60c7909192bed970b363",
+      "cases": [
+        {
+          "provider": "codex",
+          "fallback": "degrade",
+          "format": "text",
+          "plan_status": "skipped",
+          "plan_exit": 0,
+          "unauthorized_install_exit": 1,
+          "authorized_install_exit": 0,
+          "placements": 0,
+          "user_style_tree_preserved": true,
+          "passed": true
+        },
+        {
+          "provider": "codex",
+          "fallback": "degrade",
+          "format": "json",
+          "plan_status": "skipped",
+          "plan_exit": 0,
+          "unauthorized_install_exit": 1,
+          "authorized_install_exit": 0,
+          "placements": 0,
+          "user_style_tree_preserved": true,
+          "passed": true
+        },
+        {
+          "provider": "codex",
+          "fallback": "skip",
+          "format": "text",
+          "plan_status": "skipped",
+          "plan_exit": 0,
+          "unauthorized_install_exit": 1,
+          "authorized_install_exit": 0,
+          "placements": 0,
+          "user_style_tree_preserved": true,
+          "passed": true
+        },
+        {
+          "provider": "codex",
+          "fallback": "skip",
+          "format": "json",
+          "plan_status": "skipped",
+          "plan_exit": 0,
+          "unauthorized_install_exit": 1,
+          "authorized_install_exit": 0,
+          "placements": 0,
+          "user_style_tree_preserved": true,
+          "passed": true
+        },
+        {
+          "provider": "codex",
+          "fallback": "error",
+          "format": "text",
+          "plan_status": "install-error",
+          "plan_exit": 4,
+          "unauthorized_install_exit": 1,
+          "authorized_install_exit": 4,
+          "placements": 0,
+          "user_style_tree_preserved": true,
+          "passed": true
+        },
+        {
+          "provider": "codex",
+          "fallback": "error",
+          "format": "json",
+          "plan_status": "install-error",
+          "plan_exit": 4,
+          "unauthorized_install_exit": 1,
+          "authorized_install_exit": 4,
+          "placements": 0,
+          "user_style_tree_preserved": true,
+          "passed": true
+        },
+        {
+          "provider": "claude-code",
+          "fallback": "degrade",
+          "format": "text",
+          "plan_status": "skipped",
+          "plan_exit": 0,
+          "unauthorized_install_exit": 1,
+          "authorized_install_exit": 0,
+          "placements": 0,
+          "user_style_tree_preserved": true,
+          "passed": true
+        },
+        {
+          "provider": "claude-code",
+          "fallback": "degrade",
+          "format": "json",
+          "plan_status": "skipped",
+          "plan_exit": 0,
+          "unauthorized_install_exit": 1,
+          "authorized_install_exit": 0,
+          "placements": 0,
+          "user_style_tree_preserved": true,
+          "passed": true
+        },
+        {
+          "provider": "claude-code",
+          "fallback": "skip",
+          "format": "text",
+          "plan_status": "skipped",
+          "plan_exit": 0,
+          "unauthorized_install_exit": 1,
+          "authorized_install_exit": 0,
+          "placements": 0,
+          "user_style_tree_preserved": true,
+          "passed": true
+        },
+        {
+          "provider": "claude-code",
+          "fallback": "skip",
+          "format": "json",
+          "plan_status": "skipped",
+          "plan_exit": 0,
+          "unauthorized_install_exit": 1,
+          "authorized_install_exit": 0,
+          "placements": 0,
+          "user_style_tree_preserved": true,
+          "passed": true
+        },
+        {
+          "provider": "claude-code",
+          "fallback": "error",
+          "format": "text",
+          "plan_status": "install-error",
+          "plan_exit": 4,
+          "unauthorized_install_exit": 1,
+          "authorized_install_exit": 4,
+          "placements": 0,
+          "user_style_tree_preserved": true,
+          "passed": true
+        },
+        {
+          "provider": "claude-code",
+          "fallback": "error",
+          "format": "json",
+          "plan_status": "install-error",
+          "plan_exit": 4,
+          "unauthorized_install_exit": 1,
+          "authorized_install_exit": 4,
+          "placements": 0,
+          "user_style_tree_preserved": true,
+          "passed": true
+        }
+      ],
+      "passed": 12
+    },
+    "script": "scripts/check_m3_git_source.py",
+    "script_sha256": "af6ef93ba8e3fa047246cff5e2b227bc0445efd8d8a70cbe1585aa71e9202557"
+  },
+  "earlier_attempts": {
+    "notes": [
+      {
+        "stage": "initial help regression",
+        "observation": "Exact CLI help assertions lacked --ref/--path after the intentional interface addition.",
+        "resolution": "Updated only the documented help expectations; final full test passes."
+      },
+      {
+        "stage": "confirmation and stale input regressions",
+        "observation": "Two old tests changed source bytes inside Confirm and expected commit; an old stale-route assertion expected the later renderer error.",
+        "resolution": "D2 rejects stale captured inputs before commit. Existing tests now check detached approval and post-commit edits; new copy/link stale-confirmation and actual ApplyFiles rollback tests cover the stronger boundary."
+      },
+      {
+        "stage": "new fixtures and compile setup",
+        "observation": "The app snapshot helper originally assumed an existing home and regular files; new test imports/bindings and plugin Identity.PluginID needed correction.",
+        "resolution": "Corrected fixture setup without relaxing production checks; final A3 has no fail/skip."
+      },
+      {
+        "stage": "loopback TLS sandbox",
+        "observation": "Initial httptest listener selected [::1]:0 and the sandbox rejected bind with operation not permitted.",
+        "resolution": "Bound the fixture explicitly to 127.0.0.1 and reran with permission for the local listener; real Git/TLS success, invalid CA, redirect and 401 cases pass."
+      },
+      {
+        "stage": "ordinary runtime and probe fixture expectations",
+        "observation": "A test assumed empty informational stderr and an invalid 1ms probe timeout; no native executable exists in this fixture.",
+        "resolution": "Assert actual wire and absence of ERROR; use 1s and require origin-unverified with CallbackObserved=false. No real probe or delivery acceptance is claimed."
+      },
+      {
+        "stage": "final source review",
+        "observation": "Cancellation during Git --version was being reclassified as git-unavailable.",
+        "resolution": "Preserve canceled classification and run the same deadline test at both --version and fetch; final full source/race tests pass."
+      }
+    ],
+    "notes_evidence": "Early targeted failures were visible in tool outputs; separate raw files were not captured for each. These notes retain causes/corrections; all final verification logs above are preserved with hashes.",
+    "failed_command": {
+      "argv": [
+        "make",
+        "vet"
+      ],
+      "cwd": "/Users/inxups/project/style-cli",
+      "started_utc": "2026-10-17T09:06:02.598265+00:00",
+      "elapsed_seconds": 0.014,
+      "exit_code": 2,
+      "log": "/tmp/style-m3-a3-20261017/vet-final.log",
+      "log_sha256": "c7b71f646ba8716ff3924d24f1393ec19e8e04889b8ee96d2dd185b900277d7d",
+      "cleared_environment": [
+        "CODEX_HOME",
+        "CODEX_SANDBOX",
+        "STYLE_HOME",
+        "CLAUDE_CODE_EFFORT_LEVEL",
+        "CLAUDE_CODE_CONFIG_DIR",
+        "CLAUDE_CONFIG_DIR",
+        "PLUGIN_ROOT",
+        "STYLE_PERF",
+        "STYLE_PERF_OUTPUT"
+      ],
+      "Go_environment": {
+        "GOPATH": "/tmp/style-cli-gopath",
+        "GOMODCACHE": "/tmp/style-cli-gomodcache",
+        "GOCACHE": "/tmp/style-cli-gocache",
+        "GOWORK": "off",
+        "GOFLAGS": "-mod=readonly"
+      }
+    },
+    "failed_command_resolution": "Corrected make vet to the repository target make vet-go; vet-final-corrected and final vet-release both exited 0.",
+    "successful_intermediate_run_records": [
+      {
+        "id": "all-1",
+        "record_path": "/tmp/style-m3-a3-20261017/all-1.json",
+        "record_sha256": "b2832a284fd03a794e91ee016862fc375c8aab8e918bd75d4db518e9df36b8fb"
+      },
+      {
+        "id": "all-2",
+        "record_path": "/tmp/style-m3-a3-20261017/all-2.json",
+        "record_sha256": "c09a39e927edbcdf92efa68e6e701615ad64755e7a69a12d795569aa204b7858"
+      },
+      {
+        "id": "all-final",
+        "record_path": "/tmp/style-m3-a3-20261017/all-final.json",
+        "record_sha256": "b600f0bbf609305d6b60343ef520749a4bdb0167e617edb99e6f15cb7ea3fe80"
+      },
+      {
+        "id": "vet-1",
+        "record_path": "/tmp/style-m3-a3-20261017/vet-1.json",
+        "record_sha256": "45b96f36eaf2b0a273b349a7ac1399a2a2007fcbd1c97c759def00093e9e21c2"
+      },
+      {
+        "id": "vet-2",
+        "record_path": "/tmp/style-m3-a3-20261017/vet-2.json",
+        "record_sha256": "862da799a9eb434427a90e215d203315a259185a5eed58b491d0a3ed9875a292"
+      },
+      {
+        "id": "vet-final-corrected",
+        "record_path": "/tmp/style-m3-a3-20261017/vet-final-corrected.json",
+        "record_sha256": "fd0f6d5ef1da1e283278504da06d5548c6644ca0354a64879bf72d9ce367af77"
+      },
+      {
+        "id": "a3-targeted-1",
+        "record_path": "/tmp/style-m3-a3-20261017/a3-targeted-1.json",
+        "record_sha256": "3b94c6a751a908cee04ecd02dbbda97d6b0c0797714f7abb70334af6b82c84a8"
+      },
+      {
+        "id": "a3-admission-1",
+        "record_path": "/tmp/style-m3-a3-20261017/a3-admission-1.json",
+        "record_sha256": "da0bf8d720c7955bd193d50d72f8d3934a4f95d90205042edf652ffc1e0d8c76"
+      },
+      {
+        "id": "build-1",
+        "record_path": "/tmp/style-m3-a3-20261017/build-1.json",
+        "record_sha256": "6755934ed053401abfd14bb401d32a045247d7244292991b4dafe2325b92093f"
+      },
+      {
+        "id": "build-final",
+        "record_path": "/tmp/style-m3-a3-20261017/build-final.json",
+        "record_sha256": "d9ca07cd987efa275783243e496574effb33f9f0b9c4906c4c98216d608b9a89"
+      },
+      {
+        "id": "old-gate-cli-1",
+        "record_path": "/tmp/style-m3-a3-20261017/old-gate-cli-1.json",
+        "record_sha256": "6f73de0d71634cf08248e4daeccc6108d2c2b0019c640037806e8960e7876425"
+      },
+      {
+        "id": "gate-final",
+        "record_path": "/tmp/style-m3-a3-20261017/gate-final.json",
+        "record_sha256": "93a884d451e47cd382612306754c58fccf20aa8c26ba78723e1708a40d989aad"
+      }
+    ]
+  },
+  "implementation_notes": [
+    "Cache hits currently still resolve/fetch the fixed remote selection; cache_hit refers to reused verified export bytes and does not imply offline acquisition.",
+    "Approval format 1 gains optional Git provenance binding; existing local approval JSON stays unchanged. All management writers verify this binding before preserving Git identity.",
+    "Management errors retain existing text output: management-input-changed identifies stale captured inputs; existing lock and joined rollback error text is retained rather than claiming the future update/frozen schema.",
+    "Shared management guard covers commit and rollback only. Network, confirmation and post-commit state cleanup are outside the guard.",
+    "App coordinates candidates, captured inputs, package exchange and guard; agenthooks retains codecs, renderer/owner/trust merging and ApplyFiles. Only renderer input path enumeration was added."
+  ],
+  "compatibility": {
+    "core_runtime_probe_schema_fixtures_goldens_module_dependencies_unchanged": true,
+    "M1_M2_archives_unchanged": true,
+    "PROGRESS_append_only": true,
+    "details_report": "docs/review/M3-A3-DOCS-2026-10-17.json"
+  },
+  "remaining": {
+    "M3-T21": "not_started",
+    "M3-T22": "not_started",
+    "M3-A4": "not_executed",
+    "M3-A5": "not_executed",
+    "real_harness_delivery": "unchanged pending",
+    "Windows": "unchanged pending",
+    "remote_CI": "unchanged pending",
+    "official_counting": {
+      "status": "nonblocking_pending",
+      "codex": "0/40",
+      "claude-code": "0/40"
+    }
+  },
+  "limits": [
+    "Public HTTPS and normal system TLS trust only; no SSH/file/private credentials/proxy CLI override.",
+    "Export has limits, not a remote pack download byte cap.",
+    "Guard coordinates same-version cooperating management processes; it is not authentication against the same user or a power-loss atomic multi-file transaction.",
+    "A3 local OS/built-hook fixtures do not close real harness/native loading/delivery, B1/C1/B2/C2, Windows or CI."
+  ]
+}

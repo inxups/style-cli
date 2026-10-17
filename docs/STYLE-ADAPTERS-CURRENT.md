@@ -1,6 +1,6 @@
 # STYLE 当前 adapter 实现总览
 
-更新时间：2026-10-17。生产源码核对基线：`16d5c1c`（M2 native、stats、跨包去重、Claude rules/迁移），replace 回退验收 `4976713`，Claude 最终隔离准备 `5dd6742`。Codex M2 B1–B4 双路线证据归档至 `e6dd778`；D4/D5 已由 Claude 2.1.301 的 C1–C4 真实交互验收闭合；M2 已完成并关闭，远端 Ubuntu/macOS CI 在 `154506f` 全部通过（run `39000483969`，59 项采集器）。无 key 补充对照已完成；官方 token 计数仍各 0/40、待独立 API key，承接为 M3-CARRY-01 非阻塞待验。M3-T00 已统一注册表名称校验并通过 [M3-A0](review/M3-A0-2026-10-17.json)，关闭 M3-RV-01；T00 源码由该报告的完整摘要固定。M3-T10 的 [explain 离线验收](review/M3-A1-2026-10-17.json) 已通过，新增隔离重放与可选编译说明；M3-T11 的 [probe 离线验收](review/M3-A2-2026-10-17.json) 也已通过，观察既有 STYLE runtime 回调，未新增真实 harness 接入或关闭真实验收。
+更新时间：2026-10-17。生产源码核对基线：`16d5c1c`（M2 native、stats、跨包去重、Claude rules/迁移），replace 回退验收 `4976713`，Claude 最终隔离准备 `5dd6742`。Codex M2 B1–B4 双路线证据归档至 `e6dd778`；D4/D5 已由 Claude 2.1.301 的 C1–C4 真实交互验收闭合；M2 已完成并关闭，远端 Ubuntu/macOS CI 在 `154506f` 全部通过（run `39000483969`，59 项采集器）。无 key 补充对照已完成；官方 token 计数仍各 0/40、待独立 API key，承接为 M3-CARRY-01 非阻塞待验。M3-T00 已统一注册表名称校验并通过 [M3-A0](review/M3-A0-2026-10-17.json)，关闭 M3-RV-01；T00 源码由该报告的完整摘要固定。M3-T10 的 [explain 离线验收](review/M3-A1-2026-10-17.json) 已通过，新增隔离重放与可选编译说明；M3-T11 的 [probe 离线验收](review/M3-A2-2026-10-17.json) 也已通过，观察既有 STYLE runtime 回调；M3-T20 的 [Git 来源验收](review/M3-A3-2026-10-17.json) 已通过，取得与锁定留在管理冷路径，真实验收状态不变。
 
 本文总结当前仓库的实现，不代表 Claude Code / Codex 所有版本的完整产品能力。能力声明、安装配置、运行时可接收事件和真实验收结果分别说明；未修改现有 fallback 语义。
 
@@ -16,7 +16,8 @@ STYLE 当前完整接入两个 provider：`codex` 和 `claude-code`。`agenthook
 | `core/compile` | 把规划结果编译为 index 和静态正文 | [目录](../core/compile/) |
 | `core/engine`、`core/state` | 匹配、渲染、去重、预算、会话和 agent 状态 | [engine](../core/engine/)、[state](../core/state/) |
 | `internal/runtime` | 串起 codec、adapter、state、engine 和输出决策 | [runtime.go](../internal/runtime/runtime.go) |
-| `internal/app` | 安装、卸载、sync/trust、路线选择、报告、CLI hook 入口 | [install.go](../internal/app/install.go)、[hook_command.go](../internal/app/hook_command.go) |
+| `internal/source` | 显式 Git 来源、固定 OID 原始导出及私有完整缓存；仅管理冷路径 | [git.go](../internal/source/git.go)、[cache.go](../internal/source/cache.go) |
+| `internal/app` | 安装、卸载、sync/trust、lock 1/2 与批准身份、共享提交保护、路线选择、报告、CLI hook 入口 | [install.go](../internal/app/install.go)、[hook_command.go](../internal/app/hook_command.go) |
 
 原则是 adapter 提供事实，core 决定策略。`core` 不导入 `agenthooks` 或 `internal/adapter`，由 [边界测试](../internal/adapter/boundary_test.go) 检查。
 
@@ -428,6 +429,14 @@ M3-A1 的 26 个新函数/145 个叶子用例、两家 JSON golden、29 组普�
 普通 runtime 在 OnAny 提交不可变安全元数据，活动观察任务按 5ms/六层祖先预算异步记录，不能延长 hook 退出等待。无租约不建文件或后台任务；配置/信任/lock/index/编译说明保持。普通事件继续更新原 state/stats，15 组 runner 对照核对 wire/退出码、repeat/seen 和 stats；仅 state.updated_at 的自然时钟变化归一化。
 
 [M3-A2](review/M3-A2-2026-10-17.json) 的 28 个新函数/181 个叶子用例、三条现有路线的离线 OS 进程链、信号/崩溃恢复、竞争/漂移/清理失败及完整兼容回归通过。两家各 200 次普通 hook 进程 p95 为 9.56ms/8.71ms，低于 50ms 门槛。callback-observed 只提供本机关联，不是认证或模型投递；PATH 包装器、插件根或存活原生 executable 无法核对时保持 unverified。Windows 来源检查与真实 B1/C1 分开待验。
+
+### 11.5 M3 Git 来源离线与受控 TLS 验收
+
+[Git 来源](STYLE-SOURCES.md) 的 validate/plan/install 在私有 Git 进程环境中固定 advertised OID，读取选中 tree/blob 原始字节并完整校验；cache_hit 仍核对远端，update/frozen 另待 T21/T22。core、普通 hook 和原生协议不读 Git 来源。lock format=2 及批准快照绑定 Git 身份，sync/trust 拒绝管理副本漂移。
+
+app 在提交时持有共享进程身份 guard，重新核对捕获的包/锁/批准/settings/index/说明和路线输入，协调包交换与 ApplyFiles 回滚。adapter 新增可选 ManagementInputs 路径端口，agenthooks 的 ManagementPaths 枚举 renderer 输入及 owner 恢复路径，包括未改变的文件；配置格式、owner/trust 合并、渲染和文件事务仍归 agenthooks。
+
+[M3-A3](review/M3-A3-2026-10-17.json) 的 30 个新函数/202 个叶子用例、真实 SHA-1/SHA-256 与 loopback TLS、三路线生命周期/回滚、17 项真实新旧二进制门禁/普通 wire 对照及完整兼容回归通过。生产不开放 file/SSH/私有认证/继承 Git 配置；内部 fixture 注入没有 CLI/env 绕过。两家真实投递、Windows 和远端 CI 分开待验。
 
 ## 12. 已知边界与后续工作
 

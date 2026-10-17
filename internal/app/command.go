@@ -11,34 +11,43 @@ import (
 	"strings"
 
 	"github.com/inxups/style-cli/core/spec"
+	"github.com/inxups/style-cli/internal/source"
 )
 
 func runValidate(ctx context.Context, service *Service, workDir string, args []string, out, errOut io.Writer) int {
 	if isHelp(args) {
-		fmt.Fprintln(out, "style validate [path] [--json]")
+		fmt.Fprintln(out, "style validate [source] [--ref ref] [--path repo-path] [--json]")
 		return ExitOK
 	}
-	source, jsonOutput, err := parseValidateArgs(args)
+	request, jsonOutput, err := parseValidateArgs(args)
 	if err != nil {
 		fmt.Fprintf(errOut, "style validate: %v\n", err)
 		return ExitUsage
 	}
-	if source == "" {
-		source = workDir
-	} else if !filepath.IsAbs(source) {
-		source = filepath.Join(workDir, source)
+	if request.Source == "" {
+		request.Source = workDir
+	} else if !source.Remote(request.Source) && !filepath.IsAbs(request.Source) {
+		request.Source = filepath.Join(workDir, request.Source)
 	}
-	result, err := service.Validate(ctx, ValidateRequest{Source: source})
+	result, err := service.Validate(ctx, request)
 	if err != nil {
 		fmt.Fprintf(errOut, "style validate: %v\n", err)
 		return ExitInvalid
 	}
 	if jsonOutput {
-		if err := encodeJSON(out, result.Diagnostics); err != nil {
+		var report any = result.Diagnostics
+		if source.Remote(request.Source) {
+			report = struct {
+				Source      *SourceReport `json:"source,omitempty"`
+				Diagnostics []Diagnostic  `json:"diagnostics"`
+			}{result.Source, result.Diagnostics}
+		}
+		if err := encodeJSON(out, report); err != nil {
 			fmt.Fprintf(errOut, "style validate: encode report: %v\n", err)
 			return ExitInvalid
 		}
 	} else {
+		writeSource(out, result.Source)
 		writeDiagnostics(out, result.Diagnostics)
 		if len(result.Diagnostics) == 0 {
 			fmt.Fprintln(out, "valid")
@@ -52,7 +61,7 @@ func runValidate(ctx context.Context, service *Service, workDir string, args []s
 
 func runPlan(ctx context.Context, service *Service, workDir string, args []string, out, errOut io.Writer) int {
 	if isHelp(args) {
-		fmt.Fprintln(out, "style plan <source> [--harness auto|codex,claude-code] [--assume-requests N] [--assume-triggers N] [--json]")
+		fmt.Fprintln(out, "style plan <source> [--ref ref] [--path repo-path] [--harness auto|codex,claude-code] [--assume-requests N] [--assume-triggers N] [--json]")
 		return ExitOK
 	}
 	request, jsonOutput, err := parsePlanArgs(args)
@@ -64,7 +73,7 @@ func runPlan(ctx context.Context, service *Service, workDir string, args []strin
 		fmt.Fprintln(errOut, "style plan: source is required")
 		return ExitUsage
 	}
-	if !filepath.IsAbs(request.Source) {
+	if !source.Remote(request.Source) && !filepath.IsAbs(request.Source) {
 		request.Source = filepath.Join(workDir, request.Source)
 	}
 	result, err := service.Plan(ctx, request)
@@ -103,32 +112,45 @@ func runPlan(ctx context.Context, service *Service, workDir string, args []strin
 	return ExitOK
 }
 
-func parseValidateArgs(args []string) (string, bool, error) {
-	var source string
+func parseValidateArgs(args []string) (ValidateRequest, bool, error) {
+	var request ValidateRequest
 	jsonOutput := false
-	for _, arg := range args {
+	for index := 0; index < len(args); index++ {
+		if handled, err := parseSourceOption(args, &index, &request.Ref, &request.Path); handled {
+			if err != nil {
+				return ValidateRequest{}, false, err
+			}
+			continue
+		}
+		arg := args[index]
 		switch arg {
 		case "--json":
 			jsonOutput = true
 		case "--help", "-h":
-			return "", false, errors.New("usage: style validate [path] [--json]")
+			return ValidateRequest{}, false, errors.New("usage: style validate [source] [--ref ref] [--path repo-path] [--json]")
 		default:
 			if strings.HasPrefix(arg, "-") {
-				return "", false, fmt.Errorf("unknown option %q", arg)
+				return ValidateRequest{}, false, fmt.Errorf("unknown option %q", arg)
 			}
-			if source != "" {
-				return "", false, errors.New("only one source path is allowed")
+			if request.Source != "" {
+				return ValidateRequest{}, false, errors.New("only one source path is allowed")
 			}
-			source = arg
+			request.Source = arg
 		}
 	}
-	return source, jsonOutput, nil
+	return request, jsonOutput, nil
 }
 
 func parsePlanArgs(args []string) (PlanRequest, bool, error) {
 	request := PlanRequest{}
 	jsonOutput := false
 	for index := 0; index < len(args); index++ {
+		if handled, err := parseSourceOption(args, &index, &request.Ref, &request.Path); handled {
+			if err != nil {
+				return PlanRequest{}, false, err
+			}
+			continue
+		}
 		arg := args[index]
 		switch {
 		case arg == "--json":
@@ -212,6 +234,7 @@ func writeDiagnostics(out io.Writer, diagnostics []Diagnostic) {
 }
 
 func writePlanText(out io.Writer, result PlanResult) {
+	writeSource(out, result.Source)
 	fmt.Fprintf(out, "%s %s\n", result.Package, result.Version)
 	for _, report := range result.Reports {
 		fmt.Fprintf(out, "\nHarness: %s\n", report.Provider)

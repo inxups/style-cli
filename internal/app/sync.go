@@ -2,6 +2,7 @@ package app
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"path/filepath"
 
@@ -38,6 +39,7 @@ type SyncResult struct {
 }
 
 type syncPreparation struct {
+	inputs *managementInputs
 	home   string
 	result SyncResult
 	files  []install.PlannedFile
@@ -57,9 +59,25 @@ func (s *Service) Sync(ctx context.Context, request SyncRequest) (SyncResult, er
 	return applySync(ctx, prepared)
 }
 
-func applySync(ctx context.Context, prepared syncPreparation) (SyncResult, error) {
+func applySync(ctx context.Context, prepared syncPreparation) (result SyncResult, runErr error) {
 	if err := checkContext(ctx); err != nil {
 		return prepared.result, err
+	}
+	var guard *managementGuard
+	defer func() {
+		if guard != nil {
+			runErr = errors.Join(runErr, guard.close())
+		}
+	}()
+	if len(prepared.files) > 0 {
+		var err error
+		guard, err = acquireManagement(ctx, prepared.home)
+		if err != nil {
+			return prepared.result, err
+		}
+		if err := prepared.inputs.verify(); err != nil {
+			return prepared.result, err
+		}
 	}
 	if err := install.ApplyFiles(ctx, prepared.files); err != nil {
 		return prepared.result, fmt.Errorf("apply sync changes: %w", err)
@@ -68,6 +86,13 @@ func applySync(ctx context.Context, prepared syncPreparation) (SyncResult, error
 	for i := range prepared.result.Changes {
 		if prepared.result.Changes[i].Package == prepared.result.ApprovalTarget {
 			prepared.result.Changes[i].NeedsTrust = false
+		}
+	}
+	if guard != nil {
+		committed := guard
+		guard = nil
+		if err := committed.close(); err != nil {
+			return prepared.result, err
 		}
 	}
 	count, err := maintainState(filepath.Join(prepared.home, "state"), false)

@@ -32,7 +32,7 @@ type UninstallResult struct {
 // Uninstall removes selected packages and rebuilds each managed adapter route
 // from the remaining lock entries. Provider files are changed through their
 // route changesets, which retain the shared agenthooks owner semantics.
-func (s *Service) Uninstall(ctx context.Context, request UninstallRequest) (UninstallResult, error) {
+func (s *Service) Uninstall(ctx context.Context, request UninstallRequest) (final UninstallResult, runErr error) {
 	if err := checkContext(ctx); err != nil {
 		return UninstallResult{}, err
 	}
@@ -46,8 +46,15 @@ func (s *Service) Uninstall(ctx context.Context, request UninstallRequest) (Unin
 	if err != nil {
 		return UninstallResult{}, err
 	}
+	inputs, err := captureManagement(home)
+	if err != nil {
+		return UninstallResult{}, err
+	}
 	lock, err := loadLock(home)
 	if err != nil {
+		return UninstallResult{}, err
+	}
+	if err = inputs.links(lock); err != nil {
 		return UninstallResult{}, err
 	}
 	removeSet := make(map[string]bool)
@@ -60,7 +67,7 @@ func (s *Service) Uninstall(ctx context.Context, request UninstallRequest) (Unin
 		return UninstallResult{}, &ConflictError{Message: "no matching installed package"}
 	}
 	result := UninstallResult{Removed: make([]string, 0, len(removeSet)), Remaining: make([]string, 0), Routes: make([]string, 0)}
-	remainingLock := lockDocument{Format: lockFormat, Packages: make([]lockPackage, 0, len(lock.Packages)), Harnesses: cloneHarnesses(lock.Harnesses)}
+	remainingLock := lockDocument{Format: lock.Format, Packages: make([]lockPackage, 0, len(lock.Packages)), Harnesses: cloneHarnesses(lock.Harnesses)}
 	removedPackages := make([]lockPackage, 0, len(removeSet))
 	for _, item := range lock.Packages {
 		if removeSet[item.Name] {
@@ -82,6 +89,9 @@ func (s *Service) Uninstall(ctx context.Context, request UninstallRequest) (Unin
 
 	adapters, err := s.lockedAdapters(ctx, home, lock)
 	if err != nil {
+		return UninstallResult{}, err
+	}
+	if err = inputs.routes(adapters); err != nil {
 		return UninstallResult{}, err
 	}
 	packages, err := s.loadInstalledPackages(ctx, home, remainingLock)
@@ -142,7 +152,7 @@ func (s *Service) Uninstall(ctx context.Context, request UninstallRequest) (Unin
 			result.Routes = append(result.Routes, string(target.provider)+"="+target.route.Name())
 		}
 		for i, item := range packages {
-			approval, err := approvalBytes(compilation, item.lock.Name, item.pkg.Files)
+			approval, err := approvalBytes(compilation, item.lock.Name, item.pkg.Files, item.lock.Source.Git)
 			if err != nil {
 				return UninstallResult{}, err
 			}
@@ -177,6 +187,17 @@ func (s *Service) Uninstall(ctx context.Context, request UninstallRequest) (Unin
 	if err != nil {
 		return UninstallResult{}, err
 	}
+	if err = inputs.planned(changes); err != nil {
+		return result, err
+	}
+	guard, err := acquireManagement(ctx, home)
+	if err != nil {
+		return result, err
+	}
+	defer func() { runErr = errors.Join(runErr, guard.close()) }()
+	if err = inputs.verify(); err != nil {
+		return result, err
+	}
 	var swaps []*packageSwap
 	for _, item := range removedPackages {
 		if item.Link {
@@ -198,7 +219,7 @@ func (s *Service) Uninstall(ctx context.Context, request UninstallRequest) (Unin
 	defer func() {
 		if !committed {
 			for index := len(swaps) - 1; index >= 0; index-- {
-				swaps[index].rollback()
+				runErr = errors.Join(runErr, swaps[index].rollback())
 			}
 		}
 	}()

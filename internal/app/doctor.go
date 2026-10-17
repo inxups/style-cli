@@ -59,7 +59,11 @@ func (s *Service) Doctor(ctx context.Context, request DoctorRequest) (DoctorResu
 		result.Packages = listed.Packages
 		for _, pkg := range listed.Packages {
 			if !pkg.HashMatches {
-				result.add("package-changed", "error", fmt.Sprintf("%s differs from lock; run sync/trust (%v %s)", pkg.Name, pkg.ChangedFiles, pkg.Error))
+				if pkg.Git != nil {
+					result.add("git-snapshot-changed", "error", fmt.Sprintf("%s differs from its locked Git export; restore locked bytes or use a separate local/link source (%v %s)", pkg.Name, pkg.ChangedFiles, pkg.Error))
+				} else {
+					result.add("package-changed", "error", fmt.Sprintf("%s differs from lock; run sync/trust (%v %s)", pkg.Name, pkg.ChangedFiles, pkg.Error))
+				}
 			}
 			if pkg.Link == "dev" {
 				result.add("link-dev", "warning", pkg.Name+" is a development link; ordinary rule edits are accepted by sync after initial trust; native changes require renewed approval")

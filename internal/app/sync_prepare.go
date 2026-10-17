@@ -21,6 +21,10 @@ func (s *Service) prepareSync(ctx context.Context, request TrustRequest) (syncPr
 		return prepared, err
 	}
 	prepared.home = home
+	prepared.inputs, err = captureManagement(home)
+	if err != nil {
+		return prepared, err
+	}
 	prepared.result.ApprovalTarget = request.Name
 	lockPath := filepath.Join(home, "style.lock.yaml")
 	lockBefore, err := readOptionalBytes(lockPath)
@@ -29,6 +33,9 @@ func (s *Service) prepareSync(ctx context.Context, request TrustRequest) (syncPr
 	}
 	lock, err := decodeLock(lockBefore)
 	if err != nil {
+		return prepared, err
+	}
+	if err = prepared.inputs.links(lock); err != nil {
 		return prepared, err
 	}
 	if request.Name != "" {
@@ -54,6 +61,9 @@ func (s *Service) prepareSync(ctx context.Context, request TrustRequest) (syncPr
 		}
 		if files == nil {
 			files = map[string][]byte{}
+		}
+		if err := checkGitSnapshot(item, files); err != nil {
+			return prepared, err
 		}
 		baseline, available, err := loadApproval(home, item)
 		if err != nil {
@@ -109,7 +119,7 @@ func (s *Service) prepareSync(ctx context.Context, request TrustRequest) (syncPr
 		}
 	}
 	packages := make([]installPackage, 0, len(lock.Packages))
-	updated := lockDocument{Format: lockFormat, Packages: []lockPackage{}, Harnesses: cloneHarnesses(lock.Harnesses)}
+	updated := lockDocument{Format: lock.Format, Packages: []lockPackage{}, Harnesses: cloneHarnesses(lock.Harnesses)}
 	replaceOwner := ""
 	for _, item := range lock.Packages {
 		parsed, err := s.parseInstalledSnapshot(ctx, home, item, snapshots[item.Name])
@@ -134,6 +144,9 @@ func (s *Service) prepareSync(ctx context.Context, request TrustRequest) (syncPr
 	if err != nil {
 		return prepared, err
 	}
+	if err = prepared.inputs.routes(adapters); err != nil {
+		return prepared, err
+	}
 	compilation, err := s.compileInstalled(ctx, packages, adapters, request.Name)
 	if err != nil {
 		return prepared, err
@@ -149,7 +162,7 @@ func (s *Service) prepareSync(ctx context.Context, request TrustRequest) (syncPr
 	for _, item := range packages {
 		original, _ := findLockedPackage(lock, item.lock.Name)
 		baseline, available := baselines[item.lock.Name], baselineAvailable[item.lock.Name]
-		approval, err := approvalBytes(compilation, item.lock.Name, snapshots[item.lock.Name])
+		approval, err := approvalBytes(compilation, item.lock.Name, snapshots[item.lock.Name], item.lock.Source.Git)
 		if err != nil {
 			return prepared, err
 		}
@@ -210,6 +223,9 @@ func (s *Service) prepareSync(ctx context.Context, request TrustRequest) (syncPr
 		prepared.files = append(prepared.files, provenanceChanges...)
 	}
 	prepared.files, err = uniquePlannedFiles(prepared.files)
+	if err == nil {
+		err = prepared.inputs.planned(prepared.files)
+	}
 	return prepared, err
 }
 

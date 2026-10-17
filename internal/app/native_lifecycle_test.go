@@ -337,7 +337,6 @@ func TestA4NativeConfirmationUsesCapturedBytesAndDetachedReports(t *testing.T) {
 			t.Fatalf("legacy native diff=%+v", preview.Changes)
 		}
 		preview.Native[0].Command = "callback mutation"
-		writeSyncFile(t, filepath.Join(source, "STYLE.yaml"), unreviewed)
 		return true, nil
 	}})
 	if err != nil || !trusted.Changed {
@@ -351,6 +350,9 @@ func TestA4NativeConfirmationUsesCapturedBytesAndDetachedReports(t *testing.T) {
 	if lock.Packages[0].Files["STYLE.yaml"] != hashBytes([]byte(approved)) {
 		t.Fatal("lock did not retain confirmed source hash")
 	}
+	// Edits during confirmation are rejected by the D2 commit guard; edits
+	// after a successful approval still require a separate native review.
+	writeSyncFile(t, filepath.Join(source, "STYLE.yaml"), unreviewed)
 	if sync, err := service.Sync(context.Background(), SyncRequest{Home: home}); err != nil || len(sync.NeedsTrust) != 1 {
 		t.Fatalf("unreviewed native edit escaped: %+v %v", sync, err)
 	}

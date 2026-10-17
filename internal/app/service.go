@@ -8,10 +8,12 @@ import (
 
 	"github.com/inxups/style-cli/core/spec"
 	"github.com/inxups/style-cli/internal/adapter"
+	"github.com/inxups/style-cli/internal/source"
 )
 
 // Service holds the explicitly registered adapters used by planning.
 type Service struct {
+	sources     source.Acquirer
 	probeDeps   *probeDependencies
 	definitions map[adapter.ProviderID]adapter.Definition
 	catalog     spec.ValidationCatalog

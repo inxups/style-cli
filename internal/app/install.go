@@ -22,6 +22,7 @@ import (
 	"github.com/inxups/style-cli/internal/adapter"
 	"github.com/inxups/style-cli/internal/adapter/claude"
 	"github.com/inxups/style-cli/internal/adapter/codex"
+	"github.com/inxups/style-cli/internal/source"
 	"github.com/speakeasy-api/agenthooks/install"
 	"gopkg.in/yaml.v3"
 )
@@ -30,6 +31,7 @@ import (
 // explicitly confirm the capability report with Yes before any mutation.
 type InstallRequest struct {
 	Source       string
+	Ref, Path    string
 	Home         string
 	Harnesses    []string
 	Routes       map[string]string
@@ -45,6 +47,7 @@ type InstallRequest struct {
 
 // InstallResult is the stable summary written after an install transaction.
 type InstallResult struct {
+	Source               *SourceReport             `json:"source,omitempty"`
 	StaticMigrations     []adapter.StaticMigration `json:"static_migrations,omitempty"`
 	Package              string                    `json:"package"`
 	Version              string                    `json:"version"`
@@ -89,7 +92,7 @@ type installCompilation struct {
 // Install validates, plans, compiles, and applies one package as a single
 // recoverable transaction across package storage, state files, and provider
 // configuration changesets.
-func (s *Service) Install(ctx context.Context, request InstallRequest) (InstallResult, error) {
+func (s *Service) Install(ctx context.Context, request InstallRequest) (final InstallResult, runErr error) {
 	if err := checkContext(ctx); err != nil {
 		return InstallResult{}, err
 	}
@@ -100,11 +103,36 @@ func (s *Service) Install(ctx context.Context, request InstallRequest) (InstallR
 	if err != nil {
 		return InstallResult{}, err
 	}
+	inputs, err := captureManagement(home)
+	if err != nil {
+		return InstallResult{}, err
+	}
 	lock, err := loadLock(home)
 	if err != nil {
 		return InstallResult{}, err
 	}
-	files, single, sourcePath, err := snapshotPackage(request.Source)
+	if err = inputs.links(lock); err != nil {
+		return InstallResult{}, err
+	}
+	var files map[string][]byte
+	var single bool
+	var sourcePath string
+	var provenance *source.Git
+	var report *SourceReport
+	if source.Remote(request.Source) {
+		if request.Link {
+			return InstallResult{}, &source.Error{Code: "source-invalid", Message: "Git sources cannot use --link"}
+		}
+		var snapshot source.Snapshot
+		snapshot, report, err = s.acquireGit(ctx, source.Request{Source: request.Source, Ref: request.Ref, Path: request.Path, Home: home})
+		if err == nil {
+			files, single, sourcePath, provenance = snapshot.Files, snapshot.Kind == "file", snapshot.Path, &snapshot.Git
+		}
+	} else {
+		if err = localSourceOptions(request.Ref, request.Path); err == nil {
+			files, single, sourcePath, err = snapshotPackage(request.Source)
+		}
+	}
 	if err != nil {
 		return InstallResult{}, err
 	}
@@ -132,7 +160,7 @@ func (s *Service) Install(ctx context.Context, request InstallRequest) (InstallR
 	var existingLock *lockPackage
 	if existing, found := findLockedPackage(lock, name); found {
 		stored, settingErr := readSettingValues(home, name)
-		if existing.Version == version && existing.Link == request.Link && (!request.Link || existing.Source.Path == sourcePath) && reflectStringMap(existing.Files, fileHashes) && settingErr == nil && reflectStringMap(stored, settings) {
+		if existing.Version == version && existing.Link == request.Link && (!request.Link || existing.Source.Path == sourcePath) && sameGitSource(existing, provenance, sourceKind(single), sourcePath) && reflectStringMap(existing.Files, fileHashes) && settingErr == nil && reflectStringMap(stored, settings) {
 			existingLock = &existing
 		} else {
 			return InstallResult{}, &ConflictError{Message: fmt.Sprintf("package %q is already installed; use sync/trust or uninstall before replacing it", name)}
@@ -204,9 +232,23 @@ func (s *Service) Install(ctx context.Context, request InstallRequest) (InstallR
 		return InstallResult{Package: name, Version: version, Diagnostics: versionDiagnostics}, nil
 	}
 	adapters = activeAdapters
+	if existingLock != nil && provenance != nil {
+		if len(adapters) != len(lock.Harnesses) {
+			return InstallResult{}, &ConflictError{Message: "Git reinstall requires the existing installation choices"}
+		}
+		for _, target := range adapters {
+			prior := lock.Harnesses[string(target.provider)]
+			if prior.Route != target.route.Name() || prior.Version != target.installation.Version || prior.ConfigDir != target.installation.ConfigDir || !prior.FailClosed && containsProvider(request.FailClosed, target.provider) {
+				return InstallResult{}, &ConflictError{Message: "Git reinstall requires the existing installation choices"}
+			}
+		}
+	}
+	if err = inputs.routes(adapters); err != nil {
+		return InstallResult{}, err
+	}
 	newLock := lockPackage{
 		Name: name, Version: version, Seq: nextSequence(lock),
-		Source: lockSource{Kind: sourceKind(single), Path: sourcePath, Link: request.Link},
+		Source: lockSource{Kind: sourceKind(single), Path: sourcePath, Link: request.Link, Git: provenance},
 		Files:  fileHashes, Settings: settingNames, Replace: replace, Link: request.Link,
 	}
 	packages, err := s.loadInstalledPackages(ctx, home, lock)
@@ -220,7 +262,7 @@ func (s *Service) Install(ctx context.Context, request InstallRequest) (InstallR
 		newLock = *existingLock
 	}
 
-	result := InstallResult{Package: name, Version: version, Link: request.Link, Replace: replace}
+	result := InstallResult{Source: report, Package: name, Version: version, Link: request.Link, Replace: replace}
 	compilation, err := s.compileInstalled(ctx, packages, adapters, name)
 	if err != nil {
 		return InstallResult{}, err
@@ -233,7 +275,10 @@ func (s *Service) Install(ctx context.Context, request InstallRequest) (InstallR
 		}
 	}
 	indexBytes := compilation.indexBytes
-	updatedLock := lockDocument{Format: lockFormat, Packages: append([]lockPackage(nil), lock.Packages...)}
+	updatedLock := lockDocument{Format: lock.Format, Packages: append([]lockPackage(nil), lock.Packages...)}
+	if provenance != nil {
+		updatedLock.Format = gitLockFormat
+	}
 	if existingLock == nil {
 		updatedLock.Packages = append(updatedLock.Packages, newLock)
 	}
@@ -243,7 +288,7 @@ func (s *Service) Install(ctx context.Context, request InstallRequest) (InstallR
 	}
 	updatedLock.Harnesses, result.Routes, result.StaticMigrations = harnesses, routes, migrations
 	for _, item := range packages {
-		approval, err := approvalBytes(compilation, item.lock.Name, item.pkg.Files)
+		approval, err := approvalBytes(compilation, item.lock.Name, item.pkg.Files, item.lock.Source.Git)
 		if err != nil {
 			return InstallResult{}, err
 		}
@@ -276,6 +321,9 @@ func (s *Service) Install(ctx context.Context, request InstallRequest) (InstallR
 	if err != nil {
 		return InstallResult{}, err
 	}
+	if err = inputs.planned(plannedChanges); err != nil {
+		return result, err
+	}
 	confirmed := request.Yes
 	if !confirmed && request.Confirm != nil {
 		data, _ := json.Marshal(result)
@@ -291,13 +339,24 @@ func (s *Service) Install(ctx context.Context, request InstallRequest) (InstallR
 		return result, &UsageError{Message: "installation requires capability confirmation; pass --yes in non-interactive mode"}
 	}
 	if len(plannedChanges) == 0 {
+		if err = inputs.verify(); err != nil {
+			return result, err
+		}
 		return result, nil
+	}
+	guard, err := acquireManagement(ctx, home)
+	if err != nil {
+		return result, err
+	}
+	defer func() { runErr = errors.Join(runErr, guard.close()) }()
+	if err = inputs.verify(); err != nil {
+		return result, err
 	}
 	var staged *packageSwap
 	stagedCommitted := false
 	defer func() {
 		if staged != nil && !stagedCommitted {
-			staged.rollback()
+			runErr = errors.Join(runErr, staged.rollback())
 		}
 	}()
 	if !request.Link && existingLock == nil {
@@ -606,6 +665,16 @@ func (s *Service) loadInstalledPackages(ctx context.Context, home string, lock l
 			return nil, err
 		}
 		currentHashes, _ := hashPackageFiles(files)
+		if err := checkGitSnapshot(item, files); err != nil {
+			return nil, err
+		}
+		if item.Source.Git != nil {
+			if _, available, err := loadApproval(home, item); err != nil {
+				return nil, err
+			} else if !available {
+				return nil, fmt.Errorf("Git package %s has no approved provenance", item.Name)
+			}
+		}
 		if !reflectStringMap(currentHashes, item.Files) {
 			return nil, &ConflictError{Message: fmt.Sprintf("installed package %q changed; run sync/trust before installing another package", item.Name)}
 		}

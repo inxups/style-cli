@@ -7,11 +7,13 @@ import (
 	"io"
 	"path/filepath"
 	"strings"
+
+	"github.com/inxups/style-cli/internal/source"
 )
 
 func runInstall(ctx context.Context, service *Service, workDir string, args []string, out, errOut io.Writer) int {
 	if isHelp(args) {
-		fmt.Fprintln(out, "style install <source> [--harness h] [--route h=r] [--set k=v] [--link] [--allow-replace] [--fail-closed h] [--yes] [--json]")
+		fmt.Fprintln(out, "style install <source> [--ref ref] [--path repo-path] [--harness h] [--route h=r] [--set k=v] [--link] [--allow-replace] [--fail-closed h] [--yes] [--json]")
 		return ExitOK
 	}
 	request, jsonOutput, err := parseInstallArgs(args)
@@ -23,7 +25,7 @@ func runInstall(ctx context.Context, service *Service, workDir string, args []st
 		fmt.Fprintln(errOut, "style install: source is required")
 		return ExitUsage
 	}
-	if !filepath.IsAbs(request.Source) {
+	if !source.Remote(request.Source) && !filepath.IsAbs(request.Source) {
 		request.Source = filepath.Join(workDir, request.Source)
 	}
 	previewWritten := false
@@ -95,6 +97,7 @@ func runInstall(ctx context.Context, service *Service, workDir string, args []st
 }
 
 func writeInstallPreview(out io.Writer, result InstallResult) {
+	writeSource(out, result.Source)
 	if len(result.Reports) > 0 {
 		writePlanText(out, PlanResult{Package: result.Package, Version: result.Version, Diagnostics: result.Diagnostics, Reports: result.Reports})
 	}
@@ -106,6 +109,12 @@ func parseInstallArgs(args []string) (InstallRequest, bool, error) {
 	request := InstallRequest{Settings: map[string]string{}, Routes: map[string]string{}}
 	jsonOutput := false
 	for index := 0; index < len(args); index++ {
+		if handled, err := parseSourceOption(args, &index, &request.Ref, &request.Path); handled {
+			if err != nil {
+				return InstallRequest{}, false, err
+			}
+			continue
+		}
 		arg := args[index]
 		switch {
 		case arg == "--json":

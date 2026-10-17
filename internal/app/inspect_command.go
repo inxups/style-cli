@@ -102,6 +102,9 @@ func writeListText(out io.Writer, packages []InstalledPackage) {
 	}
 	for _, pkg := range packages {
 		fmt.Fprintf(out, "%s %s seq=%d source=%s:%s link=%s hash_matches=%t native=%d\n", pkg.Name, pkg.Version, pkg.Sequence, pkg.SourceKind, pkg.Source, pkg.Link, pkg.HashMatches, pkg.NativeCount)
+		if pkg.Git != nil {
+			fmt.Fprintf(out, "  git: %q ref=%q commit=%s object=%s:%s content=%s\n", pkg.Git.URL, pkg.Git.Ref, pkg.Git.Commit, pkg.Git.ObjectFormat, pkg.Git.Object, pkg.Git.ContentSHA256)
+		}
 		if len(pkg.ChangedFiles) > 0 {
 			fmt.Fprintf(out, "  changed: %s\n", strings.Join(pkg.ChangedFiles, ", "))
 		}
