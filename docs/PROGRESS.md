@@ -2054,3 +2054,9 @@ Codex 0.159.3 与实际配置模型服务、固定生产 STYLE 二进制，在�
 - Codex 0.159.3 的 user/plugin/project 三条路线均以同一缓存修复生产二进制完成独立真实验收。最终用户/项目分别九/十次调用、12/13 次请求，插件九次/12 次；原生事件、来源/时间/session、probe/explain 全文与真实请求/state/stats 交叉核对。项目额外验证其他工作区无规则投递、用户存储无会话 state、卸载后原先不存在的配置仍缺席。
 - 三路线均通过 refresh1/2/2、事件围栏、provider、自定义 effort/unknown、正常 shell/仅损坏 state 的拒绝与恢复、新 native 正文更新/旧正文缺席、frozen 锁定字节和卸载后无正文/回调。[三路线报告](review/M3-REAL-01-2026-10-18.json)保留各条完整证据，不跨路线拼接断言。关闭 REAL-01、B1–B4。
 - 缓存修复二进制六路线未触发/SIGINT 12 次预期失败复验全过，见[报告](review/M3-PROBE-NEGATIVE-FINAL-2026-10-18.json)。双 module fresh Go 3,900/550 pass、0 fail、2/23 项明确 skip 单列；其他真实与最终 CI 仍继续。
+
+## 2026-10-18 M3-REAL-02 Claude 用户路线
+
+- Claude Code 2.1.301 使用独立已登录 profile 的真实 first-party 模型，原生保留 transcript 通过逐条 canonical hash 重放完整请求；本地 stub 请求为零，凭据仅由原生程序消费。用户路线 probe/explain、原生 stream/独立作者 payload/session/time 与完整正文关联通过，route 由隔离 fixture 配置和 probe 绑定确定，不伪称 stream 含 source 字段。
+- refresh1/2/2、围栏、anthropic provider、high→medium/approx、自缺 effort unknown、正常 Bash/仅坏 state 拒绝/恢复、新 native 正文/旧正文缺席、frozen 与卸载后新会话无原文/回调均通过，[报告](review/M3-C-CLAUDE-USER-2026-10-18.json)保留完整摘要。显式 profile/project bytes/mode 还原。仅完成用户路线，C1/C5/C6 与 REAL-02 保持部分完成。
+- 首轮 --allowedTools 可变长参数吞掉末尾 prompt，原生 resume 进入 deferred-tool 分支，未计通过；M3 采集器以 -- 结束选项后整轮重跑通过。交互 UI 的无空格渲染未被旧检测识别，未接受信任，不外推项目路线；后续另修复并实际接受隔离自建工作区。

@@ -1,0 +1,17 @@
+{
+  "baseline": "dc6d98b",
+  "documents": 4,
+  "local_links_and_anchors": 260,
+  "archives_unchanged": 59,
+  "historical_json_unchanged": 153,
+  "progress_prefix_sha256": "d53b4026daeac37365e80fef3b5f42e49abd9eebab6c2b48a81f029c14631a7d",
+  "changed_files": [
+    "docs/PROGRESS.md",
+    "docs/STYLE-M3-TASKS.md",
+    "docs/STYLE-M3-TESTS.md",
+    "docs/STYLE-PROJECTS.md",
+    "docs/review/M3-C-CLAUDE-USER-2026-10-18.json",
+    "testdata/manual/m3_claude_support.py"
+  ],
+  "checks": "pass"
+}

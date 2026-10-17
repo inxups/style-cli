@@ -27,7 +27,9 @@ class M3ClaudeProbe(LiveClaudeProbe):
     def invoke(self,name,prompt,extra=(),tools='',timeout=180,setting_sources='',settings=None,model='claude-haiku-5-5'):
         # Discover the actual user/project/plugin configuration. Historical
         # LiveClaudeProbe's explicit settings-file mode is not route acceptance.
-        return super().invoke(name,prompt,extra,tools,timeout,setting_sources='user,project,local',settings=None,model=model)
+        # Native variadic tool options otherwise consume the trailing prompt
+        # and make `--resume` select deferred-tool continuation instead.
+        return super().invoke(name,prompt,[*extra,'--'],tools,timeout,setting_sources='user,project,local',settings=None,model=model)
 
     def native_command(self,*args):
         result=subprocess.run([self.claude,*args],cwd=self.work,env=self.live_env,capture_output=True,text=True,timeout=60)
