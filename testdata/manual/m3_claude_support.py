@@ -4,11 +4,13 @@ import json
 import os
 from pathlib import Path
 import pty
+import re
 import select
 import struct
 import subprocess
 import termios
 import time
+import tty
 
 from claude_live_probe import LiveClaudeProbe, replay_requests
 from claude_probe_support import text_values
@@ -19,6 +21,7 @@ class M3ClaudeProbe(LiveClaudeProbe):
     def __init__(self,*args,**kwargs):
         super().__init__(*args,**kwargs)
         self.config=self.auth_config
+        (self.root/'native-bin/style').symlink_to(self.style)
         self.live_env['PATH']=str(self.root/'native-bin')+os.pathsep+self.live_env.get('PATH','')
         self.live_env['CLAUDE_CODE_EFFORT_LEVEL']='high'
         self.live_env['CLAUDE_EFFORT']='high'
@@ -75,19 +78,34 @@ class M3ClaudeProbe(LiveClaudeProbe):
 
     def trust_workspace(self):
         master,slave=pty.openpty();fcntl.ioctl(slave,termios.TIOCSWINSZ,struct.pack('HHHH',40,140,0,0))
+        tty.setraw(slave)
         argv=[self.claude,'--model','claude-haiku-5-5','--setting-sources','user,project,local','--strict-mcp-config','--mcp-config','{"mcpServers":{}}']
         process=subprocess.Popen(argv,stdin=slave,stdout=slave,stderr=slave,cwd=self.work,env=self.live_env,start_new_session=True);os.close(slave)
-        chunks=[];accepted=False;exit_sent=False;start=time.monotonic()
+        chunks=[];accepted=False;selection_pending=False;selection_at=0;selection_output=b'';exit_sent=False;start=time.monotonic();last_output=start
         try:
             while time.monotonic()-start<35 and process.poll() is None:
+                chunk=b''
                 ready,_,_=select.select([master],[],[],.1)
                 if ready:
                     try:chunk=os.read(master,65536)
                     except OSError:break
                     chunks.append(chunk)
+                    last_output=time.monotonic()
                 text=b''.join(chunks).decode(errors='replace')
-                if not accepted and ('Yes, I trust this folder' in text or 'Yes, trust folder' in text):
-                    os.write(master,b'\r');accepted=True
+                text=re.sub(r'\x1b\[[0-?]*[ -/]*[@-~]','',text)
+                compact=''.join(text.split())
+                if selection_pending:
+                    selection_output+=chunk
+                    if '\x1b[1B❯' in selection_output.decode(errors='replace') and time.monotonic()-selection_at>1:
+                        os.write(master,b'\r');accepted=True;selection_pending=False
+                elif not accepted and time.monotonic()-start>3 and time.monotonic()-last_output>.3 and ('Yes,Itrustthisfolder' in compact or 'Yes,trustfolder' in compact):
+                    # This native version defaults to “No, exit”. Choose the
+                    # trusted, freshly created acceptance workspace explicitly.
+                    if '❯No,exit' in compact:
+                        os.write(master,b'\x1b[B')
+                        selection_pending=True;selection_at=time.monotonic()
+                    else:
+                        os.write(master,b'\r');accepted=True
                 # An interactive startup is sufficient to record native folder
                 # trust. No prompt or model request is sent through this UI.
                 if time.monotonic()-start>12 and not exit_sent:

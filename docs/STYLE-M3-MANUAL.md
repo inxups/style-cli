@@ -26,7 +26,7 @@ PYTHONDONTWRITEBYTECODE=1 python3 scripts/check_m3_acceptance_prep.py --binary /
 python3 testdata/manual/probe_m3_live_codex.py --style /tmp/style-m3 --codex /absolute/native/codex --route codex-user --scratch /tmp/m3-codex-user --output /tmp/m3-codex-user-report.json
 ```
 
-分别以 `codex-plugin`、`codex-project` 重跑并更换 scratch/output。插件必须经原生 marketplace 命令登记；项目采用规范根、原生 trust 与独立 STYLE home，另在其他工作目录运行检查隔离。`exec` 的成功不外推 TUI 信任提示或其他 clone。来源 update/frozen 要核对批准和锁的实际字节。
+分别以 `codex-plugin`、`codex-project` 重跑并更换 scratch/output。插件必须经原生 marketplace 命令登记；Codex 0.159.3 使用独立缓存，native 更新批准后需原生 `plugin add` 刷新，再开新会话核对新正文。项目采用规范根、原生 trust 与独立 STYLE home，另在其他工作目录运行检查隔离。`exec` 的成功不外推 TUI 信任提示或其他 clone。来源 update/frozen 要核对批准和锁的实际字节。
 
 ## Claude 本地三路线
 
@@ -36,7 +36,7 @@ python3 testdata/manual/probe_m3_live_codex.py --style /tmp/style-m3 --codex /ab
 python3 testdata/manual/probe_m3_live_claude.py --style /tmp/style-m3 --claude /absolute/native/claude --auth-config /private/acceptance/claude --route claude-user --scratch /tmp/m3-claude-user --output /tmp/m3-claude-user-report.json
 ```
 
-分别以 `claude-project`、`claude-plugin` 重跑并使用新的 scratch/output；同一验收 profile 串行使用。原生 UI 确认隔离工作目录 trust，保留私有 UI 记录，不使用 bypass。模型请求通过原生 transcript 的 content/shape hash 精确重建，不能凭回复包含 marker 判定。实际发现 user/project/plugin 配置，不能用显式 `--settings` 或临时 `--plugin-dir` 冒充路线加载。
+分别以 `claude-project`、`claude-plugin` 重跑并使用新的 scratch/output；同一验收 profile 串行使用。原生 UI 确认隔离工作目录 trust，保留私有 UI 记录，不使用 bypass；等待初始化稳定、实际选中 Yes 后再确认，要求 UI 正常退出。隔离 PATH 同时提供实际 Claude 与已固定的 STYLE 入口，项目 launcher 按该 PATH 执行。模型请求通过原生 transcript 的 content/shape hash 精确重建，不能凭回复包含 marker 判定。实际发现 user/project/plugin 配置，不能用显式 `--settings` 或临时 `--plugin-dir` 冒充路线加载。原生 stream 不提供 route 字段，来源按独占 fixture 配置、probe 绑定及独立观察器的 root/payload 关联，须在报告中说明归因方式。
 
 插件首次 STYLE install 退出 1 且 changed=true、registration-required 属预期；按返回命令原生登记并启用后再运行。删除前先原生 uninstall/移除 marketplace，再 STYLE uninstall。原生元数据允许保留空容器；采集器在该私有 profile 中恢复明确列出的配置基线，另验证新会话没有 STYLE/native 回调或正文。
 
@@ -54,7 +54,7 @@ Codex 的 user/plugin/project 和 Claude 的 user/plugin/project 分别使用新
 2. 同一 session 连续三次提交核对 refresh 的输出累计、state/stats 与实际请求历史。事件模板以原始 UserPromptSubmit 单独重放，仅比较该规则完整围栏正文；不把空状态中额外出现的其他规则误当 prompt 前状态。
 3. 核对 provider、raw/canonical/approx 映射及显式 unknown。原生未提供的事实必须如实保留缺失，不能从模型行为猜测。
 4. 真实 Bash/对应 shell 工具触发 native matcher 和普通 guard，未匹配 Read 正文不得出现。保持 index 有效，仅损坏已存在 session state，验证真实工具未写入目标文件且有原生 PreToolUse 尝试；恢复原文件后再次成功。
-5. update 修改批准 native timeout、下一会话加载；frozen 恢复损坏的托管来源并保留锁字节。卸载核对外部配置 bytes/mode 和新会话无残留。
+5. update 修改批准 native timeout 和独立正文标记，下一新会话须收到新正文且无旧正文；frozen 恢复损坏的托管来源并保留锁字节。卸载核对外部配置 bytes/mode 和新会话无残留。
 
 原始 payload、请求、transcript、UI/CLI 日志、配置备份与失败详情只能写入 0700 scratch 中的 0600 文件。仓库报告白名单仅含版本、摘要、固定 fixture 事实、计数/退出码与断言。不得归档 prompt、工具正文、headers、令牌、配置内容或端点。失败报告保持 passed=false；保留原因摘要和复现命令。恢复只操作显式基线文件，遇到 symlink 或来源漂移停止，不能覆盖日常配置。
 

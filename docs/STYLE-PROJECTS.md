@@ -1,6 +1,6 @@
 # STYLE 项目级安装
 
-M3-T30 提供 `codex-project` 与 `claude-project`，通过 M3-A6 离线验收。两家真实加载、workspace trust 和模型实际投递仍分别归 M3-B2/C2；云端导出和 Claude 插件本轮暂缓。
+M3-T30 提供 `codex-project` 与 `claude-project`，通过 M3-A6 离线验收。两家真实加载、workspace trust 和模型实际投递仍分别归 M3-B2/C2；云端导出和 Claude 插件已分别由 T31/A7、T32/A8 实现，当前真实状态见[M3 测试矩阵](STYLE-M3-TESTS.md)。
 
 ## 选择项目
 

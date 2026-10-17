@@ -42,6 +42,7 @@ def run(probe,route,binding,report):
             registered=entry['plugin'].split('@',1)[1]
             probe.native_command('plugin','install',entry['plugin'],'--scope','user','--json');installed_plugin=True
         report['trust']=probe.trust_workspace()
+        assert report['trust']['native_trust_prompt_accepted'] and report['trust']['ui_exit']==0
         report['index_sha256']=sha((probe.store/'build/index.json').read_bytes())
         assert json.loads((probe.store/'build/index.json').read_bytes())['format']==7
         stdout=probe.root/'probe.private.json';stderr=probe.root/'probe.private.stderr'
@@ -56,6 +57,10 @@ def run(probe,route,binding,report):
         observed=json.loads(stdout.read_text());assert first['exit']==0 and first['requests']
         event=observed['targets'][0].get('event');assert event=='SessionStart'
         payload_path,_=native_payload(probe.root,first['session_id'],'SessionStart')
+        origin=json.loads(payload_path.with_suffix('.origin').read_bytes())
+        expected_root=str((probe.store/'adapters/claude/marketplace/plugins/style-runtime').resolve()) if route=='claude-plugin' else ''
+        assert origin['claude_plugin_root']==expected_root
+        if not expected_root:assert origin['plugin_root']==''
         facts=probe.root/'facts.private.json'
         private_write(facts,json.dumps({'format':1,'harness':'claude-code','payload_sha256':sha(payload_path.read_bytes()),'harness_version':report['harness_version'].split()[0],'model_provider':'anthropic','claude_env_effort':'high'}))
         explained=probe.style_command('explain','--harness','claude-code','--event','SessionStart','--payload',str(payload_path),'--facts',str(facts),'--index',str(probe.store/'build/index.json'))
@@ -68,6 +73,7 @@ def run(probe,route,binding,report):
             if ev:native.append({'event':ev,'source':route,'completed':exit_code==0,'started_ns':first['started_ns'],'ended_ns':first['ended_ns']})
         report['checks']['M3-C1']=correlate_probe(observed,'claude-code',route,first['session_id'],event,native,[probe.delivery(first,context)],binding)
         report['checks']['M3-C1'].update(payload_sha256=sha(payload_path.read_bytes()),explain_wire_sha256=sha(explained['wire']['stdout'].encode()),explain_from_empty_pre_session_state=True)
+        report['checks']['M3-C1']['native_route_attribution']={'native_stream_has_route_field':False,'method':'exclusive fixture registration and probe installation binding, independently observed native root and payload','expected_plugin_root_sha256':sha(expected_root.encode()) if expected_root else None,'native_root_matches':True}
         assert probe.delivery(first,STATIC)['complete_body'] and probe.delivery(first,NATIVE_START)['complete_body']
         second=probe.live('second','Reply exactly OK. Do not use tools.',resume=first['session_id'])
         third=probe.live('third','Reply exactly OK. Do not use tools.',resume=first['session_id'])

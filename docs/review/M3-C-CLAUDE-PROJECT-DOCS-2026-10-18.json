@@ -1,0 +1,19 @@
+{
+  "baseline": "ce288d5",
+  "documents": 5,
+  "local_links_and_anchors": 271,
+  "archives_unchanged": 59,
+  "historical_json_unchanged": 155,
+  "progress_prefix_sha256": "23991635e11be8b2ad4f5d063ead67c9d945749b738cc8253be3efbc52c66670",
+  "changed_files": [
+    "docs/PROGRESS.md",
+    "docs/STYLE-M3-MANUAL.md",
+    "docs/STYLE-M3-TASKS.md",
+    "docs/STYLE-M3-TESTS.md",
+    "docs/STYLE-PROJECTS.md",
+    "docs/review/M3-C-CLAUDE-PROJECT-2026-10-18.json",
+    "testdata/manual/m3_claude_support.py",
+    "testdata/manual/probe_m3_live_claude.py"
+  ],
+  "checks": "pass"
+}

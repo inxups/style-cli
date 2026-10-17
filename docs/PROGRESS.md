@@ -2060,3 +2060,9 @@ Codex 0.159.3 与实际配置模型服务、固定生产 STYLE 二进制，在�
 - Claude Code 2.1.301 使用独立已登录 profile 的真实 first-party 模型，原生保留 transcript 通过逐条 canonical hash 重放完整请求；本地 stub 请求为零，凭据仅由原生程序消费。用户路线 probe/explain、原生 stream/独立作者 payload/session/time 与完整正文关联通过，route 由隔离 fixture 配置和 probe 绑定确定，不伪称 stream 含 source 字段。
 - refresh1/2/2、围栏、anthropic provider、high→medium/approx、自缺 effort unknown、正常 Bash/仅坏 state 拒绝/恢复、新 native 正文/旧正文缺席、frozen 与卸载后新会话无原文/回调均通过，[报告](review/M3-C-CLAUDE-USER-2026-10-18.json)保留完整摘要。显式 profile/project bytes/mode 还原。仅完成用户路线，C1/C5/C6 与 REAL-02 保持部分完成。
 - 首轮 --allowedTools 可变长参数吞掉末尾 prompt，原生 resume 进入 deferred-tool 分支，未计通过；M3 采集器以 -- 结束选项后整轮重跑通过。交互 UI 的无空格渲染未被旧检测识别，未接受信任，不外推项目路线；后续另修复并实际接受隔离自建工作区。
+
+## 2026-10-18 M3-C2 Claude 项目路线
+
+- Claude 2.1.301 原生 UI 明确选择信任、正常退出后，以原生配置发现模式完成项目路线全套真实模型验收。其他项目无静态/动态规则，用户 home 无本项目会话 state；profile/project bytes/mode、卸载后无正文/回调通过。probe/explain、refresh/围栏/provider/映射/unknown、真实 Bash 拒绝/恢复、新 native 正文/frozen 均通过，[完整报告](review/M3-C-CLAUDE-PROJECT-2026-10-18.json)固定请求摘要、source/两二进制/观察器副本和原生 provenance；关闭 C2，插件继续。
+- 前四轮在原生菜单退出，未调用模型；第五轮实际 trust 成功，但私有 PATH 未提供 style，probe 正确拒绝。与直接原生 PTY 对照后，等待初始化稳定和 Yes 的真实重绘再确认，保留 raw 输入模式；补齐同一二进制的 PATH/style。五次未通过报告摘要保留，不作为产品通过。
+- 支持层 10 项自测与修改脚本 AST、文档链接/锚点/围栏、历史归档与追加日志检查通过。生产 Go 源码自 5da3b45 未变。
