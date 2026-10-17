@@ -1,0 +1,29 @@
+{
+  "date": "2026-10-18",
+  "sources": [
+    {
+      "url": "https://raw.githubusercontent.com/tiktoken-go/tokenizer/v0.7.0/tokenizer.go",
+      "sha256": "09e8f76bd5067d5b99f06f8fb64eb27568e2dc8f71910408aa4aae7b116173ea"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/tiktoken-go/tokenizer/v0.7.0/go.mod",
+      "sha256": "d7a937ca647646f9de2e7bebf3a83bf316d7f6c09224aa356d1e61157b89d6a9"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/tiktoken-go/tokenizer/v0.7.0/LICENSE",
+      "sha256": "84b1679fd28b98c8e02f2f1a1cab41ac230b0e9841695462ad6369663d32473a"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/tiktoken-go/tokenizer/v0.8.1/go.mod",
+      "sha256": "2136d5395187c49bef77a1532d4259e29b44129ac28a0f36ce3c37a5f9789f10"
+    },
+    {
+      "url": "https://platform.claude.com/docs/en/api/messages-count-tokens",
+      "sha256": "2794e95b984a79fb307ce2e67c09030276398e7ed63c3a0dd50a3af268976338"
+    }
+  ],
+  "tokenizer_pin": "v0.7.0",
+  "commit": "629192d03fc5026d8d04030a93f4aee3b3458f65",
+  "sum": "h1:VMu6MPT0bXFDHr7UPh9uii7CNItVt3X9K90omxL54vw=",
+  "note": "Retrieved documentation/source only. No Anthropic counting request or key access."
+}

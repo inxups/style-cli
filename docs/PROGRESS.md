@@ -1902,3 +1902,7 @@ PY
 - index 7、严格 JSON/schema/constructor 和 min_index_format:7；六路线 install/sync/update/frozen/doctor/移除、云端快照、实际旧 T44 运行器和六管理命令零写入拒绝均有证据。adapter 提供故障评估点及 Claude prompt 抑制能力，移除 engine 两处具体 harness 判断；agenthooks 协议/renderer/owner/依赖和旧 testdata 不改。
 - [A14 报告](review/M3-A14-2026-10-18.json)：9 新函数/74 pass，最终 root fresh 3,416 pass/0 fail（2 既有 opt-in/helper skip 单列）；专项 race 74、vet、45 故障策略 CLI、35 映射兼容 CLI、40 smoke 通过。临时三缓存/清理外部环境，全量来源 TLS fixture 使用既有本机监听授权。所有初次失败保留：approx 条件误用、异步日志测试缓冲区 race、旧假 adapter 缺新能力、skill/cloud 夹具假设，修正后最终运行通过。
 - [文档检查](review/M3-A14-DOCS-2026-10-18.json)核对链接/锚点/围栏、追加日志、历史归档/JSON、源码格式与 diff。仅关闭 T45/A14，继续 D9/T50；B3/C5 后续独立，用户延期 C3/W1/Anthropic API 和各 0/40 官方计数保持。
+
+## 2026-10-18 M3-D9 精确计数定稿
+
+依赖 T45/A14 完成，按全部评审通过授权定稿[D9](review/M3-D9-EXACT-COUNT-2026-10-18.md)。明确三命令、静态/实际模型文本和动态拒绝、纯 Go 具名编码、固定 Anthropic 单消息口径、隐私/取消/无回落与旧估算兼容；固定 v0.7.0 以保留 Go 1.25 基线。来源摘要和 MIT/依赖边界有记录，只关闭 D9，A15/本地 TOKEN-01 待执行，API 真运行仍按用户决定延期。[文档检查](review/M3-D9-DOCS-2026-10-18.json)通过后进入 T50。

@@ -1,0 +1,18 @@
+{
+  "baseline": "c5df22f",
+  "documents": 5,
+  "local_links_and_anchors": 244,
+  "archives_unchanged": 59,
+  "historical_json_unchanged": 102,
+  "progress_prefix_sha256": "c47f64bcf4b6b66c6352451a99cc0bb5b3358f70ad7366b801eb890410ae7973",
+  "changed_files": [
+    "docs/PROGRESS.md",
+    "docs/STYLE-M3-TASKS.md",
+    "docs/review/M3-D9-DOCS-2026-10-18.json",
+    "docs/review/M3-D9-EXACT-COUNT-2026-10-18.md",
+    "docs/review/M3-D9-SOURCES-2026-10-18.json",
+    "docs/spec/STYLE-cli-design.md",
+    "docs/spec/STYLE-spec-runtime.md"
+  ],
+  "checks": "pass"
+}

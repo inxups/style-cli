@@ -328,3 +328,7 @@ D5 模板字段/可用事件沿 §4 条件字段定义；`reads.event` 精确列
 ## M3-D8 规则级失败策略
 
 已定稿[规则级失败契约](../review/M3-D8-FAIL-CLOSED-2026-10-18.md)：fail: closed 仅在可 deny 的直接运行时评估点使用；故障保护按整个原生事件范围保守选择，正常未命中不拦。index 7 与严格最低格式锁保护语义；index 不可读/宿主终止需安装级机制，agenthooks 保留协议职责。T45/A14 已实现并通过[离线验收](../review/M3-A14-2026-10-18.json)，见[使用说明](../STYLE-FAIL-CLOSED.md)；B3/C5 后续独立。
+
+## M3-D9 精确计数
+
+[D9 定稿](../review/M3-D9-EXACT-COUNT-2026-10-18.md)规定 count/plan/explain 的显式 exact 附加报告，本地具名编码与 Anthropic 最小消息请求分别披露；不改变估算预算/运行时上限，不将编码精确称为模型账单精确。动态计划用 explain 实际渲染；计数失败不回落估算。
