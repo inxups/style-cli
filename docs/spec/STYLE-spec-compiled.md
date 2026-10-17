@@ -189,7 +189,7 @@ static 仍只提供 index 的位置/摘要/估算，不证明原生已加载；n
 
 ### 10.1 M3-D2 锁定重建评审稿
 
-本节为等待用户评审的 [D2 契约](../review/M3-D2-SOURCES-2026-10-17.md)，尚未实现。D1 的 index/state/explain format=1 继续有效；D2 只拟在首次成功 Git 安装时引入 lock format=2，新版读取 1/2，纯本地旧锁仍写 1。Git URL/ref/object_format/commit/tree 或 blob 及内容摘要属于冷路径锁和缓存，不加入 runtime index，不使 hook 启动 Git。
+本节为已获用户确认的 [D2 契约](../review/M3-D2-SOURCES-2026-10-17.md)，尚未实现。D1 的 index/state/explain format=1 继续有效；D2 只拟在首次成功 Git 安装时引入 lock format=2，新版读取 1/2，纯本地旧锁仍写 1。Git URL/ref/object_format/commit/tree 或 blob 及内容摘要属于冷路径锁和缓存，不加入 runtime index，不使 hook 启动 Git。
 
 index.packages 的 lock 仍按排序包路径、NUL、逐文件 SHA256 和换行聚合；相同字节不因 ref/commit 变化产生新内容身份，来源变化仍在管理锁与预览中披露。Git 单文件与目录来源通过 core 的既有不可变快照校验，与本地包共用 requires/settings/native/预算/跨包去重与解释说明生成。
 

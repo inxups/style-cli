@@ -1696,3 +1696,10 @@ PY
 - macOS 27.0.1 / Git 2.54.0，在私有 HOME、空 Git 系统/全局配置与模板/hooks、清理继承 GIT/CODEX 环境下，新执行 12 项本地 Git 设计探针（41 个命令，2 个预期负例），固定对象/SHA-1 与 SHA-256、branch/tag 歧义、原始 blob/归档属性差异、目录/单文件/模式、配置隔离和禁用 ext helper 均通过，canary 未执行。第一次 required filter 与后续 index fixture 构造冲突、第二次空模板无 hooks 目录的失败和修正后重跑全部保留；不是产品失败被跳过。成功原始证据在 `/tmp/style-m3-d2-20261017.bgb7zb5l`，脚本为 `/tmp/style-m3-d2-git-probe-20261017.py`，失败记录为 `/tmp/style-m3-d2-first-failure-20261017.json`、`/tmp/style-m3-d2-second-failure-20261017.json`。
 - 文档检查命令 `PYTHONDONTWRITEBYTECODE=1 python3 /tmp/style-m3-d2-doc-check-20261017.py --base a8fad75a17d0dbc1a38cc5825ec17cfda5b780ab --closed` 通过：8 份当前 Markdown 的 145 个本地链接/锚点及围栏、4 段 shell 语法、44 任务/39 测试映射/依赖/状态、19 份源码的 62 条调查事实与全部私有探针/失败摘要；PROGRESS 原字节前缀 SHA256 `e4b488a272192fed264c8c5a3e2e9dff2778fa862ab26c0a3805a276c8e16b64` 保持，77 份 M1/M2 归档未变，git diff --check 通过；结果归入 `docs/review/M3-D2-DOCS-2026-10-17.json`。
 - A3/A4/A5 各 12 组生产验收均待执行，D2 保持 `[~]` 等用户评审，T20–T22 仍未开始。本轮只改文档/调查证据，不改生产/测试/agenthooks/依赖/已有 fixture/golden/workflow；未运行 Go/构建、生产 HTTPS/TLS 集成、完整恶意配置矩阵、真实 harness/模型/官方计数或远端 CI。真实/Windows 状态不变，官方计数仍两家各 0/40、非阻塞；定稿后才依次进入 T20/A3、T21/A4、T22/A5。
+
+### 2026-10-17 — M3-D2 来源与锁定契约定稿 `[x]`
+
+- 接 clean `03eb40690841197ae81a75822422a49170f2fac8`。用户在已展示的 D2 评审稿和明确确认问题后回复“继续”，批准公共 git+https/规范 ref/原始对象快照、lock 2 与明确选包更新、当前整锁/绑定下离线 frozen 三项选择；据此关闭 D2，不重复请求批准。
+- 任务/矩阵、详细方案与 CLI/包/编译规范同步为设计已确认、尚待实现；A3/A4/A5 各 12 组生产验收仍未执行，T20–T22 未开始。设计批准不改变真实环境、Windows、CI 或官方计数状态；两家官方计数仍各 0/40、非阻塞待验。
+- 定稿检查命令 `PYTHONDONTWRITEBYTECODE=1 python3 /tmp/style-m3-d2-approved-check-20261017.py --base 03eb40690841197ae81a75822422a49170f2fac8 --closed` 核对链接/锚点/围栏、shell 语法、44 任务/39 测试映射/依赖和状态、调查源码与原私有证据摘要、PROGRESS 追加前缀及 77 份 M1/M2 归档；结果归入 `docs/review/M3-D2-APPROVED-2026-10-17.json`。原评审报告保持不变；源码/测试/agenthooks/依赖/既有 fixture/golden/workflow 未改，git diff --check 通过。
+- 本次仅文档定稿检查，不重复设计探针或运行新的 Go/生产来源/真实验收；独立提交后开始 M3-T20/M3-A3，再依次进入 T21/A4、T22/A5。
