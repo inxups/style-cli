@@ -1614,3 +1614,12 @@ PY
 - 数量与 M2 最终对照一致。新标准构建为 `GOWORK=off`，agenthooks 记录为 `v0.0.0` 加本地 replace；额外定向 workspace 构建记录为 `(devel)`，与既有 M2 二进制逐字节相同、SHA256 `32aef36dcb67d8cd0c57e123016094e1f82e5cce8adca37a9b6ae56c990cf81d`，避免将构建模式差异误作源码回归。相对 M2 最终 CI 源码 `154506f`，cmd/core/internal/agenthooks、Go 依赖文件、Makefile、脚本与采集器对象未变。
 - 归档 `docs/review/M3-BASE-01-2026-10-17.json`：固定起点 HEAD/源码树、环境、命令/退出码/耗时、逐 package 输出、40 项 smoke、16/12 组 fixture 事实、两次采集器与构建元数据、原始日志 SHA256。私有完整记录留 `/tmp/style-m3-baseline-20261017.lbp47_dq`；旧 M2 脚本报告中的 T40 未提交/C4 待验是历史硬编码标签，报告已注明不作为本轮状态。
 - 验证命令 `python3 /tmp/style-m3-01-doc-check-20261017.py --base 7586cca5744c697c1cc84a7cc0409e20cc39af40 --closed` 通过：源码/二进制/日志摘要、52 个当前 Markdown 本地链接/锚点及围栏、三段命令语法、44 项任务/39 项测试的编号与依赖、`PROGRESS.md` 追加前缀（SHA256 `f620d519baa131e533a5cb064a1ada712f2454fd1e4b8a301077b116927b51e0`）、77 份 M1/M2 归档未变及 `git diff --check`。仅关闭 M3-01/M3-BASE-01；M3-RV-01 仍 `[!]`，官方计数各 0/40、真实验收/远端 CI 状态未变。下一项 M3-D0，设计经用户评审后才进入 M3-T00。
+
+### 2026-10-17 — M3-D0 注册表校验边界评审稿 `[~]`
+
+- 接 clean `323acf81ad63b417ea27b29064f9473efbb7a12b`，M3-01 已独立提交且基线通过。逐项检查 core/spec 的三处名称 allowlist、Registry/Service、validate/plan/install/sync/trust/卸载保留包与去重预算调用链；当前无 M3 生产实现，不沿用基线结果关闭新验收。
+- 新建 `docs/review/M3-D0-REGISTRY-VALIDATION-2026-10-17.md`，并回写 CLI §1/§3.1、包顶层字段和条件规范。拟由同一 Registry 产生 `ValidationCatalog`（名称全集/native 子集），Service 用 `ValidateWithCatalog` 完整校验；零目录不回落内置值，普通注册但无 native 与未知名分别处理，目录包/单文件包共用门禁。
+- 兼容选择明确留待用户批准：`spec.Validate(pkg)` 保留 Go 签名，职责改为结构/lint 校验；完整有效性调用迁移到带目录入口。三处未知名 code/message、默认两家 CLI 输出/退出码/诊断排序保持兼容。预算路径传递完整源诊断，validate 预算与 plan auto 遍历注册项；原生指纹/批准基线继续保留解析比较用途。agenthooks 的协议、配置渲染、owner/卸载职责不变。
+- 全 core 名称搜索额外发现 engine/process.go 两处 Claude prompt suppression 判断，与名称成员关系校验不同。本稿保留既有原生输出安全约束，显式交由 M3-D8 评估能力边界；T00 不宣称所有 core 特例清零。另确认依赖 guard 尚未覆盖 adapter 子路径，纳入 A0 的架构回归。
+- M3-A0 细化 A0-01–A0-10（四种目录、普通/native 差异、坏值与诊断兼容、API 边界、快照/无探测、全部入口/auto、预算回退、失败恢复、依赖边界及兼容回归），全部待执行。D0 保持 `[~]` 待用户评审，T00/A0 仍 `[ ]`、RV-01 仍 `[!]`；不新增真实模型请求、远端 CI 或官方计数。
+- 文档检查 `python3 /tmp/style-m3-d0-doc-check-20261017.py --base 323acf81ad63b417ea27b29064f9473efbb7a12b --closed` 通过：8 份当前 Markdown 的 81 个本地链接/锚点、围栏与四段 shell 语法，44 项任务/39 项测试映射与依赖，15 份源码的 24 条调查事实、十组待执行断言与评审门禁状态。`PROGRESS.md` 原字节前缀 SHA256 `b1e13a652462af8fd1f4c22c22e662c7e3e62ead163735aa56e82a3c41d82235` 保持一致，77 份 M1/M2 归档未变、生产/测试/agenthooks/依赖未变，`git diff --check` 通过。设计检查只证明文档和当前源码调查一致，不标记 M3-A0 通过。
