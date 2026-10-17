@@ -10,11 +10,12 @@ import (
 
 const (
 	// Format is the stable on-disk index format emitted by M1.
-	Format         = 1
-	RefreshFormat  = 2
-	EventFormat    = 3
-	ProviderFormat = 4
-	UnknownFormat  = 5
+	Format              = 1
+	RefreshFormat       = 2
+	EventFormat         = 3
+	ProviderFormat      = 4
+	UnknownFormat       = 5
+	EffortMappingFormat = 6
 )
 
 // PackageInfo identifies one installed package in the index. Seq is the
@@ -29,11 +30,12 @@ type PackageInfo struct {
 
 // Index is the complete runtime index for all installed packages and harnesses.
 type Index struct {
-	Format       int                           `json:"format"`
-	StyleVersion string                        `json:"style_version"`
-	Packages     []PackageInfo                 `json:"packages"`
-	Static       map[string][]StaticEntry      `json:"static"`
-	Harnesses    map[string]map[string][]Entry `json:"harnesses"`
+	EffortMapping EffortMapping                 `json:"effort_mapping,omitempty"`
+	Format        int                           `json:"format"`
+	StyleVersion  string                        `json:"style_version"`
+	Packages      []PackageInfo                 `json:"packages"`
+	Static        map[string][]StaticEntry      `json:"static"`
+	Harnesses     map[string]map[string][]Entry `json:"harnesses"`
 }
 
 // StaticEntry describes a rule written to a provider-owned static location.
@@ -128,8 +130,9 @@ type PackageInput struct {
 
 // Request supplies the pure inputs needed for one complete index compile.
 type Request struct {
-	StyleVersion string
-	Packages     []PackageInput
+	EffortMapping EffortMapping
+	StyleVersion  string
+	Packages      []PackageInput
 }
 
 // StaticBody is installation output kept outside index.json. Static entries

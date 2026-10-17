@@ -1,0 +1,824 @@
+{
+  "format": 1,
+  "task": "M3-T44",
+  "acceptance": "M3-A13",
+  "baseline": "a51589cdb64a4eb4adf0a7f5d921258588e06b90",
+  "date": "2026-10-17",
+  "status": "passed-offline",
+  "source_sha256": {
+    "core/compile/build.go": "a6fb63448de484a7a86d00a5b2a89feba99d272ab660bbbe79c40d5625bec37d",
+    "core/compile/effort_mapping.go": "742332467e0bb27fb11128d46012d70f96446acbc68ad5703e7901a4ad45d4e0",
+    "core/compile/effort_mapping_test.go": "3cbee6c58a4d8792b7277dfeff7d55abedb5c5b8ff0aab3bfcaa2508e1271cd9",
+    "core/compile/json.go": "7804d0893d0ca6537be60c5954063646ce8c341dcef0ea0f0f71d832eabe9476",
+    "core/compile/types.go": "50b17cddc0ab5e0b6c365880fb36ed1a22094572e7a704f0f8367230a8aa0094",
+    "core/engine/load.go": "767df64231d63bb1c0d56a945d5aa73e4d981cbd0487dff91be25f73257e44c6",
+    "core/state/effort_mapping.go": "6b98288bc89733f90ecf078c379b94cf18fd39e4de5e1379283e2bbce879a399",
+    "core/state/effort_mapping_test.go": "17289baadccae27e496a3f6df649d68cc426aa435e25f41901b6884fb1bad5d4",
+    "core/state/provider.go": "6f6641bedc05394bd1e03ce8b04b84514143a9902acff445818cfde4126993d5",
+    "core/state/state.go": "131d5e445cc9eb17f1d8b4bcc517942b35da7b5ae9f61a09f01ea0b7a380f7b1",
+    "internal/adapter/claude/runtime.go": "06089d88a7cf823e4df0818f7bc859a5142d94fa92f1dc26e5ba5b20eccfdf33",
+    "internal/adapter/codex/runtime.go": "1e164a994ff3486e48b9fb0159bdcb0a393720f67a0d770c552fb6ec4ebe1e1e",
+    "internal/adapter/effortmap/policy.go": "7bd9e4141e2d5c5dcc310cf158c763af444746774985338a8f9a2ae6fdbbb3bf",
+    "internal/adapter/effortmap/policy_test.go": "711d78a500b92b552010ed9a4040d2c8e0c7702ebef6d87e4b1c0afc9b25b96f",
+    "internal/app/doctor.go": "ccbe5c2823ee2e1ad93775039a76e93ab90f05c62bf46ac299a934039ec34bf5",
+    "internal/app/doctor_system.go": "9ee73fe27c616418d51963082681e61cb337d6c941caba0b63bc2c869c5579f5",
+    "internal/app/effort_mapping.go": "e07deb64c8ee0059514afe7d2fa5b124ccf7843df61a4590865b4d06024f24d0",
+    "internal/app/effort_mapping_test.go": "6c29dcda1261f791cbfe92b5fa914dc621eeeb7874e4118a18f43ceaa8802e4c",
+    "internal/app/explain.go": "01812a14d632af3c850ca6d5bbf034f8ca45e13a201ef4f05109cffb33c59eaf",
+    "internal/app/frozen_prepare.go": "64846a243584e0f35713d174552dd64fe5e201aa373bf4705e21859dc108c5fd",
+    "internal/app/install.go": "b90a81c4acf35f92824bcd77cd6aab4ad7ea0e881ebd1c1774318ba4a9bd2f53",
+    "internal/app/lifecycle_store.go": "37cbe37c55a0fa111499d07b2efdee4dd95a2a92042ce39f5a3e7afa42083504",
+    "internal/app/plan.go": "dede33bf0441e0231c3d44f03c5202b32563a1a45f6b69d7efbb4ce1d1c51b8c",
+    "internal/app/project.go": "3317fdd54b8f76a782a33f137f23b38a4bc1085063d109cb65da6e7f997cabe7",
+    "internal/app/runtime_minimum.go": "6446039f21af8df4d97bf97f6eb081b695d8df8253bb9af7ea50b059953f4662",
+    "internal/app/sync_prepare.go": "746d23236f5d5882b843e402dcbb305c9ff246c4632b6f62df87359fabb1e0c3",
+    "internal/app/uninstall.go": "6da6d32f60f58c93ef18e8b27e6cf34811eb711d28cd005879169a1059a72238",
+    "internal/app/update_prepare.go": "b63c84c02dac152687638566003917b89901d295710778707cc3c2c9ff94ba48",
+    "internal/runtime/runtime.go": "9092043c225932e01251c3491635bc94ae2a47f5e2a8c12284bc6f900e91e512",
+    "schema/index.schema.json": "bcff0a3fa254e1b56b5d39c07c30af1b5ca7d7316bce124877cdc1e0188b7884",
+    "scripts/check_m3_effort_mapping.py": "4db148c64627076fa0dca6f78bdf680768c7713242bcd58f6f36eed043361f08"
+  },
+  "binary_sha256": "de086b265c8d0e0008ac6802e35d3f86c7214e744936ab2d67367cb54f0f7312",
+  "old_binary_sha256": "8b8d8c31463d0d7fe9ca12559a149880306336095da2685b1c55d86bc9d3c7fe",
+  "codex_ancestor_sha256": "421085114d6a673f51308d6feee4365916e3c11b957e4f764d044ea4edc53224",
+  "runner_source": "import json,os,subprocess,sys,time\nfrom pathlib import Path\nroot=Path('/tmp/style-m3-complete-20261017');name=sys.argv[1];cmd=sys.argv[2:];env=os.environ.copy()\nfor key in ['CLAUDE_CODE_USE_BEDROCK','CLAUDE_CODE_USE_VERTEX','CLAUDE_CODE_USE_FOUNDRY','CLAUDE_CODE_PROVIDER_MANAGED_BY_HOST','CLAUDE_CODE_HOST_MANAGED','ANTHROPIC_BASE_URL','ANTHROPIC_BEDROCK_BASE_URL','ANTHROPIC_VERTEX_BASE_URL','ANTHROPIC_FOUNDRY_BASE_URL','ANTHROPIC_AWS_BASE_URL','CLAUDE_CODE_USE_MANTLE','ANTHROPIC_AWS_USE_MANTLE','CLAUDE_CODE_USE_ANTHROPIC_AWS','CODEX_HOME','CODEX_SANDBOX','STYLE_HOME','CLAUDE_CONFIG_DIR','CLAUDE_CODE_CONFIG_DIR','CLAUDE_CODE_EFFORT_LEVEL','CLAUDE_EFFORT','CLAUDE_CODE_REMOTE','CLAUDE_PLUGIN_ROOT','PLUGIN_ROOT','STYLE_PERF','STYLE_PERF_OUTPUT','STYLE_M3_A6_RECORD','STYLE_UPDATE_GOLDENS','STYLE_REFRESH_HELPER','STYLE_REFRESH_TURN','STYLE_REFRESH_WORKER']:env.pop(key,None)\nfor key,value in {'GOPATH':'gopath','GOMODCACHE':'modcache','GOCACHE':'gocache'}.items():env[key]=str(Path('/tmp/style-m3-project-20261017')/value)\nenv['GOPROXY']='off';env['GOFLAGS']='-mod=readonly';env['GOWORK']='off';start=time.time()\nwith (root/(name+'.log')).open('wb') as f:p=subprocess.run(cmd,env=env,stdout=f,stderr=subprocess.STDOUT)\nresult={'command':cmd,'exit_code':p.returncode,'seconds':round(time.time()-start,3),'environment':{key:env[key] for key in ['GOPATH','GOMODCACHE','GOCACHE','GOPROXY','GOFLAGS','GOWORK']}}\n(root/(name+'.json')).write_text(json.dumps(result,indent=2)+'\\n');print(json.dumps(result))\nif p.returncode:\n lines=(root/(name+'.log')).read_text().splitlines();events=[]\n for line in lines:\n  try:events.append(json.loads(line))\n  except:pass\n failed=[v.get('Test') for v in events if v.get('Action')=='fail' and v.get('Test')]\n if failed:\n  for test in failed:print(test, ''.join(v.get('Output','') for v in events if v.get('Test')==test)[-2200:])\n else: print('\\n'.join(lines[-35:]))\nsys.exit(p.returncode)\n",
+  "runs": [
+    {
+      "command": [
+        "go",
+        "test",
+        "./core/...",
+        "./internal/adapter/...",
+        "./internal/app",
+        "./internal/runtime",
+        "-run",
+        "^TestM3A1[12]",
+        "-count=1",
+        "-json"
+      ],
+      "exit_code": 0,
+      "seconds": 4.825,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "name": "a13-first",
+      "log_sha256": "f8d6772e04fa12786679df7d48693852e01514a7a6b4ae2fd3fc0829f7e9feff",
+      "counts": {
+        "pass": 179
+      }
+    },
+    {
+      "command": [
+        "go",
+        "test",
+        "./core/...",
+        "./internal/adapter/...",
+        "-run",
+        "^TestM3A13",
+        "-count=1",
+        "-json"
+      ],
+      "exit_code": 1,
+      "seconds": 1.765,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "name": "a13-core1",
+      "log_sha256": "b3a33a95e7ef2b200e7cceb900fc65888f8d83ba6e2684fdb2021144478d3296",
+      "counts": {
+        "pass": 28
+      }
+    },
+    {
+      "command": [
+        "go",
+        "test",
+        "./internal/app",
+        "-run",
+        "^TestM3A13",
+        "-count=1",
+        "-json"
+      ],
+      "exit_code": 1,
+      "seconds": 0.206,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "name": "a13-app1",
+      "log_sha256": "e0bfb20f939840c7edaf6e2c153acca35b062cad5f54ab97af5b0136368d61f2",
+      "counts": {}
+    },
+    {
+      "command": [
+        "go",
+        "test",
+        "./core/...",
+        "./internal/adapter/...",
+        "./internal/app",
+        "./internal/runtime",
+        "-run",
+        "^TestM3A13",
+        "-count=1",
+        "-json"
+      ],
+      "exit_code": 1,
+      "seconds": 2.017,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "name": "a13-target1",
+      "log_sha256": "f9f8cc97e39e57b95b358decd18fb183f3ebb4919cdeb5edc7ba5bfca23b23ca",
+      "counts": {
+        "pass": 54,
+        "fail": 9
+      }
+    },
+    {
+      "command": [
+        "go",
+        "test",
+        "./core/...",
+        "./internal/adapter/...",
+        "./internal/app",
+        "./internal/runtime",
+        "-run",
+        "^TestM3A13",
+        "-count=1",
+        "-json"
+      ],
+      "exit_code": 1,
+      "seconds": 4.476,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "name": "a13-target2",
+      "log_sha256": "0670fa4e60107f5c2e6746393f709e9bc48e3f6bc4675489bd65a3d86e4c869b",
+      "counts": {
+        "pass": 62,
+        "fail": 1
+      }
+    },
+    {
+      "command": [
+        "go",
+        "test",
+        "./core/...",
+        "./internal/adapter/...",
+        "./internal/app",
+        "./internal/runtime",
+        "-run",
+        "^TestM3A13",
+        "-count=1",
+        "-json"
+      ],
+      "exit_code": 0,
+      "seconds": 4.02,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "name": "a13-target3",
+      "log_sha256": "8b98fd29078cccc2896b8243723438beb29a6f99620b121573aa4f19a16210a1",
+      "counts": {
+        "pass": 73
+      }
+    },
+    {
+      "command": [
+        "go",
+        "build",
+        "-o",
+        "/tmp/style-m3-complete-20261017/style-effort",
+        "./cmd/style"
+      ],
+      "exit_code": 0,
+      "seconds": 0.333,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "name": "a13-build",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "counts": {}
+    },
+    {
+      "command": [
+        "go",
+        "test",
+        "./...",
+        "-count=1",
+        "-json"
+      ],
+      "exit_code": 0,
+      "seconds": 110.909,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "name": "a13-root",
+      "log_sha256": "92c45fab5c7605bcb76ef6d1115e1812495031b75d47ae4693e40c5e8f8020c0",
+      "counts": {
+        "pass": 3342,
+        "skip": 2
+      }
+    },
+    {
+      "command": [
+        "go",
+        "test",
+        "-race",
+        "./core/...",
+        "./internal/adapter/...",
+        "./internal/app",
+        "./internal/runtime",
+        "-run",
+        "^TestM3A13",
+        "-count=1",
+        "-json"
+      ],
+      "exit_code": 0,
+      "seconds": 9.646,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "name": "a13-race",
+      "log_sha256": "b32a11c4773545bf1e1ea3597465954a75a7a9712b9621e956260091a8594e6f",
+      "counts": {
+        "pass": 73
+      }
+    },
+    {
+      "command": [
+        "go",
+        "vet",
+        "./..."
+      ],
+      "exit_code": 0,
+      "seconds": 0.629,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "name": "a13-vet",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "counts": {}
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/check_m3_effort_mapping.py",
+        "--binary",
+        "/tmp/style-m3-complete-20261017/style-effort",
+        "--old-binary",
+        "/tmp/style-m3-complete-20261017/style-unknown",
+        "--codex-ancestor",
+        "/tmp/style-m3-complete-20261017/codex-fixture",
+        "--report",
+        "/tmp/style-m3-complete-20261017/a13-cli-report.json"
+      ],
+      "exit_code": 0,
+      "seconds": 6.117,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "name": "a13-cli1",
+      "log_sha256": "6b3e595daedae6528e6528161eae9c1007e480a0bd2a5d176ec3c6a185e1e02b",
+      "counts": {}
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/check_m3_effort_mapping.py",
+        "--binary",
+        "/tmp/style-m3-complete-20261017/style-effort",
+        "--old-binary",
+        "/tmp/style-m3-complete-20261017/style-unknown",
+        "--codex-ancestor",
+        "/tmp/style-m3-complete-20261017/codex-fixture",
+        "--report",
+        "/tmp/style-m3-complete-20261017/a13-cli-report-final.json"
+      ],
+      "exit_code": 0,
+      "seconds": 5.169,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "name": "a13-cli-final",
+      "log_sha256": "6b3e595daedae6528e6528161eae9c1007e480a0bd2a5d176ec3c6a185e1e02b",
+      "counts": {}
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/check_m3_unknown.py",
+        "--binary",
+        "/tmp/style-m3-complete-20261017/style-effort",
+        "--old-binary",
+        "/tmp/style-m3-complete-20261017/style-provider",
+        "--report",
+        "/tmp/style-m3-complete-20261017/a13-unknown-compat-report.json"
+      ],
+      "exit_code": 0,
+      "seconds": 5.315,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "name": "a13-unknown-compat",
+      "log_sha256": "6b3e595daedae6528e6528161eae9c1007e480a0bd2a5d176ec3c6a185e1e02b",
+      "counts": {}
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/smoke.py",
+        "/tmp/style-m3-complete-20261017/style-effort"
+      ],
+      "exit_code": 0,
+      "seconds": 1.382,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "name": "a13-smoke",
+      "log_sha256": "5039b6cbbaa0d673d3772dfa18b0e24352159e7f2ddf65dd8cdabcbff5e08b63",
+      "counts": {}
+    }
+  ],
+  "cli": {
+    "format": 1,
+    "binary_sha256": "de086b265c8d0e0008ac6802e35d3f86c7214e744936ab2d67367cb54f0f7312",
+    "old_binary_sha256": "8b8d8c31463d0d7fe9ca12559a149880306336095da2685b1c55d86bc9d3c7fe",
+    "real_harness": false,
+    "cases": [
+      {
+        "route": "codex-user",
+        "action": "old-install-upgrade-plan-compiled-snapshot-and-strict-lock",
+        "status": "passed"
+      },
+      {
+        "route": "codex-user",
+        "action": "configured-hook-user-approx-raw-readonly-explain-parity",
+        "status": "passed"
+      },
+      {
+        "route": "codex-user",
+        "action": "actual-T43-runtime-six-management-commands-refuse-zero-write",
+        "status": "passed"
+      },
+      {
+        "route": "codex-user",
+        "action": "frozen-rebuild-uses-approved-lock-not-live-mapping",
+        "status": "passed"
+      },
+      {
+        "route": "codex-user",
+        "action": "doctor-pending-sync-remaps-cached-raw",
+        "status": "passed"
+      },
+      {
+        "route": "codex-user",
+        "action": "removal-clears-tier-approx-provenance-and-old-runtime-management-compatible",
+        "status": "passed"
+      },
+      {
+        "route": "codex-user",
+        "action": "uninstall",
+        "status": "passed"
+      },
+      {
+        "route": "codex-plugin",
+        "action": "old-install-upgrade-plan-compiled-snapshot-and-strict-lock",
+        "status": "passed"
+      },
+      {
+        "route": "codex-plugin",
+        "action": "configured-hook-user-approx-raw-readonly-explain-parity",
+        "status": "passed"
+      },
+      {
+        "route": "codex-plugin",
+        "action": "actual-T43-runtime-six-management-commands-refuse-zero-write",
+        "status": "passed"
+      },
+      {
+        "route": "codex-plugin",
+        "action": "frozen-rebuild-uses-approved-lock-not-live-mapping",
+        "status": "passed"
+      },
+      {
+        "route": "codex-plugin",
+        "action": "doctor-pending-sync-remaps-cached-raw",
+        "status": "passed"
+      },
+      {
+        "route": "codex-plugin",
+        "action": "removal-clears-tier-approx-provenance-and-old-runtime-management-compatible",
+        "status": "passed"
+      },
+      {
+        "route": "codex-plugin",
+        "action": "uninstall",
+        "status": "passed"
+      },
+      {
+        "route": "claude-user",
+        "action": "old-install-upgrade-plan-compiled-snapshot-and-strict-lock",
+        "status": "passed"
+      },
+      {
+        "route": "claude-user",
+        "action": "configured-hook-user-approx-raw-readonly-explain-parity",
+        "status": "passed"
+      },
+      {
+        "route": "claude-user",
+        "action": "actual-T43-runtime-six-management-commands-refuse-zero-write",
+        "status": "passed"
+      },
+      {
+        "route": "claude-user",
+        "action": "frozen-rebuild-uses-approved-lock-not-live-mapping",
+        "status": "passed"
+      },
+      {
+        "route": "claude-user",
+        "action": "doctor-pending-sync-remaps-cached-raw",
+        "status": "passed"
+      },
+      {
+        "route": "claude-user",
+        "action": "removal-clears-tier-approx-provenance-and-old-runtime-management-compatible",
+        "status": "passed"
+      },
+      {
+        "route": "claude-user",
+        "action": "uninstall",
+        "status": "passed"
+      },
+      {
+        "route": "codex-project",
+        "action": "old-install-upgrade-plan-compiled-snapshot-and-strict-lock",
+        "status": "passed"
+      },
+      {
+        "route": "codex-project",
+        "action": "configured-hook-user-approx-raw-readonly-explain-parity",
+        "status": "passed"
+      },
+      {
+        "route": "codex-project",
+        "action": "actual-T43-runtime-six-management-commands-refuse-zero-write",
+        "status": "passed"
+      },
+      {
+        "route": "codex-project",
+        "action": "frozen-rebuild-uses-approved-lock-not-live-mapping",
+        "status": "passed"
+      },
+      {
+        "route": "codex-project",
+        "action": "doctor-pending-sync-remaps-cached-raw",
+        "status": "passed"
+      },
+      {
+        "route": "codex-project",
+        "action": "removal-clears-tier-approx-provenance-and-old-runtime-management-compatible",
+        "status": "passed"
+      },
+      {
+        "route": "codex-project",
+        "action": "uninstall",
+        "status": "passed"
+      },
+      {
+        "route": "claude-project",
+        "action": "old-install-upgrade-plan-compiled-snapshot-and-strict-lock",
+        "status": "passed"
+      },
+      {
+        "route": "claude-project",
+        "action": "configured-hook-user-approx-raw-readonly-explain-parity",
+        "status": "passed"
+      },
+      {
+        "route": "claude-project",
+        "action": "actual-T43-runtime-six-management-commands-refuse-zero-write",
+        "status": "passed"
+      },
+      {
+        "route": "claude-project",
+        "action": "frozen-rebuild-uses-approved-lock-not-live-mapping",
+        "status": "passed"
+      },
+      {
+        "route": "claude-project",
+        "action": "doctor-pending-sync-remaps-cached-raw",
+        "status": "passed"
+      },
+      {
+        "route": "claude-project",
+        "action": "removal-clears-tier-approx-provenance-and-old-runtime-management-compatible",
+        "status": "passed"
+      },
+      {
+        "route": "claude-project",
+        "action": "uninstall",
+        "status": "passed"
+      }
+    ]
+  },
+  "unknown_compatibility": {
+    "format": 1,
+    "binary_sha256": "de086b265c8d0e0008ac6802e35d3f86c7214e744936ab2d67367cb54f0f7312",
+    "old_binary_sha256": "c8ce82ad5bf8b396597cc7043dfcb509868108c670b5d90e431b5073d39496b4",
+    "real_harness": false,
+    "cases": [
+      {
+        "route": "codex-user",
+        "action": "preview-zero-write",
+        "status": "passed"
+      },
+      {
+        "route": "codex-user",
+        "action": "index5-strict-lock-marker",
+        "status": "passed"
+      },
+      {
+        "route": "codex-user",
+        "action": "missing-empty-known-literal-readonly-explain-actual-codec-dedup",
+        "status": "passed"
+      },
+      {
+        "route": "codex-user",
+        "action": "actual-T42-runtime-six-management-commands-refuse-zero-write",
+        "status": "passed"
+      },
+      {
+        "route": "codex-user",
+        "action": "new-management-frozen-exact-lock-rebuild-doctor",
+        "status": "passed"
+      },
+      {
+        "route": "codex-user",
+        "action": "remove-last-unknown-clears-marker-old-manager-compatible",
+        "status": "passed"
+      },
+      {
+        "route": "codex-user",
+        "action": "uninstall",
+        "status": "passed"
+      },
+      {
+        "route": "codex-plugin",
+        "action": "preview-zero-write",
+        "status": "passed"
+      },
+      {
+        "route": "codex-plugin",
+        "action": "index5-strict-lock-marker",
+        "status": "passed"
+      },
+      {
+        "route": "codex-plugin",
+        "action": "missing-empty-known-literal-readonly-explain-actual-codec-dedup",
+        "status": "passed"
+      },
+      {
+        "route": "codex-plugin",
+        "action": "actual-T42-runtime-six-management-commands-refuse-zero-write",
+        "status": "passed"
+      },
+      {
+        "route": "codex-plugin",
+        "action": "new-management-frozen-exact-lock-rebuild-doctor",
+        "status": "passed"
+      },
+      {
+        "route": "codex-plugin",
+        "action": "remove-last-unknown-clears-marker-old-manager-compatible",
+        "status": "passed"
+      },
+      {
+        "route": "codex-plugin",
+        "action": "uninstall",
+        "status": "passed"
+      },
+      {
+        "route": "claude-user",
+        "action": "preview-zero-write",
+        "status": "passed"
+      },
+      {
+        "route": "claude-user",
+        "action": "index5-strict-lock-marker",
+        "status": "passed"
+      },
+      {
+        "route": "claude-user",
+        "action": "missing-empty-known-literal-readonly-explain-actual-codec-dedup",
+        "status": "passed"
+      },
+      {
+        "route": "claude-user",
+        "action": "actual-T42-runtime-six-management-commands-refuse-zero-write",
+        "status": "passed"
+      },
+      {
+        "route": "claude-user",
+        "action": "new-management-frozen-exact-lock-rebuild-doctor",
+        "status": "passed"
+      },
+      {
+        "route": "claude-user",
+        "action": "remove-last-unknown-clears-marker-old-manager-compatible",
+        "status": "passed"
+      },
+      {
+        "route": "claude-user",
+        "action": "uninstall",
+        "status": "passed"
+      },
+      {
+        "route": "codex-project",
+        "action": "preview-zero-write",
+        "status": "passed"
+      },
+      {
+        "route": "codex-project",
+        "action": "index5-strict-lock-marker",
+        "status": "passed"
+      },
+      {
+        "route": "codex-project",
+        "action": "missing-empty-known-literal-readonly-explain-actual-codec-dedup",
+        "status": "passed"
+      },
+      {
+        "route": "codex-project",
+        "action": "actual-T42-runtime-six-management-commands-refuse-zero-write",
+        "status": "passed"
+      },
+      {
+        "route": "codex-project",
+        "action": "new-management-frozen-exact-lock-rebuild-doctor",
+        "status": "passed"
+      },
+      {
+        "route": "codex-project",
+        "action": "remove-last-unknown-clears-marker-old-manager-compatible",
+        "status": "passed"
+      },
+      {
+        "route": "codex-project",
+        "action": "uninstall",
+        "status": "passed"
+      },
+      {
+        "route": "claude-project",
+        "action": "preview-zero-write",
+        "status": "passed"
+      },
+      {
+        "route": "claude-project",
+        "action": "index5-strict-lock-marker",
+        "status": "passed"
+      },
+      {
+        "route": "claude-project",
+        "action": "missing-empty-known-literal-readonly-explain-actual-codec-dedup",
+        "status": "passed"
+      },
+      {
+        "route": "claude-project",
+        "action": "actual-T42-runtime-six-management-commands-refuse-zero-write",
+        "status": "passed"
+      },
+      {
+        "route": "claude-project",
+        "action": "new-management-frozen-exact-lock-rebuild-doctor",
+        "status": "passed"
+      },
+      {
+        "route": "claude-project",
+        "action": "remove-last-unknown-clears-marker-old-manager-compatible",
+        "status": "passed"
+      },
+      {
+        "route": "claude-project",
+        "action": "uninstall",
+        "status": "passed"
+      }
+    ]
+  },
+  "groups": [
+    {
+      "id": "A13-01",
+      "status": "passed",
+      "evidence": [
+        "internal/app/effort_mapping_test.go:TestM3A13StrictConfigurationAndBoundedCapture",
+        "internal/adapter/effortmap/policy_test.go:TestM3A13BuiltinRowsAndUserOverrides"
+      ]
+    },
+    {
+      "id": "A13-02",
+      "status": "passed",
+      "evidence": [
+        "internal/adapter/effortmap/policy_test.go:TestM3A13PolicyRemapsCachedRawOnChangeAndRemoval",
+        "core/state/effort_mapping_test.go",
+        "internal/app/effort_mapping_test.go:TestM3A13CachedMappingChangeRemovalAndMissingRaw"
+      ]
+    },
+    {
+      "id": "A13-03",
+      "status": "passed",
+      "evidence": [
+        "internal/app/effort_mapping_test.go:TestM3A13SixRouteMappingLifecycleFrozenAndRemoval",
+        "internal/app/effort_mapping_test.go:TestM3A13MappingChangeDuringCommitIsRejected",
+        "internal/app/effort_mapping_test.go:TestM3A13CompiledMappingExplainAndNativeCodecParity",
+        "internal/app/effort_mapping_test.go:TestM3A13CloudCarriesMappingSnapshot",
+        "internal/app/effort_mapping_test.go:TestM3A13PlanAndDoctorMappingProvenance"
+      ]
+    },
+    {
+      "id": "A13-04",
+      "status": "passed",
+      "evidence": [
+        "core/compile/effort_mapping_test.go",
+        "scripts/check_m3_effort_mapping.py",
+        "scripts/check_m3_unknown.py"
+      ]
+    }
+  ],
+  "failures_retained": {
+    "a13-core1/a13-app1": "Doctor provenance change lacked strings import; compile failure fixed before next run.",
+    "a13-target1": "Manifest used thinking_effort_approx as a template variable, but public templates expose tier/raw and approx is a condition. Corrected fixture manifest without widening the public template vocabulary.",
+    "a13-target2": "Stale-commit assertion compared home-directory mtime, which legitimate management guard create/remove changes. Switched to the existing a3Installed regular-file metadata/content comparison; stale and cancelled commits still preserve all installation/config files."
+  },
+  "boundary": "11 new test functions; whole root fresh suite, targeted race, vet and CLI on final production source. Native argv controller and version stubs are fixtures, not real harness delivery. Agenthooks/dependencies/old testdata unchanged. No new claim of running unchanged agenthooks module. Raw source order, builtin default paths and old serialized outputs remain intact. User aliases only reinterpret existing raw and are approximate.",
+  "remaining": "D8/T45 and remaining M3 tasks. Real B3/C5 pending; user-deferred C3/W1/Anthropic API stay [?]; official calibration each 0/40."
+}

@@ -8,12 +8,14 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/inxups/style-cli/core/compile"
 	"github.com/inxups/style-cli/core/engine"
 	"github.com/inxups/style-cli/core/plan"
 	"github.com/inxups/style-cli/core/state"
 	"github.com/inxups/style-cli/core/tokens"
 	"github.com/inxups/style-cli/core/when"
 	"github.com/inxups/style-cli/internal/adapter"
+	"github.com/inxups/style-cli/internal/adapter/effortmap"
 	"github.com/speakeasy-api/agenthooks"
 )
 
@@ -26,6 +28,7 @@ var _ adapter.RuntimeEnricher = (*Enricher)(nil)
 // persisted session value. The optional Environment callback is injectable for
 // tests and embedders; a nil callback reads CLAUDE_EFFORT from the process.
 type Enricher struct {
+	effortPolicy        effortmap.Policy
 	providerEnabled     bool
 	ProviderEnvironment func(string) (string, bool)
 	OfflineProvider     *string
@@ -44,11 +47,18 @@ func NewEnricher() *Enricher {
 // StateUpdate projects session facts and resolves effort in the documented
 // event > environment > session order. A later event carrying an effort level
 // remains authoritative even when an earlier hook already resolved the session.
-func (enricher *Enricher) StateUpdate(event *agenthooks.Event, typed any, previous state.Session) state.EventUpdate {
-	update := state.EventUpdate{}
+func (enricher *Enricher) StateUpdate(event *agenthooks.Event, typed any, previous state.Session) (update state.EventUpdate) {
 	if event == nil || event.Provider != agenthooks.ProviderClaudeCode {
 		return update
 	}
+	defer func() {
+		if enricher != nil && enricher.effortPolicy.Active(previous) {
+			table, err := EffortTable()
+			if err == nil {
+				update = enricher.effortPolicy.Apply(update, previous, table)
+			}
+		}
+	}()
 	update.Model = event.Session.Model
 	update.HarnessVersion = event.Session.HarnessVersion
 	if update.HarnessVersion == "" && enricher != nil {
@@ -549,4 +559,9 @@ func commonFields(event *agenthooks.Event) map[string]string {
 		fields["cwd"] = event.Session.CWD
 	}
 	return fields
+}
+
+// ConfigureEffortMapping binds the compiled snapshot before processing events.
+func (enricher *Enricher) ConfigureEffortMapping(mapping compile.EffortMapping) {
+	enricher.effortPolicy = effortmap.NewPolicy("claude-code", mapping)
 }

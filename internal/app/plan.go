@@ -104,6 +104,15 @@ func (s *Service) Plan(ctx context.Context, request PlanRequest) (PlanResult, er
 		result.Diagnostics = append(result.Diagnostics, parseDiagnostic(err))
 		return result, nil
 	}
+	home, err := s.resolveStyleHome(request.Home)
+	if err != nil {
+		return result, err
+	}
+	mapping, err := s.captureEffortMapping(home, nil)
+	if err != nil {
+		return result, err
+	}
+	result.Diagnostics = append(result.Diagnostics, effortMappingDiagnostics(mapping)...)
 	providers, err := s.selectProviders(ctx, request.Harnesses)
 	if err != nil {
 		return result, err

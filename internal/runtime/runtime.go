@@ -10,6 +10,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/inxups/style-cli/core/compile"
 	"github.com/inxups/style-cli/core/engine"
 	"github.com/inxups/style-cli/core/state"
 	"github.com/inxups/style-cli/internal/adapter"
@@ -42,6 +43,9 @@ func New(engineCore *engine.Engine, stateStore *state.Store, enricher adapter.Ru
 	}
 	if failClosed && provider != agenthooks.ProviderClaudeCode {
 		return nil, fmt.Errorf("runtime: fail-closed is supported only for Claude Code")
+	}
+	if configurable, ok := enricher.(interface{ ConfigureEffortMapping(compile.EffortMapping) }); ok {
+		configurable.ConfigureEffortMapping(engineCore.EffortMapping())
 	}
 	if configurable, ok := enricher.(interface{ ConfigureProvider(bool) }); ok {
 		configurable.ConfigureProvider(engineCore.NeedsProvider(string(provider)))
@@ -368,13 +372,13 @@ func applySessionFacts(update *state.EventUpdate, session agenthooks.SessionInfo
 	if session.Model != "" {
 		update.Model = session.Model
 	}
-	if session.Effort != "" {
+	if !update.EffortMappingResolved && session.Effort != "" {
 		update.ThinkingEffort = session.Effort
 	}
-	if session.EffortRaw != "" {
+	if !update.EffortMappingResolved && session.EffortRaw != "" {
 		update.EffortRaw = session.EffortRaw
 	}
-	if session.EffortApprox != nil {
+	if !update.EffortMappingResolved && session.EffortApprox != nil {
 		value := *session.EffortApprox
 		update.EffortApprox = &value
 	}

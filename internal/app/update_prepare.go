@@ -139,7 +139,11 @@ func (s *Service) prepareUpdate(ctx context.Context, request UpdateRequest) (p p
 		}
 		packages = append(packages, candidate.item)
 	}
-	compilation, err := s.compileInstalled(ctx, packages, adapters, "")
+	mapping, err := s.captureEffortMapping(p.home, p.inputs)
+	if err != nil {
+		return p, err
+	}
+	compilation, err := s.compileInstalled(ctx, packages, adapters, "", mapping)
 	if err != nil {
 		return p, err
 	}

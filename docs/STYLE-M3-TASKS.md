@@ -6,7 +6,7 @@
 
 本文件是 STYLE CLI M3 的持久化任务清单。每项完成后同步状态和可重复证据，测试矩阵见 [STYLE-M3-TESTS.md](STYLE-M3-TESTS.md)，执行记录追加到 [PROGRESS.md](PROGRESS.md)。M1、M2 已关闭并只读归档；上一里程碑的事实见 [M2 任务清单](STYLE-M2-TASKS.md)、[M2 测试矩阵](STYLE-M2-TESTS.md) 和 [M2 总验收报告](review/M2-DOCS-01-2026-10-17.json)。
 
-当前总状态：基线、注册表、诊断、来源/update/frozen、项目/云端/Claude 插件、refresh 与事件内容围栏均已实现并完成对应离线 A0–A10；D0–D6 已定稿。T41/A10 的命令和源码摘要见 [报告](review/M3-A10-2026-10-17.json)，使用方式见 [事件内容说明](STYLE-EVENT-CONTENT.md)。T42/A11 与 T43/A12 已完成，当前进入 D7 自定义 effort 映射。真实本地 B/C、后续运行时/计数/平台/CI 与最终收尾尚待执行；用户明确延期的三类真实环境单独保留待验。
+当前总状态：基线、注册表、诊断、来源/update/frozen、项目/云端/Claude 插件、refresh 与事件内容围栏均已实现并完成对应离线 A0–A10；D0–D6 已定稿。T41/A10 的命令和源码摘要见 [报告](review/M3-A10-2026-10-17.json)，使用方式见 [事件内容说明](STYLE-EVENT-CONTENT.md)。T42/A11 与 T43/A12 已完成，T44/A13 也已完成，当前进入 D8 规则级失败策略。真实本地 B/C、后续运行时/计数/平台/CI 与最终收尾尚待执行；用户明确延期的三类真实环境单独保留待验。
 
 ## 范围与推进顺序
 
@@ -83,7 +83,7 @@ M3-CARRY-01 与 `--count=exact` 产品验收分别记录；前者的非阻塞决
 - [x] **M3-T41 事件内容模板**：目标是按 D5 开放经围栏处理的事件内容。依赖：M3-D5。产出：字段访问、转义/截断、模板与预算支持及敏感数据日志检查。测试：M3-A10、M3-B3、M3-C5。证据：[A10 报告](review/M3-A10-2026-10-17.json)和[使用说明](STYLE-EVENT-CONTENT.md)。11 个新函数、最终专项/race 57 pass；根 module 全量 3,079 pass/0 fail，35 项五路线 CLI、8 云端/8 插件 CLI、40 smoke 与 refresh 回归通过。agenthooks/旧 golden 未变，真实 B3/C5 待验。
 - [x] **M3-T42 provider 条件**：目标是按 D6 使用有来源依据的模型服务信息。依赖：M3-D6。产出：adapter 数据声明、状态更新和条件评估，区分 harness 标识与服务 provider。证据：[A11](review/M3-A11-2026-10-17.json)的六组来源/缓存/重放/格式与生命周期验收通过，双 module 3,707 pass/0 fail、95 新 pass、专项 race/vet、35 provider CLI/35 事件兼容/40 smoke；见[说明](STYLE-PROVIDER.md)。测试：M3-A11、M3-B3、M3-C5。
 - [x] **M3-T43 unknown 匹配**：目标是按 D6 支持显式缺失值匹配。依赖：M3-T42。产出：校验、编译、匹配及 explain/plan 说明，旧规则缺值行为兼容。测试：M3-A12、M3-B3、M3-C5。 证据：[A12 报告](review/M3-A12-2026-10-17.json)和[使用说明](STYLE-UNKNOWN.md)覆盖四字段、计划/模板推断、两家 codec/explain、会话 canonical、index 5/严格锁/六路线与真旧程序零写入拒绝；仅离线验收，真实 B3/C5 独立。
-- [ ] **M3-T44 用户 effort 映射**：目标是按 D7 支持可追溯的用户配置。依赖：M3-D7。产出：配置读取、映射与缓存失效、raw/approx 和 doctor/plan 诊断。测试：M3-A13、M3-B3、M3-C5。
+- [x] **M3-T44 用户 effort 映射**：目标是按 D7 支持可追溯的用户配置。依赖：M3-D7。产出：配置读取、映射与缓存失效、raw/approx 和 doctor/plan 诊断。测试：M3-A13、M3-B3、M3-C5。 证据：[A13 报告](review/M3-A13-2026-10-17.json)和[使用说明](STYLE-EFFORT-MAPPING.md)；严格配置/完整内置对照、用户覆盖/raw/approx、缓存变更/删除、六路线/frozen/云端、来源诊断/index 6/真旧程序保护均通过离线验收。
 - [ ] **M3-T45 规则级 fail-closed**：目标是按 D8 实现被支持的失败策略。依赖：M3-D8。产出：规则校验、能力规划、运行时错误处理及安装级兼容；不支持的能力明确拒绝或按批准设计回退。测试：M3-A14、M3-B3、M3-C5。
 - [ ] **M3-T50 exact 计数**：目标是按 D9 提供显式计数模式。依赖：M3-D9。产出：计数实现与文本/JSON 报告、可选依赖/凭据处理和确定性测试；缺 key 或联网失败不能标为计数成功。测试：M3-A15、M3-TOKEN-01。
 - [ ] **M3-T60 native 扩展结论落地**：目标是落实 D10 的逐项结论。依赖：M3-D10。产出：获支持字段/类型的校验、plan、配置/信任生命周期；不支持项的诊断与依据，保留旧四字段兼容。测试：M3-A16、M3-B4、M3-C6。

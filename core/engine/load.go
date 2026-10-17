@@ -71,6 +71,12 @@ func newValidated(index compile.Index, store *state.Store) (*Engine, error) {
 	if store == nil {
 		return nil, fmt.Errorf("engine: state store is required")
 	}
+	if err := index.EffortMapping.Validate(); err != nil {
+		return nil, err
+	}
+	if len(index.EffortMapping) > 0 && index.Format < compile.EffortMappingFormat {
+		return nil, fmt.Errorf("engine: user effort mappings require index format 6")
+	}
 	engine := &Engine{index: index, store: store, entries: make(map[string]map[string][]compiledEntry)}
 	for harness, events := range index.Harnesses {
 		engine.entries[harness] = make(map[string][]compiledEntry, len(events))
@@ -128,4 +134,12 @@ func (e *Engine) HasRefresh(harness string) bool {
 // LoadIndexBytes loads a bounded byte slice using the same schema checks.
 func LoadIndexBytes(data []byte, store *state.Store) (*Engine, error) {
 	return Load(bytes.NewReader(data), store)
+}
+
+// EffortMapping returns a detached configuration snapshot to adapter code.
+func (e *Engine) EffortMapping() compile.EffortMapping {
+	if e == nil {
+		return nil
+	}
+	return e.index.EffortMapping.Clone()
 }

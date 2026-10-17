@@ -1883,3 +1883,11 @@ PY
 
 - 从 clean `53f0aff` 定稿[D7 契约](review/M3-D7-EFFORT-MAPPING-2026-10-17.md)，用户已批准全部评审，直接进入实现。确定当前 STYLE home 严格配置、显式用户覆盖/approx=true、原生 raw 来源保持、编译与锁快照/index 6、frozen 和缓存失效边界；agenthooks 职责不变。
 - 四组 A13 待实施，设计通过不关闭 T44 或真实 B3/C5。文档链接/锚点/围栏、归档/历史 JSON、进度追加和 diff 检查见[D7 检查](review/M3-D7-DOCS-2026-10-17.json)。
+
+## 2026-10-17 M3-T44 / M3-A13 用户 effort 映射
+
+- 基线 `a51589c`，实现当前 STYLE home 的严格 effort.yaml 捕获、归一化/冲突/注册表/64 KiB/128 行门禁；用户项优先内置并始终 approx=true，raw 保持、未列值继续内置，缺值不制造 canonical。运行时不读取 ambient 映射，adapter 解释 raw，core 仅承载通用快照；agenthooks/依赖未改。
+- index 6 与严格锁 effort_mapping/min_index_format: 6，管理变化保护覆盖映射文件；frozen 从已批准锁重建、忽略现时坏配置，六路线和 cloud bundle 有证据。用户修改/删除后用缓存 raw 重算 tier/approx/安全来源；plan/doctor/explain 披露摘要，raw 来源不被用户解释覆盖。未启用映射的旧状态和输出维持原形状。
+- [A13 报告](review/M3-A13-2026-10-17.json)固定源码/二进制/全部运行日志摘要：11 新函数/73 含分组 pass、专项 race 同 73 通过；根 module fresh test 3,342 pass/0 fail，2 既有 opt-in/helper skip 单列；vet、35 映射 CLI、35 unknown 兼容 CLI、40 smoke 全过。真实 T43 旧运行器和六种管理命令拒绝新产物且文件不变；删除映射后用当前 runner 迁移缓存，再由实际旧运行器/管理器成功运行。原生 argv 控制器和版本 stub 都是离线 fixture，不冒充真实 harness。
+- 失败保留：doctor 新引用缺 strings 导入；fixture 误用 approx 模板（公开接口只支持条件，已修正 manifest）；失败恢复断言误比较管理锁创建/删除改变的目录 mtime，改用既有 a3Installed 全部普通文件内容/元数据比较，仍核验所有安装和配置文件保全。
+- Go 采用临时三缓存/清理外部变量，全量来源 TLS fixture 按既有本机监听授权执行。仅关闭 T44/A13，当前进入 D8/T45；真实 B3/C5 尚待后续，用户延期的 C3、W1/REAL-04、Anthropic API 及官方各 0/40 非阻塞状态保持。[文档检查](review/M3-A13-DOCS-2026-10-17.json)核对链接/围栏/追加日志/历史归档、旧 testdata/agenthooks/依赖、源码格式及 diff。

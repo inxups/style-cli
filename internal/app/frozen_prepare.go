@@ -134,7 +134,7 @@ func (s *Service) prepareFrozen(ctx context.Context, request FrozenRequest) (p p
 		tx.candidates = append(tx.candidates, updateCandidate{old: item, item: parsed, baseline: baseline, approved: true, selected: true, storage: repair})
 		p.result.Contents = append(p.result.Contents, FrozenContent{Package: item.Name, Snapshot: origin, StorageRepair: repair})
 	}
-	compilation, err := s.compileInstalled(ctx, packages, adapters, "")
+	compilation, err := s.compileInstalled(ctx, packages, adapters, "", lock.EffortMapping)
 	if err != nil {
 		return p, err
 	}

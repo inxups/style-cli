@@ -294,7 +294,11 @@ func (s *Service) Install(ctx context.Context, request InstallRequest) (final In
 		result.ProjectAdoption = declaration != nil
 	}
 	result.ProjectPackages = extraPreviews
-	compilation, err := s.compileInstalled(ctx, packages, adapters, name)
+	mapping, err := s.captureEffortMapping(home, inputs)
+	if err != nil {
+		return InstallResult{}, err
+	}
+	compilation, err := s.compileInstalled(ctx, packages, adapters, name, mapping)
 	if err != nil {
 		return InstallResult{}, err
 	}
@@ -458,7 +462,7 @@ type BlockedError struct{ Message string }
 
 func (err *BlockedError) Error() string { return err.Message }
 
-func (s *Service) compileInstalled(ctx context.Context, packages []installPackage, adapters []installAdapter, reportPackage string) (installCompilation, error) {
+func (s *Service) compileInstalled(ctx context.Context, packages []installPackage, adapters []installAdapter, reportPackage string, mappings ...compile.EffortMapping) (installCompilation, error) {
 	result := installCompilation{diagnostics: make([]Diagnostic, 0), native: make(map[adapter.ProviderID][]compiledNative)}
 	compileInputs := make([]compile.PackageInput, 0, len(packages))
 	for _, item := range packages {
@@ -503,20 +507,26 @@ func (s *Service) compileInstalled(ctx context.Context, packages []installPackag
 			compileInputs = appendCompileInput(compileInputs, packages[index], target.provider)
 		}
 	}
-	compiled, err := compile.Build(compile.Request{StyleVersion: styleRuntimeVersion, Packages: compileInputs})
+	var mapping compile.EffortMapping
+	if len(mappings) > 0 {
+		mapping = mappings[0]
+	}
+	buildRequest := compile.Request{StyleVersion: styleRuntimeVersion, Packages: compileInputs, EffortMapping: mapping}
+	compiled, err := compile.Build(buildRequest)
 	if err != nil {
 		return installCompilation{}, err
 	}
 	if err := effectiveInstallReports(&result, packages, adapters, compiled, reportPackage); err != nil {
 		return installCompilation{}, err
 	}
+	result.diagnostics = append(result.diagnostics, effortMappingDiagnostics(mapping)...)
 	result.index = compiled.Index
 	result.staticBodies = compiled.StaticBodies
 	result.indexBytes, err = compile.Encode(compiled.Index)
 	if err != nil {
 		return installCompilation{}, err
 	}
-	result.provenanceBytes, err = compile.BuildProvenance(compile.Request{StyleVersion: styleRuntimeVersion, Packages: compileInputs}, compiled, result.indexBytes)
+	result.provenanceBytes, err = compile.BuildProvenance(buildRequest, compiled, result.indexBytes)
 	if err != nil {
 		return installCompilation{}, err
 	}

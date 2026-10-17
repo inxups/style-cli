@@ -52,8 +52,14 @@ func (index *Index) UnmarshalJSON(data []byte) error {
 	if err := decodeStrict(data, &decoded); err != nil {
 		return err
 	}
-	if decoded.Format != Format && decoded.Format != RefreshFormat && decoded.Format != EventFormat && decoded.Format != ProviderFormat && decoded.Format != UnknownFormat {
+	if decoded.Format != Format && decoded.Format != RefreshFormat && decoded.Format != EventFormat && decoded.Format != ProviderFormat && decoded.Format != UnknownFormat && decoded.Format != EffortMappingFormat {
 		return fmt.Errorf("compile: unsupported index format %d", decoded.Format)
+	}
+	if err := decoded.EffortMapping.Validate(); err != nil {
+		return err
+	}
+	if len(decoded.EffortMapping) > 0 && decoded.Format < EffortMappingFormat {
+		return fmt.Errorf("compile: user effort mappings require index format 6")
 	}
 	if decoded.Format == Format {
 		var wire struct {

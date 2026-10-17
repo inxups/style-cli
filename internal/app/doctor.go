@@ -10,6 +10,7 @@ import (
 	"os"
 	"path/filepath"
 	"reflect"
+	"strings"
 	"time"
 
 	"github.com/inxups/style-cli/core/compile"
@@ -51,6 +52,11 @@ func (s *Service) Doctor(ctx context.Context, request DoctorRequest) (DoctorResu
 	}
 	result := DoctorResult{Packages: []InstalledPackage{}, Adapters: []AdapterReport{}, Diagnostics: []Diagnostic{}, Effort: []EffortReport{}, TopRules: []RuleCost{}}
 	lock, lockErr := s.loadLock(home)
+	if mapping, e := s.captureEffortMapping(home, nil); e != nil {
+		result.add("effort-mapping-invalid", "error", e.Error())
+	} else if !reflect.DeepEqual(mapping, lock.EffortMapping) {
+		result.add("effort-mapping-pending", "warning", "local effort.yaml differs from the compiled lock snapshot; run sync to apply it")
+	}
 	if lockErr != nil {
 		result.add("lock-invalid", "error", lockErr.Error())
 	} else {
@@ -87,10 +93,16 @@ func (s *Service) Doctor(ctx context.Context, request DoctorRequest) (DoctorResu
 		if data, err := saferead.ReadFile(filepath.Join(home, "build", "index.json"), 16<<20); err == nil {
 			var index compile.Index
 			if json.Unmarshal(data, &index) == nil {
+				if index.Format >= compile.EffortMappingFormat {
+					result.add("runtime-index-6", "warning", "user effort mappings require index format 6; upgrade every configured STYLE runner")
+				}
+				for _, d := range effortMappingDiagnostics(index.EffortMapping) {
+					result.Diagnostics = append(result.Diagnostics, d)
+				}
 				if index.Format == compile.EventFormat {
 					result.add("event-index-3", "warning", "event templates require index format 3; upgrade every configured STYLE runner")
 				}
-				if index.Format >= compile.UnknownFormat {
+				if index.Format == compile.UnknownFormat {
 					result.add("runtime-index-5", "warning", "explicit missing-value selectors require index format 5; upgrade every configured STYLE runner")
 				}
 				if index.Format == compile.ProviderFormat {
@@ -152,6 +164,18 @@ func (s *Service) Doctor(ctx context.Context, request DoctorRequest) (DoctorResu
 		if err != nil {
 			result.add("effort-unavailable", "warning", err.Error())
 		} else {
+			if digest := lock.EffortMapping.SHA256(report.Provider); digest != "" {
+				effort.MappingSHA256 = digest
+				effort.MappingSource = "builtin"
+				if effort.Tier == "" {
+					effort.MappingSource = "unmapped"
+				}
+				if tier, ok := lock.EffortMapping[report.Provider][strings.ToLower(strings.TrimSpace(effort.Raw))]; ok {
+					effort.Tier, effort.MappingSource = tier, "user"
+					approx := true
+					effort.Approximate = &approx
+				}
+			}
 			result.Effort = append(result.Effort, effort)
 			if effort.Tier == "" {
 				result.add("effort-unknown", "warning", report.Provider+": effort is unavailable; conditional effort rules will not match")
@@ -269,7 +293,7 @@ func (s *Service) checkIndex(ctx context.Context, home string, lock lockDocument
 			adapters[i].definition.Facts = facts.WithStaticLayout(lock.Harnesses[string(adapters[i].provider)].StaticLayout)
 		}
 	}
-	expected, err := s.compileInstalled(ctx, packages, adapters, "")
+	expected, err := s.compileInstalled(ctx, packages, adapters, "", lock.EffortMapping)
 	if err != nil {
 		return err
 	}

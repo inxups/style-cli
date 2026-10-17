@@ -60,6 +60,10 @@ func Build(request Request) (Result, error) {
 			}
 		}
 	}
+	if err := request.EffortMapping.Validate(); err != nil {
+		return Result{}, err
+	}
+	result.Index.EffortMapping = request.EffortMapping.Clone()
 	sortResult(&result)
 	if err := deduplicate(&result, request.Packages); err != nil {
 		return Result{}, err
@@ -81,6 +85,9 @@ func Build(request Request) (Result, error) {
 				}
 			}
 		}
+	}
+	if len(result.Index.EffortMapping) > 0 {
+		result.Index.Format = EffortMappingFormat
 	}
 	return result, nil
 }

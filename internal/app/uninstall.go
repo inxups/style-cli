@@ -105,7 +105,11 @@ func (s *Service) Uninstall(ctx context.Context, request UninstallRequest) (fina
 	if err != nil {
 		return UninstallResult{}, err
 	}
-	compilation, err := s.compileInstalled(ctx, packages, adapters, "")
+	mapping, err := s.captureEffortMapping(home, inputs)
+	if err != nil {
+		return UninstallResult{}, err
+	}
+	compilation, err := s.compileInstalled(ctx, packages, adapters, "", mapping)
 	if err != nil {
 		return UninstallResult{}, err
 	}

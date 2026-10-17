@@ -15,12 +15,14 @@ import (
 )
 
 type EffortReport struct {
-	Provider    string `json:"provider"`
-	Source      string `json:"source"`
-	Raw         string `json:"raw"`
-	Tier        string `json:"tier"`
-	Approximate *bool  `json:"approximate"`
-	Detail      string `json:"detail"`
+	MappingSHA256 string `json:"mapping_sha256,omitempty"`
+	MappingSource string `json:"mapping_source,omitempty"`
+	Provider      string `json:"provider"`
+	Source        string `json:"source"`
+	Raw           string `json:"raw"`
+	Tier          string `json:"tier"`
+	Approximate   *bool  `json:"approximate"`
+	Detail        string `json:"detail"`
 }
 
 func inspectEffort(report AdapterReport, workDir string) (EffortReport, error) {

@@ -37,10 +37,11 @@ type ExplainDiagnostic struct {
 	Message  string `json:"message"`
 }
 type ExplainInputs struct {
-	IndexSHA256   string `json:"index_sha256,omitempty"`
-	PayloadSHA256 string `json:"payload_sha256,omitempty"`
-	FactsSHA256   string `json:"facts_sha256,omitempty"`
-	FailClosed    bool   `json:"fail_closed"`
+	EffortMappingSHA256 string `json:"effort_mapping_sha256,omitempty"`
+	IndexSHA256         string `json:"index_sha256,omitempty"`
+	PayloadSHA256       string `json:"payload_sha256,omitempty"`
+	FactsSHA256         string `json:"facts_sha256,omitempty"`
+	FailClosed          bool   `json:"fail_closed"`
 }
 type ExplainCounters struct {
 	Generation  uint64 `json:"gen"`
@@ -285,6 +286,7 @@ func (s *Service) explain(ctx context.Context, request ExplainRequest, ops expla
 			}
 		}
 	}
+	result.Inputs.EffortMappingSHA256 = index.EffortMapping.SHA256(string(provider))
 	var enricher adapter.RuntimeEnricher
 	if provider == agenthooks.ProviderCodex {
 		value := codex.NewEnricher()
@@ -486,8 +488,12 @@ func explainFactMetadata(raw map[string]json.RawMessage, facts explainFacts, bef
 	} else if facts.ClaudeEnvEffort != nil && *facts.ClaudeEnvEffort != "" {
 		source = "provided"
 	}
+	rawSource := source
+	if after.EffortMappingSHA256 != "" {
+		source = "mapping:" + after.EffortMappingSource
+	}
 	add("thinking_effort", after.ThinkingEffort != "", source)
-	add("thinking_effort_raw", after.EffortRaw != "", source)
+	add("thinking_effort_raw", after.EffortRaw != "", rawSource)
 	add("thinking_effort_approx", after.EffortApprox != nil, source)
 	var toolName string
 	_ = json.Unmarshal(raw["tool_name"], &toolName)

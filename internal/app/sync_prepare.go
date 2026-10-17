@@ -150,7 +150,11 @@ func (s *Service) prepareSync(ctx context.Context, request TrustRequest) (syncPr
 	if err = prepared.inputs.routes(adapters); err != nil {
 		return prepared, err
 	}
-	compilation, err := s.compileInstalled(ctx, packages, adapters, request.Name)
+	mapping, err := s.captureEffortMapping(home, prepared.inputs)
+	if err != nil {
+		return prepared, err
+	}
+	compilation, err := s.compileInstalled(ctx, packages, adapters, request.Name, mapping)
 	if err != nil {
 		return prepared, err
 	}

@@ -7,11 +7,13 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/inxups/style-cli/core/compile"
 	"github.com/inxups/style-cli/core/engine"
 	"github.com/inxups/style-cli/core/state"
 	"github.com/inxups/style-cli/core/tokens"
 	"github.com/inxups/style-cli/core/when"
 	"github.com/inxups/style-cli/internal/adapter"
+	"github.com/inxups/style-cli/internal/adapter/effortmap"
 	"github.com/speakeasy-api/agenthooks"
 )
 
@@ -23,6 +25,7 @@ var _ adapter.RuntimeEnricher = (*Enricher)(nil)
 // Project trust defaults to false: callers must provide a positive trust
 // decision before project configuration can affect effort matching.
 type Enricher struct {
+	effortPolicy    effortmap.Policy
 	providerEnabled bool
 	OfflineProvider *string
 	ProviderOffline bool
@@ -52,11 +55,18 @@ func NewEnricher() *Enricher {
 // StateUpdate projects session facts and resolves configured effort once.
 // Unknown/unavailable effort is still marked resolved by the existing
 // effort resolver so hot-path hooks do not repeatedly read configuration.
-func (enricher *Enricher) StateUpdate(event *agenthooks.Event, typed any, previous state.Session) state.EventUpdate {
-	update := state.EventUpdate{}
+func (enricher *Enricher) StateUpdate(event *agenthooks.Event, typed any, previous state.Session) (update state.EventUpdate) {
 	if event == nil || event.Provider != agenthooks.ProviderCodex {
 		return update
 	}
+	defer func() {
+		if enricher != nil && enricher.effortPolicy.Active(previous) {
+			table, err := EffortTable()
+			if err == nil {
+				update = enricher.effortPolicy.Apply(update, previous, table)
+			}
+		}
+	}()
 	update.Model = event.Session.Model
 	update.HarnessVersion = event.Session.HarnessVersion
 	if update.HarnessVersion == "" && enricher != nil {
@@ -570,4 +580,9 @@ func cloneValues(values map[string]string) map[string]string {
 		cloned[key] = value
 	}
 	return cloned
+}
+
+// ConfigureEffortMapping binds the compiled snapshot before processing events.
+func (enricher *Enricher) ConfigureEffortMapping(mapping compile.EffortMapping) {
+	enricher.effortPolicy = effortmap.NewPolicy("codex", mapping)
 }

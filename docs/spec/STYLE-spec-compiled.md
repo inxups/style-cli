@@ -278,4 +278,4 @@ M3-T43 的 unknown 采用独立 index 5；严格锁增加按需 min_index_format
 
 ## M3-D7 映射快照 index 6
 
-[D7](../review/M3-D7-EFFORT-MAPPING-2026-10-17.md)定义按需 effort_mapping、index 6 与严格锁同名快照/min_index_format: 6。没有映射保持旧形状；混合特性取最高格式；frozen 从锁重建映射，不从现时文件采纳新值。T44/A13 实现验收独立。
+[D7](../review/M3-D7-EFFORT-MAPPING-2026-10-17.md)定义按需 effort_mapping、index 6 与严格锁同名快照/min_index_format: 6。没有映射保持旧形状；混合特性取最高格式；frozen 从锁重建映射，不从现时文件采纳新值。T44/A13 已独立通过[验收](../review/M3-A13-2026-10-17.json)。

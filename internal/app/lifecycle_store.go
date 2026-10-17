@@ -14,6 +14,7 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/inxups/style-cli/core/compile"
 	"github.com/inxups/style-cli/core/spec"
 	"github.com/inxups/style-cli/internal/source"
 	"gopkg.in/yaml.v3"
@@ -26,6 +27,7 @@ const (
 )
 
 type lockDocument struct {
+	EffortMapping  compile.EffortMapping  `yaml:"effort_mapping,omitempty"`
 	MinIndexFormat int                    `yaml:"min_index_format,omitempty"`
 	Project        *projectBinding        `yaml:"project,omitempty"`
 	Format         int                    `yaml:"format"`
@@ -107,6 +109,12 @@ func decodeLock(data []byte) (lockDocument, error) {
 	}
 	if document.MinIndexFormat != 0 && (document.Format < gitLockFormat || !validMinimumIndex(document.MinIndexFormat)) {
 		return lockDocument{}, fmt.Errorf("invalid minimum runtime index requirement")
+	}
+	if err := document.EffortMapping.Validate(); err != nil {
+		return lockDocument{}, err
+	}
+	if len(document.EffortMapping) > 0 && (document.MinIndexFormat < compile.EffortMappingFormat || document.Format < gitLockFormat) {
+		return lockDocument{}, fmt.Errorf("effort mapping snapshot requires a strict compatible lock")
 	}
 	decoder := yaml.NewDecoder(bytes.NewReader(data))
 	decoder.KnownFields(document.Format >= gitLockFormat)

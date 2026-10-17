@@ -323,4 +323,4 @@ D5 模板字段/可用事件沿 §4 条件字段定义；`reads.event` 精确列
 
 ## M3-D7 用户 effort 映射
 
-[D7 定稿](../review/M3-D7-EFFORT-MAPPING-2026-10-17.md)规定当前 STYLE home 的 effort.yaml、显式用户项优先内置、raw 不变且用户映射 approx=true。管理冷路径捕获到 index 6/严格锁，frozen 使用锁快照；原生来源优先级不变，变更/删除后按已有 raw 重算，缺原值不伪造档位。plan/doctor/explain 披露来源/摘要，运行时不读 ambient 配置。T44/A13 待实现。
+[D7 定稿](../review/M3-D7-EFFORT-MAPPING-2026-10-17.md)规定当前 STYLE home 的 effort.yaml、显式用户项优先内置、raw 不变且用户映射 approx=true。管理冷路径捕获到 index 6/严格锁，frozen 使用锁快照；原生来源优先级不变，变更/删除后按已有 raw 重算，缺原值不伪造档位。plan/doctor/explain 披露来源/摘要，运行时不读 ambient 配置。T44/A13 已通过[离线验收](../review/M3-A13-2026-10-17.json)，配置和来源细节见[说明](../STYLE-EFFORT-MAPPING.md)。

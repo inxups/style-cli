@@ -532,6 +532,7 @@ func (s *Service) projectFiles(home string, old lockDocument, next *lockDocument
 	if err := s.projectCollision(home, *next, inputs); err != nil {
 		return nil, err
 	}
+	next.EffortMapping = compilation.index.EffortMapping.Clone()
 	next.MinIndexFormat = minimumIndex(compilation.index.Format)
 	if s.project == nil {
 		if next.Harnesses["claude-code"].Route == claude.PluginRouteName {
