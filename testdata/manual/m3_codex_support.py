@@ -7,6 +7,11 @@ from m3_probe_support import private_write, sha
 
 
 class M3CodexProbe(NativeProbe):
+    def invoke(self,name,prompt,flags=(),resume=None,timeout=240):
+        # Native `exec resume` defaults to read-only independently of the
+        # original turn. Keep the same explicit fixture-only tool policy.
+        return super().invoke(name,prompt,('-c','sandbox_mode="danger-full-access"','-c','approval_policy="never"',*flags),resume,timeout)
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.raw_requests = []; self.raw_lock = threading.Lock()

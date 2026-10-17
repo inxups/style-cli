@@ -2010,3 +2010,11 @@ run 39054681822 固定 `70cdaca`，Ubuntu/macOS 通过；Windows 根模块 3,369
 [手册 P2](STYLE-M3-MANUAL.md#延期环境-p2)列明云端真实会话/clone/runner/native 依赖/私有 HOME、独立 API key/模型/TLS 最小请求，以及 Windows 原生 exe/user 路线/PowerShell/DACL/实际模型证据和卸载。记录白名单、失败及明确私有基线恢复步骤；不申请用户已延期的环境，不以 stub 冒充实际验收。
 
 [P2 报告](review/M3-P2-2026-10-18.json)记录生产 CLI 两具名编码预检、API 缺 key 退出1且未发送请求、八项云端离线交付检查通过和 Windows A17 自动化依据。只关闭 PREP-02/P2；C3、W1/REAL-04、Anthropic API 保持 `[?]`，本地 exact 在 REAL-03 正式汇总，官方校准各0/40继续非阻塞。[文档检查](review/M3-P2-DOCS-2026-10-18.json)通过，归档不变、日志仅追加。
+
+## 2026-10-18 M3-REAL-01 Codex 用户路线
+
+Codex 0.159.3 与实际配置模型服务、固定生产 STYLE 二进制，在全新私有用户配置完成九次 exec/resume、12 次实际请求。独立原生 SessionStart/OTEL 时序与 probe 收据、session/路线/两份二进制 SHA 对应；空启动前状态的 explain 完整正文进入实际请求。refresh 累计1/2/2、原 prompt 围栏、provider 请求、low→high/approx 用户映射与缺 effort 的 unknown 全文均通过。
+
+真实正常 shell 写入、匹配 native/普通 guard、未匹配 Read 缺席；保持有效 index 仅损坏会话 state，工具未写目标且有真实 PreToolUse，恢复后成功。批准 native timeout 更新、frozen 来源/锁字节、卸载配置 bytes/mode 和新会话无回调/正文均通过。原始请求/日志留私有目录，[白名单报告](review/M3-B-CODEX-USER-2026-10-18.json)仅固定摘要/计数/事实。
+
+首轮 resume 原生默认 read-only，虽然产生真实工具尝试但 OS 拒写，未计通过；采集器显式保持所有回合的隔离 fixture 工具策略后重跑通过，生产源码未改。仅完成用户路线，B1/B3/B4/REAL-01 仍部分完成，B2 项目待验，插件与无触发/中断继续。文档检查见[报告](review/M3-B-CODEX-USER-DOCS-2026-10-18.json)。

@@ -7,6 +7,7 @@
 从仓库根执行。记录 `git rev-parse HEAD`、工作树状态、Go/OS/原生 CLI 版本及二进制摘要。使用临时 GOPATH、GOMODCACHE、GOCACHE，清理 CODEX_HOME、CODEX_SANDBOX、STYLE_HOME、Claude 配置、effort 与 provider 选择变量；真实运行时再显式设置隔离配置。不可把真实配置目录当作 scratch。
 
 ```sh
+umask 077
 style_m3_cache=$(mktemp -d)
 env -u CODEX_HOME -u CODEX_SANDBOX GOWORK=off GOPATH="$style_m3_cache/gopath" GOMODCACHE="$style_m3_cache/modcache" GOCACHE="$style_m3_cache/gocache" go build -trimpath -o /tmp/style-m3 ./cmd/style
 PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s testdata/manual -p 'test_m3_probe_support.py'
