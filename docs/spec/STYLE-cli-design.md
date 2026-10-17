@@ -949,3 +949,7 @@ M3-T42 已通过 [A11](../review/M3-A11-2026-10-17.json)，reads.provider、服�
 按[D7](../review/M3-D7-EFFORT-MAPPING-2026-10-17.md)实施当前 STYLE home 的 effort.yaml。plan/管理预览显示快照摘要；sync 采纳用户修改，doctor 报待同步，frozen 保持锁快照。用户解释只调整已有 raw 的 canonical/approx，不声称原生实际思考模式。
 
 T44/A13 已实现并通过[验收](../review/M3-A13-2026-10-17.json)，严格格式和来源说明见[用户指南](../STYLE-EFFORT-MAPPING.md)。当前继续 D8。
+
+## M3-D8 规则级失败策略
+
+已定稿[规则级失败契约](../review/M3-D8-FAIL-CLOSED-2026-10-18.md)：fail: closed 仅在可 deny 的直接运行时评估点使用；故障保护按整个原生事件范围保守选择，正常未命中不拦。index 7 与严格最低格式锁保护语义；index 不可读/宿主终止需安装级机制，agenthooks 保留协议职责。T45/A14 后续独立验收。

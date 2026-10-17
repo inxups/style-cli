@@ -268,3 +268,7 @@ M1 的 `skipped-m2` 状态取消。token 一节单列"native hook 输出不估�
 开启后同一作用域/代/按需纪元/规则/模型正文，首次正常命中就发，之后距离上次保留输出满 N 个实际提交回合才可再次发；不按命中次数计、不补欠账，未命中/空输出/block 优先/cap-drop 不消费机会。system 走动态双点，其他 target 保留原匹配入口；正文变更、A→B→A、clear/compact/resume/fork 与旧 seen 升级按方案 §3–6。每次仍发送完整正文；reason 继续只用于成本告警。
 
 无有效 refresh 时，上文既有 repeat、sources、静态位置和 native 语义保持。用法与升级边界见 [周期补发说明](../STYLE-REFRESH.md)，实现验收见 [M3-A9](../review/M3-A9-2026-10-17.json)。
+
+## M3-D8 规则级失败策略
+
+已定稿[规则级失败契约](../review/M3-D8-FAIL-CLOSED-2026-10-18.md)：fail: closed 仅在可 deny 的直接运行时评估点使用；故障保护按整个原生事件范围保守选择，正常未命中不拦。index 7 与严格最低格式锁保护语义；index 不可读/宿主终止需安装级机制，agenthooks 保留协议职责。T45/A14 后续独立验收。

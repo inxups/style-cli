@@ -279,3 +279,7 @@ M3-T43 的 unknown 采用独立 index 5；严格锁增加按需 min_index_format
 ## M3-D7 映射快照 index 6
 
 [D7](../review/M3-D7-EFFORT-MAPPING-2026-10-17.md)定义按需 effort_mapping、index 6 与严格锁同名快照/min_index_format: 6。没有映射保持旧形状；混合特性取最高格式；frozen 从锁重建映射，不从现时文件采纳新值。T44/A13 已独立通过[验收](../review/M3-A13-2026-10-17.json)。
+
+## M3-D8 规则级失败策略
+
+已定稿[规则级失败契约](../review/M3-D8-FAIL-CLOSED-2026-10-18.md)：fail: closed 仅在可 deny 的直接运行时评估点使用；故障保护按整个原生事件范围保守选择，正常未命中不拦。index 7 与严格最低格式锁保护语义；index 不可读/宿主终止需安装级机制，agenthooks 保留协议职责。T45/A14 后续独立验收。

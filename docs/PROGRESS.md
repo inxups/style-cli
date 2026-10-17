@@ -1891,3 +1891,7 @@ PY
 - [A13 报告](review/M3-A13-2026-10-17.json)固定源码/二进制/全部运行日志摘要：11 新函数/73 含分组 pass、专项 race 同 73 通过；根 module fresh test 3,342 pass/0 fail，2 既有 opt-in/helper skip 单列；vet、35 映射 CLI、35 unknown 兼容 CLI、40 smoke 全过。真实 T43 旧运行器和六种管理命令拒绝新产物且文件不变；删除映射后用当前 runner 迁移缓存，再由实际旧运行器/管理器成功运行。原生 argv 控制器和版本 stub 都是离线 fixture，不冒充真实 harness。
 - 失败保留：doctor 新引用缺 strings 导入；fixture 误用 approx 模板（公开接口只支持条件，已修正 manifest）；失败恢复断言误比较管理锁创建/删除改变的目录 mtime，改用既有 a3Installed 全部普通文件内容/元数据比较，仍核验所有安装和配置文件保全。
 - Go 采用临时三缓存/清理外部变量，全量来源 TLS fixture 按既有本机监听授权执行。仅关闭 T44/A13，当前进入 D8/T45；真实 B3/C5 尚待后续，用户延期的 C3、W1/REAL-04、Anthropic API 及官方各 0/40 非阻塞状态保持。[文档检查](review/M3-A13-DOCS-2026-10-17.json)核对链接/围栏/追加日志/历史归档、旧 testdata/agenthooks/依赖、源码格式及 diff。
+
+## 2026-10-18 M3-D8 规则级失败策略定稿
+
+按全部评审通过授权记录[D8 契约](review/M3-D8-FAIL-CLOSED-2026-10-18.md)，明确三动作/deny 事件、保守事件范围、正常未命中、index 与宿主终止边界、独立安装开关、adapter 能力和 index 7/严格锁。官方 hooks 原文固定摘要；四组 A14 待实现。仅关闭 D8，文档检查见[报告](review/M3-D8-DOCS-2026-10-18.json)。
