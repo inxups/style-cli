@@ -2,7 +2,7 @@
 
 对应规范：[STYLE-spec.md](STYLE-spec.md)（v0.3）。规范定义包格式、运行时语义、token 预算、安全约束和 `index.json`；本文定义命令、本地布局、编译和运行时流程、Claude Code 与 Codex 两个适配器、token 估算器、fork 改动、里程碑、验收和未决项。冲突时，格式和语义以规范为准，实现细节以本文为准。
 
-状态（2026-10-17）：M1、M2 已关闭并只读归档；M2 的 native、stats、跨包去重、Claude rules/迁移与 replace 回退已验收，Codex/Claude 真实环境、本地回归和最终 Ubuntu/macOS CI 均通过，历史证据见 [M2 任务清单](../STYLE-M2-TASKS.md)、[测试矩阵](../STYLE-M2-TESTS.md)。当前里程碑为 M3，任务、依赖和验收状态以 [M3 任务清单](../STYLE-M3-TASKS.md)、[测试矩阵](../STYLE-M3-TESTS.md) 为准；建档和隔离环境基线已完成，D0 已获用户确认，T00 注册表校验修复和 A0 验收已完成，下一项为 D1 诊断契约设计。官方 token 计数仍各 0/40，承接为 M3-CARRY-01 非阻塞待验；本地编码/订阅 usage 作为补充，不提供误差范围保证。核心名称校验硬编码风险 M3-RV-01 已随 T00/A0 关闭；engine 既有输出安全特例仍按 D8 评估。当前仅支持 **Claude Code** 和 **Codex**；本文接口代码为设计示意，当前接口与职责见 [adapter 总览](../STYLE-ADAPTERS-CURRENT.md)。
+状态（2026-10-17）：M1、M2 已关闭并只读归档；M2 的 native、stats、跨包去重、Claude rules/迁移与 replace 回退已验收，Codex/Claude 真实环境、本地回归和最终 Ubuntu/macOS CI 均通过，历史证据见 [M2 任务清单](../STYLE-M2-TASKS.md)、[测试矩阵](../STYLE-M2-TESTS.md)。当前里程碑为 M3，任务、依赖和验收状态以 [M3 任务清单](../STYLE-M3-TASKS.md)、[测试矩阵](../STYLE-M3-TESTS.md) 为准；建档和隔离环境基线已完成，D0 已获用户确认，T00 注册表校验修复和 A0 验收已完成；[D1 诊断契约评审稿](../review/M3-D1-DIAGNOSTICS-2026-10-17.md) 已形成，等待用户评审，explain/probe 尚未实现。官方 token 计数仍各 0/40，承接为 M3-CARRY-01 非阻塞待验；本地编码/订阅 usage 作为补充，不提供误差范围保证。核心名称校验硬编码风险 M3-RV-01 已随 T00/A0 关闭；engine 既有输出安全特例仍按 D8 评估。当前仅支持 **Claude Code** 和 **Codex**；本文接口代码为设计示意，当前接口与职责见 [adapter 总览](../STYLE-ADAPTERS-CURRENT.md)。
 
 **依据**：
 - agenthooks `3f734c7` 源码，历史整理资料为 `agenthooks-codex.md`（外部资料，本仓库未收录）；
@@ -177,8 +177,8 @@ core 只消费通用目录/能力端口；agenthooks 继续负责协议、配置
 | `style adapters` | 适配器、检测结果、可用路线、信任方式、能力摘要、上限 | M1 |
 | `style agenthooks run --provider=<h> [--owner=style] [--fail-closed]` | 隐藏，hook 入口（第 8 节） | M1 |
 | `style stats [--by rule\|session] [--since <duration\|RFC3339>] [--json]` | 只读汇总历史运行时记录，默认最近 7 天、按规则；D2/T20 已实现（§11.5） | M2 |
-| `style explain --harness h --event e --payload f.json` | 离线模拟一次 hook 调用，打印命中的规则、去重判断和最终输出 | M3 |
-| `style probe [--harness h]` | 自检：确认 harness 真的在调用 hook | M3 |
+| `style explain --harness h --event NativeEvent --payload f.json [--index f] [--state-dir d] [--facts f] [--provenance f] [--fail-closed] [--json]` | 隔离重放一次原生 hook，解释命中/跳过/去重/容量和最终 wire；D1 评审中（§4.1），尚未实现 | M3 |
+| `style probe [--harness h] [--timeout 60s] [--json]` | 等待已安装 STYLE hook 的关联回调；D1 评审中（§4.1），尚未实现 | M3 |
 | `style update`、git 来源、`install --frozen`、`install --project`、`--count=exact` | | M3 |
 
 **选项说明**：
@@ -192,6 +192,24 @@ core 只消费通用目录/能力端口；agenthooks 继续负责协议、配置
 实现对照：[CLI 选项解析](../../internal/app/lifecycle_command.go)、[Codex 路线 ID](../../internal/adapter/codex/adapter.go)、[Claude 路线 ID](../../internal/adapter/claude/adapter.go)、[Codex 信任摘要渲染](../../agenthooks/install/render_codex.go)。路线 ID 是安装参数；`adapters` 的信任种类与锁文件持久值是不同表示，映射见 [trustState](../../internal/app/install.go)：`user-confirmation` → `user`，`preseed` → `preseeded`，`workspace` → `workspace`，其余 → `managed`。这些值描述路线策略，不能当作真实 UI 信任确认记录。
 
 **退出码**：`0` 成功；`1` 校验失败或用法错误；`3` `sync` 发现改动，需要 `trust`；`4` 安装被中止（`fallback: error` 命中，或 `T003`）。`agenthooks run` 永远退出 0，只有 `--fail-closed` 模式下内部出错时退出 1。
+
+### 4.1 M3-D1 诊断契约评审稿
+
+本节是 `[~]` 待用户评审的接口，T10/T11 尚未实现。完整输入、format=1 报告、失败行为和 A1-01–A1-12/A2-01–A2-12 断言见 [D1 方案](../review/M3-D1-DIAGNOSTICS-2026-10-17.md)。
+
+**explain**：`--harness` 必填一家（沿用 claude 别名）；`--event` 为区分大小写的原生事件名，例如 PreToolUse，必须与 payload.hook_event_name 一致。payload/session 必填且有界，index 默认从 STYLE_HOME 读取，也可显式指定；同一份捕获字节交给真实 codec/adapter/engine，不能独立实现一个解释匹配器。
+
+默认使用空 state 和空外部事实。`--state-dir` 只读捕获 payload 对应的 session/agent，所有计数、占位和 stats 写入私有临时根；不是在真实状态上运行后回滚。`--facts` 可提供与 payload 精确摘要绑定的已捕获版本、effort/MCP/Skill 补充事实；缺值保持缺值，不从宿主环境、配置、进程、transcript 或 skill 路径自动补齐。需要改动 agenthooks 的解码内部 Skill 读取边界，协议归属继续保留在 agenthooks。
+
+trace 与普通求值共用实现，覆盖 selector/source/when 短路、缺值、block 优先、render、repeat、共同容量和占位释放。最终 wire 的 stdout/stderr/退出码直接来自 codec，文本转义展示，JSON 放入 wire 字段；它可能包含用户主动检查的最终正文，不自动写入真实日志。static 只列 index 元数据、native 不执行。跨包编译折叠使用 [§9.7 编译说明](STYLE-spec-compiled.md#97-m3-d1-编译说明文件评审稿)；旧安装无说明文件时按 index-only 展示，不能从缺条目推断被折叠。
+
+重放完成退出 0（包括普通 block/未命中/dedup/cap-drop）；输入、内部求值/编码、取消或清理失败退出 1，即使原生 fail-open 的 wire.exit_code 为 0。`--fail-closed` 默认 false，仅接受当前已支持的 Claude 安装级策略，具体采用值写入报告。有效解析的 `--json` 请求输出单个成功/错误报告；用法错误 stdout 为空。不以管理结果修改原有 hook 退出码。
+
+**probe**：省略 harness 时选当前 lock 的所有已安装目标，指定时只选一家；timeout 默认 60s，接受 1s–10m。预检只读现有路线的 STYLE runtime 订阅/命令和绑定，不改 hook 配置、信任、lock/index 或包，不自动发送模型请求。没有 STYLE runtime hook、未加载的插件、旧 runtime 或来源无法验证不能算成功。
+
+本次观察使用 STYLE_HOME/probes 下的私有短租约和 run ID，runtime 通过 OnAny 记录解码成功的安全回调元数据。收据须与时间窗口、harness、安装根、runtime 可执行文件和 adapter 进程来源检查一致。没有租约时不建文件，观察失败不改变普通 hook 的 Decision/state/stats。进程关系只作本机关联，不能防同用户手工伪造；真实验收 B1/C1 另须独立原生来源与投递证据。
+
+全部目标观察到合格回调且本次租约/收据清理成功才退出 0；超时、部分完成、来源不明、中断、安装变化或清理失败退出 1。正常退出先停租约再清自己的收据；崩溃遗留到期即失效，下次按身份回收，不覆盖别人的探测。真实回调自然产生的正常 runtime 状态变更继续存在。probe 的 callback-observed 仅证明观察到入口，不关闭规则投递、原生信任或官方计数验收。
 
 ## 5. 本地布局、锁文件和状态
 

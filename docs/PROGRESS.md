@@ -1640,3 +1640,14 @@ PY
 - `GOWORK=off go build -trimpath -buildvcs=false` 当前二进制 SHA256 `8d4e933ccdc6d79167294b0998e0bfe76668cfbf0a268a64d25dc3f3b5ad6967`；独立导出 `74a473d2e238af44c346da3807f46e1c9993176d` 重新构建真旧布局二进制 SHA256 `4b2a46049758faef4c0a7e7e3045b877fe0503d0479b349fc5bf929adff8d958`。新执行 40/40 smoke、16/16 真旧迁移、12/12 replace 回退；与 M3 基线 CLI 的 32 组文本/JSON stdout/stderr/退出码逐字节相同。8 个隔离复制 import guard fixture 正确拒绝 5 个整个 adapter/agenthooks 根或子路径，允许 3 个不匹配前缀，未改仓库来制造失败。
 - `docs/review/M3-A0-2026-10-17.json` 固定源码起点加 22 份 Go 改动、源码范围指纹 `b4513fa557eb30a63758437aff58dc4149163b5c2c61a2b963ab6f7f89b31d8d`、14 个函数/十组验收映射、环境、命令/退出码/日志摘要、兼容案例和构建摘要；完整私有产物留 `/tmp/style-m3-a0-20261017.0ttt7bk2`。旧 M2 兼容脚本的 T40 未提交/C4 待验常量已注明为历史标签，不能当作当前源码或真实验收状态。
 - 文档/证据验证命令 `python3 /tmp/style-m3-t00-check-20261017.py --base 7a577d5ff1ab566f8adaf7659e61d688695fa7a3 --closed` 核对链接/锚点/围栏/命令语法、44 任务/39 测试映射与依赖、全部摘要/日志/新旧案例及当前源码一致性；PROGRESS 原始前缀 SHA256 `4b976e73deb835ee25fec4030f291c0e8bb6fc889b060c4cfbf9467902f2ea1f` 不变，77 份 M1/M2 归档、agenthooks、依赖、脚本/旧 fixture/golden 未改，`git diff --check` 通过。关闭 T00/A0/RV-01；下一项 D1 设计，官方校准仍各 0/40、全部真实验收与远端 CI 保持待验，未新增模型调用。
+
+### 2026-10-17 — M3-D1 explain / probe 诊断契约评审稿 `[~]`
+
+- 接 clean `bf278633cd58661b1d60b7128bdff06b79f0d92b`，T00/A0/RV-01 已独立完成。按依赖推进 D1 调查与设计，新契约此前未向用户展示，本次“继续”不当作对该契约的预先批准；D1 保持 `[~]` 待评审。
+- 新建 `docs/review/M3-D1-DIAGNOSTICS-2026-10-17.md`，回写 CLI §4.1、运行时 §8.9 与编译产物 §9.7；任务/测试入口同步。固定原生 event、index/payload、默认空 state、显式只读 snapshot/绑定 facts、format=1 报告、最终 codec wire 与管理退出码；普通 block/未命中/去重是正常解释结果，fail-open=0 不掩盖管理失败。
+- 核对 runtime 的状态更新/Claim/记录链，以及 agenthooks 解码内部 Claude Skill manifest 读盘、MCP 补充和 adapter 配置/环境/进程来源。拟用共享 trace 和显式离线依赖复用实际执行，所有模拟写入私有临时根；不能运行真实入口后回滚，不能只关 MCP 便宣称零外部读取。完整输出只进入用户主动请求的解释报告，不自动落真实日志。
+- index 不保存已折叠声明，故拟新增与最终 index 精确摘要绑定的冷路径 `build/explain.json`，同事务生成/移除，不改变 index/lock/state format；旧安装无说明或不匹配时只读 index-only，不重读新源、不补写、不虚构 runtime dedup/native 执行或静态已加载。这仍是设计，生产未新增文件。
+- probe 拟观察既有 STYLE runtime hook，以私有短租约/run ID/目标与二进制绑定/进程来源关联，覆盖超时/部分完成/中断/配置漂移/并发/崩溃和清理恢复；不自动改配置、信任或发送模型请求。进程关系不防同用户手工伪造，B1/C1 另需独立原生来源及投递证据；正常真实事件的 state/stats 更新不被错误承诺回滚。
+- A1-01–A1-12、A2-01–A2-12 全部待执行；B1/C1 补事件前 state/facts、原生来源及已装路线独立取证要求，保持 `[?]`。T10/T11 未开始，官方校准继续两家各 0/40、非阻塞待验；D3–D11 等后续契约没有提前批准。
+- 文档检查命令 `PYTHONDONTWRITEBYTECODE=1 python3 /tmp/style-m3-d1-doc-check-20261017.py --base bf278633cd58661b1d60b7128bdff06b79f0d92b --closed` 已通过：8 份当前 Markdown 的 110 个本地链接/锚点及围栏、4 段 shell 语法和 3 个 JSON 示例、44 任务/39 测试映射/依赖和状态、21 份源码的 59 条调查事实及 SHA256、PROGRESS 追加前缀、77 份 M1/M2 归档和 `git diff --check`；结果与检查器摘要归入 `docs/review/M3-D1-DOCS-2026-10-17.json`。原日志字节前缀 SHA256 `2b8149e50310b37b326eb8dd4c398295fa45cefc63a4df69522d62b5f13f4ffb` 保持。
+- 本次仅提交文档/调查证据，未运行新 Go/功能/真实环境验收，不改生产代码、测试、agenthooks、依赖、已有 fixture/golden 或 workflow。用户确认具体评审稿后才单独关闭 D1 并进入 T10/A1，随后 T11/A2。

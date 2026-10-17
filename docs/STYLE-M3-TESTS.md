@@ -4,7 +4,7 @@
 
 本文件记录 M3 测试矩阵与当前证据状态，任务及依赖见 [STYLE-M3-TASKS.md](STYLE-M3-TASKS.md)，运行记录追加到 [PROGRESS.md](PROGRESS.md)。[M1 测试](STYLE-M1-TESTS.md)、[M2 测试](STYLE-M2-TESTS.md) 已只读归档；历史通过结果不替代 M3 的新验收。
 
-当前状态：M3-00 建档检查、M3-BASE-01 新基线及 M3-A0 注册表/架构边界均已通过；A1–A18、准备、CI 和最终文档验收尚未执行。Codex B1–B4、Claude C1–C6、exact TOKEN-01 与 Windows W1 均待真实环境。M3-CARRY-01 官方校准仍两家各 0/40；三处名称校验的硬编码风险已由 M3-T00/M3-A0 关闭，后续功能按依赖继续设计。
+当前状态：M3-00 建档检查、M3-BASE-01 新基线及 M3-A0 注册表/架构边界均已通过；D1 已形成[诊断评审稿](review/M3-D1-DIAGNOSTICS-2026-10-17.md)，A1/A2 各细化 12 组待执行断言。A1–A18、准备、CI 和最终文档验收尚未执行。Codex B1–B4、Claude C1–C6、exact TOKEN-01 与 Windows W1 均待真实环境。M3-CARRY-01 官方校准仍两家各 0/40；三处名称校验的硬编码风险已由 M3-T00/M3-A0 关闭，设计文档检查不关闭新功能验收。
 
 ## 状态与验收规则
 
@@ -70,8 +70,8 @@ PYTHONDONTWRITEBYTECODE=1 python3 scripts/check_m2_rules_migration.py \
 ## M3a：离线验收
 
 - [x] **M3-A0 注册表与架构边界**（M3-D0、M3-T00、M3-RV-01）：用仅注册假 harness、删去某家、两家现有注册表及空目录的 fixture，覆盖 `when.harness.name`、`requires.harness`、`recommends` 及 native 校验。目录/单文件包、所有 app 入包路径给出一致诊断；普通名称全集与 native 子集、快照隔离、结构/完整 API、预算重复路径和 auto 遍历均需证明。core 不导入具体 adapter/agenthooks，旧包/诊断排序及失败后 bytes/mode/mtime 保持兼容。[D0 设计 §6](review/M3-D0-REGISTRY-VALIDATION-2026-10-17.md#6-m3-a0-验收细化) 的 A0-01–A0-10 已逐项通过，见 [本轮报告](review/M3-A0-2026-10-17.json)。macOS 27.0.1 / Go 1.27.0、临时三缓存及清理环境下，新执行双 module fresh test（30 个有测试 package，均非 cached）/vet、core/spec/tokens/adapter/app 四包完整 race；14 个新测试函数、205 个叶子用例，含 144 组目录/单文件/from 的精确名称组合与 33 组无效候选文件保全。与固定基线 CLI 的 32 组文本/JSON 输出和退出码逐字节相同；8 个隔离 import fixture 证明整个 adapter/agenthooks 前缀受限。59 项采集器、40 smoke、16 组 `74a473d` 真实旧版迁移、12 组回退通过；当前二进制 SHA256 `8d4e933ccdc6d79167294b0998e0bfe76668cfbf0a268a64d25dc3f3b5ad6967`。首轮测试中两个 fixture 问题及修正后通过均保留；生产校验未放宽、agenthooks/协议/旧 golden 未改，未调用真实 harness、远端 CI 或官方计数。关闭 M3-RV-01，允许进入 D1。
-- [ ] **M3-A1 explain**（M3-D1、M3-T10）：固定两家原生 payload、index 和隔离状态，解释命中/不命中、缺值、repeat、跨包去重、容量丢弃与最终输出；结果与真实 runtime/codec 相符。覆盖坏 payload/index、未知 harness/event 和 native 边界；以目录字节/权限/mtime 对照证明不改真实 state/config、不执行 native 命令，输出范围按 D1 固定。
-- [ ] **M3-A2 probe**（M3-D1、M3-T11）：以隔离回调 fixture 验证关联、真实回调与仅安装的区分、超时/中断/未触发诊断及失败清理；他人配置与已有 STYLE 安装保持完整，不残留探针。此项仅验离线生命周期，实际 harness 调用由 B1/C1 验收。
+- [ ] **M3-A1 explain**（M3-D1、M3-T10）：按 [D1 §8 的 A1-01–A1-12](review/M3-D1-DIAGNOSTICS-2026-10-17.md#8-待执行的验收细化)（待用户评审）固定两家原生 payload/index、空 state/只读 snapshot 和绑定 facts。逐项核对共享短路 trace、缺值、来源/agent、repeat、block 优先、多点评估、cap-drop/释放、编译折叠与 static/native 边界，实际 codec wire 和管理退出码分开。覆盖解码起零外部读取/进程/网络、坏/超限/漂移输入、取消/清理失败、并发隔离和 bytes/mode/mtime；explain.json 与 index 同事务及旧安装 index-only 回退另验。文本/JSON 确定性、协议白名单和兼容回归均需新证据；当前尚未实现或执行。
+- [ ] **M3-A2 probe**（M3-D1、M3-T11）：按 [D1 §8 的 A2-01–A2-12](review/M3-D1-DIAGNOSTICS-2026-10-17.md#8-待执行的验收细化)（待用户评审）以隔离 runner/进程来源 fixture 验证现有 STYLE hook 的 lease/run ID/安装根/原生事件/二进制绑定，旧/伪造收据与仅安装/版本命令不计成功。覆盖多目标部分完成、来源不明、超时/中断/并发 busy/配置漂移/崩溃恢复/迟到写入/清理失败、receipt 上限及脱敏。配置/信任/包/lock/index/说明文件保持，普通 hook 输出和 state/stats 不因观察改变；此项只验离线生命周期，实际原生调用及独立来源由 B1/C1 验收。
 - [ ] **M3-A3 Git 来源**（M3-D2、M3-T20）：用临时本地 Git 仓库模拟固定 revision、分支推进、同名/不同内容、目录与单文件包。覆盖不可达/缺 revision、非法包、路径逃逸/symlink 和取得中断；锁与内容摘要一致，失败不留半安装。取得源码不执行仓库代码；凭据与来源中的敏感字段不进入报告。
 - [ ] **M3-A4 update**（M3-D2、M3-T21）：fixture 覆盖无变化、普通内容变化、native 变化、多个包和已授权 link 的交互。核对预览/批准边界、来源与锁/index/配置一致、取消/部分失败完整回滚；不会连带批准未选包或跳过既有 native 信任。
 - [ ] **M3-A5 frozen**（M3-D2、M3-T22）：在隔离根重复锁定安装，核对 revision/摘要/有效规则可重复；覆盖锁缺失/不匹配、缓存缺失、离线条件、远端分支移动和本地/link 来源的定稿行为。失败结果明确，锁/已安装配置不发生未批准变化。
@@ -98,7 +98,7 @@ PYTHONDONTWRITEBYTECODE=1 python3 scripts/check_m2_rules_migration.py \
 
 既有 `codex-user`、`codex-plugin` 两路线独立记录，不拼接为一套通过；项目路线新增单独证据。记录固定版本、二进制和配置基线、原生 hook 来源/回调、完整上下文或请求摘要及卸载恢复；只声明实际观察到的信任范围。
 
-- [?] **M3-B1 probe 与 explain**（M3-T10、M3-T11、M3-REAL-01）：真实会话触发可关联探针；采集原生 payload 后按 D1 在隔离状态解释，与实际命中/去重/输出核对。未触发、退出与清理结果明确，卸载后新会话无探针残留。
+- [?] **M3-B1 probe 与 explain**（M3-T10、M3-T11、M3-REAL-01）：真实会话触发可关联回调，user/plugin 路线分别执行；用独立原生 hook 来源/事件证据关联 probe 收据、时间与 session，不能只依赖进程祖先或手工调用。采集原生 payload、事件前 state、补充事实和固定 index 后按 D1 隔离解释，与实际命中/去重/输出及原生上下文/请求证据核对。未触发、退出、清理与卸载后新会话无残留分别记录；callback-observed 不单独证明模型投递。
 - [?] **M3-B2 项目路线与来源生命周期**（M3-T20–T22、M3-T30、M3-REAL-01）：在隔离项目中用锁定来源安装，核对项目配置被真实 harness 接受、实际投递和用户/其他项目隔离；更新/frozen 与 native 变更信任沿定稿执行。多 clone 信任不外推，卸载后配置与原有用户规则还原。
 - [?] **M3-B3 运行时扩展**（M3-T40–T45、M3-REAL-01）：以固定真实事件序列核对 refresh、围栏、provider/unknown、effort 映射和受支持失败策略。原生回调/上下文、state、stats 与 explain 相符；不支持能力按批准设计证明边界，不把模型回复当投递证据。
 - [?] **M3-B4 native 与既有路线回归**（M3-T60、M3-T80、M3-REAL-01）：真实触发仍受支持的 native 及 STYLE hook，核对来源、matcher/timeout、信任与共存。新 native 能力仅按 D10 的 Codex 支持范围取证；卸载恢复外部文件，后续新会话不再触发。
@@ -107,7 +107,7 @@ PYTHONDONTWRITEBYTECODE=1 python3 scripts/check_m2_rules_migration.py \
 
 本地用户/项目/插件与云端分别记录。沿用隔离 runbook 和原生证据；交互操作沿既有授权范围执行，登录/钥匙串等需要用户交互时单列。固定版本、实际工作区信任范围和文件基线，安装/卸载分别启动新会话核对。
 
-- [?] **M3-C1 probe 与 explain**（M3-T10、M3-T11、M3-REAL-02）：真实交互会话产生可关联原生回调，隔离解释与真实输出相符；核对未触发/超时诊断、清理与配置还原，不以采集器手工调用代替原生事件。
+- [?] **M3-C1 probe 与 explain**（M3-T10、M3-T11、M3-REAL-02）：真实交互会话产生可关联原生回调，用独立原生 hook 来源/事件证据对应收据/时间/session。固定原 payload/index、事件前 state 和补充事实后隔离解释，对照命中/去重/codec 输出与实际投递；当前 user 路线单独记录，后续新路线另验。核对未触发/超时、清理及卸载后新会话；进程祖先、callback-observed 或采集器手工调用均不单独替代原生/投递证据。
 - [?] **M3-C2 本地项目路线**（M3-T30、M3-REAL-02）：原生加载/指令附件或请求证据证明项目规则生效，用户规则与其他项目隔离；核对信任、动态/native 与静态位置、卸载恢复和新会话无残留。
 - [?] **M3-C3 云端项目交付**（M3-T31、M3-REAL-02）：在实际云端会话中验证定稿支持的交付路径、规则发现、hook 运行和完整投递；记录 clone/运行时条件及卸载或移除后的新会话。无真实环境保持待验，本地 fixture 不代替云端结果。
 - [?] **M3-C4 插件路线**（M3-T32、M3-REAL-02）：实际登记/启用插件、原生加载并触发目标规则；与已有用户/项目路线无重复投递，核对原生信任边界、禁用/卸载和外部文件恢复。
