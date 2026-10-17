@@ -477,3 +477,9 @@ FINAL-08 的 [Claude 原生超限](review/M1-FINAL-08-CLAUDE-2026-10-16.json) �
 U9控制配置补测已完成，见 [THINKING](review/M1-FINAL-06-THINKING-2026-10-16.json)：真实Haiku5.5请求在alwaysThinkingEnabled=false和MAX_THINKING_TOKENS=0下仍为adaptive，hook/state仍high，不能当作关闭成功。所测环境缺少off原值，按既定边界不产出none，档位描述原生effort参数而非思考开关。最终[C9](review/M1-FINAL-06-C9-2026-10-16.json)已通过，整体p95=28ms。
 
 [FINAL-07 Claude](review/M1-FINAL-07-CLAUDE-2026-10-16.json)：真实resume/fork保留原动态context且startup-only没有补发；关闭reinject专用compact后两标记消失。原生Agent子级不继承本例父动态标记，工具上下文和阻断在独立child scope生效，父scope无子事件；不据此增加SubagentStart注入能力。
+
+## 12. M3-D3 路线评审边界
+
+[安装范围与交付路线评审稿](review/M3-D3-ROUTES-2026-10-17.md)已结合 Claude Code 调查和本轮静态加载补测回写规范，等待用户确认。`codex-project`、`claude-project`、cloud export 与 `claude-plugin` 均未实现；本页前述三条现有路线仍是当前实现。新项目路线拟使用私有独立安装根、显式 --project、lock 3 与可移植入口；Codex 项目静态降级以免覆盖用户 developer_instructions，Claude 项目静态 rules 与 hook 发现分开报告。Claude 插件拟为手动登记的本地 marketplace hook 载体，静态继续在用户 rules，原生缓存残留单列。
+
+本轮原生补测绑定 Codex 0.159.3 / Claude Code 2.1.301，仅以回环 stub 请求中的固定标记核对加载；未调用真实模型。A6–A8、B2/C2–C4、Windows、远端 CI 和官方两家各 0/40 状态不变，复核证据见 [D3 报告](review/M3-D3-DOCS-2026-10-17.json)。

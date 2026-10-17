@@ -293,3 +293,11 @@ STYLE 的 hook 输出**只允许**这几样：`additionalContext`、`systemMessa
 - 管理失败退出 1，原生 fail-open/fail-closed 输出和退出码单列；不能用 hook 退出 0 证明解释成功。普通 block/未命中/去重/容量丢弃是正常解释结果。
 - probe 等待现有 STYLE hook 的关联回调，只有本次私有租约/收据可新增；不改配置、信任、包、lock/index 或订阅面。OnAny 只提交不可变安全元数据，观察任务按 5ms/六层祖先预算异步捕获 OS 身份，不由正常 hook 退出等待；完整文件哈希由管理进程核对。观察器错误不得影响正常 hook，重放也不会触发真实 probe。真实事件本身的常规 state/stats/log 更新不被回滚。
 - callback-observed 与规则已投递分别记录；run ID/绑定/进程来源仅作本机关联，不是防同用户伪造的认证。B1/C1 还须独立原生来源、输出/投递和清理证据；A1/A2 fixture 不能提前关闭真实验收。
+
+### 8.10 M3-D3 项目与云端隔离评审稿
+
+本节为待用户确认提案，尚未实现，详见 [D3 范围契约](../review/M3-D3-ROUTES-2026-10-17.md)。项目入口只从进程 cwd/显式项目入口定位唯一受管声明，核对规范根与私有 binding；不能相信 payload.cwd 来选择另一个根，不调用 Git/网络/包编译。缺安装、歧义、换根或环境根不一致经 agenthooks 既有 codec/策略报告，不退到用户 index，不以管理退出码改变 fail-open/fail-closed。
+
+每个项目/clone 的 index/state/stats/codec cache/probe 分离，用户/项目不同名包允许同时生效，不承诺跨范围优先级/共同预算/正文去重；同一 harness 的同名包在管理入口阻断。项目 root 定位与绑定归 app；协议、事件与原生输出继续归 agenthooks，core 不识别项目/harness 配置。Claude 从子目录启动的静态向上发现与 hook settings 发现不同，不以其一推断另一种投递。
+
+云端入口只加载 manifest 验证过的预编译 bundle，状态写云端私有 HOME，不写仓库或自动下载/编译；固定 runner 的预置为外部前提。native 仍由原生执行，原文与依赖如实披露，不声称任意 shell 跨平台可用。插件禁用只停止插件 hook，静态 user rules 直到 STYLE uninstall 才移除；真实加载/信任和新会话无残留仍待 B2/C2–C4。

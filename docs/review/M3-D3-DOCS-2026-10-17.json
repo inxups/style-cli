@@ -1,0 +1,345 @@
+{
+  "format": 1,
+  "task": "M3-D3",
+  "date": "2026-10-17",
+  "status": "draft_awaiting_user_review",
+  "source_base": "843cf3faf4ab1fe084a0458c0db270858e905f25",
+  "scope": "investigation review, five isolated static observations and design documentation; no product implementation or functional acceptance",
+  "reviewed_investigation": {
+    "path": "docs/review/M3-D3-INVESTIGATION-2026-10-17.json",
+    "sha256": "94c1122030b73991044818a788b5faf4fb3122a336abb5350df086fddae86c18",
+    "four_probe_hashes_match": true,
+    "original_report_and_markdown_unchanged": true,
+    "review_notes": [
+      "Original probes collect observations; exit zero is not behavioral acceptance.",
+      "Original fake harness tests verify the collector, not native product semantics.",
+      "Claude hook discovery finding must not be generalized to static memory.",
+      "Codex project developer_instructions replaces the user value in the tested version.",
+      "Official Claude project-plugin -p trust documentation and 2.1.301 observation differ; preserve both.",
+      "Real delivery, cloud, Windows and CI remain pending."
+    ]
+  },
+  "commands": {
+    "static_native": "env -u CODEX_HOME -u CODEX_SANDBOX -u CLAUDE_CONFIG_DIR PYTHONDONTWRITEBYTECODE=1 python3 testdata/manual/probe_m3_d3_static.py --scratch /tmp/style-m3-d3-review-20261017/static-native --output /tmp/style-m3-d3-review-20261017/static-native.json",
+    "self_tests": "env -u CODEX_HOME -u CODEX_SANDBOX -u CLAUDE_CONFIG_DIR PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s testdata/manual -p 'test_*.py'",
+    "documentation_check": "PYTHONDONTWRITEBYTECODE=1 python3 /tmp/style-m3-d3-review-20261017/check-design.py"
+  },
+  "new_probe": {
+    "files": {
+      "testdata/manual/probe_m3_d3_static.py": "ecdd3957acd3607c4199c37f4b4ef1dafec6f009af8c4e1e227749b49183b86d",
+      "testdata/manual/test_probe_m3_d3_static.py": "eb575a8faa2afbfebce21fee3907821ceb5aa6779c35f279985053a85ff24fb5"
+    },
+    "observation": {
+      "task": "M3-D3 static discovery investigation",
+      "versions": {
+        "codex": "codex-cli 0.159.3",
+        "claude": "2.1.301 (Claude Code)"
+      },
+      "model_service": "loopback stubs; no inference; no real credentials",
+      "probe_sha256": "ecdd3957acd3607c4199c37f4b4ef1dafec6f009af8c4e1e227749b49183b86d",
+      "results": [
+        {
+          "case": "codex-user-only",
+          "exit_code": 0,
+          "requests": [
+            {
+              "path": "/v1/responses",
+              "markers": {
+                "user": [
+                  "input"
+                ],
+                "project": [],
+                "memory": []
+              }
+            }
+          ]
+        },
+        {
+          "case": "codex-project-trusted",
+          "exit_code": 0,
+          "requests": [
+            {
+              "path": "/v1/responses",
+              "markers": {
+                "user": [],
+                "project": [
+                  "input"
+                ],
+                "memory": []
+              }
+            }
+          ]
+        },
+        {
+          "case": "codex-project-untrusted",
+          "exit_code": 0,
+          "requests": [
+            {
+              "path": "/v1/responses",
+              "markers": {
+                "user": [
+                  "input"
+                ],
+                "project": [],
+                "memory": []
+              }
+            }
+          ]
+        },
+        {
+          "case": "claude-static-root",
+          "exit_code": 0,
+          "requests": [
+            {
+              "path": "/v1/messages",
+              "markers": {
+                "user": [
+                  "messages"
+                ],
+                "project": [
+                  "messages"
+                ],
+                "memory": [
+                  "messages"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "case": "claude-static-subdir",
+          "exit_code": 0,
+          "requests": [
+            {
+              "path": "/v1/messages",
+              "markers": {
+                "user": [
+                  "messages"
+                ],
+                "project": [
+                  "messages"
+                ],
+                "memory": [
+                  "messages"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "expected_observation_matrix_matches": true,
+    "no_feature_acceptance_closed": true
+  },
+  "execution": {
+    "native_exit_code": 0,
+    "collectors_initial_passed": 67,
+    "collectors_final_passed": 68,
+    "Go_tests_executed": false,
+    "reason": "No production Go source or dependency changed. Python fixture/self tests and isolated native observations exercise the new investigation code.",
+    "environment": "fresh temporary HOME/CODEX_HOME/CLAUDE_CONFIG_DIR, inherited PATH only as explicitly set by fixtures; local stub endpoints; placeholder Anthropic key; no real inference or credentials",
+    "logs": [
+      {
+        "path": "/tmp/style-m3-d3-review-20261017/static-native.json",
+        "sha256": "b9ff8e979b0320b543fc4972c77b9235fe7b5a72a6c26bd3462c42961ac55f2e"
+      },
+      {
+        "path": "/tmp/style-m3-d3-review-20261017/static-native.log",
+        "sha256": "b9ff8e979b0320b543fc4972c77b9235fe7b5a72a6c26bd3462c42961ac55f2e"
+      },
+      {
+        "path": "/tmp/style-m3-d3-review-20261017/collectors.log",
+        "sha256": "af45f7b3583107680ce0c2cebd1eed42c1ff1261933131cb93838cc3ed7b4a0e"
+      },
+      {
+        "path": "/tmp/style-m3-d3-review-20261017/collectors-final.log",
+        "sha256": "77deaa8778fba6c762b0a7c4b2fb94578b46f3a0926ad4322c8aac6d7ce1b0c1"
+      }
+    ]
+  },
+  "official_sources": [
+    {
+      "id": "codex-hooks",
+      "url": "https://developers.openai.com/codex/hooks",
+      "status": "fetched",
+      "exit_code": 0,
+      "error": "",
+      "sha256": "45c7c1d99c3e279f3274eee89402c91d9b59ab521d9c8841e075d0625fc01f7e",
+      "bytes": 523636
+    },
+    {
+      "id": "codex-config",
+      "url": "https://developers.openai.com/codex/config-basic",
+      "status": "fetched",
+      "exit_code": 0,
+      "error": "",
+      "sha256": "17f556bcfefc9332e56de85afd16176827e6ee822545f3d2ab68db4404467c4c",
+      "bytes": 411378
+    },
+    {
+      "id": "claude-hooks",
+      "url": "https://code.claude.com/docs/en/hooks.md",
+      "status": "fetched",
+      "exit_code": 0,
+      "error": "",
+      "sha256": "5599b94537beb359bfe35dfa7538503194ea78b8d824fcaccba068915d6a77d7",
+      "bytes": 273668
+    },
+    {
+      "id": "claude-memory",
+      "url": "https://code.claude.com/docs/en/memory.md",
+      "status": "fetched",
+      "exit_code": 0,
+      "error": "",
+      "sha256": "768be47946cafc36d6fbe3988a04229521f5433bc038736739204e2ed258f6a7",
+      "bytes": 51526
+    },
+    {
+      "id": "claude-web",
+      "url": "https://code.claude.com/docs/en/claude-code-on-the-web.md",
+      "status": "fetched",
+      "exit_code": 0,
+      "error": "",
+      "sha256": "96facadf5c54041b768e5e1c98131f80ae9c851c15253d72639423146dafb704",
+      "bytes": 41021
+    },
+    {
+      "id": "claude-plugin",
+      "url": "https://code.claude.com/docs/en/plugins-reference.md",
+      "status": "fetched",
+      "exit_code": 0,
+      "error": "",
+      "sha256": "16b6dafd91d4a258bd1afcb901ee6efafca67c6de52e8c7a2b3c65c3884b5f3d",
+      "bytes": 41987
+    },
+    {
+      "id": "claude-loading",
+      "url": "https://code.claude.com/docs/en/plugins/loading.md",
+      "status": "fetched",
+      "exit_code": 0,
+      "error": "",
+      "sha256": "981414aeb654516276a878dc8f8942f251b279ba36b9003fe77355e4e24484a5",
+      "bytes": 39375
+    },
+    {
+      "id": "claude-settings",
+      "url": "https://code.claude.com/docs/en/settings.md",
+      "status": "fetched",
+      "exit_code": 0,
+      "error": "",
+      "sha256": "a8cc395af5e0938659ddfd38a703bdc8a5151640216c5230098408e30625e380",
+      "bytes": 57985
+    },
+    {
+      "id": "claude-cloud-env",
+      "url": "https://code.claude.com/docs/en/cloud-environments.md",
+      "status": "fetched",
+      "exit_code": 0,
+      "error": "",
+      "sha256": "299e408e9efa92e53fa75c6d36b49132980f228a3f14dd290e18de43a178c61f",
+      "bytes": 63059
+    },
+    {
+      "id": "claude-components",
+      "url": "https://code.claude.com/docs/en/plugins/components.md",
+      "status": "fetched",
+      "exit_code": 0,
+      "error": "",
+      "sha256": "735298101629f7e87d311b277b08abea995a975172f88446ba52726f52c25e10",
+      "bytes": 54973
+    }
+  ],
+  "fetch_attempts": {
+    "web_search": "did not return source text; used HTTPS GET of official pages via system curl with certificate verification",
+    "sandbox_python": "DNS unavailable; retained official-fetch-sandbox.json",
+    "unsandboxed_python": "certificate chain unavailable; retained official-fetch-python-ssl.json",
+    "successful_method": "curl --fail --location --silent --show-error --max-time 30 URL -o private-file; system certificate validation enabled",
+    "private_failed_attempts_sha256": {
+      "official-fetch-sandbox.json": "a8ae54d588be79b5b4ffb02f12c2ecbf07b7da92b0b94aac84a4b6290c544fdc",
+      "official-fetch-python-ssl.json": "e57e637b361ef8fb24ae24edb7ebf6b598f71bdf0b4e33a3fd8ed5ed4a9a9231"
+    }
+  },
+  "source_snapshot": {
+    "internal/app/lifecycle_store.go": "cb8db21bd395cc219fedb550d8c2334fac087a4c463297d78e8ff9b216215543",
+    "internal/app/hook_command.go": "854712e8369033dbe55625e5c51c979a74e56c473d17ddf59b521d22a48a9be2",
+    "internal/app/install_routes.go": "f4933568b0322bff283077e74564eaa223620f0d22a41db64f078fd326e27cb9",
+    "internal/app/frozen_prepare.go": "b1fc6d2999c910265d54e11ae6b1014d1258056bb8130cff865ae008297d68b6",
+    "internal/adapter/codex/route.go": "000661b522427e30a8bf32f87ed88cbdf9ffee7dcb9fc1113db5988168ed908a",
+    "internal/adapter/claude/route.go": "e7b603ae225ee0c668e497f793248f2be6f8d472d291a0fefbc7b0847f00ef37",
+    "internal/adapter/command.go": "4263b6bbde3955453b16dd8d3947b12d583298984713f0b2d407f1709d224238",
+    "core/compile/types.go": "c11064f20de70080c8ef93b88d4e5a16b1d0e7b34a4db5d7191bb83cb8cf94b7",
+    "core/plan/system.go": "41c8e37508d96c693eaa50b09a614150f223cdfd4cb412b2bd415c19bd98a423",
+    "agenthooks/install/install.go": "165045d937defc0b6ca4d8b33737b74aed1d4d4c57e04187bdc4721ef5631326",
+    "agenthooks/install/render_codex.go": "d18ee831e59de72eba1bb07e18427054f933353155c240c5d32a11145654b52a",
+    "agenthooks/install/render_claude.go": "d715718d703fe26b75584a359ea1966261b694582405ef107e9af3b0c1d7aa4f",
+    "agenthooks/install/codex_path.go": "377cf0f3159e179aa430b72b04f81e689938ff3a4b0c229304abad4c384dda34"
+  },
+  "verification": {
+    "command": "PYTHONDONTWRITEBYTECODE=1 python3 /tmp/style-m3-d3-review-20261017/check-design.py",
+    "checker_sha256": "c905a63b0529bfe2f2fcd5ee3a606888f9697c35c23be2e7089ebdb2b51652fe",
+    "exit_code": 0,
+    "result": {
+      "status": "passed",
+      "source_base": "843cf3faf4ab1fe084a0458c0db270858e905f25",
+      "documents_checked": 9,
+      "local_links_and_anchors": 263,
+      "external_reference_links": 10,
+      "shell_blocks_syntax_checked": 9,
+      "task_entries": 44,
+      "test_entries": 39,
+      "mappings_and_dependency_graph": "passed",
+      "D3_status": "draft awaiting user review",
+      "new_functional_items_closed": [],
+      "A6_pending": 12,
+      "A7_pending": 6,
+      "A8_pending": 6,
+      "original_probe_hashes_verified": 4,
+      "static_native_observation_cases": 5,
+      "collector_self_tests_passed": 68,
+      "PROGRESS_append_only": true,
+      "PROGRESS_prefix_sha256": "4fc223c2c609eb1b1061f843d59231da8256e1e59c31abb10eb4ddf33d2bc1d4",
+      "historical_archives_unchanged": 77,
+      "historical_M3_JSON_unchanged": 15,
+      "protected_baseline_files_unchanged": 942,
+      "production_and_agenthooks_unchanged": true,
+      "Python_syntax": "passed",
+      "git_diff_check": "passed"
+    }
+  },
+  "document_sha256": {
+    "AGENTS.md": "f405ef8b1d31f01ba43d3f07950db847e770956a79372f212fd30482d3e463c9",
+    "docs/STYLE-M3-TASKS.md": "7caad1b3f42375588b55d382d85b099471cd3fe53d8c940af2a1bf2491e849f3",
+    "docs/STYLE-M3-TESTS.md": "04ad593cfd40be06f2a18ce13856c76c18995f381e6cbc6d285797202f13602c",
+    "docs/PROGRESS.md": "01324bed741d1ad375efee74e190b914caf4b9aaae663b13407489c0a2daa303",
+    "docs/STYLE-ADAPTERS-CURRENT.md": "929cdb5ea887e58558ec4c482c4838cf6896f5e694d857f7a9d076109122cf59",
+    "docs/spec/STYLE-cli-design.md": "075826b1efc61e6fe1c44655da817ef414ecf6c0fba8f0816a5017b911f97e47",
+    "docs/spec/STYLE-spec-compiled.md": "9635911a17c6c727ecb005acc2d4c144a6a996c6f7ee7bc5c04dc0c433c284c2",
+    "docs/spec/STYLE-spec-runtime.md": "2b02160f1841409b84315ab0bfb414487bbf8be1f6fe53c59e1b2da66eb97cb4",
+    "docs/review/M3-D3-ROUTES-2026-10-17.md": "a7ce5c9ae3bd17fc6417c8b11ec19d82e4a7fc54419a3c728704950b2b30a4b7"
+  },
+  "changed_paths": [
+    "docs/PROGRESS.md",
+    "docs/STYLE-ADAPTERS-CURRENT.md",
+    "docs/STYLE-M3-TASKS.md",
+    "docs/STYLE-M3-TESTS.md",
+    "docs/review/M3-D3-DOCS-2026-10-17.json",
+    "docs/review/M3-D3-ROUTES-2026-10-17.md",
+    "docs/spec/STYLE-cli-design.md",
+    "docs/spec/STYLE-spec-compiled.md",
+    "docs/spec/STYLE-spec-runtime.md",
+    "testdata/manual/probe_m3_d3_static.py",
+    "testdata/manual/test_probe_m3_d3_static.py"
+  ],
+  "remaining": {
+    "D3": "awaiting user review of section 11 choices",
+    "T30_T31_T32": "not started",
+    "A6_A7_A8": "pending; 12/6/6 subcases",
+    "B2_C2_C3_C4": "pending real environment",
+    "Windows_CI": "pending",
+    "official_counting": {
+      "codex": "0/40",
+      "claude-code": "0/40",
+      "blocking": false
+    }
+  }
+}

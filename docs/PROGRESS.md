@@ -1751,3 +1751,13 @@ PY
 - Claude 云端只有官方文档依据（2026-10-17 读取）：只读仓库 `.claude/settings.json` 的 hooks、`CLAUDE.md`、`.claude/rules`，不读用户和 local 设置，也不安装插件；`CLAUDE_CODE_REMOTE=true`，预装 Go，`proxy.golang.org` 在白名单内。C3 待验。
 - 首轮 Claude 试运行时，`timeout` 命令在 macOS 上不存在（退出 127），已保留记录；随后一次带 `cd` 的相对路径清理被安全检查拦截、没有执行，改为每次实验都用新的空目录。Claude 子目录场景首轮无法区分“没有发现项目设置”和“路径替换失败”，第 2 轮补了绝对路径对照后确认是前者。
 - 验证：`env -u CODEX_HOME -u CODEX_SANDBOX -u CLAUDE_CONFIG_DIR PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s testdata/manual -p 'test_*.py'` 67/67 通过（原有 59 + 新增 8）；Python 版信任哈希与 agenthooks `DefinitionHash` 的两组向量一致；证据 JSON 中没有绝对路径和占位 key；`git diff --check` 和链接检查通过。没有运行真实模型、Windows、远端 CI 或 STYLE 二进制本身。下一步：用户通知后开始 D3 评审稿，引用本调查的事实和第 6 节的待决问题。
+
+## 2026-10-17 — M3-D3 调查复核与路线评审稿 [~]
+
+- 基线：clean `843cf3f`，T22/A5 已完成；用户已收到 D3 开始前通知，本次授权复核 Claude Code 调查稿并继续推进。原调查稿、原 JSON 与四份探针/自测摘要保持不变。
+- 复核：逐项比对原报告的场景计数、源码与结论；原探针退出 0 代表完成采集，fake 自测不代表原生行为验收。本轮先重跑既有 67 项采集器/探针自测，再新增固定标记捕获隐私测试，最终 68/68 通过。
+- 补查：新增 `testdata/manual/probe_m3_d3_static.py` 及自测；Codex 0.159.3 / Claude Code 2.1.301 的五个场景在全新临时 HOME/配置、回环 stub 下命令均退出 0、各一条请求。Codex 受信项目 developer_instructions 覆盖用户值，未受信项目保留用户值；Claude 根/子目录启动都加载用户 rules、项目 rules 与项目 CLAUDE.md。因此收紧原调查的“只认启动目录”为 hook settings 实测范围，不外推到静态文件发现。
+- 官方核查：实际取得十份 OpenAI/Anthropic 官方页面并固定摘要。保留 Claude 项目插件 -p 信任的文档/2.1.301 实测差异，不据此推断交互信任。首次沙箱 DNS 和 Python 证书链失败均保留，随后系统 curl 正常校验证书取得页面，未跳过 TLS 校验。
+- 产出：[D3 评审稿](review/M3-D3-ROUTES-2026-10-17.md)、[复核与检查报告](review/M3-D3-DOCS-2026-10-17.json)，已回写 CLI/编译/运行时规范、adapter 总览和 M3 清单/矩阵。提议显式项目范围/私有独立根、新 clone 重新重现确认、跨用户/项目同名冲突阻断、Codex 静态动态降级、lock 3 和 agenthooks 项目 trust 分根；云端显式 export/预置 runner；Claude 插件使用手动登记的本地 marketplace，外部静态规则和原生缓存残留单列。
+- 验证：本地链接/锚点、围栏/shell 语法、44 项任务/39 项测试映射及依赖、A6/A7/A8 的 12/6/6 组待验编号、原始摘要、Python 语法、PROGRESS 仅追加、77 份 M1/M2 归档及历史 M3 JSON 未变、生产源码/agenthooks 未变、`git diff --check` 均通过，具体数量与命令见报告。未改生产 Go 源码/依赖，本轮未重跑 Go 功能测试。
+- 状态：仅将 D3 更新为 `[~]`（具体稿待用户确认），不关闭 D3 或任何功能/真实测试。没有调用真实模型、云端、Windows 或远端 CI；官方计数仍两家各 0/40 非阻塞待验。用户确认评审稿第 11 节后再按 T30/A6 → T31/A7 → T32/A8 独立实现和验收。

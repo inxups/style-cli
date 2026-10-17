@@ -4,7 +4,7 @@
 
 本文件是 STYLE CLI M3 的持久化任务清单。每项完成后同步状态和可重复证据，测试矩阵见 [STYLE-M3-TESTS.md](STYLE-M3-TESTS.md)，执行记录追加到 [PROGRESS.md](PROGRESS.md)。M1、M2 已关闭并只读归档；上一里程碑的事实见 [M2 任务清单](STYLE-M2-TASKS.md)、[M2 测试矩阵](STYLE-M2-TESTS.md) 和 [M2 总验收报告](review/M2-DOCS-01-2026-10-17.json)。
 
-当前总状态：M3-00、M3-01、M3-D0、M3-T00 已完成，M3-A0 已通过，M3-RV-01 已关闭。M3-D1 诊断契约已获用户确认并[定稿](review/M3-D1-DIAGNOSTICS-2026-10-17.md)；M3-T10 explain 已实现并通过 M3-A1，见 [使用说明](STYLE-EXPLAIN.md) 和 [验收报告](review/M3-A1-2026-10-17.json)。M3-T11 probe 已实现并通过 M3-A2，见 [使用说明](STYLE-PROBE.md) 和 [验收报告](review/M3-A2-2026-10-17.json)。M3-D2 [来源与锁定契约](review/M3-D2-SOURCES-2026-10-17.md) 已获用户确认并定稿；T20 Git 来源已实现并通过 [A3 验收](review/M3-A3-2026-10-17.json)，见 [使用说明](STYLE-SOURCES.md)；T21 update 已实现并通过 [A4](review/M3-A4-2026-10-17.json)，T22 frozen 已实现并通过 [A5](review/M3-A5-2026-10-17.json)；D3 尚未开始，开始 D3 前按用户要求通知。用户已确认完整覆盖 M3 backlog、分阶段推进，并将核心 harness 名硬编码修复列为前置必做项；具体接口语义仍需各设计项定稿。
+当前总状态：M3-00、M3-01、M3-D0、M3-T00 已完成，M3-A0 已通过，M3-RV-01 已关闭。M3-D1 诊断契约已获用户确认并[定稿](review/M3-D1-DIAGNOSTICS-2026-10-17.md)；M3-T10 explain 已实现并通过 M3-A1，见 [使用说明](STYLE-EXPLAIN.md) 和 [验收报告](review/M3-A1-2026-10-17.json)。M3-T11 probe 已实现并通过 M3-A2，见 [使用说明](STYLE-PROBE.md) 和 [验收报告](review/M3-A2-2026-10-17.json)。M3-D2 [来源与锁定契约](review/M3-D2-SOURCES-2026-10-17.md) 已获用户确认并定稿；T20 Git 来源已实现并通过 [A3 验收](review/M3-A3-2026-10-17.json)，见 [使用说明](STYLE-SOURCES.md)；T21 update 已实现并通过 [A4](review/M3-A4-2026-10-17.json)，T22 frozen 已实现并通过 [A5](review/M3-A5-2026-10-17.json)；D3 已按用户通知要求开始，调查已复核并形成[安装范围与交付路线评审稿](review/M3-D3-ROUTES-2026-10-17.md)，待用户确认。用户已确认完整覆盖 M3 backlog、分阶段推进，并将核心 harness 名硬编码修复列为前置必做项；具体接口语义仍需各设计项定稿。
 
 ## 范围与推进顺序
 
@@ -54,7 +54,7 @@ M3-CARRY-01 与 `--count=exact` 产品验收分别记录；前者的非阻塞决
 - [x] **M3-D0 注册表校验边界**：目标是明确通用校验如何接收合法 harness 集合，兼容现有调用与诊断。依赖：M3-01。产出：[定稿设计](review/M3-D0-REGISTRY-VALIDATION-2026-10-17.md) 与 [CLI §3.1](spec/STYLE-cli-design.md#31-m3-d0-注册表校验边界)，已覆盖名称全集/native 子集、结构/完整校验接口、三处名称及预算/重编译调用链、诊断兼容和十组验收，并回写包/条件规范。测试：M3-A0。2026-10-17 用户在评审问题后回复“继续”，确认 `Validate` 的结构校验兼容选择与实现范围；文档检查通过，见 `PROGRESS.md` M3-D0 定稿记录。M3-T00 已实现、M3-A0 已通过，结果见 [验收报告](review/M3-A0-2026-10-17.json)。
 - [x] **M3-D1 诊断契约**：目标是明确 `style explain --harness h --event e --payload f.json` 和 `style probe [--harness h]` 的输入、输出及成功证据。依赖：M3-T00。产出：[定稿契约](review/M3-D1-DIAGNOSTICS-2026-10-17.md) 与 [CLI §4.1](spec/STYLE-cli-design.md#41-m3-d1-诊断契约评审稿)、运行时 §8.9、编译产物 §9.7；拟定原生 event/默认空状态/显式 snapshot 与 facts、共享 trace、绑定 index 的可选编译说明、现有 hook 观察及租约清理，A1/A2 各细化 12 组。测试：M3-A1、M3-A2、M3-B1、M3-C1。源码调查固定 clean `bf27863`，文档检查见 [D1 文档报告](review/M3-D1-DOCS-2026-10-17.json)；2026-10-17 用户在明确评审问题后回复“继续”，确认本稿三项产品选择；[定稿检查](review/M3-D1-APPROVED-2026-10-17.json) 通过，关闭 D1。M3-T10/M3-A1、M3-T11/M3-A2 均已独立完成；B1/C1 真实验收保持待验。
 - [x] **M3-D2 来源与锁定契约**：目标是明确 Git 来源、`update`、`install --frozen` 的来源表达、revision 锁定和授权边界。依赖：M3-T11。产出：[评审稿](review/M3-D2-SOURCES-2026-10-17.md) 与 [CLI §4.2](spec/STYLE-cli-design.md#42-m3-d2-来源与锁定评审稿)、包 §1.8、编译产物 §10.1；拟定显式公共 HTTPS/完整 ref/原始对象快照、私有导出缓存、lock 1/2 兼容、明确选包更新/未选批准基线、共享提交保护与回滚、整锁离线 frozen。测试：M3-A3–A5。调查固定 clean `a8fad75a17d0dbc1a38cc5825ec17cfda5b780ab`，本地 Git 2.54.0 的 12 项设计探针通过，前两次 fixture 失败保留；文档检查见 [报告](review/M3-D2-DOCS-2026-10-17.json)。A3/A4/A5 各细化 12 组断言；2026-10-17 用户在明确评审问题后回复“继续”，确认公共 HTTPS、lock 2/明确选包更新和当前整锁离线恢复的三项选择；[定稿检查](review/M3-D2-APPROVED-2026-10-17.json) 通过，仅关闭 D2。
-- [ ] **M3-D3 安装范围与新路线**：目标是明确用户级/项目级安装隔离，以及 Claude 云端和插件载体的可行路径。依赖：M3-T22。产出：项目根/存储/index/state 选择、同名包和多 clone 边界、原生信任与卸载恢复、Claude 云端交付条件及插件注册方案；固定原生证据后回写路线设计。测试：M3-A6–A8、M3-B2、M3-C2–C4。T22 推进期间已按本清单的隔离调查约定完成[原生调查](review/M3-D3-INVESTIGATION-2026-10-17.md)（Codex 0.159.3 与 Claude Code 2.1.301，均用 stub 模型；Claude 运行经用户授权，真实 `~/.claude` 未变），只固定事实和待决问题；评审稿与用户确认尚未开始，本项仍未完成。
+- [~] **M3-D3 安装范围与新路线**：目标是明确用户级/项目级安装隔离，以及 Claude 云端和插件载体的可行路径。依赖：M3-T22。产出：项目根/存储/index/state 选择、同名包和多 clone 边界、原生信任与卸载恢复、Claude 云端交付条件及插件注册方案；固定原生证据后回写路线设计。测试：M3-A6–A8、M3-B2、M3-C2–C4。T22 推进期间已按本清单的隔离调查约定完成[原生调查](review/M3-D3-INVESTIGATION-2026-10-17.md)（Codex 0.159.3 与 Claude Code 2.1.301，均用 stub 模型；Claude 运行经用户授权，真实 `~/.claude` 未变），只固定事实和待决问题；现已复核原稿并补做五个静态加载调查场景；[评审稿](review/M3-D3-ROUTES-2026-10-17.md)已回写规范，A6/A7/A8 分别细化 12/6/6 组，待用户确认范围/云端/插件选择，本项仍未完成。
 - [ ] **M3-D4 refresh 语义**：目标是明确隔 N 回合补发如何计回合、何时重置及如何影响预算。依赖：M3-T32。产出：与 repeat、compact、resume/fork、子 agent 和并发去重的关系，及统计/报告口径；回写运行时与编译规范。测试：M3-A9、M3-B3、M3-C5。
 - [ ] **M3-D5 事件内容围栏**：目标是明确可进入模板的事件字段及其不可信内容边界。依赖：M3-T40。产出：显式使用方式、围栏转义、长度限制、reads 与预算处理、日志脱敏边界；回写模板和运行时安全章节。测试：M3-A10、M3-B3、M3-C5。
 - [ ] **M3-D6 provider 与 unknown**：目标是区分模型服务 provider 与 harness 名，并确定缺失数据的显式匹配范围。依赖：M3-T41。产出：可核验的数据来源、缺失/空值/未知原始值区别、`unknown` 的适用字段与比较行为，以及旧规则兼容；回写条件、数据来源和编译规范。测试：M3-A11、M3-A12、M3-B3、M3-C5。
@@ -105,7 +105,7 @@ M3-CARRY-01 与 `--count=exact` 产品验收分别记录；前者的非阻塞决
 - [ ] **M3-FINAL 最终回归**：目标是关闭完整交付范围的验收。依赖：M3-REAL-01–04、M3-CI-01。产出：离线、升级/失败恢复、两家真实环境、exact 与 Windows 的一致证据；缺环境的必需验收不能自动转为非阻塞。测试：M3-FINAL。M3-CARRY-01 保留独立非阻塞状态。
 - [ ] **M3-DOCS-01 总文档验收**：目标是同步最终能力和限制并关闭 M3。依赖：M3-FINAL。产出：规范、教程、adapter 总览、M3 手册与任务/测试/进度记录一致，所有状态有证据，归档不改；关闭时提示用户规划下一里程碑。测试：M3-DOCS-01。
 
-M3-T00/M3-A0、M3-D1、M3-T10/M3-A1、M3-T11/M3-A2、M3-D2 和 M3-T20–T22/M3-A3–A5 已完成。下一项 M3-D3 尚未开始；开始 D3 前按用户要求通知。
+M3-T00/M3-A0、M3-D1、M3-T10/M3-A1、M3-T11/M3-A2、M3-D2 和 M3-T20–T22/M3-A3–A5 已完成。当前 M3-D3 评审稿待用户确认；确认后按 T30/A6 → T31/A7 → T32/A8 推进，尚未进入实现。
 
 ## 后续 backlog
 
