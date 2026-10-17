@@ -15,6 +15,17 @@ var ErrChanged = errors.New("input changed while capturing")
 // Anchor canonicalizes existing parent aliases (such as macOS /tmp), but
 // refuses a symlink at the explicitly selected directory itself.
 func Anchor(path string) (*os.Root, error) {
+	return anchor(path, false)
+}
+
+// AnchorMutable retains directory identity and mode while allowing child
+// creation/removal to change its size and mtime, as concurrent probe leases do.
+// File captures still require the full Same check on the file itself.
+func AnchorMutable(path string) (*os.Root, error) {
+	return anchor(path, true)
+}
+
+func anchor(path string, mutable bool) (*os.Root, error) {
 	absolute, err := filepath.Abs(path)
 	if err != nil {
 		return nil, err
@@ -36,7 +47,11 @@ func Anchor(path string) (*os.Root, error) {
 		return nil, err
 	}
 	opened, e := root.Stat(".")
-	if e != nil || !Same(info, opened) {
+	stable := e == nil && Same(info, opened)
+	if mutable && e == nil {
+		stable = os.SameFile(info, opened) && info.Mode() == opened.Mode()
+	}
+	if !stable {
 		root.Close()
 		return nil, ErrChanged
 	}

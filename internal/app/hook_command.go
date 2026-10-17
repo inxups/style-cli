@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"os"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -11,6 +12,7 @@ import (
 	"github.com/inxups/style-cli/internal/adapter"
 	"github.com/inxups/style-cli/internal/adapter/claude"
 	"github.com/inxups/style-cli/internal/adapter/codex"
+	"github.com/inxups/style-cli/internal/probe"
 	styleruntime "github.com/inxups/style-cli/internal/runtime"
 	"github.com/speakeasy-api/agenthooks"
 )
@@ -97,5 +99,6 @@ func runHook(ctx context.Context, args []string, in io.Reader, out, errOut io.Wr
 		return invalid("cannot initialize runtime")
 	}
 	runtime.CodecStateDir = filepath.Join(home, "cache", "agenthooks")
+	runtime.Observer = probe.NewObserver(home, harnessHome, string(provider), os.Getenv("PLUGIN_ROOT"))
 	return runtime.Run(ctx, args, in, out, errOut)
 }

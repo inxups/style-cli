@@ -76,6 +76,8 @@ func RunWithService(ctx context.Context, service *Service, workDir string, args 
 		return runSync(ctx, service, args[0], args[1:], out, errOut)
 	case "list", "doctor", "adapters":
 		return runInspect(ctx, service, workDir, args[0], args[1:], out, errOut)
+	case "probe":
+		return runProbe(ctx, service, args[1:], out, errOut)
 	case "explain":
 		return runExplain(ctx, service, workDir, args[1:], out, errOut)
 	case "stats":
@@ -99,5 +101,6 @@ func printUsage(out io.Writer) {
 	fmt.Fprintln(out, "style doctor [--reset-state] [--json]")
 	fmt.Fprintln(out, statsUsage)
 	fmt.Fprintln(out, explainUsage)
+	fmt.Fprintln(out, probeUsage)
 	fmt.Fprintln(out, "style adapters [--json]")
 }

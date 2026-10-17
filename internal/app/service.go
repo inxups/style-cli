@@ -12,6 +12,7 @@ import (
 
 // Service holds the explicitly registered adapters used by planning.
 type Service struct {
+	probeDeps   *probeDependencies
 	definitions map[adapter.ProviderID]adapter.Definition
 	catalog     spec.ValidationCatalog
 }

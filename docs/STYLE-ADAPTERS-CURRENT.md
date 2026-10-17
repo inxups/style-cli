@@ -1,6 +1,6 @@
 # STYLE 当前 adapter 实现总览
 
-更新时间：2026-10-17。生产源码核对基线：`16d5c1c`（M2 native、stats、跨包去重、Claude rules/迁移），replace 回退验收 `4976713`，Claude 最终隔离准备 `5dd6742`。Codex M2 B1–B4 双路线证据归档至 `e6dd778`；D4/D5 已由 Claude 2.1.301 的 C1–C4 真实交互验收闭合；M2 已完成并关闭，远端 Ubuntu/macOS CI 在 `154506f` 全部通过（run `39000483969`，59 项采集器）。无 key 补充对照已完成；官方 token 计数仍各 0/40、待独立 API key，承接为 M3-CARRY-01 非阻塞待验。M3-T00 已统一注册表名称校验并通过 [M3-A0](review/M3-A0-2026-10-17.json)，关闭 M3-RV-01；T00 源码由该报告的完整摘要固定。M3-T10 的 [explain 离线验收](review/M3-A1-2026-10-17.json) 已通过，新增隔离重放与可选编译说明，未新增真实 harness 接入。
+更新时间：2026-10-17。生产源码核对基线：`16d5c1c`（M2 native、stats、跨包去重、Claude rules/迁移），replace 回退验收 `4976713`，Claude 最终隔离准备 `5dd6742`。Codex M2 B1–B4 双路线证据归档至 `e6dd778`；D4/D5 已由 Claude 2.1.301 的 C1–C4 真实交互验收闭合；M2 已完成并关闭，远端 Ubuntu/macOS CI 在 `154506f` 全部通过（run `39000483969`，59 项采集器）。无 key 补充对照已完成；官方 token 计数仍各 0/40、待独立 API key，承接为 M3-CARRY-01 非阻塞待验。M3-T00 已统一注册表名称校验并通过 [M3-A0](review/M3-A0-2026-10-17.json)，关闭 M3-RV-01；T00 源码由该报告的完整摘要固定。M3-T10 的 [explain 离线验收](review/M3-A1-2026-10-17.json) 已通过，新增隔离重放与可选编译说明；M3-T11 的 [probe 离线验收](review/M3-A2-2026-10-17.json) 也已通过，观察既有 STYLE runtime 回调，未新增真实 harness 接入或关闭真实验收。
 
 本文总结当前仓库的实现，不代表 Claude Code / Codex 所有版本的完整产品能力。能力声明、安装配置、运行时可接收事件和真实验收结果分别说明；未修改现有 fallback 语义。
 
@@ -419,7 +419,15 @@ M1b 实测版本为 Codex 0.159.3、Claude Code 2.1.300。M1b 的 B/C 条目已�
 
 agenthooks 新增 `WithOfflineInputs`、`RecognizesNativeEvent` 和 `WithRunObserver`，负责从解码阶段替换 Skill/MCP 等外部依赖并报告阶段/错误类别；默认 Run 行为和配置渲染归属保持。core 的可选 trace 与普通 Match/Process 共用一次短路、渲染、Claim 和 cap 处理。`build/explain.json` 来自同次冷编译的计划与去重结果，绑定 index，随正常安装重建/sync/trust/卸载同事务处理；旧安装缺说明降为 index-only。
 
-M3-A1 的 26 个新函数/145 个叶子用例、两家 JSON golden、29 组普通 runtime 对照和完整兼容回归通过。probe、真实回调/投递以及 Windows 仍分别由 T11/A2、B1/C1、D11/W1 验收。
+M3-A1 的 26 个新函数/145 个叶子用例、两家 JSON golden、29 组普通 runtime 对照和完整兼容回归通过。probe 已由 T11/A2 独立验收，见下一节；真实回调/投递与 Windows 仍由 B1/C1、D11/W1 验收。
+
+### 11.4 M3 probe 离线验收
+
+[style probe](STYLE-PROBE.md) 选择 lock 中已有安装，route/agenthooks 只读核对 STYLE owner、实际订阅/命令和信任绑定；不调用 Detect、作者 native 命令、安装写操作或模型。agenthooks 新增 OS 进程出生/executable 身份读取和归属订阅检查，继续负责原生协议、配置渲染和 trust key；STYLE adapter 核对 user/plugin 来源，app 管理租约、全量哈希和报告。
+
+普通 runtime 在 OnAny 提交不可变安全元数据，活动观察任务按 5ms/六层祖先预算异步记录，不能延长 hook 退出等待。无租约不建文件或后台任务；配置/信任/lock/index/编译说明保持。普通事件继续更新原 state/stats，15 组 runner 对照核对 wire/退出码、repeat/seen 和 stats；仅 state.updated_at 的自然时钟变化归一化。
+
+[M3-A2](review/M3-A2-2026-10-17.json) 的 28 个新函数/181 个叶子用例、三条现有路线的离线 OS 进程链、信号/崩溃恢复、竞争/漂移/清理失败及完整兼容回归通过。两家各 200 次普通 hook 进程 p95 为 9.56ms/8.71ms，低于 50ms 门槛。callback-observed 只提供本机关联，不是认证或模型投递；PATH 包装器、插件根或存活原生 executable 无法核对时保持 unverified。Windows 来源检查与真实 B1/C1 分开待验。
 
 ## 12. 已知边界与后续工作
 

@@ -1,0 +1,128 @@
+package app
+
+import (
+	"context"
+	"encoding/json"
+	"fmt"
+	"io"
+	"os"
+	"os/signal"
+	"strconv"
+	"strings"
+	"syscall"
+	"time"
+)
+
+const probeUsage = "style probe [--harness h] [--timeout 60s] [--json]"
+
+func runProbe(ctx context.Context, s *Service, args []string, out, errOut io.Writer) int {
+	request, jsonMode, err := parseProbeArgs(args)
+	if err != nil {
+		fmt.Fprintln(errOut, "style probe: "+err.Error())
+		fmt.Fprintln(errOut, probeUsage)
+		return ExitUsage
+	}
+	for _, arg := range args {
+		if arg == "--help" || arg == "-h" {
+			fmt.Fprintln(out, probeUsage)
+			return ExitOK
+		}
+	}
+	request.Ready = func(ready ProbeReady) error {
+		if _, err := fmt.Fprintf(errOut, "probe ready: run_id=%s; trigger a subscribed event in your harness session.\n", ready.RunID); err != nil {
+			return err
+		}
+		for _, target := range ready.Targets {
+			if _, err := fmt.Fprintf(errOut, "  %s route=%s events=%s\n", probeQuote(target.Harness), probeQuote(target.Route), probeQuote(strings.Join(target.Events, ","))); err != nil {
+				return err
+			}
+		}
+		return nil
+	}
+	signalCtx, stop := signal.NotifyContext(ctx, os.Interrupt, syscall.SIGTERM)
+	defer stop()
+	result, runErr := s.Probe(signalCtx, request)
+	if jsonMode {
+		encoder := json.NewEncoder(out)
+		encoder.SetIndent("", "  ")
+		if encoder.Encode(result) != nil {
+			return ExitInvalid
+		}
+	} else {
+		writeProbeText(out, result)
+	}
+	if runErr != nil {
+		return ExitInvalid
+	}
+	return ExitOK
+}
+func parseProbeArgs(args []string) (ProbeRequest, bool, error) {
+	request := ProbeRequest{Timeout: time.Minute}
+	jsonMode := false
+	seen := map[string]bool{}
+	for index := 0; index < len(args); index++ {
+		arg, value, inline := strings.Cut(args[index], "=")
+		if arg == "--help" || arg == "-h" {
+			return request, false, nil
+		}
+		if seen[arg] {
+			return request, false, fmt.Errorf("duplicate option %q", arg)
+		}
+		seen[arg] = true
+		if arg == "--json" {
+			boolean := true
+			var err error
+			if inline {
+				boolean, err = strconv.ParseBool(value)
+				if err != nil {
+					return request, false, fmt.Errorf("invalid boolean option %s", arg)
+				}
+			}
+			jsonMode = boolean
+			continue
+		}
+		if arg != "--harness" && arg != "--timeout" {
+			return request, false, fmt.Errorf("unknown option %q", arg)
+		}
+		if !inline {
+			index++
+			if index >= len(args) || strings.HasPrefix(args[index], "--") {
+				return request, false, fmt.Errorf("missing value for %s", arg)
+			}
+			value = args[index]
+		}
+		if value == "" {
+			return request, false, fmt.Errorf("empty option %s", arg)
+		}
+		if arg == "--harness" {
+			request.Harness = value
+		} else {
+			duration, err := time.ParseDuration(value)
+			if err != nil || duration < time.Second || duration > 10*time.Minute {
+				return request, false, fmt.Errorf("timeout must be between 1s and 10m")
+			}
+			request.Timeout = duration
+		}
+	}
+	if request.Harness == "auto" || strings.Contains(request.Harness, ",") {
+		return request, false, fmt.Errorf("select one harness or omit --harness")
+	}
+	return request, jsonMode, nil
+}
+func probeQuote(value string) string { encoded, _ := json.Marshal(value); return string(encoded) }
+func writeProbeText(out io.Writer, result ProbeResult) {
+	fmt.Fprintf(out, "probe %s: %s (timeout=%s)\n", probeQuote(result.RunID), result.Status, result.Timeout)
+	for _, target := range result.Targets {
+		fmt.Fprintf(out, "%s route=%s: %s origin=%s callback_observed=%t\n", probeQuote(target.Harness), probeQuote(target.Route), target.Status, target.Origin, target.CallbackObserved)
+		if target.CallbackObserved {
+			fmt.Fprintf(out, "  event=%s session_sha256=%s; rule execution and model delivery remain unassessed.\n", probeQuote(target.Event), target.SessionSHA256)
+		}
+	}
+	fmt.Fprintf(out, "cleanup complete=%t\n", result.Cleanup.Complete)
+	for _, path := range result.Cleanup.Remaining {
+		fmt.Fprintf(out, "  remaining=%s\n", probeQuote(path))
+	}
+	for _, finding := range result.Diagnostics {
+		fmt.Fprintf(out, "%s %s harness=%s: %s\n", finding.Severity, finding.Code, probeQuote(finding.Harness), probeQuote(finding.Message))
+	}
+}

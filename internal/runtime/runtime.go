@@ -13,12 +13,14 @@ import (
 	"github.com/inxups/style-cli/core/engine"
 	"github.com/inxups/style-cli/core/state"
 	"github.com/inxups/style-cli/internal/adapter"
+	"github.com/inxups/style-cli/internal/probe"
 	"github.com/speakeasy-api/agenthooks"
 )
 
 // Runtime connects the provider codec, adapter enrichment, state, and core
 // engine. The codec remains responsible for reading stdin and encoding output.
 type Runtime struct {
+	Observer      *probe.Observer
 	Trace         *engine.Trace
 	Engine        *engine.Engine
 	State         *state.Store
@@ -75,6 +77,19 @@ type eventAdapter func(context.Context, *agenthooks.Event, any) (engine.Output, 
 func (r *Runtime) Register(runner *agenthooks.Runner) error {
 	if r == nil || runner == nil || r.State == nil || r.Adapter == nil || r.Provider == "" {
 		return fmt.Errorf("runtime: initialized runtime and agenthooks runner are required")
+	}
+	if r.Observer != nil {
+		runner.OnAny(func(_ context.Context, event *agenthooks.Event) error {
+			if event == nil || event.Backfilled {
+				return nil
+			}
+			meta := probe.Metadata{Harness: string(event.Provider), Event: event.NativeName, Session: event.Session.ID, Turn: event.Session.TurnID}
+			if event.Agent != nil {
+				meta.Agent = event.Agent.ID
+			}
+			r.Observer.Submit(meta)
+			return nil
+		})
 	}
 	handle := eventAdapter(r.process)
 	runner.OnSessionStart(func(ctx context.Context, event *agenthooks.SessionStartEvent) (agenthooks.SessionStartDecision, error) {

@@ -1,6 +1,6 @@
 # style explain 使用说明
 
-2026-10-17：M3-T10 已实现，M3-A1 离线验收通过，见 [验收报告](review/M3-A1-2026-10-17.json)。完整契约见 [D1 设计](review/M3-D1-DIAGNOSTICS-2026-10-17.md)。probe 由 M3-T11 另行实现；本页示例不代表真实 harness 回调或模型投递验收。
+2026-10-17：M3-T10 已实现，M3-A1 离线验收通过，见 [验收报告](review/M3-A1-2026-10-17.json)。完整契约见 [D1 设计](review/M3-D1-DIAGNOSTICS-2026-10-17.md)。[probe](STYLE-PROBE.md) 已由 M3-T11 实现并通过独立的 A2 离线验收；本页示例不代表真实 harness 回调或模型投递验收。
 
 ## 固定输入重放
 

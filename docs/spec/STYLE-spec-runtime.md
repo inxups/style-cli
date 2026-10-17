@@ -284,12 +284,12 @@ STYLE 的 hook 输出**只允许**这几样：`additionalContext`、`systemMessa
 
 ### 8.9 M3-D1 诊断隔离评审稿
 
-以下为已获用户确认的 D1 契约；explain 已由 T10 实现并通过 [A1](../review/M3-A1-2026-10-17.json)，probe 待 T11 实现；完整命令、输入/报告和退出码见 [D1 设计](../review/M3-D1-DIAGNOSTICS-2026-10-17.md)，入口见 [CLI §4.1](STYLE-cli-design.md#41-m3-d1-诊断契约评审稿)。
+以下为已获用户确认的 D1 契约；explain 已由 T10 实现并通过 [A1](../review/M3-A1-2026-10-17.json)，probe 已由 T11 实现并通过 [A2](../review/M3-A2-2026-10-17.json)，见 [使用说明](../STYLE-PROBE.md)；完整命令、输入/报告和退出码见 [D1 设计](../review/M3-D1-DIAGNOSTICS-2026-10-17.md)，入口见 [CLI §4.1](STYLE-cli-design.md#41-m3-d1-诊断契约评审稿)。
 
 - explain 的 event 是原生事件名，与原 payload 一致；真实 codec → adapter → state → engine → codec 链在私有临时根执行。默认空状态，显式 state 输入只读复制所选 session/agent；源 bytes/mode/mtime 不改，复制检测到变化即失败，不声称等于历史事件前的状态。
 - 默认禁用外部事实补充；可显式提供与 payload 摘要绑定的版本、effort、MCP/Skill 事实，来源标为 provided。隔离必须覆盖 agenthooks 解码中的本地 Skill manifest 读取及 MCP/进程/环境/transcript 依赖；不接受只关 MCP 后仍读宿主文件。所有正常优先级、未知 effort 清旧值和缺值不匹配规则保持。
 - trace 和普通求值共享短路、render、排序、repeat Claim、block 优先和容量逻辑；未执行阶段标 not-evaluated，不能为了说明额外抢占、释放或更改决策。原始条件字段值不进入 trace，最终 codec wire 仅进入用户主动要求的解释报告，不写真实 hook.log/stats。
 - 跨包编译去重由与 index 摘要匹配的 [冷路径说明](STYLE-spec-compiled.md#97-m3-d1-编译说明文件评审稿) 单列；不虚构 runtime dedup/stats。静态项不重放加载，native 不执行。无说明的旧安装仍可解释 index 内条目，覆盖范围如实标明。
 - 管理失败退出 1，原生 fail-open/fail-closed 输出和退出码单列；不能用 hook 退出 0 证明解释成功。普通 block/未命中/去重/容量丢弃是正常解释结果。
-- probe 等待现有 STYLE hook 的关联回调，只有本次私有租约/收据可新增；不改配置、信任、包、lock/index 或订阅面。观察器错误不得影响正常 hook，重放也不会触发真实 probe。真实事件本身的常规 state/stats/log 更新不被回滚。
+- probe 等待现有 STYLE hook 的关联回调，只有本次私有租约/收据可新增；不改配置、信任、包、lock/index 或订阅面。OnAny 只提交不可变安全元数据，观察任务按 5ms/六层祖先预算异步捕获 OS 身份，不由正常 hook 退出等待；完整文件哈希由管理进程核对。观察器错误不得影响正常 hook，重放也不会触发真实 probe。真实事件本身的常规 state/stats/log 更新不被回滚。
 - callback-observed 与规则已投递分别记录；run ID/绑定/进程来源仅作本机关联，不是防同用户伪造的认证。B1/C1 还须独立原生来源、输出/投递和清理证据；A1/A2 fixture 不能提前关闭真实验收。
