@@ -959,3 +959,7 @@ T44/A13 已实现并通过[验收](../review/M3-A13-2026-10-17.json)，严格格
 [D9 定稿](../review/M3-D9-EXACT-COUNT-2026-10-18.md)规定 count/plan/explain 的显式 exact 附加报告，本地具名编码与 Anthropic 最小消息请求分别披露；不改变估算预算/运行时上限，不将编码精确称为模型账单精确。动态计划用 explain 实际渲染；计数失败不回落估算。
 
 T50 的计数输出与边界见[文本计数指南](../STYLE-COUNT.md)：本地具名编码保留 256 KiB/连续段 4,096 字节上限；默认 hook 和预算不调用计数器。
+
+## M3-D10 native 扩展边界
+
+[D10 定稿](../review/M3-D10-NATIVE-EXTENSIONS-2026-10-18.md)保留 event/matcher/command/timeout 四字段。async、onFailure、HTTP/MCP/prompt/agent 等扩展逐项评估后明确拒绝；不把异步后续投递或模型/网络授权冒充已有 native 管理能力。六组隔离真 CLI/本地 stub 证据不代替真实模型投递。

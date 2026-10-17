@@ -226,7 +226,7 @@ claude-code:
 | 映射 | `command` | 必填，一行 shell 命令，原样写入（加归属前缀，见下） |
 | 映射 | `timeout` | 可选，整数秒，1–600；不写按适配器默认值（60 秒；Codex `SessionEnd` 仍按 agenthooks 压到 3 秒），报告显示实际值 |
 
-规则引擎字段（`action`、`at`、`when`、`repeat`、`reinject_on_compact`、`sources`、`model_text`、`max_tokens`、`mode`、`reason`、`tool`、`names`、`mcp`、`skill`、`event`）显式写在 native 规则上就报错；从包级 `defaults` 继承来的值对 native 规则不生效，也不报错。harness 映射里的 `async`、`onFailure`、`type`、`args` 等其他键在 M2 一律报错，Claude 的 `async`/`onFailure` 和非 command 类 hook 留到 M3。`from:` 条目可以整体覆盖某个 harness 键的映射，不做逐字段合并。
+规则引擎字段（`action`、`at`、`when`、`repeat`、`reinject_on_compact`、`sources`、`model_text`、`max_tokens`、`mode`、`reason`、`tool`、`names`、`mcp`、`skill`、`event`）显式写在 native 规则上就报错；从包级 `defaults` 继承来的值对 native 规则不生效，也不报错。harness 映射里的 `async`、`onFailure`、`type`、`args` 等其他键在 M2 一律报错，M3 已由 [D10 评估](../review/M3-D10-NATIVE-EXTENSIONS-2026-10-18.md)定稿：保持四字段，`async`/`onFailure` 和非 command 类型仍明确不支持，逐项原因见方案，不静默透传。`from:` 条目可以整体覆盖某个 harness 键的映射，不做逐字段合并。
 
 **`command` 的约束**：非空；不含换行、回车、NUL；没有首尾空白；不以 `;`、`&`、`|`、`)`、`#` 开头；不以未转义的 `\` 结尾；单引号、双引号成对（按 POSIX shell 词法检查）。这些约束保证加上归属前缀后命令语义不变。
 

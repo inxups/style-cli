@@ -1,0 +1,72 @@
+{
+  "format": 1,
+  "design": "M3-D10",
+  "scope": "real-cli-loopback-model-only",
+  "remote_model_inference": false,
+  "version": "2.1.301 (Claude Code)",
+  "binary_sha256": "1f04c69e1c24e4d0a716a863af0aad8fc64d49a499334c29701f073700276b99",
+  "phases": [
+    {
+      "name": "failure-unset",
+      "exit": 0,
+      "requests": 1,
+      "model_context_contains_marker": null,
+      "stdout_sha256": "da4f93266b1ec6757691b5a4d6946342304c1e2de37b185dc16e51210707f4eb",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "failure-continue",
+      "exit": 0,
+      "requests": 1,
+      "model_context_contains_marker": null,
+      "stdout_sha256": "2e979b0ce909e348cad41362c601d5880f03f10938636711a1b8ef6659f13615",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "failure-block",
+      "exit": 0,
+      "requests": 0,
+      "model_context_contains_marker": null,
+      "stdout_sha256": "6c7a8154f15911707246e7b7c4936541484d69984fa9d73aca5a67773d280bb1",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "sync",
+      "exit": 0,
+      "requests": 1,
+      "model_context_contains_marker": true,
+      "stdout_sha256": "d0ba2876f5cb05d4dc488170ab5d60573785af72af2fc3cd0f236bd7356f1e0e",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "background_finished": true,
+      "timeout_seconds": 5,
+      "first_request_precedes_hook_end": false
+    },
+    {
+      "name": "async",
+      "exit": 0,
+      "requests": 1,
+      "model_context_contains_marker": false,
+      "stdout_sha256": "72f0f5a0833062ebe1fd76636d5cd7893cf7fba9e6a1b115873bf00f79488114",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "background_finished": true,
+      "timeout_seconds": 1,
+      "first_request_precedes_hook_end": true
+    },
+    {
+      "name": "http",
+      "exit": 0,
+      "requests": 1,
+      "model_context_contains_marker": true,
+      "stdout_sha256": "59900b3abc13260599907eb49c98e2622967c658c4309c4180f80f234d1b8959",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "http_calls": [
+    {
+      "method": "POST",
+      "event": "UserPromptSubmit",
+      "body_sha256": "cb5ebb3b139f2f42b501aa43f69ec7e841642dea97b59ecc0e8e23ed2fc1f292"
+    }
+  ],
+  "boundary": "Local real CLI -p protocol evidence. No remote model, subscription login, hosted cloud or Windows. Prompt/agent/MCP variants assessed from pinned official documentation only."
+}

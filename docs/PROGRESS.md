@@ -1914,3 +1914,9 @@ PY
 [A15](review/M3-A15-2026-10-18.json)固定三缓存/清环境命令、源码与二进制摘要：9 新函数/329 专项和 race pass，137×2 独立 Python golden、两套完整词表摘要及 socket 禁用再生成；根 fresh test 3,745 pass/0 fail，2 既有 opt-in/helper skip 单列，vet/构建通过。生产 CLI 287 项、45 故障兼容、50 refresh/五路线各 50 次进程采样、40 smoke 通过，p95 24.602–33.887ms。API transport 覆盖成功、请求口径/截止时间、HTTP/取消/重定向/响应格式及隐私；未调用真实 API。首轮帮助文案、同包重复预期、状态 fixture API 和路径碰撞失败保留并修正。
 
 [文档检查](review/M3-A15-DOCS-2026-10-18.json)通过；PROGRESS 只追加、M1/M2/历史 JSON 和旧 testdata/agenthooks 不变。仅关闭 T50/A15，REAL-03 汇总本地生产 CLI，用户延期的 API/云端/Windows 真机保持 [?]；官方校准两家各 0/40。继续 D10/T60。
+
+## 2026-10-18 M3-D10 native 扩展评估
+
+T50/A15 已完成后，固定官方 hooks.md 与 Claude 2.1.301 六组隔离原生探针；unset/continue/block 分别有 1/1/0 请求，block 时 CLI 仍退出0；异步 2 秒工作在 timeout1 下完成且未进初次请求，HTTP 事件实际收到且返回上下文。全部只连接本地 stub、没有远端模型或真实凭据；白名单[报告](review/M3-D10-NATIVE-PROBE-2026-10-18.json)、[来源](review/M3-D10-SOURCES-2026-10-18.json)固定摘要。
+
+[D10 定稿](review/M3-D10-NATIVE-EXTENSIONS-2026-10-18.md)按评估任务范围决定 M3 保留四字段 native，拒绝后台生命周期、原生故障策略和非命令类型扩展，说明所需归属/信任/版本与独立授权。此结论不把未支持能力标为实现；T60 负责安全诊断与旧四字段/外部扩展条目的兼容验收。只关闭 D10，B4/C6 保持独立。文档检查见[D10-DOCS](review/M3-D10-DOCS-2026-10-18.json)。

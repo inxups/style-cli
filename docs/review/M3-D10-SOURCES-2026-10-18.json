@@ -1,0 +1,35 @@
+{
+  "date": "2026-10-18",
+  "baseline": "5084a06a10295f93257954f93ebecbef52a7f017",
+  "sources": [
+    {
+      "url": "https://code.claude.com/docs/en/hooks.md",
+      "sha256": "5599b94537beb359bfe35dfa7538503194ea78b8d824fcaccba068915d6a77d7"
+    }
+  ],
+  "probe_source_sha256": "e6bcc3d6b06f6fc7e6b123eb6a587ab903e05812ee7f30c72d1c3ce4f5c4dc5c",
+  "run": {
+    "command": [
+      "python3",
+      "testdata/manual/probe_m3_native_extensions.py",
+      "--scratch",
+      "/tmp/style-m3-complete-20261017/d10-native-first",
+      "--claude",
+      "/Users/inxups/.nvm/versions/node/v24.21.0/bin/claude",
+      "--output",
+      "/tmp/style-m3-complete-20261017/d10-native-probe-report.json"
+    ],
+    "exit_code": 0,
+    "seconds": 7.338,
+    "environment": {
+      "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+      "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+      "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+      "GOPROXY": "off",
+      "GOFLAGS": "-mod=readonly",
+      "GOWORK": "off"
+    }
+  },
+  "run_log_sha256": "1bed29a2a8494f34c8f947cd1f1884153fb6c7af762a3c05ee059ab02e5f7e8d",
+  "boundary": "Isolated real native CLI with only loopback stub; no remote model inference or real credentials."
+}

@@ -1,0 +1,21 @@
+{
+  "baseline": "5084a06",
+  "documents": 6,
+  "local_links_and_anchors": 325,
+  "archives_unchanged": 59,
+  "historical_json_unchanged": 106,
+  "progress_prefix_sha256": "7bb13087257c15b9d2b0daf1aa36970e7c4fa41455b2954f4e780818aedb7f22",
+  "changed_files": [
+    "docs/PROGRESS.md",
+    "docs/STYLE-ADAPTERS-CURRENT.md",
+    "docs/STYLE-M3-TASKS.md",
+    "docs/review/M3-D10-DOCS-2026-10-18.json",
+    "docs/review/M3-D10-NATIVE-EXTENSIONS-2026-10-18.md",
+    "docs/review/M3-D10-NATIVE-PROBE-2026-10-18.json",
+    "docs/review/M3-D10-SOURCES-2026-10-18.json",
+    "docs/spec/STYLE-cli-design.md",
+    "docs/spec/STYLE-spec-rules.md",
+    "testdata/manual/probe_m3_native_extensions.py"
+  ],
+  "checks": "pass"
+}

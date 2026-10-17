@@ -500,3 +500,7 @@ M3-T41 通过 [A10](review/M3-A10-2026-10-17.json)：两家 DataSource 对 event
 两家 adapter 提供原生事件到统一故障评估点的保守映射；Claude 普通 prompt 的抑制能力也由 adapter 提供，engine 不再按 harness 名推断。原生错误输出、timeout/panic 处理、配置渲染和 owner 合并仍由 agenthooks 负责。使用与边界见[规则故障说明](STYLE-FAIL-CLOSED.md)。
 
 M3-T50 已提供显式 `count/plan/explain --count=exact`，通过[A15](review/M3-A15-2026-10-18.json)。本地具名编码与 Anthropic 最小请求的区别、256 KiB/局部长段限制、实现版本和 API 延期见[计数说明](STYLE-COUNT.md)。普通 hook/预算/stats 仍用原估算。
+
+## M3-D10 native 扩展边界
+
+[D10 定稿](review/M3-D10-NATIVE-EXTENSIONS-2026-10-18.md)保留 event/matcher/command/timeout 四字段。async、onFailure、HTTP/MCP/prompt/agent 等扩展逐项评估后明确拒绝；不把异步后续投递或模型/网络授权冒充已有 native 管理能力。六组隔离真 CLI/本地 stub 证据不代替真实模型投递。
