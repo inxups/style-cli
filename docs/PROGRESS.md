@@ -1956,3 +1956,7 @@ Ubuntu CI run 39049754503 的 lease-replaced 回归证明删除后立即重建�
 本次按打开句柄解析 DACL 重开路径，修复嵌套 Root 的相对 Name，源缓存使用系统权限模型；Doctor Windows user 路线不执行 POSIX login shell 检查。移动 privatefs 集成测试以保留 core 边界，并修正 .exe/cmd、状态路径、外部权限属性和 JSON 引用。Git fixture 直接生成 raw tree，保证非法名称未被 Windows index 悄悄省略；D11 明确不支持的 POSIX 路线/native 测试记录具体 skip，通用用户路线继续执行。
 
 [阶段报告](review/M3-A17-HANDLES-2026-10-18.json)保留 sandbox TLS 监听失败、一次测试 import 编译失误及修正；macOS fresh root 3,881/agenthooks 531 pass，0 fail，既有 skip 单列；双 vet 与双模块 Windows 编译/vet 通过。Windows 清理/额外故障测试和最终原生结果继续处理，不关闭 T70/A17。[文档检查](review/M3-A17-HANDLES-DOCS-2026-10-18.json)核对历史归档、追加日志、链接与 diff。
+
+## 2026-10-18 M3-A17 第三轮 CI 格式修正
+
+run 39051594728 固定 `6f1ff04`，三平台在格式检查停下，未执行测试。补正遗漏的 `internal/source/transport_test.go` 格式，全部已跟踪 Go 文件 gofmt 与 diff 检查通过；没有代码行为变更，继续重跑原生 CI，A17 未关闭。
