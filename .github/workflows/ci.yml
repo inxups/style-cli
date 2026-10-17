@@ -26,8 +26,11 @@ jobs:
       GOPATH: /tmp/style-cli-gopath
       GOMODCACHE: /tmp/style-cli-gomodcache
       GOCACHE: /tmp/style-cli-gocache
+      GOWORK: "off"
     steps:
       - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -52,8 +55,8 @@ jobs:
 
       - name: Test
         run: |
-          env -u CODEX_HOME -u CODEX_SANDBOX go test ./...
-          env -u CODEX_HOME -u CODEX_SANDBOX go test -C agenthooks ./...
+          env -u CODEX_HOME -u CODEX_SANDBOX go test ./... -count=1
+          env -u CODEX_HOME -u CODEX_SANDBOX go test -C agenthooks ./... -count=1
 
       - name: Test acceptance collectors
         env:
@@ -73,6 +76,19 @@ jobs:
         env:
           PYTHONDONTWRITEBYTECODE: "1"
         run: python3 scripts/check_m2_replace.py "$RUNNER_TEMP/style"
+
+      - name: Check actual old installs and combined M3 conformance
+        env:
+          PYTHONDONTWRITEBYTECODE: "1"
+        run: |
+          mkdir -p "$RUNNER_TEMP/style-legacy-source" "$RUNNER_TEMP/style-t44-source"
+          git archive 74a473d2e238af44c346da3807f46e1c9993176d | tar -x -C "$RUNNER_TEMP/style-legacy-source"
+          git archive 664a46cc8bfa352601b7e124f367463ed7731792 | tar -x -C "$RUNNER_TEMP/style-t44-source"
+          env -u CODEX_HOME -u CODEX_SANDBOX go build -C "$RUNNER_TEMP/style-legacy-source" -trimpath -o "$RUNNER_TEMP/style-legacy" ./cmd/style
+          env -u CODEX_HOME -u CODEX_SANDBOX go build -C "$RUNNER_TEMP/style-t44-source" -trimpath -o "$RUNNER_TEMP/style-t44" ./cmd/style
+          env -u CODEX_HOME -u CODEX_SANDBOX go build -o "$RUNNER_TEMP/codex-fixture" ./testdata/provider/ancestor.go
+          python3 scripts/check_m2_rules_migration.py --binary "$RUNNER_TEMP/style" --old-binary "$RUNNER_TEMP/style-legacy"
+          python3 scripts/check_m3_conformance.py --binary "$RUNNER_TEMP/style" --old-binary "$RUNNER_TEMP/style-t44" --codex-ancestor "$RUNNER_TEMP/codex-fixture" --report "$RUNNER_TEMP/m3-conformance.json"
 
   windows:
     name: Test (windows-latest)

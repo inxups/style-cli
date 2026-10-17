@@ -1988,3 +1988,11 @@ run 39054681822 固定 `70cdaca`，Ubuntu/macOS 通过；Windows 根模块 3,369
 第七轮 run 39055736061 固定 `b481396d457ec4e0811e203415f7c38cbda35a39`，Ubuntu/macOS/Windows 全部成功。Windows 原生根模块 3,380 pass/0 fail/280 skip、agenthooks 521 pass/0 fail/35 skip；25 项生产 CLI 全过，含两 user 路线真实生成命令、特殊路径/Unicode、stdin/deny、exact 两编码、frozen 来源/锁恢复、四类不支持路线拒绝与外部配置/卸载。所有 skip 名称和具体前提保留，不计 pass。
 
 [A17 报告](review/M3-A17-2026-10-18.json)固定每 job/step、Windows 全量 JSON 日志摘要和 CLI 结果；前六轮失败仍保留在此前报告。仅关闭 T70/A17 支持范围，W1 实际 harness 已由用户延期；最终 CI-01 后续绑定最终源码。归档/追加日志/链接/围栏/diff 检查见[文档报告](review/M3-A17-DOCS-2026-10-18.json)，按依赖进入 T80/A18。
+
+## 2026-10-18 M3-T80 / M3-A18 conformance 与升级
+
+依 T70/A17 完成后，六条 POSIX 路线用实际 T44 二进制建立 index1/锁/会话，再更新为 index7 组合规则和映射。36 项检查覆盖 provider/effort、unknown、refresh 时钟、围栏、优先级、跨包零额外成本/正文去重、只读 explain 完整 wire、状态故障 deny/恢复、frozen 锁/映射/状态不变、旧管理器零写入拒绝、canonical 晋升与卸载。Claude 插件使用公开标明的原生元数据 fixture，非真实登记证据。
+
+[A18 报告](review/M3-A18-2026-10-18.json)固定临时三缓存/清环境及源码/二进制摘要：root fresh 3,881、agenthooks 531 pass，0 fail，2/23 既有 skip；双 vet、16 组真正旧布局迁移、12 组 replace 回退、40 smoke 通过。原 codec/白名单/golden/native/stats 回归全部经过 fresh；未改旧 golden。CI 新增固定历史源码构建及迁移/六路线组合检查，最终远端结果仍由 CI-01 收录。最初 fixture 的优先级方向和旧项目 runtime PATH 绑定错误均保留并修正，没有放宽实现。
+
+[文档检查](review/M3-A18-DOCS-2026-10-18.json)通过，历史归档/报告原样、进度仅追加；仅关闭 T80/A18，继续 PREP 与真实本地验收。

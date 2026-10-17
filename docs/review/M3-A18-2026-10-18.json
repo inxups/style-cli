@@ -1,0 +1,831 @@
+{
+  "format": 1,
+  "task": "M3-T80",
+  "test": "M3-A18",
+  "date": "2026-10-18",
+  "baseline": "e5937b2600e593ae51a5cb001ec821a6de70922e",
+  "status": "passed-offline",
+  "production_source_changed": false,
+  "binary_sha256": "b1f149dc22a7c19b516b9eb3fda2dc55f18197053ffd2eb24aac7d519cde0d67",
+  "binary_production_equivalent_since": "50c666eddb4a1bdd10a5ef52eb5e209cfc6a71d9",
+  "commands": {
+    "a18-root-fresh": {
+      "command": [
+        "go",
+        "test",
+        "./...",
+        "-count=1",
+        "-json"
+      ],
+      "exit_code": 0,
+      "seconds": 113.043,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "log_sha256": "ce794cef531e5cba32b82b61d479a9d74abd73fd5482a60874578361f88cc026",
+      "tests": {
+        "pass": 3881,
+        "fail": 0,
+        "skip": 2
+      }
+    },
+    "a18-agent-fresh": {
+      "command": [
+        "go",
+        "test",
+        "-C",
+        "agenthooks",
+        "./...",
+        "-count=1",
+        "-json"
+      ],
+      "exit_code": 0,
+      "seconds": 9.658,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "log_sha256": "85b6de9f23462fb35f2a7df3573dc23fae2c18d92bbfb78cff4ea75f7f8232f5",
+      "tests": {
+        "pass": 531,
+        "fail": 0,
+        "skip": 23
+      }
+    },
+    "a18-vet": {
+      "command": [
+        "go",
+        "vet",
+        "./..."
+      ],
+      "exit_code": 0,
+      "seconds": 0.389,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "a18-agent-vet": {
+      "command": [
+        "go",
+        "vet",
+        "-C",
+        "agenthooks",
+        "./..."
+      ],
+      "exit_code": 0,
+      "seconds": 0.151,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "a18-combined-first": {
+      "command": [
+        "python3",
+        "scripts/check_m3_conformance.py",
+        "--binary",
+        "/tmp/style-m3-complete-20261017/style-m3",
+        "--old-binary",
+        "/tmp/style-m3-complete-20261017/style-effort",
+        "--codex-ancestor",
+        "/tmp/style-m3-complete-20261017/codex-fixture",
+        "--report",
+        "/tmp/style-m3-complete-20261017/a18-combined-first-report.json"
+      ],
+      "exit_code": 1,
+      "seconds": 1.169,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "log_sha256": "36192b4fea252114d9a9ea431ddf73bc8ca52ef183d3b529611e3032267d7507"
+    },
+    "a18-combined-second": {
+      "command": [
+        "python3",
+        "scripts/check_m3_conformance.py",
+        "--binary",
+        "/tmp/style-m3-complete-20261017/style-m3",
+        "--old-binary",
+        "/tmp/style-m3-complete-20261017/style-effort",
+        "--codex-ancestor",
+        "/tmp/style-m3-complete-20261017/codex-fixture",
+        "--report",
+        "/tmp/style-m3-complete-20261017/a18-combined-second-report.json"
+      ],
+      "exit_code": 1,
+      "seconds": 0.587,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "log_sha256": "7097903b2961b5fe8e54f03be991ae23b8bcfa3e142e54e468f6ebc8b635a4a2"
+    },
+    "a18-combined-third": {
+      "command": [
+        "python3",
+        "scripts/check_m3_conformance.py",
+        "--binary",
+        "/tmp/style-m3-complete-20261017/style-m3",
+        "--old-binary",
+        "/tmp/style-m3-complete-20261017/style-effort",
+        "--codex-ancestor",
+        "/tmp/style-m3-complete-20261017/codex-fixture",
+        "--report",
+        "/tmp/style-m3-complete-20261017/a18-combined-third-report.json"
+      ],
+      "exit_code": 1,
+      "seconds": 2.997,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "log_sha256": "cc0dde698a390bfeb8abd1cc80ffe350a2fca3015bacedc99d1f2df427af9a81"
+    },
+    "a18-combined-fourth": {
+      "command": [
+        "python3",
+        "scripts/check_m3_conformance.py",
+        "--binary",
+        "/tmp/style-m3-complete-20261017/style-m3",
+        "--old-binary",
+        "/tmp/style-m3-complete-20261017/style-effort",
+        "--codex-ancestor",
+        "/tmp/style-m3-complete-20261017/codex-fixture",
+        "--report",
+        "/tmp/style-m3-complete-20261017/a18-combined-fourth-report.json"
+      ],
+      "exit_code": 0,
+      "seconds": 5.315,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "log_sha256": "45d8dc10c02a378c860af2d0e16c9e6ee180dbdc8a6de58de6e5ff420af77d15",
+      "tests": {
+        "pass": 0,
+        "fail": 0,
+        "skip": 0
+      }
+    },
+    "a18-combined-final": {
+      "command": [
+        "python3",
+        "scripts/check_m3_conformance.py",
+        "--binary",
+        "/tmp/style-m3-complete-20261017/style-m3",
+        "--old-binary",
+        "/tmp/style-m3-complete-20261017/style-effort",
+        "--codex-ancestor",
+        "/tmp/style-m3-complete-20261017/codex-fixture",
+        "--report",
+        "/tmp/style-m3-complete-20261017/a18-combined-final-report.json"
+      ],
+      "exit_code": 0,
+      "seconds": 6.015,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "log_sha256": "37f4a3eb65c4ee739689d3e81da8cc79ff688b49a30d9237ea69f8671321c744",
+      "tests": {
+        "pass": 0,
+        "fail": 0,
+        "skip": 0
+      }
+    },
+    "a18-migration": {
+      "command": [
+        "python3",
+        "scripts/check_m2_rules_migration.py",
+        "--binary",
+        "/tmp/style-m3-complete-20261017/style-m3",
+        "--old-binary",
+        "/tmp/style-m3-a3-20261017/style-legacy",
+        "--report",
+        "/tmp/style-m3-complete-20261017/a18-migration-report.json"
+      ],
+      "exit_code": 0,
+      "seconds": 11.864,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "log_sha256": "f44b07d85cd6db9adef12b9e87bf6b29fbfbd11bd6ceb36335e50552c279a375"
+    },
+    "a18-replace": {
+      "command": [
+        "python3",
+        "scripts/check_m2_replace.py",
+        "/tmp/style-m3-complete-20261017/style-m3",
+        "--report",
+        "/tmp/style-m3-complete-20261017/a18-replace-report.json"
+      ],
+      "exit_code": 0,
+      "seconds": 4.0,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "log_sha256": "ca4a7384714f31c2511250703ec0e899128da6048b3cb677adfda8ee6b037050"
+    },
+    "a18-smoke": {
+      "command": [
+        "python3",
+        "scripts/smoke.py",
+        "/tmp/style-m3-complete-20261017/style-m3"
+      ],
+      "exit_code": 0,
+      "seconds": 1.502,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "log_sha256": "5039b6cbbaa0d673d3772dfa18b0e24352159e7f2ddf65dd8cdabcbff5e08b63"
+    }
+  },
+  "six_route_combinations": {
+    "format": 1,
+    "passed": true,
+    "real_harness": false,
+    "binary_sha256": "b1f149dc22a7c19b516b9eb3fda2dc55f18197053ffd2eb24aac7d519cde0d67",
+    "old_binary_sha256": "de086b265c8d0e0008ac6802e35d3f86c7214e744936ab2d67367cb54f0f7312",
+    "ancestor_sha256": "421085114d6a673f51308d6feee4365916e3c11b957e4f764d044ea4edc53224",
+    "cases": [
+      {
+        "route": "codex-user",
+        "action": "actual-old-install-lock-index-state",
+        "status": "passed"
+      },
+      {
+        "route": "codex-user",
+        "action": "upgrade-index7-mapping-provider-sort-dedup-readonly-explain-parity",
+        "status": "passed"
+      },
+      {
+        "route": "codex-user",
+        "action": "refresh-fence-unknown-combination",
+        "status": "passed"
+      },
+      {
+        "route": "codex-user",
+        "action": "combined-fail-closed-and-recovery",
+        "status": "passed"
+      },
+      {
+        "route": "codex-user",
+        "action": "frozen-approved-mapping-state-preserved-old-writer-rejected",
+        "status": "passed"
+      },
+      {
+        "route": "codex-user",
+        "action": "canonical-promotion-and-last-uninstall",
+        "status": "passed"
+      },
+      {
+        "route": "codex-plugin",
+        "action": "actual-old-install-lock-index-state",
+        "status": "passed"
+      },
+      {
+        "route": "codex-plugin",
+        "action": "upgrade-index7-mapping-provider-sort-dedup-readonly-explain-parity",
+        "status": "passed"
+      },
+      {
+        "route": "codex-plugin",
+        "action": "refresh-fence-unknown-combination",
+        "status": "passed"
+      },
+      {
+        "route": "codex-plugin",
+        "action": "combined-fail-closed-and-recovery",
+        "status": "passed"
+      },
+      {
+        "route": "codex-plugin",
+        "action": "frozen-approved-mapping-state-preserved-old-writer-rejected",
+        "status": "passed"
+      },
+      {
+        "route": "codex-plugin",
+        "action": "canonical-promotion-and-last-uninstall",
+        "status": "passed"
+      },
+      {
+        "route": "codex-project",
+        "action": "actual-old-install-lock-index-state",
+        "status": "passed"
+      },
+      {
+        "route": "codex-project",
+        "action": "upgrade-index7-mapping-provider-sort-dedup-readonly-explain-parity",
+        "status": "passed"
+      },
+      {
+        "route": "codex-project",
+        "action": "refresh-fence-unknown-combination",
+        "status": "passed"
+      },
+      {
+        "route": "codex-project",
+        "action": "combined-fail-closed-and-recovery",
+        "status": "passed"
+      },
+      {
+        "route": "codex-project",
+        "action": "frozen-approved-mapping-state-preserved-old-writer-rejected",
+        "status": "passed"
+      },
+      {
+        "route": "codex-project",
+        "action": "canonical-promotion-and-last-uninstall",
+        "status": "passed"
+      },
+      {
+        "route": "claude-user",
+        "action": "actual-old-install-lock-index-state",
+        "status": "passed"
+      },
+      {
+        "route": "claude-user",
+        "action": "upgrade-index7-mapping-provider-sort-dedup-readonly-explain-parity",
+        "status": "passed"
+      },
+      {
+        "route": "claude-user",
+        "action": "refresh-fence-unknown-combination",
+        "status": "passed"
+      },
+      {
+        "route": "claude-user",
+        "action": "combined-fail-closed-and-recovery",
+        "status": "passed"
+      },
+      {
+        "route": "claude-user",
+        "action": "frozen-approved-mapping-state-preserved-old-writer-rejected",
+        "status": "passed"
+      },
+      {
+        "route": "claude-user",
+        "action": "canonical-promotion-and-last-uninstall",
+        "status": "passed"
+      },
+      {
+        "route": "claude-project",
+        "action": "actual-old-install-lock-index-state",
+        "status": "passed"
+      },
+      {
+        "route": "claude-project",
+        "action": "upgrade-index7-mapping-provider-sort-dedup-readonly-explain-parity",
+        "status": "passed"
+      },
+      {
+        "route": "claude-project",
+        "action": "refresh-fence-unknown-combination",
+        "status": "passed"
+      },
+      {
+        "route": "claude-project",
+        "action": "combined-fail-closed-and-recovery",
+        "status": "passed"
+      },
+      {
+        "route": "claude-project",
+        "action": "frozen-approved-mapping-state-preserved-old-writer-rejected",
+        "status": "passed"
+      },
+      {
+        "route": "claude-project",
+        "action": "canonical-promotion-and-last-uninstall",
+        "status": "passed"
+      },
+      {
+        "route": "claude-plugin",
+        "action": "actual-old-install-lock-index-state",
+        "status": "passed"
+      },
+      {
+        "route": "claude-plugin",
+        "action": "upgrade-index7-mapping-provider-sort-dedup-readonly-explain-parity",
+        "status": "passed"
+      },
+      {
+        "route": "claude-plugin",
+        "action": "refresh-fence-unknown-combination",
+        "status": "passed"
+      },
+      {
+        "route": "claude-plugin",
+        "action": "combined-fail-closed-and-recovery",
+        "status": "passed"
+      },
+      {
+        "route": "claude-plugin",
+        "action": "frozen-approved-mapping-state-preserved-old-writer-rejected",
+        "status": "passed"
+      },
+      {
+        "route": "claude-plugin",
+        "action": "canonical-promotion-and-last-uninstall",
+        "status": "passed"
+      }
+    ]
+  },
+  "actual_legacy_binary_migration": {
+    "test": "M2-A7 actual binary upgrade",
+    "scope": "offline CLI, harness version stubs; no real Claude session",
+    "old_binary_sha256": "4b2a46049758faef4c0a7e7e3045b877fe0503d0479b349fc5bf929adff8d958",
+    "binary_sha256": "b1f149dc22a7c19b516b9eb3fda2dc55f18197053ffd2eb24aac7d519cde0d67",
+    "cases": [
+      {
+        "entrypoint": "install",
+        "legacy_fixture": "lf",
+        "passed": true,
+        "read_only_commands": 5,
+        "migrated_owners": 2,
+        "repeat_sync_changed": false,
+        "doctor_healthy_before_and_after": true,
+        "external_bytes_and_mode_restored": true
+      },
+      {
+        "entrypoint": "install",
+        "legacy_fixture": "crlf",
+        "passed": true,
+        "read_only_commands": 5,
+        "migrated_owners": 2,
+        "repeat_sync_changed": false,
+        "doctor_healthy_before_and_after": true,
+        "external_bytes_and_mode_restored": true
+      },
+      {
+        "entrypoint": "install",
+        "legacy_fixture": "no-newline",
+        "passed": true,
+        "read_only_commands": 5,
+        "migrated_owners": 2,
+        "repeat_sync_changed": false,
+        "doctor_healthy_before_and_after": true,
+        "external_bytes_and_mode_restored": true
+      },
+      {
+        "entrypoint": "install",
+        "legacy_fixture": "absent",
+        "passed": true,
+        "read_only_commands": 5,
+        "migrated_owners": 2,
+        "repeat_sync_changed": false,
+        "doctor_healthy_before_and_after": true,
+        "external_bytes_and_mode_restored": true
+      },
+      {
+        "entrypoint": "sync",
+        "legacy_fixture": "lf",
+        "passed": true,
+        "read_only_commands": 5,
+        "migrated_owners": 2,
+        "repeat_sync_changed": false,
+        "doctor_healthy_before_and_after": true,
+        "external_bytes_and_mode_restored": true
+      },
+      {
+        "entrypoint": "sync",
+        "legacy_fixture": "crlf",
+        "passed": true,
+        "read_only_commands": 5,
+        "migrated_owners": 2,
+        "repeat_sync_changed": false,
+        "doctor_healthy_before_and_after": true,
+        "external_bytes_and_mode_restored": true
+      },
+      {
+        "entrypoint": "sync",
+        "legacy_fixture": "no-newline",
+        "passed": true,
+        "read_only_commands": 5,
+        "migrated_owners": 2,
+        "repeat_sync_changed": false,
+        "doctor_healthy_before_and_after": true,
+        "external_bytes_and_mode_restored": true
+      },
+      {
+        "entrypoint": "sync",
+        "legacy_fixture": "absent",
+        "passed": true,
+        "read_only_commands": 5,
+        "migrated_owners": 2,
+        "repeat_sync_changed": false,
+        "doctor_healthy_before_and_after": true,
+        "external_bytes_and_mode_restored": true
+      },
+      {
+        "entrypoint": "trust",
+        "legacy_fixture": "lf",
+        "passed": true,
+        "read_only_commands": 5,
+        "migrated_owners": 2,
+        "repeat_sync_changed": false,
+        "doctor_healthy_before_and_after": true,
+        "external_bytes_and_mode_restored": true
+      },
+      {
+        "entrypoint": "trust",
+        "legacy_fixture": "crlf",
+        "passed": true,
+        "read_only_commands": 5,
+        "migrated_owners": 2,
+        "repeat_sync_changed": false,
+        "doctor_healthy_before_and_after": true,
+        "external_bytes_and_mode_restored": true
+      },
+      {
+        "entrypoint": "trust",
+        "legacy_fixture": "no-newline",
+        "passed": true,
+        "read_only_commands": 5,
+        "migrated_owners": 2,
+        "repeat_sync_changed": false,
+        "doctor_healthy_before_and_after": true,
+        "external_bytes_and_mode_restored": true
+      },
+      {
+        "entrypoint": "trust",
+        "legacy_fixture": "absent",
+        "passed": true,
+        "read_only_commands": 5,
+        "migrated_owners": 2,
+        "repeat_sync_changed": false,
+        "doctor_healthy_before_and_after": true,
+        "external_bytes_and_mode_restored": true
+      },
+      {
+        "entrypoint": "uninstall",
+        "legacy_fixture": "lf",
+        "passed": true,
+        "read_only_commands": 5,
+        "migrated_owners": 2,
+        "repeat_sync_changed": false,
+        "doctor_healthy_before_and_after": true,
+        "external_bytes_and_mode_restored": true
+      },
+      {
+        "entrypoint": "uninstall",
+        "legacy_fixture": "crlf",
+        "passed": true,
+        "read_only_commands": 5,
+        "migrated_owners": 2,
+        "repeat_sync_changed": false,
+        "doctor_healthy_before_and_after": true,
+        "external_bytes_and_mode_restored": true
+      },
+      {
+        "entrypoint": "uninstall",
+        "legacy_fixture": "no-newline",
+        "passed": true,
+        "read_only_commands": 5,
+        "migrated_owners": 2,
+        "repeat_sync_changed": false,
+        "doctor_healthy_before_and_after": true,
+        "external_bytes_and_mode_restored": true
+      },
+      {
+        "entrypoint": "uninstall",
+        "legacy_fixture": "absent",
+        "passed": true,
+        "read_only_commands": 5,
+        "migrated_owners": 2,
+        "repeat_sync_changed": false,
+        "doctor_healthy_before_and_after": true,
+        "external_bytes_and_mode_restored": true
+      }
+    ],
+    "passed": 16,
+    "source_revision": "b481396d457ec4e0811e203415f7c38cbda35a39",
+    "source_includes_uncommitted_T40": true
+  },
+  "replace_fallback": {
+    "test": "M2-A8 replace fallback",
+    "scope": "offline built CLI with version stubs; C4 UI acceptance remains pending",
+    "binary_sha256": "b1f149dc22a7c19b516b9eb3fda2dc55f18197053ffd2eb24aac7d519cde0d67",
+    "source_revision": "e5937b2600e593ae51a5cb001ec821a6de70922e",
+    "cases": [
+      {
+        "provider": "codex",
+        "fallback": "degrade",
+        "format": "text",
+        "plan_status": "skipped",
+        "plan_exit": 0,
+        "unauthorized_install_exit": 1,
+        "authorized_install_exit": 0,
+        "placements": 0,
+        "user_style_tree_preserved": true,
+        "passed": true
+      },
+      {
+        "provider": "codex",
+        "fallback": "degrade",
+        "format": "json",
+        "plan_status": "skipped",
+        "plan_exit": 0,
+        "unauthorized_install_exit": 1,
+        "authorized_install_exit": 0,
+        "placements": 0,
+        "user_style_tree_preserved": true,
+        "passed": true
+      },
+      {
+        "provider": "codex",
+        "fallback": "skip",
+        "format": "text",
+        "plan_status": "skipped",
+        "plan_exit": 0,
+        "unauthorized_install_exit": 1,
+        "authorized_install_exit": 0,
+        "placements": 0,
+        "user_style_tree_preserved": true,
+        "passed": true
+      },
+      {
+        "provider": "codex",
+        "fallback": "skip",
+        "format": "json",
+        "plan_status": "skipped",
+        "plan_exit": 0,
+        "unauthorized_install_exit": 1,
+        "authorized_install_exit": 0,
+        "placements": 0,
+        "user_style_tree_preserved": true,
+        "passed": true
+      },
+      {
+        "provider": "codex",
+        "fallback": "error",
+        "format": "text",
+        "plan_status": "install-error",
+        "plan_exit": 4,
+        "unauthorized_install_exit": 1,
+        "authorized_install_exit": 4,
+        "placements": 0,
+        "user_style_tree_preserved": true,
+        "passed": true
+      },
+      {
+        "provider": "codex",
+        "fallback": "error",
+        "format": "json",
+        "plan_status": "install-error",
+        "plan_exit": 4,
+        "unauthorized_install_exit": 1,
+        "authorized_install_exit": 4,
+        "placements": 0,
+        "user_style_tree_preserved": true,
+        "passed": true
+      },
+      {
+        "provider": "claude-code",
+        "fallback": "degrade",
+        "format": "text",
+        "plan_status": "skipped",
+        "plan_exit": 0,
+        "unauthorized_install_exit": 1,
+        "authorized_install_exit": 0,
+        "placements": 0,
+        "user_style_tree_preserved": true,
+        "passed": true
+      },
+      {
+        "provider": "claude-code",
+        "fallback": "degrade",
+        "format": "json",
+        "plan_status": "skipped",
+        "plan_exit": 0,
+        "unauthorized_install_exit": 1,
+        "authorized_install_exit": 0,
+        "placements": 0,
+        "user_style_tree_preserved": true,
+        "passed": true
+      },
+      {
+        "provider": "claude-code",
+        "fallback": "skip",
+        "format": "text",
+        "plan_status": "skipped",
+        "plan_exit": 0,
+        "unauthorized_install_exit": 1,
+        "authorized_install_exit": 0,
+        "placements": 0,
+        "user_style_tree_preserved": true,
+        "passed": true
+      },
+      {
+        "provider": "claude-code",
+        "fallback": "skip",
+        "format": "json",
+        "plan_status": "skipped",
+        "plan_exit": 0,
+        "unauthorized_install_exit": 1,
+        "authorized_install_exit": 0,
+        "placements": 0,
+        "user_style_tree_preserved": true,
+        "passed": true
+      },
+      {
+        "provider": "claude-code",
+        "fallback": "error",
+        "format": "text",
+        "plan_status": "install-error",
+        "plan_exit": 4,
+        "unauthorized_install_exit": 1,
+        "authorized_install_exit": 4,
+        "placements": 0,
+        "user_style_tree_preserved": true,
+        "passed": true
+      },
+      {
+        "provider": "claude-code",
+        "fallback": "error",
+        "format": "json",
+        "plan_status": "install-error",
+        "plan_exit": 4,
+        "unauthorized_install_exit": 1,
+        "authorized_install_exit": 4,
+        "placements": 0,
+        "user_style_tree_preserved": true,
+        "passed": true
+      }
+    ],
+    "passed": 12
+  },
+  "coverage": [
+    "All existing codec stdout whitelist, golden conformance, cross-package dedup/native/stats and legacy lock/index/state tests in both fresh modules",
+    "Actual T44 install/state upgraded to combined index7/provider/unknown/effort mapping/refresh/fenced prompt/fail-closed on six POSIX routes",
+    "Read-only explain full stdout parity, priority order, zero extra cost for aliases, refresh due/dedup, fixed fault denial and recovery",
+    "Frozen approved mapping/index/lock restoration with unchanged state, old writer zero-write refusal, alias promotion and uninstall",
+    "Actual pre-rules-layout binary migration at four entrypoints and four external newline/missing variants",
+    "CI compiles two exact historical source revisions and invokes upgrade/conformance checks"
+  ],
+  "failures_retained": {
+    "a18-combined-first/second": "Fixture assumed descending priority; documented production order is ascending. Corrected priorities, not implementation.",
+    "a18-combined-third": "Old approved project entry resolved a new runtime via PATH. Pin the old runtime until explicit new update, then switch fixture PATH.",
+    "a18-combined-fourth": "Five routes passed; final adds Claude plugin metadata fixture and launcher/environment interpolation."
+  },
+  "boundary": "Offline fixtures only. New source/test combination is added without changing golden files or historical M1/M2 archives. Real B/C and final CI remain independent. Windows A17 native proof is recorded separately; unsupported POSIX routes are not inferred on Windows.",
+  "sources": {
+    "scripts/check_m3_conformance.py": "7d3cd4f4b855294a849e2d2e2b5c16e37105b3aefd208bacb8052e9c29720abb",
+    ".github/workflows/ci.yml": "b9e8754a93b48b7ff55c14e836b5541356390a9cf4f2bcc7162437e0fe2ac0c3"
+  }
+}

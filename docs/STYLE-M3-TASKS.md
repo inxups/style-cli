@@ -88,7 +88,7 @@ M3-CARRY-01 与 `--count=exact` 产品验收分别记录；前者的非阻塞决
 - [x] **M3-T50 exact 计数**：目标是按 D9 提供显式计数模式。依赖：M3-D9。产出：计数实现与文本/JSON 报告、可选依赖/凭据处理和确定性测试；缺 key 或联网失败不能标为计数成功。测试：M3-A15、M3-TOKEN-01。 [A15 报告](review/M3-A15-2026-10-18.json)和[计数指南](STYLE-COUNT.md)：137 文本 × 两编码及完整词表摘要、API transport fixture、三命令/旧 JSON 和预算兼容通过；9 新函数/329 专项 race pass，根全量 3,745 pass/0 fail，vet、287 计数 CLI、45 故障兼容/50 refresh CLI、40 smoke 通过。内置词表增加二进制体积，五路线 p95 24.602–33.887ms；本地连续段 4,096 字节拒绝边界已披露。TOKEN-01 本地生产验收在 REAL-03 汇总，API 保持延期。
 - [x] **M3-T60 native 扩展结论落地**：目标是落实 D10 的逐项结论。依赖：M3-D10。产出：获支持字段/类型的校验、plan、配置/信任生命周期；不支持项的诊断与依据，保留旧四字段兼容。测试：M3-A16、M3-B4、M3-C6。 [A16 报告](review/M3-A16-2026-10-18.json)与[指南](STYLE-NATIVE.md)：3 新函数/135 专项和 race pass、根 3,880 pass/0 fail、24 agenthooks native renderer pass、vet、40 五路线 CLI/外部五类 hook 保全及 40 smoke 通过。六路线拒绝/零写入/frozen 恢复通过；native 仍四字段，诊断不回显值，B4/C6 独立待验。
 - [x] **M3-T70 Windows 适配**：目标是按 D11 完成支持范围内的平台实现。依赖：M3-D11。产出：路径/启动器、原生 exe 与 stdin/退出码、DACL/进程身份、状态锁/清理和文件事务及 Windows CI。测试：M3-A17、M3-W1、M3-CI-01。[A17 完整报告](review/M3-A17-2026-10-18.json)固定 `b481396` 和 run 39055736061，Ubuntu/macOS/Windows 全过；Windows 根模块 3,380、agenthooks 521 pass，0 fail；280/35 项明确前提 skip 单列，25 项生产 CLI 全过。前六轮失败与逐项修正见 PROGRESS；仅关闭支持范围的平台实现，用户延期的实际 harness W1 保持 `[?]`，最终 CI-01 另验。
-- [ ] **M3-T80 conformance 与升级回归**：目标是核对新能力组合及 M2 兼容性。依赖：M3-T70。产出：共享路线/协议回归、旧包/锁/index/state 的升级 fixture、组合能力和失败回滚覆盖，保留旧 golden 的有据变更说明。测试：M3-A18。
+- [x] **M3-T80 conformance 与升级回归**：目标是核对新能力组合及 M2 兼容性。依赖：M3-T70。产出：六路线组合升级、实际旧二进制/旧状态迁移、共享 codec/白名单/golden、恢复与去重回归，原 golden 不改。测试：M3-A18。[完整报告](review/M3-A18-2026-10-18.json)：fresh root 3,881/agenthooks 531 pass、0 fail，既有 2/23 skip 单列；36 项六路线组合、16 组旧布局迁移、12 组 replace 回退、40 smoke 及双 vet 通过，迁移/组合检查接入 CI。真实验收独立。
 
 ## 真实环境准备与验收
 
