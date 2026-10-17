@@ -2,7 +2,7 @@
 
 日期：2026-10-17。状态：**调查稿，不是评审稿，未获用户批准**；M3-D3 保持 `[ ]`，不关闭 A6–A8、B2、C2–C4。依据 [M3 任务](../STYLE-M3-TASKS.md) “设计需要原生探针时可先做该设计范围的隔离调查”的约定，在 T21/T22 推进期间先固定原生事实，供 T22 关闭后的 D3 评审稿引用。
 
-调查起点为 clean `fd88e8da66cd8409b6939e71875edd4bee3c9421`（分支 `claude/m3-d3-investigation`），本机 codex-cli 0.159.3、Claude Code 2.1.301、Git 2.54.0。生产源码、spec、任务/测试矩阵均未修改。证据见 [调查报告](M3-D3-INVESTIGATION-2026-10-17.json)，探针为 [probe_m3_d3_routes.py](../../testdata/manual/probe_m3_d3_routes.py)，自测为 [test_probe_m3_d3_routes.py](../../testdata/manual/test_probe_m3_d3_routes.py)。
+调查起点为 clean `fd88e8da66cd8409b6939e71875edd4bee3c9421`（分支 `claude/m3-d3-investigation`），本机 codex-cli 0.159.3、Claude Code 2.1.301、Git 2.54.0。生产源码、spec、任务/测试矩阵均未修改。证据见 [调查报告](M3-D3-INVESTIGATION-2026-10-17.json)。Codex 探针为 [probe_m3_d3_routes.py](../../testdata/manual/probe_m3_d3_routes.py)（自测 [test_probe_m3_d3_routes.py](../../testdata/manual/test_probe_m3_d3_routes.py)）；Claude 探针为 [probe_m3_d3_claude.py](../../testdata/manual/probe_m3_d3_claude.py)（自测 [test_probe_m3_d3_claude.py](../../testdata/manual/test_probe_m3_d3_claude.py)），由用户 2026-10-17 授权在隔离临时项目中运行，不改动真实 `~/.claude`。
 
 ## 1. 当前源码事实
 
@@ -47,14 +47,29 @@
 - **C-8 信任会放宽沙箱**：写入 `projects."<路径>".trust_level = "trusted"` 后，默认沙箱从 read-only 变为 workspace-write。所以**项目信任是用户的安全决定，STYLE 不能替用户写**，最多只预置 hook 哈希，并说明还缺项目信任。
 - 所有场景中 Codex 都没有改写用户 `config.toml`（M1 的 app-server 会自己写项目信任，exec 不会）。hook payload 字段：SessionStart 有 `cwd/hook_event_name/model/permission_mode/session_id/source/transcript_path`，UserPromptSubmit 多了 `prompt/turn_id`、没有 `source`。
 
-## 3. Claude Code 项目级（仅文档依据）
+## 3. Claude Code 项目级实测
 
-本轮**没有运行 Claude Code**（Claude 真实配置需要用户另行授权）。以下都来自 2026-10-17 读取的官方文档，记为 `[?]`，需要真实验证。
+方法：每个场景都用全新的 HOME、`CLAUDE_CONFIG_DIR` 和临时 Git 项目；模型服务是本地回环 Anthropic Messages stub，`ANTHROPIC_API_KEY` 是只发给 stub 的占位值，不做真实推理。`-p` 和伪终端交互两种方式分别测试；预置的 `.claude.json` 只跳过首次引导和 API key 确认，“已信任”场景另外写入该项目的 `hasTrustDialogAccepted`。运行前后核对过真实 `~/.claude/settings.json`、`plugins/known_marketplaces.json`、`~/.config/git/ignore`、`~/.gitconfig` 的摘要、权限和 mtime，均未变化。
 
-- **文件与优先级**：`.claude/settings.json` 是共享、可提交的；`.claude/settings.local.json` 是个人文件，Claude Code 首次写入时会把它加进全局 git excludes。优先级：managed > `--settings` > local > project > user。hooks 跨层级**合并**而不是覆盖，匹配到的 hook 并行运行。
-- **去重**：文档说同一个 handler 写在多个设置文件里只运行一次，但插件或 skill 里的同一 handler 不去重；没说明“同一”按什么判定。STYLE 的用户级和项目级命令里 `--style-home` 不同，很可能被视为两个 handler，需要实测。
-- **信任**：设置文件里的 hook 要等用户接受工作区信任后才运行；未跟踪的 `settings.local.json` 的 allow 规则不需要等信任。`-p` 下的行为文档没写清楚。
-- **可移植路径**：`${CLAUDE_PROJECT_DIR}` 在 exec 形式的 `command` 和 `args` 中都会被替换，也会导出为环境变量。它是项目路线去掉绝对路径的首选。
+| 场景 | 结果 |
+|---|---|
+| project-print-untrusted：项目 `settings.json`，`-p`，未信任 | 两个事件各运行 1 次 |
+| project-tty-untrusted：交互，未信任 | 出现工作区信任对话框；不接受时 hook 不运行 |
+| project-tty-trusted：交互，已信任 | 两个事件各运行 1 次 |
+| dup-user-project-shell / -exec：用户级与项目级定义相同的 handler | 各运行 **1 次**（会去重） |
+| dup-user-project-exec-args-differ：同一命令，只有 `--style-home=` 参数不同 | 各运行 **2 次** |
+| dup-project-and-local-shell：项目 `settings.json` 与 `settings.local.json` 相同 | 各运行 1 次 |
+| projdir-root：exec 形式，args 中使用 `${CLAUDE_PROJECT_DIR}` | 替换生效，值为项目根 |
+| projdir-symlink：通过符号链接路径启动 | 运行；`CLAUDE_PROJECT_DIR` 是**规范路径** |
+| projdir-subdir / subdir-discovery：从项目子目录启动 | 项目 hook **不运行**，只运行用户级 hook；`CLAUDE_PROJECT_DIR` 等于启动目录 |
+
+结论（Claude Code 2.1.301）：
+
+- **K-1 信任只拦交互模式**：`-p` 在未受信目录里也会运行项目 `settings.json` 中的 hook；交互模式在用户接受工作区信任之前不运行。STYLE 的 doctor/probe 不能用 `-p` 的结果代替交互会话的信任状态。
+- **K-2 去重看整个 handler**：用户级、项目级、本地级之间完全相同的 handler 只运行一次，shell 和 exec 形式都一样；参数只要有一处不同就各自运行。现在 STYLE 命令里带 `--style-home=<绝对路径>`，用户路线和项目路线同时安装就会**重复投递**。
+- **K-3 项目根就是启动目录**：Claude 不会向上查找父目录的 `.claude/settings.json`（Codex 会，见 C-4），`CLAUDE_PROJECT_DIR` 等于启动目录；通过符号链接启动时会解析成规范路径。从子目录打开会话时，项目路线完全不生效。
+- **K-4 可移植命令可行**：exec 形式 args 里的 `${CLAUDE_PROJECT_DIR}` 会被替换，也会导出为环境变量，可以用来去掉写进可提交文件里的绝对路径。
+- 文档另外说明：`.claude/settings.local.json` 是个人文件（Claude 首次写入时会加进全局 git excludes），优先级为 managed > `--settings` > local > project > user，hooks 跨层合并；未跟踪的 local 文件里的 allow 规则不需要等信任。
 
 ## 4. Claude 云端会话（仅文档依据，C3 待验）
 
@@ -68,26 +83,30 @@
   不论哪种，可提交的配置里都不能出现本机绝对路径；index 要么提交到仓库，要么在会话启动时重建，state 必须放在仓库之外。
 - 插件路线不是云端的交付方式。
 
-## 5. Claude 插件路线（仅文档依据）
+## 5. Claude 插件路线实测
 
-- 布局：`.claude-plugin/plugin.json`（只有 `name` 是必填项）加上 `hooks/hooks.json`；hook 的 `command`/`args` 里可以用 `${CLAUDE_PLUGIN_ROOT}`、`${CLAUDE_PLUGIN_DATA}`、`${CLAUDE_PROJECT_DIR}`。
-- **顶层 `bin/` 不能照搬 Codex 布局**：插件的 `bin/` 会被加入 Bash 工具的 PATH，而且有 `bin/` 的插件 claude.ai/Cowork 不会安装。
-- 安装与缓存：marketplace 插件会被复制到 `~/.claude/plugins/cache/<marketplace>/<plugin>/<version>/`；**本地路径 marketplace 里用相对路径声明的插件则原地加载**，改动在新会话或 `/reload-plugins` 后生效。如果插件 manifest 写死 `version`（agenthooks 现在固定为 `0.1.0`），复制安装的插件在版本号变化前不会更新。
-- 登记：`claude plugin marketplace add` 会同时写用户设置里的 `extraKnownMarketplaces` 和 `known_marketplaces.json`；安装记录在 `installed_plugins.json`；`enabledPlugins` 有 user/project/local/flag/managed 几个来源。卸载默认会删除 `${CLAUDE_PLUGIN_DATA}`。
-- 项目范围的插件要等工作区信任，`-p` 不算接受信任。用户路线和插件路线定义同一 handler 时**不去重**，切换路线时必须移除另一边。
+在同一个隔离配置中依次执行：`claude plugin validate` → `marketplace add <本地目录>` → `install style-runtime@style-m3d3`（user 范围）→ `-p` 运行 → 不改版本号直接修改源目录的 hooks → 运行 → 在用户设置里加入与插件相同的 handler → 运行 → `uninstall` → 运行 → `install --scope project` → 运行 → `uninstall --scope project` → `marketplace remove`。每一步的 CLI 都返回 0，每一步前后都对配置目录和项目 `.claude/` 做了快照对比（报告 `steps`）。
+
+- **P-1 登记写入的位置**：`marketplace add` 新建 `plugins/known_marketplaces.json`，并在用户 `settings.json` 写入 `extraKnownMarketplaces`；`install` 再写入 `enabledPlugins`，新建 `plugins/installed_plugins.json`，并把插件复制到 `plugins/cache/style-m3d3/style-runtime/0.1.0/`。
+- **P-2 实际原地加载**：尽管复制了一份到缓存，运行时 `CLAUDE_PLUGIN_ROOT` 指向**源目录**；不改版本号直接修改源目录，下一个会话就会用新 hook。这和文档“本地路径 marketplace 中相对路径声明的插件原地加载”一致，也就不受固定 `0.1.0` 版本号的影响。
+- **P-3 插件与设置文件不去重**：插件和用户设置里完全相同的 handler 运行 2 次。所以用户路线和插件路线必须互斥，切换路线时要移除另一边。
+- **P-4 项目范围**：`install --scope project` 会**新建**项目的 `.claude/settings.json`，写入 `{"enabledPlugins": {"style-runtime@style-m3d3": true}}`；`-p` 下即使未受信也会运行。卸载后这个文件仍然留着，内容是 `{"enabledPlugins": {}}`，也就是说**仓库里多出一个文件**。
+- **P-5 卸载有残留**：全部卸载并移除 marketplace 后，相对基线多出：用户 `settings.json`（内容为空的 `enabledPlugins` 和 `extraKnownMarketplaces`）、内容为空的 `installed_plugins.json` 和 `known_marketplaces.json`，以及带 `.orphaned_at` 标记的缓存副本（文档称 14 天后后台清理）。卸载后的新会话里 hook 不再运行。STYLE 如果要做到“逐字节还原”，就要自己清理这些空键和文件；否则就只能宣称“功能上卸载干净”。
+- 文档补充：顶层 `bin/` 会进 Bash PATH，而且带 `bin/` 的插件 claude.ai/Cowork 不会安装，不能照搬 Codex 插件的 `bin/style`；项目范围的插件在交互模式下要等工作区信任；云端会话不加载插件。
 
 ## 6. 留给 D3 评审稿的待决问题
 
 1. **项目状态放在哪里**：`~/.style/projects/<规范路径摘要>/` 这样的独立根（不入库），还是仓库内 `.style/`（index 是否提交）？
-2. **项目根怎么定**：默认 git toplevel，还是显式 `--project <dir>`？是否做规范化？符号链接拼写怎么处理（C-5：预置多个拼写，还是只支持规范路径并在 doctor 中提示）？
-3. **用户级与项目级共存**（C-6、Claude 去重待验）：禁止同一个包同时装两处，跨两个根做运行时去重，还是允许并提示？
+2. **项目根怎么定**：两家行为不同：Codex 会向上发现项目（C-4），Claude 只认启动目录（K-3）。默认用 git toplevel，还是显式 `--project <dir>`？对 Claude，是否要求从项目根启动并在 doctor 中提示？符号链接拼写怎么处理（C-5：预置多个拼写，还是只支持规范路径并提示）？
+3. **用户级与项目级共存**（C-6、K-2、P-3）：Codex 不去重；Claude 只在 handler 完全相同时去重，而 STYLE 命令带 `--style-home`。是禁止同一个包同时装两处，跨两个根做运行时去重，还是让两条路线的 handler 完全一致、由 Claude 去重（Codex 仍会重复）？
 4. **Codex 项目信任**（C-1、C-8）：确认 STYLE 只预置 hook 哈希，不写项目信任；install/doctor 报告“项目未受信”。多个 clone 各自安装、各自信任（C-3）。
 5. **Claude 项目文件**：写共享的 `settings.json`（可提交，云端可用），还是个人的 `settings.local.json`（不入库，云端不可用）？还是两种都提供？
 6. **云端引导**：§4 的三种方案选哪种，或者 M3 只承诺静态规则交付？
-7. **Claude 插件**：用本地 marketplace 原地加载（和 Codex 插件路线对称），还是复制缓存并管理版本？是否自动执行 `claude plugin` 登记？
+7. **Claude 插件**：本地目录 marketplace 已证明会原地加载（P-2），可以和 Codex 插件路线对称。是否由 STYLE 自动执行 `claude plugin` 登记和卸载？卸载残留（P-4、P-5）是自己清理到逐字节还原，还是只承诺功能上卸载干净？
 8. **agenthooks 边界改动**：Codex ScopeProject 把信任写入位置拆开、信任键的路径拼写、Claude 插件和项目命令改用 `${CLAUDE_PLUGIN_ROOT}`/`${CLAUDE_PROJECT_DIR}`。每一项都要写明原因、影响和双 module 测试。
 
 ## 7. 未覆盖与下一步
 
-- 未覆盖：Codex TUI 下的项目 hook 信任提示、项目级 `developer_instructions`、项目 hook 与 codex-plugin 路线并存；Claude Code 的任何真实运行（项目设置、去重判定、信任对话框、插件登记/卸载）；云端会话；Windows；STYLE 二进制本身（探针只用普通 shell hook）。
-- 下一步：用户授权后，在隔离项目里实测 Claude 的项目级去重与信任、本地 marketplace 插件的登记/卸载/残留；T22 关闭后，把本稿事实并入 D3 评审稿，按 AGENTS 约定更新任务状态并追加 PROGRESS。
+- 未覆盖：Codex TUI 下的项目 hook 信任提示、项目级 `developer_instructions`、项目 hook 与 codex-plugin 路线并存；Claude 交互模式下的插件信任、`/reload-plugins`；Claude 静态规则（`.claude/rules`、`CLAUDE.md`）的项目级加载；云端会话（C3）；Windows；STYLE 二进制本身（探针只用普通 shell hook）。
+- Claude 的去重、信任和插件结论来自 stub 模型下的隔离运行，没有验证真实模型请求里的上下文投递；真实投递仍归 C2/C4。
+- 下一步：T22 关闭后，把本稿事实并入 D3 评审稿，按 AGENTS 约定更新任务状态并追加 PROGRESS。

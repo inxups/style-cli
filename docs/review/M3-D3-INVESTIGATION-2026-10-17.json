@@ -8,29 +8,36 @@
     "python": "3.14.7",
     "git": "2.54.0",
     "codex": "codex-cli 0.159.3",
-    "claude_code": "2.1.301 (installed; not executed)",
+    "claude_code": "2.1.301 (Claude Code)",
     "cleared_env": [
       "CODEX_HOME",
       "CODEX_SANDBOX",
       "CLAUDE_CONFIG_DIR"
     ],
-    "per_case_isolation": "fresh HOME, CODEX_HOME and git project under private scratch; PATH inherited"
+    "per_case_isolation": "fresh HOME, CODEX_HOME and git project under private scratch; PATH inherited",
+    "claude_isolation": "fresh HOME and CLAUDE_CONFIG_DIR per case; loopback Anthropic Messages stub; ANTHROPIC_API_KEY is a labelled placeholder seen only by the stub"
   },
   "model_service": "local loopback Responses SSE stub; no real inference, no credentials read or copied",
   "files": {
     "testdata/manual/probe_m3_d3_routes.py": "ff7253fabe9e4516b60cdf0034d3b556a5a1c73aa84734ca595cfab3b0e1ed43",
-    "testdata/manual/test_probe_m3_d3_routes.py": "4f95b0848a99c66e8994162d8bba9ab12ab939ac0bab3125ef72e6499d77efef"
+    "testdata/manual/test_probe_m3_d3_routes.py": "4f95b0848a99c66e8994162d8bba9ab12ab939ac0bab3125ef72e6499d77efef",
+    "testdata/manual/probe_m3_d3_claude.py": "0e2fb198683f484b4aee3ca61226d950aa9c935accb255be9ac9e72cc47d536d",
+    "testdata/manual/test_probe_m3_d3_claude.py": "95b20ba5cf7c9837ce3155fd5b3f0ab44c98e92127461c4c2eee676c6e044610"
   },
   "commands": {
     "probe": "env -u CODEX_HOME -u CODEX_SANDBOX -u CLAUDE_CONFIG_DIR PYTHONDONTWRITEBYTECODE=1 python3 testdata/manual/probe_m3_d3_routes.py --scratch <empty-private-dir> --output <json>",
     "self_test": "env -u CODEX_HOME -u CODEX_SANDBOX -u CLAUDE_CONFIG_DIR PYTHONDONTWRITEBYTECODE=1 python3 -m unittest testdata/manual/test_probe_m3_d3_routes.py",
-    "collectors": "env -u CODEX_HOME -u CODEX_SANDBOX -u CLAUDE_CONFIG_DIR PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s testdata/manual -p 'test_*.py'"
+    "collectors": "env -u CODEX_HOME -u CODEX_SANDBOX -u CLAUDE_CONFIG_DIR PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s testdata/manual -p 'test_*.py'",
+    "claude_probe": "env -u CODEX_HOME -u CODEX_SANDBOX -u CLAUDE_CONFIG_DIR PYTHONDONTWRITEBYTECODE=1 python3 testdata/manual/probe_m3_d3_claude.py --scratch <empty-private-dir> --output <json>",
+    "claude_self_test": "env -u CODEX_HOME -u CODEX_SANDBOX -u CLAUDE_CONFIG_DIR PYTHONDONTWRITEBYTECODE=1 python3 -m unittest testdata/manual/test_probe_m3_d3_claude.py"
   },
   "results_summary": {
     "probe_exit": 0,
     "self_test": "5/5 ok (fake-codex case also asserts whitelisted sandbox field)",
-    "collectors": "64/64 ok (59 existing + 5 new)",
-    "hash_vector_check": "Python definition_hash equals agenthooks/install.DefinitionHash for 2 vectors (trust.go compiled standalone in scratch)"
+    "collectors": "67/67 ok (59 existing + 8 new)",
+    "hash_vector_check": "Python definition_hash equals agenthooks/install.DefinitionHash for 2 vectors (trust.go compiled standalone in scratch)",
+    "claude_probe_exit": 0,
+    "claude_self_test": "3/3 ok (fake claude fixture for project part)"
   },
   "rounds": [
     {
@@ -471,14 +478,569 @@
       "https://code.claude.com/docs/en/plugins-reference",
       "https://code.claude.com/docs/en/plugins/loading"
     ],
-    "note": "Claude facts are documentation-only; no Claude Code process was run in this investigation"
+    "note": "Claude cloud facts are documentation-only; Claude project and plugin facts were also measured (claude_probe)"
   },
   "not_covered": [
     "Codex interactive TUI trust prompts for project hooks",
-    "Codex project hooks under codex-plugin route coexistence",
-    "Claude Code real runs (project settings, plugin marketplace add/install, trust dialog)",
+    "Codex project developer_instructions",
+    "Codex project hooks with codex-plugin route coexistence",
+    "Claude interactive plugin trust and /reload-plugins",
+    "Claude project static rules (.claude/rules, CLAUDE.md)",
     "Claude cloud session (C3)",
+    "real model delivery (stub only)",
     "Windows",
-    "STYLE binary itself (probe uses plain shell hooks)"
-  ]
+    "STYLE binary itself (probes use plain shell hooks)"
+  ],
+  "authorization": "2026-10-17 user authorized isolated real Claude Code runs (project hook dedup/trust, local marketplace plugin add/install/uninstall) without changing ~/.claude",
+  "claude_rounds": [
+    {
+      "round": 1,
+      "part": "project",
+      "cases": 10,
+      "note": "projdir-subdir fired nothing; ambiguous between discovery and path substitution"
+    },
+    {
+      "round": 2,
+      "part": "project",
+      "cases": 11,
+      "note": "added subdir-discovery with absolute scripts: only user hooks fire, so project files are not discovered from a subdirectory"
+    },
+    {
+      "round": 3,
+      "part": "plugin",
+      "steps": 7,
+      "note": "local directory marketplace flow; all CLI exits 0"
+    },
+    {
+      "round": "final",
+      "part": "project+plugin",
+      "note": "final script; outcomes identical to rounds 1-3",
+      "output_sha256": "47628df86320caab4aa4d17911aa329280e26a91e39d2da940684605dc3b2484"
+    }
+  ],
+  "real_config_check": {
+    "files": [
+      "~/.claude/settings.json",
+      "~/.claude/settings.local.json (absent)",
+      "~/.claude/plugins/installed_plugins.json (absent)",
+      "~/.claude/plugins/known_marketplaces.json",
+      "~/.config/git/ignore",
+      "~/.gitconfig"
+    ],
+    "method": "sha256 + mtime + mode before and after all Claude runs",
+    "result": "unchanged; no style-m3d3 entries in real plugin cache or marketplaces"
+  },
+  "claude_probe": {
+    "probe": "M3-D3 claude project hooks and local plugin marketplace",
+    "claude_version": "2.1.301 (Claude Code)",
+    "model_service": "loopback Anthropic Messages stub, placeholder key, no inference",
+    "stub_paths": [
+      "POST /v1/messages"
+    ],
+    "results": {
+      "project-print-untrusted": {
+        "fired": {
+          "project-ss": 1,
+          "project-ups": 1
+        },
+        "hook_env": {
+          "project-ss": {
+            "CLAUDE_PROJECT_DIR": "<case>/project",
+            "CLAUDE_PLUGIN_ROOT": ""
+          },
+          "project-ups": {
+            "CLAUDE_PROJECT_DIR": "<case>/project",
+            "CLAUDE_PLUGIN_ROOT": ""
+          }
+        },
+        "exit_code": 0
+      },
+      "project-tty-untrusted": {
+        "fired": {},
+        "hook_env": {},
+        "screen": {
+          "trust_dialog_text_seen": true,
+          "api_key_dialog_text_seen": false,
+          "onboarding_text_seen": false
+        }
+      },
+      "project-tty-trusted": {
+        "fired": {
+          "project-ss": 1,
+          "project-ups": 1
+        },
+        "hook_env": {
+          "project-ss": {
+            "CLAUDE_PROJECT_DIR": "<case>/project",
+            "CLAUDE_PLUGIN_ROOT": ""
+          },
+          "project-ups": {
+            "CLAUDE_PROJECT_DIR": "<case>/project",
+            "CLAUDE_PLUGIN_ROOT": ""
+          }
+        },
+        "screen": {
+          "trust_dialog_text_seen": false,
+          "api_key_dialog_text_seen": false,
+          "onboarding_text_seen": false
+        }
+      },
+      "dup-user-project-shell": {
+        "fired": {
+          "dup-ss": 1,
+          "dup-ups": 1
+        },
+        "hook_env": {
+          "dup-ss": {
+            "CLAUDE_PROJECT_DIR": "<case>/project",
+            "CLAUDE_PLUGIN_ROOT": ""
+          },
+          "dup-ups": {
+            "CLAUDE_PROJECT_DIR": "<case>/project",
+            "CLAUDE_PLUGIN_ROOT": ""
+          }
+        },
+        "exit_code": 0,
+        "layers": [
+          "cfg",
+          "project"
+        ]
+      },
+      "dup-user-project-exec": {
+        "fired": {
+          "dup-ss": 1,
+          "dup-ups": 1
+        },
+        "hook_env": {
+          "dup-ss": {
+            "CLAUDE_PROJECT_DIR": "<case>/project",
+            "CLAUDE_PLUGIN_ROOT": ""
+          },
+          "dup-ups": {
+            "CLAUDE_PROJECT_DIR": "<case>/project",
+            "CLAUDE_PLUGIN_ROOT": ""
+          }
+        },
+        "exit_code": 0,
+        "layers": [
+          "cfg",
+          "project"
+        ]
+      },
+      "dup-user-project-exec-args-differ": {
+        "fired": {
+          "dup-ss": 2,
+          "dup-ups": 2
+        },
+        "hook_env": {
+          "dup-ss": {
+            "CLAUDE_PROJECT_DIR": "<case>/project",
+            "CLAUDE_PLUGIN_ROOT": ""
+          },
+          "dup-ups": {
+            "CLAUDE_PROJECT_DIR": "<case>/project",
+            "CLAUDE_PLUGIN_ROOT": ""
+          }
+        },
+        "exit_code": 0,
+        "layers": [
+          "cfg",
+          "project"
+        ]
+      },
+      "dup-project-and-local-shell": {
+        "fired": {
+          "dup-ss": 1,
+          "dup-ups": 1
+        },
+        "hook_env": {
+          "dup-ss": {
+            "CLAUDE_PROJECT_DIR": "<case>/project",
+            "CLAUDE_PLUGIN_ROOT": ""
+          },
+          "dup-ups": {
+            "CLAUDE_PROJECT_DIR": "<case>/project",
+            "CLAUDE_PLUGIN_ROOT": ""
+          }
+        },
+        "exit_code": 0,
+        "layers": [
+          "project",
+          "local"
+        ]
+      },
+      "projdir-root": {
+        "fired": {
+          "projdir-ss": 1,
+          "projdir-ups": 1
+        },
+        "hook_env": {
+          "projdir-ss": {
+            "CLAUDE_PROJECT_DIR": "<case>/project",
+            "CLAUDE_PLUGIN_ROOT": ""
+          },
+          "projdir-ups": {
+            "CLAUDE_PROJECT_DIR": "<case>/project",
+            "CLAUDE_PLUGIN_ROOT": ""
+          }
+        },
+        "exit_code": 0,
+        "cwd": "<case>/project"
+      },
+      "projdir-subdir": {
+        "fired": {},
+        "hook_env": {},
+        "exit_code": 0,
+        "cwd": "<case>/project/nested/dir"
+      },
+      "projdir-symlink": {
+        "fired": {
+          "projdir-ss": 1,
+          "projdir-ups": 1
+        },
+        "hook_env": {
+          "projdir-ss": {
+            "CLAUDE_PROJECT_DIR": "<case>/project",
+            "CLAUDE_PLUGIN_ROOT": ""
+          },
+          "projdir-ups": {
+            "CLAUDE_PROJECT_DIR": "<case>/project",
+            "CLAUDE_PLUGIN_ROOT": ""
+          }
+        },
+        "exit_code": 0,
+        "cwd": "<case>/link"
+      },
+      "subdir-discovery": {
+        "fired": {
+          "user-ss": 1,
+          "user-ups": 1
+        },
+        "hook_env": {
+          "user-ss": {
+            "CLAUDE_PROJECT_DIR": "<case>/project/nested/dir",
+            "CLAUDE_PLUGIN_ROOT": ""
+          },
+          "user-ups": {
+            "CLAUDE_PROJECT_DIR": "<case>/project/nested/dir",
+            "CLAUDE_PLUGIN_ROOT": ""
+          }
+        },
+        "exit_code": 0,
+        "cwd": "<case>/project/nested/dir"
+      },
+      "plugin-local-marketplace": {
+        "validate_passed": true,
+        "user_settings_keys_after_marketplace_add": [
+          "extraKnownMarketplaces"
+        ],
+        "user_settings_keys_after_install": [
+          "enabledPlugins",
+          "extraKnownMarketplaces"
+        ],
+        "installed_plugins": {
+          "version": 2,
+          "plugins": {
+            "style-runtime@style-m3d3": [
+              {
+                "scope": "user",
+                "installPath": "<case>/cfg/plugins/cache/style-m3d3/style-runtime/0.1.0",
+                "version": "0.1.0",
+                "installedAt": "2026-10-17T09:59:51.655Z",
+                "lastUpdated": "2026-10-17T09:59:51.655Z"
+              }
+            ]
+          }
+        },
+        "known_marketplaces": {
+          "style-m3d3": {
+            "source": {
+              "source": "directory",
+              "path": "<case>/market"
+            },
+            "installLocation": "<case>/market",
+            "lastUpdated": "2026-10-17T09:59:51.533Z"
+          }
+        },
+        "run_after_install": {
+          "fired": {
+            "dupcheck": 1,
+            "plugin-ss": 1,
+            "plugin-ups": 1
+          },
+          "hook_env": {
+            "dupcheck": {
+              "CLAUDE_PROJECT_DIR": "<case>/project",
+              "CLAUDE_PLUGIN_ROOT": "<case>/market/plugins/style-runtime"
+            },
+            "plugin-ss": {
+              "CLAUDE_PROJECT_DIR": "<case>/project",
+              "CLAUDE_PLUGIN_ROOT": "<case>/market/plugins/style-runtime"
+            },
+            "plugin-ups": {
+              "CLAUDE_PROJECT_DIR": "<case>/project",
+              "CLAUDE_PLUGIN_ROOT": "<case>/market/plugins/style-runtime"
+            }
+          },
+          "exit_code": 0
+        },
+        "run_after_source_edit": {
+          "fired": {
+            "dupcheck": 1,
+            "plugin-v2-ss": 1,
+            "plugin-v2-ups": 1
+          },
+          "hook_env": {
+            "dupcheck": {
+              "CLAUDE_PROJECT_DIR": "<case>/project",
+              "CLAUDE_PLUGIN_ROOT": "<case>/market/plugins/style-runtime"
+            },
+            "plugin-v2-ss": {
+              "CLAUDE_PROJECT_DIR": "<case>/project",
+              "CLAUDE_PLUGIN_ROOT": "<case>/market/plugins/style-runtime"
+            },
+            "plugin-v2-ups": {
+              "CLAUDE_PROJECT_DIR": "<case>/project",
+              "CLAUDE_PLUGIN_ROOT": "<case>/market/plugins/style-runtime"
+            }
+          },
+          "exit_code": 0
+        },
+        "run_with_identical_user_handler": {
+          "fired": {
+            "dupcheck": 2,
+            "plugin-v2-ss": 1,
+            "plugin-v2-ups": 1
+          },
+          "hook_env": {
+            "dupcheck": {
+              "CLAUDE_PROJECT_DIR": "<case>/project",
+              "CLAUDE_PLUGIN_ROOT": ""
+            },
+            "plugin-v2-ss": {
+              "CLAUDE_PROJECT_DIR": "<case>/project",
+              "CLAUDE_PLUGIN_ROOT": "<case>/market/plugins/style-runtime"
+            },
+            "plugin-v2-ups": {
+              "CLAUDE_PROJECT_DIR": "<case>/project",
+              "CLAUDE_PLUGIN_ROOT": "<case>/market/plugins/style-runtime"
+            }
+          },
+          "exit_code": 0
+        },
+        "run_after_uninstall": {
+          "fired": {},
+          "hook_env": {},
+          "exit_code": 0
+        },
+        "project_settings_after_project_install": {
+          "enabledPlugins": {
+            "style-runtime@style-m3d3": true
+          }
+        },
+        "run_after_project_install": {
+          "fired": {
+            "dupcheck": 1,
+            "plugin-v2-ss": 1,
+            "plugin-v2-ups": 1
+          },
+          "hook_env": {
+            "dupcheck": {
+              "CLAUDE_PROJECT_DIR": "<case>/project",
+              "CLAUDE_PLUGIN_ROOT": "<case>/market/plugins/style-runtime"
+            },
+            "plugin-v2-ss": {
+              "CLAUDE_PROJECT_DIR": "<case>/project",
+              "CLAUDE_PLUGIN_ROOT": "<case>/market/plugins/style-runtime"
+            },
+            "plugin-v2-ups": {
+              "CLAUDE_PROJECT_DIR": "<case>/project",
+              "CLAUDE_PLUGIN_ROOT": "<case>/market/plugins/style-runtime"
+            }
+          },
+          "exit_code": 0
+        },
+        "project_settings_after_project_uninstall": "{\n  \"enabledPlugins\": {}\n}\n",
+        "residue_vs_baseline": {
+          "added": [
+            "plugins/cache/style-m3d3/style-runtime/0.1.0/.claude-plugin/plugin.json",
+            "plugins/cache/style-m3d3/style-runtime/0.1.0/.orphaned_at",
+            "plugins/cache/style-m3d3/style-runtime/0.1.0/hooks/hooks.json",
+            "plugins/cache/style-m3d3/style-runtime/0.1.0/scripts/mark.sh",
+            "plugins/installed_plugins.json",
+            "plugins/known_marketplaces.json",
+            "settings.json"
+          ],
+          "removed": [],
+          "changed": []
+        },
+        "user_settings_after_all": "{\n  \"enabledPlugins\": {},\n  \"extraKnownMarketplaces\": {}\n}\n",
+        "steps": [
+          {
+            "step": "validate",
+            "args": [
+              "validate",
+              "<case>/market/plugins/style-runtime"
+            ],
+            "exit_code": 0,
+            "config_diff": {
+              "added": [],
+              "removed": [],
+              "changed": []
+            },
+            "project_claude_diff": {
+              "added": [],
+              "removed": [],
+              "changed": []
+            }
+          },
+          {
+            "step": "marketplace-add",
+            "args": [
+              "marketplace",
+              "add",
+              "<case>/market"
+            ],
+            "exit_code": 0,
+            "config_diff": {
+              "added": [
+                "plugins/known_marketplaces.json",
+                "settings.json"
+              ],
+              "removed": [],
+              "changed": []
+            },
+            "project_claude_diff": {
+              "added": [],
+              "removed": [],
+              "changed": []
+            }
+          },
+          {
+            "step": "install-user",
+            "args": [
+              "install",
+              "style-runtime@style-m3d3"
+            ],
+            "exit_code": 0,
+            "config_diff": {
+              "added": [
+                "plugins/cache/style-m3d3/style-runtime/0.1.0/.claude-plugin/plugin.json",
+                "plugins/cache/style-m3d3/style-runtime/0.1.0/hooks/hooks.json",
+                "plugins/cache/style-m3d3/style-runtime/0.1.0/scripts/mark.sh",
+                "plugins/installed_plugins.json"
+              ],
+              "removed": [],
+              "changed": [
+                "settings.json"
+              ]
+            },
+            "project_claude_diff": {
+              "added": [],
+              "removed": [],
+              "changed": []
+            }
+          },
+          {
+            "step": "uninstall-user",
+            "args": [
+              "uninstall",
+              "style-runtime@style-m3d3"
+            ],
+            "exit_code": 0,
+            "config_diff": {
+              "added": [
+                "plugins/cache/style-m3d3/style-runtime/0.1.0/.orphaned_at"
+              ],
+              "removed": [],
+              "changed": [
+                "plugins/installed_plugins.json",
+                "settings.json"
+              ]
+            },
+            "project_claude_diff": {
+              "added": [],
+              "removed": [],
+              "changed": []
+            }
+          },
+          {
+            "step": "install-project-scope",
+            "args": [
+              "install",
+              "style-runtime@style-m3d3",
+              "--scope",
+              "project"
+            ],
+            "exit_code": 0,
+            "config_diff": {
+              "added": [],
+              "removed": [
+                "plugins/cache/style-m3d3/style-runtime/0.1.0/.orphaned_at"
+              ],
+              "changed": [
+                "plugins/cache/style-m3d3/style-runtime/0.1.0/hooks/hooks.json",
+                "plugins/installed_plugins.json"
+              ]
+            },
+            "project_claude_diff": {
+              "added": [
+                "settings.json"
+              ],
+              "removed": [],
+              "changed": []
+            }
+          },
+          {
+            "step": "uninstall-project-scope",
+            "args": [
+              "uninstall",
+              "style-runtime@style-m3d3",
+              "--scope",
+              "project"
+            ],
+            "exit_code": 0,
+            "config_diff": {
+              "added": [
+                "plugins/cache/style-m3d3/style-runtime/0.1.0/.orphaned_at"
+              ],
+              "removed": [],
+              "changed": [
+                "plugins/installed_plugins.json"
+              ]
+            },
+            "project_claude_diff": {
+              "added": [],
+              "removed": [],
+              "changed": [
+                "settings.json"
+              ]
+            }
+          },
+          {
+            "step": "marketplace-remove",
+            "args": [
+              "marketplace",
+              "remove",
+              "style-m3d3"
+            ],
+            "exit_code": 0,
+            "config_diff": {
+              "added": [],
+              "removed": [],
+              "changed": [
+                "plugins/known_marketplaces.json",
+                "settings.json"
+              ]
+            },
+            "project_claude_diff": {
+              "added": [],
+              "removed": [],
+              "changed": []
+            }
+          }
+        ]
+      }
+    }
+  }
 }
