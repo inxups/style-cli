@@ -1948,3 +1948,11 @@ T50/A15 已完成后，固定官方 hooks.md 与 Claude 2.1.301 六组隔离原�
 ## 2026-10-18 M3-A17 probe 租约身份修复
 
 Ubuntu CI run 39049754503 的 lease-replaced 回归证明删除后立即重建可能复用 inode。控制器在租约存活期间、观察器在读取与写回期间固定原文件句柄，并比较身份/大小/权限/修改时间；清理失败保留外部替换，退出关闭句柄。[修复报告](review/M3-A17-LEASE-PIN-2026-10-18.json)记录专项、连续十轮 race 和全量命令；全量仅在另一项新增 Windows 测试的 core 导入边界失败，未标通过，继续修复。A17/T70 保持未关闭；文档和归档检查见[报告](review/M3-A17-LEASE-PIN-DOCS-2026-10-18.json)。
+
+## 2026-10-18 M3-A17 rooted 权限与平台测试修正
+
+第二轮 CI run 39049754503 的三平台均失败：POSIX 为已记录的 core 测试边界与 inode 复用问题；Windows 执行到双用户路线真实配置命令并得到 deny，但 Doctor 调用 POSIX shell 失败。原生根模块存在 407 条含分组失败且 app panic 截止，其余结果未推定通过。
+
+本次按打开句柄解析 DACL 重开路径，修复嵌套 Root 的相对 Name，源缓存使用系统权限模型；Doctor Windows user 路线不执行 POSIX login shell 检查。移动 privatefs 集成测试以保留 core 边界，并修正 .exe/cmd、状态路径、外部权限属性和 JSON 引用。Git fixture 直接生成 raw tree，保证非法名称未被 Windows index 悄悄省略；D11 明确不支持的 POSIX 路线/native 测试记录具体 skip，通用用户路线继续执行。
+
+[阶段报告](review/M3-A17-HANDLES-2026-10-18.json)保留 sandbox TLS 监听失败、一次测试 import 编译失误及修正；macOS fresh root 3,881/agenthooks 531 pass，0 fail，既有 skip 单列；双 vet 与双模块 Windows 编译/vet 通过。Windows 清理/额外故障测试和最终原生结果继续处理，不关闭 T70/A17。[文档检查](review/M3-A17-HANDLES-DOCS-2026-10-18.json)核对历史归档、追加日志、链接与 diff。

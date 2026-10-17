@@ -91,7 +91,7 @@ func TestRunDecodesClaudeHookAndEmitsOnlyWhitelistedBlock(t *testing.T) {
 	if strings.Contains(stdout.String(), "rm -rf build") || strings.Contains(logs.String(), "rm -rf build") {
 		t.Fatal("tool input leaked into response or logs")
 	}
-	stats, err := os.ReadFile(filepath.Join(root, "sess-claude-1", "main", "stats.jsonl"))
+	stats, err := os.ReadFile(filepath.Join(root, fixtureStateComponent("sess-claude-1"), fixtureStateComponent("main"), "stats.jsonl"))
 	if err != nil {
 		t.Fatalf("read stats: %v", err)
 	}

@@ -6,6 +6,7 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
+	"runtime"
 	"testing"
 
 	"github.com/inxups/style-cli/core/spec"
@@ -28,6 +29,9 @@ func checkRouteLifecycle(t *testing.T, withNative bool) {
 	for _, name := range []string{"codex-plugin", "codex-user", "claude-user"} {
 		for _, ending := range []string{"", "\n", "\n\n"} {
 			t.Run(name+"/ending="+string(rune('0'+len(ending))), func(t *testing.T) {
+				if runtime.GOOS == "windows" && (withNative || name == "codex-plugin") {
+					t.Skip("D11: POSIX plugin or author native fixture")
+				}
 				root := t.TempDir()
 				config := filepath.Join(root, "config")
 				if err := os.Mkdir(config, 0o700); err != nil {

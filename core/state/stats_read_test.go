@@ -10,6 +10,7 @@ import (
 	"math"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strconv"
 	"strings"
 	"testing"
@@ -198,7 +199,7 @@ func TestScanStatsMissingDisappearingPermissionAndCancellation(t *testing.T) {
 	if !errors.Is(err, context.Canceled) || seen != 1 {
 		t.Fatalf("cancel during read: seen=%d err=%v", seen, err)
 	}
-	if os.Geteuid() != 0 {
+	if os.Geteuid() != 0 && runtime.GOOS != "windows" {
 		path := paths[0]
 		if err := os.Chmod(path, 0); err != nil {
 			t.Fatal(err)

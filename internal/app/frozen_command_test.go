@@ -7,6 +7,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"testing"
 
@@ -102,6 +103,9 @@ func TestM3A5CommandGoldenAndSingleJSON(t *testing.T) {
 }
 
 func TestM3A5NativeReplaceAndBlockedCLI(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		t.Skip("POSIX author native/login shell fixture; Windows rejects those capabilities")
+	}
 	for _, gate := range []string{"replace", "input-ceiling", "fallback-error"} {
 		t.Run(gate, func(t *testing.T) {
 			manifest := a4Manifest("first", "Locked instructions.")

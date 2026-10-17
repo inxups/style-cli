@@ -52,3 +52,13 @@ func CheckPath(path string) error {
 	}
 	return Check(file)
 }
+
+// PrepareRoot secures a newly created object using its rooted handle.
+func PrepareRoot(root *os.Root, name string) error {
+	file, err := root.Open(name)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+	return Prepare(file)
+}

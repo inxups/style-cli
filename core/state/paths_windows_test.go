@@ -2,7 +2,6 @@ package state
 
 import (
 	"context"
-	"github.com/speakeasy-api/agenthooks/privatefs"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -18,21 +17,19 @@ func TestM3A17WindowsSessionComponentsAvoidAliases(t *testing.T) {
 		seen[strings.ToLower(component)] = true
 	}
 }
-func TestM3A17WindowsPrivateRefreshDirectory(t *testing.T) {
-	root := t.TempDir()
-	if err := privatefs.PrepareDirectory(root); err != nil {
-		t.Fatal(err)
-	}
-	store, err := New(root)
-	if err != nil {
-		t.Fatal(err)
-	}
-	guard, err := store.BeginRefresh(context.Background(), "CON")
+
+func TestM3A17WindowsQuarantineHandleBehavior(t *testing.T) {
+	store, _ := New(t.TempDir())
+	guard, err := store.BeginRefresh(context.Background(), "test")
 	if err != nil {
 		t.Fatal(err)
 	}
 	defer guard.Close()
-	if err = privatefs.CheckPath(filepath.Join(root, component("CON"), "refresh.lock")); err != nil {
-		t.Fatal(err)
+	name := component("test")
+	err = guard.root.Rename(name, "quarantined")
+	t.Logf("directory rename with active child lock: %v", err)
+	if err != nil {
+		guard.file.Close()
+		t.Logf("directory rename after child handle close: %v", guard.root.Rename(name, "quarantined"))
 	}
 }

@@ -201,7 +201,7 @@ func TestA7LegacyMigrationEveryRebuildEntrypoint(t *testing.T) {
 					if string(readSyncFile(t, filepath.Join(config, "CLAUDE.md"))) != original {
 						t.Fatal("migration changed external legacy bytes")
 					}
-					if info, err := os.Stat(filepath.Join(config, "CLAUDE.md")); err != nil || info.Mode().Perm() != 0o640 {
+					if info, err := os.Stat(filepath.Join(config, "CLAUDE.md")); err != nil || info.Mode().Perm() != fixtureMode(0o640, false) {
 						t.Fatal("migration changed external legacy mode")
 					}
 				}

@@ -113,7 +113,7 @@ func TestM3A1SnapshotLifecycleMatchesOrdinaryRuntime(t *testing.T) {
 					t.Fatalf("replay %+v %v", result, err)
 				}
 				if !reflect.DeepEqual(before, snapshotStatsTree(t, request.StateDir)) {
-					t.Fatal("replay changed the source snapshot")
+					t.Fatalf("replay changed the source snapshot: before=%+v after=%+v", before, snapshotStatsTree(t, request.StateDir))
 				}
 				ordinaryRoot := filepath.Join(t.TempDir(), "ordinary")
 				if _, err := state.CopySnapshot(context.Background(), request.StateDir, ordinaryRoot, "s", agentID); err != nil {

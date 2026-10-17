@@ -17,6 +17,7 @@ import (
 )
 
 func a6Setup(t *testing.T) (*Service, string, string, string) {
+	requirePOSIXFixture(t, "project/plugin delivery requires POSIX")
 	t.Helper()
 	root := t.TempDir()
 	base := filepath.Join(root, "private")

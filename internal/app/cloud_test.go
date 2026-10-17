@@ -15,6 +15,7 @@ import (
 )
 
 func a7Setup(t *testing.T) (*Service, string, string, string) {
+	requirePOSIXFixture(t, "project/plugin delivery requires POSIX")
 	t.Helper()
 	s, base, root, source := a6Setup(t)
 	writeSyncFile(t, filepath.Join(source, "STYLE.yaml"), strings.Replace(nativePackageYAML("project-rules"), "rules:", "rules:\n  - {id: static, target: system, text: 'Portable project static.'}", 1))

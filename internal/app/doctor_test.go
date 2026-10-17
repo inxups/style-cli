@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"testing"
 	"time"
@@ -115,6 +116,9 @@ func TestDoctorChecksIndexLockSettingsAndRouteIntegrity(t *testing.T) {
 }
 
 func TestDoctorReportsEffortPoliciesAndNoisyLoginShell(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		t.Skip("POSIX author native/login shell fixture; Windows rejects those capabilities")
+	}
 	service, home := inspectionFixture(t)
 	lock, err := loadLock(home)
 	if err != nil {

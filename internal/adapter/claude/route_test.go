@@ -2,6 +2,7 @@ package claude
 
 import (
 	"context"
+	"encoding/json"
 	"os"
 	"path/filepath"
 	"strings"
@@ -157,7 +158,8 @@ func TestClaudeRouteWritesAbsoluteHookCommandForRelativeProgram(t *testing.T) {
 	if settings == nil {
 		t.Fatalf("settings.json not planned: %#v", changes.Files)
 	}
-	want := `"` + filepath.Join(cwd, "style") + `"`
+	quoted, _ := json.Marshal(filepath.Join(cwd, "style"))
+	want := string(quoted)
 	if !strings.Contains(string(settings.After), want) || strings.Contains(string(settings.After), `"./style`) {
 		t.Fatalf("settings.json command must use %q, got:\n%s", want, settings.After)
 	}

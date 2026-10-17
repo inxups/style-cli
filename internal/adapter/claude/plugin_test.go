@@ -7,12 +7,16 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"runtime"
 	"testing"
 
 	"github.com/inxups/style-cli/internal/adapter"
 )
 
 func TestM3A8PluginProbeIdentityAndRegistration(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		t.Skip("D11: POSIX plugin route unavailable on Windows")
+	}
 	root := t.TempDir()
 	config := filepath.Join(root, "claude")
 	home := filepath.Join(root, "style")

@@ -5,10 +5,12 @@ package testgit
 import (
 	"bytes"
 	"context"
+	"encoding/hex"
 	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"sort"
 	"strings"
 	"sync"
 	"testing"
@@ -45,7 +47,7 @@ func New(t testing.TB, format string, entries []Entry) *Fixture {
 			t.Fatal(err)
 		}
 	}
-	f.env = []string{"PATH=" + filepath.Dir(git) + ":/usr/bin:/bin", "HOME=" + filepath.Join(f.Root, "home"), "GIT_CONFIG_NOSYSTEM=1", "GIT_CONFIG_GLOBAL=" + os.DevNull, "LC_ALL=C", "GIT_AUTHOR_NAME=Fixture", "GIT_AUTHOR_EMAIL=fixture@example.invalid", "GIT_COMMITTER_NAME=Fixture", "GIT_COMMITTER_EMAIL=fixture@example.invalid", "GIT_AUTHOR_DATE=2026-10-17T00:00:00Z", "GIT_COMMITTER_DATE=2026-10-17T00:00:00Z"}
+	f.env = []string{"PATH=" + filepath.Dir(git) + string(os.PathListSeparator) + os.Getenv("PATH"), "HOME=" + filepath.Join(f.Root, "home"), "GIT_CONFIG_NOSYSTEM=1", "GIT_CONFIG_GLOBAL=" + os.DevNull, "LC_ALL=C", "GIT_AUTHOR_NAME=Fixture", "GIT_AUTHOR_EMAIL=fixture@example.invalid", "GIT_COMMITTER_NAME=Fixture", "GIT_COMMITTER_EMAIL=fixture@example.invalid", "GIT_AUTHOR_DATE=2026-10-17T00:00:00Z", "GIT_COMMITTER_DATE=2026-10-17T00:00:00Z"}
 	cmd := exec.Command(git, "init", "--bare", "--object-format="+format, "--initial-branch=main", "--template="+filepath.Join(f.Root, "template"), f.Repo)
 	cmd.Env = f.env
 	if out, err := cmd.CombinedOutput(); err != nil {
@@ -69,8 +71,14 @@ func (f *Fixture) Run(input []byte, args ...string) string {
 }
 func (f *Fixture) MakeCommit(entries []Entry) string {
 	f.T.Helper()
-	f.Run(nil, "read-tree", "--empty")
-	var index bytes.Buffer
+	// Build raw tree objects rather than a platform index: Git for Windows may
+	// silently omit filenames its working tree cannot represent. Export tests
+	// must still receive those forbidden raw Git entries and reject them.
+	type node struct {
+		mode, oid string
+		children  map[string]*node
+	}
+	root := &node{children: map[string]*node{}}
 	blobs := map[string]string{}
 	for _, e := range entries {
 		mode := e.Mode
@@ -85,10 +93,49 @@ func (f *Fixture) MakeCommit(entries []Entry) string {
 				blobs[string(e.Data)] = oid
 			}
 		}
-		fmt.Fprintf(&index, "%s %s\t%s\x00", mode, oid, e.Path)
+		parent := root
+		parts := strings.Split(e.Path, "/")
+		for _, part := range parts[:len(parts)-1] {
+			if parent.children[part] == nil {
+				parent.children[part] = &node{children: map[string]*node{}}
+			}
+			parent = parent.children[part]
+		}
+		parent.children[parts[len(parts)-1]] = &node{mode: mode, oid: oid}
 	}
-	f.Run(index.Bytes(), "update-index", "-z", "--index-info")
-	tree := f.Run(nil, "write-tree")
+	var treeObject func(*node) string
+	treeObject = func(parent *node) string {
+		names := make([]string, 0, len(parent.children))
+		for name := range parent.children {
+			names = append(names, name)
+		}
+		sort.Slice(names, func(i, j int) bool {
+			left, right := names[i], names[j]
+			if parent.children[left].children != nil {
+				left += "/"
+			}
+			if parent.children[right].children != nil {
+				right += "/"
+			}
+			return left < right
+		})
+		var raw bytes.Buffer
+		for _, name := range names {
+			child := parent.children[name]
+			mode, oid := child.mode, child.oid
+			if child.children != nil {
+				mode, oid = "40000", treeObject(child)
+			}
+			binary, err := hex.DecodeString(oid)
+			if err != nil {
+				f.T.Fatal(err)
+			}
+			fmt.Fprintf(&raw, "%s %s\x00", mode, name)
+			raw.Write(binary)
+		}
+		return f.Run(raw.Bytes(), "hash-object", "-t", "tree", "--literally", "-w", "--stdin")
+	}
+	tree := treeObject(root)
 	f.count++
 	args := []string{"commit-tree", tree}
 	if f.Commit != "" {

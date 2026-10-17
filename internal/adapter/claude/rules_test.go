@@ -40,7 +40,7 @@ func TestRulesMigrationRestoresLegacyBytesAndModes(t *testing.T) {
 			} else {
 				data, err := os.ReadFile(path)
 				info, statErr := os.Stat(path)
-				if err != nil || statErr != nil || string(data) != original || info.Mode().Perm() != 0o640 {
+				if err != nil || statErr != nil || string(data) != original || info.Mode().Perm() != fixtureMode(0o640) {
 					t.Fatalf("legacy bytes/mode: %q %v %v", data, err, statErr)
 				}
 			}
@@ -48,7 +48,7 @@ func TestRulesMigrationRestoresLegacyBytesAndModes(t *testing.T) {
 				path := filepath.Join(dir, "rules", "style-"+owner+".md")
 				data, err := os.ReadFile(path)
 				info, statErr := os.Stat(path)
-				if err != nil || statErr != nil || info.Mode().Perm() != 0o644 || !bytes.HasPrefix(data, []byte("<!-- style-rules:v1 "+owner+" -->\n")) || bytes.Contains(data, []byte("paths:")) {
+				if err != nil || statErr != nil || info.Mode().Perm() != fixtureMode(0o644) || !bytes.HasPrefix(data, []byte("<!-- style-rules:v1 "+owner+" -->\n")) || bytes.Contains(data, []byte("paths:")) {
 					t.Fatalf("rules format/mode: %q %v %v", data, err, statErr)
 				}
 			}
@@ -218,7 +218,7 @@ func TestRulesMigrationStalePlanAndInterruptedApplyKeepLegacy(t *testing.T) {
 			if err != nil || !bytes.Equal(got, before) {
 				t.Fatal("failed migration damaged legacy file")
 			}
-			if info, err := os.Stat(path); err != nil || info.Mode().Perm() != 0o640 {
+			if info, err := os.Stat(path); err != nil || info.Mode().Perm() != fixtureMode(0o640) {
 				t.Fatal("rollback damaged legacy mode")
 			}
 			if _, err := os.Stat(filepath.Join(dir, "rules", "style-first.md")); !os.IsNotExist(err) {

@@ -103,6 +103,7 @@ func a13Route(t *testing.T, route string) (*Service, string, string, string, str
 func TestM3A13SixRouteMappingLifecycleFrozenAndRemoval(t *testing.T) {
 	for _, route := range []string{"codex-user", "codex-plugin", "claude-user", "claude-plugin", "codex-project", "claude-project"} {
 		t.Run(route, func(t *testing.T) {
+			requireFixtureRoute(t, route)
 			s, home, source, config, harness := a13Route(t, route)
 			configPath := filepath.Join(home, "effort.yaml")
 			writeSyncFile(t, filepath.Join(source, "STYLE.yaml"), a13Manifest)

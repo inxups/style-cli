@@ -162,7 +162,7 @@ func Begin(home string, bindings []Binding, timeout time.Duration, options Optio
 func privateDirectory(root *os.Root, name string, create bool) error {
 	if create {
 		if err := root.Mkdir(name, 0o700); err == nil {
-			if err = privatefs.PrepareDirectory(filepath.Join(root.Name(), name)); err != nil {
+			if err = privatefs.PrepareRoot(root, name); err != nil {
 				return err
 			}
 		} else if !errors.Is(err, os.ErrExist) {

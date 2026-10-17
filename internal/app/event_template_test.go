@@ -17,6 +17,7 @@ func a10Manifest() string {
 func TestM3A10SixRouteLifecycleAndFrozen(t *testing.T) {
 	for _, route := range []string{"codex-user", "codex-plugin", "claude-user", "claude-plugin", "codex-project", "claude-project"} {
 		t.Run(route, func(t *testing.T) {
+			requireFixtureRoute(t, route)
 			harness := "codex"
 			if strings.HasPrefix(route, "claude-") {
 				harness = "claude-code"

@@ -99,7 +99,7 @@ func TestRefreshNativeReplayLateUnknownAndFallback(t *testing.T) {
 			}
 		})
 	}
-	data, err := os.ReadFile(filepath.Join(s.root, "s", "main", "refresh", "codex.json"))
+	data, err := os.ReadFile(filepath.Join(s.root, component("s"), component("main"), "refresh", "codex.json"))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -234,7 +234,7 @@ func TestRefreshLockDeadlineIdentityAndSnapshot(t *testing.T) {
 	}
 	s := refreshStore(t)
 	refreshEvent(t, s, "s", "main", "codex", EventUpdate{PromptSubmitted: true}, "private-turn", func(f *RefreshFrame) { refreshClaim(t, f, 3, "A", true) })
-	lockPath := filepath.Join(s.root, "s", "refresh.lock")
+	lockPath := filepath.Join(s.root, component("s"), "refresh.lock")
 	before, _ := os.Stat(lockPath)
 	g, err := s.BeginRefresh(context.Background(), "s")
 	if err != nil {
@@ -265,7 +265,7 @@ func TestRefreshLockDeadlineIdentityAndSnapshot(t *testing.T) {
 	if !os.SameFile(before, after) || !before.ModTime().Equal(after.ModTime()) {
 		t.Fatal("snapshot changed lock")
 	}
-	if _, err := os.Stat(filepath.Join(dest, "s", "refresh.lock")); !os.IsNotExist(err) {
+	if _, err := os.Stat(filepath.Join(dest, component("s"), "refresh.lock")); !os.IsNotExist(err) {
 		t.Fatal("snapshot copied source lock")
 	}
 	copyStore, _ := New(dest)
@@ -286,7 +286,7 @@ func TestRefreshRejectsCorruptionSymlinksAndOverflow(t *testing.T) {
 		t.Run(bad, func(t *testing.T) {
 			s := refreshStore(t)
 			refreshEvent(t, s, "s", "main", "codex", EventUpdate{}, "", nil)
-			path := filepath.Join(s.root, "s", "main", "refresh", "codex.json")
+			path := filepath.Join(s.root, component("s"), component("main"), "refresh", "codex.json")
 			os.WriteFile(path, []byte(bad), 0600)
 			g, err := s.BeginRefresh(context.Background(), "s")
 			if err != nil {
@@ -332,7 +332,7 @@ func TestRefreshRejectsCorruptionSymlinksAndOverflow(t *testing.T) {
 		t.Run(part, func(t *testing.T) {
 			s := refreshStore(t)
 			refreshEvent(t, s, "s", "main", "codex", EventUpdate{}, "", nil)
-			path := map[string]string{"root": s.root, "session": filepath.Join(s.root, "s"), "scope": filepath.Join(s.root, "s", "main"), "refresh": filepath.Join(s.root, "s", "main", "refresh"), "state": filepath.Join(s.root, "s", "main", "refresh", "codex.json"), "lock": filepath.Join(s.root, "s", "refresh.lock"), "seen": filepath.Join(s.root, "s", "main", "seen")}[part]
+			path := map[string]string{"root": s.root, "session": filepath.Join(s.root, component("s")), "scope": filepath.Join(s.root, component("s"), component("main")), "refresh": filepath.Join(s.root, component("s"), component("main"), "refresh"), "state": filepath.Join(s.root, component("s"), component("main"), "refresh", "codex.json"), "lock": filepath.Join(s.root, component("s"), "refresh.lock"), "seen": filepath.Join(s.root, component("s"), component("main"), "seen")}[part]
 			os.RemoveAll(path)
 			target := t.TempDir()
 			if part == "state" || part == "lock" {
@@ -480,7 +480,7 @@ func TestRefreshSynchronizedProcessesAndCrash(t *testing.T) {
 		t.Fatal(err)
 	}
 	waitRefreshFiles(t, root, "locked", 1)
-	before, _ := os.Stat(filepath.Join(root, "s", "refresh.lock"))
+	before, _ := os.Stat(filepath.Join(root, component("s"), "refresh.lock"))
 	cmd.Process.Kill()
 	cmd.Wait()
 	s, _ := New(root)
@@ -489,7 +489,7 @@ func TestRefreshSynchronizedProcessesAndCrash(t *testing.T) {
 		t.Fatal(err)
 	}
 	g.Close()
-	after, _ := os.Stat(filepath.Join(root, "s", "refresh.lock"))
+	after, _ := os.Stat(filepath.Join(root, component("s"), "refresh.lock"))
 	if !os.SameFile(before, after) {
 		t.Fatal("crash replaced lock inode")
 	}

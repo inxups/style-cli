@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"runtime"
 	"strings"
 	"testing"
 
@@ -128,6 +129,9 @@ func TestCodexFactsDetectUnavailableStaticSlotAndUnobservableTools(t *testing.T)
 }
 
 func TestCodexPluginStatusDoesNotClaimTrustBeforeConfirmation(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		t.Skip("D11: POSIX plugin route unavailable on Windows")
+	}
 	root := t.TempDir()
 	codexHome := filepath.Join(root, "codex-home")
 	route := NewPluginRouteForCommand(filepath.Join(root, "plugin"), codexHome, "/tmp/style", nil)

@@ -149,7 +149,7 @@ func TestM3A15PlanDynamicRejectedBeforeNetwork(t *testing.T) {
 		t.Fatal(err)
 	}
 	if !reflect.DeepEqual(before, snapshotStatsTree(t, root)) {
-		t.Fatal("failed plan changed files")
+		t.Fatalf("failed plan changed files: before=%+v after=%+v", before, snapshotStatsTree(t, root))
 	}
 }
 

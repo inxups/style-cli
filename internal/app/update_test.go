@@ -9,6 +9,7 @@ import (
 	"os"
 	"path/filepath"
 	"reflect"
+	"runtime"
 	"slices"
 	"strings"
 	"testing"
@@ -595,6 +596,9 @@ func TestM3A4UnselectedEffectsRequireAll(t *testing.T) {
 }
 
 func TestM3A4NativeChangesAndFirstLinkTrust(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		t.Skip("POSIX author native/login shell fixture; Windows rejects those capabilities")
+	}
 	for _, route := range a4Routes {
 		for _, change := range []string{"add", "modify", "remove", "reorder", "first-link-trust"} {
 			t.Run(route+"/"+change, func(t *testing.T) {

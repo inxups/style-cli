@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"testing"
 
@@ -21,7 +22,7 @@ import (
 
 func buildBinary(t testing.TB) string {
 	t.Helper()
-	binary := filepath.Join(t.TempDir(), "style with spaces")
+	binary := filepath.Join(t.TempDir(), "style with spaces"+fixtureExeSuffix())
 	command := exec.Command("go", "build", "-o", binary, "../../../cmd/style")
 	if output, err := command.CombinedOutput(); err != nil {
 		t.Fatalf("build CLI: %v\n%s", err, output)
@@ -152,6 +153,9 @@ func TestGeneratedRoutesInvokeBuiltCLIWithPersistedHome(t *testing.T) {
 	binary := buildBinary(t)
 	for _, name := range []string{"codex-plugin", "codex-user", "claude-user"} {
 		t.Run(name, func(t *testing.T) {
+			if runtime.GOOS == "windows" && name == "codex-plugin" {
+				t.Skip("D11: POSIX plugin launcher")
+			}
 			root := t.TempDir()
 			home, config := filepath.Join(root, "style home"), filepath.Join(root, "config home")
 			installation := adapter.Installation{Provider: agenthooks.ProviderCodex, Version: "0.159.3", ConfigDir: config}
@@ -199,7 +203,11 @@ func TestGeneratedRoutesInvokeBuiltCLIWithPersistedHome(t *testing.T) {
 			hook := commands[0].Hooks[0]
 			var command *exec.Cmd
 			if installation.Provider == agenthooks.ProviderCodex {
-				command = exec.Command("/bin/sh", "-c", hook.Command)
+				if runtime.GOOS == "windows" {
+					command = exec.Command("cmd.exe", "/d", "/s", "/c", hook.Command)
+				} else {
+					command = exec.Command("/bin/sh", "-c", hook.Command)
+				}
 			} else {
 				command = exec.Command(hook.Command, hook.Args...)
 			}
@@ -215,4 +223,11 @@ func TestGeneratedRoutesInvokeBuiltCLIWithPersistedHome(t *testing.T) {
 			}
 		})
 	}
+}
+
+func fixtureExeSuffix() string {
+	if runtime.GOOS == "windows" {
+		return ".exe"
+	}
+	return ""
 }

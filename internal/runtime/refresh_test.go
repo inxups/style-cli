@@ -73,7 +73,7 @@ func TestRefreshRuntimeClockOnlyAndNativeWire(t *testing.T) {
 					}
 				}
 			}
-			data, err := os.ReadFile(filepath.Join(root, "s", "main", "refresh", string(provider)+".json"))
+			data, err := os.ReadFile(filepath.Join(root, fixtureStateComponent("s"), fixtureStateComponent("main"), "refresh", string(provider)+".json"))
 			if err != nil {
 				t.Fatal(err)
 			}

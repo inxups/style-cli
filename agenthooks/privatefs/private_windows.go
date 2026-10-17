@@ -4,8 +4,6 @@ import (
 	"errors"
 	"golang.org/x/sys/windows"
 	"os"
-	"path/filepath"
-	"strings"
 	"unsafe"
 )
 
@@ -79,21 +77,24 @@ func Restrict(file *os.File) error {
 	if err != nil {
 		return err
 	}
-	absolute, err := filepath.Abs(file.Name())
-	if err != nil {
-		return err
-	}
-	if !strings.HasPrefix(absolute, `\\?\`) {
-		if strings.HasPrefix(absolute, `\\`) {
-			absolute = `\\?\UNC\` + strings.TrimPrefix(absolute, `\\`)
-		} else {
-			absolute = `\\?\` + absolute
+	// Root.OpenFile names may be relative. Resolve the already opened handle,
+	// then bind the WRITE_DAC reopen to its file identity.
+	buffer := make([]uint16, 512)
+	for {
+		n, e := windows.GetFinalPathNameByHandle(windows.Handle(file.Fd()), &buffer[0], uint32(len(buffer)), 0)
+		if e != nil {
+			return e
 		}
+		if n < uint32(len(buffer)) {
+			buffer = buffer[:n+1]
+			break
+		}
+		if n > 32767 {
+			return errors.New("private object path too long")
+		}
+		buffer = make([]uint16, n+1)
 	}
-	path, err := windows.UTF16PtrFromString(absolute)
-	if err != nil {
-		return err
-	}
+	path := &buffer[0]
 	handle, err := windows.CreateFile(path, windows.READ_CONTROL|windows.WRITE_DAC|windows.FILE_READ_ATTRIBUTES, windows.FILE_SHARE_READ|windows.FILE_SHARE_WRITE|windows.FILE_SHARE_DELETE, nil, windows.OPEN_EXISTING, windows.FILE_FLAG_BACKUP_SEMANTICS|windows.FILE_FLAG_OPEN_REPARSE_POINT, 0)
 	if err != nil {
 		return err

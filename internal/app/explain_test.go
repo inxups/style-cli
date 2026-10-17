@@ -220,7 +220,7 @@ func TestM3A1SnapshotReadOnlyLifecycleAndRepeat(t *testing.T) {
 		t.Fatalf("snapshot %+v %v", result, err)
 	}
 	if !reflect.DeepEqual(before, snapshotStatsTree(t, source)) {
-		t.Fatal("source state metadata changed")
+		t.Fatalf("source state metadata changed: before=%+v after=%+v", before, snapshotStatsTree(t, source))
 	}
 	request.StateDir = ""
 	result, err = service.Explain(context.Background(), request)

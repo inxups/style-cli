@@ -1,6 +1,7 @@
 package claude
 
 import (
+	"runtime"
 	"testing"
 
 	"github.com/inxups/style-cli/core/plan"
@@ -8,6 +9,12 @@ import (
 )
 
 func TestNativeHookResolvesEffectiveTimeout(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		if _, err := DefaultFacts().NativeHook(spec.NativeRule{Event: "Stop", Command: "echo native"}); err == nil {
+			t.Fatal("Windows accepted POSIX author native command")
+		}
+		return
+	}
 	facts := DefaultFacts()
 	for _, tc := range []struct {
 		rule spec.NativeRule

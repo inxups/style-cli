@@ -5,6 +5,7 @@ import (
 	"errors"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"sync"
 	"testing"
@@ -147,24 +148,24 @@ func TestStateFilesAreAtomicPrivateAndStrict(t *testing.T) {
 	if _, _, err := store.Update("session", "main", EventUpdate{}); err != nil {
 		t.Fatal(err)
 	}
-	path := filepath.Join(root, "session", "session.json")
+	path := filepath.Join(root, component("session"), "session.json")
 	info, err := os.Stat(path)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if info.Mode().Perm() != 0o600 {
+	if info.Mode().Perm() != fixtureMode(0o600, false) {
 		t.Errorf("session mode = %o, want 600", info.Mode().Perm())
 	}
-	for _, directory := range []string{root, filepath.Join(root, "session"), filepath.Join(root, "session", "main")} {
+	for _, directory := range []string{root, filepath.Join(root, component("session")), filepath.Join(root, component("session"), component("main"))} {
 		info, err := os.Stat(directory)
 		if err != nil {
 			t.Fatal(err)
 		}
-		if info.Mode().Perm() != 0o700 {
+		if info.Mode().Perm() != fixtureMode(0o700, true) {
 			t.Errorf("state directory %s mode = %o, want 700", directory, info.Mode().Perm())
 		}
 	}
-	entries, err := os.ReadDir(filepath.Join(root, "session"))
+	entries, err := os.ReadDir(filepath.Join(root, component("session")))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -188,7 +189,7 @@ func TestUnsafeIDsAreHashedBeforePathUse(t *testing.T) {
 			t.Errorf("unsafe component %q became %q", value, path)
 		}
 	}
-	if got := component("safe-ID_123"); got != "safe-ID_123" {
+	if got := component("safe-ID_123"); got != "safe-ID_123" && runtime.GOOS != "windows" {
 		t.Fatalf("safe component = %q", got)
 	}
 }
@@ -205,18 +206,18 @@ func TestCleanupUsesLastStateModificationAndNeverRunsImplicitly(t *testing.T) {
 	if _, _, err := store.Update("new", "main", EventUpdate{}); err != nil {
 		t.Fatal(err)
 	}
-	oldPath, newPath := filepath.Join(root, "old", "session.json"), filepath.Join(root, "new", "session.json")
+	oldPath, newPath := filepath.Join(root, component("old"), "session.json"), filepath.Join(root, component("new"), "session.json")
 	oldTime := time.Now().Add(-8 * 24 * time.Hour)
 	if err := os.Chtimes(oldPath, oldTime, oldTime); err != nil {
 		t.Fatal(err)
 	}
-	if err := os.Chtimes(filepath.Join(root, "old", "main", "scope.json"), oldTime, oldTime); err != nil {
+	if err := os.Chtimes(filepath.Join(root, component("old"), component("main"), "scope.json"), oldTime, oldTime); err != nil {
 		t.Fatal(err)
 	}
-	if err := os.Chtimes(filepath.Join(root, "old", "main"), oldTime, oldTime); err != nil {
+	if err := os.Chtimes(filepath.Join(root, component("old"), component("main")), oldTime, oldTime); err != nil {
 		t.Fatal(err)
 	}
-	if err := os.Chtimes(filepath.Join(root, "old"), oldTime, oldTime); err != nil {
+	if err := os.Chtimes(filepath.Join(root, component("old")), oldTime, oldTime); err != nil {
 		t.Fatal(err)
 	}
 	if _, err := os.Stat(newPath); err != nil {
@@ -421,12 +422,12 @@ func TestAppendStatsAcceptsOnlyBoundedMetadata(t *testing.T) {
 			t.Errorf("AppendStats accepted %q", invalid)
 		}
 	}
-	path := filepath.Join(root, "session", "main", "stats.jsonl")
+	path := filepath.Join(root, component("session"), component("main"), "stats.jsonl")
 	info, err := os.Stat(path)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if info.Mode().Perm() != 0o600 {
+	if info.Mode().Perm() != fixtureMode(0o600, false) {
 		t.Fatalf("stats mode = %o, want 600", info.Mode().Perm())
 	}
 }
@@ -443,7 +444,7 @@ func TestUpdateRewritesOnlyChangedStateFiles(t *testing.T) {
 	if _, _, err := store.Update("s", "main", EventUpdate{Model: "m", EffortRaw: "high", ThinkingEffort: "high", EffortApprox: &approx}); err != nil {
 		t.Fatal(err)
 	}
-	sessionPath, scopePath := filepath.Join(root, "s", "session.json"), filepath.Join(root, "s", "main", "scope.json")
+	sessionPath, scopePath := filepath.Join(root, component("s"), "session.json"), filepath.Join(root, component("s"), component("main"), "scope.json")
 	read := func(path string) []byte {
 		t.Helper()
 		data, err := os.ReadFile(path)
@@ -490,7 +491,7 @@ func TestUpdateRewritesOnlyChangedStateFiles(t *testing.T) {
 	if _, _, err := store.Update("s", "worker", EventUpdate{}); err != nil {
 		t.Fatal(err)
 	}
-	if _, err := os.Stat(filepath.Join(root, "s", "worker", "scope.json")); err != nil {
+	if _, err := os.Stat(filepath.Join(root, component("s"), component("worker"), "scope.json")); err != nil {
 		t.Fatalf("a new agent scope must be written even when empty: %v", err)
 	}
 }

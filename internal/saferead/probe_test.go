@@ -3,6 +3,7 @@ package saferead
 import (
 	"os"
 	"path/filepath"
+	"runtime"
 	"testing"
 )
 
@@ -17,7 +18,15 @@ func TestM3A2MutableAnchorRetainsDirectoryOwnership(t *testing.T) {
 	}
 	defer root.Close()
 	if err = os.Rename(home, home+"-original"); err != nil {
-		t.Fatal(err)
+		if runtime.GOOS != "windows" {
+			t.Fatal(err)
+		}
+		// Windows pins the directory without delete sharing: replacement is
+		// prevented by the OS instead of being followed through an old inode.
+		if _, e := root.Stat("."); e != nil {
+			t.Fatal(e)
+		}
+		return
 	}
 	if err = os.Mkdir(home, 0o700); err != nil {
 		t.Fatal(err)

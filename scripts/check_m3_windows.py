@@ -3,6 +3,10 @@
 import json, os, shutil, subprocess, sys, tempfile
 from pathlib import Path
 
+if hasattr(sys.stdout, 'reconfigure'):
+    sys.stdout.reconfigure(encoding='utf-8', errors='backslashreplace')
+    sys.stderr.reconfigure(encoding='utf-8', errors='backslashreplace')
+
 ROOT = Path(__file__).resolve().parent.parent
 
 def main():
@@ -42,7 +46,8 @@ def main():
             check(output.get('hookSpecificOutput',{}).get('permissionDecision')=='deny','native hook deny '+harness)
         check(run(['sync']).returncode==0,'sync both user routes')
         for command in [['doctor','--json'],['list','--json'],['stats','--json']]:
-            check(run(command).returncode==0,' '.join(command))
+            result=run(command)
+            check(result.returncode==0,' '.join(command)+': '+result.stdout[-2000:]+result.stderr[-500:])
         for encoding in ['o200k_base','cl100k_base']:
             text=root/'输入.txt';text.write_text('Hello 世界\n',encoding='utf-8')
             result=run(['count',str(text),'--count=exact','--count-provider=openai','--encoding='+encoding,'--json'])

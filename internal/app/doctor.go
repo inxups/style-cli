@@ -10,6 +10,7 @@ import (
 	"os"
 	"path/filepath"
 	"reflect"
+	"runtime"
 	"strings"
 	"time"
 
@@ -184,7 +185,7 @@ func (s *Service) Doctor(ctx context.Context, request DoctorRequest) (DoctorResu
 				result.add("effort-unknown", "warning", report.Provider+": effort is unavailable; conditional effort rules will not match")
 			}
 		}
-		if report.Provider == "codex" {
+		if report.Provider == "codex" && runtime.GOOS != "windows" {
 			if err := checkLoginShell(ctx, request.Shell, request.WorkDir); err != nil {
 				result.add("codex-login-shell", "error", err.Error())
 			}

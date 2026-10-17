@@ -1,6 +1,7 @@
 package source_test
 
 import (
+ "runtime"
 	"context"
 	"crypto/x509"
 	"encoding/pem"
@@ -176,6 +177,7 @@ func TestM3A3HostileGitConfigurationNeverExecutes(t *testing.T) {
 }
 
 func TestM3A3ExecCancellationStopsProcessGroup(t *testing.T) {
+ if runtime.GOOS == "windows" { t.Skip("POSIX process-group fixture; Windows direct-process cancellation is tested separately") }
 	if testing.Short() {
 		t.Skip("process cancellation fixture")
 	}

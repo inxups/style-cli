@@ -40,14 +40,14 @@ func TestM3A11ProviderOptionalStateSnapshotAndClear(t *testing.T) {
 	if err != nil || cleared.ModelProvider != "" || !cleared.ProviderResolved {
 		t.Fatal(cleared, err)
 	}
-	before, err := os.ReadFile(filepath.Join(store.root, "s", "session.json"))
+	before, err := os.ReadFile(filepath.Join(store.root, component("s"), "session.json"))
 	if err != nil {
 		t.Fatal(err)
 	}
 	if _, _, err = store.Update("s", "main", EventUpdate{ProviderResolved: true, ModelProvider: "https://private.invalid", ProviderSource: "codex-launch"}); err == nil {
 		t.Fatal("accepted endpoint")
 	}
-	after, _ := os.ReadFile(filepath.Join(store.root, "s", "session.json"))
+	after, _ := os.ReadFile(filepath.Join(store.root, component("s"), "session.json"))
 	if !bytes.Equal(before, after) {
 		t.Fatal("invalid update changed state")
 	}

@@ -66,3 +66,34 @@ func TestM3A17WindowsLongUnicodePath(t *testing.T) {
 		t.Fatal(err)
 	}
 }
+
+func TestM3A17WindowsRootedPrivateObjects(t *testing.T) {
+	home := t.TempDir()
+	root, err := os.OpenRoot(home)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer root.Close()
+	if err = root.Mkdir("nested", 0700); err != nil {
+		t.Fatal(err)
+	}
+	if err = PrepareRoot(root, "nested"); err != nil {
+		t.Fatal(err)
+	}
+	nested, err := root.OpenRoot("nested")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer nested.Close()
+	file, err := nested.OpenFile("record", os.O_CREATE|os.O_EXCL|os.O_WRONLY, 0600)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer file.Close()
+	if err = Prepare(file); err != nil {
+		t.Fatal(err)
+	}
+	if err = CheckRoot(nested, "record"); err != nil {
+		t.Fatal(err)
+	}
+}

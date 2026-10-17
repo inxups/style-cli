@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"runtime"
 	"testing"
 	"time"
 )
@@ -19,7 +20,7 @@ func TestRefreshCleanupPreservesActiveLock(t *testing.T) {
 	}
 	defer g.Close()
 	old := time.Now().Add(-2 * DefaultExpiry)
-	err = filepath.WalkDir(filepath.Join(s.root, "s"), func(path string, entry os.DirEntry, err error) error {
+	err = filepath.WalkDir(filepath.Join(s.root, component("s")), func(path string, entry os.DirEntry, err error) error {
 		if err != nil {
 			return err
 		}
@@ -38,7 +39,7 @@ func TestRefreshCleanupPreservesActiveLock(t *testing.T) {
 	if n, err := s.Cleanup(DefaultExpiry); err != nil || n != 1 {
 		t.Fatal(n, err)
 	}
-	if _, err := os.Stat(filepath.Join(s.root, "s")); !os.IsNotExist(err) {
+	if _, err := os.Stat(filepath.Join(s.root, component("s"))); !os.IsNotExist(err) {
 		t.Fatal("expired session survived", err)
 	}
 }
@@ -66,14 +67,14 @@ func TestRefreshCleanupFirstEnableAndLegacyCandidates(t *testing.T) {
 	if n, err := s.Cleanup(DefaultExpiry); err != nil || n != 0 {
 		t.Fatal(n, err)
 	}
-	if _, err := os.Stat(filepath.Join(s.root, "recent", "refresh.lock")); !os.IsNotExist(err) {
+	if _, err := os.Stat(filepath.Join(s.root, component("recent"), "refresh.lock")); !os.IsNotExist(err) {
 		t.Fatal("cleanup touched a recent legacy session", err)
 	}
 	if _, _, err := s.Update("old", "main", EventUpdate{}); err != nil {
 		t.Fatal(err)
 	}
 	old := time.Now().Add(-2 * DefaultExpiry)
-	if err := filepath.WalkDir(filepath.Join(s.root, "old"), func(path string, entry os.DirEntry, err error) error {
+	if err := filepath.WalkDir(filepath.Join(s.root, component("old")), func(path string, entry os.DirEntry, err error) error {
 		if err != nil {
 			return err
 		}
@@ -87,8 +88,8 @@ func TestRefreshCleanupFirstEnableAndLegacyCandidates(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer g.Close()
-	os.Chtimes(filepath.Join(s.root, "old", "refresh.lock"), old, old)
-	os.Chtimes(filepath.Join(s.root, "old"), old, old)
+	os.Chtimes(filepath.Join(s.root, component("old"), "refresh.lock"), old, old)
+	os.Chtimes(filepath.Join(s.root, component("old")), old, old)
 	if n, err := s.Cleanup(DefaultExpiry); err != nil || n != 0 {
 		t.Fatal(n, err)
 	}
@@ -102,6 +103,9 @@ func TestRefreshCleanupFirstEnableAndLegacyCandidates(t *testing.T) {
 }
 
 func TestRefreshWriteAndRollbackFailuresPreservePriorClaims(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		t.Skip("POSIX directory chmod fault; Windows DACL faults have separate coverage")
+	}
 	if !RefreshSupported() {
 		t.Skip("refresh platform")
 	}
@@ -168,7 +172,7 @@ func TestRefreshSnapshotCombinedFileAndByteLimits(t *testing.T) {
 	t.Run("files", func(t *testing.T) {
 		s := refreshStore(t)
 		refreshEvent(t, s, "s", "main", "codex", EventUpdate{}, "", nil)
-		dir := filepath.Join(s.root, "s", "main", "seen")
+		dir := filepath.Join(s.root, component("s"), component("main"), "seen")
 		os.Mkdir(dir, 0700)
 		for i := 0; i < 9998; i++ {
 			name := fmt.Sprintf("s.0.0.%016x.%016x", i, i)
@@ -192,7 +196,7 @@ func TestRefreshSnapshotCombinedFileAndByteLimits(t *testing.T) {
 			t.Fatal(len(data), err)
 		}
 		for i := 0; i < 6; i++ {
-			if err := os.WriteFile(filepath.Join(s.root, "s", "main", "refresh", fmt.Sprintf("h%d.json", i)), data, 0600); err != nil {
+			if err := os.WriteFile(filepath.Join(s.root, component("s"), component("main"), "refresh", fmt.Sprintf("h%d.json", i)), data, 0600); err != nil {
 				t.Fatal(err)
 			}
 		}

@@ -18,6 +18,7 @@ import (
 )
 
 func nativeInstallFixture(t *testing.T, route string) (*Service, string, string, string, map[string][]byte) {
+	requireFixtureRoute(t, route)
 	t.Helper()
 	root := t.TempDir()
 	home, config := filepath.Join(root, "style"), filepath.Join(root, "config")
@@ -170,6 +171,7 @@ func assertNativeInstalled(t *testing.T, home, config, route string, packages ..
 }
 
 func TestA3NativeInstallRoundTripAndRouteSwitch(t *testing.T) {
+	requirePOSIXFixture(t, "author native install and POSIX route switch")
 	for _, route := range []string{"codex-plugin", "codex-user", "claude-user"} {
 		t.Run(route, func(t *testing.T) {
 			service, home, config, source, foreign := nativeInstallFixture(t, route)

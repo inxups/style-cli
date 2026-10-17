@@ -29,7 +29,7 @@ func TestM3A1SnapshotSelectionAndInputRefusal(t *testing.T) {
 				t.Fatal(err)
 			}
 			sessionDir := filepath.Join(source, component(sid))
-			agentDir := filepath.Join(sessionDir, "agent")
+			agentDir := filepath.Join(sessionDir, component("agent"))
 			scopePath := filepath.Join(agentDir, "scope.json")
 			seen := filepath.Join(agentDir, "seen")
 			ctx := context.Background()

@@ -3,6 +3,10 @@
 import json, os, subprocess, sys
 from pathlib import Path
 
+if hasattr(sys.stdout, 'reconfigure'):
+    sys.stdout.reconfigure(encoding='utf-8', errors='backslashreplace')
+    sys.stderr.reconfigure(encoding='utf-8', errors='backslashreplace')
+
 root=Path(__file__).resolve().parent.parent
 out=Path(os.environ['RUNNER_TEMP'])/'style-windows-evidence';out.mkdir(exist_ok=True)
 failed=False

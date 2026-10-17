@@ -15,6 +15,7 @@ import (
 )
 
 func a8Setup(t *testing.T) (*Service, string, string, string) {
+	requirePOSIXFixture(t, "project/plugin delivery requires POSIX")
 	t.Helper()
 	s, home, config, source := a4Setup(t, "claude-user", strings.Replace(nativePackageYAML("plugin-rules"), "rules:", "rules:\n  - {id: static, target: system, text: 'External static guidance.'}", 1), false)
 

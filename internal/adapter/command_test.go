@@ -16,7 +16,7 @@ func TestHookCommandMakesRelativePathsAbsolute(t *testing.T) {
 		"bin/style":      filepath.Join(cwd, "bin", "style"),
 		"../bin/style":   filepath.Join(filepath.Dir(cwd), "bin", "style"),
 		"style":          "style",
-		"/usr/bin/style": "/usr/bin/style",
+		"/usr/bin/style": absoluteFixture("/usr/bin/style"),
 	} {
 		if got := HookCommand(command); got != want {
 			t.Errorf("HookCommand(%q) = %q, want %q", command, got, want)
@@ -29,3 +29,5 @@ func TestHookCommandMakesRelativePathsAbsolute(t *testing.T) {
 		t.Fatalf("HookCommand(\"\") with os.Args[0]=./style = %q", got)
 	}
 }
+
+func absoluteFixture(path string) string { absolute, _ := filepath.Abs(path); return absolute }

@@ -336,6 +336,7 @@ func TestM3A5StrictSettingsAndApprovals(t *testing.T) {
 		t.Run(scenario, func(t *testing.T) {
 			sourceText := manifest
 			if scenario == "changed-native" || scenario == "legacy-native-omitted" {
+				requirePOSIXFixture(t, "author native commands require POSIX")
 				sourceText = nativePackageYAML("first")
 			}
 			s, home, config, _ := a4Setup(t, "codex-user", sourceText, false)

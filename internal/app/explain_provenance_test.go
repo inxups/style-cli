@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"github.com/speakeasy-api/agenthooks/privatefs"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -32,7 +33,7 @@ func a1AssertProvenance(t *testing.T, home string) compile.Provenance {
 		t.Fatal("provenance differs from the D1 top-level contract")
 	}
 	info, err := os.Stat(filepath.Join(home, "build", "explain.json"))
-	if err != nil || info.Mode().Perm() != 0600 {
+	if err != nil || privatefs.CheckPath(filepath.Join(home, "build", "explain.json")) != nil {
 		t.Fatalf("private provenance %v %v", info, err)
 	}
 	if strings.Contains(string(data), "Shared denial.") || strings.Contains(string(data), "command\"") || strings.Contains(string(data), "Shared prompt instructions.") {
@@ -86,7 +87,7 @@ func TestM3A1ProvenanceTransactionRollback(t *testing.T) {
 		if !bytes.Equal(readSyncFile(t, path), baseline[path]) {
 			t.Fatalf("transaction did not restore %s", path)
 		}
-		if info, err := os.Stat(path); err != nil || info.Mode().Perm() != 0600 {
+		if info, err := os.Stat(path); err != nil || privatefs.CheckPath(path) != nil {
 			t.Fatalf("rollback changed private mode: %v %v", info, err)
 		}
 	}
@@ -200,6 +201,7 @@ func TestM3A1ProvenanceSyncTrustAndLegacy(t *testing.T) {
 	}
 }
 func TestM3A1ProvenanceFallbackAndNativeMetadata(t *testing.T) {
+	requirePOSIXFixture(t, "author native metadata fixture")
 	service, home, _, source, _ := nativeInstallFixture(t, "claude-user")
 	if _, err := service.Install(context.Background(), InstallRequest{Home: home, Source: source, Harnesses: []string{"claude-code"}, Yes: true}); err != nil {
 		t.Fatal(err)

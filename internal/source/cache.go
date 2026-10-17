@@ -15,6 +15,8 @@ import (
 	"strings"
 
 	"github.com/inxups/style-cli/internal/saferead"
+	"github.com/speakeasy-api/agenthooks/privatefs"
+	"runtime"
 )
 
 type manifest struct {
@@ -41,6 +43,9 @@ func cacheRoot(home string, create bool) (*os.Root, error) {
 		if err := os.MkdirAll(home, 0o700); err != nil {
 			return nil, err
 		}
+		if err := privatefs.PrepareDirectory(home); err != nil {
+			return nil, err
+		}
 	}
 	root, err := saferead.AnchorMutable(home)
 	if err != nil {
@@ -54,6 +59,9 @@ func cacheRoot(home string, create bool) (*os.Root, error) {
 		if errors.Is(e, os.ErrNotExist) && create {
 			e = root.Mkdir(current, 0o700)
 			if e != nil && !errors.Is(e, os.ErrExist) {
+				return nil, e
+			}
+			if e = privatefs.PrepareRoot(root, current); e != nil {
 				return nil, e
 			}
 			info, e = root.Lstat(current)
@@ -85,7 +93,7 @@ func readEntry(root *os.Root, key string, identity Git, kind, p string) (Snapsho
 	if err != nil {
 		return Snapshot{}, err
 	}
-	if !info.IsDir() || info.Mode()&os.ModeSymlink != 0 || info.Mode().Perm() != 0o700 {
+	if !info.IsDir() || info.Mode()&os.ModeSymlink != 0 || runtime.GOOS != "windows" && info.Mode().Perm() != 0o700 || privatefs.CheckRoot(root, key) != nil {
 		return invalid()
 	}
 	entry, err := root.OpenRoot(key)
@@ -128,12 +136,11 @@ func readEntry(root *os.Root, key string, identity Git, kind, p string) (Snapsho
 		if e != nil {
 			return e
 		}
-		if d.IsDir() {
-			if info.Mode().Perm() != 0o700 {
-				return fail("source-cache-invalid", "cache directory permissions changed")
-			}
-		} else if !info.Mode().IsRegular() || info.Mode().Perm() != 0o600 {
-			return fail("source-cache-invalid", "cache file permissions changed")
+		if !d.IsDir() && !info.Mode().IsRegular() || privatefs.CheckRoot(entry, filepath.FromSlash(name)) != nil {
+			return fail("source-cache-invalid", "cache permissions changed")
+		}
+		if runtime.GOOS != "windows" && d.IsDir() && info.Mode().Perm() != 0o700 {
+			return fail("source-cache-invalid", "cache directory permissions changed")
 		}
 		return nil
 	})
@@ -180,6 +187,10 @@ func mkdirParents(root *os.Root, name string) error {
 func createPrivate(root *os.Root, name string, data []byte) error {
 	f, err := root.OpenFile(name, os.O_CREATE|os.O_EXCL|os.O_WRONLY, 0o600)
 	if err != nil {
+		return err
+	}
+	if err = privatefs.Prepare(f); err != nil {
+		f.Close()
 		return err
 	}
 	_, writeErr := f.Write(data)
