@@ -300,7 +300,7 @@ STYLE 的 hook 输出**只允许**这几样：`additionalContext`、`systemMessa
 
 ### 8.10 M3-D3 项目与云端隔离评审稿
 
-本节项目部分已获用户确认，由 T30 实现并通过 [A6](../review/M3-A6-2026-10-17.json)；云端/插件仍暂缓待评审，详见 [D3 范围契约](../review/M3-D3-ROUTES-2026-10-17.md)。项目入口只从进程 cwd/显式项目入口定位唯一受管声明，核对规范根与私有 binding；不能相信 payload.cwd 来选择另一个根，不调用 Git/网络/包编译。缺安装、歧义、换根或环境根不一致经 agenthooks 既有 codec/策略报告，不退到用户 index，不以管理退出码改变 fail-open/fail-closed。
+本节项目部分已获用户确认，由 T30 实现并通过 [A6](../review/M3-A6-2026-10-17.json)；云端/插件已于 2026-10-17 获用户批准、待实现，详见 [D3 范围契约](../review/M3-D3-ROUTES-2026-10-17.md)。项目入口只从进程 cwd/显式项目入口定位唯一受管声明，核对规范根与私有 binding；不能相信 payload.cwd 来选择另一个根，不调用 Git/网络/包编译。缺安装、歧义、换根或环境根不一致经 agenthooks 既有 codec/策略报告，不退到用户 index，不以管理退出码改变 fail-open/fail-closed。
 
 每个项目/clone 的 index/state/stats/codec cache/probe 分离，用户/项目不同名包允许同时生效，不承诺跨范围优先级/共同预算/正文去重；同一 harness 的同名包在管理入口阻断。项目 root 定位与绑定归 app；协议、事件与原生输出继续归 agenthooks，core 不识别项目/harness 配置。Claude 从子目录启动的静态向上发现与 hook settings 发现不同，不以其一推断另一种投递。
 

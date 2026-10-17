@@ -1812,3 +1812,9 @@ PY
 - 20 次失败运行及修正保留在报告：早期配置/状态/engine/runtime/app 的 fixture 或编译错误、同步创建锁的 ENOENT（沙箱内外均复现）、插件 fixture 的 PLUGIN_ROOT、误用 Install 代替 Update、frozen 专用 detector 未还原，以及采集器本机 HTTP/伪终端被沙箱拒绝。后者在允许本地 fixture 后同套 68 项通过；不删失败、不把既有回归或 skip 当新功能成功。最终清理竞争修复再经全量、state race 与 app race 复核。
 - [使用说明](STYLE-REFRESH.md)、规则/编译/运行时规范、主设计和 adapter 总览已同步。文档审计 `python3 /tmp/style-m3-a9-20261017/check-docs-final.py` 检查本地链接/锚点/围栏、44 任务/39 测试双向映射与依赖、12 组 A9 证据、仅 T40/A9 关闭、PROGRESS 仅追加、77 份 M1/M2 归档及历史 M3 JSON/既有 testdata/agenthooks/依赖文件原样、gofmt/Python 语法、所有新增/已跟踪文件空白与 `git diff --check`；结果见 [文档检查](review/M3-A9-DOCS-2026-10-17.json)，提交前另做 staged diff 检查。
 - 本次仅关闭 T40/A9。D3 云端 T31/A7 和 Claude 插件 T32/A8 仍暂缓；真实 B3/C5、Windows、远端 CI 和官方计数两家各 0/40 状态保持。下一项为 D5 事件内容围栏设计，用户评审通过后才进入 T41；未以本次确认批准其他接口。
+
+## 2026-10-17 — M3 完整实施授权 / D3 云端与插件定稿 [x]
+
+- 用户明确“开始推进，所有评审全部通过，完全完成M3”。覆盖此前 T31/T32 暂缓决定，批准 D3 §6–7 及后续设计由 agent 记录契约后直接实施；不再逐项请求设计确认。
+- D3 整体设计关闭；T31/A7、T32/A8 和后续功能、真实投递、计数、Windows、CI、最终验收仍按实际证据独立判定。官方校准两家各 0/40 非阻塞状态不变。
+- 基线 clean cc399c5fc76124dd085d96b6e6fb65feec415bdd；当前只更新设计授权与当前入口，PROGRESS 仅追加，M1/M2 归档和历史 JSON 未改。提交前检查链接、状态和 git diff --check。
