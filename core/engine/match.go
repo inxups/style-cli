@@ -72,6 +72,9 @@ func matchesSource(entry compile.Entry, point, source string) bool {
 
 func mergeWhenInput(point when.Input, input Input) when.Input {
 	merged := point
+	if merged.Provider == "" {
+		merged.Provider = input.Variables["provider"]
+	}
 	if merged.Model == "" {
 		merged.Model = input.Variables["model"]
 	}
@@ -107,6 +110,9 @@ func mergeValues(base, point map[string]string, input when.Input) map[string]str
 	}
 	for key, value := range point {
 		values[key] = value
+	}
+	if input.Provider != "" {
+		values["provider"] = input.Provider
 	}
 	if input.Model != "" {
 		values["model"] = input.Model

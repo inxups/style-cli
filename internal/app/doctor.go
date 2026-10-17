@@ -87,8 +87,11 @@ func (s *Service) Doctor(ctx context.Context, request DoctorRequest) (DoctorResu
 		if data, err := saferead.ReadFile(filepath.Join(home, "build", "index.json"), 16<<20); err == nil {
 			var index compile.Index
 			if json.Unmarshal(data, &index) == nil {
-				if index.Format >= compile.EventFormat {
+				if index.Format == compile.EventFormat {
 					result.add("event-index-3", "warning", "event templates require index format 3; upgrade every configured STYLE runner")
+				}
+				if index.Format >= compile.ProviderFormat {
+					result.add("runtime-index-4", "warning", "model-service rules require index format 4; upgrade every configured STYLE runner")
 				}
 				refresh := false
 				for _, events := range index.Harnesses {

@@ -24,6 +24,11 @@ func Compile(rule Rule) (*Matcher, error) {
 			matcher.rule.Agent = []string{"main"}
 		}
 	}
+	for _, id := range rule.Provider {
+		if !ValidProviderID(id) {
+			return nil, fmt.Errorf("when.provider: invalid service identifier")
+		}
+	}
 	for _, pattern := range rule.Model {
 		if err := ValidateModelGlob(pattern); err != nil {
 			return nil, fmt.Errorf("when.model: %w", err)
@@ -83,6 +88,9 @@ func (m *Matcher) match(input Input, checks *[]Check) bool {
 			source := "unavailable"
 			if available {
 				source = "input"
+				if field == "provider" && input.ProviderSource != "" {
+					source = input.ProviderSource
+				}
 			}
 			result := "pass"
 			if !available {
@@ -95,7 +103,7 @@ func (m *Matcher) match(input Input, checks *[]Check) bool {
 		return available && matched
 	}
 	rule := m.rule
-	if rule.Provider != nil && !check("provider", false, false) {
+	if rule.Provider != nil && !check("provider", input.Provider != "", input.Provider != "" && contains(rule.Provider, input.Provider)) {
 		return false
 	}
 	if rule.Model != nil && !check("model", input.Model != "", input.Model != "" && anyModelMatches(rule.Model, input.Model)) {

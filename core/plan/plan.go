@@ -51,9 +51,6 @@ func planRule(rule spec.Rule, adapterName string, adapter Adapter) (RulePlan, er
 	case !harnessSelectorMatches(rule, adapterName):
 		result.Status = Skipped
 		result.Reasons = []string{"when.harness.name does not include this adapter"}
-	case req.ProviderCondition:
-		result.Status = Never
-		result.Reasons = []string{"when.provider is not evaluated in M1"}
 	case req.Refresh > 0 && !state.RefreshSupported():
 		result = failedPlan(result, req, "refresh-unsupported-platform: refresh session locking is unavailable on this platform")
 	default:

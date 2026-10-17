@@ -18,6 +18,7 @@ import (
 	"github.com/inxups/style-cli/core/compile"
 	"github.com/inxups/style-cli/core/engine"
 	"github.com/inxups/style-cli/core/state"
+	"github.com/inxups/style-cli/core/when"
 	"github.com/inxups/style-cli/internal/adapter"
 	"github.com/inxups/style-cli/internal/adapter/claude"
 	"github.com/inxups/style-cli/internal/adapter/codex"
@@ -98,6 +99,7 @@ type ExplainResult struct {
 	Diagnostics       []ExplainDiagnostic  `json:"diagnostics"`
 }
 type explainFacts struct {
+	ModelProvider     *string `json:"model_provider,omitempty"`
 	Format            int     `json:"format"`
 	Harness           string  `json:"harness"`
 	PayloadSHA256     string  `json:"payload_sha256"`
@@ -194,6 +196,9 @@ func (s *Service) explain(ctx context.Context, request ExplainRequest, ops expla
 		if provider != agenthooks.ProviderCodex && facts.CodexConfigEffort != nil || provider != agenthooks.ProviderClaudeCode && (facts.ClaudeEnvEffort != nil || facts.ClaudeSkillContent != nil) {
 			return result, fail("facts-conflict", "Supplementary facts belong to another harness.")
 		}
+		if facts.ModelProvider != nil && *facts.ModelProvider != "" && !when.ValidProviderID(*facts.ModelProvider) {
+			return result, fail("facts-invalid", "Provider fact must be a bounded service identifier or empty.")
+		}
 		if facts.MCP != nil && (facts.MCP.Server == "" || facts.MCP.Tool == "") {
 			return result, fail("facts-invalid", "MCP facts require server and tool identities.")
 		}
@@ -284,6 +289,8 @@ func (s *Service) explain(ctx context.Context, request ExplainRequest, ops expla
 	if provider == agenthooks.ProviderCodex {
 		value := codex.NewEnricher()
 		value.Offline = true
+		value.ProviderOffline = true
+		value.OfflineProvider = facts.ModelProvider
 		value.OfflineConfigEffort = facts.CodexConfigEffort
 		if facts.HarnessVersion != nil {
 			value.HarnessVersion = *facts.HarnessVersion
@@ -291,6 +298,8 @@ func (s *Service) explain(ctx context.Context, request ExplainRequest, ops expla
 		enricher = value
 	} else {
 		value := claude.NewEnricher()
+		value.ProviderOffline = true
+		value.OfflineProvider = facts.ModelProvider
 		value.Environment = func() string {
 			if facts.ClaudeEnvEffort != nil {
 				return *facts.ClaudeEnvEffort
@@ -454,6 +463,9 @@ func explainFactMetadata(raw map[string]json.RawMessage, facts explainFacts, bef
 		source = "payload"
 	}
 	add("model", after.Model != "", source)
+	if after.ProviderResolved {
+		add("provider", after.ModelProvider != "", after.ProviderSource)
+	}
 	source = "session"
 	if facts.HarnessVersion != nil && *facts.HarnessVersion != "" {
 		source = "provided"

@@ -96,7 +96,7 @@ func unionReads(values ...any) map[string]any {
 		fields := asStringMap(value)
 		for key, item := range fields {
 			switch key {
-			case "model", "thinking_effort":
+			case "model", "provider", "thinking_effort":
 				if enabled, ok := item.(bool); ok && enabled {
 					merged[key] = true
 				}

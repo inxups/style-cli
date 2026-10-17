@@ -1,0 +1,1124 @@
+{
+  "format": 1,
+  "task": "M3-T42",
+  "acceptance": "M3-A11",
+  "baseline": "7016478",
+  "date": "2026-10-17",
+  "status": "passed-offline",
+  "source_sha256": {
+    "agenthooks/codexlaunch.go": "f290a4a4f7ed18723e5e870cf77903262489d769685b57a50e5502ee78914987",
+    "agenthooks/codexlaunch_provider_test.go": "0087a485a5921592242939d00cafa619044d72385d491d770d87c19ecb571df9",
+    "core/compile/build.go": "612753d599ed47f992acb657baf0a6c4521d2408e1d468b54e3ffce7e9d9d82b",
+    "core/compile/json.go": "2acddda0306658cdf5440f80be74213a1eea25dd120bb0f3a292db70a55ebe40",
+    "core/compile/provider.go": "6171727c9a94f384a21462c6a513ce4327deb8ce609de5de8138ba6e1b80ac62",
+    "core/compile/provider_test.go": "724d77eeae3721e905025acb541953d38ce49656d89adc67f6390ebbd147b917",
+    "core/compile/types.go": "329029f4391950a999ac43f0529ed8993d38eb963ec0cb88cc49adbd3f65ebf0",
+    "core/engine/load.go": "7ce47eb170f377a115a7d7cc91c77ae1f4cc24d658a7e36bf0338caeb6bc7170",
+    "core/engine/match.go": "bb0c28bfb16e6c59f99931424048deffcf7ed7219dfc742f9561754f7289a8a6",
+    "core/engine/provider.go": "59241c6357072471e8f44b375af4a3c4d291cd7440840edc83440c5655a8b18d",
+    "core/engine/provider_test.go": "f9e358cc6e5c031136a6ee1a5ff8c1fd1b78bec0db215ce1d6f7b15f4044ef20",
+    "core/plan/plan.go": "a3083a2a4b4fe977bad8f3f2a5be63fd075e528fdb2e8ac8b42e10203177cc2c",
+    "core/plan/plan_test.go": "4cea6ad908c103f0399db35921c002d781a3e412ac9b3d6c267efeefe8ac7b1f",
+    "core/plan/provider_test.go": "c05b8a0569e833387458289fcbc2f76adbe5ab5c27b56261cf340801a76fb8c9",
+    "core/plan/requirements.go": "cd4007ecb50b76005e234b759d594cc5ecdae98b6a661ea6adf43385029f760d",
+    "core/spec/provider_test.go": "961034451d76c523547098e34542e9bf3b74c1f7b2d574f081d3f7e58c547c4d",
+    "core/spec/validate_conditions.go": "81b6f45faa1f0ff8b5b54f89f5331f21c3af35361121a6fb67a22c5528f283e5",
+    "core/spec/validate_reads.go": "68b519e1292c6f705f2d8ddc8f8f3372945fbe5c8fc8e6837270f13445ce8e95",
+    "core/spec/validate_template.go": "9529a218205764075aadedc6b566b38ba8097de626f4a10e5fc179507d591fe2",
+    "core/spec/values.go": "a85c19a165dd950111ed3ed0509815ffc0cb6bddd7e52b0a8b2300048ec906b2",
+    "core/state/provider.go": "f7e81065f01aad0fba8bd9cc7ad9bb69950273f84f3d9d77c118d8a948d9505f",
+    "core/state/provider_test.go": "ab5b598d7c84e3414d1a2f35c62faf872295ec3ae24e55eead9093cf3d0cc592",
+    "core/state/snapshot.go": "bd26eb91279a534c652eb6c6bc3c934a3187ca2cb0d32d7fd56b7ed843f93cb5",
+    "core/state/state.go": "4f2246a90c1984823d2636663596081cc0883c711dffa57611b5b145e9655e4c",
+    "core/template/template.go": "06f27962d09a7228f80caee6f6995a3272c65e935fa3ca693e04aebfc4d1321e",
+    "core/when/match.go": "11ebe63849f1d63eaf95ed72fee451a04aae470ba9b6c3474a7ba395a7b96b90",
+    "core/when/provider.go": "7d9715f82d552e64dcaa55c02701e4876eb4b113e43ab2d84ddc4dfb26f467b5",
+    "core/when/provider_test.go": "b868057dabd800bcb6f93bc2d85e5b59f8416bccb5c1c3169e13c9ba0272fcfc",
+    "core/when/types.go": "9bec6939350f68a0f9c5270423cf753030b384d0ca0fcceb0690a7310976d66f",
+    "core/when/when_test.go": "bd334c93b81e505c2628a6d3767fccce85f06596afd2b805222c1bd80e3c35cd",
+    "internal/adapter/claude/adapter.go": "d14426ff7cd363bf92f0628a1f4b2fbef433d831bb36b4a2ececf618622bc694",
+    "internal/adapter/claude/provider.go": "340d2b40d93a1769252e3321295bf28c3dadecde7613127710ee948ff95e9c9b",
+    "internal/adapter/claude/provider_test.go": "71800da23b6ae57e3cb78673deb52bf35f9adf5181c5280d3b48c63b9f0c573b",
+    "internal/adapter/claude/runtime.go": "bce8ba17e9f8dce823dd5b87f60fe7f2fdad7b46a4dd14b267da4b7ca9a14792",
+    "internal/adapter/codex/adapter.go": "ad081e569b819086c6fd56f244b551fb89007b709d29ce6ca8c85c0659aeaac4",
+    "internal/adapter/codex/provider.go": "a63b5bc351974c597e48aca5d007f0f1528c3d8838d6ce37f9af85e68056f0c9",
+    "internal/adapter/codex/provider_test.go": "c23749fd72b2fdd6e4c93c6f091316baae44171c16ad000a9f340549ecf183a8",
+    "internal/adapter/codex/runtime.go": "199d7eec11f995a1ff5710c9164b96651f28b0d025896c78e1f9aedf627dbef9",
+    "internal/app/doctor.go": "f85409e2cb0a02acd9bb91b56cf587856756a22b31225bdbdec6c6c88ecae900",
+    "internal/app/explain.go": "dcf50c918455b1ab0f95c8399980930d7a29eaf5820023e242c15ddaa8107850",
+    "internal/app/provider_test.go": "c6160cfa739498f4f0d6d8693a259272446137038ad0494905b917dc2103d61c",
+    "internal/runtime/runtime.go": "3c5afadc3a45bdc995ce9be04187c376ea82414ea90b44376223842ec1967751",
+    "internal/tokenestimate/estimate.go": "55903c694f0cb5c9749cd9b3c727de72d6b0069448adacedcdc1e8a8be8c9af2",
+    "schema/index.schema.json": "91333c7acef623b2a3744cfd86a01d0d5917fb530c08bfaf104437192a775911",
+    "scripts/check_m3_provider.py": "5ad9c175819ed91a8f4164576c9a54819e34b4bb548de8f0e4ca67fdb739edee",
+    "testdata/provider/ancestor.go": "13b36bc8bca98d25713077544e881ad920bf7d94232e68bc71eed59e53fd6c1a"
+  },
+  "binary_sha256": "c8ce82ad5bf8b396597cc7043dfcb509868108c670b5d90e431b5073d39496b4",
+  "old_binary_sha256": "2e8ed5b9d5e687f162f1961dcb3b89f262aaa347bcd9c73c36e64bf250486630",
+  "codex_ancestor_fixture_sha256": "421085114d6a673f51308d6feee4365916e3c11b957e4f764d044ea4edc53224",
+  "runner_source": "import json,os,subprocess,sys,time\nfrom pathlib import Path\nroot=Path('/tmp/style-m3-complete-20261017');name=sys.argv[1];cmd=sys.argv[2:];env=os.environ.copy()\nfor key in ['CLAUDE_CODE_USE_BEDROCK','CLAUDE_CODE_USE_VERTEX','CLAUDE_CODE_USE_FOUNDRY','CLAUDE_CODE_PROVIDER_MANAGED_BY_HOST','CLAUDE_CODE_HOST_MANAGED','ANTHROPIC_BASE_URL','ANTHROPIC_BEDROCK_BASE_URL','ANTHROPIC_VERTEX_BASE_URL','ANTHROPIC_FOUNDRY_BASE_URL','ANTHROPIC_AWS_BASE_URL','CLAUDE_CODE_USE_MANTLE','ANTHROPIC_AWS_USE_MANTLE','CLAUDE_CODE_USE_ANTHROPIC_AWS','CODEX_HOME','CODEX_SANDBOX','STYLE_HOME','CLAUDE_CONFIG_DIR','CLAUDE_CODE_CONFIG_DIR','CLAUDE_CODE_EFFORT_LEVEL','CLAUDE_EFFORT','CLAUDE_CODE_REMOTE','CLAUDE_PLUGIN_ROOT','PLUGIN_ROOT','STYLE_PERF','STYLE_PERF_OUTPUT','STYLE_M3_A6_RECORD','STYLE_UPDATE_GOLDENS','STYLE_REFRESH_HELPER','STYLE_REFRESH_TURN','STYLE_REFRESH_WORKER']:env.pop(key,None)\nfor key,value in {'GOPATH':'gopath','GOMODCACHE':'modcache','GOCACHE':'gocache'}.items():env[key]=str(Path('/tmp/style-m3-project-20261017')/value)\nenv['GOPROXY']='off';env['GOFLAGS']='-mod=readonly';env['GOWORK']='off';start=time.time()\nwith (root/(name+'.log')).open('wb') as f:p=subprocess.run(cmd,env=env,stdout=f,stderr=subprocess.STDOUT)\nresult={'command':cmd,'exit_code':p.returncode,'seconds':round(time.time()-start,3),'environment':{key:env[key] for key in ['GOPATH','GOMODCACHE','GOCACHE','GOPROXY','GOFLAGS','GOWORK']}}\n(root/(name+'.json')).write_text(json.dumps(result,indent=2)+'\\n');print(json.dumps(result))\nif p.returncode:\n lines=(root/(name+'.log')).read_text().splitlines();events=[]\n for line in lines:\n  try:events.append(json.loads(line))\n  except:pass\n failed=[v.get('Test') for v in events if v.get('Action')=='fail' and v.get('Test')]\n if failed:\n  for test in failed:print(test, ''.join(v.get('Output','') for v in events if v.get('Test')==test)[-2200:])\n else: print('\\n'.join(lines[-35:]))\nsys.exit(p.returncode)\n",
+  "runs": [
+    {
+      "command": [
+        "go",
+        "test",
+        "./core/...",
+        "./internal/adapter/...",
+        "./internal/runtime",
+        "./internal/app",
+        "./schema",
+        "-run",
+        "^TestM3A11",
+        "-count=1",
+        "-json"
+      ],
+      "exit_code": 0,
+      "seconds": 3.615,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "name": "a11-first",
+      "log_sha256": "d4d406526dfa0556a19e84b2e8f847ba39647942e54a813376730c7ed6b88771",
+      "counts": {}
+    },
+    {
+      "command": [
+        "go",
+        "test",
+        "./core/...",
+        "./internal/adapter/...",
+        "./internal/runtime",
+        "./internal/app",
+        "./schema",
+        "-count=1",
+        "-json"
+      ],
+      "exit_code": 1,
+      "seconds": 111.303,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "name": "a11-existing",
+      "log_sha256": "137804e6e89c7b724138bbc7a5b4c6f790f17a3e68a8211988685fe15f34a076",
+      "counts": {
+        "pass": 2861,
+        "fail": 1,
+        "skip": 2
+      }
+    },
+    {
+      "command": [
+        "go",
+        "test",
+        "./core/...",
+        "./internal/adapter/...",
+        "-run",
+        "^TestM3A11",
+        "-count=1",
+        "-json"
+      ],
+      "exit_code": 0,
+      "seconds": 2.25,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "name": "a11-target1",
+      "log_sha256": "6256c21475ca3c7fd1e520f132378bafd4b15e452384b5c0327166ee82ec5945",
+      "counts": {
+        "pass": 68
+      }
+    },
+    {
+      "command": [
+        "go",
+        "test",
+        "./core/...",
+        "./internal/adapter/...",
+        "./internal/runtime",
+        "./internal/app",
+        "-run",
+        "^TestM3A11",
+        "-count=1",
+        "-json"
+      ],
+      "exit_code": 1,
+      "seconds": 2.72,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "name": "a11-target2",
+      "log_sha256": "dd289cd524477d951f4379aa50b50b0e1f109b0174cc4177cb2a682ed9166655",
+      "counts": {
+        "pass": 87
+      }
+    },
+    {
+      "command": [
+        "go",
+        "test",
+        "./core/...",
+        "./internal/adapter/...",
+        "./internal/runtime",
+        "./internal/app",
+        "-run",
+        "^TestM3A11",
+        "-count=1",
+        "-json"
+      ],
+      "exit_code": 1,
+      "seconds": 3.005,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "name": "a11-target3",
+      "log_sha256": "aade5d814fa09c9b29a96fa080094a64c9bc040fea0fe1b953e2b27d25e6970b",
+      "counts": {
+        "pass": 87,
+        "fail": 1
+      }
+    },
+    {
+      "command": [
+        "go",
+        "test",
+        "./core/...",
+        "./internal/adapter/...",
+        "./internal/runtime",
+        "./internal/app",
+        "-run",
+        "^TestM3A11",
+        "-count=1",
+        "-json"
+      ],
+      "exit_code": 1,
+      "seconds": 3.475,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "name": "a11-target4",
+      "log_sha256": "4fe4a7253bc641f85d721d4cc8bfc2a3eb570859fcc4d9eac34ef3f37a992eca",
+      "counts": {
+        "pass": 88,
+        "fail": 1
+      }
+    },
+    {
+      "command": [
+        "go",
+        "test",
+        "./core/...",
+        "./internal/adapter/...",
+        "./internal/runtime",
+        "./internal/app",
+        "-run",
+        "^TestM3A11",
+        "-count=1",
+        "-json"
+      ],
+      "exit_code": 0,
+      "seconds": 2.871,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "name": "a11-target-final",
+      "log_sha256": "7c5313971069e186ffddf70c83a91ed2d3ae6dcfb9b978982e50a8dbb439fe22",
+      "counts": {
+        "pass": 89
+      }
+    },
+    {
+      "command": [
+        "go",
+        "test",
+        "-C",
+        "agenthooks",
+        "./...",
+        "-run",
+        "^TestM3A11",
+        "-count=1",
+        "-json"
+      ],
+      "exit_code": 0,
+      "seconds": 1.971,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "name": "a11-agent",
+      "log_sha256": "e8af33fe4f5e3f05f77680ef4a1678badcdb949948cb5d46cee7bf337b9cf8e7",
+      "counts": {
+        "pass": 6
+      }
+    },
+    {
+      "command": [
+        "go",
+        "test",
+        "./...",
+        "-count=1",
+        "-json"
+      ],
+      "exit_code": 0,
+      "seconds": 112.606,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "name": "a11-root-final",
+      "log_sha256": "1ea1334c7a98e828523e36bbcd31a8d0c722a67932f0ac521856bfba14623718",
+      "counts": {
+        "pass": 3179,
+        "skip": 2
+      }
+    },
+    {
+      "command": [
+        "go",
+        "test",
+        "-C",
+        "agenthooks",
+        "./...",
+        "-count=1",
+        "-json"
+      ],
+      "exit_code": 0,
+      "seconds": 9.834,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "name": "a11-agent-final",
+      "log_sha256": "7135b13623e6526ac6901756499727cffecf9cdfa10a247301d41df01a875433",
+      "counts": {
+        "skip": 23,
+        "pass": 528
+      }
+    },
+    {
+      "command": [
+        "go",
+        "test",
+        "-race",
+        "./core/...",
+        "./internal/adapter/...",
+        "./internal/runtime",
+        "./internal/app",
+        "-run",
+        "^TestM3A11",
+        "-count=1",
+        "-json"
+      ],
+      "exit_code": 0,
+      "seconds": 8.835,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "name": "a11-race",
+      "log_sha256": "7bb53fdfba92f83c0617f6ec7d2aba4750857200517918144dfeba9766902133",
+      "counts": {
+        "pass": 89
+      }
+    },
+    {
+      "command": [
+        "go",
+        "vet",
+        "./..."
+      ],
+      "exit_code": 0,
+      "seconds": 0.801,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "name": "a11-vet",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "counts": {}
+    },
+    {
+      "command": [
+        "go",
+        "vet",
+        "-C",
+        "agenthooks",
+        "./..."
+      ],
+      "exit_code": 0,
+      "seconds": 0.482,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "name": "a11-agent-vet",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "counts": {}
+    },
+    {
+      "command": [
+        "go",
+        "build",
+        "-trimpath",
+        "-buildvcs=false",
+        "-o",
+        "/tmp/style-m3-complete-20261017/style-provider",
+        "./cmd/style"
+      ],
+      "exit_code": 0,
+      "seconds": 1.794,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "name": "a11-build",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "counts": {}
+    },
+    {
+      "command": [
+        "go",
+        "build",
+        "-trimpath",
+        "-buildvcs=false",
+        "-o",
+        "/tmp/style-m3-complete-20261017/style-provider",
+        "./cmd/style"
+      ],
+      "exit_code": 0,
+      "seconds": 1.679,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "name": "a11-build-final",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "counts": {}
+    },
+    {
+      "command": [
+        "go",
+        "build",
+        "-trimpath",
+        "-buildvcs=false",
+        "-o",
+        "/tmp/style-m3-complete-20261017/codex-fixture",
+        "./testdata/provider/ancestor.go"
+      ],
+      "exit_code": 0,
+      "seconds": 0.151,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "name": "a11-ancestor-build",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "counts": {}
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/check_m3_provider.py",
+        "--binary",
+        "/tmp/style-m3-complete-20261017/style-provider",
+        "--old-binary",
+        "/tmp/style-m3-complete-20261017/style-event",
+        "--report",
+        "/tmp/style-m3-complete-20261017/a11-cli-report.json"
+      ],
+      "exit_code": 1,
+      "seconds": 0.835,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "name": "a11-cli1",
+      "log_sha256": "d262f2938753a77882463dfa86a8a3957c215757bd7b074e79c8387dae2ccacd",
+      "counts": {}
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/check_m3_provider.py",
+        "--binary",
+        "/tmp/style-m3-complete-20261017/style-provider",
+        "--old-binary",
+        "/tmp/style-m3-complete-20261017/style-event",
+        "--report",
+        "/tmp/style-m3-complete-20261017/a11-cli-report.json"
+      ],
+      "exit_code": 1,
+      "seconds": 0.388,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "name": "a11-cli2",
+      "log_sha256": "42c679a1519dece6509291d817a188dba97e6cdc70caaa8379bfe5eec377417e",
+      "counts": {}
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/check_m3_provider.py",
+        "--binary",
+        "/tmp/style-m3-complete-20261017/style-provider",
+        "--old-binary",
+        "/tmp/style-m3-complete-20261017/style-event",
+        "--report",
+        "/tmp/style-m3-complete-20261017/a11-cli-report.json"
+      ],
+      "exit_code": 1,
+      "seconds": 0.84,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "name": "a11-cli3",
+      "log_sha256": "b51fa1dd501a68e4c2be327a27dd88434fe1c408bb427f0818eacf819ef3c1c2",
+      "counts": {}
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/check_m3_provider.py",
+        "--binary",
+        "/tmp/style-m3-complete-20261017/style-provider",
+        "--old-binary",
+        "/tmp/style-m3-complete-20261017/style-event",
+        "--codex-ancestor",
+        "/tmp/style-m3-complete-20261017/codex-fixture",
+        "--report",
+        "/tmp/style-m3-complete-20261017/a11-cli-report.json"
+      ],
+      "exit_code": 0,
+      "seconds": 5.222,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "name": "a11-cli4",
+      "log_sha256": "6b3e595daedae6528e6528161eae9c1007e480a0bd2a5d176ec3c6a185e1e02b",
+      "counts": {}
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/check_m3_provider.py",
+        "--binary",
+        "/tmp/style-m3-complete-20261017/style-provider",
+        "--old-binary",
+        "/tmp/style-m3-complete-20261017/style-event",
+        "--codex-ancestor",
+        "/tmp/style-m3-complete-20261017/codex-fixture",
+        "--report",
+        "/tmp/style-m3-complete-20261017/a11-cli-report-final.json"
+      ],
+      "exit_code": 0,
+      "seconds": 5.485,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "name": "a11-cli-final",
+      "log_sha256": "6b3e595daedae6528e6528161eae9c1007e480a0bd2a5d176ec3c6a185e1e02b",
+      "counts": {}
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/check_m3_event_content.py",
+        "--binary",
+        "/tmp/style-m3-complete-20261017/style-provider",
+        "--old-binary",
+        "/tmp/style-m3-complete-20261017/style-plugin",
+        "--report",
+        "/tmp/style-m3-complete-20261017/a11-event-compat-report.json"
+      ],
+      "exit_code": 0,
+      "seconds": 5.322,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "name": "a11-event-compat",
+      "log_sha256": "6b3e595daedae6528e6528161eae9c1007e480a0bd2a5d176ec3c6a185e1e02b",
+      "counts": {}
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/smoke.py",
+        "--binary",
+        "/tmp/style-m3-complete-20261017/style-provider"
+      ],
+      "exit_code": 1,
+      "seconds": 0.057,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "name": "a11-smoke",
+      "log_sha256": "c9bd6d985e2f62b62e093be12e004d53b828e936290dca3456e16ebc43aa7c77",
+      "counts": {}
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/smoke.py",
+        "/tmp/style-m3-complete-20261017/style-provider"
+      ],
+      "exit_code": 0,
+      "seconds": 1.221,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "name": "a11-smoke-final",
+      "log_sha256": "5039b6cbbaa0d673d3772dfa18b0e24352159e7f2ddf65dd8cdabcbff5e08b63",
+      "counts": {}
+    }
+  ],
+  "cli": {
+    "format": 1,
+    "binary_sha256": "c8ce82ad5bf8b396597cc7043dfcb509868108c670b5d90e431b5073d39496b4",
+    "old_binary_sha256": "2e8ed5b9d5e687f162f1961dcb3b89f262aaa347bcd9c73c36e64bf250486630",
+    "real_harness": false,
+    "cases": [
+      {
+        "route": "codex-user",
+        "action": "preview-zero-write",
+        "status": "passed"
+      },
+      {
+        "route": "codex-user",
+        "action": "dynamic-index4",
+        "status": "passed"
+      },
+      {
+        "route": "codex-user",
+        "action": "configured-hook-service-selector-default-conflict-readonly-explain-dedup",
+        "status": "passed",
+        "modes": 2
+      },
+      {
+        "route": "codex-user",
+        "action": "state-stats-no-endpoint",
+        "status": "passed"
+      },
+      {
+        "route": "codex-user",
+        "action": "actual-old-runtime-and-management-refuse-zero-write",
+        "status": "passed"
+      },
+      {
+        "route": "codex-user",
+        "action": "new-management-frozen-rebuild-and-doctor",
+        "status": "passed"
+      },
+      {
+        "route": "codex-user",
+        "action": "uninstall",
+        "status": "passed"
+      },
+      {
+        "route": "codex-plugin",
+        "action": "preview-zero-write",
+        "status": "passed"
+      },
+      {
+        "route": "codex-plugin",
+        "action": "dynamic-index4",
+        "status": "passed"
+      },
+      {
+        "route": "codex-plugin",
+        "action": "configured-hook-service-selector-default-conflict-readonly-explain-dedup",
+        "status": "passed",
+        "modes": 2
+      },
+      {
+        "route": "codex-plugin",
+        "action": "state-stats-no-endpoint",
+        "status": "passed"
+      },
+      {
+        "route": "codex-plugin",
+        "action": "actual-old-runtime-and-management-refuse-zero-write",
+        "status": "passed"
+      },
+      {
+        "route": "codex-plugin",
+        "action": "new-management-frozen-rebuild-and-doctor",
+        "status": "passed"
+      },
+      {
+        "route": "codex-plugin",
+        "action": "uninstall",
+        "status": "passed"
+      },
+      {
+        "route": "claude-user",
+        "action": "preview-zero-write",
+        "status": "passed"
+      },
+      {
+        "route": "claude-user",
+        "action": "dynamic-index4",
+        "status": "passed"
+      },
+      {
+        "route": "claude-user",
+        "action": "configured-hook-service-selector-default-conflict-readonly-explain-dedup",
+        "status": "passed",
+        "modes": 6
+      },
+      {
+        "route": "claude-user",
+        "action": "state-stats-no-endpoint",
+        "status": "passed"
+      },
+      {
+        "route": "claude-user",
+        "action": "actual-old-runtime-and-management-refuse-zero-write",
+        "status": "passed"
+      },
+      {
+        "route": "claude-user",
+        "action": "new-management-frozen-rebuild-and-doctor",
+        "status": "passed"
+      },
+      {
+        "route": "claude-user",
+        "action": "uninstall",
+        "status": "passed"
+      },
+      {
+        "route": "codex-project",
+        "action": "preview-zero-write",
+        "status": "passed"
+      },
+      {
+        "route": "codex-project",
+        "action": "dynamic-index4",
+        "status": "passed"
+      },
+      {
+        "route": "codex-project",
+        "action": "configured-hook-service-selector-default-conflict-readonly-explain-dedup",
+        "status": "passed",
+        "modes": 2
+      },
+      {
+        "route": "codex-project",
+        "action": "state-stats-no-endpoint",
+        "status": "passed"
+      },
+      {
+        "route": "codex-project",
+        "action": "actual-old-runtime-and-management-refuse-zero-write",
+        "status": "passed"
+      },
+      {
+        "route": "codex-project",
+        "action": "new-management-frozen-rebuild-and-doctor",
+        "status": "passed"
+      },
+      {
+        "route": "codex-project",
+        "action": "uninstall",
+        "status": "passed"
+      },
+      {
+        "route": "claude-project",
+        "action": "preview-zero-write",
+        "status": "passed"
+      },
+      {
+        "route": "claude-project",
+        "action": "dynamic-index4",
+        "status": "passed"
+      },
+      {
+        "route": "claude-project",
+        "action": "configured-hook-service-selector-default-conflict-readonly-explain-dedup",
+        "status": "passed",
+        "modes": 6
+      },
+      {
+        "route": "claude-project",
+        "action": "state-stats-no-endpoint",
+        "status": "passed"
+      },
+      {
+        "route": "claude-project",
+        "action": "actual-old-runtime-and-management-refuse-zero-write",
+        "status": "passed"
+      },
+      {
+        "route": "claude-project",
+        "action": "new-management-frozen-rebuild-and-doctor",
+        "status": "passed"
+      },
+      {
+        "route": "claude-project",
+        "action": "uninstall",
+        "status": "passed"
+      }
+    ]
+  },
+  "event_compatibility": {
+    "format": 1,
+    "binary_sha256": "c8ce82ad5bf8b396597cc7043dfcb509868108c670b5d90e431b5073d39496b4",
+    "old_binary_sha256": "1a974ae96a8c7854bce12cc9a24555962cba6fdbf54efdd6ee3d1880f7329e94",
+    "real_harness": false,
+    "cases": [
+      {
+        "route": "codex-user",
+        "action": "preview-zero-write",
+        "status": "passed"
+      },
+      {
+        "route": "codex-user",
+        "action": "dynamic-index3",
+        "status": "passed"
+      },
+      {
+        "route": "codex-user",
+        "action": "configured-hook-fences-truncation-readonly-explain-dedup",
+        "status": "passed"
+      },
+      {
+        "route": "codex-user",
+        "action": "state-stats-no-event-body",
+        "status": "passed"
+      },
+      {
+        "route": "codex-user",
+        "action": "actual-old-runtime-and-management-refuse-zero-write",
+        "status": "passed"
+      },
+      {
+        "route": "codex-user",
+        "action": "new-management-frozen-rebuild-and-doctor",
+        "status": "passed"
+      },
+      {
+        "route": "codex-user",
+        "action": "uninstall",
+        "status": "passed"
+      },
+      {
+        "route": "codex-plugin",
+        "action": "preview-zero-write",
+        "status": "passed"
+      },
+      {
+        "route": "codex-plugin",
+        "action": "dynamic-index3",
+        "status": "passed"
+      },
+      {
+        "route": "codex-plugin",
+        "action": "configured-hook-fences-truncation-readonly-explain-dedup",
+        "status": "passed"
+      },
+      {
+        "route": "codex-plugin",
+        "action": "state-stats-no-event-body",
+        "status": "passed"
+      },
+      {
+        "route": "codex-plugin",
+        "action": "actual-old-runtime-and-management-refuse-zero-write",
+        "status": "passed"
+      },
+      {
+        "route": "codex-plugin",
+        "action": "new-management-frozen-rebuild-and-doctor",
+        "status": "passed"
+      },
+      {
+        "route": "codex-plugin",
+        "action": "uninstall",
+        "status": "passed"
+      },
+      {
+        "route": "claude-user",
+        "action": "preview-zero-write",
+        "status": "passed"
+      },
+      {
+        "route": "claude-user",
+        "action": "dynamic-index3",
+        "status": "passed"
+      },
+      {
+        "route": "claude-user",
+        "action": "configured-hook-fences-truncation-readonly-explain-dedup",
+        "status": "passed"
+      },
+      {
+        "route": "claude-user",
+        "action": "state-stats-no-event-body",
+        "status": "passed"
+      },
+      {
+        "route": "claude-user",
+        "action": "actual-old-runtime-and-management-refuse-zero-write",
+        "status": "passed"
+      },
+      {
+        "route": "claude-user",
+        "action": "new-management-frozen-rebuild-and-doctor",
+        "status": "passed"
+      },
+      {
+        "route": "claude-user",
+        "action": "uninstall",
+        "status": "passed"
+      },
+      {
+        "route": "codex-project",
+        "action": "preview-zero-write",
+        "status": "passed"
+      },
+      {
+        "route": "codex-project",
+        "action": "dynamic-index3",
+        "status": "passed"
+      },
+      {
+        "route": "codex-project",
+        "action": "configured-hook-fences-truncation-readonly-explain-dedup",
+        "status": "passed"
+      },
+      {
+        "route": "codex-project",
+        "action": "state-stats-no-event-body",
+        "status": "passed"
+      },
+      {
+        "route": "codex-project",
+        "action": "actual-old-runtime-and-management-refuse-zero-write",
+        "status": "passed"
+      },
+      {
+        "route": "codex-project",
+        "action": "new-management-frozen-rebuild-and-doctor",
+        "status": "passed"
+      },
+      {
+        "route": "codex-project",
+        "action": "uninstall",
+        "status": "passed"
+      },
+      {
+        "route": "claude-project",
+        "action": "preview-zero-write",
+        "status": "passed"
+      },
+      {
+        "route": "claude-project",
+        "action": "dynamic-index3",
+        "status": "passed"
+      },
+      {
+        "route": "claude-project",
+        "action": "configured-hook-fences-truncation-readonly-explain-dedup",
+        "status": "passed"
+      },
+      {
+        "route": "claude-project",
+        "action": "state-stats-no-event-body",
+        "status": "passed"
+      },
+      {
+        "route": "claude-project",
+        "action": "actual-old-runtime-and-management-refuse-zero-write",
+        "status": "passed"
+      },
+      {
+        "route": "claude-project",
+        "action": "new-management-frozen-rebuild-and-doctor",
+        "status": "passed"
+      },
+      {
+        "route": "claude-project",
+        "action": "uninstall",
+        "status": "passed"
+      }
+    ]
+  },
+  "groups": [
+    {
+      "id": "A11-01",
+      "status": "passed",
+      "evidence": [
+        "TestM3A11ProviderReadsAndValidation",
+        "TestM3A11ProviderExactIDsMissingAndTrace",
+        "TestM3A11ProviderPlanUsesExplicitDataSource"
+      ]
+    },
+    {
+      "id": "A11-02",
+      "status": "passed",
+      "evidence": [
+        "TestM3A11CodexProviderSourcesAndErrors",
+        "TestM3A11CodexProviderBoundedRegularConfig",
+        "TestM3A11CodexLaunchProviderAllowlistAndLastOverride"
+      ]
+    },
+    {
+      "id": "A11-03",
+      "status": "passed",
+      "evidence": [
+        "TestM3A11ClaudeProviderSelectors",
+        "TestM3A11ClaudeProviderReevaluatesAndClears"
+      ]
+    },
+    {
+      "id": "A11-04",
+      "status": "passed",
+      "evidence": [
+        "TestM3A11CodexProviderCacheOptInAndOffline",
+        "TestM3A11ProviderOptionalStateSnapshotAndClear",
+        "TestM3A11ProviderExplainFactsAndRealCodecs"
+      ]
+    },
+    {
+      "id": "A11-05",
+      "status": "passed",
+      "evidence": [
+        "TestM3A11ProviderExplainFactsAndRealCodecs",
+        "TestM3A11CodexProviderCacheOptInAndOffline",
+        "TestM3A11ClaudeProviderReevaluatesAndClears"
+      ]
+    },
+    {
+      "id": "A11-06",
+      "status": "passed",
+      "evidence": [
+        "TestM3A11ProviderCompileFormatSchemaAndOldGate",
+        "TestM3A11ProviderCapRecoveryAndFeatureGate",
+        "TestM3A11SixRouteProviderLifecycleAndFrozen",
+        "TestM3A11ProviderCloudBundle",
+        "scripts/check_m3_provider.py"
+      ]
+    }
+  ],
+  "failures_retained": {
+    "editing": "First script stopped at a switch-form runtime-variable classifier; resumed after correcting pattern. State validator insertion pattern also corrected before final runs. No partial edit was submitted.",
+    "a11-existing": "Existing special-status assertion still expected provider unconditional Never. Updated to the actual supported-data/capability planning contract.",
+    "a11-target2": "Test used undefined plan.Full; actual native placement status is plan.Native.",
+    "a11-target3": "An adapter without condition data correctly reports Never; updated fixture expectation.",
+    "a11-target4": "Shared testIndex helper intentionally contains both harnesses; isolate one harness for feature-detection assertion.",
+    "a11-cli1/a11-cli2": "CLI fixture assumed no Codex ancestor, but desktop environment supplies one.",
+    "a11-cli3": "Python interpreter rewrites argv[0]; replaced with checked-in Go ancestor fixture, explicitly not native-harness evidence.",
+    "a11-smoke": "Used unsupported --binary flag; reran documented positional form."
+  },
+  "verification_boundary": "Final source and tests used for fresh root/agenthooks suites: 3179+528 pass, 0 fail, 25 existing opt-in/helper skips separately. 15 new test functions, 89 root+6 agenthooks pass events; root new tests passed race. Both vet passed. Final binary: provider CLI35, event CLI35, smoke40. Codex argv controller and version stubs are fixtures, not real harness delivery. No credentials/network service read for provider. Original goldens/dependencies and codec/event/renderer/owner unchanged; agenthooks only extends allowlisted launch settings and tests.",
+  "remaining": "T43/A12, later features and real B/C pending; user-deferred C3/W1/Anthropic API stay [?], official calibration each 0/40."
+}

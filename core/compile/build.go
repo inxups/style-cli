@@ -70,7 +70,10 @@ func Build(request Request) (Result, error) {
 				if entry.Refresh > 0 && result.Index.Format < RefreshFormat {
 					result.Index.Format = RefreshFormat
 				}
-				if entry.HasEventContent() {
+				if entry.HasProvider() {
+					result.Index.Format = ProviderFormat
+				}
+				if entry.HasEventContent() && result.Index.Format < EventFormat {
 					result.Index.Format = EventFormat
 				}
 			}

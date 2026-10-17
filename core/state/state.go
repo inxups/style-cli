@@ -32,13 +32,16 @@ type Store struct {
 
 // Session holds values shared by all agent scopes in one provider session.
 type Session struct {
-	Model          string    `json:"model,omitempty"`
-	ThinkingEffort string    `json:"effort,omitempty"`
-	EffortRaw      string    `json:"effort_raw,omitempty"`
-	EffortApprox   *bool     `json:"effort_approx,omitempty"`
-	EffortResolved bool      `json:"effort_resolved,omitempty"`
-	HarnessVersion string    `json:"harness_version,omitempty"`
-	UpdatedAt      time.Time `json:"updated_at"`
+	ModelProvider    string    `json:"model_provider,omitempty"`
+	ProviderResolved bool      `json:"provider_resolved,omitempty"`
+	ProviderSource   string    `json:"provider_source,omitempty"`
+	Model            string    `json:"model,omitempty"`
+	ThinkingEffort   string    `json:"effort,omitempty"`
+	EffortRaw        string    `json:"effort_raw,omitempty"`
+	EffortApprox     *bool     `json:"effort_approx,omitempty"`
+	EffortResolved   bool      `json:"effort_resolved,omitempty"`
+	HarnessVersion   string    `json:"harness_version,omitempty"`
+	UpdatedAt        time.Time `json:"updated_at"`
 }
 
 // Scope stores counters for one agent within a provider session.
@@ -53,14 +56,17 @@ type Scope struct {
 
 // EventUpdate contains normalized session and lifecycle facts.
 type EventUpdate struct {
-	Source          string
-	PromptSubmitted bool
-	Model           string
-	ThinkingEffort  string
-	EffortRaw       string
-	EffortApprox    *bool
-	EffortResolved  bool
-	HarnessVersion  string
+	ModelProvider    string
+	ProviderResolved bool
+	ProviderSource   string
+	Source           string
+	PromptSubmitted  bool
+	Model            string
+	ThinkingEffort   string
+	EffortRaw        string
+	EffortApprox     *bool
+	EffortResolved   bool
+	HarnessVersion   string
 }
 
 // New creates a state store rooted at root. The directory is created lazily.
@@ -90,6 +96,11 @@ func (s *Store) UpdateLocked(sessionID, agentID string, update EventUpdate, guar
 func (s *Store) update(sessionID, agentID string, update EventUpdate, guard *RefreshGuard) (Session, Scope, error) {
 	if s == nil {
 		return Session{}, Scope{}, fmt.Errorf("state: nil store")
+	}
+	if update.ProviderResolved {
+		if err := validateProviderState(Session{ModelProvider: update.ModelProvider, ProviderResolved: true, ProviderSource: update.ProviderSource}); err != nil {
+			return Session{}, Scope{}, err
+		}
 	}
 	if sessionID == "" {
 		return Session{}, Scope{}, fmt.Errorf("state: session ID must not be empty")
@@ -189,6 +200,11 @@ func (s *Store) update(sessionID, agentID string, update EventUpdate, guard *Ref
 		scope.PromptCount++
 	}
 
+	if update.ProviderResolved {
+		session.ModelProvider = update.ModelProvider
+		session.ProviderResolved = true
+		session.ProviderSource = update.ProviderSource
+	}
 	if update.Model != "" {
 		session.Model = update.Model
 	}
@@ -258,7 +274,7 @@ func sameSession(a, b Session) bool {
 	if (a.EffortApprox == nil) != (b.EffortApprox == nil) || a.EffortApprox != nil && *a.EffortApprox != *b.EffortApprox {
 		return false
 	}
-	return a.Model == b.Model && a.ThinkingEffort == b.ThinkingEffort && a.EffortRaw == b.EffortRaw &&
+	return a.ModelProvider == b.ModelProvider && a.ProviderResolved == b.ProviderResolved && a.ProviderSource == b.ProviderSource && a.Model == b.Model && a.ThinkingEffort == b.ThinkingEffort && a.EffortRaw == b.EffortRaw &&
 		a.EffortResolved == b.EffortResolved && a.HarnessVersion == b.HarnessVersion
 }
 
@@ -473,6 +489,9 @@ func decodeState(data []byte, target any) error {
 	}
 	if err := decoder.Decode(new(any)); err != io.EOF {
 		return fmt.Errorf("unexpected trailing JSON")
+	}
+	if session, ok := target.(*Session); ok {
+		return validateProviderState(*session)
 	}
 	return nil
 }

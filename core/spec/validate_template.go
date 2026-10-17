@@ -114,8 +114,8 @@ func (v *validator) whenGuarantees(rule Rule, name string) bool {
 		return false
 	}
 	switch name {
-	case "model":
-		return when["model"] != nil
+	case "model", "provider":
+		return when[name] != nil
 	case "thinking_effort", "thinking_effort_raw":
 		return when["thinking_effort"] != nil
 	default:

@@ -1856,3 +1856,11 @@ PY
 - 按用户全部评审通过授权记录 [D6 契约](review/M3-D6-PROVIDER-UNKNOWN-2026-10-17.md)。provider 是原生配置请求，Codex 使用专属 provider 层级而非 effort 的项目覆盖；Claude 环境白名单、冲突/托管/端点缺值，不读取凭据或推断 URL。配置错误不降级伪造服务，按需缓存、可重放事实及 index 4 明确。
 - 四字段 unknown 显式匹配 canonical 缺值，比较/其他字段/旧规则不扩展；列出六组 A11 与四组 A12 待实施。使用 openai-docs 技能核对官方配置参考及 Claude 环境/网关页，2026-10-17 获取；设计不替代原生投递。
 - 仅关闭 D6，后续依赖 T42 → T43；链接/锚点/围栏、归档和历史 JSON 原样、PROGRESS 追加前缀与 diff 检查见 [设计检查](review/M3-D6-DOCS-2026-10-17.json)。用户延期的 C3/W1/Anthropic 独立 API 仍待验且退出本轮 FINAL 必过集合。
+
+## 2026-10-17 M3-T42 / M3-A11 provider 条件完成
+
+- 基线 `7016478` 按 D6 实现 reads.provider、动态模板、大小写精确单值/列表及受限服务 ID；移除旧 provider-unimplemented/无条件 Never，plan 采用实际数据来源。只有需要的 harness 开启 provider 解析，额外 session 字段可省略；固定来源码严格校验并支持 snapshot，Claude 缺值明确清除旧服务。index 4 及 schema/严格解码/所有 constructor 门禁一致，旧格式需重编译 provider 规则。估算涵盖最坏标点宽度和显式 fallback，cap-drop 可恢复 claim。
+- Codex 仅扩展 agenthooks 启动设置白名单，保护任意配置参数；明确覆盖/文件 profile/用户/default，项目不参与 provider。坏/超限/类型/路径/symlink/未知版本/不可恢复祖先均有证据，会话缓存与 startup 重读。Claude 每事件白名单选择，冲突/非法/托管/端点/未支持路线缺值，不读取密钥，不保存 URL。explain 只用绑定事实并与两家原 codec 的普通 runtime wire 对照；环境 canary 不泄漏。
+- [A11 报告](review/M3-A11-2026-10-17.json)固定最终源码/二进制/fixture 与全部运行摘要。15 新函数、95 条含分组 pass（根 89、agenthooks 6），根专项 race 同 89 通过；双 module fresh test 3,179+528=3,707 pass/0 fail，25 既有 opt-in/helper skip 单列；双 vet、35 provider CLI、35 事件兼容、40 smoke 通过。沿临时三缓存和清理 CODEX_HOME/CODEX_SANDBOX/Claude 服务选择及端点等变量；全量来源 TLS fixture 使用已批准本机监听。原 golden/依赖、agenthooks codec/event/renderer/owner 不改。
+- 保留失败与修正：编辑脚本匹配模式、测试状态常量/缺数据状态/双 harness helper、桌面 Codex 祖先影响假设、Python argv 重写、smoke 参数错误。使用明确标识的 Go 祖先 fixture 后离线 CLI 可复跑，不把它或版本 stub 当真实 harness 投递。
+- 当前规范/使用说明/adapter 总览同步，[文档检查](review/M3-A11-DOCS-2026-10-17.json)检查链接/锚点/围栏、PROGRESS 追加、归档/历史 JSON、旧 golden、源码格式和 diff。仅关闭 T42/A11；继续 T43/A12。用户延期的 C3、W1/REAL-04、Anthropic API 保留待验，官方校准两家各 0/40 非阻塞不变。

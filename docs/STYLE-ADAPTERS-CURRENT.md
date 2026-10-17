@@ -2,6 +2,8 @@
 
 更新时间：2026-10-17。生产源码核对基线：`16d5c1c`（M2 native、stats、跨包去重、Claude rules/迁移），replace 回退验收 `4976713`，Claude 最终隔离准备 `5dd6742`。Codex M2 B1–B4 双路线证据归档至 `e6dd778`；D4/D5 已由 Claude 2.1.301 的 C1–C4 真实交互验收闭合；M2 已完成并关闭，远端 Ubuntu/macOS CI 在 `154506f` 全部通过（run `39000483969`，59 项采集器）。无 key 补充对照已完成；官方 token 计数仍各 0/40、待独立 API key，承接为 M3-CARRY-01 非阻塞待验。M3-T00 已统一注册表名称校验并通过 [M3-A0](review/M3-A0-2026-10-17.json)，关闭 M3-RV-01；T00 源码由该报告的完整摘要固定。M3-T10 的 [explain 离线验收](review/M3-A1-2026-10-17.json) 已通过，新增隔离重放与可选编译说明；M3-T11 的 [probe 离线验收](review/M3-A2-2026-10-17.json) 也已通过，观察既有 STYLE runtime 回调；M3-T20 的 [Git 来源验收](review/M3-A3-2026-10-17.json) 已通过，取得与锁定留在管理冷路径，真实验收状态不变。M3-T30 已提供两条显式项目路线并通过 [M3-A6](review/M3-A6-2026-10-17.json)，见 [项目安装说明](STYLE-PROJECTS.md)；云端 export 已通过 A7，Claude 插件已通过 [A8](review/M3-A8-2026-10-17.json)，见[插件说明](STYLE-CLAUDE-PLUGIN.md)。用户现要求继续其他阶段，已确认 [M3-D4 refresh 契约](review/M3-D4-REFRESH-2026-10-17.md)；T40 已实现动态 system、按需 Claude 时钟订阅、独立时钟/游标和 index 2，支持现有五条路线的 macOS/Linux 离线运行，见 [说明](STYLE-REFRESH.md) 与 [A9](review/M3-A9-2026-10-17.json)。agenthooks 协议、事件表和渲染保持原职责；真实 B3/C5 和 Windows 原生结果继续待验。
 
+M3-T41 的显式事件围栏已通过 [A10](review/M3-A10-2026-10-17.json)。M3-T42 的模型服务配置请求已通过 [A11](review/M3-A11-2026-10-17.json)，来源和 index 4 见[说明](STYLE-PROVIDER.md)。本文早期 provider 一词仍指原生 harness；新 when.provider 与之区分。agenthooks 仅扩展启动设置 allowlist 两个字段，codec/event/renderer/owner 不改。
+
 本文总结当前仓库的实现，不代表 Claude Code / Codex 所有版本的完整产品能力。能力声明、安装配置、运行时可接收事件和真实验收结果分别说明；未修改现有 fallback 语义。
 
 ## 1. 范围与职责

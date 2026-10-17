@@ -43,6 +43,9 @@ func New(engineCore *engine.Engine, stateStore *state.Store, enricher adapter.Ru
 	if failClosed && provider != agenthooks.ProviderClaudeCode {
 		return nil, fmt.Errorf("runtime: fail-closed is supported only for Claude Code")
 	}
+	if configurable, ok := enricher.(interface{ ConfigureProvider(bool) }); ok {
+		configurable.ConfigureProvider(engineCore.NeedsProvider(string(provider)))
+	}
 	return &Runtime{Engine: engineCore, State: stateStore, Adapter: enricher, Provider: provider, FailClosed: failClosed, Now: time.Now}, nil
 }
 

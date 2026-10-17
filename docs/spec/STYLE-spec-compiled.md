@@ -36,7 +36,7 @@
 | `reinject_on_compact` | bool | 是 | |
 | `sources` | string[] | `session.start` 上必有 | 允许的会话来源，已补上默认值；`reinject_on_compact` 为 true 时额外含 `compact` |
 | `reeval` | bool | 否 | `true` 表示这是动态 system 规则在 `prompt.submitted` 上的重新评估条目（3.7） |
-| `needs` | string[] | 是 | 正文变量 ∪ `when` 用到的运行时数据：`model`、`thinking_effort`、`harness.<键>` |
+| `needs` | string[] | 是 | 正文变量 ∪ `when` 用到的运行时数据：`model`、`provider`、`thinking_effort`、`harness.<键>` |
 | `body` | object | 是 | `inject`：给模型的正文；`warn`：给用户的全文；`block`：拒绝理由。写法 `{"static": "…"}` 或 `{"parts": ["文本", {"var": "model", "default": "未知"}, …]}` |
 | `model_body` | object | `warn` 上必有 | 给模型的那一句，写法同 `body` |
 | `model_body_first_sentence` | bool | 否 | 仅隐式生成的动态 `warn` 正文可能为 `true`；运行时在模板渲染后提取首句。显式 `model_text` 不截断，静态正文在编译时已截断 |
@@ -238,7 +238,7 @@ cloud manifest format=1 与管理锁分开：相对路径/生成器与 runner �
 - **U-C5**：Claude 各事件上的 `systemMessage` 是否真的显示给用户（3.2、第 5 节）。
 - **U9**：Claude 的 hook 能否知道思考被关闭（4.2）。
 - **U-T3**：估算器误差；预算默认值（7.2）都是起点，要用真实规则校准。
-- **M3 再定**：`provider` 的数据来源；事件内容带围栏进模板；"取不到"能否在列表里写 `unknown` 匹配；用户自定义 effort 映射；规则级 `fail: closed`。
+- **M3 后续**："取不到"能否在列表里写 `unknown` 匹配；用户自定义 effort 映射；规则级 `fail: closed`。
 
 ## 附录 A：推迟的 harness 备忘
 
@@ -272,4 +272,4 @@ M3-T31 已实现 cloud manifest format 1、相对逻辑来源、绑定文件摘�
 
 ## M3-D6 服务条件与缺值 index 4
 
-[D6 定稿](../review/M3-D6-PROVIDER-UNKNOWN-2026-10-17.md)要求 provider 条件/变量与四字段 unknown 使用整体 format 4；旧 format 的 provider 条件严格拒绝，重新编译原包启用新语义。when/body 结构保持，needs 加 provider；新 runner 兼容原 1/2/3 的合法非 provider 产物。T42/T43 将分别实现并记录证据。
+[D6 定稿](../review/M3-D6-PROVIDER-UNKNOWN-2026-10-17.md)要求 provider 条件/变量与四字段 unknown 使用整体 format 4；旧 format 的 provider 条件严格拒绝，重新编译原包启用新语义。when/body 结构保持，needs 加 provider；新 runner 兼容原 1/2/3 的合法非 provider 产物。T42 已实现并通过 [A11](../review/M3-A11-2026-10-17.json)，T43 单独继续。

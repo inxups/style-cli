@@ -177,6 +177,11 @@ func CopySnapshot(ctx context.Context, source, destination, sessionID, agentID s
 				if err := decoder.Decode(target); err != nil {
 					return nil, false, fmt.Errorf("invalid snapshot state")
 				}
+				if session, ok := target.(*Session); ok {
+					if err := validateProviderState(*session); err != nil {
+						return nil, false, err
+					}
+				}
 				if decoder.Decode(new(any)) != io.EOF {
 					return nil, false, fmt.Errorf("trailing snapshot state")
 				}

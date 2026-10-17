@@ -941,3 +941,5 @@ M3-T31 已通过 [A7](../review/M3-A7-2026-10-17.json)，云端 export/entry v1 
 M3-T32 已通过 [A8](../review/M3-A8-2026-10-17.json)，本地 marketplace、登记边界与 user/plugin 切换见[插件说明](../STYLE-CLAUDE-PLUGIN.md)；生成后未登记退出 1，原生数据库只读检查。
 
 M3-T41 已实现并通过 [A10](../review/M3-A10-2026-10-17.json)；`event.` + `reads.event` 明确启用，完整转义围栏、512 code point 和 index 3 见[说明](../STYLE-EVENT-CONTENT.md)。doctor 给出 runner 升级要求，默认旧模板和 index 1/2 保持。
+
+M3-T42 已通过 [A11](../review/M3-A11-2026-10-17.json)，reads.provider、服务选择请求、离线重放及 index 4 的当前行为见[说明](../STYLE-PROVIDER.md)。旧 stats/log/hook 参数的 provider 仍指 harness；T43 unknown 独立继续。

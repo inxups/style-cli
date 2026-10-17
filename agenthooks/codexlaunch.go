@@ -9,11 +9,13 @@ import (
 )
 
 // CodexLaunchSettings exposes only the launch facts STYLE needs to interpret
-// Codex effort configuration. Arbitrary -c values remain private because they
+// Codex effort and model-service configuration. Arbitrary -c values remain private because they
 // may contain unrelated or sensitive settings.
 type CodexLaunchSettings struct {
 	Profile              string
 	ModelReasoningEffort string
+	ModelProvider        string
+	ModelProviderSet     bool
 	IgnoreUserConfig     bool
 }
 
@@ -133,6 +135,10 @@ func (c codexLaunchContext) styleSettings() CodexLaunchSettings {
 			continue
 		}
 		key, value, ok := strings.Cut(c.Overrides[i+1], "=")
+		if ok && strings.TrimSpace(key) == "model_provider" {
+			settings.ModelProvider = unquoteCodexValue(strings.TrimSpace(value))
+			settings.ModelProviderSet = true
+		}
 		if ok && strings.TrimSpace(key) == "model_reasoning_effort" {
 			settings.ModelReasoningEffort = unquoteCodexValue(strings.TrimSpace(value))
 		}

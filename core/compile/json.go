@@ -52,7 +52,7 @@ func (index *Index) UnmarshalJSON(data []byte) error {
 	if err := decodeStrict(data, &decoded); err != nil {
 		return err
 	}
-	if decoded.Format != Format && decoded.Format != RefreshFormat && decoded.Format != EventFormat {
+	if decoded.Format != Format && decoded.Format != RefreshFormat && decoded.Format != EventFormat && decoded.Format != ProviderFormat {
 		return fmt.Errorf("compile: unsupported index format %d", decoded.Format)
 	}
 	if decoded.Format == Format {
@@ -75,6 +75,9 @@ func (index *Index) UnmarshalJSON(data []byte) error {
 	for _, events := range decoded.Harnesses {
 		for _, entries := range events {
 			for _, entry := range entries {
+				if entry.HasProvider() && decoded.Format < ProviderFormat {
+					return fmt.Errorf("compile: provider requires index format 4")
+				}
 				if entry.HasEventContent() && decoded.Format < EventFormat {
 					return fmt.Errorf("compile: event content requires index format 3")
 				}

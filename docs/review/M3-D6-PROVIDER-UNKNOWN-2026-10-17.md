@@ -46,13 +46,15 @@
 
 | 编号 | 状态 | 断言 |
 |---|---|---|
-| A11-01 | [ ] | reads/模板/条件完整校验、大小写/自定义 ID/非法值、plan 来源声明 |
-| A11-02 | [ ] | Codex 启动/profile/user/default、未知版本/祖先/忽略配置、坏/超限/类型/缺文件与项目层排除 |
-| A11-03 | [ ] | Claude 三服务/default、冲突/非法/托管/端点/其他路线与缺值清除，不读取凭据 |
-| A11-04 | [ ] | 按需解析、会话缓存及新会话、state/snapshot、两家实际 codec 和来源 trace |
-| A11-05 | [ ] | 离线 explain facts 绑定、无环境/配置泄漏、缺事实不偷读、普通输出一致 |
-| A11-06 | [ ] | index 4/schema/严格旧格式门禁、真旧 runner、生命周期/refresh/event/旧 golden 与 CLI |
+| A11-01 | [x] | reads/模板/条件完整校验、大小写/自定义 ID/非法值、plan 来源声明 |
+| A11-02 | [x] | Codex 启动/profile/user/default、未知版本/祖先/忽略配置、坏/超限/类型/缺文件与项目层排除 |
+| A11-03 | [x] | Claude 三服务/default、冲突/非法/托管/端点/其他路线与缺值清除，不读取凭据 |
+| A11-04 | [x] | 按需解析、会话缓存及新会话、state/snapshot、两家实际 codec 和来源 trace |
+| A11-05 | [x] | 离线 explain facts 绑定、无环境/配置泄漏、缺事实不偷读、普通输出一致 |
+| A11-06 | [x] | index 4/schema/严格旧格式门禁、真旧 runner、生命周期/refresh/event/旧 golden 与 CLI |
 | A12-01 | [ ] | 四字段缺失/空/非空、未知 effort 原值、列表 OR/跨字段 AND |
 | A12-02 | [ ] | 模型 glob/effort 比较、其他字段和否定条件不扩展 |
 | A12-03 | [ ] | plan 不错误移除缺值规则、reads 与 var-no-default、compile/engine/trace/explain 一致 |
 | A12-04 | [ ] | format 4 和旧缺值兼容、fixture/golden 与 built CLI；真实 B3/C5 后续独立 |
+
+T42/A11 六组均通过[验收报告](M3-A11-2026-10-17.json)，具体接口见[使用说明](../STYLE-PROVIDER.md)。A12 四组仍待实施，真实投递未据此关闭。

@@ -99,13 +99,13 @@ rules:
   | 变量 | 何时确定 | M1 能不能进模板 | 前提 |
   |---|---|---|---|
   | `vars.*`、`settings.*`、`package.name`、`package.version`、`rule.id` | 安装时 | 能 | 已定义；`sensitive` 的 settings 在 M1 不可用（8.4） |
-  | `model`、`thinking_effort`、`thinking_effort_raw` | 运行时 | 能 | `reads` 里声明 |
+  | `model`、`provider`、`thinking_effort`、`thinking_effort_raw` | 运行时 | 能 | `reads` 里声明 |
   | `harness.name`、`harness.version`、`harness.cwd`、`harness.permission_mode`、`harness.agent` | 运行时 | 能 | `reads.harness` 里声明 |
   | `harness.session_id`、`harness.turn_id` | 运行时 | 能，但 lint `T006` 告警：每次都变，破坏去重和缓存 | 同上 |
   | `event.prompt`、`event.tool.input`/子路径等 | 当前事件 | M3 可以，始终截断/转义/围栏 | `reads.event` 声明完整字段；见 [说明](../STYLE-EVENT-CONTENT.md) |
   | `prompt`、`tool.name`、`tool.input.*`、`tool.added`、`tool.output`、`mcp.server`、`mcp.tool`、`skill.name` | 运行时，取自当前事件 | **不能**，报错 `event-var-in-template`；只能在 `when.conditions` 里用 | — |
 
-- **取不到值时**：有 `default` 就用默认值，没有就是空字符串。想"取不到就别注入"，就在 `when` 里写条件，不要靠模板。运行时变量没写 `default`、又没有被 `when` 保证有值时，validate 给警告 `var-no-default`。"被 `when` 保证"指：`when.model` 保证 `model`；`when.thinking_effort` 保证 `thinking_effort` 和 `thinking_effort_raw`；`when.harness.<键>` 保证 `harness.<键>`。
+- **取不到值时**：有 `default` 就用默认值，没有就是空字符串。想"取不到就别注入"，就在 `when` 里写条件，不要靠模板。运行时变量没写 `default`、又没有被 `when` 保证有值时，validate 给警告 `var-no-default`。"被 `when` 保证"指：`when.model` 保证 `model`；`when.provider` 保证 `provider`；`when.thinking_effort` 保证 `thinking_effort` 和 `thinking_effort_raw`；`when.harness.<键>` 保证 `harness.<键>`。
 - **静态和动态**：只用到安装时变量的正文叫**静态正文**，编译时直接渲染成最终文本；用到运行时变量的叫**动态正文**，编译时只解析，运行时再填值。这个区分决定 `system` 规则能不能写进静态位置（3.3、第 10 节）。
 - **validate 会检查**：每个变量都有定义（`undeclared-var`）；运行时变量在 `reads` 里声明过（`reads-missing`）。
 

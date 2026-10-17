@@ -22,12 +22,12 @@ when:
 - **组合**：同一字段的多个值是"或"，不同字段之间是"且"。**所有条件都满足才注入**，没有"任一满足"的写法。
 - **取不到就不满足**：某个条件需要的数据这次取不到（harness 没给、档位为空、`tool.added` 在这个工具上不存在），这个条件算不满足，规则不触发。安装时 plan 按第 6 节的表提前告警，例如"Codex 上没配置 `model_reasoning_effort` 时，规则 X 永远不会触发"。
 - **`model`**：glob，不区分大小写，匹配 **harness 报告的模型字符串**（STYLE 分不清别名）。`*` 不跨 `/`；`**/` 前缀匹配零段或多段，所以 `**/claude-*` 既匹配 `claude-opus-5-5`，也匹配 `anthropic/claude-x`。
-- **`provider`**：[M3-D6 定稿](../review/M3-D6-PROVIDER-UNKNOWN-2026-10-17.md)将其定义为可核验的模型服务配置请求；T42 实施前仍沿旧的 provider-unimplemented/永不满足路径。新增 reads.provider、动态模板与大小写精确服务 ID，不能由模型名/harness/URL 猜测。四字段 unknown 由 T43 单独实施。
+- **`provider`**：M3-T42 已按 [D6](../review/M3-D6-PROVIDER-UNKNOWN-2026-10-17.md)实现可核验的模型服务配置请求。单值/列表按大小写精确匹配，须 reads.provider；动态模板同名。缺值不满足，不能由模型名/harness/URL 猜测。来源限制见[说明](../STYLE-PROVIDER.md)，unknown 由 T43 单独实施。
 - **`thinking_effort`**：写法只有四种：单值（`high`）、列表（`[minimal, low]`）、`>=档位`、`<=档位`，不区分大小写；其他写法报错 `bad-effort-expr`。别名（如 `ultra`）不能写在 `when` 里，只在映射层用。取值和比较规则见 4.2。
 - **`thinking_effort_approx`**：`true` / `false`，要求档位是或不是近似值。M1 两个适配器的已知映射均为 `false`；未知档位同时清除 approx，不沿用旧值。字段留给以后的预算型 harness。
 - **`harness.name`**：由当前 Service 的注册表提供合法名称全集，当前生产默认注册 `claude-code`、`codex`，与 `requires.harness`、`recommends` 一致，按 canonical ID 精确匹配；不从全部 agenthooks Provider 常量或本机检测结果推导。M3-T00 已于 2026-10-17 实现并通过 M3-A0，接口和兼容选择见 [设计 §3.1](STYLE-cli-design.md#31-m3-d0-注册表校验边界)。`harness.permission_mode` 继续使用 harness 原生取值，reads 与缺值匹配行为不变。
 - **`agent`**：不写时等于 `[main]`，只在主 agent 里生效；挂在 `subagent.start` 上的规则不写时等于 `any`。`any` 表示主 agent 和所有子 agent；列表里可以写 `main` 和子 agent 的类型名（`agent_type`）。**主 agent 的判断是"事件里没有 `agent_id`"**：Claude 用 `--agent` 启动时，主 agent 的事件里也有 `agent_type`【文档】。
-- **`reads`**：`when` 里用到的 `model`、`thinking_effort`、`harness.<键>` 必须先在 `reads` 里声明（`reads-missing`）。`agent` 不需要声明，它是去重作用域本来就要读的。
+- **`reads`**：`when` 里用到的 `model`、`provider`、`thinking_effort`、`harness.<键>` 必须先在 `reads` 里声明（`reads-missing`）。`agent` 不需要声明，它是去重作用域本来就要读的。
 
 ### 4.2 thinking_effort：取值和映射
 
@@ -120,7 +120,7 @@ Codex 一列以 agenthooks `capability.go` 为准；Claude 一列结合官方文
 6. **`mode: replace`**：harness 没有替换位置（M1 的两家均无）时，`degrade` / `skip` = 跳过；`error` = 拒绝安装。
 7. **`target: event`**：只评估指定事件，不自动换事件或静态回退。Codex 的无条件 `tool.error` 缺输出能力，degrade/skip 为 skipped、error 为 install-error；若先发现条件数据不可用，非 error 可为 never-trigger。
 
-`degrade` 允许最终跳过，不保证保留规则。`skip` 在普通能力不足时移除规则，不尝试替代路径；`error` 在普通能力或数据失败时阻止安装。harness 过滤、M1 不求值的 provider、native 留到 M2、固有工具盲区等前置分支仍按各自状态报告，不承诺 error 拦住所有未生效规则。
+`degrade` 允许最终跳过，不保证保留规则。`skip` 在普通能力不足时移除规则，不尝试替代路径；`error` 在普通能力或数据失败时阻止安装。harness 过滤、native 映射和固有工具盲区等前置分支仍按各自状态报告，不承诺 error 拦住所有未生效规则。
 
 当前实例与源码入口见 [adapter 总览 §6](../STYLE-ADAPTERS-CURRENT.md#6-fallback当前代码语义)。Codex `subagent.start` 已真实投递，不再作为缺能力的例子。Claude 各事件用户提示可见性仍待 FINAL-06 实测，表中声明不等同完整 UI 验收。
 
@@ -135,13 +135,14 @@ reads:
   harness: [name, version, cwd, permission_mode, agent, session_id, turn_id]
 ```
 
-键为 `model`、`thinking_effort`、`harness`，M3-T41 增加 `event` 完整字段列表（§8.2）。模板或 `when` 用了没声明的数据，报错 `reads-missing`；声明了没用，给警告 `reads-unused`。规则文件 frontmatter 里的 `reads` 并入包级。
+键为 `model`、`provider`、`thinking_effort`、`harness`，M3-T41 增加 `event` 完整字段列表（§8.2）。模板或 `when` 用了没声明的数据，报错 `reads-missing`；声明了没用，给警告 `reads-unused`。规则文件 frontmatter 里的 `reads` 并入包级。
 
 **两家的数据从哪来**：
 
 | 数据 | Codex | Claude Code |
 |---|---|---|
 | `model` | 每个事件 stdin 的 `model`【源码】 | 只有 SessionStart 带，而且不一定有（例如 `/clear` 之后）；之后用 `PostModelSwitch` 的 `to_model` 更新【文档】 |
+| `provider` | 明确启动 model_provider → 文件 profile → 用户 → openai 默认；仅可恢复启动和已知文件式版本，排除项目层。缺失/错误为缺值，每会话按需缓存 | hook 进程服务选择开关 → anthropic 默认；冲突/托管/端点/未支持路线为缺值，每事件刷新并清除旧值；均为配置请求，见[说明](../STYLE-PROVIDER.md) |
 | `thinking_effort` | **hook 输入里没有**。读配置里的请求值 `model_reasoning_effort`，0.159.3 按第一个有值的来源解析：命令行 `-c model_reasoning_effort=…`（从祖先进程恢复）→ 明确受信项目 `.codex/config.toml` → `-p` 指定的 `CODEX_HOME/<name>.config.toml` → 用户 `config.toml`。**判断不了项目信任就不读项目层**；生产当前采用此回退。缺失 profile 文件可继承用户配置；新 CLI 拒绝 legacy profile selector/选中 table。旧/未知版本保留原表式 profile → 受信项目 → 用户的兼容解析。配置都没有就取不到，不推断模型默认强度。每个会话第一次需要时解析一次。会话中途 `/model` 改强度看不到；`plan_mode_reasoning_effort` 不读【M1-FINAL-02 配置实测；模型投递独立验收】 | 每个事件按 `effort.level` → `$CLAUDE_EFFORT` → 状态最近一次值解析；显式未知原值清除旧tier，不回退旧档位。FINAL-06实际工具前/后/失败两处均有值，启动/提示/显式技能均没有；所测关闭配置仍为adaptive，不产出none，未观测实际off原值 |
 | 回合 | `turn_id`，SessionStart 上没有【源码】 | `prompt_id`，第一条提示之前没有【文档】 |
 | 会话来源 | SessionStart 的 `source` | 同左 |
@@ -149,7 +150,7 @@ reads:
 | `cwd`、`permission_mode`、`session_id` | stdin | stdin |
 | harness 版本 | 适配器安装时检测，写进锁文件 | 同左 |
 
-**状态刷新**：事件里带了值就覆盖状态；没带就读状态；**从不用空值覆盖**已有的值。状态按会话保存（CLI 设计 5.3）。
+**状态刷新**：事件里带了值就覆盖状态；没带就读状态；**从不用空值覆盖**已有的值。状态按会话保存（CLI 设计 5.3）。provider 是完整读数：明确缺值清除旧服务，按需可选字段不改变旧规则 state。
 
 ## 7. token 预算
 
@@ -318,4 +319,4 @@ D5 模板字段/可用事件沿 §4 条件字段定义；`reads.event` 精确列
 
 ## M3-D6 provider 与 unknown
 
-[D6 契约](../review/M3-D6-PROVIDER-UNKNOWN-2026-10-17.md)规定 Codex 明确启动参数或文件 profile/用户层，provider 排除项目层，不照搬 effort；Claude 使用服务环境白名单，托管/自定义端点/冲突为缺值。只解析显式需要的 provider，来源固定码；explain 仅用绑定事实。unknown 只在 model/provider/thinking_effort/harness.permission_mode 显式匹配空 canonical 值，普通规则缺值不满足。使用 index 4；T42/A11、T43/A12 尚待实现验收。
+[D6 契约](../review/M3-D6-PROVIDER-UNKNOWN-2026-10-17.md)规定 Codex 明确启动参数或文件 profile/用户层，provider 排除项目层，不照搬 effort；Claude 使用服务环境白名单，托管/自定义端点/冲突为缺值。只解析显式需要的 provider，来源固定码；explain 仅用绑定事实。unknown 只在 model/provider/thinking_effort/harness.permission_mode 显式匹配空 canonical 值，普通规则缺值不满足。使用 index 4；T42/A11 已通过[离线验收](../review/M3-A11-2026-10-17.json)，T43/A12 尚待实现。

@@ -31,6 +31,9 @@ func (v *validator) collectReads() {
 		if enabled, _ := reads["model"].(bool); enabled {
 			v.declaredReads["model"] = true
 		}
+		if enabled, _ := reads["provider"].(bool); enabled {
+			v.declaredReads["provider"] = true
+		}
 		if enabled, _ := reads["thinking_effort"].(bool); enabled {
 			v.declaredReads["thinking_effort"] = true
 		}
@@ -55,7 +58,7 @@ func (v *validator) validateReads(value any, source string) {
 	for _, key := range sortedMapKeys(reads) {
 		item := reads[key]
 		switch key {
-		case "model", "thinking_effort":
+		case "model", "provider", "thinking_effort":
 			if enabled, ok := item.(bool); !ok || !enabled {
 				v.add("invalid-schema", source, fmt.Sprintf("reads.%s must be true", key))
 			}
@@ -107,10 +110,10 @@ func (v *validator) requireRuntimeRead(name, source string) {
 		}
 		return
 	}
-	if name == "model" {
+	if name == "model" || name == "provider" {
 		v.usedReads[name] = true
 		if !v.declaredReads[name] {
-			v.add("reads-missing", source, "model is used but not declared in reads")
+			v.add("reads-missing", source, name+" is used but not declared in reads")
 		}
 		return
 	}
@@ -152,7 +155,7 @@ func (v *validator) reportUnusedReads() {
 		if reads == nil {
 			continue
 		}
-		for _, key := range []string{"model", "thinking_effort"} {
+		for _, key := range []string{"model", "provider", "thinking_effort"} {
 			if enabled, _ := reads[key].(bool); enabled && !v.usedReads[key] {
 				v.warn("reads-unused", declaration.source, "reads."+key+" is declared but unused")
 			}

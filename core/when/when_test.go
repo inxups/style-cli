@@ -206,7 +206,7 @@ func TestApproximationAndProviderSemantics(t *testing.T) {
 		t.Fatal(err)
 	}
 	if Match(providerRule, Input{}) {
-		t.Fatal("provider conditions are accepted but never match in M1")
+		t.Fatal("provider conditions require a present service identifier")
 	}
 	encoded, err := json.Marshal(providerRule)
 	if err != nil {

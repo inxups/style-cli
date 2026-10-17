@@ -10,9 +10,10 @@ import (
 
 const (
 	// Format is the stable on-disk index format emitted by M1.
-	Format        = 1
-	RefreshFormat = 2
-	EventFormat   = 3
+	Format         = 1
+	RefreshFormat  = 2
+	EventFormat    = 3
+	ProviderFormat = 4
 )
 
 // PackageInfo identifies one installed package in the index. Seq is the

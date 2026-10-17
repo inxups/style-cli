@@ -24,6 +24,8 @@ type Rule struct {
 
 // Input contains data enriched by the active harness adapter.
 type Input struct {
+	Provider             string
+	ProviderSource       string
 	Model                string
 	ThinkingEffort       string
 	ThinkingEffortApprox *bool

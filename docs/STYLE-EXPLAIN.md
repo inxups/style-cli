@@ -45,7 +45,7 @@ index 默认取 `$STYLE_HOME/build/index.json`，STYLE_HOME 未设时取 `~/.sty
 }
 ```
 
-全零摘要仅为格式示例，实际值可用 `shasum -a 256 f.json` 计算后加 `sha256:` 前缀。可选字段还有 `codex_config_effort`、`mcp: {server, tool}` 和成功 Claude Skill PostToolUse 的 `claude_skill_content`。跨 harness、未知字段、null、摘要不符或与已知 MCP 身份冲突会失败；空字符串和省略分别处理。effort 优先级与现有 runtime 相同，Codex 已解析 session 仍用缓存。
+全零摘要仅为格式示例，实际值可用 `shasum -a 256 f.json` 计算后加 `sha256:` 前缀。可选字段还有 `model_provider`（受限服务 ID；省略/空串为缺值，覆盖快照中的 provider，不读取外部来源）、`codex_config_effort`、`mcp: {server, tool}` 和成功 Claude Skill PostToolUse 的 `claude_skill_content`。跨 harness、未知字段、null、摘要不符或与已知 MCP 身份冲突会失败；空字符串和省略分别处理。effort 优先级与现有 runtime 相同，Codex 已解析 session 仍用缓存。
 
 payload/index/facts/编译说明上限分别为 32/16/1/16 MiB，文件必须为普通文件；拒绝叶项 symlink、FIFO 等。快照 JSON 单文件上限 64 KiB，seen 只接受空占位文件、最多 10,000 个，复制总量最多 16 MiB。Skill 补充正文最多 65,536 字节。
 

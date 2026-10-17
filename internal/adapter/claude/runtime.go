@@ -26,9 +26,13 @@ var _ adapter.RuntimeEnricher = (*Enricher)(nil)
 // persisted session value. The optional Environment callback is injectable for
 // tests and embedders; a nil callback reads CLAUDE_EFFORT from the process.
 type Enricher struct {
-	HarnessVersion string
-	Environment    func() string
-	InputLimit     tokens.InputLimit
+	providerEnabled     bool
+	ProviderEnvironment func(string) (string, bool)
+	OfflineProvider     *string
+	ProviderOffline     bool
+	HarnessVersion      string
+	Environment         func() string
+	InputLimit          tokens.InputLimit
 }
 
 // NewEnricher constructs a Claude runtime adapter with Claude's documented
@@ -59,6 +63,7 @@ func (enricher *Enricher) StateUpdate(event *agenthooks.Event, typed any, previo
 		}
 	}
 
+	enricher.updateProvider(&update, event, previous)
 	eventEffort := event.Session.EffortRaw
 	if eventEffort == "" {
 		eventEffort = rawString(event.RawField("effort.level"))
@@ -183,6 +188,10 @@ func (enricher *Enricher) Enrich(event *agenthooks.Event, typed any, session sta
 		input.Points = []engine.Point{newPoint(event, plan.SubagentStart, variables, nil, nil, "")}
 	}
 	for i := range input.Points {
+		if enricher != nil && enricher.providerEnabled {
+			input.Points[i].When.Provider = session.ModelProvider
+			input.Points[i].When.ProviderSource = session.ProviderSource
+		}
 		if input.Points[i].When.AgentID == "" && scope.AgentID != "main" {
 			input.Points[i].When.AgentID = scope.AgentID
 		}
@@ -192,6 +201,9 @@ func (enricher *Enricher) Enrich(event *agenthooks.Event, typed any, session sta
 
 func sessionVariables(event *agenthooks.Event, session state.Session, scope state.Scope, enricher *Enricher) map[string]string {
 	variables := make(map[string]string, 16)
+	if enricher != nil && enricher.providerEnabled && session.ModelProvider != "" {
+		variables["provider"] = session.ModelProvider
+	}
 	model := session.Model
 	if model == "" {
 		model = event.Session.Model

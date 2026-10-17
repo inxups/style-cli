@@ -75,6 +75,15 @@ func RenderForEstimate(source string, context Context) (string, error) {
 			rendered.WriteString(template.EstimateEvent(part.Name))
 			continue
 		}
+		if part.Name == "provider" {
+			// Identifiers can contain punctuation; count the worst allowed width and
+			// the explicit fallback conservatively, without changing legacy estimates.
+			rendered.WriteString(strings.Repeat(".", 64))
+			if part.HasDefault {
+				rendered.WriteString(part.Default)
+			}
+			continue
+		}
 		if template.IsRuntimeVariable(part.Name) {
 			length := 64
 			if part.Name == "harness.cwd" {

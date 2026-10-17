@@ -63,6 +63,8 @@ func RequirementFor(rule spec.Rule) (Requirement, error) {
 	requirement.HasWhen = len(when) > 0
 	if _, exists := when["provider"]; exists {
 		requirement.ProviderCondition = true
+		requirement.Needs = append(requirement.Needs, "provider")
+		requirement.ConditionNeeds = append(requirement.ConditionNeeds, "provider")
 	}
 	requirement.Needs = append(requirement.Needs, "agent")
 	requirement.ConditionNeeds = append(requirement.ConditionNeeds, "agent")

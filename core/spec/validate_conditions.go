@@ -54,8 +54,13 @@ func (v *validator) validateWhen(value any, rule Rule, source string) {
 			if !isStringOrStringList(item) {
 				v.add("invalid-schema", source, "when.provider must be a string or list of strings")
 			} else {
-				v.warn("provider-unimplemented", source, "when.provider is accepted but not evaluated in M1")
+				for _, id := range stringValues(item) {
+					if !stylewhen.ValidProviderID(id) {
+						v.add("bad-provider-id", source, "when.provider requires bounded service identifiers")
+					}
+				}
 			}
+			v.requireRuntimeRead("provider", source)
 		default:
 			v.add("invalid-schema", source, fmt.Sprintf("unknown when field %q", key))
 		}

@@ -136,13 +136,13 @@ func (t *Template) IsDynamic() bool { return t.Classify() == Dynamic }
 // and literal text.
 func (t *Template) IsStatic() bool { return t.Classify() == Static }
 
-// IsRuntimeVariable reports whether name denotes runtime data in STYLE M1.
+// IsRuntimeVariable reports whether name denotes runtime data in STYLE.
 // It includes variables that validation may separately reject from templates
 // (such as event-content variables), so classification never treats runtime
 // data as install-time data.
 func IsRuntimeVariable(name string) bool {
 	switch name {
-	case "model", "thinking_effort", "thinking_effort_raw",
+	case "model", "provider", "thinking_effort", "thinking_effort_raw",
 		"prompt", "tool.name", "tool.input", "tool.added", "tool.output",
 		"mcp.server", "mcp.tool", "skill.name":
 		return true
