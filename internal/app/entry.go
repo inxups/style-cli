@@ -65,6 +65,8 @@ func RunWithService(ctx context.Context, service *Service, workDir string, args 
 		return runProjectCommand(ctx, service, workDir, args, out, errOut)
 	}
 	switch args[0] {
+	case "export":
+		return runExport(ctx, service, args[1:], out, errOut)
 	case "init":
 		return runInit(ctx, service, workDir, args[1:], out, errOut)
 	case "validate":
@@ -100,6 +102,7 @@ func printUsage(out io.Writer) {
 	fmt.Fprintln(out, "style validate [source] [--ref ref] [--path repo-path] [--json]")
 	fmt.Fprintln(out, "style plan <source> [--ref ref] [--path repo-path] [--harness auto|codex,claude-code] [--assume-requests N] [--assume-triggers N] [--json]")
 	fmt.Fprintln(out, "style install <source> [--ref ref] [--path repo-path] [--harness h] [--route h=r] [--set k=v] [--link] [--allow-replace] [--fail-closed h] [--yes] [--json]")
+	fmt.Fprintln(out, exportUsage)
 	fmt.Fprintln(out, frozenUsage)
 	fmt.Fprintln(out, updateUsage)
 	fmt.Fprintln(out, "style uninstall <name|--all> [--yes] [--json]")

@@ -239,7 +239,7 @@ T22/A5 的恢复实现与 [使用说明](../STYLE-SOURCES.md#整锁离线恢复)
 
 项目范围只选 `codex-project`、`claude-project`。用户/项目不同名包可共存，同一 harness 同名包双向阻断；两个项目同名独立。Codex 项目不写 developer_instructions，沿既有动态降级，避免覆盖用户指令；项目 hook 在 R/.codex，哈希信任在用户 CODEX_HOME，STYLE 不写项目信任。Claude 写共享 settings.json 与项目 rules，动态要求从根启动；静态向上发现与 hook 发现分开诊断。
 
-T31 提议 `style export --target claude-cloud --project <dir> [--yes] [--json]`：导出已批准预编译 bundle 与完整摘要，沿用 sensitive-reserved 拒绝、阻止结构化私有路径引用并完整披露普通值；单仓库 Anthropic 托管会话由环境预置固定 runner，SessionStart 不自动下载/取源/编译。state 等运行数据留在云端私有 HOME，缺运行时/摘要漂移不回落到用户 index。native 原文和外部依赖完整披露、实际云端另验。
+T31 已实现 `style export --target claude-cloud --project <dir> [--yes] [--json]`：导出已批准预编译 bundle 与完整摘要，沿用 sensitive-reserved 拒绝、阻止结构化私有路径引用并完整披露普通值；单仓库 Anthropic 托管会话由环境预置固定 runner，SessionStart 不自动下载/取源/编译。state 等运行数据留在云端私有 HOME，缺运行时/摘要漂移不回落到用户 index。native 原文和外部依赖完整披露、实际云端另验。
 
 T32 提议用户级 `claude-plugin`，本地目录 marketplace，`${CLAUDE_PLUGIN_ROOT}/scripts/style` 启动，不用顶层 bin；手动原生登记/卸载。与 claude-user hook 载体互斥切换，静态仍在用户 rules，插件禁用不代表静态移除。原生 CLI 的空键/缓存残留单列，不直接编辑原生数据库或承诺其字节还原。
 
@@ -935,3 +935,5 @@ Claude U9、U-C1/C2/C3/C5 已由用户界面观察、原生请求/hook及state�
 - `refresh` 已由 T40 按 [D4](../review/M3-D4-REFRESH-2026-10-17.md) 实现；事件内容带围栏进模板、`--count=exact`、用户自定义 effort 映射、"取不到"能否用 `unknown` 匹配、`provider` 的数据来源、规则级 `fail: closed`：M3。
 - Codex 会话中途 `/model` 改强度看不到，这是"只读配置"的代价；要不要补办法，M3 之后再说。
 - 只有开关的模型（Kimi、GLM）的开关从哪读：跟着这些 harness 一起推迟到 M4。
+
+M3-T31 已通过 [A7](../review/M3-A7-2026-10-17.json)，云端 export/entry v1 的当前行为见[使用说明](../STYLE-CLOUD.md)；C3 真实托管环境单独验收。

@@ -39,7 +39,7 @@ func runProjectCommand(ctx context.Context, service *Service, workDir string, ar
 		return ExitInvalid
 	}
 	switch args[0] {
-	case "plan", "install", "update", "uninstall", "list", "sync", "trust", "doctor", "stats", "probe", "explain", "adapters":
+	case "export", "plan", "install", "update", "uninstall", "list", "sync", "trust", "doctor", "stats", "probe", "explain", "adapters":
 	default:
 		return fail(&UsageError{Message: "--project is not supported by this command"})
 	}

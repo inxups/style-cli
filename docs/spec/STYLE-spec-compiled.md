@@ -263,3 +263,5 @@ cloud manifest format=1 与管理锁分开：相对路径/生成器与 runner �
 | 档位 | `none` | `minimal` | `low` | `medium` | `high` | `xhigh` | 取不到 |
 
 **能力提醒**：Cursor 的 `additional_context` 能否送到模型各方说法矛盾；Gemini 会转义 `<>`；Kimi 只有提示词事件的纯文本能进上下文；Windsurf 完全不能注入；OpenCode 是进程内函数，每次请求重建系统提示词，不需要压缩处理。加这些 harness 时，压缩信号可能需要"信号和动作分开、延后补发"的做法（历史材料 `style-review/solution-2026-10-12.md` A2 未随本仓库分发），适配器接口里的 `CompactSignal()` 就是为它留的。
+
+M3-T31 已实现 cloud manifest format 1、相对逻辑来源、绑定文件摘要与私有 export receipt；支持显式重新导出和最后卸载的同事务移除，见[云端说明](../STYLE-CLOUD.md)。

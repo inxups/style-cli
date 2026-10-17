@@ -579,6 +579,11 @@ func (s *Service) projectFiles(home string, old lockDocument, next *lockDocument
 	}
 	removing := len(next.Packages) == 0
 	if removing {
+		cloudRemovals, e := s.removeCloudExport(home, inputs)
+		if e != nil {
+			return nil, e
+		}
+		files = append(files, cloudRemovals...)
 		delete(registry.Projects, filepath.Base(home))
 		for _, name := range []string{projectDeclarationPath, projectLauncherPath} {
 			removals, e := plannedRemoval(filepath.Join(p.Root, name))

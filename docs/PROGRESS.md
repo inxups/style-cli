@@ -1818,3 +1818,11 @@ PY
 - 用户明确“开始推进，所有评审全部通过，完全完成M3”。覆盖此前 T31/T32 暂缓决定，批准 D3 §6–7 及后续设计由 agent 记录契约后直接实施；不再逐项请求设计确认。
 - D3 整体设计关闭；T31/A7、T32/A8 和后续功能、真实投递、计数、Windows、CI、最终验收仍按实际证据独立判定。官方校准两家各 0/40 非阻塞状态不变。
 - 基线 clean cc399c5fc76124dd085d96b6e6fb65feec415bdd；当前只更新设计授权与当前入口，PROGRESS 仅追加，M1/M2 归档和历史 JSON 未改。提交前检查链接、状态和 git diff --check。
+
+## 2026-10-17 — M3-T31 / M3-A7 云端交付产物完成 [x]
+
+- 基线 `34d1b73def70430d427d06b4fac148548ec42a72`，按已批准 D3 §6 实现显式 `export --target claude-cloud --project`。捕获并核对批准安装，完整披露正文/普通字符串/native；生成 manifest/index/explain 和私有 receipt，不改锁、不批准、不取源。manifest 绑定逻辑来源、兼容版本、所有必需项目文件与 generation；云端从 root 校验后运行，状态/cache/stats/probe 在仓库外 HOME。
+- 漂移/坏 JSON/缺文件/版本/路径/symlink/摘要/未知文件拒绝；新 clone 不依赖本机批准仓库，local 模式仍核对私有 binding。重导出明确更新旧快照，doctor 报陈旧；最后卸载带 bundle 删除预览并同事务移除，修改过的导出不静默删除。agenthooks 的 codec、原生渲染/owner/ApplyFiles 保持原职责，源码及 module 依赖未改。
+- 临时三缓存及清理 CODEX_HOME/CODEX_SANDBOX/STYLE_HOME/Claude/录制等外部变量，runner 全文见 [A7 报告](review/M3-A7-2026-10-17.json)。9 个新函数，54 条含分组 pass，专项 race 同 54 pass；根 module fresh `go test ./... -count=1 -json` 为 2,989 pass/0 fail，2 项既有 opt-in/helper skip 单列；vet、40 smoke、8 项 built CLI 通过。后者实际调用导出配置中的普通与 portable native fixture，缺依赖返回 127，缺 runner、篡改无回落，并核对原安装/仓库不被 runtime 写入。
+- 首轮 test helper 参数数目错误；第二轮两项 fixture 预期（native 条数、state 路径）修正，并发现 export 忽略额外 settings 键的真实缺口，已加入精确键校验。所有失败与修正后日志摘要保留。逐检查点取消与多包/部分/最后卸载覆盖失败恢复；确认回调拿到 detached 预览，漂移或取消不写部分产物。
+- 当前仅关闭 T31/A7，A7-01–A7-06 全部通过。真实托管云端 C3、其他真实 B/C、exact、Windows、远端 CI 与两家各 0/40 官方计数不据此关闭。下一项 T32/A8 Claude 插件。文档链接/锚点/围栏、归档/历史 JSON 原样、PROGRESS 仅追加、源码摘要、gofmt/Python 语法及 diff --check 见本轮文档检查。

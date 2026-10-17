@@ -22,11 +22,13 @@ type UninstallRequest struct {
 }
 
 type UninstallResult struct {
-	StaticMigrations []adapter.StaticMigration `json:"static_migrations,omitempty"`
-	Removed          []string                  `json:"removed"`
-	Remaining        []string                  `json:"remaining"`
-	Routes           []string                  `json:"routes"`
-	Changed          bool                      `json:"changed"`
+	CloudFiles           []string                  `json:"cloud_files,omitempty"`
+	AwaitingConfirmation bool                      `json:"awaiting_confirmation,omitempty"`
+	StaticMigrations     []adapter.StaticMigration `json:"static_migrations,omitempty"`
+	Removed              []string                  `json:"removed"`
+	Remaining            []string                  `json:"remaining"`
+	Routes               []string                  `json:"routes"`
+	Changed              bool                      `json:"changed"`
 }
 
 // Uninstall removes selected packages and rebuilds each managed adapter route
@@ -37,7 +39,12 @@ func (s *Service) Uninstall(ctx context.Context, request UninstallRequest) (fina
 		return UninstallResult{}, err
 	}
 	if !request.Yes {
-		return UninstallResult{}, &UsageError{Message: "uninstall requires confirmation; pass --yes in non-interactive mode"}
+		if s.project == nil {
+			return UninstallResult{}, &UsageError{Message: "uninstall requires confirmation; pass --yes in non-interactive mode"}
+		}
+		if _, err := os.Lstat(filepath.Join(s.project.Home, cloudReceiptName)); err != nil {
+			return UninstallResult{}, &UsageError{Message: "uninstall requires confirmation; pass --yes in non-interactive mode"}
+		}
 	}
 	if request.All == (strings.TrimSpace(request.Name) != "") {
 		return UninstallResult{}, &UsageError{Message: "specify one package name or --all"}
@@ -195,6 +202,19 @@ func (s *Service) Uninstall(ctx context.Context, request UninstallRequest) (fina
 	}
 	if err = inputs.planned(changes); err != nil {
 		return result, err
+	}
+	if s.project != nil {
+		for _, change := range changes {
+			if within(filepath.Join(s.project.Root, cloudDir), change.Path) {
+				rel, _ := filepath.Rel(s.project.Root, change.Path)
+				result.CloudFiles = append(result.CloudFiles, filepath.ToSlash(rel))
+			}
+		}
+		sort.Strings(result.CloudFiles)
+	}
+	if !request.Yes {
+		result.AwaitingConfirmation = true
+		return result, nil
 	}
 	guard, err := acquireInputs(ctx, inputs, home)
 	if err != nil {

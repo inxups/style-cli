@@ -311,3 +311,5 @@ STYLE 的 hook 输出**只允许**这几样：`additionalContext`、`systemMessa
 本节为已获用户确认并由 T40 实现的 [D4 §3–8](../review/M3-D4-REFRESH-2026-10-17.md#3-回合时钟)。新增时钟/原生 ID 摘要收据/正文游标独立于旧 session/scope/seen，按真实 state 根、harness、session/agent 隔离；跨进程保护覆盖更新、claim 与释放，锁等待上限 20ms，失败继续既有 runtime/codec 策略。原生 ID 不可做数字运算，缺失时明确披露回调计数局限，不哈希提示正文作身份，不读 transcript 补历史。
 
 snapshot/explain 必须捕获新增状态并保留只读、严格解码、文件身份、总量和漂移检查；原生 ID、事件/模板正文和私有路径不得进入日志或说明。占位早于 stdout，进程崩溃可能损失本次补发，不能把 output 视为原生已投递。agenthooks 保持 codec、事件表与配置渲染职责；当前锁实现支持 macOS/Linux，Windows 仍待 D11/T70。新增 `refresh/<harness>.json` 为独立 format 1，单文件 4 MiB、收据与游标合计 40,000 项；snapshot 总限额仍为 16 MiB / 10,000 文件，源锁只读取得且不复制。冷路径清理先取得同一锁再隔离过期目录，活动写入者保持。实现/恢复边界见 [使用说明](../STYLE-REFRESH.md) 与 [A9](../review/M3-A9-2026-10-17.json)。
+
+M3-T31 的 Claude 项目入口在 `CLAUDE_CODE_REMOTE=true` 时实际校验 cloud entry v1；仅从根目录的完整 bundle 加载，状态位于仓库外 HOME。失败走原 codec/策略，不回落本机私有 binding。见[云端说明](../STYLE-CLOUD.md)。

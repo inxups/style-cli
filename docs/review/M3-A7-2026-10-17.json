@@ -1,0 +1,456 @@
+{
+  "format": 1,
+  "task": "M3-T31",
+  "acceptance": "M3-A7",
+  "date": "2026-10-17",
+  "baseline": "34d1b73def70430d427d06b4fac148548ec42a72",
+  "status": "passed-offline",
+  "scope": "Approved Claude project export and cloud entry v1; no hosted cloud or model invocation",
+  "source_sha256": {
+    "internal/app/cloud.go": "4649536054ab1f733e3768198bc9c9bb714a9066530ffc1865ddd5453ba696cf",
+    "internal/app/cloud_command.go": "fc13f31a2c77db305b5b1ab7a130a7795d8e4edc7248d28f45927163ecc705e9",
+    "internal/app/cloud_test.go": "6fca718628f98ede3011149196fffadb31b9738f8dd00c99da93c7f1e16ebdae",
+    "internal/app/doctor.go": "c931e69fe4b929e106a2522dda15651338b0c5e2eb07f6d5f9377c4ade02af45",
+    "internal/app/entry.go": "3e595aa50da289d7bb804f52f389567ae7505b73c40fe22dcf4fdfe948e3668c",
+    "internal/app/hook_command.go": "2616cf9ecacef32cd6c1880b138b73daf99dd6ff26de891aad7e08c743e8d752",
+    "internal/app/lifecycle_command.go": "09d8a5459c1492d5e1f28c284a0fa0f433b3373e99c1eba7b99d05c2b299fd47",
+    "internal/app/project.go": "54b81fcce7474aef6c6638a3cb55f8f591db93dda12ef7f55013cebdba524d58",
+    "internal/app/project_command.go": "d5dcbb25c148d89559324df2a0406e169686528f2d2bc9c2a97951d7ed62e93d",
+    "internal/app/uninstall.go": "5a47ec76a690d889bdf3d42463711144c661eb7cf9adc4c08841b4b4cb59cc04",
+    "scripts/check_m3_cloud.py": "b6b9814fc3863da5c74dbaa77b93277f4b9867e1a5cacda97a15ef5dec960680"
+  },
+  "binary_sha256": "fd251baf9cdc73e63ddbad2138daab8cc0f0d4d7cb16b400d1f6debb7bb84104",
+  "runner_source": "import json,os,subprocess,sys,time\nfrom pathlib import Path\nroot=Path('/tmp/style-m3-complete-20261017');name=sys.argv[1];cmd=sys.argv[2:];env=os.environ.copy()\nfor key in ['CODEX_HOME','CODEX_SANDBOX','STYLE_HOME','CLAUDE_CONFIG_DIR','CLAUDE_CODE_CONFIG_DIR','CLAUDE_CODE_EFFORT_LEVEL','CLAUDE_EFFORT','PLUGIN_ROOT','STYLE_PERF','STYLE_PERF_OUTPUT','STYLE_M3_A6_RECORD','STYLE_UPDATE_GOLDENS','STYLE_REFRESH_HELPER','STYLE_REFRESH_TURN','STYLE_REFRESH_WORKER']:env.pop(key,None)\nfor key,value in {'GOPATH':'gopath','GOMODCACHE':'modcache','GOCACHE':'gocache'}.items():env[key]=str(Path('/tmp/style-m3-project-20261017')/value)\nenv['GOPROXY']='off';env['GOFLAGS']='-mod=readonly';env['GOWORK']='off';start=time.time()\nwith (root/(name+'.log')).open('wb') as f:p=subprocess.run(cmd,env=env,stdout=f,stderr=subprocess.STDOUT)\nresult={'command':cmd,'exit_code':p.returncode,'seconds':round(time.time()-start,3),'environment':{key:env[key] for key in ['GOPATH','GOMODCACHE','GOCACHE','GOPROXY','GOFLAGS','GOWORK']}}\n(root/(name+'.json')).write_text(json.dumps(result,indent=2)+'\\n');print(json.dumps(result))\nif p.returncode:\n lines=(root/(name+'.log')).read_text().splitlines();events=[]\n for line in lines:\n  try:events.append(json.loads(line))\n  except:pass\n failed=[v.get('Test') for v in events if v.get('Action')=='fail' and v.get('Test')]\n if failed:\n  for test in failed:print(test, ''.join(v.get('Output','') for v in events if v.get('Test')==test)[-2200:])\n else: print('\\n'.join(lines[-35:]))\nsys.exit(p.returncode)\n",
+  "runs": [
+    {
+      "command": [
+        "go",
+        "test",
+        "./internal/app",
+        "-run",
+        "^TestM3A6ProjectLifecycle$",
+        "-count=1",
+        "-json"
+      ],
+      "exit_code": 0,
+      "seconds": 2.538,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "name": "cloud-compile",
+      "log_sha256": "1a9e3fdcd7a7580320a599dd7e1209b1c77889fab6b320b3aa6b654dfec87bff",
+      "counts": {
+        "pass": 3
+      }
+    },
+    {
+      "command": [
+        "go",
+        "test",
+        "./internal/app",
+        "-run",
+        "^TestM3A7",
+        "-count=1",
+        "-json"
+      ],
+      "exit_code": 1,
+      "seconds": 0.2,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "name": "cloud-tests-1",
+      "log_sha256": "021af5242162da917895417b9f2eb6624353868b62ef056588ccdb3be054ca3d",
+      "counts": {}
+    },
+    {
+      "command": [
+        "go",
+        "test",
+        "./internal/app",
+        "-run",
+        "^TestM3A7",
+        "-count=1",
+        "-json"
+      ],
+      "exit_code": 1,
+      "seconds": 4.058,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "name": "cloud-tests-2",
+      "log_sha256": "ae2dc43d249b48e27ca2371cd4f81fdb05f2ea1e3e90a29abba275bf7c230ac5",
+      "counts": {
+        "fail": 4,
+        "pass": 29
+      }
+    },
+    {
+      "command": [
+        "go",
+        "test",
+        "./internal/app",
+        "-run",
+        "^TestM3A7",
+        "-count=1",
+        "-json"
+      ],
+      "exit_code": 0,
+      "seconds": 3.646,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "name": "cloud-tests-3",
+      "log_sha256": "ae502030e63114352677a894a0b4c675230877340b9017578a85190eb9d8dd52",
+      "counts": {
+        "pass": 33
+      }
+    },
+    {
+      "command": [
+        "go",
+        "test",
+        "./internal/app",
+        "-run",
+        "^TestM3A7",
+        "-count=1",
+        "-json"
+      ],
+      "exit_code": 0,
+      "seconds": 5.341,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "name": "cloud-tests-4",
+      "log_sha256": "71c39415f4ab4c2894378ded56bd067cb066267ad981d42b1d98f665ea266bc5",
+      "counts": {
+        "pass": 54
+      }
+    },
+    {
+      "command": [
+        "go",
+        "test",
+        "./internal/app",
+        "-run",
+        "^TestM3A7",
+        "-count=1",
+        "-json"
+      ],
+      "exit_code": 0,
+      "seconds": 5.393,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "name": "cloud-tests-final",
+      "log_sha256": "f56cb4a1e2b3da03818d8e80bd361190bb6f4a70d93b62b97db9d35b5ec92ea0",
+      "counts": {
+        "pass": 54
+      }
+    },
+    {
+      "command": [
+        "go",
+        "build",
+        "-trimpath",
+        "-buildvcs=false",
+        "-o",
+        "/tmp/style-m3-complete-20261017/style-cloud",
+        "./cmd/style"
+      ],
+      "exit_code": 0,
+      "seconds": 0.81,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "name": "cloud-build",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "counts": {}
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/check_m3_cloud.py",
+        "--binary",
+        "/tmp/style-m3-complete-20261017/style-cloud",
+        "--report",
+        "/tmp/style-m3-complete-20261017/cloud-cli-report.json"
+      ],
+      "exit_code": 0,
+      "seconds": 0.986,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "name": "cloud-cli",
+      "log_sha256": "042248173de164d555d7dc888bc48023748d70aa224a50ec8c5370454a51f976",
+      "counts": {}
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/check_m3_cloud.py",
+        "--binary",
+        "/tmp/style-m3-complete-20261017/style-cloud",
+        "--report",
+        "/tmp/style-m3-complete-20261017/cloud-cli-report.json"
+      ],
+      "exit_code": 0,
+      "seconds": 0.593,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "name": "cloud-cli-final",
+      "log_sha256": "f8b9ad401f1f807d476be38a795b4bc90951993f090100f03a594ed5aa6bd696",
+      "counts": {}
+    },
+    {
+      "command": [
+        "go",
+        "vet",
+        "./..."
+      ],
+      "exit_code": 0,
+      "seconds": 0.743,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "name": "cloud-vet",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "counts": {}
+    },
+    {
+      "command": [
+        "go",
+        "test",
+        "-race",
+        "./internal/app",
+        "-run",
+        "^TestM3A7",
+        "-count=1",
+        "-json"
+      ],
+      "exit_code": 0,
+      "seconds": 11.543,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "name": "cloud-race",
+      "log_sha256": "c92a3a66a8539056524fe9729cd33e7fc7931a44abe50d3d70e90e8da17db9b0",
+      "counts": {
+        "pass": 54
+      }
+    },
+    {
+      "command": [
+        "go",
+        "test",
+        "./...",
+        "-count=1",
+        "-json"
+      ],
+      "exit_code": 0,
+      "seconds": 108.088,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "name": "cloud-root",
+      "log_sha256": "03b56c908e3781913a0139c11407b947ae01c6352983da2d8f0549bc21751e9f",
+      "counts": {
+        "pass": 2989,
+        "skip": 2
+      }
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/smoke.py",
+        "/tmp/style-m3-complete-20261017/style-cloud"
+      ],
+      "exit_code": 0,
+      "seconds": 1.164,
+      "environment": {
+        "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+        "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+        "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+        "GOPROXY": "off",
+        "GOFLAGS": "-mod=readonly",
+        "GOWORK": "off"
+      },
+      "name": "cloud-smoke",
+      "log_sha256": "5039b6cbbaa0d673d3772dfa18b0e24352159e7f2ddf65dd8cdabcbff5e08b63",
+      "counts": {}
+    }
+  ],
+  "cli": {
+    "format": 1,
+    "binary_sha256": "fd251baf9cdc73e63ddbad2138daab8cc0f0d4d7cb16b400d1f6debb7bb84104",
+    "real_cloud": false,
+    "cases": [
+      {
+        "route": "claude-cloud",
+        "action": "full-preview-zero-write",
+        "status": "passed"
+      },
+      {
+        "route": "claude-cloud",
+        "action": "portable-deterministic-bundle",
+        "status": "passed"
+      },
+      {
+        "route": "claude-cloud",
+        "action": "fresh-clone-no-private-install-runtime",
+        "status": "passed",
+        "real_cloud": false
+      },
+      {
+        "route": "claude-cloud",
+        "action": "portable-native-command-and-static-file",
+        "status": "passed",
+        "real_delivery": false
+      },
+      {
+        "route": "claude-cloud",
+        "action": "missing-native-dependency-fails",
+        "status": "passed"
+      },
+      {
+        "route": "claude-cloud",
+        "action": "tamper-rejected-and-local-binding-required",
+        "status": "passed"
+      },
+      {
+        "route": "claude-cloud",
+        "action": "missing-runner-native-process-failure",
+        "status": "passed"
+      },
+      {
+        "route": "claude-cloud",
+        "action": "last-uninstall-preview-and-bundle-removal",
+        "status": "passed"
+      }
+    ]
+  },
+  "groups": [
+    {
+      "id": "A7-01",
+      "status": "passed",
+      "evidence": [
+        "TestM3A7PreviewDeterminismAndManifest",
+        "TestM3A7CLIAndUnsupportedScope",
+        "full-preview-zero-write",
+        "portable-deterministic-bundle"
+      ]
+    },
+    {
+      "id": "A7-02",
+      "status": "passed",
+      "evidence": [
+        "TestM3A7FreshCloneRemoteRuntimeAndIsolation",
+        "fresh-clone-no-private-install-runtime",
+        "portable-native-command-and-static-file"
+      ]
+    },
+    {
+      "id": "A7-03",
+      "status": "passed",
+      "evidence": [
+        "TestM3A7InputAndBundleFailures",
+        "TestM3A7ConfirmationDriftAndCancellation",
+        "unchanged root schema tests for sensitive-reserved rejection"
+      ]
+    },
+    {
+      "id": "A7-04",
+      "status": "passed",
+      "evidence": [
+        "TestM3A7RemoteFailuresUseCodecAndNoFallback",
+        "missing-native-dependency-fails",
+        "missing-runner-native-process-failure",
+        "tamper-rejected-and-local-binding-required"
+      ]
+    },
+    {
+      "id": "A7-05",
+      "status": "passed",
+      "evidence": [
+        "TestM3A7FreshCloneRemoteRuntimeAndIsolation",
+        "TestM3A7ReexportStaleAndUninstall"
+      ]
+    },
+    {
+      "id": "A7-06",
+      "status": "passed",
+      "evidence": [
+        "TestM3A7EveryCancellationRestoresFiles",
+        "TestM3A7MultiplePackagesAndPartialRemoval",
+        "TestM3A7ReexportStaleAndUninstall",
+        "last-uninstall-preview-and-bundle-removal"
+      ]
+    }
+  ],
+  "failures_retained": {
+    "cloud-tests-1": "test helper arity compile error; corrected only fixture calls",
+    "cloud-tests-2": "two fixture expectations (two native commands; actual state directory) corrected; real export gap found for unexpected settings keys and fixed by exact-key validation"
+  },
+  "compatibility": "Full root test suite passed with unchanged existing golden files; agenthooks and dependencies unchanged. Two pre-existing opt-in/helper skips remain separate.",
+  "remaining": "Actual single-repository Anthropic-hosted C3 delivery remains [?]; native workspace trust, native shell dependencies, model delivery, Windows and CI are not proven by local fixture checks."
+}
