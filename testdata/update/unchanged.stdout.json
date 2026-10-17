@@ -1,0 +1,171 @@
+{
+  "format": 1,
+  "command": "update",
+  "status": "unchanged",
+  "selected": [
+    "first"
+  ],
+  "changes": [
+    {
+      "package": "first",
+      "seq": 1,
+      "before": {
+        "source": {
+          "kind": "dir",
+          "path": "$FIXTURE/source",
+          "link": false
+        },
+        "version": "1.0.0",
+        "content_sha256": "sha256:47a06c1d6f7ba1f14744af583084fbc4074677fe473c95cab474cea1bf2f2093",
+        "settings": [],
+        "replace": false,
+        "link_trusted": false
+      },
+      "after": {
+        "source": {
+          "kind": "dir",
+          "path": "$FIXTURE/source",
+          "link": false
+        },
+        "version": "1.0.0",
+        "content_sha256": "sha256:47a06c1d6f7ba1f14744af583084fbc4074677fe473c95cab474cea1bf2f2093",
+        "settings": [],
+        "replace": false,
+        "link_trusted": false
+      },
+      "baseline_available": true,
+      "source_changed": false,
+      "rendered_changed": false,
+      "native_changed": false,
+      "configuration_repair": false,
+      "approval_changed": false,
+      "settings_added": [],
+      "settings_removed": []
+    }
+  ],
+  "reports": [
+    {
+      "package": "first",
+      "provider": "codex",
+      "route": "codex-user",
+      "native_limit": {
+        "value": 2500,
+        "unit": "tokens",
+        "approximate": true,
+        "source": "Codex additionalContext default",
+        "overflow": "file-preview"
+      },
+      "budget": {
+        "per_rule": 400,
+        "per_event": 1200,
+        "always_on": 600
+      },
+      "plan": {
+        "package": "first",
+        "adapter": "codex",
+        "rules": [
+          {
+            "id": "dynamic",
+            "source": "STYLE.yaml#dynamic",
+            "target": "tool",
+            "action": "inject",
+            "status": "native",
+            "needs": [
+              "agent"
+            ],
+            "placements": [
+              {
+                "event": "tool.pre",
+                "action": "inject",
+                "status": "native",
+                "capabilities": [
+                  "add-context"
+                ],
+                "repeat": "session"
+              }
+            ]
+          },
+          {
+            "id": "static",
+            "source": "STYLE.yaml#static",
+            "target": "system",
+            "action": "inject",
+            "status": "native",
+            "needs": [
+              "agent"
+            ],
+            "placements": [
+              {
+                "action": "inject",
+                "status": "native",
+                "static_slot": "developer_instructions"
+              }
+            ]
+          }
+        ],
+        "blocked": false
+      },
+      "tokens": {
+        "rules": [
+          {
+            "rule": "dynamic",
+            "action": "inject",
+            "status": "native",
+            "estimate": {
+              "tokens": 2,
+              "chars": 6
+            },
+            "events": [
+              "tool.pre"
+            ]
+          },
+          {
+            "rule": "static",
+            "action": "inject",
+            "status": "native",
+            "estimate": {
+              "tokens": 4,
+              "chars": 13
+            }
+          }
+        ],
+        "events": [
+          {
+            "key": "codex\u0000PreToolUse Bash",
+            "label": "PreToolUse Bash",
+            "estimate": {
+              "tokens": 2,
+              "chars": 6
+            },
+            "block": {
+              "tokens": 0,
+              "chars": 0
+            },
+            "other": {
+              "tokens": 2,
+              "chars": 6
+            },
+            "other_count": 1
+          }
+        ],
+        "always_on": {
+          "tokens": 4,
+          "chars": 13
+        }
+      },
+      "session_cost": {
+        "requests": 60,
+        "triggers": 3,
+        "always_on": 28.6,
+        "triggered": 8.5,
+        "total": 37.1
+      }
+    }
+  ],
+  "diagnostics": [],
+  "routes": [
+    "codex=codex-user"
+  ],
+  "changed": false,
+  "awaiting_confirmation": false
+}

@@ -2,7 +2,7 @@
 
 对应规范：[STYLE-spec.md](STYLE-spec.md)（v0.3）。规范定义包格式、运行时语义、token 预算、安全约束和 `index.json`；本文定义命令、本地布局、编译和运行时流程、Claude Code 与 Codex 两个适配器、token 估算器、fork 改动、里程碑、验收和未决项。冲突时，格式和语义以规范为准，实现细节以本文为准。
 
-状态（2026-10-17）：M1、M2 已关闭并只读归档；M2 的 native、stats、跨包去重、Claude rules/迁移与 replace 回退已验收，Codex/Claude 真实环境、本地回归和最终 Ubuntu/macOS CI 均通过，历史证据见 [M2 任务清单](../STYLE-M2-TASKS.md)、[测试矩阵](../STYLE-M2-TESTS.md)。当前里程碑为 M3，任务、依赖和验收状态以 [M3 任务清单](../STYLE-M3-TASKS.md)、[测试矩阵](../STYLE-M3-TESTS.md) 为准；建档和隔离环境基线已完成，D0 已获用户确认，T00 注册表校验修复和 A0 验收已完成；[D1 诊断契约评审稿](../review/M3-D1-DIAGNOSTICS-2026-10-17.md) 已获用户确认，explain 已实现并通过 [M3-A1](../review/M3-A1-2026-10-17.json)，probe 也已实现并通过 [M3-A2](../review/M3-A2-2026-10-17.json)；[D2 来源与锁定评审稿](../review/M3-D2-SOURCES-2026-10-17.md) 已于 2026-10-17 获用户确认，Git 来源已由 T20 实现并通过 [M3-A3](../review/M3-A3-2026-10-17.json)，update/frozen 待 T21/T22。官方 token 计数仍各 0/40，承接为 M3-CARRY-01 非阻塞待验；本地编码/订阅 usage 作为补充，不提供误差范围保证。核心名称校验硬编码风险 M3-RV-01 已随 T00/A0 关闭；engine 既有输出安全特例仍按 D8 评估。当前仅支持 **Claude Code** 和 **Codex**；本文接口代码为设计示意，当前接口与职责见 [adapter 总览](../STYLE-ADAPTERS-CURRENT.md)。
+状态（2026-10-17）：M1、M2 已关闭并只读归档；M2 的 native、stats、跨包去重、Claude rules/迁移与 replace 回退已验收，Codex/Claude 真实环境、本地回归和最终 Ubuntu/macOS CI 均通过，历史证据见 [M2 任务清单](../STYLE-M2-TASKS.md)、[测试矩阵](../STYLE-M2-TESTS.md)。当前里程碑为 M3，任务、依赖和验收状态以 [M3 任务清单](../STYLE-M3-TASKS.md)、[测试矩阵](../STYLE-M3-TESTS.md) 为准；建档和隔离环境基线已完成，D0 已获用户确认，T00 注册表校验修复和 A0 验收已完成；[D1 诊断契约评审稿](../review/M3-D1-DIAGNOSTICS-2026-10-17.md) 已获用户确认，explain 已实现并通过 [M3-A1](../review/M3-A1-2026-10-17.json)，probe 也已实现并通过 [M3-A2](../review/M3-A2-2026-10-17.json)；[D2 来源与锁定评审稿](../review/M3-D2-SOURCES-2026-10-17.md) 已于 2026-10-17 获用户确认，Git 来源已由 T20 实现并通过 [M3-A3](../review/M3-A3-2026-10-17.json)，update 已由 T21 实现并通过 [M3-A4](../review/M3-A4-2026-10-17.json)，frozen 待 T22。官方 token 计数仍各 0/40，承接为 M3-CARRY-01 非阻塞待验；本地编码/订阅 usage 作为补充，不提供误差范围保证。核心名称校验硬编码风险 M3-RV-01 已随 T00/A0 关闭；engine 既有输出安全特例仍按 D8 评估。当前仅支持 **Claude Code** 和 **Codex**；本文接口代码为设计示意，当前接口与职责见 [adapter 总览](../STYLE-ADAPTERS-CURRENT.md)。
 
 **依据**：
 - agenthooks `3f734c7` 源码，历史整理资料为 `agenthooks-codex.md`（外部资料，本仓库未收录）；
@@ -180,7 +180,7 @@ core 只消费通用目录/能力端口；agenthooks 继续负责协议、配置
 | `style explain --harness h --event NativeEvent --payload f.json [--index f] [--state-dir d] [--facts f] [--provenance f] [--fail-closed] [--json]` | 隔离重放一次原生 hook，解释命中/跳过/去重/容量和最终 wire；D1 已定稿（§4.1），T10/A1 已完成；[使用说明](../STYLE-EXPLAIN.md) | M3 |
 | `style probe [--harness h] [--timeout 60s] [--json]` | 等待已安装 STYLE hook 的关联回调；T11/A2 离线验收已完成；[使用说明](../STYLE-PROBE.md) | M3 |
 | `style validate/plan/install <git+https://…> [--ref …] [--path …]` | T20/A3 已完成：显式 Git 来源、固定 commit 原始快照（§4.2）；[使用说明](../STYLE-SOURCES.md) | M3 |
-| `style update <name>` / `style update --all` | D2 定稿：明确选择、预览/确认、多包事务；尚未实现（§4.2） | M3 |
+| `style update <name>` / `style update --all` | T21/A4 已完成：明确选择、预览/确认、多包事务（§4.2）；[使用说明](../STYLE-SOURCES.md#明确选包更新) | M3 |
 | `style install --frozen [--yes] [--json] [--allow-replace]` | D2 定稿：当前整锁/绑定下离线恢复；尚未实现（§4.2） | M3 |
 | `install --project`、`--count=exact` | 分别待 D3/D9 定稿 | M3 |
 
@@ -216,13 +216,13 @@ trace 与普通求值共用实现，覆盖 selector/source/when 短路、缺值�
 
 ### 4.2 M3-D2 来源与锁定评审稿
 
-本节设计已于 2026-10-17 获用户确认。Git 来源由 T20 实现，A3-01–A3-12 已通过 [验收](../review/M3-A3-2026-10-17.json)，入口与限制见 [使用说明](../STYLE-SOURCES.md)；update/frozen 仍待 T21/T22。具体字段、资源限制、失败行为及 A4/A5 待执行断言见 [D2 方案](../review/M3-D2-SOURCES-2026-10-17.md)。D2 的 12 项设计探针与文档检查保留在 [原报告](../review/M3-D2-DOCS-2026-10-17.json)。
+本节设计已于 2026-10-17 获用户确认。Git 来源由 T20 实现，A3-01–A3-12 已通过 [验收](../review/M3-A3-2026-10-17.json)，入口与限制见 [使用说明](../STYLE-SOURCES.md)；update 已实现并通过 [A4](../review/M3-A4-2026-10-17.json)，frozen 待 T22。具体字段、资源限制、失败行为及 A5 待执行断言见 [D2 方案](../review/M3-D2-SOURCES-2026-10-17.md)。D2 的 12 项设计探针与文档检查保留在 [原报告](../review/M3-D2-DOCS-2026-10-17.json)。
 
 **来源**：保留本地目录/单文件及 link；validate/plan/install 已支持显式公共 `git+https`，`--ref` 接规范 branch/tag 或完整 OID，默认解析 HEAD 后锁定 branch/commit；`--path` 选目录或单文件。Git 不接受 --link，生产 CLI 不开放 file/SSH/凭据/helper。取得在私有 bare 中固定 commit，通过 tree/blob 原始字节导出，不 checkout/archive/filter/submodule；沿用 core 完整包/注册表/native/预算校验。Git validate/plan 可写私有完整来源缓存，已安装文件保持只读；原有本地 plan 不改文件的保证不变。
 
-**锁与缓存**：Git 首次成功安装将 lock 升至 format=2；新版本读 1/2，纯本地旧锁维持 1、已有 2 不自动降级。source.kind 仍为 dir/file，path 为仓库包路径，source.git 保存 URL/ref/object_format/commit/selected object/content_sha256，逐文件 files 和现有聚合算法不改。index/state/explain 格式继续为 1。缓存位于 STYLE_HOME/cache/sources/git/v1，只有完整导出和校验通过后发布；下载不等于授权。Git 管理副本漂移不得由 sync/trust 重新标成原 commit，批准快照也绑定 Git 身份。缓存命中仍会解析远端并核对固定对象，不是离线模式。install/sync/trust/uninstall 共用提交阶段 guard，确认期间的管理输入变化拒绝旧候选；具体边界见使用说明。
+**锁与缓存**：Git 首次成功安装将 lock 升至 format=2；新版本读 1/2，纯本地旧锁维持 1、已有 2 不自动降级。source.kind 仍为 dir/file，path 为仓库包路径，source.git 保存 URL/ref/object_format/commit/selected object/content_sha256，逐文件 files 和现有聚合算法不改。index/state/explain 格式继续为 1。缓存位于 STYLE_HOME/cache/sources/git/v1，只有完整导出和校验通过后发布；下载不等于授权。Git 管理副本漂移不得由 sync/trust 重新标成原 commit，批准快照也绑定 Git 身份。缓存命中仍会解析远端并核对固定对象，不是离线模式。install/update/sync/trust/uninstall 共用提交阶段 guard，确认期间的管理输入变化拒绝旧候选；具体边界见使用说明。
 
-**update**：必须一个包名或 --all，默认预览，--yes 应用同次捕获的候选；--ref 仅对单个 Git 包显式换目标。Git 按原 ref、复制包按原路径、link 按当前源取得；保留 seq/settings，名称或类型变化、缺必填、新 replace 未授权、预算/能力阻止均失败。未选包只使用批准快照，即便 link 已授权也不带入新字节；未选渲染/native 表示变化先阻止，--all 才批准联合效果。app 协调所有包和文件的提交 guard/Before/逆序回滚，报告恢复失败；agenthooks 的渲染/owner/文件事务职责保留。
+**update**（T21/A4 已完成）：必须一个包名或 --all，默认预览，--yes 应用同次捕获的候选；--ref 仅对单个 Git 包显式换目标。Git 按原 ref、复制包按原路径、link 按当前源取得；保留 seq/settings，名称或类型变化、缺必填、新 replace 未授权、预算/能力阻止均失败。未选包只使用批准快照，即便 link 已授权也不带入新字节；未选渲染/native 表示变化先阻止，--all 才批准联合效果。app 协调所有包和文件的提交 guard/Before/逆序回滚，报告恢复失败；agenthooks 的渲染/owner/文件事务职责保留。
 
 **frozen**：无位置来源，读取当前 STYLE_HOME 的整锁，零 Git/网络/来源缓存写入，锁精确字节不变。需要完整锁定源内容、settings 和可验证批准表示；管理/批准快照或 Git 缓存均可提供内容，不强制缓存存在。link 必须 live 内容精确匹配且已 trust。固定路线/版本/根/渲染和静态布局，不 Detect/重定位/迁移；缺基线或输出不匹配明确失败。仅在既有 owner 计划允许时恢复派生产物，仍披露 native/replace 并确认；不声称跨根或真实 harness 已接受。项目可移植性由 D3 定义。
 

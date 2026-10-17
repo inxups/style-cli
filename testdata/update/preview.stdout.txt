@@ -1,0 +1,77 @@
+Update: confirmation-required; selected=["first"]
+first (seq=1):
+  before: version="1.0.0" source="$FIXTURE/source" kind=dir link=false link_trusted=false replace=false content=sha256:7ae4309f33fd1733c1bdfaa63439671549734c62369e9df85dc14a190eae0b5a
+  after: version="1.0.0" source="$FIXTURE/source" kind=dir link=false link_trusted=false replace=false content=sha256:47a06c1d6f7ba1f14744af583084fbc4074677fe473c95cab474cea1bf2f2093
+  settings added=[] removed=[]; approval_changed=true configuration_repair=false
+Source diff:
+--- approved/STYLE.yaml
++++ current/STYLE.yaml
+@@ -3,5 +3,5 @@
+ version: 1.0.0
+ description: update fixture
+ rules:
+-  - {id: dynamic, target: tool, tool: shell, at: before, text: 'Before.'}
+-  - {id: static, target: system, text: 'Static Before.'}
++  - {id: dynamic, target: tool, tool: shell, at: before, text: 'After.'}
++  - {id: static, target: system, text: 'Static After.'}
+Rendered diff (static values substituted; event variables remain runtime fragments):
+--- approved/codex/static/first/static/developer_instructions
++++ current/codex/static/first/static/developer_instructions
+@@ -1,2 +1,2 @@
+ mode: append
+-Static Before.
+\ No newline at end of file
++Static After.
+\ No newline at end of file
+--- approved/codex/tool.pre/first/dynamic@tool.pre
++++ current/codex/tool.pre/first/dynamic@tool.pre
+@@ -2,8 +2,8 @@
+   "rule": "first/dynamic",
+   "entry": "first/dynamic@tool.pre",
+   "src": "STYLE.yaml#dynamic",
+-  "src_sha256": "sha256:c8f6ea5ca433bc21fb9b7357881ceea7f4014416e3eb15cf69c2f1ee35a1b8f9",
+-  "body_sha256": "sha256:3e6847a341e06ab8322bb7a0e5240d92efd66923897a086294ab89154814f5db",
++  "src_sha256": "sha256:3bd3ed5a53b11dc2c70759c5dbed6665e36ac1eca94a71c062644504a0722edf",
++  "body_sha256": "sha256:0306b48ad9dd5473e42bb337d264bfadd2e1407a343f7d9a855ad5bb78ebb941",
+   "order": [
+     50,
+     1,
+@@ -28,11 +28,11 @@
+     "agent"
+   ],
+   "body": {
+-    "static": "Before."
++    "static": "After."
+   },
+   "est": {
+     "tokens": 2,
+-    "chars": 7
++    "chars": 6
+   },
+   "degraded_from": null
+ }
+\ No newline at end of file
+Plan: first
+ 
+
+Harness: codex
+Preferred route: codex-user (availability checked during install)
+Package: first
+Adapter: codex
+- dynamic: native (inject tool)
+  needs: agent
+  -> tool.pre inject (native); capabilities: add-context
+- static: native (inject system)
+  needs: agent
+  -> static:developer_instructions inject (native)
+Token (estimated; calibration pending):
+  native input limit: 2500 tokens (approximate); overflow=file-preview; source=Codex additionalContext default
+  budget: per_rule 400; per_event 1200; always_on 600 tokens
+  always-on: 4 tokens / 13 chars
+  per-rule:
+    dynamic: 2 tokens / 6 chars (native)
+    static: 4 tokens / 13 chars (native)
+  PreToolUse Bash: 2 tokens / 6 chars
+  session cost (requests=60 triggers=3): 28.6 always-on + 8.5 triggered = 37.1 units
+  scenario only: 1.25x cache write + 0.1x later hits; assumes an eligible unchanged prefix within cache lifetime; not billing
+Locked routes: ["codex=codex-user"]

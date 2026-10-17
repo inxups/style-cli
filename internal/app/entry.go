@@ -70,6 +70,8 @@ func RunWithService(ctx context.Context, service *Service, workDir string, args 
 		return runPlan(ctx, service, workDir, args[1:], out, errOut)
 	case "install":
 		return runInstall(ctx, service, workDir, args[1:], out, errOut)
+	case "update":
+		return runUpdate(ctx, service, args[1:], out, errOut)
 	case "uninstall":
 		return runUninstall(ctx, service, args[1:], out, errOut)
 	case "sync", "trust":
@@ -94,6 +96,7 @@ func printUsage(out io.Writer) {
 	fmt.Fprintln(out, "style validate [source] [--ref ref] [--path repo-path] [--json]")
 	fmt.Fprintln(out, "style plan <source> [--ref ref] [--path repo-path] [--harness auto|codex,claude-code] [--assume-requests N] [--assume-triggers N] [--json]")
 	fmt.Fprintln(out, "style install <source> [--ref ref] [--path repo-path] [--harness h] [--route h=r] [--set k=v] [--link] [--allow-replace] [--fail-closed h] [--yes] [--json]")
+	fmt.Fprintln(out, updateUsage)
 	fmt.Fprintln(out, "style uninstall <name|--all> [--yes] [--json]")
 	fmt.Fprintln(out, "style list [--json]")
 	fmt.Fprintln(out, "style sync [--json]")

@@ -432,11 +432,19 @@ M3-A1 的 26 个新函数/145 个叶子用例、两家 JSON golden、29 组普�
 
 ### 11.5 M3 Git 来源离线与受控 TLS 验收
 
-[Git 来源](STYLE-SOURCES.md) 的 validate/plan/install 在私有 Git 进程环境中固定 advertised OID，读取选中 tree/blob 原始字节并完整校验；cache_hit 仍核对远端，update/frozen 另待 T21/T22。core、普通 hook 和原生协议不读 Git 来源。lock format=2 及批准快照绑定 Git 身份，sync/trust 拒绝管理副本漂移。
+[Git 来源](STYLE-SOURCES.md) 的 validate/plan/install 在私有 Git 进程环境中固定 advertised OID，读取选中 tree/blob 原始字节并完整校验；cache_hit 仍核对远端，update 已由 T21/A4 完成，frozen 待 T22/A5。core、普通 hook 和原生协议不读 Git 来源。lock format=2 及批准快照绑定 Git 身份，sync/trust 拒绝管理副本漂移。
 
 app 在提交时持有共享进程身份 guard，重新核对捕获的包/锁/批准/settings/index/说明和路线输入，协调包交换与 ApplyFiles 回滚。adapter 新增可选 ManagementInputs 路径端口，agenthooks 的 ManagementPaths 枚举 renderer 输入及 owner 恢复路径，包括未改变的文件；配置格式、owner/trust 合并、渲染和文件事务仍归 agenthooks。
 
 [M3-A3](review/M3-A3-2026-10-17.json) 的 30 个新函数/202 个叶子用例、真实 SHA-1/SHA-256 与 loopback TLS、三路线生命周期/回滚、17 项真实新旧二进制门禁/普通 wire 对照及完整兼容回归通过。生产不开放 file/SSH/私有认证/继承 Git 配置；内部 fixture 注入没有 CLI/env 绕过。两家真实投递、Windows 和远端 CI 分开待验。
+
+### 11.6 M3 update 离线验收
+
+[update](STYLE-SOURCES.md#明确选包更新) 由 app 明确选择既有来源、捕获一次候选、读取未选批准基线并联合编译，按锁重建路线而不 Detect。未选效果变化须明确选择，选中旧基线缺失须完整披露重新批准；不循环 sync/trust。共享 guard 内复核输入、暂存全部包、交换并调用一次 ApplyFiles，失败逆序恢复，state/stats/probe 不参与。
+
+agenthooks 继续负责协议、配置渲染、owner/trust 与文件事务；ApplyFiles 新增类型化恢复错误，备份保留原 mode/mtime，恢复失败保留备份及路径。app 包回滚也使用类型化错误；这些变化使多包失败可准确报告恢复不完整，不改变配置格式或 wire。
+
+[A4](review/M3-A4-2026-10-17.json) 的 31 个新函数/244 个叶子用例、逐包/逐文件恢复、三路线 native/旧批准/旧锁、24 项 built CLI 及基线 runtime 对照通过；真实投递、Windows 和远端 CI 保持待验。
 
 ## 12. 已知边界与后续工作
 

@@ -1,0 +1,18 @@
+{
+  "format": 1,
+  "command": "update",
+  "status": "error",
+  "selected": [],
+  "changes": [],
+  "reports": [],
+  "diagnostics": [
+    {
+      "code": "source-invalid",
+      "severity": "error",
+      "message": "the selected package is not installed"
+    }
+  ],
+  "routes": [],
+  "changed": false,
+  "awaiting_confirmation": false
+}

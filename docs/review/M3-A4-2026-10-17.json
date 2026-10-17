@@ -1,0 +1,2363 @@
+{
+  "format": 1,
+  "task": "M3-T21",
+  "test": "M3-A4",
+  "date": "2026-10-17",
+  "status": "passed",
+  "source_base": "fd88e8da66cd8409b6939e71875edd4bee3c9421",
+  "scope": "Explicit updates of existing copy/link/Git sources under D2, authenticated unselected approvals, one captured joint candidate and multi-package recovery. T22 frozen remains unimplemented; D3 has not started and the user must be notified before it starts.",
+  "source_manifest": [
+    {
+      "path": "agenthooks/install/plan_files.go",
+      "sha256": "d8825abc61a9e0973551d7203d1b64e3d7a80ddffd50c9a5aaab0426b826b36a",
+      "lines": 467,
+      "role": "production"
+    },
+    {
+      "path": "agenthooks/install/update_recovery_test.go",
+      "sha256": "d63193e8d9cabbdd0cbc472d0a1bed0935ef10f3d0675cc96380da4ad924ffc7",
+      "lines": 103,
+      "role": "test"
+    },
+    {
+      "path": "internal/app/entry.go",
+      "sha256": "51d99bdb994ab35bf5a7ee5702bf9ba2250b97103efd2619df6ca78f3acd2f79",
+      "lines": 109,
+      "role": "production"
+    },
+    {
+      "path": "internal/app/lifecycle_store.go",
+      "sha256": "cb8db21bd395cc219fedb550d8c2334fac087a4c463297d78e8ff9b216215543",
+      "lines": 518,
+      "role": "production"
+    },
+    {
+      "path": "internal/app/native_inspect.go",
+      "sha256": "7d5cbc12016df08d8c45a9361566fa79f47de024f1ccf16491284939a5f5fed0",
+      "lines": 113,
+      "role": "production"
+    },
+    {
+      "path": "internal/app/package_snapshot.go",
+      "sha256": "6d29b82cbf74e5a3bb0d4cf3ac453b163a4ce49e1a2a0ac44c4bebb26d4d8ced",
+      "lines": 102,
+      "role": "production"
+    },
+    {
+      "path": "internal/app/update.go",
+      "sha256": "cc0afad02317d255e800d3c2435f90ace4dfeb23c489ef7cba04212665d8d402",
+      "lines": 195,
+      "role": "production"
+    },
+    {
+      "path": "internal/app/update_apply.go",
+      "sha256": "2a64a4be7568032d149132b85afca6d1746ccbff98ab3bfd70d6bc3617754467",
+      "lines": 104,
+      "role": "production"
+    },
+    {
+      "path": "internal/app/update_command.go",
+      "sha256": "46adb968ab96164bc0e646ff0805033c61c223b8facf79d9d28b70da07477416",
+      "lines": 154,
+      "role": "production"
+    },
+    {
+      "path": "internal/app/update_compat_test.go",
+      "sha256": "864f31d862ada86a327e099c2b24e7cf58c76fcd6a6d7aabbb29e7aef47934e7",
+      "lines": 437,
+      "role": "test"
+    },
+    {
+      "path": "internal/app/update_prepare.go",
+      "sha256": "3658940bd7836da70a4bbc486e1e111b8a709fcfea9d736efa5f1dea8bc14cc1",
+      "lines": 489,
+      "role": "production"
+    },
+    {
+      "path": "internal/app/update_test.go",
+      "sha256": "51c73aa09913057af4c51b7d18f5520ce95da291749a84d261bba66bd14504de",
+      "lines": 826,
+      "role": "test"
+    },
+    {
+      "path": "internal/app/update_transaction_test.go",
+      "sha256": "794352af610ff6bf8b16e88b1fac3bfffd658ff36567738bc34b2eaaa788ba41",
+      "lines": 443,
+      "role": "test"
+    },
+    {
+      "path": "internal/source/git.go",
+      "sha256": "221acf37b8bf0055714d6f4cad372aa2ca8c1a31bb701db2c29b1fcc07204dbf",
+      "lines": 422,
+      "role": "production"
+    },
+    {
+      "path": "internal/source/identity_test.go",
+      "sha256": "0c975159545457043d8b01f58fe374e5f33ead797a4dc58329bd00884d805b4e",
+      "lines": 68,
+      "role": "test"
+    },
+    {
+      "path": "scripts/check_m3_update.py",
+      "sha256": "7bb849bd3db3c8abb992c8f86b2838834021b628328febba15668110fb8cf141",
+      "lines": 210,
+      "role": "verification_script"
+    }
+  ],
+  "source_fingerprint_sha256": "358b0fee444e20a485c11a6f45cf4dd4ba2ed759c60d26acf3b2f36aba826bcd",
+  "environment": {
+    "os": "macOS 27.0.1",
+    "arch": "arm64",
+    "go": "go1.27.0",
+    "git": "git version 2.54.0",
+    "python": "3.14.7",
+    "workspace": "/Users/inxups/project/style-cli",
+    "test_environment": "temporary GOPATH/GOMODCACHE/GOCACHE, GOWORK=off, cleared detector variables listed per run; private fixture configuration",
+    "network": "Real local SHA-1/SHA-256 repositories and A3 127.0.0.1 TLS fixtures only; no real remote, harness, native execution, model, credentials, login or keychain",
+    "loopback_sandbox": "Full Go and app/source race runs were permitted to bind local fixture listeners; initial sandbox rejection is retained in earlier attempts."
+  },
+  "verification": [
+    {
+      "argv": [
+        "make",
+        "test-go"
+      ],
+      "cwd": "/Users/inxups/project/style-cli",
+      "started_utc": "2026-10-17T09:55:23.411582+00:00",
+      "elapsed_seconds": 95.763,
+      "exit_code": 0,
+      "log": "/tmp/style-m3-a4-20261017/all-final.log",
+      "log_sha256": "be0ee0d3caea7db73161e010194fcf8531314aa8c455176aa2f2c880e1590b3e",
+      "cleared_environment": [
+        "CODEX_HOME",
+        "CODEX_SANDBOX",
+        "STYLE_HOME",
+        "CLAUDE_CODE_EFFORT_LEVEL",
+        "CLAUDE_CODE_CONFIG_DIR",
+        "CLAUDE_CONFIG_DIR",
+        "PLUGIN_ROOT",
+        "STYLE_PERF",
+        "STYLE_PERF_OUTPUT"
+      ],
+      "Go_environment": {
+        "GOPATH": "/tmp/style-cli-gopath",
+        "GOMODCACHE": "/tmp/style-cli-gomodcache",
+        "GOCACHE": "/tmp/style-cli-gocache",
+        "GOWORK": "off",
+        "GOFLAGS": "-mod=readonly -count=1 -json"
+      },
+      "test_events": {
+        "passed": 2935,
+        "failed": 0,
+        "skipped": 24
+      },
+      "failed_tests": [],
+      "id": "all-final"
+    },
+    {
+      "argv": [
+        "make",
+        "vet-go"
+      ],
+      "cwd": "/Users/inxups/project/style-cli",
+      "started_utc": "2026-10-17T09:59:25.670533+00:00",
+      "elapsed_seconds": 0.875,
+      "exit_code": 0,
+      "log": "/tmp/style-m3-a4-20261017/vet-final.log",
+      "log_sha256": "c3e36b766aa965211cced519ace9e08040a4514036bfd8cad99ac6b508125005",
+      "cleared_environment": [
+        "CODEX_HOME",
+        "CODEX_SANDBOX",
+        "STYLE_HOME",
+        "CLAUDE_CODE_EFFORT_LEVEL",
+        "CLAUDE_CODE_CONFIG_DIR",
+        "CLAUDE_CONFIG_DIR",
+        "PLUGIN_ROOT",
+        "STYLE_PERF",
+        "STYLE_PERF_OUTPUT"
+      ],
+      "Go_environment": {
+        "GOPATH": "/tmp/style-cli-gopath",
+        "GOMODCACHE": "/tmp/style-cli-gomodcache",
+        "GOCACHE": "/tmp/style-cli-gocache",
+        "GOWORK": "off",
+        "GOFLAGS": "-mod=readonly"
+      },
+      "id": "vet-final"
+    },
+    {
+      "argv": [
+        "go",
+        "test",
+        "-json",
+        "-race",
+        "-count=1",
+        "./internal/app",
+        "./internal/source"
+      ],
+      "cwd": "/Users/inxups/project/style-cli",
+      "started_utc": "2026-10-17T09:55:22.903143+00:00",
+      "elapsed_seconds": 124.166,
+      "exit_code": 0,
+      "log": "/tmp/style-m3-a4-20261017/race-app-source.log",
+      "log_sha256": "164e572422308e8597f8cfdaaf39a63301202f5a9312221b0d54d09e5a3a4b62",
+      "cleared_environment": [
+        "CODEX_HOME",
+        "CODEX_SANDBOX",
+        "STYLE_HOME",
+        "CLAUDE_CODE_EFFORT_LEVEL",
+        "CLAUDE_CODE_CONFIG_DIR",
+        "CLAUDE_CONFIG_DIR",
+        "PLUGIN_ROOT",
+        "STYLE_PERF",
+        "STYLE_PERF_OUTPUT"
+      ],
+      "Go_environment": {
+        "GOPATH": "/tmp/style-cli-gopath",
+        "GOMODCACHE": "/tmp/style-cli-gomodcache",
+        "GOCACHE": "/tmp/style-cli-gocache",
+        "GOWORK": "off",
+        "GOFLAGS": "-mod=readonly"
+      },
+      "test_events": {
+        "passed": 1071,
+        "failed": 0,
+        "skipped": 0
+      },
+      "failed_tests": [],
+      "id": "race-app-source"
+    },
+    {
+      "argv": [
+        "go",
+        "-C",
+        "agenthooks",
+        "test",
+        "-json",
+        "-race",
+        "-count=1",
+        "./..."
+      ],
+      "cwd": "/Users/inxups/project/style-cli",
+      "started_utc": "2026-10-17T09:59:25.668381+00:00",
+      "elapsed_seconds": 62.349,
+      "exit_code": 0,
+      "log": "/tmp/style-m3-a4-20261017/race-agenthooks.log",
+      "log_sha256": "a46f6ade209b3f2fd6cc4fc6a3e5ffa377f964eb3c4cd93a215b1f73a01acb25",
+      "cleared_environment": [
+        "CODEX_HOME",
+        "CODEX_SANDBOX",
+        "STYLE_HOME",
+        "CLAUDE_CODE_EFFORT_LEVEL",
+        "CLAUDE_CODE_CONFIG_DIR",
+        "CLAUDE_CONFIG_DIR",
+        "PLUGIN_ROOT",
+        "STYLE_PERF",
+        "STYLE_PERF_OUTPUT"
+      ],
+      "Go_environment": {
+        "GOPATH": "/tmp/style-cli-gopath",
+        "GOMODCACHE": "/tmp/style-cli-gomodcache",
+        "GOCACHE": "/tmp/style-cli-gocache",
+        "GOWORK": "off",
+        "GOFLAGS": "-mod=readonly"
+      },
+      "test_events": {
+        "passed": 502,
+        "failed": 0,
+        "skipped": 23
+      },
+      "failed_tests": [],
+      "id": "race-agenthooks"
+    },
+    {
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "testdata/manual",
+        "-p",
+        "test_*.py"
+      ],
+      "cwd": "/Users/inxups/project/style-cli",
+      "started_utc": "2026-10-17T09:55:23.406564+00:00",
+      "elapsed_seconds": 4.664,
+      "exit_code": 0,
+      "log": "/tmp/style-m3-a4-20261017/collectors.log",
+      "log_sha256": "16f670b3c543a5b00417856800be4d6997efd8c834918503e3917276bfbce798",
+      "cleared_environment": [
+        "CODEX_HOME",
+        "CODEX_SANDBOX",
+        "STYLE_HOME",
+        "CLAUDE_CODE_EFFORT_LEVEL",
+        "CLAUDE_CODE_CONFIG_DIR",
+        "CLAUDE_CONFIG_DIR",
+        "PLUGIN_ROOT",
+        "STYLE_PERF",
+        "STYLE_PERF_OUTPUT"
+      ],
+      "Go_environment": {
+        "GOPATH": "/tmp/style-cli-gopath",
+        "GOMODCACHE": "/tmp/style-cli-gomodcache",
+        "GOCACHE": "/tmp/style-cli-gocache",
+        "GOWORK": "off",
+        "GOFLAGS": "-mod=readonly"
+      },
+      "id": "collectors"
+    },
+    {
+      "argv": [
+        "go",
+        "build",
+        "-trimpath",
+        "-buildvcs=false",
+        "-o",
+        "/tmp/style-m3-a4-20261017/style",
+        "./cmd/style"
+      ],
+      "cwd": "/Users/inxups/project/style-cli",
+      "started_utc": "2026-10-17T09:55:18.036519+00:00",
+      "elapsed_seconds": 0.714,
+      "exit_code": 0,
+      "log": "/tmp/style-m3-a4-20261017/build-final.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "cleared_environment": [
+        "CODEX_HOME",
+        "CODEX_SANDBOX",
+        "STYLE_HOME",
+        "CLAUDE_CODE_EFFORT_LEVEL",
+        "CLAUDE_CODE_CONFIG_DIR",
+        "CLAUDE_CONFIG_DIR",
+        "PLUGIN_ROOT",
+        "STYLE_PERF",
+        "STYLE_PERF_OUTPUT"
+      ],
+      "Go_environment": {
+        "GOPATH": "/tmp/style-cli-gopath",
+        "GOMODCACHE": "/tmp/style-cli-gomodcache",
+        "GOCACHE": "/tmp/style-cli-gocache",
+        "GOWORK": "off",
+        "GOFLAGS": "-mod=readonly"
+      },
+      "id": "build-final"
+    },
+    {
+      "argv": [
+        "go",
+        "-C",
+        "/tmp/style-m3-a4-20261017/baseline-source",
+        "build",
+        "-trimpath",
+        "-buildvcs=false",
+        "-o",
+        "/tmp/style-m3-a4-20261017/style-baseline",
+        "./cmd/style"
+      ],
+      "cwd": "/Users/inxups/project/style-cli",
+      "started_utc": "2026-10-17T09:51:28.411622+00:00",
+      "elapsed_seconds": 0.802,
+      "exit_code": 0,
+      "log": "/tmp/style-m3-a4-20261017/baseline-build.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "cleared_environment": [
+        "CODEX_HOME",
+        "CODEX_SANDBOX",
+        "STYLE_HOME",
+        "CLAUDE_CODE_EFFORT_LEVEL",
+        "CLAUDE_CODE_CONFIG_DIR",
+        "CLAUDE_CONFIG_DIR",
+        "PLUGIN_ROOT",
+        "STYLE_PERF",
+        "STYLE_PERF_OUTPUT"
+      ],
+      "Go_environment": {
+        "GOPATH": "/tmp/style-cli-gopath",
+        "GOMODCACHE": "/tmp/style-cli-gomodcache",
+        "GOCACHE": "/tmp/style-cli-gocache",
+        "GOWORK": "off",
+        "GOFLAGS": "-mod=readonly"
+      },
+      "id": "baseline-build"
+    },
+    {
+      "argv": [
+        "env",
+        "STYLE_M3_A3_EXPORT=/tmp/style-m3-a4-20261017/format-two-fixture",
+        "go",
+        "test",
+        "-json",
+        "-count=1",
+        "./internal/app",
+        "-run",
+        "^TestM3A3ExportFormatTwoFixture$"
+      ],
+      "cwd": "/Users/inxups/project/style-cli",
+      "started_utc": "2026-10-17T09:59:25.686925+00:00",
+      "elapsed_seconds": 1.408,
+      "exit_code": 0,
+      "log": "/tmp/style-m3-a4-20261017/fixture-export.log",
+      "log_sha256": "b7638f07334c8d2f31a275142e07d5539b9fae33d5212971e15fdd4628ffb713",
+      "cleared_environment": [
+        "CODEX_HOME",
+        "CODEX_SANDBOX",
+        "STYLE_HOME",
+        "CLAUDE_CODE_EFFORT_LEVEL",
+        "CLAUDE_CODE_CONFIG_DIR",
+        "CLAUDE_CONFIG_DIR",
+        "PLUGIN_ROOT",
+        "STYLE_PERF",
+        "STYLE_PERF_OUTPUT"
+      ],
+      "Go_environment": {
+        "GOPATH": "/tmp/style-cli-gopath",
+        "GOMODCACHE": "/tmp/style-cli-gomodcache",
+        "GOCACHE": "/tmp/style-cli-gocache",
+        "GOWORK": "off",
+        "GOFLAGS": "-mod=readonly"
+      },
+      "test_events": {
+        "passed": 1,
+        "failed": 0,
+        "skipped": 0
+      },
+      "failed_tests": [],
+      "id": "fixture-export"
+    },
+    {
+      "argv": [
+        "python3",
+        "scripts/check_m3_git_source.py",
+        "--old-binary",
+        "/tmp/style-m3-a3-20261017/style-legacy",
+        "--binary",
+        "/tmp/style-m3-a4-20261017/style",
+        "--fixture",
+        "/tmp/style-m3-a4-20261017/format-two-fixture",
+        "--report",
+        "/tmp/style-m3-a4-20261017/git-gate-report.json"
+      ],
+      "cwd": "/Users/inxups/project/style-cli",
+      "started_utc": "2026-10-17T10:00:03.636917+00:00",
+      "elapsed_seconds": 0.175,
+      "exit_code": 0,
+      "log": "/tmp/style-m3-a4-20261017/git-gate.log",
+      "log_sha256": "3499c6c19269c7e9f84fd4c327a864f67ae84d35c20fb9009071db3afd2be04d",
+      "cleared_environment": [
+        "CODEX_HOME",
+        "CODEX_SANDBOX",
+        "STYLE_HOME",
+        "CLAUDE_CODE_EFFORT_LEVEL",
+        "CLAUDE_CODE_CONFIG_DIR",
+        "CLAUDE_CONFIG_DIR",
+        "PLUGIN_ROOT",
+        "STYLE_PERF",
+        "STYLE_PERF_OUTPUT"
+      ],
+      "Go_environment": {
+        "GOPATH": "/tmp/style-cli-gopath",
+        "GOMODCACHE": "/tmp/style-cli-gomodcache",
+        "GOCACHE": "/tmp/style-cli-gocache",
+        "GOWORK": "off",
+        "GOFLAGS": "-mod=readonly"
+      },
+      "id": "git-gate"
+    },
+    {
+      "argv": [
+        "python3",
+        "scripts/check_m3_update.py",
+        "--binary",
+        "/tmp/style-m3-a4-20261017/style",
+        "--old-binary",
+        "/tmp/style-m3-a3-20261017/style-legacy",
+        "--baseline-binary",
+        "/tmp/style-m3-a4-20261017/style-baseline",
+        "--report",
+        "/tmp/style-m3-a4-20261017/built-cli-verified-report.json"
+      ],
+      "cwd": "/Users/inxups/project/style-cli",
+      "started_utc": "2026-10-17T09:59:25.681397+00:00",
+      "elapsed_seconds": 3.256,
+      "exit_code": 0,
+      "log": "/tmp/style-m3-a4-20261017/built-cli-verified.log",
+      "log_sha256": "7cc9351a7e736d6e714590fc0090f75904f8c8693198bd400df59c4b0c3adf09",
+      "cleared_environment": [
+        "CODEX_HOME",
+        "CODEX_SANDBOX",
+        "STYLE_HOME",
+        "CLAUDE_CODE_EFFORT_LEVEL",
+        "CLAUDE_CODE_CONFIG_DIR",
+        "CLAUDE_CONFIG_DIR",
+        "PLUGIN_ROOT",
+        "STYLE_PERF",
+        "STYLE_PERF_OUTPUT"
+      ],
+      "Go_environment": {
+        "GOPATH": "/tmp/style-cli-gopath",
+        "GOMODCACHE": "/tmp/style-cli-gomodcache",
+        "GOCACHE": "/tmp/style-cli-gocache",
+        "GOWORK": "off",
+        "GOFLAGS": "-mod=readonly"
+      },
+      "id": "built-cli-verified"
+    },
+    {
+      "argv": [
+        "python3",
+        "scripts/smoke.py",
+        "/tmp/style-m3-a4-20261017/style"
+      ],
+      "cwd": "/Users/inxups/project/style-cli",
+      "started_utc": "2026-10-17T09:59:25.672386+00:00",
+      "elapsed_seconds": 2.54,
+      "exit_code": 0,
+      "log": "/tmp/style-m3-a4-20261017/smoke.log",
+      "log_sha256": "5039b6cbbaa0d673d3772dfa18b0e24352159e7f2ddf65dd8cdabcbff5e08b63",
+      "cleared_environment": [
+        "CODEX_HOME",
+        "CODEX_SANDBOX",
+        "STYLE_HOME",
+        "CLAUDE_CODE_EFFORT_LEVEL",
+        "CLAUDE_CODE_CONFIG_DIR",
+        "CLAUDE_CONFIG_DIR",
+        "PLUGIN_ROOT",
+        "STYLE_PERF",
+        "STYLE_PERF_OUTPUT"
+      ],
+      "Go_environment": {
+        "GOPATH": "/tmp/style-cli-gopath",
+        "GOMODCACHE": "/tmp/style-cli-gomodcache",
+        "GOCACHE": "/tmp/style-cli-gocache",
+        "GOWORK": "off",
+        "GOFLAGS": "-mod=readonly"
+      },
+      "id": "smoke"
+    },
+    {
+      "argv": [
+        "python3",
+        "scripts/check_m2_rules_migration.py",
+        "--old-binary",
+        "/tmp/style-m3-a3-20261017/style-legacy",
+        "--binary",
+        "/tmp/style-m3-a4-20261017/style",
+        "--report",
+        "/tmp/style-m3-a4-20261017/migration-report.json"
+      ],
+      "cwd": "/Users/inxups/project/style-cli",
+      "started_utc": "2026-10-17T09:59:25.678798+00:00",
+      "elapsed_seconds": 12.359,
+      "exit_code": 0,
+      "log": "/tmp/style-m3-a4-20261017/migration.log",
+      "log_sha256": "f44b07d85cd6db9adef12b9e87bf6b29fbfbd11bd6ceb36335e50552c279a375",
+      "cleared_environment": [
+        "CODEX_HOME",
+        "CODEX_SANDBOX",
+        "STYLE_HOME",
+        "CLAUDE_CODE_EFFORT_LEVEL",
+        "CLAUDE_CODE_CONFIG_DIR",
+        "CLAUDE_CONFIG_DIR",
+        "PLUGIN_ROOT",
+        "STYLE_PERF",
+        "STYLE_PERF_OUTPUT"
+      ],
+      "Go_environment": {
+        "GOPATH": "/tmp/style-cli-gopath",
+        "GOMODCACHE": "/tmp/style-cli-gomodcache",
+        "GOCACHE": "/tmp/style-cli-gocache",
+        "GOWORK": "off",
+        "GOFLAGS": "-mod=readonly"
+      },
+      "id": "migration"
+    },
+    {
+      "argv": [
+        "python3",
+        "scripts/check_m2_replace.py",
+        "/tmp/style-m3-a4-20261017/style",
+        "--report",
+        "/tmp/style-m3-a4-20261017/replace-report.json"
+      ],
+      "cwd": "/Users/inxups/project/style-cli",
+      "started_utc": "2026-10-17T09:59:25.685595+00:00",
+      "elapsed_seconds": 4.37,
+      "exit_code": 0,
+      "log": "/tmp/style-m3-a4-20261017/replace.log",
+      "log_sha256": "ca4a7384714f31c2511250703ec0e899128da6048b3cb677adfda8ee6b037050",
+      "cleared_environment": [
+        "CODEX_HOME",
+        "CODEX_SANDBOX",
+        "STYLE_HOME",
+        "CLAUDE_CODE_EFFORT_LEVEL",
+        "CLAUDE_CODE_CONFIG_DIR",
+        "CLAUDE_CONFIG_DIR",
+        "PLUGIN_ROOT",
+        "STYLE_PERF",
+        "STYLE_PERF_OUTPUT"
+      ],
+      "Go_environment": {
+        "GOPATH": "/tmp/style-cli-gopath",
+        "GOMODCACHE": "/tmp/style-cli-gomodcache",
+        "GOCACHE": "/tmp/style-cli-gocache",
+        "GOWORK": "off",
+        "GOFLAGS": "-mod=readonly"
+      },
+      "id": "replace"
+    }
+  ],
+  "new_tests": {
+    "function_count": 31,
+    "leaf_case_count": 244,
+    "passed_events_with_groups": 269,
+    "failed": 0,
+    "skipped": 0,
+    "functions": [
+      "github.com/inxups/style-cli/internal/app/TestM3A4LegacyLockAndApprovalCompatibility",
+      "github.com/inxups/style-cli/internal/app/TestM3A4UnselectedOrdinaryLegacyApproval",
+      "github.com/inxups/style-cli/internal/app/TestM3A4InvalidOldLocksFailBeforeSourceAcquisition",
+      "github.com/inxups/style-cli/internal/app/TestM3A4GitManagedDriftBeforeFetchAndUnselectedGit",
+      "github.com/inxups/style-cli/internal/app/TestM3A4ConfirmationDeclineErrorAndRepeatCapture",
+      "github.com/inxups/style-cli/internal/app/TestM3A4CommandGoldenAndSingleJSON",
+      "github.com/inxups/style-cli/internal/app/TestM3A4ReportsSortByExistingSequence",
+      "github.com/inxups/style-cli/internal/app/TestM3A4PinnedOIDCannotFallBackToBranchOrCache",
+      "github.com/inxups/style-cli/internal/app/TestM3A4LockedHarnessesAndLayout",
+      "github.com/inxups/style-cli/internal/app/TestM3A4SelectionAndCLIOptions",
+      "github.com/inxups/style-cli/internal/app/TestM3A4PreviewNoopAndApply",
+      "github.com/inxups/style-cli/internal/app/TestM3A4GitRefUpdates",
+      "github.com/inxups/style-cli/internal/app/TestM3A4LocalSourceKindsAndDrift",
+      "github.com/inxups/style-cli/internal/app/TestM3A4SettingsAndSequence",
+      "github.com/inxups/style-cli/internal/app/TestM3A4UnselectedUsesOnlyApprovedBytes",
+      "github.com/inxups/style-cli/internal/app/TestM3A4AuthenticatedBaselinesRequired",
+      "github.com/inxups/style-cli/internal/app/TestM3A4UnselectedEffectsRequireAll",
+      "github.com/inxups/style-cli/internal/app/TestM3A4NativeChangesAndFirstLinkTrust",
+      "github.com/inxups/style-cli/internal/app/TestM3A4CandidateGatesAndBlockedCLI",
+      "github.com/inxups/style-cli/internal/app/TestM3A4GitCaptureAndDetachedPreview",
+      "github.com/inxups/style-cli/internal/app/TestM3A4BatchValidationAndJointCompilation",
+      "github.com/inxups/style-cli/internal/app/TestM3A4EachPackageFailureRestoresBatch",
+      "github.com/inxups/style-cli/internal/app/TestM3A4EachFileFailureRestoresBatch",
+      "github.com/inxups/style-cli/internal/app/TestM3A4RollbackFailuresAreReportedAndRetained",
+      "github.com/inxups/style-cli/internal/app/TestM3A4ConfirmationRejectsEveryStaleInput",
+      "github.com/inxups/style-cli/internal/app/TestM3A4UpdateSharesGuardWithOtherWriters",
+      "github.com/inxups/style-cli/internal/app/TestM3A4CancellationGuardRecoveryAndMaintenanceIsolation",
+      "github.com/inxups/style-cli/internal/app/TestM3A4FailureReportClassification",
+      "github.com/inxups/style-cli/internal/app/TestM3A4PrivateInputsCannotAliasUncapturedValues",
+      "github.com/speakeasy-api/agenthooks/install/TestM3A4FileRollbackPreservesModeAndMtime",
+      "github.com/speakeasy-api/agenthooks/install/TestM3A4FileRestoreFailureRetainsBackup"
+    ],
+    "passed_test_names": [
+      "github.com/inxups/style-cli/internal/app/TestM3A4LegacyLockAndApprovalCompatibility/codex-user/no-approval",
+      "github.com/inxups/style-cli/internal/app/TestM3A4LegacyLockAndApprovalCompatibility/codex-user/no-native-field",
+      "github.com/inxups/style-cli/internal/app/TestM3A4LegacyLockAndApprovalCompatibility/codex-user/implicit-format",
+      "github.com/inxups/style-cli/internal/app/TestM3A4LegacyLockAndApprovalCompatibility/codex-user/format-two-local",
+      "github.com/inxups/style-cli/internal/app/TestM3A4LegacyLockAndApprovalCompatibility/codex-plugin/no-approval",
+      "github.com/inxups/style-cli/internal/app/TestM3A4LegacyLockAndApprovalCompatibility/codex-plugin/no-native-field",
+      "github.com/inxups/style-cli/internal/app/TestM3A4LegacyLockAndApprovalCompatibility/codex-plugin/implicit-format",
+      "github.com/inxups/style-cli/internal/app/TestM3A4LegacyLockAndApprovalCompatibility/codex-plugin/format-two-local",
+      "github.com/inxups/style-cli/internal/app/TestM3A4LegacyLockAndApprovalCompatibility/claude-user/no-approval",
+      "github.com/inxups/style-cli/internal/app/TestM3A4LegacyLockAndApprovalCompatibility/claude-user/no-native-field",
+      "github.com/inxups/style-cli/internal/app/TestM3A4LegacyLockAndApprovalCompatibility/claude-user/implicit-format",
+      "github.com/inxups/style-cli/internal/app/TestM3A4LegacyLockAndApprovalCompatibility/claude-user/format-two-local",
+      "github.com/inxups/style-cli/internal/app/TestM3A4LegacyLockAndApprovalCompatibility",
+      "github.com/inxups/style-cli/internal/app/TestM3A4UnselectedOrdinaryLegacyApproval",
+      "github.com/inxups/style-cli/internal/app/TestM3A4InvalidOldLocksFailBeforeSourceAcquisition/format",
+      "github.com/inxups/style-cli/internal/app/TestM3A4InvalidOldLocksFailBeforeSourceAcquisition/name",
+      "github.com/inxups/style-cli/internal/app/TestM3A4InvalidOldLocksFailBeforeSourceAcquisition/duplicate",
+      "github.com/inxups/style-cli/internal/app/TestM3A4InvalidOldLocksFailBeforeSourceAcquisition/sequence",
+      "github.com/inxups/style-cli/internal/app/TestM3A4InvalidOldLocksFailBeforeSourceAcquisition/source-path",
+      "github.com/inxups/style-cli/internal/app/TestM3A4InvalidOldLocksFailBeforeSourceAcquisition/kind",
+      "github.com/inxups/style-cli/internal/app/TestM3A4InvalidOldLocksFailBeforeSourceAcquisition/link",
+      "github.com/inxups/style-cli/internal/app/TestM3A4InvalidOldLocksFailBeforeSourceAcquisition/hash",
+      "github.com/inxups/style-cli/internal/app/TestM3A4InvalidOldLocksFailBeforeSourceAcquisition/escape",
+      "github.com/inxups/style-cli/internal/app/TestM3A4InvalidOldLocksFailBeforeSourceAcquisition",
+      "github.com/inxups/style-cli/internal/app/TestM3A4GitManagedDriftBeforeFetchAndUnselectedGit/edit",
+      "github.com/inxups/style-cli/internal/app/TestM3A4GitManagedDriftBeforeFetchAndUnselectedGit/missing",
+      "github.com/inxups/style-cli/internal/app/TestM3A4GitManagedDriftBeforeFetchAndUnselectedGit/symlink",
+      "github.com/inxups/style-cli/internal/app/TestM3A4GitManagedDriftBeforeFetchAndUnselectedGit/unselected",
+      "github.com/inxups/style-cli/internal/app/TestM3A4GitManagedDriftBeforeFetchAndUnselectedGit",
+      "github.com/inxups/style-cli/internal/app/TestM3A4ConfirmationDeclineErrorAndRepeatCapture/decline",
+      "github.com/inxups/style-cli/internal/app/TestM3A4ConfirmationDeclineErrorAndRepeatCapture/error",
+      "github.com/inxups/style-cli/internal/app/TestM3A4ConfirmationDeclineErrorAndRepeatCapture/approve",
+      "github.com/inxups/style-cli/internal/app/TestM3A4ConfirmationDeclineErrorAndRepeatCapture/separate-call",
+      "github.com/inxups/style-cli/internal/app/TestM3A4ConfirmationDeclineErrorAndRepeatCapture",
+      "github.com/inxups/style-cli/internal/app/TestM3A4CommandGoldenAndSingleJSON/text",
+      "github.com/inxups/style-cli/internal/app/TestM3A4CommandGoldenAndSingleJSON/json",
+      "github.com/inxups/style-cli/internal/app/TestM3A4CommandGoldenAndSingleJSON",
+      "github.com/inxups/style-cli/internal/app/TestM3A4ReportsSortByExistingSequence",
+      "github.com/inxups/style-cli/internal/app/TestM3A4PinnedOIDCannotFallBackToBranchOrCache",
+      "github.com/inxups/style-cli/internal/app/TestM3A4LockedHarnessesAndLayout/both-harnesses",
+      "github.com/inxups/style-cli/internal/app/TestM3A4LockedHarnessesAndLayout/legacy-static-layout",
+      "github.com/inxups/style-cli/internal/app/TestM3A4LockedHarnessesAndLayout/missing-route",
+      "github.com/inxups/style-cli/internal/app/TestM3A4LockedHarnessesAndLayout/missing-provider",
+      "github.com/inxups/style-cli/internal/app/TestM3A4LockedHarnessesAndLayout",
+      "github.com/inxups/style-cli/internal/app/TestM3A4SelectionAndCLIOptions/#00",
+      "github.com/inxups/style-cli/internal/app/TestM3A4SelectionAndCLIOptions/first_--all",
+      "github.com/inxups/style-cli/internal/app/TestM3A4SelectionAndCLIOptions/first_second",
+      "github.com/inxups/style-cli/internal/app/TestM3A4SelectionAndCLIOptions/--all_--ref=refs/heads/main",
+      "github.com/inxups/style-cli/internal/app/TestM3A4SelectionAndCLIOptions/first_--ref",
+      "github.com/inxups/style-cli/internal/app/TestM3A4SelectionAndCLIOptions/first_--ref=",
+      "github.com/inxups/style-cli/internal/app/TestM3A4SelectionAndCLIOptions/first_--ref=x_--ref=y",
+      "github.com/inxups/style-cli/internal/app/TestM3A4SelectionAndCLIOptions/first_--yes_--yes",
+      "github.com/inxups/style-cli/internal/app/TestM3A4SelectionAndCLIOptions/--all_--all",
+      "github.com/inxups/style-cli/internal/app/TestM3A4SelectionAndCLIOptions/first_--yes=true",
+      "github.com/inxups/style-cli/internal/app/TestM3A4SelectionAndCLIOptions/first_--set=a=b",
+      "github.com/inxups/style-cli/internal/app/TestM3A4SelectionAndCLIOptions/first_--harness=codex",
+      "github.com/inxups/style-cli/internal/app/TestM3A4SelectionAndCLIOptions/first_--route=codex=codex-user",
+      "github.com/inxups/style-cli/internal/app/TestM3A4SelectionAndCLIOptions/first_--path=pkg",
+      "github.com/inxups/style-cli/internal/app/TestM3A4SelectionAndCLIOptions/first_--source=elsewhere",
+      "github.com/inxups/style-cli/internal/app/TestM3A4SelectionAndCLIOptions/first_--link",
+      "github.com/inxups/style-cli/internal/app/TestM3A4SelectionAndCLIOptions/first_--frozen",
+      "github.com/inxups/style-cli/internal/app/TestM3A4SelectionAndCLIOptions/first_--fail-closed=claude-code",
+      "github.com/inxups/style-cli/internal/app/TestM3A4SelectionAndCLIOptions/first_--json_--json",
+      "github.com/inxups/style-cli/internal/app/TestM3A4SelectionAndCLIOptions",
+      "github.com/inxups/style-cli/internal/app/TestM3A4PreviewNoopAndApply/codex-user",
+      "github.com/inxups/style-cli/internal/app/TestM3A4PreviewNoopAndApply/codex-plugin",
+      "github.com/inxups/style-cli/internal/app/TestM3A4PreviewNoopAndApply/claude-user",
+      "github.com/inxups/style-cli/internal/app/TestM3A4PreviewNoopAndApply",
+      "github.com/inxups/style-cli/internal/app/TestM3A4GitRefUpdates/sha1/branch",
+      "github.com/inxups/style-cli/internal/app/TestM3A4GitRefUpdates/sha1/tag",
+      "github.com/inxups/style-cli/internal/app/TestM3A4GitRefUpdates/sha1/oid",
+      "github.com/inxups/style-cli/internal/app/TestM3A4GitRefUpdates/sha1/change-ref",
+      "github.com/inxups/style-cli/internal/app/TestM3A4GitRefUpdates/sha1/revision-only",
+      "github.com/inxups/style-cli/internal/app/TestM3A4GitRefUpdates/sha1/downgrade",
+      "github.com/inxups/style-cli/internal/app/TestM3A4GitRefUpdates/sha1/missing-ref",
+      "github.com/inxups/style-cli/internal/app/TestM3A4GitRefUpdates/sha256/branch",
+      "github.com/inxups/style-cli/internal/app/TestM3A4GitRefUpdates/sha256/tag",
+      "github.com/inxups/style-cli/internal/app/TestM3A4GitRefUpdates/sha256/oid",
+      "github.com/inxups/style-cli/internal/app/TestM3A4GitRefUpdates/sha256/change-ref",
+      "github.com/inxups/style-cli/internal/app/TestM3A4GitRefUpdates/sha256/revision-only",
+      "github.com/inxups/style-cli/internal/app/TestM3A4GitRefUpdates/sha256/downgrade",
+      "github.com/inxups/style-cli/internal/app/TestM3A4GitRefUpdates/sha256/missing-ref",
+      "github.com/inxups/style-cli/internal/app/TestM3A4GitRefUpdates",
+      "github.com/inxups/style-cli/internal/app/TestM3A4LocalSourceKindsAndDrift/copy-dir/none",
+      "github.com/inxups/style-cli/internal/app/TestM3A4LocalSourceKindsAndDrift/copy-dir/missing-source",
+      "github.com/inxups/style-cli/internal/app/TestM3A4LocalSourceKindsAndDrift/copy-dir/type-change",
+      "github.com/inxups/style-cli/internal/app/TestM3A4LocalSourceKindsAndDrift/copy-dir/name-change",
+      "github.com/inxups/style-cli/internal/app/TestM3A4LocalSourceKindsAndDrift/copy-dir/managed-drift",
+      "github.com/inxups/style-cli/internal/app/TestM3A4LocalSourceKindsAndDrift/copy-dir/ref-option",
+      "github.com/inxups/style-cli/internal/app/TestM3A4LocalSourceKindsAndDrift/copy-file/none",
+      "github.com/inxups/style-cli/internal/app/TestM3A4LocalSourceKindsAndDrift/copy-file/missing-source",
+      "github.com/inxups/style-cli/internal/app/TestM3A4LocalSourceKindsAndDrift/copy-file/type-change",
+      "github.com/inxups/style-cli/internal/app/TestM3A4LocalSourceKindsAndDrift/copy-file/name-change",
+      "github.com/inxups/style-cli/internal/app/TestM3A4LocalSourceKindsAndDrift/copy-file/managed-drift",
+      "github.com/inxups/style-cli/internal/app/TestM3A4LocalSourceKindsAndDrift/copy-file/ref-option",
+      "github.com/inxups/style-cli/internal/app/TestM3A4LocalSourceKindsAndDrift/link-dir/none",
+      "github.com/inxups/style-cli/internal/app/TestM3A4LocalSourceKindsAndDrift/link-dir/missing-source",
+      "github.com/inxups/style-cli/internal/app/TestM3A4LocalSourceKindsAndDrift/link-dir/type-change",
+      "github.com/inxups/style-cli/internal/app/TestM3A4LocalSourceKindsAndDrift/link-dir/name-change",
+      "github.com/inxups/style-cli/internal/app/TestM3A4LocalSourceKindsAndDrift/link-dir/managed-drift",
+      "github.com/inxups/style-cli/internal/app/TestM3A4LocalSourceKindsAndDrift/link-dir/ref-option",
+      "github.com/inxups/style-cli/internal/app/TestM3A4LocalSourceKindsAndDrift/link-file/none",
+      "github.com/inxups/style-cli/internal/app/TestM3A4LocalSourceKindsAndDrift/link-file/missing-source",
+      "github.com/inxups/style-cli/internal/app/TestM3A4LocalSourceKindsAndDrift/link-file/type-change",
+      "github.com/inxups/style-cli/internal/app/TestM3A4LocalSourceKindsAndDrift/link-file/name-change",
+      "github.com/inxups/style-cli/internal/app/TestM3A4LocalSourceKindsAndDrift/link-file/managed-drift",
+      "github.com/inxups/style-cli/internal/app/TestM3A4LocalSourceKindsAndDrift/link-file/ref-option",
+      "github.com/inxups/style-cli/internal/app/TestM3A4LocalSourceKindsAndDrift",
+      "github.com/inxups/style-cli/internal/app/TestM3A4SettingsAndSequence/retain",
+      "github.com/inxups/style-cli/internal/app/TestM3A4SettingsAndSequence/drop",
+      "github.com/inxups/style-cli/internal/app/TestM3A4SettingsAndSequence/new-default",
+      "github.com/inxups/style-cli/internal/app/TestM3A4SettingsAndSequence/new-default-shadow",
+      "github.com/inxups/style-cli/internal/app/TestM3A4SettingsAndSequence/required",
+      "github.com/inxups/style-cli/internal/app/TestM3A4SettingsAndSequence/required-shadow",
+      "github.com/inxups/style-cli/internal/app/TestM3A4SettingsAndSequence/remove-all",
+      "github.com/inxups/style-cli/internal/app/TestM3A4SettingsAndSequence/unknown-stored",
+      "github.com/inxups/style-cli/internal/app/TestM3A4SettingsAndSequence",
+      "github.com/inxups/style-cli/internal/app/TestM3A4UnselectedUsesOnlyApprovedBytes/copy",
+      "github.com/inxups/style-cli/internal/app/TestM3A4UnselectedUsesOnlyApprovedBytes/link",
+      "github.com/inxups/style-cli/internal/app/TestM3A4UnselectedUsesOnlyApprovedBytes/trusted-link",
+      "github.com/inxups/style-cli/internal/app/TestM3A4UnselectedUsesOnlyApprovedBytes/native-copy",
+      "github.com/inxups/style-cli/internal/app/TestM3A4UnselectedUsesOnlyApprovedBytes/native-link",
+      "github.com/inxups/style-cli/internal/app/TestM3A4UnselectedUsesOnlyApprovedBytes",
+      "github.com/inxups/style-cli/internal/app/TestM3A4AuthenticatedBaselinesRequired/missing",
+      "github.com/inxups/style-cli/internal/app/TestM3A4AuthenticatedBaselinesRequired/corrupt",
+      "github.com/inxups/style-cli/internal/app/TestM3A4AuthenticatedBaselinesRequired/no-digest",
+      "github.com/inxups/style-cli/internal/app/TestM3A4AuthenticatedBaselinesRequired/wrong-files",
+      "github.com/inxups/style-cli/internal/app/TestM3A4AuthenticatedBaselinesRequired/legacy-native",
+      "github.com/inxups/style-cli/internal/app/TestM3A4AuthenticatedBaselinesRequired",
+      "github.com/inxups/style-cli/internal/app/TestM3A4UnselectedEffectsRequireAll/dedup",
+      "github.com/inxups/style-cli/internal/app/TestM3A4UnselectedEffectsRequireAll/settings",
+      "github.com/inxups/style-cli/internal/app/TestM3A4UnselectedEffectsRequireAll/native-configuration",
+      "github.com/inxups/style-cli/internal/app/TestM3A4UnselectedEffectsRequireAll/native-trust",
+      "github.com/inxups/style-cli/internal/app/TestM3A4UnselectedEffectsRequireAll",
+      "github.com/inxups/style-cli/internal/app/TestM3A4NativeChangesAndFirstLinkTrust/codex-user/add",
+      "github.com/inxups/style-cli/internal/app/TestM3A4NativeChangesAndFirstLinkTrust/codex-user/modify",
+      "github.com/inxups/style-cli/internal/app/TestM3A4NativeChangesAndFirstLinkTrust/codex-user/remove",
+      "github.com/inxups/style-cli/internal/app/TestM3A4NativeChangesAndFirstLinkTrust/codex-user/reorder",
+      "github.com/inxups/style-cli/internal/app/TestM3A4NativeChangesAndFirstLinkTrust/codex-user/first-link-trust",
+      "github.com/inxups/style-cli/internal/app/TestM3A4NativeChangesAndFirstLinkTrust/codex-plugin/add",
+      "github.com/inxups/style-cli/internal/app/TestM3A4NativeChangesAndFirstLinkTrust/codex-plugin/modify",
+      "github.com/inxups/style-cli/internal/app/TestM3A4NativeChangesAndFirstLinkTrust/codex-plugin/remove",
+      "github.com/inxups/style-cli/internal/app/TestM3A4NativeChangesAndFirstLinkTrust/codex-plugin/reorder",
+      "github.com/inxups/style-cli/internal/app/TestM3A4NativeChangesAndFirstLinkTrust/codex-plugin/first-link-trust",
+      "github.com/inxups/style-cli/internal/app/TestM3A4NativeChangesAndFirstLinkTrust/claude-user/add",
+      "github.com/inxups/style-cli/internal/app/TestM3A4NativeChangesAndFirstLinkTrust/claude-user/modify",
+      "github.com/inxups/style-cli/internal/app/TestM3A4NativeChangesAndFirstLinkTrust/claude-user/remove",
+      "github.com/inxups/style-cli/internal/app/TestM3A4NativeChangesAndFirstLinkTrust/claude-user/reorder",
+      "github.com/inxups/style-cli/internal/app/TestM3A4NativeChangesAndFirstLinkTrust/claude-user/first-link-trust",
+      "github.com/inxups/style-cli/internal/app/TestM3A4NativeChangesAndFirstLinkTrust",
+      "github.com/inxups/style-cli/internal/app/TestM3A4CandidateGatesAndBlockedCLI/version",
+      "github.com/inxups/style-cli/internal/app/TestM3A4CandidateGatesAndBlockedCLI/name",
+      "github.com/inxups/style-cli/internal/app/TestM3A4CandidateGatesAndBlockedCLI/schema",
+      "github.com/inxups/style-cli/internal/app/TestM3A4CandidateGatesAndBlockedCLI/runtime",
+      "github.com/inxups/style-cli/internal/app/TestM3A4CandidateGatesAndBlockedCLI/harness",
+      "github.com/inxups/style-cli/internal/app/TestM3A4CandidateGatesAndBlockedCLI/native",
+      "github.com/inxups/style-cli/internal/app/TestM3A4CandidateGatesAndBlockedCLI/template",
+      "github.com/inxups/style-cli/internal/app/TestM3A4CandidateGatesAndBlockedCLI/budget",
+      "github.com/inxups/style-cli/internal/app/TestM3A4CandidateGatesAndBlockedCLI/input-ceiling",
+      "github.com/inxups/style-cli/internal/app/TestM3A4CandidateGatesAndBlockedCLI/replace",
+      "github.com/inxups/style-cli/internal/app/TestM3A4CandidateGatesAndBlockedCLI/two-replace",
+      "github.com/inxups/style-cli/internal/app/TestM3A4CandidateGatesAndBlockedCLI/fallback-error",
+      "github.com/inxups/style-cli/internal/app/TestM3A4CandidateGatesAndBlockedCLI",
+      "github.com/inxups/style-cli/internal/app/TestM3A4GitCaptureAndDetachedPreview",
+      "github.com/inxups/style-cli/internal/app/TestM3A4BatchValidationAndJointCompilation/none",
+      "github.com/inxups/style-cli/internal/app/TestM3A4BatchValidationAndJointCompilation/missing-local",
+      "github.com/inxups/style-cli/internal/app/TestM3A4BatchValidationAndJointCompilation/invalid-local",
+      "github.com/inxups/style-cli/internal/app/TestM3A4BatchValidationAndJointCompilation/git-fetch",
+      "github.com/inxups/style-cli/internal/app/TestM3A4BatchValidationAndJointCompilation",
+      "github.com/inxups/style-cli/internal/app/TestM3A4EachPackageFailureRestoresBatch/codex-user/stage-first",
+      "github.com/inxups/style-cli/internal/app/TestM3A4EachPackageFailureRestoresBatch/codex-user/stage-second",
+      "github.com/inxups/style-cli/internal/app/TestM3A4EachPackageFailureRestoresBatch/codex-user/apply-first",
+      "github.com/inxups/style-cli/internal/app/TestM3A4EachPackageFailureRestoresBatch/codex-user/apply-second",
+      "github.com/inxups/style-cli/internal/app/TestM3A4EachPackageFailureRestoresBatch/codex-plugin/stage-first",
+      "github.com/inxups/style-cli/internal/app/TestM3A4EachPackageFailureRestoresBatch/codex-plugin/stage-second",
+      "github.com/inxups/style-cli/internal/app/TestM3A4EachPackageFailureRestoresBatch/codex-plugin/apply-first",
+      "github.com/inxups/style-cli/internal/app/TestM3A4EachPackageFailureRestoresBatch/codex-plugin/apply-second",
+      "github.com/inxups/style-cli/internal/app/TestM3A4EachPackageFailureRestoresBatch/claude-user/stage-first",
+      "github.com/inxups/style-cli/internal/app/TestM3A4EachPackageFailureRestoresBatch/claude-user/stage-second",
+      "github.com/inxups/style-cli/internal/app/TestM3A4EachPackageFailureRestoresBatch/claude-user/apply-first",
+      "github.com/inxups/style-cli/internal/app/TestM3A4EachPackageFailureRestoresBatch/claude-user/apply-second",
+      "github.com/inxups/style-cli/internal/app/TestM3A4EachPackageFailureRestoresBatch",
+      "github.com/inxups/style-cli/internal/app/TestM3A4EachFileFailureRestoresBatch/codex-user/config/.agenthooks/style/hooks.json.restore.json",
+      "github.com/inxups/style-cli/internal/app/TestM3A4EachFileFailureRestoresBatch/codex-user/config/config.toml",
+      "github.com/inxups/style-cli/internal/app/TestM3A4EachFileFailureRestoresBatch/codex-user/config/hooks.json",
+      "github.com/inxups/style-cli/internal/app/TestM3A4EachFileFailureRestoresBatch/codex-user/style/approved/first.json",
+      "github.com/inxups/style-cli/internal/app/TestM3A4EachFileFailureRestoresBatch/codex-user/style/approved/second.json",
+      "github.com/inxups/style-cli/internal/app/TestM3A4EachFileFailureRestoresBatch/codex-user/style/build/explain.json",
+      "github.com/inxups/style-cli/internal/app/TestM3A4EachFileFailureRestoresBatch/codex-user/style/build/index.json",
+      "github.com/inxups/style-cli/internal/app/TestM3A4EachFileFailureRestoresBatch/codex-user/style/settings/first.yaml",
+      "github.com/inxups/style-cli/internal/app/TestM3A4EachFileFailureRestoresBatch/codex-user/style/style.lock.yaml",
+      "github.com/inxups/style-cli/internal/app/TestM3A4EachFileFailureRestoresBatch/codex-user/after-final-file",
+      "github.com/inxups/style-cli/internal/app/TestM3A4EachFileFailureRestoresBatch/codex-plugin/config/config.toml",
+      "github.com/inxups/style-cli/internal/app/TestM3A4EachFileFailureRestoresBatch/codex-plugin/style/adapters/codex/plugin/bin/style",
+      "github.com/inxups/style-cli/internal/app/TestM3A4EachFileFailureRestoresBatch/codex-plugin/style/adapters/codex/plugin/hooks/hooks.json",
+      "github.com/inxups/style-cli/internal/app/TestM3A4EachFileFailureRestoresBatch/codex-plugin/style/approved/first.json",
+      "github.com/inxups/style-cli/internal/app/TestM3A4EachFileFailureRestoresBatch/codex-plugin/style/approved/second.json",
+      "github.com/inxups/style-cli/internal/app/TestM3A4EachFileFailureRestoresBatch/codex-plugin/style/build/explain.json",
+      "github.com/inxups/style-cli/internal/app/TestM3A4EachFileFailureRestoresBatch/codex-plugin/style/build/index.json",
+      "github.com/inxups/style-cli/internal/app/TestM3A4EachFileFailureRestoresBatch/codex-plugin/style/settings/first.yaml",
+      "github.com/inxups/style-cli/internal/app/TestM3A4EachFileFailureRestoresBatch/codex-plugin/style/style.lock.yaml",
+      "github.com/inxups/style-cli/internal/app/TestM3A4EachFileFailureRestoresBatch/codex-plugin/after-final-file",
+      "github.com/inxups/style-cli/internal/app/TestM3A4EachFileFailureRestoresBatch/claude-user/config/.agenthooks/style/settings.json.restore.json",
+      "github.com/inxups/style-cli/internal/app/TestM3A4EachFileFailureRestoresBatch/claude-user/config/rules/style-first.md",
+      "github.com/inxups/style-cli/internal/app/TestM3A4EachFileFailureRestoresBatch/claude-user/config/rules/style-second.md",
+      "github.com/inxups/style-cli/internal/app/TestM3A4EachFileFailureRestoresBatch/claude-user/config/settings.json",
+      "github.com/inxups/style-cli/internal/app/TestM3A4EachFileFailureRestoresBatch/claude-user/style/approved/first.json",
+      "github.com/inxups/style-cli/internal/app/TestM3A4EachFileFailureRestoresBatch/claude-user/style/approved/second.json",
+      "github.com/inxups/style-cli/internal/app/TestM3A4EachFileFailureRestoresBatch/claude-user/style/build/explain.json",
+      "github.com/inxups/style-cli/internal/app/TestM3A4EachFileFailureRestoresBatch/claude-user/style/build/index.json",
+      "github.com/inxups/style-cli/internal/app/TestM3A4EachFileFailureRestoresBatch/claude-user/style/settings/first.yaml",
+      "github.com/inxups/style-cli/internal/app/TestM3A4EachFileFailureRestoresBatch/claude-user/style/style.lock.yaml",
+      "github.com/inxups/style-cli/internal/app/TestM3A4EachFileFailureRestoresBatch/claude-user/after-final-file",
+      "github.com/inxups/style-cli/internal/app/TestM3A4EachFileFailureRestoresBatch",
+      "github.com/inxups/style-cli/internal/app/TestM3A4RollbackFailuresAreReportedAndRetained",
+      "github.com/inxups/style-cli/internal/app/TestM3A4ConfirmationRejectsEveryStaleInput/source",
+      "github.com/inxups/style-cli/internal/app/TestM3A4ConfirmationRejectsEveryStaleInput/source-identity",
+      "github.com/inxups/style-cli/internal/app/TestM3A4ConfirmationRejectsEveryStaleInput/source-mode",
+      "github.com/inxups/style-cli/internal/app/TestM3A4ConfirmationRejectsEveryStaleInput/lock",
+      "github.com/inxups/style-cli/internal/app/TestM3A4ConfirmationRejectsEveryStaleInput/lock-identity",
+      "github.com/inxups/style-cli/internal/app/TestM3A4ConfirmationRejectsEveryStaleInput/lock-mtime",
+      "github.com/inxups/style-cli/internal/app/TestM3A4ConfirmationRejectsEveryStaleInput/approval",
+      "github.com/inxups/style-cli/internal/app/TestM3A4ConfirmationRejectsEveryStaleInput/settings",
+      "github.com/inxups/style-cli/internal/app/TestM3A4ConfirmationRejectsEveryStaleInput/managed",
+      "github.com/inxups/style-cli/internal/app/TestM3A4ConfirmationRejectsEveryStaleInput/unselected-managed",
+      "github.com/inxups/style-cli/internal/app/TestM3A4ConfirmationRejectsEveryStaleInput/index",
+      "github.com/inxups/style-cli/internal/app/TestM3A4ConfirmationRejectsEveryStaleInput/explain",
+      "github.com/inxups/style-cli/internal/app/TestM3A4ConfirmationRejectsEveryStaleInput/hook",
+      "github.com/inxups/style-cli/internal/app/TestM3A4ConfirmationRejectsEveryStaleInput/native-trust",
+      "github.com/inxups/style-cli/internal/app/TestM3A4ConfirmationRejectsEveryStaleInput/parent",
+      "github.com/inxups/style-cli/internal/app/TestM3A4ConfirmationRejectsEveryStaleInput/new-file",
+      "github.com/inxups/style-cli/internal/app/TestM3A4ConfirmationRejectsEveryStaleInput",
+      "github.com/inxups/style-cli/internal/app/TestM3A4UpdateSharesGuardWithOtherWriters/install",
+      "github.com/inxups/style-cli/internal/app/TestM3A4UpdateSharesGuardWithOtherWriters/update",
+      "github.com/inxups/style-cli/internal/app/TestM3A4UpdateSharesGuardWithOtherWriters/sync",
+      "github.com/inxups/style-cli/internal/app/TestM3A4UpdateSharesGuardWithOtherWriters/trust",
+      "github.com/inxups/style-cli/internal/app/TestM3A4UpdateSharesGuardWithOtherWriters/uninstall",
+      "github.com/inxups/style-cli/internal/app/TestM3A4UpdateSharesGuardWithOtherWriters/during-update-commit",
+      "github.com/inxups/style-cli/internal/app/TestM3A4UpdateSharesGuardWithOtherWriters",
+      "github.com/inxups/style-cli/internal/app/TestM3A4CancellationGuardRecoveryAndMaintenanceIsolation/before",
+      "github.com/inxups/style-cli/internal/app/TestM3A4CancellationGuardRecoveryAndMaintenanceIsolation/confirmation",
+      "github.com/inxups/style-cli/internal/app/TestM3A4CancellationGuardRecoveryAndMaintenanceIsolation/stage",
+      "github.com/inxups/style-cli/internal/app/TestM3A4CancellationGuardRecoveryAndMaintenanceIsolation/files",
+      "github.com/inxups/style-cli/internal/app/TestM3A4CancellationGuardRecoveryAndMaintenanceIsolation/stale-guard",
+      "github.com/inxups/style-cli/internal/app/TestM3A4CancellationGuardRecoveryAndMaintenanceIsolation/preview-unlocked",
+      "github.com/inxups/style-cli/internal/app/TestM3A4CancellationGuardRecoveryAndMaintenanceIsolation",
+      "github.com/inxups/style-cli/internal/app/TestM3A4FailureReportClassification/busy",
+      "github.com/inxups/style-cli/internal/app/TestM3A4FailureReportClassification/stale",
+      "github.com/inxups/style-cli/internal/app/TestM3A4FailureReportClassification/canceled",
+      "github.com/inxups/style-cli/internal/app/TestM3A4FailureReportClassification/deadline",
+      "github.com/inxups/style-cli/internal/app/TestM3A4FailureReportClassification/rollback",
+      "github.com/inxups/style-cli/internal/app/TestM3A4FailureReportClassification/fallback",
+      "github.com/inxups/style-cli/internal/app/TestM3A4FailureReportClassification/budget",
+      "github.com/inxups/style-cli/internal/app/TestM3A4FailureReportClassification/safe-default",
+      "github.com/inxups/style-cli/internal/app/TestM3A4FailureReportClassification",
+      "github.com/inxups/style-cli/internal/app/TestM3A4PrivateInputsCannotAliasUncapturedValues/lock",
+      "github.com/inxups/style-cli/internal/app/TestM3A4PrivateInputsCannotAliasUncapturedValues/approved-dir",
+      "github.com/inxups/style-cli/internal/app/TestM3A4PrivateInputsCannotAliasUncapturedValues/approval",
+      "github.com/inxups/style-cli/internal/app/TestM3A4PrivateInputsCannotAliasUncapturedValues/unselected-approval",
+      "github.com/inxups/style-cli/internal/app/TestM3A4PrivateInputsCannotAliasUncapturedValues/settings-dir",
+      "github.com/inxups/style-cli/internal/app/TestM3A4PrivateInputsCannotAliasUncapturedValues/settings",
+      "github.com/inxups/style-cli/internal/app/TestM3A4PrivateInputsCannotAliasUncapturedValues/build-dir",
+      "github.com/inxups/style-cli/internal/app/TestM3A4PrivateInputsCannotAliasUncapturedValues/index",
+      "github.com/inxups/style-cli/internal/app/TestM3A4PrivateInputsCannotAliasUncapturedValues/explain",
+      "github.com/inxups/style-cli/internal/app/TestM3A4PrivateInputsCannotAliasUncapturedValues",
+      "github.com/speakeasy-api/agenthooks/install/TestM3A4FileRollbackPreservesModeAndMtime/replace",
+      "github.com/speakeasy-api/agenthooks/install/TestM3A4FileRollbackPreservesModeAndMtime/remove",
+      "github.com/speakeasy-api/agenthooks/install/TestM3A4FileRollbackPreservesModeAndMtime",
+      "github.com/speakeasy-api/agenthooks/install/TestM3A4FileRestoreFailureRetainsBackup"
+    ]
+  },
+  "full_test_result": {
+    "test_events": {
+      "passed": 2935,
+      "failed": 0,
+      "skipped": 24
+    },
+    "packages_with_tests_passed": 33,
+    "packages_without_tests": 7,
+    "cached_results": 0,
+    "existing_skips": [
+      "github.com/inxups/style-cli/internal/adapter/conformance/TestHookProcessLatency",
+      "github.com/speakeasy-api/agenthooks/e2e/TestClaudeEvents",
+      "github.com/speakeasy-api/agenthooks/e2e/TestCopilotToolFailure",
+      "github.com/speakeasy-api/agenthooks/e2e/TestCopilotSubagentEvents",
+      "github.com/speakeasy-api/agenthooks/e2e/TestCopilotPreCompact",
+      "github.com/speakeasy-api/agenthooks/e2e/TestGeminiDeny",
+      "github.com/speakeasy-api/agenthooks/e2e/TestOpenCodeDeny",
+      "github.com/speakeasy-api/agenthooks/e2e/TestCopilotPascalCaseCompat",
+      "github.com/speakeasy-api/agenthooks/e2e/TestCopilotDeny",
+      "github.com/speakeasy-api/agenthooks/e2e/TestCopilotPluginScope",
+      "github.com/speakeasy-api/agenthooks/e2e/TestOpenCodeEvents",
+      "github.com/speakeasy-api/agenthooks/e2e/TestCopilotModifiedArgs",
+      "github.com/speakeasy-api/agenthooks/e2e/TestCopilotEventFields",
+      "github.com/speakeasy-api/agenthooks/e2e/TestCodexDeny",
+      "github.com/speakeasy-api/agenthooks/e2e/TestCodexTrustPreseeding",
+      "github.com/speakeasy-api/agenthooks/e2e/TestClaudeDeny",
+      "github.com/speakeasy-api/agenthooks/e2e/TestKimiEventFields",
+      "github.com/speakeasy-api/agenthooks/e2e/TestGeminiEvents",
+      "github.com/speakeasy-api/agenthooks/e2e/TestCursorDeny",
+      "github.com/speakeasy-api/agenthooks/e2e/TestCursorEvents",
+      "github.com/speakeasy-api/agenthooks/e2e/TestCopilotStopContinuation",
+      "github.com/speakeasy-api/agenthooks/e2e/TestCursorResumeBackfill",
+      "github.com/speakeasy-api/agenthooks/e2e/TestKimiDeny",
+      "github.com/speakeasy-api/agenthooks/e2e/TestCodexCanonicalShellMatcher"
+    ],
+    "skip_scope": "23 opt-in real e2e plus one opt-in process latency test; no A4 skip"
+  },
+  "acceptance": [
+    {
+      "id": "A4-01",
+      "status": "passed",
+      "assertions": "明确单包或 --all、选项拒绝、无变化零写、完整默认预览和确认、text/JSON golden",
+      "test_functions": [
+        "github.com/inxups/style-cli/internal/app/TestM3A4SelectionAndCLIOptions",
+        "github.com/inxups/style-cli/internal/app/TestM3A4PreviewNoopAndApply",
+        "github.com/inxups/style-cli/internal/app/TestM3A4CommandGoldenAndSingleJSON"
+      ],
+      "additional_evidence": [
+        "built-cli-verified"
+      ]
+    },
+    {
+      "id": "A4-02",
+      "status": "passed",
+      "assertions": "真实 SHA-1/SHA-256 Git branch/tag/OID/ref、同版/降版/revision-only/缺 ref；旧 OID 不可达不能用分支或缓存替代",
+      "test_functions": [
+        "github.com/inxups/style-cli/internal/app/TestM3A4GitRefUpdates",
+        "github.com/inxups/style-cli/internal/app/TestM3A4PinnedOIDCannotFallBackToBranchOrCache"
+      ],
+      "additional_evidence": []
+    },
+    {
+      "id": "A4-03",
+      "status": "passed",
+      "assertions": "原复制路径、link 当前字节、目录/单文件、缺失/类型/名称、选中复制/Git 漂移在取得前失败",
+      "test_functions": [
+        "github.com/inxups/style-cli/internal/app/TestM3A4LocalSourceKindsAndDrift",
+        "github.com/inxups/style-cli/internal/app/TestM3A4GitManagedDriftBeforeFetchAndUnselectedGit"
+      ],
+      "additional_evidence": []
+    },
+    {
+      "id": "A4-04",
+      "status": "passed",
+      "assertions": "旧 settings 保留/移除、新键 default/必填/影子值拒绝，不用环境或未声明值，seq 保持",
+      "test_functions": [
+        "github.com/inxups/style-cli/internal/app/TestM3A4SettingsAndSequence"
+      ],
+      "additional_evidence": []
+    },
+    {
+      "id": "A4-05",
+      "status": "passed",
+      "assertions": "未选脏复制/link/native/Git 只用认证批准字节；缺/坏/无摘要基线与缺有序 native 基线拒绝",
+      "test_functions": [
+        "github.com/inxups/style-cli/internal/app/TestM3A4UnselectedUsesOnlyApprovedBytes",
+        "github.com/inxups/style-cli/internal/app/TestM3A4AuthenticatedBaselinesRequired",
+        "github.com/inxups/style-cli/internal/app/TestM3A4GitManagedDriftBeforeFetchAndUnselectedGit",
+        "github.com/inxups/style-cli/internal/app/TestM3A4UnselectedOrdinaryLegacyApproval"
+      ],
+      "additional_evidence": []
+    },
+    {
+      "id": "A4-06",
+      "status": "passed",
+      "assertions": "未选 settings、native 配置/信任、渲染和跨包去重变化须明确 --all",
+      "test_functions": [
+        "github.com/inxups/style-cli/internal/app/TestM3A4UnselectedEffectsRequireAll",
+        "github.com/inxups/style-cli/internal/app/TestM3A4BatchValidationAndJointCompilation"
+      ],
+      "additional_evidence": []
+    },
+    {
+      "id": "A4-07",
+      "status": "passed",
+      "assertions": "三路线 native 新增/修改/删除/顺序和首次 link 信任全量披露；replace/两 replace/预算/requires/fallback:error 门禁",
+      "test_functions": [
+        "github.com/inxups/style-cli/internal/app/TestM3A4NativeChangesAndFirstLinkTrust",
+        "github.com/inxups/style-cli/internal/app/TestM3A4CandidateGatesAndBlockedCLI"
+      ],
+      "additional_evidence": []
+    },
+    {
+      "id": "A4-08",
+      "status": "passed",
+      "assertions": "多包联合编译/去重、任一取得或校验失败整批无写、锁定路线零 Detect",
+      "test_functions": [
+        "github.com/inxups/style-cli/internal/app/TestM3A4BatchValidationAndJointCompilation",
+        "github.com/inxups/style-cli/internal/app/TestM3A4LockedHarnessesAndLayout"
+      ],
+      "additional_evidence": []
+    },
+    {
+      "id": "A4-09",
+      "status": "passed",
+      "assertions": "深复制确认预览、确认间 ref 移动仅用捕获 commit，16 类输入漂移拒绝与私有输入 symlink 防越出捕获树",
+      "test_functions": [
+        "github.com/inxups/style-cli/internal/app/TestM3A4GitCaptureAndDetachedPreview",
+        "github.com/inxups/style-cli/internal/app/TestM3A4ConfirmationRejectsEveryStaleInput",
+        "github.com/inxups/style-cli/internal/app/TestM3A4PrivateInputsCannotAliasUncapturedValues",
+        "github.com/inxups/style-cli/internal/app/TestM3A4ConfirmationDeclineErrorAndRepeatCapture"
+      ],
+      "additional_evidence": []
+    },
+    {
+      "id": "A4-10",
+      "status": "passed",
+      "assertions": "每包 stage/exchange 和各实际文件计划失败点恢复 bytes/mode/mtime；类型化回滚失败保留备份及路径",
+      "test_functions": [
+        "github.com/inxups/style-cli/internal/app/TestM3A4EachPackageFailureRestoresBatch",
+        "github.com/inxups/style-cli/internal/app/TestM3A4EachFileFailureRestoresBatch",
+        "github.com/inxups/style-cli/internal/app/TestM3A4RollbackFailuresAreReportedAndRetained",
+        "github.com/speakeasy-api/agenthooks/install/TestM3A4FileRollbackPreservesModeAndMtime",
+        "github.com/speakeasy-api/agenthooks/install/TestM3A4FileRestoreFailureRetainsBackup"
+      ],
+      "additional_evidence": []
+    },
+    {
+      "id": "A4-11",
+      "status": "passed",
+      "assertions": "五种写入器共用 guard、commit 持锁而 preview 不持锁、busy/取消/陈旧身份恢复，state/stats/probe 不维护",
+      "test_functions": [
+        "github.com/inxups/style-cli/internal/app/TestM3A4UpdateSharesGuardWithOtherWriters",
+        "github.com/inxups/style-cli/internal/app/TestM3A4CancellationGuardRecoveryAndMaintenanceIsolation"
+      ],
+      "additional_evidence": []
+    },
+    {
+      "id": "A4-12",
+      "status": "passed",
+      "assertions": "旧 format1/2/隐式格式和普通/native 批准兼容、非法旧锁提前失败、排序/隐私/单 JSON、三路线与真实旧安装/runtime 对照",
+      "test_functions": [
+        "github.com/inxups/style-cli/internal/app/TestM3A4LegacyLockAndApprovalCompatibility",
+        "github.com/inxups/style-cli/internal/app/TestM3A4InvalidOldLocksFailBeforeSourceAcquisition",
+        "github.com/inxups/style-cli/internal/app/TestM3A4ReportsSortByExistingSequence",
+        "github.com/inxups/style-cli/internal/app/TestM3A4FailureReportClassification",
+        "github.com/inxups/style-cli/internal/app/TestM3A4CommandGoldenAndSingleJSON",
+        "github.com/inxups/style-cli/internal/app/TestM3A4LockedHarnessesAndLayout"
+      ],
+      "additional_evidence": [
+        "built-cli-verified",
+        "git-gate",
+        "smoke",
+        "migration",
+        "replace"
+      ]
+    }
+  ],
+  "goldens": [
+    {
+      "path": "testdata/update/apply.stderr.json",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "testdata/update/apply.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "testdata/update/apply.stdout.json",
+      "sha256": "6713135b9fc519bceca00b5dc5bc066dc4de0af61f293b9af3e618bf55fa0cb7",
+      "bytes": 5948
+    },
+    {
+      "path": "testdata/update/apply.stdout.txt",
+      "sha256": "cf8e5142bb2fa06844e431875cdccdcfb3f0fa8ddaf8311a04e71d4cacb2ccab",
+      "bytes": 3061
+    },
+    {
+      "path": "testdata/update/error.stderr.json",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "testdata/update/error.stderr.txt",
+      "sha256": "c0ddcbba3679bd0c99311ced308b74a51d434f5f8ddb7d7818967ea83042ace9",
+      "bytes": 54
+    },
+    {
+      "path": "testdata/update/error.stdout.json",
+      "sha256": "999f62575487690c227131e40bd40ed7a60a156ee1b3f64ea401efad8d6f9989",
+      "bytes": 336
+    },
+    {
+      "path": "testdata/update/error.stdout.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "testdata/update/preview.stderr.json",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "testdata/update/preview.stderr.txt",
+      "sha256": "c18c40cd25da6ee98fae06dfd5c5cdf7ccb04da0386faf08032fef4ffdc09986",
+      "bytes": 66
+    },
+    {
+      "path": "testdata/update/preview.stdout.json",
+      "sha256": "2231cc38f9b68412cc9a50f8930a87d1546593ea43a9425460346401e55e79f0",
+      "bytes": 5962
+    },
+    {
+      "path": "testdata/update/preview.stdout.txt",
+      "sha256": "7b8358e3e89913df190ed6bbd7232ff8cab2063b0a8464c3c3bcf2f1c0e1cf99",
+      "bytes": 3031
+    },
+    {
+      "path": "testdata/update/unchanged.stderr.json",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "testdata/update/unchanged.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "testdata/update/unchanged.stdout.json",
+      "sha256": "d2ffe1a235f0e272b238a47cc77c199947b0b182f88cc67b0b67994cad8c7701",
+      "bytes": 4035
+    },
+    {
+      "path": "testdata/update/unchanged.stdout.txt",
+      "sha256": "e232c51a50bd3d3f8aaa1fb04fc565d949fe8b6a027c6dce62aee033b0e889cf",
+      "bytes": 1586
+    }
+  ],
+  "golden_whitespace": {
+    "attribute_path": ".gitattributes",
+    "attribute_sha256": "43e1cb14e2b2eb99b42346dbf0efef07a7573ccd5c817da6c1f13b6f1b1ac63d",
+    "scope": "Only new testdata/update/*.txt keeps exact intentional space-only CLI report lines; production whitespace checks are unchanged."
+  },
+  "built_cli": {
+    "binary_path": "/tmp/style-m3-a4-20261017/style",
+    "binary_sha256": "7da4b1d4d7288c6305793d5db3677b325eb6c3c7f8e9d0b9a28f7f6afd55bf3a",
+    "baseline_binary_path": "/tmp/style-m3-a4-20261017/style-baseline",
+    "baseline_binary_sha256": "175979dcf6bf2317e4c2b67917a7bf28e848456bd218e6b012c7cc57bda32150",
+    "baseline_source": {
+      "revision": "fd88e8da66cd8409b6939e71875edd4bee3c9421",
+      "archive_path": "/tmp/style-m3-a4-20261017/baseline-source.tar",
+      "archive_sha256": "3973f939eca3937d62ca5985e61b7bee49641b56b9086a4611678919cc041c28",
+      "source_directory": "/tmp/style-m3-a4-20261017/baseline-source"
+    },
+    "old_binary_path": "/tmp/style-m3-a3-20261017/style-legacy",
+    "old_binary_sha256": "4b2a46049758faef4c0a7e7e3045b877fe0503d0479b349fc5bf929adff8d958",
+    "old_binary_reused_from_A3": true,
+    "old_source": {
+      "revision": "74a473d2e238af44c346da3807f46e1c9993176d",
+      "archive_sha256": "993fab002b8480fe00f9d53505aa1eafb8ac3f0bb678ca65734e1e5db126a981",
+      "source_directory": "/tmp/style-m3-a3-20261017/legacy-source"
+    },
+    "old_build_record": {
+      "argv": [
+        "go",
+        "-C",
+        "/tmp/style-m3-a3-20261017/legacy-source",
+        "build",
+        "-trimpath",
+        "-buildvcs=false",
+        "-o",
+        "/tmp/style-m3-a3-20261017/style-legacy",
+        "./cmd/style"
+      ],
+      "cwd": "/Users/inxups/project/style-cli",
+      "started_utc": "2026-10-17T08:58:09.578471+00:00",
+      "elapsed_seconds": 0.906,
+      "exit_code": 0,
+      "log": "/tmp/style-m3-a3-20261017/build-legacy-1.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "cleared_environment": [
+        "CODEX_HOME",
+        "CODEX_SANDBOX",
+        "STYLE_HOME",
+        "CLAUDE_CODE_EFFORT_LEVEL",
+        "CLAUDE_CODE_CONFIG_DIR",
+        "CLAUDE_CONFIG_DIR",
+        "PLUGIN_ROOT",
+        "STYLE_PERF",
+        "STYLE_PERF_OUTPUT"
+      ],
+      "Go_environment": {
+        "GOPATH": "/tmp/style-cli-gopath",
+        "GOMODCACHE": "/tmp/style-cli-gomodcache",
+        "GOCACHE": "/tmp/style-cli-gocache",
+        "GOWORK": "off",
+        "GOFLAGS": "-mod=readonly"
+      }
+    },
+    "update_gate": {
+      "format": 1,
+      "test": "M3-A4-built-cli",
+      "status": "passed",
+      "binary_sha256": "7da4b1d4d7288c6305793d5db3677b325eb6c3c7f8e9d0b9a28f7f6afd55bf3a",
+      "old_binary_sha256": "4b2a46049758faef4c0a7e7e3045b877fe0503d0479b349fc5bf929adff8d958",
+      "baseline_binary_sha256": "175979dcf6bf2317e4c2b67917a7bf28e848456bd218e6b012c7cc57bda32150",
+      "cases": [
+        {
+          "route": "codex-user",
+          "action": "json-preview",
+          "status": "passed",
+          "unchanged": true,
+          "native_disclosed": true
+        },
+        {
+          "route": "codex-user",
+          "action": "text-preview",
+          "status": "passed",
+          "unchanged": true,
+          "before_after_disclosed": true
+        },
+        {
+          "route": "codex-user",
+          "action": "apply",
+          "status": "passed",
+          "version": "0.5.0",
+          "seq": 1,
+          "runtime_format": 1
+        },
+        {
+          "route": "codex-user",
+          "action": "unchanged",
+          "status": "passed",
+          "bytes_mode_mtime_inode_preserved": true
+        },
+        {
+          "route": "codex-user",
+          "action": "single-error-json",
+          "status": "passed",
+          "unchanged": true
+        },
+        {
+          "route": "codex-user",
+          "action": "usage-errors",
+          "status": "passed",
+          "stdout_empty": true,
+          "combinations": 3
+        },
+        {
+          "route": "codex-user",
+          "action": "baseline-new-runtime-wire",
+          "status": "passed",
+          "identical": true,
+          "wire_sha256": "2c99375ec381c512c8d429a5c2a0fc389b7822f148d0ee7d3dca337370b01cd0",
+          "zero_detection_git": true
+        },
+        {
+          "route": "codex-plugin",
+          "action": "json-preview",
+          "status": "passed",
+          "unchanged": true,
+          "native_disclosed": true
+        },
+        {
+          "route": "codex-plugin",
+          "action": "text-preview",
+          "status": "passed",
+          "unchanged": true,
+          "before_after_disclosed": true
+        },
+        {
+          "route": "codex-plugin",
+          "action": "apply",
+          "status": "passed",
+          "version": "0.5.0",
+          "seq": 1,
+          "runtime_format": 1
+        },
+        {
+          "route": "codex-plugin",
+          "action": "unchanged",
+          "status": "passed",
+          "bytes_mode_mtime_inode_preserved": true
+        },
+        {
+          "route": "codex-plugin",
+          "action": "single-error-json",
+          "status": "passed",
+          "unchanged": true
+        },
+        {
+          "route": "codex-plugin",
+          "action": "usage-errors",
+          "status": "passed",
+          "stdout_empty": true,
+          "combinations": 3
+        },
+        {
+          "route": "codex-plugin",
+          "action": "baseline-new-runtime-wire",
+          "status": "passed",
+          "identical": true,
+          "wire_sha256": "2c99375ec381c512c8d429a5c2a0fc389b7822f148d0ee7d3dca337370b01cd0",
+          "zero_detection_git": true
+        },
+        {
+          "route": "claude-user",
+          "action": "json-preview",
+          "status": "passed",
+          "unchanged": true,
+          "native_disclosed": true
+        },
+        {
+          "route": "claude-user",
+          "action": "text-preview",
+          "status": "passed",
+          "unchanged": true,
+          "before_after_disclosed": true
+        },
+        {
+          "route": "claude-user",
+          "action": "apply",
+          "status": "passed",
+          "version": "0.5.0",
+          "seq": 1,
+          "runtime_format": 1
+        },
+        {
+          "route": "claude-user",
+          "action": "unchanged",
+          "status": "passed",
+          "bytes_mode_mtime_inode_preserved": true
+        },
+        {
+          "route": "claude-user",
+          "action": "single-error-json",
+          "status": "passed",
+          "unchanged": true
+        },
+        {
+          "route": "claude-user",
+          "action": "usage-errors",
+          "status": "passed",
+          "stdout_empty": true,
+          "combinations": 3
+        },
+        {
+          "route": "claude-user",
+          "action": "baseline-new-runtime-wire",
+          "status": "passed",
+          "identical": true,
+          "wire_sha256": "2c99375ec381c512c8d429a5c2a0fc389b7822f148d0ee7d3dca337370b01cd0",
+          "zero_detection_git": true
+        },
+        {
+          "route": "codex-user",
+          "action": "real-old-install-update-lifecycle",
+          "status": "passed",
+          "legacy_format": 1
+        },
+        {
+          "route": "claude-user",
+          "action": "old-layout-update-refused",
+          "status": "passed",
+          "unchanged": true
+        },
+        {
+          "route": "claude-user",
+          "action": "real-old-install-update-lifecycle",
+          "status": "passed",
+          "legacy_format": 1
+        }
+      ],
+      "passed": 24,
+      "failed": 0,
+      "boundary": "Version stubs, private files and raw runtime invocation; no real harness delivery, native command execution, credentials or remote Git."
+    },
+    "format_two_gate_and_wire": {
+      "status": "passed",
+      "new_binary_sha256": "7da4b1d4d7288c6305793d5db3677b325eb6c3c7f8e9d0b9a28f7f6afd55bf3a",
+      "old_binary_sha256": "4b2a46049758faef4c0a7e7e3045b877fe0503d0479b349fc5bf929adff8d958",
+      "format_two_fixture": "real TestM3A3ExportFormatTwoFixture production Install output",
+      "cases": [
+        {
+          "command": "list",
+          "exit_code": 1,
+          "unsupported_format_2": true,
+          "tree_identity_bytes_modes_mtimes_preserved": true
+        },
+        {
+          "command": "sync",
+          "exit_code": 1,
+          "unsupported_format_2": true,
+          "tree_identity_bytes_modes_mtimes_preserved": true
+        },
+        {
+          "command": "trust",
+          "exit_code": 1,
+          "unsupported_format_2": true,
+          "tree_identity_bytes_modes_mtimes_preserved": true
+        },
+        {
+          "command": "uninstall",
+          "exit_code": 1,
+          "unsupported_format_2": true,
+          "tree_identity_bytes_modes_mtimes_preserved": true
+        },
+        {
+          "command": "install",
+          "exit_code": 1,
+          "unsupported_format_2": true,
+          "tree_identity_bytes_modes_mtimes_preserved": true
+        },
+        {
+          "command": "doctor",
+          "exit_code": 1,
+          "unsupported_format_2": true,
+          "tree_identity_bytes_modes_mtimes_preserved": true
+        },
+        {
+          "command": "new-list",
+          "exit_code": 0,
+          "git_metadata_present": true,
+          "read_only": true
+        },
+        {
+          "command": "old-new-runtime",
+          "exit_code": 0,
+          "wire_identical": true,
+          "stdout_sha256": "df3f42cbabfeb54c850d2baebe9d772f2e626d34da6ac91663b82be899c2d106",
+          "index_format": 1,
+          "lock_format": 2
+        },
+        {
+          "command": "validate",
+          "input_class": "invalid_remote_or_combination",
+          "exit_code": 1,
+          "no_git_no_home_write": true,
+          "secret_absent": true
+        },
+        {
+          "command": "validate",
+          "input_class": "invalid_remote_or_combination",
+          "exit_code": 1,
+          "no_git_no_home_write": true,
+          "secret_absent": true
+        },
+        {
+          "command": "validate",
+          "input_class": "invalid_remote_or_combination",
+          "exit_code": 1,
+          "no_git_no_home_write": true,
+          "secret_absent": true
+        },
+        {
+          "command": "plan",
+          "input_class": "invalid_remote_or_combination",
+          "exit_code": 1,
+          "no_git_no_home_write": true,
+          "secret_absent": true
+        },
+        {
+          "command": "plan",
+          "input_class": "invalid_remote_or_combination",
+          "exit_code": 1,
+          "no_git_no_home_write": true,
+          "secret_absent": true
+        },
+        {
+          "command": "plan",
+          "input_class": "invalid_remote_or_combination",
+          "exit_code": 1,
+          "no_git_no_home_write": true,
+          "secret_absent": true
+        },
+        {
+          "command": "install",
+          "input_class": "invalid_remote_or_combination",
+          "exit_code": 1,
+          "no_git_no_home_write": true,
+          "secret_absent": true
+        },
+        {
+          "command": "install",
+          "input_class": "invalid_remote_or_combination",
+          "exit_code": 1,
+          "no_git_no_home_write": true,
+          "secret_absent": true
+        },
+        {
+          "command": "install",
+          "input_class": "invalid_remote_or_combination",
+          "exit_code": 1,
+          "no_git_no_home_write": true,
+          "secret_absent": true
+        }
+      ]
+    },
+    "smoke_cases": 40,
+    "old_rules_migration": {
+      "test": "M2-A7 actual binary upgrade",
+      "scope": "offline CLI, harness version stubs; no real Claude session",
+      "old_binary_sha256": "4b2a46049758faef4c0a7e7e3045b877fe0503d0479b349fc5bf929adff8d958",
+      "binary_sha256": "7da4b1d4d7288c6305793d5db3677b325eb6c3c7f8e9d0b9a28f7f6afd55bf3a",
+      "cases": [
+        {
+          "entrypoint": "install",
+          "legacy_fixture": "lf",
+          "passed": true,
+          "read_only_commands": 5,
+          "migrated_owners": 2,
+          "repeat_sync_changed": false,
+          "doctor_healthy_before_and_after": true,
+          "external_bytes_and_mode_restored": true
+        },
+        {
+          "entrypoint": "install",
+          "legacy_fixture": "crlf",
+          "passed": true,
+          "read_only_commands": 5,
+          "migrated_owners": 2,
+          "repeat_sync_changed": false,
+          "doctor_healthy_before_and_after": true,
+          "external_bytes_and_mode_restored": true
+        },
+        {
+          "entrypoint": "install",
+          "legacy_fixture": "no-newline",
+          "passed": true,
+          "read_only_commands": 5,
+          "migrated_owners": 2,
+          "repeat_sync_changed": false,
+          "doctor_healthy_before_and_after": true,
+          "external_bytes_and_mode_restored": true
+        },
+        {
+          "entrypoint": "install",
+          "legacy_fixture": "absent",
+          "passed": true,
+          "read_only_commands": 5,
+          "migrated_owners": 2,
+          "repeat_sync_changed": false,
+          "doctor_healthy_before_and_after": true,
+          "external_bytes_and_mode_restored": true
+        },
+        {
+          "entrypoint": "sync",
+          "legacy_fixture": "lf",
+          "passed": true,
+          "read_only_commands": 5,
+          "migrated_owners": 2,
+          "repeat_sync_changed": false,
+          "doctor_healthy_before_and_after": true,
+          "external_bytes_and_mode_restored": true
+        },
+        {
+          "entrypoint": "sync",
+          "legacy_fixture": "crlf",
+          "passed": true,
+          "read_only_commands": 5,
+          "migrated_owners": 2,
+          "repeat_sync_changed": false,
+          "doctor_healthy_before_and_after": true,
+          "external_bytes_and_mode_restored": true
+        },
+        {
+          "entrypoint": "sync",
+          "legacy_fixture": "no-newline",
+          "passed": true,
+          "read_only_commands": 5,
+          "migrated_owners": 2,
+          "repeat_sync_changed": false,
+          "doctor_healthy_before_and_after": true,
+          "external_bytes_and_mode_restored": true
+        },
+        {
+          "entrypoint": "sync",
+          "legacy_fixture": "absent",
+          "passed": true,
+          "read_only_commands": 5,
+          "migrated_owners": 2,
+          "repeat_sync_changed": false,
+          "doctor_healthy_before_and_after": true,
+          "external_bytes_and_mode_restored": true
+        },
+        {
+          "entrypoint": "trust",
+          "legacy_fixture": "lf",
+          "passed": true,
+          "read_only_commands": 5,
+          "migrated_owners": 2,
+          "repeat_sync_changed": false,
+          "doctor_healthy_before_and_after": true,
+          "external_bytes_and_mode_restored": true
+        },
+        {
+          "entrypoint": "trust",
+          "legacy_fixture": "crlf",
+          "passed": true,
+          "read_only_commands": 5,
+          "migrated_owners": 2,
+          "repeat_sync_changed": false,
+          "doctor_healthy_before_and_after": true,
+          "external_bytes_and_mode_restored": true
+        },
+        {
+          "entrypoint": "trust",
+          "legacy_fixture": "no-newline",
+          "passed": true,
+          "read_only_commands": 5,
+          "migrated_owners": 2,
+          "repeat_sync_changed": false,
+          "doctor_healthy_before_and_after": true,
+          "external_bytes_and_mode_restored": true
+        },
+        {
+          "entrypoint": "trust",
+          "legacy_fixture": "absent",
+          "passed": true,
+          "read_only_commands": 5,
+          "migrated_owners": 2,
+          "repeat_sync_changed": false,
+          "doctor_healthy_before_and_after": true,
+          "external_bytes_and_mode_restored": true
+        },
+        {
+          "entrypoint": "uninstall",
+          "legacy_fixture": "lf",
+          "passed": true,
+          "read_only_commands": 5,
+          "migrated_owners": 2,
+          "repeat_sync_changed": false,
+          "doctor_healthy_before_and_after": true,
+          "external_bytes_and_mode_restored": true
+        },
+        {
+          "entrypoint": "uninstall",
+          "legacy_fixture": "crlf",
+          "passed": true,
+          "read_only_commands": 5,
+          "migrated_owners": 2,
+          "repeat_sync_changed": false,
+          "doctor_healthy_before_and_after": true,
+          "external_bytes_and_mode_restored": true
+        },
+        {
+          "entrypoint": "uninstall",
+          "legacy_fixture": "no-newline",
+          "passed": true,
+          "read_only_commands": 5,
+          "migrated_owners": 2,
+          "repeat_sync_changed": false,
+          "doctor_healthy_before_and_after": true,
+          "external_bytes_and_mode_restored": true
+        },
+        {
+          "entrypoint": "uninstall",
+          "legacy_fixture": "absent",
+          "passed": true,
+          "read_only_commands": 5,
+          "migrated_owners": 2,
+          "repeat_sync_changed": false,
+          "doctor_healthy_before_and_after": true,
+          "external_bytes_and_mode_restored": true
+        }
+      ],
+      "passed": 16,
+      "source_revision": "fd88e8da66cd8409b6939e71875edd4bee3c9421",
+      "source_includes_uncommitted_T40": true
+    },
+    "replace_fallback": {
+      "test": "M2-A8 replace fallback",
+      "scope": "offline built CLI with version stubs; C4 UI acceptance remains pending",
+      "binary_sha256": "7da4b1d4d7288c6305793d5db3677b325eb6c3c7f8e9d0b9a28f7f6afd55bf3a",
+      "source_revision": "fd88e8da66cd8409b6939e71875edd4bee3c9421",
+      "cases": [
+        {
+          "provider": "codex",
+          "fallback": "degrade",
+          "format": "text",
+          "plan_status": "skipped",
+          "plan_exit": 0,
+          "unauthorized_install_exit": 1,
+          "authorized_install_exit": 0,
+          "placements": 0,
+          "user_style_tree_preserved": true,
+          "passed": true
+        },
+        {
+          "provider": "codex",
+          "fallback": "degrade",
+          "format": "json",
+          "plan_status": "skipped",
+          "plan_exit": 0,
+          "unauthorized_install_exit": 1,
+          "authorized_install_exit": 0,
+          "placements": 0,
+          "user_style_tree_preserved": true,
+          "passed": true
+        },
+        {
+          "provider": "codex",
+          "fallback": "skip",
+          "format": "text",
+          "plan_status": "skipped",
+          "plan_exit": 0,
+          "unauthorized_install_exit": 1,
+          "authorized_install_exit": 0,
+          "placements": 0,
+          "user_style_tree_preserved": true,
+          "passed": true
+        },
+        {
+          "provider": "codex",
+          "fallback": "skip",
+          "format": "json",
+          "plan_status": "skipped",
+          "plan_exit": 0,
+          "unauthorized_install_exit": 1,
+          "authorized_install_exit": 0,
+          "placements": 0,
+          "user_style_tree_preserved": true,
+          "passed": true
+        },
+        {
+          "provider": "codex",
+          "fallback": "error",
+          "format": "text",
+          "plan_status": "install-error",
+          "plan_exit": 4,
+          "unauthorized_install_exit": 1,
+          "authorized_install_exit": 4,
+          "placements": 0,
+          "user_style_tree_preserved": true,
+          "passed": true
+        },
+        {
+          "provider": "codex",
+          "fallback": "error",
+          "format": "json",
+          "plan_status": "install-error",
+          "plan_exit": 4,
+          "unauthorized_install_exit": 1,
+          "authorized_install_exit": 4,
+          "placements": 0,
+          "user_style_tree_preserved": true,
+          "passed": true
+        },
+        {
+          "provider": "claude-code",
+          "fallback": "degrade",
+          "format": "text",
+          "plan_status": "skipped",
+          "plan_exit": 0,
+          "unauthorized_install_exit": 1,
+          "authorized_install_exit": 0,
+          "placements": 0,
+          "user_style_tree_preserved": true,
+          "passed": true
+        },
+        {
+          "provider": "claude-code",
+          "fallback": "degrade",
+          "format": "json",
+          "plan_status": "skipped",
+          "plan_exit": 0,
+          "unauthorized_install_exit": 1,
+          "authorized_install_exit": 0,
+          "placements": 0,
+          "user_style_tree_preserved": true,
+          "passed": true
+        },
+        {
+          "provider": "claude-code",
+          "fallback": "skip",
+          "format": "text",
+          "plan_status": "skipped",
+          "plan_exit": 0,
+          "unauthorized_install_exit": 1,
+          "authorized_install_exit": 0,
+          "placements": 0,
+          "user_style_tree_preserved": true,
+          "passed": true
+        },
+        {
+          "provider": "claude-code",
+          "fallback": "skip",
+          "format": "json",
+          "plan_status": "skipped",
+          "plan_exit": 0,
+          "unauthorized_install_exit": 1,
+          "authorized_install_exit": 0,
+          "placements": 0,
+          "user_style_tree_preserved": true,
+          "passed": true
+        },
+        {
+          "provider": "claude-code",
+          "fallback": "error",
+          "format": "text",
+          "plan_status": "install-error",
+          "plan_exit": 4,
+          "unauthorized_install_exit": 1,
+          "authorized_install_exit": 4,
+          "placements": 0,
+          "user_style_tree_preserved": true,
+          "passed": true
+        },
+        {
+          "provider": "claude-code",
+          "fallback": "error",
+          "format": "json",
+          "plan_status": "install-error",
+          "plan_exit": 4,
+          "unauthorized_install_exit": 1,
+          "authorized_install_exit": 4,
+          "placements": 0,
+          "user_style_tree_preserved": true,
+          "passed": true
+        }
+      ],
+      "passed": 12
+    },
+    "script": "scripts/check_m3_update.py",
+    "script_sha256": "7bb849bd3db3c8abb992c8f86b2838834021b628328febba15668110fb8cf141",
+    "comparison_boundary": "Pre-update fd88e8d is the runtime comparison. Fixed M1 74a473d is used only for actual old-install migration/lifecycle and format2 management refusal; M1 cannot decode the pre-existing M2 claude_rules index slot."
+  },
+  "earlier_attempts": {
+    "raw_logs": [
+      {
+        "path": "/tmp/style-m3-a4-20261017/initial.log",
+        "sha256": "254fcef9e6ce6ba5bea0db72165d9de8cb647300c1261d27f842976a0a04efa7",
+        "bytes": 17889
+      },
+      {
+        "path": "/tmp/style-m3-a4-20261017/second.log",
+        "sha256": "5739af64da98c13bd1088c2654f44176f8c574306238b1e80c896aca1b2347dc",
+        "bytes": 7353
+      },
+      {
+        "path": "/tmp/style-m3-a4-20261017/golden-record.log",
+        "sha256": "11316cdead4c57e2ff8d11846b7246cab4f4524ba258e06222b37fc88f763c23",
+        "bytes": 53
+      },
+      {
+        "path": "/tmp/style-m3-a4-20261017/targeted.log",
+        "sha256": "75f9e83cd91856b439cfb3343de0e85cd30e74d0a7c87b469e039ccf92df8bf3",
+        "bytes": 437109
+      },
+      {
+        "path": "/tmp/style-m3-a4-20261017/built-cli.log",
+        "sha256": "475427c9baa26ab52d1aca9c80589492da592843d14f68b2ff724d63f379622f",
+        "bytes": 390
+      },
+      {
+        "path": "/tmp/style-m3-a4-20261017/built-cli-debug.log",
+        "sha256": "d16524a13bf32f269dd98f243f4cdef79947a3ea6958a120e1967a116e18bd2e",
+        "bytes": 1881
+      }
+    ],
+    "failed_run_records": [
+      {
+        "argv": [
+          "go",
+          "test",
+          "-json",
+          "-count=1",
+          "./internal/app",
+          "./internal/source",
+          "-run",
+          "^TestM3A[34]"
+        ],
+        "cwd": "/Users/inxups/project/style-cli",
+        "started_utc": "2026-10-17T09:43:43.928329+00:00",
+        "elapsed_seconds": 39.44,
+        "exit_code": 1,
+        "log": "/tmp/style-m3-a4-20261017/targeted.log",
+        "log_sha256": "75f9e83cd91856b439cfb3343de0e85cd30e74d0a7c87b469e039ccf92df8bf3",
+        "cleared_environment": [
+          "CODEX_HOME",
+          "CODEX_SANDBOX",
+          "STYLE_HOME",
+          "CLAUDE_CODE_EFFORT_LEVEL",
+          "CLAUDE_CODE_CONFIG_DIR",
+          "CLAUDE_CONFIG_DIR",
+          "PLUGIN_ROOT",
+          "STYLE_PERF",
+          "STYLE_PERF_OUTPUT"
+        ],
+        "Go_environment": {
+          "GOPATH": "/tmp/style-cli-gopath",
+          "GOMODCACHE": "/tmp/style-cli-gomodcache",
+          "GOCACHE": "/tmp/style-cli-gocache",
+          "GOWORK": "off",
+          "GOFLAGS": "-mod=readonly"
+        },
+        "test_events": {
+          "passed": 476,
+          "failed": 3,
+          "skipped": 0
+        },
+        "failed_tests": [
+          "github.com/inxups/style-cli/internal/app/TestM3A4InvalidOldLocksFailBeforeSourceAcquisition/format",
+          "github.com/inxups/style-cli/internal/app/TestM3A4InvalidOldLocksFailBeforeSourceAcquisition",
+          "github.com/inxups/style-cli/internal/app/TestM3A4ReportsSortByExistingSequence"
+        ],
+        "a4_passed_tests": [
+          "github.com/inxups/style-cli/internal/app/TestM3A4LegacyLockAndApprovalCompatibility/codex-user/no-approval",
+          "github.com/inxups/style-cli/internal/app/TestM3A4LegacyLockAndApprovalCompatibility/codex-user/no-native-field",
+          "github.com/inxups/style-cli/internal/app/TestM3A4LegacyLockAndApprovalCompatibility/codex-user/implicit-format",
+          "github.com/inxups/style-cli/internal/app/TestM3A4LegacyLockAndApprovalCompatibility/codex-user/format-two-local",
+          "github.com/inxups/style-cli/internal/app/TestM3A4LegacyLockAndApprovalCompatibility/codex-plugin/no-approval",
+          "github.com/inxups/style-cli/internal/app/TestM3A4LegacyLockAndApprovalCompatibility/codex-plugin/no-native-field",
+          "github.com/inxups/style-cli/internal/app/TestM3A4LegacyLockAndApprovalCompatibility/codex-plugin/implicit-format",
+          "github.com/inxups/style-cli/internal/app/TestM3A4LegacyLockAndApprovalCompatibility/codex-plugin/format-two-local",
+          "github.com/inxups/style-cli/internal/app/TestM3A4LegacyLockAndApprovalCompatibility/claude-user/no-approval",
+          "github.com/inxups/style-cli/internal/app/TestM3A4LegacyLockAndApprovalCompatibility/claude-user/no-native-field",
+          "github.com/inxups/style-cli/internal/app/TestM3A4LegacyLockAndApprovalCompatibility/claude-user/implicit-format",
+          "github.com/inxups/style-cli/internal/app/TestM3A4LegacyLockAndApprovalCompatibility/claude-user/format-two-local",
+          "github.com/inxups/style-cli/internal/app/TestM3A4LegacyLockAndApprovalCompatibility",
+          "github.com/inxups/style-cli/internal/app/TestM3A4UnselectedOrdinaryLegacyApproval",
+          "github.com/inxups/style-cli/internal/app/TestM3A4InvalidOldLocksFailBeforeSourceAcquisition/name",
+          "github.com/inxups/style-cli/internal/app/TestM3A4InvalidOldLocksFailBeforeSourceAcquisition/duplicate",
+          "github.com/inxups/style-cli/internal/app/TestM3A4InvalidOldLocksFailBeforeSourceAcquisition/sequence",
+          "github.com/inxups/style-cli/internal/app/TestM3A4InvalidOldLocksFailBeforeSourceAcquisition/source-path",
+          "github.com/inxups/style-cli/internal/app/TestM3A4InvalidOldLocksFailBeforeSourceAcquisition/kind",
+          "github.com/inxups/style-cli/internal/app/TestM3A4InvalidOldLocksFailBeforeSourceAcquisition/link",
+          "github.com/inxups/style-cli/internal/app/TestM3A4InvalidOldLocksFailBeforeSourceAcquisition/hash",
+          "github.com/inxups/style-cli/internal/app/TestM3A4InvalidOldLocksFailBeforeSourceAcquisition/escape",
+          "github.com/inxups/style-cli/internal/app/TestM3A4GitManagedDriftBeforeFetchAndUnselectedGit/edit",
+          "github.com/inxups/style-cli/internal/app/TestM3A4GitManagedDriftBeforeFetchAndUnselectedGit/missing",
+          "github.com/inxups/style-cli/internal/app/TestM3A4GitManagedDriftBeforeFetchAndUnselectedGit/symlink",
+          "github.com/inxups/style-cli/internal/app/TestM3A4GitManagedDriftBeforeFetchAndUnselectedGit/unselected",
+          "github.com/inxups/style-cli/internal/app/TestM3A4GitManagedDriftBeforeFetchAndUnselectedGit",
+          "github.com/inxups/style-cli/internal/app/TestM3A4ConfirmationDeclineErrorAndRepeatCapture/decline",
+          "github.com/inxups/style-cli/internal/app/TestM3A4ConfirmationDeclineErrorAndRepeatCapture/error",
+          "github.com/inxups/style-cli/internal/app/TestM3A4ConfirmationDeclineErrorAndRepeatCapture/approve",
+          "github.com/inxups/style-cli/internal/app/TestM3A4ConfirmationDeclineErrorAndRepeatCapture/separate-call",
+          "github.com/inxups/style-cli/internal/app/TestM3A4ConfirmationDeclineErrorAndRepeatCapture",
+          "github.com/inxups/style-cli/internal/app/TestM3A4CommandGoldenAndSingleJSON/text",
+          "github.com/inxups/style-cli/internal/app/TestM3A4CommandGoldenAndSingleJSON/json",
+          "github.com/inxups/style-cli/internal/app/TestM3A4CommandGoldenAndSingleJSON",
+          "github.com/inxups/style-cli/internal/app/TestM3A4PinnedOIDCannotFallBackToBranchOrCache",
+          "github.com/inxups/style-cli/internal/app/TestM3A4LockedHarnessesAndLayout/both-harnesses",
+          "github.com/inxups/style-cli/internal/app/TestM3A4LockedHarnessesAndLayout/legacy-static-layout",
+          "github.com/inxups/style-cli/internal/app/TestM3A4LockedHarnessesAndLayout/missing-route",
+          "github.com/inxups/style-cli/internal/app/TestM3A4LockedHarnessesAndLayout/missing-provider",
+          "github.com/inxups/style-cli/internal/app/TestM3A4LockedHarnessesAndLayout",
+          "github.com/inxups/style-cli/internal/app/TestM3A4SelectionAndCLIOptions/#00",
+          "github.com/inxups/style-cli/internal/app/TestM3A4SelectionAndCLIOptions/first_--all",
+          "github.com/inxups/style-cli/internal/app/TestM3A4SelectionAndCLIOptions/first_second",
+          "github.com/inxups/style-cli/internal/app/TestM3A4SelectionAndCLIOptions/--all_--ref=refs/heads/main",
+          "github.com/inxups/style-cli/internal/app/TestM3A4SelectionAndCLIOptions/first_--ref",
+          "github.com/inxups/style-cli/internal/app/TestM3A4SelectionAndCLIOptions/first_--ref=",
+          "github.com/inxups/style-cli/internal/app/TestM3A4SelectionAndCLIOptions/first_--ref=x_--ref=y",
+          "github.com/inxups/style-cli/internal/app/TestM3A4SelectionAndCLIOptions/first_--yes_--yes",
+          "github.com/inxups/style-cli/internal/app/TestM3A4SelectionAndCLIOptions/--all_--all",
+          "github.com/inxups/style-cli/internal/app/TestM3A4SelectionAndCLIOptions/first_--yes=true",
+          "github.com/inxups/style-cli/internal/app/TestM3A4SelectionAndCLIOptions/first_--set=a=b",
+          "github.com/inxups/style-cli/internal/app/TestM3A4SelectionAndCLIOptions/first_--harness=codex",
+          "github.com/inxups/style-cli/internal/app/TestM3A4SelectionAndCLIOptions/first_--route=codex=codex-user",
+          "github.com/inxups/style-cli/internal/app/TestM3A4SelectionAndCLIOptions/first_--path=pkg",
+          "github.com/inxups/style-cli/internal/app/TestM3A4SelectionAndCLIOptions/first_--source=elsewhere",
+          "github.com/inxups/style-cli/internal/app/TestM3A4SelectionAndCLIOptions/first_--link",
+          "github.com/inxups/style-cli/internal/app/TestM3A4SelectionAndCLIOptions/first_--frozen",
+          "github.com/inxups/style-cli/internal/app/TestM3A4SelectionAndCLIOptions/first_--fail-closed=claude-code",
+          "github.com/inxups/style-cli/internal/app/TestM3A4SelectionAndCLIOptions/first_--json_--json",
+          "github.com/inxups/style-cli/internal/app/TestM3A4SelectionAndCLIOptions",
+          "github.com/inxups/style-cli/internal/app/TestM3A4PreviewNoopAndApply/codex-user",
+          "github.com/inxups/style-cli/internal/app/TestM3A4PreviewNoopAndApply/codex-plugin",
+          "github.com/inxups/style-cli/internal/app/TestM3A4PreviewNoopAndApply/claude-user",
+          "github.com/inxups/style-cli/internal/app/TestM3A4PreviewNoopAndApply",
+          "github.com/inxups/style-cli/internal/app/TestM3A4GitRefUpdates/sha1/branch",
+          "github.com/inxups/style-cli/internal/app/TestM3A4GitRefUpdates/sha1/tag",
+          "github.com/inxups/style-cli/internal/app/TestM3A4GitRefUpdates/sha1/oid",
+          "github.com/inxups/style-cli/internal/app/TestM3A4GitRefUpdates/sha1/change-ref",
+          "github.com/inxups/style-cli/internal/app/TestM3A4GitRefUpdates/sha1/revision-only",
+          "github.com/inxups/style-cli/internal/app/TestM3A4GitRefUpdates/sha1/downgrade",
+          "github.com/inxups/style-cli/internal/app/TestM3A4GitRefUpdates/sha1/missing-ref",
+          "github.com/inxups/style-cli/internal/app/TestM3A4GitRefUpdates/sha256/branch",
+          "github.com/inxups/style-cli/internal/app/TestM3A4GitRefUpdates/sha256/tag",
+          "github.com/inxups/style-cli/internal/app/TestM3A4GitRefUpdates/sha256/oid",
+          "github.com/inxups/style-cli/internal/app/TestM3A4GitRefUpdates/sha256/change-ref",
+          "github.com/inxups/style-cli/internal/app/TestM3A4GitRefUpdates/sha256/revision-only",
+          "github.com/inxups/style-cli/internal/app/TestM3A4GitRefUpdates/sha256/downgrade",
+          "github.com/inxups/style-cli/internal/app/TestM3A4GitRefUpdates/sha256/missing-ref",
+          "github.com/inxups/style-cli/internal/app/TestM3A4GitRefUpdates",
+          "github.com/inxups/style-cli/internal/app/TestM3A4LocalSourceKindsAndDrift/copy-dir/none",
+          "github.com/inxups/style-cli/internal/app/TestM3A4LocalSourceKindsAndDrift/copy-dir/missing-source",
+          "github.com/inxups/style-cli/internal/app/TestM3A4LocalSourceKindsAndDrift/copy-dir/type-change",
+          "github.com/inxups/style-cli/internal/app/TestM3A4LocalSourceKindsAndDrift/copy-dir/name-change",
+          "github.com/inxups/style-cli/internal/app/TestM3A4LocalSourceKindsAndDrift/copy-dir/managed-drift",
+          "github.com/inxups/style-cli/internal/app/TestM3A4LocalSourceKindsAndDrift/copy-dir/ref-option",
+          "github.com/inxups/style-cli/internal/app/TestM3A4LocalSourceKindsAndDrift/copy-file/none",
+          "github.com/inxups/style-cli/internal/app/TestM3A4LocalSourceKindsAndDrift/copy-file/missing-source",
+          "github.com/inxups/style-cli/internal/app/TestM3A4LocalSourceKindsAndDrift/copy-file/type-change",
+          "github.com/inxups/style-cli/internal/app/TestM3A4LocalSourceKindsAndDrift/copy-file/name-change",
+          "github.com/inxups/style-cli/internal/app/TestM3A4LocalSourceKindsAndDrift/copy-file/managed-drift",
+          "github.com/inxups/style-cli/internal/app/TestM3A4LocalSourceKindsAndDrift/copy-file/ref-option",
+          "github.com/inxups/style-cli/internal/app/TestM3A4LocalSourceKindsAndDrift/link-dir/none",
+          "github.com/inxups/style-cli/internal/app/TestM3A4LocalSourceKindsAndDrift/link-dir/missing-source",
+          "github.com/inxups/style-cli/internal/app/TestM3A4LocalSourceKindsAndDrift/link-dir/type-change",
+          "github.com/inxups/style-cli/internal/app/TestM3A4LocalSourceKindsAndDrift/link-dir/name-change",
+          "github.com/inxups/style-cli/internal/app/TestM3A4LocalSourceKindsAndDrift/link-dir/managed-drift",
+          "github.com/inxups/style-cli/internal/app/TestM3A4LocalSourceKindsAndDrift/link-dir/ref-option",
+          "github.com/inxups/style-cli/internal/app/TestM3A4LocalSourceKindsAndDrift/link-file/none",
+          "github.com/inxups/style-cli/internal/app/TestM3A4LocalSourceKindsAndDrift/link-file/missing-source",
+          "github.com/inxups/style-cli/internal/app/TestM3A4LocalSourceKindsAndDrift/link-file/type-change",
+          "github.com/inxups/style-cli/internal/app/TestM3A4LocalSourceKindsAndDrift/link-file/name-change",
+          "github.com/inxups/style-cli/internal/app/TestM3A4LocalSourceKindsAndDrift/link-file/managed-drift",
+          "github.com/inxups/style-cli/internal/app/TestM3A4LocalSourceKindsAndDrift/link-file/ref-option",
+          "github.com/inxups/style-cli/internal/app/TestM3A4LocalSourceKindsAndDrift",
+          "github.com/inxups/style-cli/internal/app/TestM3A4SettingsAndSequence/retain",
+          "github.com/inxups/style-cli/internal/app/TestM3A4SettingsAndSequence/drop",
+          "github.com/inxups/style-cli/internal/app/TestM3A4SettingsAndSequence/new-default",
+          "github.com/inxups/style-cli/internal/app/TestM3A4SettingsAndSequence/required",
+          "github.com/inxups/style-cli/internal/app/TestM3A4SettingsAndSequence/remove-all",
+          "github.com/inxups/style-cli/internal/app/TestM3A4SettingsAndSequence/unknown-stored",
+          "github.com/inxups/style-cli/internal/app/TestM3A4SettingsAndSequence",
+          "github.com/inxups/style-cli/internal/app/TestM3A4UnselectedUsesOnlyApprovedBytes/copy",
+          "github.com/inxups/style-cli/internal/app/TestM3A4UnselectedUsesOnlyApprovedBytes/link",
+          "github.com/inxups/style-cli/internal/app/TestM3A4UnselectedUsesOnlyApprovedBytes/trusted-link",
+          "github.com/inxups/style-cli/internal/app/TestM3A4UnselectedUsesOnlyApprovedBytes/native-copy",
+          "github.com/inxups/style-cli/internal/app/TestM3A4UnselectedUsesOnlyApprovedBytes/native-link",
+          "github.com/inxups/style-cli/internal/app/TestM3A4UnselectedUsesOnlyApprovedBytes",
+          "github.com/inxups/style-cli/internal/app/TestM3A4AuthenticatedBaselinesRequired/missing",
+          "github.com/inxups/style-cli/internal/app/TestM3A4AuthenticatedBaselinesRequired/corrupt",
+          "github.com/inxups/style-cli/internal/app/TestM3A4AuthenticatedBaselinesRequired/no-digest",
+          "github.com/inxups/style-cli/internal/app/TestM3A4AuthenticatedBaselinesRequired/wrong-files",
+          "github.com/inxups/style-cli/internal/app/TestM3A4AuthenticatedBaselinesRequired/legacy-native",
+          "github.com/inxups/style-cli/internal/app/TestM3A4AuthenticatedBaselinesRequired",
+          "github.com/inxups/style-cli/internal/app/TestM3A4UnselectedEffectsRequireAll/dedup",
+          "github.com/inxups/style-cli/internal/app/TestM3A4UnselectedEffectsRequireAll/settings",
+          "github.com/inxups/style-cli/internal/app/TestM3A4UnselectedEffectsRequireAll/native-configuration",
+          "github.com/inxups/style-cli/internal/app/TestM3A4UnselectedEffectsRequireAll/native-trust",
+          "github.com/inxups/style-cli/internal/app/TestM3A4UnselectedEffectsRequireAll",
+          "github.com/inxups/style-cli/internal/app/TestM3A4NativeChangesAndFirstLinkTrust/codex-user/add",
+          "github.com/inxups/style-cli/internal/app/TestM3A4NativeChangesAndFirstLinkTrust/codex-user/modify",
+          "github.com/inxups/style-cli/internal/app/TestM3A4NativeChangesAndFirstLinkTrust/codex-user/remove",
+          "github.com/inxups/style-cli/internal/app/TestM3A4NativeChangesAndFirstLinkTrust/codex-user/reorder",
+          "github.com/inxups/style-cli/internal/app/TestM3A4NativeChangesAndFirstLinkTrust/codex-user/first-link-trust",
+          "github.com/inxups/style-cli/internal/app/TestM3A4NativeChangesAndFirstLinkTrust/codex-plugin/add",
+          "github.com/inxups/style-cli/internal/app/TestM3A4NativeChangesAndFirstLinkTrust/codex-plugin/modify",
+          "github.com/inxups/style-cli/internal/app/TestM3A4NativeChangesAndFirstLinkTrust/codex-plugin/remove",
+          "github.com/inxups/style-cli/internal/app/TestM3A4NativeChangesAndFirstLinkTrust/codex-plugin/reorder",
+          "github.com/inxups/style-cli/internal/app/TestM3A4NativeChangesAndFirstLinkTrust/codex-plugin/first-link-trust",
+          "github.com/inxups/style-cli/internal/app/TestM3A4NativeChangesAndFirstLinkTrust/claude-user/add",
+          "github.com/inxups/style-cli/internal/app/TestM3A4NativeChangesAndFirstLinkTrust/claude-user/modify",
+          "github.com/inxups/style-cli/internal/app/TestM3A4NativeChangesAndFirstLinkTrust/claude-user/remove",
+          "github.com/inxups/style-cli/internal/app/TestM3A4NativeChangesAndFirstLinkTrust/claude-user/reorder",
+          "github.com/inxups/style-cli/internal/app/TestM3A4NativeChangesAndFirstLinkTrust/claude-user/first-link-trust",
+          "github.com/inxups/style-cli/internal/app/TestM3A4NativeChangesAndFirstLinkTrust",
+          "github.com/inxups/style-cli/internal/app/TestM3A4CandidateGatesAndBlockedCLI/version",
+          "github.com/inxups/style-cli/internal/app/TestM3A4CandidateGatesAndBlockedCLI/name",
+          "github.com/inxups/style-cli/internal/app/TestM3A4CandidateGatesAndBlockedCLI/schema",
+          "github.com/inxups/style-cli/internal/app/TestM3A4CandidateGatesAndBlockedCLI/runtime",
+          "github.com/inxups/style-cli/internal/app/TestM3A4CandidateGatesAndBlockedCLI/harness",
+          "github.com/inxups/style-cli/internal/app/TestM3A4CandidateGatesAndBlockedCLI/native",
+          "github.com/inxups/style-cli/internal/app/TestM3A4CandidateGatesAndBlockedCLI/template",
+          "github.com/inxups/style-cli/internal/app/TestM3A4CandidateGatesAndBlockedCLI/budget",
+          "github.com/inxups/style-cli/internal/app/TestM3A4CandidateGatesAndBlockedCLI/input-ceiling",
+          "github.com/inxups/style-cli/internal/app/TestM3A4CandidateGatesAndBlockedCLI/replace",
+          "github.com/inxups/style-cli/internal/app/TestM3A4CandidateGatesAndBlockedCLI/two-replace",
+          "github.com/inxups/style-cli/internal/app/TestM3A4CandidateGatesAndBlockedCLI/fallback-error",
+          "github.com/inxups/style-cli/internal/app/TestM3A4CandidateGatesAndBlockedCLI",
+          "github.com/inxups/style-cli/internal/app/TestM3A4GitCaptureAndDetachedPreview",
+          "github.com/inxups/style-cli/internal/app/TestM3A4BatchValidationAndJointCompilation/none",
+          "github.com/inxups/style-cli/internal/app/TestM3A4BatchValidationAndJointCompilation/missing-local",
+          "github.com/inxups/style-cli/internal/app/TestM3A4BatchValidationAndJointCompilation/invalid-local",
+          "github.com/inxups/style-cli/internal/app/TestM3A4BatchValidationAndJointCompilation/git-fetch",
+          "github.com/inxups/style-cli/internal/app/TestM3A4BatchValidationAndJointCompilation",
+          "github.com/inxups/style-cli/internal/app/TestM3A4EachPackageFailureRestoresBatch/codex-user/stage-first",
+          "github.com/inxups/style-cli/internal/app/TestM3A4EachPackageFailureRestoresBatch/codex-user/stage-second",
+          "github.com/inxups/style-cli/internal/app/TestM3A4EachPackageFailureRestoresBatch/codex-user/apply-first",
+          "github.com/inxups/style-cli/internal/app/TestM3A4EachPackageFailureRestoresBatch/codex-user/apply-second",
+          "github.com/inxups/style-cli/internal/app/TestM3A4EachPackageFailureRestoresBatch/codex-plugin/stage-first",
+          "github.com/inxups/style-cli/internal/app/TestM3A4EachPackageFailureRestoresBatch/codex-plugin/stage-second",
+          "github.com/inxups/style-cli/internal/app/TestM3A4EachPackageFailureRestoresBatch/codex-plugin/apply-first",
+          "github.com/inxups/style-cli/internal/app/TestM3A4EachPackageFailureRestoresBatch/codex-plugin/apply-second",
+          "github.com/inxups/style-cli/internal/app/TestM3A4EachPackageFailureRestoresBatch/claude-user/stage-first",
+          "github.com/inxups/style-cli/internal/app/TestM3A4EachPackageFailureRestoresBatch/claude-user/stage-second",
+          "github.com/inxups/style-cli/internal/app/TestM3A4EachPackageFailureRestoresBatch/claude-user/apply-first",
+          "github.com/inxups/style-cli/internal/app/TestM3A4EachPackageFailureRestoresBatch/claude-user/apply-second",
+          "github.com/inxups/style-cli/internal/app/TestM3A4EachPackageFailureRestoresBatch",
+          "github.com/inxups/style-cli/internal/app/TestM3A4EachFileFailureRestoresBatch/codex-user/config/.agenthooks/style/hooks.json.restore.json",
+          "github.com/inxups/style-cli/internal/app/TestM3A4EachFileFailureRestoresBatch/codex-user/config/config.toml",
+          "github.com/inxups/style-cli/internal/app/TestM3A4EachFileFailureRestoresBatch/codex-user/config/hooks.json",
+          "github.com/inxups/style-cli/internal/app/TestM3A4EachFileFailureRestoresBatch/codex-user/style/approved/first.json",
+          "github.com/inxups/style-cli/internal/app/TestM3A4EachFileFailureRestoresBatch/codex-user/style/approved/second.json",
+          "github.com/inxups/style-cli/internal/app/TestM3A4EachFileFailureRestoresBatch/codex-user/style/build/explain.json",
+          "github.com/inxups/style-cli/internal/app/TestM3A4EachFileFailureRestoresBatch/codex-user/style/build/index.json",
+          "github.com/inxups/style-cli/internal/app/TestM3A4EachFileFailureRestoresBatch/codex-user/style/settings/first.yaml",
+          "github.com/inxups/style-cli/internal/app/TestM3A4EachFileFailureRestoresBatch/codex-user/style/style.lock.yaml",
+          "github.com/inxups/style-cli/internal/app/TestM3A4EachFileFailureRestoresBatch/codex-user/after-final-file",
+          "github.com/inxups/style-cli/internal/app/TestM3A4EachFileFailureRestoresBatch/codex-plugin/config/config.toml",
+          "github.com/inxups/style-cli/internal/app/TestM3A4EachFileFailureRestoresBatch/codex-plugin/style/adapters/codex/plugin/bin/style",
+          "github.com/inxups/style-cli/internal/app/TestM3A4EachFileFailureRestoresBatch/codex-plugin/style/adapters/codex/plugin/hooks/hooks.json",
+          "github.com/inxups/style-cli/internal/app/TestM3A4EachFileFailureRestoresBatch/codex-plugin/style/approved/first.json",
+          "github.com/inxups/style-cli/internal/app/TestM3A4EachFileFailureRestoresBatch/codex-plugin/style/approved/second.json",
+          "github.com/inxups/style-cli/internal/app/TestM3A4EachFileFailureRestoresBatch/codex-plugin/style/build/explain.json",
+          "github.com/inxups/style-cli/internal/app/TestM3A4EachFileFailureRestoresBatch/codex-plugin/style/build/index.json",
+          "github.com/inxups/style-cli/internal/app/TestM3A4EachFileFailureRestoresBatch/codex-plugin/style/settings/first.yaml",
+          "github.com/inxups/style-cli/internal/app/TestM3A4EachFileFailureRestoresBatch/codex-plugin/style/style.lock.yaml",
+          "github.com/inxups/style-cli/internal/app/TestM3A4EachFileFailureRestoresBatch/codex-plugin/after-final-file",
+          "github.com/inxups/style-cli/internal/app/TestM3A4EachFileFailureRestoresBatch/claude-user/config/.agenthooks/style/settings.json.restore.json",
+          "github.com/inxups/style-cli/internal/app/TestM3A4EachFileFailureRestoresBatch/claude-user/config/rules/style-first.md",
+          "github.com/inxups/style-cli/internal/app/TestM3A4EachFileFailureRestoresBatch/claude-user/config/rules/style-second.md",
+          "github.com/inxups/style-cli/internal/app/TestM3A4EachFileFailureRestoresBatch/claude-user/config/settings.json",
+          "github.com/inxups/style-cli/internal/app/TestM3A4EachFileFailureRestoresBatch/claude-user/style/approved/first.json",
+          "github.com/inxups/style-cli/internal/app/TestM3A4EachFileFailureRestoresBatch/claude-user/style/approved/second.json",
+          "github.com/inxups/style-cli/internal/app/TestM3A4EachFileFailureRestoresBatch/claude-user/style/build/explain.json",
+          "github.com/inxups/style-cli/internal/app/TestM3A4EachFileFailureRestoresBatch/claude-user/style/build/index.json",
+          "github.com/inxups/style-cli/internal/app/TestM3A4EachFileFailureRestoresBatch/claude-user/style/settings/first.yaml",
+          "github.com/inxups/style-cli/internal/app/TestM3A4EachFileFailureRestoresBatch/claude-user/style/style.lock.yaml",
+          "github.com/inxups/style-cli/internal/app/TestM3A4EachFileFailureRestoresBatch/claude-user/after-final-file",
+          "github.com/inxups/style-cli/internal/app/TestM3A4EachFileFailureRestoresBatch",
+          "github.com/inxups/style-cli/internal/app/TestM3A4RollbackFailuresAreReportedAndRetained",
+          "github.com/inxups/style-cli/internal/app/TestM3A4ConfirmationRejectsEveryStaleInput/source",
+          "github.com/inxups/style-cli/internal/app/TestM3A4ConfirmationRejectsEveryStaleInput/source-identity",
+          "github.com/inxups/style-cli/internal/app/TestM3A4ConfirmationRejectsEveryStaleInput/source-mode",
+          "github.com/inxups/style-cli/internal/app/TestM3A4ConfirmationRejectsEveryStaleInput/lock",
+          "github.com/inxups/style-cli/internal/app/TestM3A4ConfirmationRejectsEveryStaleInput/lock-identity",
+          "github.com/inxups/style-cli/internal/app/TestM3A4ConfirmationRejectsEveryStaleInput/lock-mtime",
+          "github.com/inxups/style-cli/internal/app/TestM3A4ConfirmationRejectsEveryStaleInput/approval",
+          "github.com/inxups/style-cli/internal/app/TestM3A4ConfirmationRejectsEveryStaleInput/settings",
+          "github.com/inxups/style-cli/internal/app/TestM3A4ConfirmationRejectsEveryStaleInput/managed",
+          "github.com/inxups/style-cli/internal/app/TestM3A4ConfirmationRejectsEveryStaleInput/unselected-managed",
+          "github.com/inxups/style-cli/internal/app/TestM3A4ConfirmationRejectsEveryStaleInput/index",
+          "github.com/inxups/style-cli/internal/app/TestM3A4ConfirmationRejectsEveryStaleInput/explain",
+          "github.com/inxups/style-cli/internal/app/TestM3A4ConfirmationRejectsEveryStaleInput/hook",
+          "github.com/inxups/style-cli/internal/app/TestM3A4ConfirmationRejectsEveryStaleInput/native-trust",
+          "github.com/inxups/style-cli/internal/app/TestM3A4ConfirmationRejectsEveryStaleInput/parent",
+          "github.com/inxups/style-cli/internal/app/TestM3A4ConfirmationRejectsEveryStaleInput/new-file",
+          "github.com/inxups/style-cli/internal/app/TestM3A4ConfirmationRejectsEveryStaleInput",
+          "github.com/inxups/style-cli/internal/app/TestM3A4UpdateSharesGuardWithOtherWriters/install",
+          "github.com/inxups/style-cli/internal/app/TestM3A4UpdateSharesGuardWithOtherWriters/update",
+          "github.com/inxups/style-cli/internal/app/TestM3A4UpdateSharesGuardWithOtherWriters/sync",
+          "github.com/inxups/style-cli/internal/app/TestM3A4UpdateSharesGuardWithOtherWriters/trust",
+          "github.com/inxups/style-cli/internal/app/TestM3A4UpdateSharesGuardWithOtherWriters/uninstall",
+          "github.com/inxups/style-cli/internal/app/TestM3A4UpdateSharesGuardWithOtherWriters/during-update-commit",
+          "github.com/inxups/style-cli/internal/app/TestM3A4UpdateSharesGuardWithOtherWriters",
+          "github.com/inxups/style-cli/internal/app/TestM3A4CancellationGuardRecoveryAndMaintenanceIsolation/before",
+          "github.com/inxups/style-cli/internal/app/TestM3A4CancellationGuardRecoveryAndMaintenanceIsolation/confirmation",
+          "github.com/inxups/style-cli/internal/app/TestM3A4CancellationGuardRecoveryAndMaintenanceIsolation/stage",
+          "github.com/inxups/style-cli/internal/app/TestM3A4CancellationGuardRecoveryAndMaintenanceIsolation/files",
+          "github.com/inxups/style-cli/internal/app/TestM3A4CancellationGuardRecoveryAndMaintenanceIsolation/stale-guard",
+          "github.com/inxups/style-cli/internal/app/TestM3A4CancellationGuardRecoveryAndMaintenanceIsolation/preview-unlocked",
+          "github.com/inxups/style-cli/internal/app/TestM3A4CancellationGuardRecoveryAndMaintenanceIsolation",
+          "github.com/inxups/style-cli/internal/app/TestM3A4FailureReportClassification/busy",
+          "github.com/inxups/style-cli/internal/app/TestM3A4FailureReportClassification/stale",
+          "github.com/inxups/style-cli/internal/app/TestM3A4FailureReportClassification/canceled",
+          "github.com/inxups/style-cli/internal/app/TestM3A4FailureReportClassification/deadline",
+          "github.com/inxups/style-cli/internal/app/TestM3A4FailureReportClassification/rollback",
+          "github.com/inxups/style-cli/internal/app/TestM3A4FailureReportClassification/fallback",
+          "github.com/inxups/style-cli/internal/app/TestM3A4FailureReportClassification/budget",
+          "github.com/inxups/style-cli/internal/app/TestM3A4FailureReportClassification/safe-default",
+          "github.com/inxups/style-cli/internal/app/TestM3A4FailureReportClassification"
+        ]
+      },
+      {
+        "argv": [
+          "python3",
+          "scripts/check_m3_update.py",
+          "--binary",
+          "/tmp/style-m3-a4-20261017/style",
+          "--old-binary",
+          "/tmp/style-m3-a3-20261017/style-legacy",
+          "--report",
+          "/tmp/style-m3-a4-20261017/built-cli-report.json"
+        ],
+        "cwd": "/Users/inxups/project/style-cli",
+        "started_utc": "2026-10-17T09:49:50.747243+00:00",
+        "elapsed_seconds": 1.656,
+        "exit_code": 1,
+        "log": "/tmp/style-m3-a4-20261017/built-cli.log",
+        "log_sha256": "475427c9baa26ab52d1aca9c80589492da592843d14f68b2ff724d63f379622f",
+        "cleared_environment": [
+          "CODEX_HOME",
+          "CODEX_SANDBOX",
+          "STYLE_HOME",
+          "CLAUDE_CODE_EFFORT_LEVEL",
+          "CLAUDE_CODE_CONFIG_DIR",
+          "CLAUDE_CONFIG_DIR",
+          "PLUGIN_ROOT",
+          "STYLE_PERF",
+          "STYLE_PERF_OUTPUT"
+        ],
+        "Go_environment": {
+          "GOPATH": "/tmp/style-cli-gopath",
+          "GOMODCACHE": "/tmp/style-cli-gomodcache",
+          "GOCACHE": "/tmp/style-cli-gocache",
+          "GOWORK": "off",
+          "GOFLAGS": "-mod=readonly"
+        }
+      },
+      {
+        "argv": [
+          "python3",
+          "scripts/check_m3_update.py",
+          "--binary",
+          "/tmp/style-m3-a4-20261017/style",
+          "--old-binary",
+          "/tmp/style-m3-a3-20261017/style-legacy",
+          "--report",
+          "/tmp/style-m3-a4-20261017/built-cli-report.json"
+        ],
+        "cwd": "/Users/inxups/project/style-cli",
+        "started_utc": "2026-10-17T09:50:27.369640+00:00",
+        "elapsed_seconds": 1.662,
+        "exit_code": 1,
+        "log": "/tmp/style-m3-a4-20261017/built-cli-debug.log",
+        "log_sha256": "d16524a13bf32f269dd98f243f4cdef79947a3ea6958a120e1967a116e18bd2e",
+        "cleared_environment": [
+          "CODEX_HOME",
+          "CODEX_SANDBOX",
+          "STYLE_HOME",
+          "CLAUDE_CODE_EFFORT_LEVEL",
+          "CLAUDE_CODE_CONFIG_DIR",
+          "CLAUDE_CONFIG_DIR",
+          "PLUGIN_ROOT",
+          "STYLE_PERF",
+          "STYLE_PERF_OUTPUT"
+        ],
+        "Go_environment": {
+          "GOPATH": "/tmp/style-cli-gopath",
+          "GOMODCACHE": "/tmp/style-cli-gomodcache",
+          "GOCACHE": "/tmp/style-cli-gocache",
+          "GOWORK": "off",
+          "GOFLAGS": "-mod=readonly"
+        }
+      }
+    ],
+    "notes": [
+      {
+        "observation": "Initial A4 fixture/path expectations, native fallback fixture and desired budget exit were incorrect; explicit missing ref used the generic source-invalid code.",
+        "resolution": "Corrected fixtures to exercise existing fallback:error and T002 policy, and classify an unavailable explicit ref as source-fetch-failed per D2. Full source/app tests now pass."
+      },
+      {
+        "observation": "A stale-mode test set mode to its existing value and the restricted sandbox rejected an A3 TLS loopback listener.",
+        "resolution": "Toggle the original mode; run final local-listener tests with the required sandbox capability. No remote network is used."
+      },
+      {
+        "observation": "A malformed-lock fixture called writeLock, which validates format, and an ordering fixture called it even though it sorts the slice in place.",
+        "resolution": "Use raw YAML fixture serialization for deliberately malformed/unsorted locks; production validation was preserved."
+      },
+      {
+        "observation": "The first built runtime comparison incorrectly used M1 against the existing M2 claude_rules index slot.",
+        "resolution": "Build fixed pre-update fd88e8d for runtime wire comparison; retain M1 for actual old-install migration/lifecycle. Final 24-case script passes all three routes."
+      },
+      {
+        "observation": "Review found newly declared settings could accidentally consume stored shadow values and private symlinks could point outside the captured settings tree.",
+        "resolution": "Supply only old declared settings to selected candidates, allow new defaults only, reject private-input/build symlinks; final full/race runs cover both."
+      }
+    ],
+    "successful_intermediate_records": [
+      {
+        "path": "/tmp/style-m3-a4-20261017/a4-regression.json",
+        "sha256": "42654d9208a777d07ef90d267fcc38f735a37dbdf0402d09b5fce169ede3fddf"
+      },
+      {
+        "path": "/tmp/style-m3-a4-20261017/all-go.json",
+        "sha256": "c083bbcf71579d3fb56a5e1d61b162d6246228e0b71a8a0419974bbadf71a322"
+      },
+      {
+        "path": "/tmp/style-m3-a4-20261017/vet.json",
+        "sha256": "eec43db768fe41962bcbdfe3e7bc007fe45158e593870c1419c965cdd416e146"
+      },
+      {
+        "path": "/tmp/style-m3-a4-20261017/files-regression.json",
+        "sha256": "30efdfe600ce15eb07c74d2d2632477a20b17fdc52478c40e16e1af4a030f335"
+      },
+      {
+        "path": "/tmp/style-m3-a4-20261017/settings-policy.json",
+        "sha256": "38ccdfd4da8f90a5f9f7974368283172d0b3235016a355543e9593c1ddb88ca5"
+      },
+      {
+        "path": "/tmp/style-m3-a4-20261017/private-inputs.json",
+        "sha256": "7ed0122ae960e495250ff375808f2f2fac767aac51a2bbfe6ef824a07f50b726"
+      },
+      {
+        "path": "/tmp/style-m3-a4-20261017/built-cli-final.json",
+        "sha256": "e4df4889c34e5d0ed218719ca1ff6dac765d1ae014074c2249c4cd439be95298"
+      }
+    ]
+  },
+  "implementation_notes": [
+    "Explicit name xor --all; --ref is single Git only. No path/URL/type/settings/route override and no Detect or implicit layout migration.",
+    "Selected managed copy/Git drift is rejected before acquisition; unselected content comes exclusively from authenticated approval bytes. Missing ordered native baseline is conservative unless explicitly selected.",
+    "Joint compilation checks effective/rendered/native and dedup ownership of unselected packages before any commit; only selected approval/settings records are rewritten.",
+    "Settings are captured once: retain still-declared old keys, remove dropped keys, default-only new keys. New required keys cannot consume ambient or stored undeclared values.",
+    "Detached confirmation applies the same captured candidate; Git ref is not re-resolved. No-op verifies inputs while preserving installation bytes, permissions, timestamps and identity.",
+    "App coordinates shared management guard, full input verification and all package stages/exchanges. agenthooks keeps codecs/rendering/owner/trust/ApplyFiles; only typed recovery reporting, original backup mode/mtime and failed-backup retention were added.",
+    "Runtime state/stats/probe are not maintained; no new runtime index/lock/approval format or public test bypass is introduced."
+  ],
+  "compatibility": {
+    "core_runtime_probe_schema_dependencies_old_scripts_and_goldens_unchanged": true,
+    "new_golden_files": 16,
+    "M1_M2_archives_unchanged": true,
+    "PROGRESS_append_only": true,
+    "details_report": "docs/review/M3-A4-DOCS-2026-10-17.json"
+  },
+  "remaining": {
+    "M3-T22": "not_started",
+    "M3-A5": "not_executed",
+    "M3-D3": "not_started; notify user before starting",
+    "real_harness_delivery": "unchanged pending",
+    "Windows": "unchanged pending",
+    "remote_CI": "unchanged pending",
+    "official_counting": {
+      "status": "nonblocking_pending",
+      "codex": "0/40",
+      "claude-code": "0/40"
+    }
+  },
+  "limits": [
+    "Same-version cooperative-process guard; no same-user authentication or multi-file power-loss atomicity.",
+    "Git update may acquire/cache while installation remains unchanged; it is not offline frozen recovery.",
+    "An authenticated approval is required for each unselected package; legacy native ordering requires explicit selection.",
+    "Tests use private fixtures/version stubs and raw hook invocation; real harness trust/loading/delivery, Windows, CI and official counts are not closed."
+  ]
+}

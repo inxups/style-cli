@@ -19,7 +19,11 @@ func TestM3A3AdvertisementIntegrity(t *testing.T) {
 	} {
 		t.Run(c.name, func(t *testing.T) {
 			_, _, _, _, err := parseAdvertisement([]byte(c.advert), c.requested)
-			if Code(err) != "source-invalid" || strings.Contains(err.Error(), "CANARY") {
+			want := "source-invalid"
+			if c.name == "missing-ref" {
+				want = "source-fetch-failed"
+			}
+			if Code(err) != want || strings.Contains(err.Error(), "CANARY") {
 				t.Fatal(err)
 			}
 		})

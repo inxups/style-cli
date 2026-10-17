@@ -233,6 +233,9 @@ func parseAdvertisement(data []byte, requested string) (ref, object, peeled, for
 		peeled = entries[requested+"^{}"]
 	}
 	if object == "" {
+		if requested != "" && !CommitSelector(requested) {
+			return "", "", "", "", fail("source-fetch-failed", "the requested Git ref is unavailable")
+		}
 		return bad()
 	}
 	if len(object) == 40 {

@@ -166,6 +166,15 @@ func PlanUninstallFiles(m Manifest, t Target) ([]PlannedFile, error) {
 	return out, nil
 }
 
+// RollbackError reports an incomplete recovery while preserving the original
+// failure for errors.Is/As. Backups named by Recovery remain available.
+type RollbackError struct {
+	Cause, Recovery error
+}
+
+func (e *RollbackError) Error() string   { return fmt.Sprintf("%v; %v", e.Cause, e.Recovery) }
+func (e *RollbackError) Unwrap() []error { return []error{e.Cause, e.Recovery} }
+
 // ApplyFiles applies a previously generated plan. It validates every planned
 // file against its Before bytes before making any change, so stale plans do
 // not overwrite intervening edits. A file already removed after planning is
@@ -181,12 +190,13 @@ func ApplyFiles(ctx context.Context, changes []PlannedFile) error {
 		applied bool
 	}
 	staged := make([]stagedChange, 0, len(changes))
+	retained := make(map[string]bool)
 	cleanup := func() {
 		for _, item := range staged {
 			if item.temp != "" {
 				_ = os.Remove(item.temp)
 			}
-			if item.backup != "" {
+			if item.backup != "" && !retained[item.backup] {
 				_ = os.Remove(item.backup)
 			}
 		}
@@ -204,15 +214,19 @@ func ApplyFiles(ctx context.Context, changes []PlannedFile) error {
 				}
 			} else {
 				if err := os.MkdirAll(filepath.Dir(item.change.Path), 0o755); err != nil {
-					failures = append(failures, err.Error())
+					retained[item.backup] = true
+					failures = append(failures, fmt.Sprintf("backup retained at %s: %v", item.backup, err))
 					continue
 				}
 				if err := os.Remove(item.change.Path); err != nil && !errors.Is(err, os.ErrNotExist) {
-					failures = append(failures, err.Error())
+					retained[item.backup] = true
+					failures = append(failures, fmt.Sprintf("backup retained at %s: %v", item.backup, err))
 					continue
 				}
 				if err := os.Rename(item.backup, item.change.Path); err != nil {
-					failures = append(failures, err.Error())
+					retained[item.backup] = true
+					failures = append(failures, fmt.Sprintf("restore failed; backup retained at %s: %v", item.backup, err))
+					continue
 				}
 				item.backup = ""
 			}
@@ -225,7 +239,7 @@ func ApplyFiles(ctx context.Context, changes []PlannedFile) error {
 	}
 	fail := func(cause error) error {
 		if rollbackErr := rollback(); rollbackErr != nil {
-			return fmt.Errorf("%w; %v", cause, rollbackErr)
+			return &RollbackError{Cause: cause, Recovery: rollbackErr}
 		}
 		return cause
 	}
@@ -283,9 +297,14 @@ func ApplyFiles(ctx context.Context, changes []PlannedFile) error {
 			}
 			item.backup = backup.Name()
 			backupMode := change.Mode
-			if info, statErr := os.Stat(change.Path); statErr == nil {
-				backupMode = info.Mode().Perm()
+			originalInfo, statErr := os.Stat(change.Path)
+			if statErr != nil {
+				backup.Close()
+				staged = append(staged, item)
+				cleanup()
+				return statErr
 			}
+			backupMode = originalInfo.Mode().Perm()
 			if err := backup.Chmod(backupMode); err != nil {
 				backup.Close()
 				staged = append(staged, item)
@@ -305,6 +324,11 @@ func ApplyFiles(ctx context.Context, changes []PlannedFile) error {
 				return err
 			}
 			if err := backup.Close(); err != nil {
+				staged = append(staged, item)
+				cleanup()
+				return err
+			}
+			if err := os.Chtimes(item.backup, originalInfo.ModTime(), originalInfo.ModTime()); err != nil {
 				staged = append(staged, item)
 				cleanup()
 				return err

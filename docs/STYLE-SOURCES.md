@@ -1,6 +1,6 @@
 # Git 来源与锁定安装
 
-M3-T20 支持显式公共 HTTPS Git 来源。本地目录、单文件和 `--link` 继续使用原有流程；包格式仍为 `style/v0.3`。本功能的离线与受控 TLS 验收见 [M3-A3](review/M3-A3-2026-10-17.json)，设计依据见 [D2](review/M3-D2-SOURCES-2026-10-17.md)。`update` 和 `install --frozen` 由后续 T21/T22 实现，当前不可用；两家真实投递、Windows 和远端 CI 单独验收。
+M3-T20 支持显式公共 HTTPS Git 来源，M3-T21 支持明确选包更新。本地目录、单文件和 `--link` 继续使用原有流程；包格式仍为 `style/v0.3`。本功能的离线与受控 TLS 验收见 [M3-A3](review/M3-A3-2026-10-17.json)，设计依据见 [D2](review/M3-D2-SOURCES-2026-10-17.md)。`update` 已通过 [M3-A4](review/M3-A4-2026-10-17.json)，`install --frozen` 待 T22 实现；两家真实投递、Windows 和远端 CI 单独验收。
 
 ## 使用
 
@@ -27,7 +27,7 @@ Git validate 的 JSON 是 `{source, diagnostics}`；原有本地 validate 仍输
 
 validate/plan 和未确认 install 可以建立完整来源缓存，不改包、锁、批准文件、settings、index 或 harness 配置。安装沿用能力/native 全量披露、`--yes` 和 `--allow-replace`，取得成功不表示包有效或已获执行授权。确认回调收到独立预览；后续应用同次捕获的字节，不再解析移动中的分支。
 
-同名 Git 重装要求来源 URL/ref/commit/path/kind、文件、settings 和安装选择一致。版本相同但 revision 不同、换 ref、换路线或本地/Git 来源转换均不能被当作无变化。当前需要明确卸载后重装；按原来源更新由 T21 提供。
+同名 Git 重装要求来源 URL/ref/commit/path/kind、文件、settings 和安装选择一致。版本相同但 revision 不同、换 ref、换路线或本地/Git 来源转换均不能被当作无变化。来源 URL/path/类型转换需要明确卸载后重装；按原来源更新使用下述 `update`。
 
 ## 快照与缓存
 
@@ -47,9 +47,31 @@ validate/plan 和未确认 install 可以建立完整来源缓存，不改包、
 
 Git 管理副本的编辑、丢失或 symlink 漂移报 `git-snapshot-changed`；sync/trust 不会把新内容标成原 commit。list/doctor 展示身份与漂移，不取得 Git。来源与安装文件保持只读；doctor 的既有 state 维护仍可能清理过期会话。恢复可先还原锁定字节；开发修改另用本地/link 来源，frozen 恢复待 T22。
 
-install/sync/trust/uninstall 共用提交阶段的 `.management.lock`。网络和等待确认期间不持锁；busy 明确失败，陈旧回收核对 OS PID/出生身份，不按年龄删除。提交前重新检查捕获的 lock、包、批准文件、settings、index/说明和 renderer 输入，包括未改变的配置、文件身份/模式及父路径。确认期间发生本地复制包/link 或配置改动，现在会拒绝旧候选，要求重新预览。
+install/update/sync/trust/uninstall 共用提交阶段的 `.management.lock`。网络和等待确认期间不持锁；busy 明确失败，陈旧回收核对 OS PID/出生身份，不按年龄删除。提交前重新检查捕获的 lock、包、批准文件、settings、index/说明和 renderer 输入，包括未改变的配置、文件身份/模式及父路径。确认期间发生本地复制包/link 或配置改动，现在会拒绝旧候选，要求重新预览。
 
-app 协调包交换和文件事务，失败逆序恢复并报告恢复错误；恢复失败保留包备份。agenthooks 继续负责协议、渲染、owner/trust 合并与 ApplyFiles，仅新增 renderer 输入路径枚举供 app 捕获。保护范围是同版合作管理进程；它不承诺跨文件断电原子性，也不能排除旧版或同用户非合作写入。
+app 协调包交换和文件事务，失败逆序恢复 bytes/mode/mtime 并报告恢复错误；恢复失败保留包或文件备份及路径。agenthooks 继续负责协议、渲染、owner/trust 合并与 ApplyFiles，提供 renderer 输入路径枚举供 app 捕获；ApplyFiles 现以类型化错误报告恢复失败，并保留恢复失败的备份及原 mode/mtime。保护范围是同版合作管理进程；它不承诺跨文件断电原子性，也不能排除旧版或同用户非合作写入。
+
+## 明确选包更新
+
+```sh
+style update terse-reviewer --json
+style update terse-reviewer --ref refs/tags/v2 --yes --json
+style update --all --allow-replace --yes
+```
+
+必须指定一个已安装包名或 `--all`，不默认更新全部；`--ref` 只适用于单个 Git 包。默认生成完整预览，有变化且未确认时退出 1；`--yes` 应用本次捕获的候选。两次 CLI 调用各自重新捕获，后一次报告才对应实际应用内容。无变化退出 0，不改安装文件的字节、mode、mtime 或 inode；Git 取得仍可能读写完整来源缓存，报告将 acquisition 与安装 changed 分开。
+
+Git 重新解析锁定 branch/tag，固定 OID 不跟随分支，不可达时也不回退到缓存中的其他 revision。可显式换 ref，不能换 URL/path/存储类型。本地复制包读取原 source.path，link 读取当前链接源；名称和 dir/file 类型必须保持。选中复制/Git 管理副本先与旧锁比对，已编辑、丢失或 symlink 漂移先失败，不覆盖未批准改动。版本允许不变或降低，来源、版本、内容及 native 变化分别披露。
+
+保留 seq 和仍声明的旧 settings 值，删除已移除键；新键仅用包中 default，即使私有文件已有同名未声明值也不采用。缺新必填值明确失败，提示先按现有 install/配置流程补齐；update 不接收 `--set`、环境或其他包的值。新增 replace 要求 `--allow-replace`，两 replace、requires、预算和 fallback:error 沿用既有门禁。
+
+未选包只取经 lock.approval 校验的批准字节；普通 link 已有同步授权也不带入新内容。选中候选与未选基线联合编译、去重和预算检查；未选的渲染/native/settings 效果或配置信任修复发生变化时，报 `update-unselected-effect` 并列出包名，须显式 `--all` 或先处理相关包。未选包缺可验证批准基线时保守失败。旧普通批准可兼容；旧 native 批准缺有序表示时，须明确选中或 `--all` 重新披露批准。选中旧包缺基线会在预览中标明，不将未知旧效果伪装成相同。
+
+路线、版本、config_dir、fail_closed 和静态布局沿锁绑定，不 Detect 或自动迁移旧 Claude 布局。需要迁移时先按既有 sync/管理流程处理，再运行 update。预览完整披露 native 增删改及顺序、首次 link 信任、source/rendered 差异、settings 键与预算/路线报告。一次调用只捕获一次，确认回调收到独立副本；确认后不重新取分支或读取新源码。提交前核对捕获输入及身份、mode、mtime、父路径，变化报 `installation-changed`；私有 lock/approved/settings/index/explain 或 build 父路径为 symlink 时拒绝。
+
+多包先全部校验、暂存，再交换包并调用同一次 agenthooks 文件事务。任一失败逆序恢复，恢复失败报 `rollback-failed` 并保留备份路径；不会清理 runtime state、stats 或 probe 数据。共享 guard 与 owner 保护仍适用，`--yes` 不扩大归属权限。
+
+JSON 始终输出一份 format=1、command=update 文档，含 status、selected、changes、reports、diagnostics、awaiting_confirmation；changes 按原 seq 排序，before/after 含安全来源、版本、内容摘要和 settings 键。native 命令和正文仅出现在显式批准披露，不进入常规错误摘要。status 为 unchanged/confirmation-required/applied/error；用法解析失败 stdout 为空。无变化/应用成功退出 0，未确认/普通失败退出 1，既有预算或 fallback:error 阻止退出 4；3 仍仅属于 sync。
 
 ## 重复验收
 
@@ -72,3 +94,24 @@ PYTHONDONTWRITEBYTECODE=1 python3 scripts/check_m3_git_source.py \
 ```
 
 `STYLE_M3_A3_EXPORT` 仅由测试读取，生产命令没有对应入口。脚本的 17 项检查覆盖六条旧管理命令拒绝 format 2 且保全目录身份/字节/模式/mtime、新版 list、真实新旧 hook wire 相同，以及三条 CLI 的九组非法来源在启动 Git 前被拒绝。生成的安装仅供门禁 fixture 使用，不能当作真实 harness 投递结果。
+
+A4 的 31 个新函数/244 个叶子用例及 16 份新增 text/JSON golden 覆盖更新、联合授权、失败恢复和旧安装；旧 golden 未改。新增脚本还对三条路线运行 24 项 built CLI 检查，比较本轮开始前的 `fd88e8d` 与新二进制的普通 runtime wire，并用固定 M1 `74a473d` 验证旧安装生命周期和 Claude 旧布局迁移边界。两种对照各有用途，不能把 M1 对较新 index 的既有不兼容计为更新回归。
+
+在上述构建目录中额外构建固定 T20 二进制，再运行脚本：
+
+```sh
+m3_update_baseline="$m3_build_dir/update-baseline"
+mkdir -p "$m3_update_baseline"
+git archive fd88e8da66cd8409b6939e71875edd4bee3c9421 | tar -x -C "$m3_update_baseline"
+env -u CODEX_HOME -u CODEX_SANDBOX -u CLAUDE_CONFIG_DIR -u STYLE_HOME \
+  GOPATH=/tmp/style-cli-gopath GOMODCACHE=/tmp/style-cli-gomodcache \
+  GOCACHE=/tmp/style-cli-gocache GOFLAGS=-mod=readonly GOWORK=off \
+  go -C "$m3_update_baseline" build -trimpath -buildvcs=false \
+  -o "$m3_build_dir/style-update-baseline" ./cmd/style
+PYTHONDONTWRITEBYTECODE=1 python3 scripts/check_m3_update.py \
+  --binary "$m3_build_dir/style" --old-binary "$m3_build_dir/style-legacy" \
+  --baseline-binary "$m3_build_dir/style-update-baseline" \
+  --report "$m3_build_dir/update-gate.json"
+```
+
+脚本使用私有配置和仅报告版本的 harness stub；安装后以 canary 证明 update/普通 runtime 不调用检测或 Git，native 只披露不执行。真实投递、Windows、远端 CI 和官方计数继续单独验收。

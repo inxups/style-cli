@@ -1,0 +1,187 @@
+{
+  "format": 1,
+  "command": "update",
+  "status": "applied",
+  "selected": [
+    "first"
+  ],
+  "changes": [
+    {
+      "package": "first",
+      "seq": 1,
+      "before": {
+        "source": {
+          "kind": "dir",
+          "path": "$FIXTURE/source",
+          "link": false
+        },
+        "version": "1.0.0",
+        "content_sha256": "sha256:7ae4309f33fd1733c1bdfaa63439671549734c62369e9df85dc14a190eae0b5a",
+        "settings": [],
+        "replace": false,
+        "link_trusted": false
+      },
+      "after": {
+        "source": {
+          "kind": "dir",
+          "path": "$FIXTURE/source",
+          "link": false
+        },
+        "version": "1.0.0",
+        "content_sha256": "sha256:47a06c1d6f7ba1f14744af583084fbc4074677fe473c95cab474cea1bf2f2093",
+        "settings": [],
+        "replace": false,
+        "link_trusted": false
+      },
+      "baseline_available": true,
+      "source_changed": true,
+      "rendered_changed": true,
+      "native_changed": false,
+      "configuration_repair": false,
+      "approval_changed": true,
+      "settings_added": [],
+      "settings_removed": [],
+      "source_diff": [
+        {
+          "path": "STYLE.yaml",
+          "diff": "--- approved/STYLE.yaml\n+++ current/STYLE.yaml\n@@ -3,5 +3,5 @@\n version: 1.0.0\n description: update fixture\n rules:\n-  - {id: dynamic, target: tool, tool: shell, at: before, text: 'Before.'}\n-  - {id: static, target: system, text: 'Static Before.'}\n+  - {id: dynamic, target: tool, tool: shell, at: before, text: 'After.'}\n+  - {id: static, target: system, text: 'Static After.'}\n"
+        }
+      ],
+      "rendered_diff": [
+        {
+          "path": "codex/static/first/static/developer_instructions",
+          "diff": "--- approved/codex/static/first/static/developer_instructions\n+++ current/codex/static/first/static/developer_instructions\n@@ -1,2 +1,2 @@\n mode: append\n-Static Before.\n\\ No newline at end of file\n+Static After.\n\\ No newline at end of file\n"
+        },
+        {
+          "path": "codex/tool.pre/first/dynamic@tool.pre",
+          "diff": "--- approved/codex/tool.pre/first/dynamic@tool.pre\n+++ current/codex/tool.pre/first/dynamic@tool.pre\n@@ -2,8 +2,8 @@\n   \"rule\": \"first/dynamic\",\n   \"entry\": \"first/dynamic@tool.pre\",\n   \"src\": \"STYLE.yaml#dynamic\",\n-  \"src_sha256\": \"sha256:c8f6ea5ca433bc21fb9b7357881ceea7f4014416e3eb15cf69c2f1ee35a1b8f9\",\n-  \"body_sha256\": \"sha256:3e6847a341e06ab8322bb7a0e5240d92efd66923897a086294ab89154814f5db\",\n+  \"src_sha256\": \"sha256:3bd3ed5a53b11dc2c70759c5dbed6665e36ac1eca94a71c062644504a0722edf\",\n+  \"body_sha256\": \"sha256:0306b48ad9dd5473e42bb337d264bfadd2e1407a343f7d9a855ad5bb78ebb941\",\n   \"order\": [\n     50,\n     1,\n@@ -28,11 +28,11 @@\n     \"agent\"\n   ],\n   \"body\": {\n-    \"static\": \"Before.\"\n+    \"static\": \"After.\"\n   },\n   \"est\": {\n     \"tokens\": 2,\n-    \"chars\": 7\n+    \"chars\": 6\n   },\n   \"degraded_from\": null\n }\n\\ No newline at end of file\n"
+        }
+      ]
+    }
+  ],
+  "reports": [
+    {
+      "package": "first",
+      "provider": "codex",
+      "route": "codex-user",
+      "native_limit": {
+        "value": 2500,
+        "unit": "tokens",
+        "approximate": true,
+        "source": "Codex additionalContext default",
+        "overflow": "file-preview"
+      },
+      "budget": {
+        "per_rule": 400,
+        "per_event": 1200,
+        "always_on": 600
+      },
+      "plan": {
+        "package": "first",
+        "adapter": "codex",
+        "rules": [
+          {
+            "id": "dynamic",
+            "source": "STYLE.yaml#dynamic",
+            "target": "tool",
+            "action": "inject",
+            "status": "native",
+            "needs": [
+              "agent"
+            ],
+            "placements": [
+              {
+                "event": "tool.pre",
+                "action": "inject",
+                "status": "native",
+                "capabilities": [
+                  "add-context"
+                ],
+                "repeat": "session"
+              }
+            ]
+          },
+          {
+            "id": "static",
+            "source": "STYLE.yaml#static",
+            "target": "system",
+            "action": "inject",
+            "status": "native",
+            "needs": [
+              "agent"
+            ],
+            "placements": [
+              {
+                "action": "inject",
+                "status": "native",
+                "static_slot": "developer_instructions"
+              }
+            ]
+          }
+        ],
+        "blocked": false
+      },
+      "tokens": {
+        "rules": [
+          {
+            "rule": "dynamic",
+            "action": "inject",
+            "status": "native",
+            "estimate": {
+              "tokens": 2,
+              "chars": 6
+            },
+            "events": [
+              "tool.pre"
+            ]
+          },
+          {
+            "rule": "static",
+            "action": "inject",
+            "status": "native",
+            "estimate": {
+              "tokens": 4,
+              "chars": 13
+            }
+          }
+        ],
+        "events": [
+          {
+            "key": "codex\u0000PreToolUse Bash",
+            "label": "PreToolUse Bash",
+            "estimate": {
+              "tokens": 2,
+              "chars": 6
+            },
+            "block": {
+              "tokens": 0,
+              "chars": 0
+            },
+            "other": {
+              "tokens": 2,
+              "chars": 6
+            },
+            "other_count": 1
+          }
+        ],
+        "always_on": {
+          "tokens": 4,
+          "chars": 13
+        }
+      },
+      "session_cost": {
+        "requests": 60,
+        "triggers": 3,
+        "always_on": 28.6,
+        "triggered": 8.5,
+        "total": 37.1
+      }
+    }
+  ],
+  "diagnostics": [],
+  "routes": [
+    "codex=codex-user"
+  ],
+  "changed": true,
+  "awaiting_confirmation": false
+}

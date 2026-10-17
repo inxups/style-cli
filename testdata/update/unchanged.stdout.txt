@@ -1,0 +1,32 @@
+Update: unchanged; selected=["first"]
+first (seq=1):
+  before: version="1.0.0" source="$FIXTURE/source" kind=dir link=false link_trusted=false replace=false content=sha256:47a06c1d6f7ba1f14744af583084fbc4074677fe473c95cab474cea1bf2f2093
+  after: version="1.0.0" source="$FIXTURE/source" kind=dir link=false link_trusted=false replace=false content=sha256:47a06c1d6f7ba1f14744af583084fbc4074677fe473c95cab474cea1bf2f2093
+  settings added=[] removed=[]; approval_changed=false configuration_repair=false
+Source diff:
+Rendered diff (static values substituted; event variables remain runtime fragments):
+Plan: first
+ 
+
+Harness: codex
+Preferred route: codex-user (availability checked during install)
+Package: first
+Adapter: codex
+- dynamic: native (inject tool)
+  needs: agent
+  -> tool.pre inject (native); capabilities: add-context
+- static: native (inject system)
+  needs: agent
+  -> static:developer_instructions inject (native)
+Token (estimated; calibration pending):
+  native input limit: 2500 tokens (approximate); overflow=file-preview; source=Codex additionalContext default
+  budget: per_rule 400; per_event 1200; always_on 600 tokens
+  always-on: 4 tokens / 13 chars
+  per-rule:
+    dynamic: 2 tokens / 6 chars (native)
+    static: 4 tokens / 13 chars (native)
+  PreToolUse Bash: 2 tokens / 6 chars
+  session cost (requests=60 triggers=3): 28.6 always-on + 8.5 triggered = 37.1 units
+  scenario only: 1.25x cache write + 0.1x later hits; assumes an eligible unchanged prefix within cache lifetime; not billing
+Locked routes: ["codex=codex-user"]
+update unchanged (changed=false)

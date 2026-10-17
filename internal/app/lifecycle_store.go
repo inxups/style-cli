@@ -453,7 +453,17 @@ func (swap *packageSwap) commit() {
 	}
 }
 
-func (swap *packageSwap) rollback() error {
+type packageRollbackError struct{ cause error }
+
+func (e *packageRollbackError) Error() string { return e.cause.Error() }
+func (e *packageRollbackError) Unwrap() error { return e.cause }
+
+func (swap *packageSwap) rollback() (runErr error) {
+	defer func() {
+		if runErr != nil {
+			runErr = &packageRollbackError{cause: runErr}
+		}
+	}()
 	if swap == nil {
 		return nil
 	}

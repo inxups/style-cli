@@ -34,6 +34,14 @@ func installedSnapshot(home string, item lockPackage) (map[string][]byte, error)
 }
 
 func (s *Service) parseInstalledSnapshot(ctx context.Context, home string, item lockPackage, files map[string][]byte) (installPackage, error) {
+	return s.parseSnapshotWithSettings(ctx, home, item, files, func() (map[string]string, error) {
+		return readSettingValues(home, item.Name)
+	})
+}
+
+// Management callers may supply already captured settings. The normal
+// lifecycle retains its existing private-file lookup and validation order.
+func (s *Service) parseSnapshotWithSettings(ctx context.Context, home string, item lockPackage, files map[string][]byte, readSettings func() (map[string]string, error)) (installPackage, error) {
 	if err := checkContext(ctx); err != nil {
 		return installPackage{}, err
 	}
@@ -58,7 +66,7 @@ func (s *Service) parseInstalledSnapshot(ctx context.Context, home string, item 
 	if err := validateRuntimeRequirement(pkg.Metadata["requires"]); err != nil {
 		return installPackage{}, err
 	}
-	stored, err := readSettingValues(home, item.Name)
+	stored, err := readSettings()
 	if err != nil {
 		return installPackage{}, err
 	}

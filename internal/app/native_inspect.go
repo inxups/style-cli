@@ -20,8 +20,7 @@ func (s *Service) checkNative(ctx context.Context, home string, lock lockDocumen
 	if err != nil {
 		return nil, err
 	}
-	reports := make(map[string]NativeHookReport)
-	hooks := make(map[adapter.ProviderID][]adapter.HookSpec)
+	var approved []NativeHookReport
 	for _, item := range lock.Packages {
 		baseline, available, err := loadApproval(home, item)
 		if err != nil {
@@ -44,12 +43,19 @@ func (s *Service) checkNative(ctx context.Context, home string, lock lockDocumen
 		if err != nil {
 			return nil, err
 		}
-		for _, report := range native {
-			provider := adapter.ProviderID(report.Harness)
-			reports[report.Harness+"\x00"+report.Rule] = report
-			hooks[provider] = append(hooks[provider], adapter.HookSpec{NativeEvent: report.Event, Matcher: report.Matcher,
-				Command: report.Command, NativeTag: report.Rule, Extra: map[string]any{"timeout_seconds": report.Timeout}})
-		}
+		approved = append(approved, native...)
+	}
+	return inspectNativeReports(ctx, adapters, approved)
+}
+
+func inspectNativeReports(ctx context.Context, adapters []installAdapter, approved []NativeHookReport) ([]NativeHookCheck, error) {
+	reports := make(map[string]NativeHookReport)
+	hooks := make(map[adapter.ProviderID][]adapter.HookSpec)
+	for _, report := range approved {
+		provider := adapter.ProviderID(report.Harness)
+		reports[report.Harness+"\x00"+report.Rule] = report
+		hooks[provider] = append(hooks[provider], adapter.HookSpec{NativeEvent: report.Event, Matcher: report.Matcher,
+			Command: report.Command, NativeTag: report.Rule, Extra: map[string]any{"timeout_seconds": report.Timeout}})
 	}
 	var result []NativeHookCheck
 	for _, target := range adapters {
