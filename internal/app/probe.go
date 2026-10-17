@@ -14,6 +14,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/inxups/style-cli/core/compile"
 	"github.com/inxups/style-cli/internal/adapter"
 	"github.com/inxups/style-cli/internal/probe"
 	"github.com/inxups/style-cli/internal/saferead"
@@ -293,10 +294,8 @@ func (s *Service) Probe(ctx context.Context, request ProbeRequest) (result Probe
 			files[indexFile.path] = indexFile
 			result.Targets[index].IndexSHA256 = indexFile.sha
 			result.Targets[index].IndexStatus = "captured"
-			var header struct {
-				Format int `json:"format"`
-			}
-			if json.Unmarshal(indexData, &header) != nil || header.Format != 1 {
+			var captured compile.Index
+			if json.Unmarshal(indexData, &captured) != nil {
 				result.Targets[index].IndexStatus = "invalid"
 				add("probe-index-unavailable", "warning", "Index cannot establish execution success; callback observation remains available.", string(id))
 			}

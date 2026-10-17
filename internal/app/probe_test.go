@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"io/fs"
 	"os"
@@ -21,6 +22,42 @@ import (
 	"github.com/speakeasy-api/agenthooks"
 	"runtime"
 )
+
+func TestM3ProbeSupportedIndexFormats(t *testing.T) {
+	for _, format := range []int{1, 2, 3, 4, 5, 6, 7, 0, 8, 99} {
+		t.Run(fmt.Sprint(format), func(t *testing.T) {
+			f := a2Install(t, "codex-user")
+			path := filepath.Join(f.home, "build", "index.json")
+			var index map[string]any
+			if err := json.Unmarshal(readSyncFile(t, path), &index); err != nil {
+				t.Fatal(err)
+			}
+			index["format"] = format
+			data, err := json.Marshal(index)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if err := os.WriteFile(path, data, 0o600); err != nil {
+				t.Fatal(err)
+			}
+			result, err := f.service.Probe(context.Background(), ProbeRequest{Home: f.home, Timeout: time.Second, Ready: func(ProbeReady) error {
+				f.emit(t, "codex", nil)
+				return nil
+			}})
+			if err != nil || !result.Targets[0].CallbackObserved || !result.Cleanup.Complete {
+				t.Fatalf("callback or cleanup: %+v %v", result, err)
+			}
+			valid := format >= 1 && format <= 7
+			if (result.Targets[0].IndexStatus == "captured") != valid || a2HasCode(result, "probe-index-unavailable") == valid {
+				t.Fatalf("index format %d: %+v", format, result)
+			}
+			if result.Targets[0].Execution != "not-assessed" {
+				t.Fatal("captured index must not establish rule execution")
+			}
+			a2NoLeases(t, f.home)
+		})
+	}
+}
 
 type a2Fixture struct {
 	service                                                                     *Service

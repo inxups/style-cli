@@ -2018,3 +2018,9 @@ Codex 0.159.3 与实际配置模型服务、固定生产 STYLE 二进制，在�
 真实正常 shell 写入、匹配 native/普通 guard、未匹配 Read 缺席；保持有效 index 仅损坏会话 state，工具未写目标且有真实 PreToolUse，恢复后成功。批准 native timeout 更新、frozen 来源/锁字节、卸载配置 bytes/mode 和新会话无回调/正文均通过。原始请求/日志留私有目录，[白名单报告](review/M3-B-CODEX-USER-2026-10-18.json)仅固定摘要/计数/事实。
 
 首轮 resume 原生默认 read-only，虽然产生真实工具尝试但 OS 拒写，未计通过；采集器显式保持所有回合的隔离 fixture 工具策略后重跑通过，生产源码未改。仅完成用户路线，B1/B3/B4/REAL-01 仍部分完成，B2 项目待验，插件与无触发/中断继续。文档检查见[报告](review/M3-B-CODEX-USER-DOCS-2026-10-18.json)。
+
+## 2026-10-18 M3-A2 新版 index 诊断补充
+
+- 真实用户 probe 的 index 7 被旧版 header.Format == 1 误报 invalid。改用共享 compile.Index reader，避免维护另一份索引版本判断；不改变回调来源或 execution=not-assessed 边界。
+- 临时三缓存、GOWORK=off，清理检测/provider 环境后的 A2 专项与新增 10 格式子项、根 module vet 和生产 trimpath build 全过。[报告](review/M3-A2-INDEX-FOLLOWUP-2026-10-18.json)固定源码与新二进制摘要。
+- 原用户路线真实正文证据保留；新版二进制的最终真实验收继续待执行。插件批量命令及拆分后的单次命令均在自动审批复核截止前未启动，未给出安全拒绝原因，不据此标记通过；本地修复与验证继续完成。
