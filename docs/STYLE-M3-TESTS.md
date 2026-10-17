@@ -96,7 +96,7 @@ PYTHONDONTWRITEBYTECODE=1 python3 scripts/check_m2_rules_migration.py \
 ## 准备验证
 
 - [x] **M3-P1 两家 runbook/采集器**（M3-PREP-01）：[手册](STYLE-M3-MANUAL.md)与[报告](review/M3-P1-2026-10-18.json)固定私有源码/STYLE/harness/实际观察器副本摘要、原生时序/session/路线关联和完整正文判定；六路线干跑/bytes/mode 恢复、76 项全量和最终 10 项 M3 自测通过。拒绝漂移、缺原生/请求/时间证据、伪造回调单证及 symlink，验证短写入与原始观察器 subprocess。只关闭准备，不计真实 B/C。
-- [ ] **M3-P2 特殊环境 runbook**（M3-PREP-02）：明确 Claude 云端项目运行条件、exact 的 API key/编码模型条件和 Windows 原生 shell/runner 条件。验证证据白名单、失败保留与恢复步骤可执行，环境不具备时记录缺项；准备检查不计入 C3/TOKEN-01/W1 成功。
+- [x] **M3-P2 特殊环境 runbook**（M3-PREP-02）：[手册 P2](STYLE-M3-MANUAL.md#延期环境-p2)和[报告](review/M3-P2-2026-10-18.json)固定云端/独立计数 API/Windows 的环境、版本/账号依赖、采集白名单、失败保留和恢复。八项云端离线入口、两编码预检及缺 key 明确失败/零请求通过；Windows 自动化引用原生 A17。三类实际环境按用户决定延期，未计 C3/W1/API 通过。
 
 ## M3b：Codex 真实环境
 

@@ -2004,3 +2004,9 @@ run 39054681822 固定 `70cdaca`，Ubuntu/macOS 通过；Windows 根模块 3,369
 [P1 报告](review/M3-P1-2026-10-18.json)记录六路线版本-stub 安装/sync/卸载、index7 与外部 bytes/mode 干跑全过；已有全量采集器 76 项通过，新增 observer/time 两项后的最终 M3 专项 10 项通过，未宣称全量 78 项本地重跑。首次 plugin exit/sync 预期与一次测试块插入 NameError 保留并修正。CI 接入六路线准备检查；源码和报告未存原始请求/工具/prompt/认证信息。
 
 仅关闭 PREP-01/P1，真实 B/C 尚未执行，任何实际差异继续按失败保留修正。[文档检查](review/M3-P1-DOCS-2026-10-18.json)核对手册链接/围栏、源码语法、追加日志、历史归档与 diff；后续 PREP-02 单独记录特殊环境条件。
+
+## 2026-10-18 M3-PREP-02 / M3-P2 特殊环境准备
+
+[手册 P2](STYLE-M3-MANUAL.md#延期环境-p2)列明云端真实会话/clone/runner/native 依赖/私有 HOME、独立 API key/模型/TLS 最小请求，以及 Windows 原生 exe/user 路线/PowerShell/DACL/实际模型证据和卸载。记录白名单、失败及明确私有基线恢复步骤；不申请用户已延期的环境，不以 stub 冒充实际验收。
+
+[P2 报告](review/M3-P2-2026-10-18.json)记录生产 CLI 两具名编码预检、API 缺 key 退出1且未发送请求、八项云端离线交付检查通过和 Windows A17 自动化依据。只关闭 PREP-02/P2；C3、W1/REAL-04、Anthropic API 保持 `[?]`，本地 exact 在 REAL-03 正式汇总，官方校准各0/40继续非阻塞。[文档检查](review/M3-P2-DOCS-2026-10-18.json)通过，归档不变、日志仅追加。

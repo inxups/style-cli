@@ -1,0 +1,153 @@
+{
+  "format": 1,
+  "task": "M3-PREP-02",
+  "test": "M3-P2",
+  "date": "2026-10-18",
+  "baseline": "093f772c76a96b6a63cd02b1debbded52d13d663",
+  "status": "passed-preparation-only",
+  "manual": "docs/STYLE-M3-MANUAL.md#延期环境-p2",
+  "preflight": {
+    "format": 1,
+    "passed": true,
+    "local_count_and_missing_api_key": [
+      {
+        "encoding": "o200k_base",
+        "exit": 0,
+        "result": {
+          "format": 1,
+          "command": "count",
+          "count": {
+            "mode": "exact",
+            "provider": "openai",
+            "scope": "utf8-text-encoding",
+            "encoding": "o200k_base",
+            "implementation": "github.com/tiktoken-go/tokenizer@v0.7.0",
+            "tokens": 9,
+            "chars": 25,
+            "bytes": 35,
+            "text_sha256": "sha256:6bf6c20f671b10514014a46c240cf44155b19adac890c90fa1f3cb8454748be2"
+          }
+        }
+      },
+      {
+        "encoding": "cl100k_base",
+        "exit": 0,
+        "result": {
+          "format": 1,
+          "command": "count",
+          "count": {
+            "mode": "exact",
+            "provider": "openai",
+            "scope": "utf8-text-encoding",
+            "encoding": "cl100k_base",
+            "implementation": "github.com/tiktoken-go/tokenizer@v0.7.0",
+            "tokens": 10,
+            "chars": 25,
+            "bytes": 35,
+            "text_sha256": "sha256:6bf6c20f671b10514014a46c240cf44155b19adac890c90fa1f3cb8454748be2"
+          }
+        }
+      },
+      {
+        "provider": "anthropic",
+        "missing_key_exit": 1,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "dd432c590c0e4aefd02c5be05e8c42eb9eca9642fe268e1be0161c36c09726b2",
+        "request_sent": false
+      }
+    ],
+    "cloud": "offline bundle path verified; hosted session user-deferred",
+    "windows": "native automated CI A17 passed; actual harness W1 user-deferred",
+    "no_credentials_read": true
+  },
+  "cloud_offline_entry": {
+    "format": 1,
+    "binary_sha256": "b1f149dc22a7c19b516b9eb3fda2dc55f18197053ffd2eb24aac7d519cde0d67",
+    "real_cloud": false,
+    "cases": [
+      {
+        "route": "claude-cloud",
+        "action": "full-preview-zero-write",
+        "status": "passed"
+      },
+      {
+        "route": "claude-cloud",
+        "action": "portable-deterministic-bundle",
+        "status": "passed"
+      },
+      {
+        "route": "claude-cloud",
+        "action": "fresh-clone-no-private-install-runtime",
+        "status": "passed",
+        "real_cloud": false
+      },
+      {
+        "route": "claude-cloud",
+        "action": "portable-native-command-and-static-file",
+        "status": "passed",
+        "real_delivery": false
+      },
+      {
+        "route": "claude-cloud",
+        "action": "missing-native-dependency-fails",
+        "status": "passed"
+      },
+      {
+        "route": "claude-cloud",
+        "action": "tamper-rejected-and-local-binding-required",
+        "status": "passed"
+      },
+      {
+        "route": "claude-cloud",
+        "action": "missing-runner-native-process-failure",
+        "status": "passed"
+      },
+      {
+        "route": "claude-cloud",
+        "action": "last-uninstall-preview-and-bundle-removal",
+        "status": "passed"
+      }
+    ]
+  },
+  "cloud_command": {
+    "command": [
+      "python3",
+      "scripts/check_m3_cloud.py",
+      "--binary",
+      "/tmp/style-m3-complete-20261017/style-m3",
+      "--report",
+      "/tmp/style-m3-complete-20261017/p2-cloud-entry-report.json"
+    ],
+    "exit_code": 0,
+    "seconds": 1.053,
+    "environment": {
+      "GOPATH": "/tmp/style-m3-project-20261017/gopath",
+      "GOMODCACHE": "/tmp/style-m3-project-20261017/modcache",
+      "GOCACHE": "/tmp/style-m3-project-20261017/gocache",
+      "GOPROXY": "off",
+      "GOFLAGS": "-mod=readonly",
+      "GOWORK": "off"
+    }
+  },
+  "cloud_log_sha256": "f8b9ad401f1f807d476be38a795b4bc90951993f090100f03a594ed5aa6bd696",
+  "windows_automated_evidence": "docs/review/M3-A17-2026-10-18.json",
+  "user_deferred": [
+    "C3 hosted Claude session",
+    "W1/REAL-04 actual Windows host/harness",
+    "TOKEN-01 Anthropic independent API subcase"
+  ],
+  "requirements": [
+    "Cloud native session, compatible runner, bundle hashes, external private HOME, native dependencies, explicit approved delivery and removal/new-session check",
+    "API independent ANTHROPIC_API_KEY configured privately, available count model and official TLS endpoint; record minimal request/model/scope/digests without key",
+    "Windows real exe/user routes/system PowerShell/private DACL/profile and actual native hook/model delivery; explicit unsupported POSIX routes/native; capture cleanup"
+  ],
+  "restoration": "Use explicit private baseline files, preserve raw failures locally, restore only known configuration bytes/modes, verify subsequent session has no managed effect. Cloud bundle removal must be exported/approved and checked in actual session later.",
+  "boundary": "Local exact preflight does not replace formal REAL-03; empty-key failure is expected refusal without a request. Cloud offline eight checks and Windows automated CI are preparation/implementation evidence, not C3/W1. Official fixed-corpus calibration remains each 0/40, nonblocking.",
+  "sources": {
+    "docs/STYLE-M3-MANUAL.md": "1bfb681ae1ebcbc9300e1121e1e390120213d853887e3b144f8b6c53d51e47e7",
+    "docs/STYLE-CLOUD.md": "54359032b01d8f37e3231928222cd654c89ce9584bdda2bf8e34680fbda94224",
+    "docs/STYLE-COUNT.md": "ca83cf563e1998c207d12e288ad50beef5b548b0c44c2726c44f7a016df61c97",
+    "scripts/check_m3_cloud.py": "b6b9814fc3863da5c74dbaa77b93277f4b9867e1a5cacda97a15ef5dec960680",
+    "scripts/check_m3_windows.py": "4729f969849d00bbf12e161e859115d03f83b6a86d6402f0e3e4a1f0a8ed64f1"
+  }
+}
