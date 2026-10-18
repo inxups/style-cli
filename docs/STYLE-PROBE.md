@@ -39,7 +39,7 @@ Codex 0.159.3 的本地 marketplace 插件从原生缓存运行。probe 核对 c
 
 `index_status=captured` 只表示捕获了 index，不能据此认定规则求值成功；缺失或损坏 index 仍可观察回调，并给出 `probe-index-unavailable`。报告始终以 `execution=not-assessed` 标明执行未验，规则命中、最终 wire 和去重可用保存的事件前输入进行 [explain](STYLE-EXPLAIN.md) 对照。
 
-`callback-observed` 仅证明本机入口关联。进程关系和 run ID 不是防同用户伪造的认证，无法排除 harness 祖先下的手工调用。真实 M3-B1/C1 还需独立的原生来源/事件和上下文或请求投递证据；官方计数仍两家各 0/40、非阻塞待验。
+`callback-observed` 仅证明本机入口关联。进程关系和 run ID 不是防同用户伪造的认证，无法排除 harness 祖先下的手工调用。真实 M3-B1/C1 还需独立的原生来源/事件和上下文或请求投递证据；官方估算校准进度与误差另见[计数指南](STYLE-COUNT.md#固定语料估算校准)，不以 probe 结果替代。
 
 ## 租约、清理与恢复
 

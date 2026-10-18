@@ -6,7 +6,7 @@
 
 本文件是 STYLE CLI M3 的持久化任务清单。每项完成后同步状态和可重复证据，测试矩阵见 [STYLE-M3-TESTS.md](STYLE-M3-TESTS.md)，执行记录追加到 [PROGRESS.md](PROGRESS.md)。M1、M2 已关闭并只读归档；上一里程碑的事实见 [M2 任务清单](STYLE-M2-TASKS.md)、[M2 测试矩阵](STYLE-M2-TESTS.md) 和 [M2 总验收报告](review/M2-DOCS-01-2026-10-17.json)。
 
-当前总状态：M3 于 2026-10-18 按用户确认的范围完成并关闭，[总验收](review/M3-FINAL-2026-10-18.json)和[文档关闭报告](review/M3-DOCS-01-2026-10-18.json)保留原受验源码的证据。补充 [M3-REMOVE-01 报告](review/M3-REMOVE-01-2026-10-18.json)验证删除 Claude 云端能力；本地两家各三条路线保留，C3 已取消。W1/REAL-04 仍待验；Anthropic 独立 API 产品计数验收已由 REAL-03 补测通过，官方估算校准两家各 0/40、独立非阻塞。
+当前总状态：M3 于 2026-10-18 按用户确认的范围完成并关闭，[总验收](review/M3-FINAL-2026-10-18.json)和[文档关闭报告](review/M3-DOCS-01-2026-10-18.json)保留原受验源码的证据。补充 [M3-REMOVE-01 报告](review/M3-REMOVE-01-2026-10-18.json)验证删除 Claude 云端能力；本地两家各三条路线保留，C3 已取消。W1/REAL-04 仍待验；Anthropic 独立 API 产品计数验收已由 REAL-03 补测通过。官方估算校准现为 Anthropic 40/40、OpenAI 0/40；用户本轮只测 Claude，CARRY-01 保持部分完成、独立非阻塞。
 
 ## 范围与推进顺序
 
@@ -45,7 +45,7 @@ M3 继续完整支持 Codex 与 Claude Code；其他 harness 的完整接入留�
 
 ## 遗留与风险
 
-- [?] **M3-CARRY-01 官方 token 计数**（承接 M2-CARRY-01，原 M1-FINAL-09）：目标是完成固定 40 条、中英各半语料的两家官方同结构基线增量对照。依赖：独立 API key 和可用计数模型。产出：模型、语料/请求摘要、逐条计数及与生产估算的比较；缺 key 时仍各 0/40，非阻塞遗留不因 M3 建档关闭。测试：M3-CARRY-01。原阻塞见 [报告](review/M1-FINAL-09-COUNTING-BLOCKED-2026-10-16.json)，[M2 补充验证](review/M2-ALT-01-2026-10-17.md) 不替代官方结果，不承诺模型误差范围。
+- [~] **M3-CARRY-01 官方 token 计数**（承接 M2-CARRY-01，原 M1-FINAL-09）：目标是完成固定 40 条、中英各半语料的两家官方同结构基线增量对照。依赖：独立 API key 和可用计数模型。产出：模型、语料/请求摘要、逐条计数及与生产估算的比较。测试：M3-CARRY-01。2026-10-18 用户要求先只测 Claude：[Anthropic 报告](review/M3-CARRY-01-ANTHROPIC-2026-10-18.json)完成 Haiku 5.5 的 40/40 与 5/5 稳定性复测，46 次官方计数全部 HTTP 200；生产估算 1,205、官方增量 1,294，合计低估 6.88%，逐条平均绝对误差 8.54%、最大 18.92%。不设准确率通过阈值、不改生产系数。OpenAI 依用户决定保留 0/40，本项不整体关闭。原阻塞见 [报告](review/M1-FINAL-09-COUNTING-BLOCKED-2026-10-16.json)，[M2 补充验证](review/M2-ALT-01-2026-10-17.md) 不替代官方结果。
 - [x] **M3-RV-01 核心 harness 名硬编码**（承接 M2-RV-01）：目标是消除 `when.harness.name`、`requires.harness`、`recommends` 校验对两家名称的写死依赖。依赖：M3-D0、M3-T00。产出：注册表驱动的统一校验和回归证据；已由 M3-T00 修复并通过 M3-A0，见 [验收报告](review/M3-A0-2026-10-17.json)；三处校验不再维护内置名称名单。engine 的两处既有 Claude 输出判断继续由 D8 评估，不属于本风险的名称成员关系范围。测试：M3-A0。来源：[条件校验](../core/spec/validate_conditions.go)、[包级校验](../core/spec/validate_package.go)、[注册表](../internal/adapter/registry.go)。
 
 M3-CARRY-01 与 `--count=exact` 产品验收分别记录；前者的非阻塞决定不自动豁免后者的真实能力验证。其他新增环境阻塞也不自动豁免里程碑验收。2026-10-17 用户另明确延期 Claude 托管云端、Windows 主机真实运行、Anthropic 独立 API 计数（见本文件末尾范围决定）。
@@ -137,4 +137,4 @@ T41/A10 已完成；当前按依赖推进 D6/T42/T43，T31/T32 早期暂缓记�
 
 六路线最终超时/中断复验使用缓存修复后二进制，见[最终报告](review/M3-PROBE-NEGATIVE-FINAL-2026-10-18.json)：12 次预期失败、有效 index 捕获、完整 cleanup 和配置/项目恢复均通过。
 
-2026-10-18 后续补测：用户提供官方 API key 并选择 Haiku 5.5 / low 后，REAL-03/TOKEN-01 的官方 API 子项已通过，以上原始延期决定保留历史语境。当前仍延期 W1/REAL-04；CARRY-01 两家各 0/40 继续单独记录。
+2026-10-18 后续补测：用户提供官方 API key 并选择 Haiku 5.5 / low 后，REAL-03/TOKEN-01 的官方 API 子项已通过，以上原始延期决定保留历史语境。当前仍延期 W1/REAL-04；CARRY-01 已完成 Anthropic 40/40，OpenAI 按用户本轮只测 Claude 的决定保留 0/40，单独非阻塞。

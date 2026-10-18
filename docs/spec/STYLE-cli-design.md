@@ -4,7 +4,7 @@
 
 状态（2026-10-18）：M1、M2 已关闭并只读归档；M2 的 native、stats、跨包去重、Claude rules/迁移和 replace 回退及真实验收事实保留，见 [M2 任务](../STYLE-M2-TASKS.md)与[测试矩阵](../STYLE-M2-TESTS.md)。
 
-当前里程碑 M3 于 2026-10-18 按用户确认范围完成并关闭，原关闭验收覆盖：D0–D11、全部实现/A0–A18、两家各三条本地真实路线、本地 exact 和最终 Ubuntu/macOS/Windows CI 均通过，[最终报告](../review/M3-FINAL-2026-10-18.json)与[文档关闭核对](../review/M3-DOCS-01-2026-10-18.json)固定证据。任务、测试和隔离操作见 [M3 清单](../STYLE-M3-TASKS.md)、[矩阵](../STYLE-M3-TESTS.md)、[手册](../STYLE-M3-MANUAL.md)。用户已于同日要求移除 Claude 云端功能，C3 取消，删除后的补充验收见[报告](../review/M3-REMOVE-01-2026-10-18.json)；W1 和 Anthropic 独立 API 仍延期，未标记通过；官方校准两家各 0/40 仍独立非阻塞。M3-RV-01 已由注册表校验关闭，D8 已将 engine 输出差异改为 adapter 能力。下一步规划新里程碑。
+当前里程碑 M3 于 2026-10-18 按用户确认范围完成并关闭，原关闭验收覆盖：D0–D11、全部实现/A0–A18、两家各三条本地真实路线、本地 exact 和最终 Ubuntu/macOS/Windows CI 均通过，[最终报告](../review/M3-FINAL-2026-10-18.json)与[文档关闭核对](../review/M3-DOCS-01-2026-10-18.json)固定证据。任务、测试和隔离操作见 [M3 清单](../STYLE-M3-TASKS.md)、[矩阵](../STYLE-M3-TESTS.md)、[手册](../STYLE-M3-MANUAL.md)。用户已于同日要求移除 Claude 云端功能，C3 取消，删除后的补充验收见[报告](../review/M3-REMOVE-01-2026-10-18.json)。W1 仍延期；Anthropic 独立 API 已补测通过，固定语料估算校准也已完成 Anthropic 40/40，OpenAI 按用户决定保留 0/40，见[计数指南](../STYLE-COUNT.md#固定语料估算校准)。M3-RV-01 已由注册表校验关闭，D8 已将 engine 输出差异改为 adapter 能力。下一步规划新里程碑。
 
 当前完整接入 Claude Code 与 Codex。Windows 支持两家 user 路线，POSIX 还支持项目及插件；本文接口示意须结合当前源码与[adapter 总览](../STYLE-ADAPTERS-CURRENT.md)阅读。
 
@@ -650,8 +650,8 @@ chars = Unicode 字符（rune）个数，精确值
 ```
 
 - 动态正文里的每个变量按占位长度算：一般变量 16 token / 64 字符；`harness.cwd` 32 token / 128 字符。
-- 结果明确标为估算，不提供百分比误差保证；U-T3 官方计数校准尚未完成，不调整现有系数。 2026-10-17 的 [M2-ALT-01](../review/M2-ALT-01-2026-10-17.md) 补齐固定 40 条语料的两种本地编码对照与既有订阅 usage；编码差异和语料偏差均单列，不代替官方计数；该 M2 补充当时未新增 `--count=exact`。
-- M3 已实现显式 `--count=exact`，用于本地编码或独立 Anthropic 计数 API；默认估算、预算和热路径保持。具体 scope、编码/模型/凭据参数及失败边界见[计数指南](../STYLE-COUNT.md)，最终本地验收见[TOKEN-01](../review/M3-TOKEN-LOCAL-2026-10-18.json)；独立 API 按用户决定延期。
+- 结果明确标为估算，不提供百分比误差保证。2026-10-18 官方 Haiku 5.5 的固定语料校准完成 40/40，逐条平均绝对误差 8.54%，合计低估 6.88%；本轮只测 Claude，OpenAI 仍 0/40，不调整现有系数，见[误差定义与结果](../STYLE-COUNT.md#固定语料估算校准)。2026-10-17 的 [M2-ALT-01](../review/M2-ALT-01-2026-10-17.md)为当时两种本地编码对照与既有订阅 usage，不代替官方计数；该 M2 补充当时未新增 `--count=exact`。
+- M3 已实现显式 `--count=exact`，用于本地编码或独立 Anthropic 计数 API；默认估算、预算和热路径保持。具体 scope、编码/模型/凭据参数及失败边界见[计数指南](../STYLE-COUNT.md)，最终本地验收见[TOKEN-01](../review/M3-TOKEN-LOCAL-2026-10-18.json)；独立 API 已由[官方补测](../review/M3-TOKEN-OFFICIAL-2026-10-18.json)通过。
 
 ### 11.2 按原生事件分组
 

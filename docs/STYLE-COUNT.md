@@ -27,6 +27,20 @@ style count rules.txt --count=exact --count-provider=anthropic --count-model=cla
 
 结果 `scope: anthropic-messages-request` 包含该最小消息请求的封装开销，披露模型、接口版本和请求摘要；它不是纯正文增量或两份请求的差值。文件空文本拒绝。没有自定义 endpoint、自动重试或重定向；15 秒超时、响应上限 1 MiB。缺 key/参数、网络、HTTP 或无效计数均报错，不静默退回估算，错误不回显服务端正文或 key。
 
-[离线 A15 报告](review/M3-A15-2026-10-18.json)覆盖独立 Python golden、两套完整词表摘要、API transport fixture 和命令兼容。Anthropic 官方 API 已于 2026-10-18 补测通过，见[真实验收](review/M3-TOKEN-OFFICIAL-2026-10-18.json)与[可复跑生产 CLI 检查](review/M3-TOKEN-OFFICIAL-VERIFY-2026-10-18.py)：count/plan/explain 共 7 项，计数 17、21、583、17，重复一致、缺 key 失败与输入保全通过。官方估算校准 CARRY-01 仍两家各 0/40。许可见[第三方说明](../third_party/README.md)。
+[离线 A15 报告](review/M3-A15-2026-10-18.json)覆盖独立 Python golden、两套完整词表摘要、API transport fixture 和命令兼容。Anthropic 官方 API 已于 2026-10-18 补测通过，见[真实验收](review/M3-TOKEN-OFFICIAL-2026-10-18.json)与[可复跑生产 CLI 检查](review/M3-TOKEN-OFFICIAL-VERIFY-2026-10-18.py)：count/plan/explain 共 7 项，计数 17、21、583、17，重复一致、缺 key 失败与输入保全通过。官方估算校准 CARRY-01 现为 Anthropic 40/40、OpenAI 0/40，详见下节。许可见[第三方说明](../third_party/README.md)。
 
-2026-10-18 用户已撤回中转方案，改用 Anthropic 官方 API；独立中转入口、配置和私有临时测试材料已清理，见[官方接入准备](review/M3-TOKEN-OFFICIAL-SETUP-2026-10-18.json)。此前[中转兼容结果](review/M3-TOKEN-RELAY-2026-10-18.json)仅保留历史事实，不作为当前接入步骤或官方验收。官方真实产品计数现已通过，REAL-03/TOKEN-01 关闭；历史中转结果不计入官方校准，CARRY-01 仍两家各 0/40。
+2026-10-18 用户已撤回中转方案，改用 Anthropic 官方 API；独立中转入口、配置和私有临时测试材料已清理，见[官方接入准备](review/M3-TOKEN-OFFICIAL-SETUP-2026-10-18.json)。此前[中转兼容结果](review/M3-TOKEN-RELAY-2026-10-18.json)仅保留历史事实，不作为当前接入步骤或官方验收。官方真实产品计数现已通过，REAL-03/TOKEN-01 关闭；历史中转结果不计入官方校准。
+
+## 固定语料估算校准
+
+2026-10-18 按用户“先只测试claudecode”的范围，用官方 `claude-haiku-5-5` 完成固定 40 条规则的校准。估算取自已验生产 CLI `plan`；官方请求保留相同 user message 和 system 前缀，只加入单条规则，以“加入规则后计数 − 空规则基线计数”作为参考。基线为 24；40 条计数与基线/中英文首尾共 5 项复测均成功，46 次请求全部 HTTP 200，复测值一致。原始语料与生产估算系数保持不变。
+
+| 语料 | 条数 | STYLE 估算合计 | 官方增量合计 | 合计相对偏差 | 逐条平均绝对误差 |
+|---|---:|---:|---:|---:|---:|
+| 英文 | 20 | 626 | 643 | -2.64% | 6.21% |
+| 中文 | 20 | 579 | 651 | -11.06% | 10.87% |
+| 全部 | 40 | 1,205 | 1,294 | -6.88% | 8.54% |
+
+合计相对偏差为 `(估算合计 − 官方增量合计) / 官方增量合计`，负数表示低估。逐条平均绝对误差先对每条计算 `abs(估算 − 官方增量) / 官方增量` 再平均；最大为 18.92%，p95 为 17.95%。28 条低估、8 条高估、4 条一致，中文 20 条全部低估。结果只描述这组短规则及指定模型，没有约定准确率通过阈值，不据此承诺其他语料的误差范围或自动调整预算系数。
+
+逐条文本/请求/响应摘要与计数见[实测报告](review/M3-CARRY-01-ANTHROPIC-2026-10-18.json)，重跑方式见[采集器说明](../testdata/manual/README.md#m3-carry-01claude-官方校准)。此项使用官方计数接口，不生成回复，思考强度不参与计数；不作为新的 Claude Code hook 投递验收。OpenAI 依用户决定保留 0/40，CARRY-01 整体为部分完成。

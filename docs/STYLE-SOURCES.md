@@ -154,4 +154,4 @@ PYTHONDONTWRITEBYTECODE=1 python3 scripts/check_m3_frozen.py \
   --report "$m3_build_dir/frozen-gate.json"
 ```
 
-A5 的命令、源码/二进制摘要、失败修正及边界记录见 [完整报告](review/M3-A5-2026-10-17.json)。真实 B2/C2、Windows、远端 CI 和官方两家各 0/40 仍待验；D3 开始前按用户要求通知。
+A5 的命令、源码/二进制摘要、失败修正及边界记录见 [完整报告](review/M3-A5-2026-10-17.json)。该次完成时真实 B2/C2、Windows、远端 CI 和官方计数均待验，D3 开始前按用户要求通知；后续进展见 [M3 测试矩阵](STYLE-M3-TESTS.md)，当前校准结果见[计数指南](STYLE-COUNT.md#固定语料估算校准)。

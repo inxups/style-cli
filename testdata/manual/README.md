@@ -92,6 +92,24 @@ PYTHONDONTWRITEBYTECODE=1 python3 testdata/manual/calibrate_tokens.py \
 
 已核对官方 [OpenAI counting tokens](https://developers.openai.com/api/docs/guides/token-counting) 和 [Claude token counting](https://platform.claude.com/docs/en/build-with-claude/token-counting)。计数接口的结果按其语义记录，不代表实际会话账单；计数模型若不可用，保留失败，另起有明确模型的新报告。
 
+### M3-CARRY-01：Claude 官方校准
+
+2026-10-18 用户选择本轮只测 Claude。[M3 采集器](../../docs/review/M3-CARRY-01-CALIBRATE-2026-10-18.py)复用上述固定语料、同结构请求与生产 `plan` 估算，读取仓库外官方 settings 中的 `env.ANTHROPIC_API_KEY` 和 `model`。先核对已验二进制及全部构建输入，使用独立 HOME/STYLE/Codex/Claude 目录和版本 fixture；后者不代表真实 hook 投递。固定官方 HTTPS、系统 CA 校验、关闭代理/重定向，无自动重试；私有逐请求日志实时保存，不含 key 或原始 headers。
+
+```sh
+env -u OPENAI_API_KEY PYTHONDONTWRITEBYTECODE=1 python3 \
+  docs/review/M3-CARRY-01-CALIBRATE-2026-10-18.py \
+  --anthropic-settings /Users/inxups/.claude-style-official/settings.json \
+  --output /tmp/new-claude-calibration.json
+```
+
+每次使用新输出路径以保留旧证据。共 46 次官方计数：空基线、40 条单规则及空基线/中英文首尾 5 次复测；不调用生成接口。继承的双供应商采集器在 OpenAI 未测时退出 2、`passed=false`；应核对 Anthropic `completed=40`、`available_provider_checks_passed=true` 和五项复测，不能将整体未完成误判为 Claude 失败或把整体标为通过。此次结果见[脱敏报告](../../docs/review/M3-CARRY-01-ANTHROPIC-2026-10-18.json)与[误差说明](../../docs/STYLE-COUNT.md#固定语料估算校准)。[离线核对工具](../../docs/review/M3-CARRY-01-VERIFY-2026-10-18.py)重算逐条/汇总结果、检查文档与历史保全，无 API 请求。
+
+```sh
+PYTHONDONTWRITEBYTECODE=1 python3 \
+  docs/review/M3-CARRY-01-VERIFY-2026-10-18.py /tmp/claude-calibration-check.json
+```
+
 
 ### 无 API key 的补充对照（M2-ALT-01）
 

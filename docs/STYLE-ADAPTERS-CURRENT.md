@@ -2,7 +2,7 @@
 
 更新时间：2026-10-18。M3 已按确认范围完成并关闭，见[最终报告](review/M3-FINAL-2026-10-18.json)及[文档关闭核对](review/M3-DOCS-01-2026-10-18.json)。原关闭验收的 D0–D11、T00–T80/A0–A18、两家各三条本地真实路线、本地 exact、三平台 CI 和旧版本兼容均通过；源码与二进制摘要逐报告固定。用户已移除 Claude 云端能力，C3 取消，补充回归见[删除报告](review/M3-REMOVE-01-2026-10-18.json)；W1 和 Anthropic 独立 API 保持待验，官方校准各0/40仍非阻塞。范围、状态和隔离步骤见[M3 任务](STYLE-M3-TASKS.md)、[测试矩阵](STYLE-M3-TESTS.md)、[手册](STYLE-M3-MANUAL.md)。
 
-M1/M2 保持只读历史，M2 native/stats/去重/rules/replace 与真实验收事实继续有效。用户移除 Claude 云端能力；W1 实际 Windows harness 和 Anthropic 独立 API 继续延期；官方校准两家各0/40继续非阻塞。本地 exact 编码不替代官方模型校准。文中历史 provider 字段仍表示 harness，新的 when.provider 则表示模型服务配置请求。
+M1/M2 保持只读历史，M2 native/stats/去重/rules/replace 与真实验收事实继续有效。用户移除 Claude 云端能力；W1 实际 Windows harness 继续延期。Anthropic 独立 API 已通过补测，官方估算校准已完成 Anthropic 40/40，OpenAI 依用户决定保留 0/40、非阻塞，见[计数指南](STYLE-COUNT.md#固定语料估算校准)。本地 exact 编码不替代官方模型校准。文中历史 provider 字段仍表示 harness，新的 when.provider 则表示模型服务配置请求。
 
 agenthooks 保留协议、事件、原生输出、配置渲染、owner/信任合并与文件事务职责；adapter 提供平台/数据/能力事实，core 保持通用匹配、预算和状态。M3 已移除名称校验白名单及 engine 的具体 Claude 输出分支，分别由注册表目录和输出能力替代。
 

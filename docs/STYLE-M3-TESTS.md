@@ -6,7 +6,7 @@
 
 本文件记录 M3 测试矩阵与当前证据状态，任务及依赖见 [STYLE-M3-TASKS.md](STYLE-M3-TASKS.md)，运行记录追加到 [PROGRESS.md](PROGRESS.md)。[M1 测试](STYLE-M1-TESTS.md)、[M2 测试](STYLE-M2-TESTS.md) 已只读归档；历史通过结果不替代 M3 的新验收。
 
-当前状态：M3 原批准范围已于 2026-10-18 完成并关闭，原[最终报告](review/M3-FINAL-2026-10-18.json)与[文档核对](review/M3-DOCS-01-2026-10-18.json)保留原提交证据。当前补充移除 Claude 云端，[M3-A19](review/M3-REMOVE-01-2026-10-18.json)已通过；C3 已取消，不计通过。W1 保持待验，Anthropic 独立 API 产品计数已由 TOKEN-01 补测通过；M3-CARRY-01 仍两家各 0/40、非阻塞。
+当前状态：M3 原批准范围已于 2026-10-18 完成并关闭，原[最终报告](review/M3-FINAL-2026-10-18.json)与[文档核对](review/M3-DOCS-01-2026-10-18.json)保留原提交证据。当前补充移除 Claude 云端，[M3-A19](review/M3-REMOVE-01-2026-10-18.json)已通过；C3 已取消，不计通过。W1 保持待验，Anthropic 独立 API 产品计数已由 TOKEN-01 补测通过；M3-CARRY-01 已完成 Anthropic 40/40，OpenAI 依用户决定保留 0/40，部分完成、非阻塞。
 
 ## 状态与验收规则
 
@@ -68,7 +68,7 @@ PYTHONDONTWRITEBYTECODE=1 python3 scripts/check_m2_rules_migration.py \
 
 ## 遗留项
 
-- [?] **M3-CARRY-01 官方校准**（M3-CARRY-01，承接 M2-CARRY-01）：固定 40 条中英各半语料，在两家官方计数接口上取得同结构基线增量，逐条对照生产估算。Anthropic 官方 key 已通过本轮 exact 产品验收，但固定 40 条估算校准尚未执行，当前两家各 0/40；依 [采集器说明](../testdata/manual/README.md) 和 [原阻塞报告](review/M1-FINAL-09-COUNTING-BLOCKED-2026-10-16.json) 有条件时重跑，固定模型/语料/请求摘要并保留失败。非阻塞状态沿用，不因建档通过，也不以 [M2 本地编码/订阅补充](review/M2-ALT-01-2026-10-17.md) 替代。
+- [~] **M3-CARRY-01 官方校准**（M3-CARRY-01，承接 M2-CARRY-01）：固定 40 条中英各半语料，在两家官方计数接口上取得同结构基线增量，逐条对照生产估算。2026-10-18 [Anthropic 实测](review/M3-CARRY-01-ANTHROPIC-2026-10-18.json)完成 Haiku 5.5 的 40/40、空基线及中英文各首尾两条 5/5 复测；46 次请求 HTTP 200，基线 24，全部规则增量为正。生产估算 1,205、官方增量 1,294；逐条平均绝对误差整体 8.54% / 英文 6.21% / 中文 10.87%，最大 18.92%；中文 20 条全部低估。固定语料/请求/响应/采集器/生产源码摘要，离线逐项重算与输入保全检查通过。测量完成不表示达成误差阈值；系数保持原样。OpenAI 按用户“先只测试claudecode”决定保留 0/40，整体不关闭；见 [采集器说明](../testdata/manual/README.md)，原阻塞与 M2 补充保留历史。
 
 ## M3a：离线验收
 
@@ -141,4 +141,4 @@ M3-A2 缓存补充：Codex 0.159.3 原生插件使用独立缓存，三次真实
 
 六路线最终超时/中断复验使用缓存修复后二进制，见[最终报告](review/M3-PROBE-NEGATIVE-FINAL-2026-10-18.json)：12 次预期失败、有效 index 捕获、完整 cleanup 和配置/项目恢复均通过。
 
-2026-10-18 后续补测：用户提供官方 API key 并选择 Haiku 5.5 / low 后，REAL-03/TOKEN-01 的官方 API 子项已通过，以上原始延期决定保留历史语境。当前仍延期 W1/REAL-04；CARRY-01 两家各 0/40 继续单独记录。
+2026-10-18 后续补测：用户提供官方 API key 并选择 Haiku 5.5 / low 后，REAL-03/TOKEN-01 的官方 API 子项已通过，以上原始延期决定保留历史语境。当前仍延期 W1/REAL-04；CARRY-01 已完成 Anthropic 40/40，OpenAI 按用户本轮只测 Claude 的决定保留 0/40，整体保持 `[~]`。

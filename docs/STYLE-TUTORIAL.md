@@ -1,6 +1,6 @@
 # STYLE CLI 使用教程
 
-更新时间：2026-10-18。当前里程碑为 M3，基线、全部功能实现与 A0–A18 离线/升级验收已通过；Windows 原生自动化三平台结果见 [A17](review/M3-A17-2026-10-18.json)。真实 B/C 与最终 CI 的进度以 [M3 任务](STYLE-M3-TASKS.md)和[测试矩阵](STYLE-M3-TESTS.md)为准。M1/M2 已关闭并保留只读历史；官方固定语料计数仍两家各 0/40、非阻塞，精确本地编码不替代模型校准。
+更新时间：2026-10-18。当前里程碑为 M3，基线、全部功能实现与 A0–A18 离线/升级验收已通过；Windows 原生自动化三平台结果见 [A17](review/M3-A17-2026-10-18.json)。真实 B/C 与最终 CI 的进度以 [M3 任务](STYLE-M3-TASKS.md)和[测试矩阵](STYLE-M3-TESTS.md)为准。M1/M2 已关闭并保留只读历史；官方固定语料校准已完成 Anthropic 40/40，OpenAI 按用户决定保留 0/40、非阻塞，精确本地编码不替代模型校准。
 
 本教程面向第一次使用 STYLE 的人，从构建到卸载走完整生命周期。早期示例输出来自隔离沙箱，路径已缩写；M3 命令和边界在第 16 节汇总，验证依据链接到各功能指南。规则语义以[规范](spec/STYLE-spec.md)为准，实现职责见 [adapter 总览](STYLE-ADAPTERS-CURRENT.md)，当前真实环境步骤见 [M3 手册](STYLE-M3-MANUAL.md)。
 
@@ -876,7 +876,7 @@ style plan ./pkg --harness codex,claude-code --json
 - Codex 中途 `/model` 修改 effort 的可靠观测未纳入 M3；provider 表示配置请求，不能证明网关实际上游或账单主体。
 - native 保留 event/matcher/command/timeout 四字段；async、onFailure、HTTP/MCP/prompt/agent 类型明确拒绝，见[native 指南](STYLE-NATIVE.md)。
 - Windows 支持两家 user 路线与原生 exe；项目/插件路线和作者 POSIX native 不支持。自动化通过不等于 W1 的实际 harness 验收。
-- Claude 托管云端功能已由用户移除，C3 取消。Windows 实际主机/harness W1 和 Anthropic 独立计数 API 仍延期；不得用本地 fixture 或编码对照替代。官方两家各 0/40 另为非阻塞遗留。
+- Claude 托管云端功能已由用户移除，C3 取消。Windows 实际主机/harness W1 仍延期；Anthropic 独立计数 API 已通过真实补测，固定语料校准也已完成 40/40，见[计数指南](STYLE-COUNT.md#固定语料估算校准)。OpenAI 校准依用户决定保留 0/40、非阻塞。
 - 原生插件登记仍需按报告命令执行；文件存在、登记 enabled、回调 observed 和完整正文投递分别核对。Claude rules 的 compact 行为不由新会话验收外推。
 
 ## 16. M3 工作流程

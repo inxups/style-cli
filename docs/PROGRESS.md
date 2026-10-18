@@ -2127,3 +2127,11 @@ Codex 0.159.3 与实际配置模型服务、固定生产 STYLE 二进制，在�
 - 已验生产二进制 SHA256 fd548913f8a62018f73acd85d64a0b4004f9d8133ff0a0f1549f475497ea1ca6 与全部构建源码输入逐项一致，无需重建。新隔离 HOME/STYLE_HOME/CODEX_HOME/CLAUDE_CONFIG_DIR 环境、不继承 CODEX_SANDBOX/provider/effort/proxy，仅注入官方 key；count/plan/explain 共 7 项检查、7 次官方 Count tokens 请求通过。英文/中文/较长混合/英文重复分别 17、21、583、17，文本/请求摘要、模型/版本/scope、重复稳定、缺 key 失败后恢复和输入 bytes/mode/mtime/inode 保全通过；plan 排除 native 输出。版本 fixture 不作为新增 harness 投递证据。
 - 证据见[官方补测报告](review/M3-TOKEN-OFFICIAL-2026-10-18.json)与[可复跑检查](review/M3-TOKEN-OFFICIAL-VERIFY-2026-10-18.py)。结合既有本地编码证据，关闭 REAL-03/TOKEN-01，计数指南/当前状态/手册同步；原延期决定、M1/M2 归档和既有报告保留。W1/REAL-04 继续延期；此次计数不是固定 40 条语料的估算校准，CARRY-01 两家各 0/40 仍非阻塞。
 - 文档核对使用[可复跑关闭检查](review/M3-TOKEN-OFFICIAL-DOCS-VERIFY-2026-10-18.py)：45 项任务/40 项测试及依赖映射、当前链接/锚点/围栏、77 份归档/199 份既有评审/104 份 golden 保全、日志自当前 HEAD 仅追加、299 个构建源码摘要、model/low 配置和私有 key 未进入变更均通过；git diff --check 通过。业务代码和 Go 依赖未变，不重复既有 Go 全量或模型调用。
+
+## 2026-10-18 M3-CARRY-01 Claude 官方估算校准
+
+- 用户要求开始估算误差校准，随后明确“先只测试claudecode”。固定原有 40 条中英各半语料及同结构基线方法，使用已配置的官方 claude-haiku-5-5；只调用官方计数接口，不生成模型回复、不读取订阅/OAuth 或日常 Codex 令牌。OpenAI 无 key 且按用户决定延期，本轮没有 OpenAI 请求；其 0/40 保留，CARRY-01 改为部分完成 `[~]`，不整体关闭。
+- [实测报告](review/M3-CARRY-01-ANTHROPIC-2026-10-18.json)记录 40/40 官方结果、文本/请求/响应摘要和 5/5 稳定性复测，46 次请求全部 HTTP 200。固定空基线 24，生产估算合计 1,205、官方增量 1,294，合计相对偏差 -6.88%；逐条平均绝对误差整体 8.54%、英文 6.21%、中文 10.87%，最大 18.92%、p95 17.95%。28 条低估/8 条高估/4 条一致，中文 20 条全部低估；没有准确率通过阈值，不调整生产估算系数。
+- [M3 采集器](review/M3-CARRY-01-CALIBRATE-2026-10-18.py)复用旧请求/语料与生产 plan；已验删除云端后二进制及全部 299 个构建输入匹配。独立 HOME/STYLE/Codex/Claude/版本 fixture，清理继承环境，固定 HTTPS/系统 CA、关闭代理/重定向及自动重试；逐请求回执实时保存在私有临时文件，key 与原始 headers 不入库。配置和 fixture 输入原样；版本 fixture 不作为新增 harness 投递验收。旧双供应商采集器因 OpenAI 未测退出 2，报告明确区分整体未完成和 Claude 测量成功，不将该退出码当作 Claude 失败或整体通过。
+- 既有采集器 3 项离线自测与独立指标算例通过；[离线复核](review/M3-CARRY-01-VERIFY-2026-10-18.py)逐条重建请求/增量并独立重算中英/整体指标、关联全部回执，重新运行两家生产 plan 确认估算与输入保全。当前任务/矩阵/规范/指南同步，M1/M2 归档、既有评审、golden 和固定语料保持原样，PROGRESS 仅追加，凭据未进入改动。生产 Go/agenthooks/依赖未变，不重复 Go 全量或真实模型调用；最终检查与提交结果见本节后续证据。
+- 最终验证：45 项任务/40 项测试映射、12 份当前 Markdown 的本地链接/锚点/围栏、77 份归档/202 份既有评审/104 份 golden 保全、进度仅追加、299 个构建输入、逐条计数/三组误差指标/46 份回执/5 项复测及两家生产 plan 独立复核通过；凭据未入库，git diff --check 通过。[核对结果](review/M3-CARRY-01-DOCS-2026-10-18.json)保留可复跑证据。
