@@ -6,7 +6,7 @@
 
 本文件是 STYLE CLI M3 的持久化任务清单。每项完成后同步状态和可重复证据，测试矩阵见 [STYLE-M3-TESTS.md](STYLE-M3-TESTS.md)，执行记录追加到 [PROGRESS.md](PROGRESS.md)。M1、M2 已关闭并只读归档；上一里程碑的事实见 [M2 任务清单](STYLE-M2-TASKS.md)、[M2 测试矩阵](STYLE-M2-TESTS.md) 和 [M2 总验收报告](review/M2-DOCS-01-2026-10-17.json)。
 
-当前总状态：M3 于 2026-10-18 按用户确认的范围完成并关闭，[总验收](review/M3-FINAL-2026-10-18.json)和[文档关闭报告](review/M3-DOCS-01-2026-10-18.json)保留原受验源码的证据。补充 [M3-REMOVE-01 报告](review/M3-REMOVE-01-2026-10-18.json)验证删除 Claude 云端能力；本地两家各三条路线保留，C3 已取消。W1/REAL-04 仍待验；Anthropic 独立 API 产品计数验收已由 REAL-03 补测通过。官方估算校准现为 Anthropic 40/40、OpenAI 0/40；OpenAI 自定义 API 配置正在准备，尚未请求，CARRY-01 保持部分完成、独立非阻塞。
+当前总状态：M3 于 2026-10-18 按用户确认的范围完成并关闭，[总验收](review/M3-FINAL-2026-10-18.json)和[文档关闭报告](review/M3-DOCS-01-2026-10-18.json)保留原受验源码的证据。补充 [M3-REMOVE-01 报告](review/M3-REMOVE-01-2026-10-18.json)验证删除 Claude 云端能力；本地两家各三条路线保留，C3 已取消。W1/REAL-04 仍待验；Anthropic 独立 API 产品计数验收已由 REAL-03 补测通过。官方估算校准现为 Anthropic 40/40、OpenAI 0/40；OpenAI 自定义 Responses 已由隔离原生 Codex CLI 验证连接；官方校准仍为 0/40，CARRY-01 保持部分完成、独立非阻塞。
 
 ## 范围与推进顺序
 
@@ -48,7 +48,9 @@ M3 继续完整支持 Codex 与 Claude Code；其他 harness 的完整接入留�
 - [~] **M3-CARRY-01 官方 token 计数**（承接 M2-CARRY-01，原 M1-FINAL-09）：目标是完成固定 40 条、中英各半语料的两家官方同结构基线增量对照。依赖：独立 API key 和可用计数模型。产出：模型、语料/请求摘要、逐条计数及与生产估算的比较。测试：M3-CARRY-01。2026-10-18 用户要求先只测 Claude：[Anthropic 报告](review/M3-CARRY-01-ANTHROPIC-2026-10-18.json)完成 Haiku 5.5 的 40/40 与 5/5 稳定性复测，46 次官方计数全部 HTTP 200；生产估算 1,205、官方增量 1,294，合计低估 6.88%，逐条平均绝对误差 8.54%、最大 18.92%。不设准确率通过阈值、不改生产系数。OpenAI 依用户决定保留 0/40，本项不整体关闭。原阻塞见 [报告](review/M1-FINAL-09-COUNTING-BLOCKED-2026-10-16.json)，[M2 补充验证](review/M2-ALT-01-2026-10-17.md) 不替代官方结果。
 - [x] **M3-RV-01 核心 harness 名硬编码**（承接 M2-RV-01）：目标是消除 `when.harness.name`、`requires.harness`、`recommends` 校验对两家名称的写死依赖。依赖：M3-D0、M3-T00。产出：注册表驱动的统一校验和回归证据；已由 M3-T00 修复并通过 M3-A0，见 [验收报告](review/M3-A0-2026-10-17.json)；三处校验不再维护内置名称名单。engine 的两处既有 Claude 输出判断继续由 D8 评估，不属于本风险的名称成员关系范围。测试：M3-A0。来源：[条件校验](../core/spec/validate_conditions.go)、[包级校验](../core/spec/validate_package.go)、[注册表](../internal/adapter/registry.go)。
 
-2026-10-18 后续接入：用户要求配置可自定义请求地址的 OpenAI API，已建立仓库外私有配置模板；填写完整 URL、API key 和模型后先验证接口兼容性。此次仅准备配置，尚无 OpenAI 请求，官方校准仍为 0/40；自定义服务的结果另记来源，不自动关闭官方遗留项。见[配置说明](../testdata/manual/README.md#m3-carry-01openai-自定义-api-配置)与[准备报告](review/M3-OPENAI-CUSTOM-SETUP-2026-10-18.json)。
+2026-10-18 后续接入：用户要求配置可自定义请求地址的 OpenAI API，已建立仓库外私有配置模板；填写完整 URL、API key 和模型后先验证接口兼容性。配置准备阶段未请求服务，官方校准仍为 0/40；自定义服务的结果另记来源，不自动关闭官方遗留项。见[配置说明](../testdata/manual/README.md#m3-carry-01openai-自定义-api-配置)与[准备报告](review/M3-OPENAI-CUSTOM-SETUP-2026-10-18.json)。
+
+后续用户明确使用 codex-cli、隔离环境、直接 Responses。[原生连接报告](review/M3-OPENAI-CODEX-2026-10-18.json)记录 codex-cli 0.159.3 / gpt-6.1-sol / low 成功返回固定标记，独立 HOME/CODEX_HOME/空目录、日常配置原样且零工具调用。已建立独立 `codex-style-openai` 入口，生成配置与真实受验配置一致，7 项离线初始化/环境/无效配置检查通过。此次只验证连接对话，未做自定义或官方 40 条校准。
 
 M3-CARRY-01 与 `--count=exact` 产品验收分别记录；前者的非阻塞决定不自动豁免后者的真实能力验证。其他新增环境阻塞也不自动豁免里程碑验收。2026-10-17 用户另明确延期 Claude 托管云端、Windows 主机真实运行、Anthropic 独立 API 计数（见本文件末尾范围决定）。
 

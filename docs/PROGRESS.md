@@ -2141,3 +2141,11 @@ Codex 0.159.3 与实际配置模型服务、固定生产 STYLE 二进制，在�
 - 用户要求开始配置 OpenAI，支持自定义请求链接与 API key。建立仓库外 `/Users/inxups/.style-openai/settings.json`，三个字段为 `request_url`、`api_key`、`model`，创建时均留空；目录 0700、文件 0600，JSON 结构和日常 Codex/Claude/官方 Claude 配置保全检查通过。已提供填写位置，凭据不进仓库、聊天或命令参数。见[准备报告](review/M3-OPENAI-CUSTOM-SETUP-2026-10-18.json)。
 - 本轮仅建配置模板，尚未发起 OpenAI 或自定义 API 请求；填写后先核对完整 endpoint 和协议，再测试兼容性。既有官方采集器、生产 Go/agenthooks/依赖和估算系数未改；自定义服务的测量单列来源，OpenAI 官方 0/40、Anthropic 40/40、CARRY-01 部分完成状态不变。
 - 用户回复已填写后，三项均有值；地址为自定义 HTTPS 根地址，模型为 gpt-6.1-sol，接口路径待兼容性预检确认。配置准备检查通过：45 项任务/40 项测试映射与状态、320 个本地链接/锚点、54 个围栏标记、77 份归档/206 份既有评审/104 份 golden 保全、日志仅追加、私有 JSON/权限及 key/地址未入库，git diff --check 通过。仅文档和仓库外配置准备，不重复 Go 全量。
+
+## 2026-10-18 M3-CARRY-01 原生 Codex 自定义 Responses 连接
+
+- 用户明确要求“用codex-cli，隔离我的环境，直接用Responses”。用本机 codex-cli 0.159.3、用户配置的 gpt-6.1-sol / low，在全新 HOME/CODEX_HOME/XDG/tmp 和空工作目录中原生 exec；自定义 HTTPS 根地址规范为 `/v1` base，由 Codex 直接 Responses，无自建 HTTP 转发器/协议适配。只请求固定短句，关闭 shell 工具、搜索、HTTP/stream 重试，read-only、ephemeral、清理继承的 provider/proxy/OAuth/CODEX_SANDBOX。
+- 约 7,964ms 完成、退出 0，准确返回 STYLE_OPENAI_OK，一次完成 turn，无错误事件或工具调用；CLI 自报 input 9,446 / output 33 / cached 0，不作为账单或规则增量测量。日常 Codex/Claude/官方 Claude 配置 bytes/mode/mtime/inode 与私有 settings 原样。模型名为配置值，上游身份未独立核实；原始日志仅私有目录，公开材料不含 key/地址/headers。详见[报告](review/M3-OPENAI-CODEX-2026-10-18.json)与[可复跑采集器](review/M3-OPENAI-CODEX-2026-10-18.py)。
+- 建立仓库外 `codex-style-openai` 原生启动入口，每次读取私有 settings，独立 HOME/CODEX_HOME/XDG/tmp，key 仅进程环境，生成 TOML 不含 key。目录/启动器 0700、配置 0600；版本检查通过，生成配置逐字节等于上述真实受验配置。7 项离线检查覆盖根地址/versioned base/完整 Responses URL、环境清理/参数传递/私钥不写配置，以及 HTTP/查询/URL 内凭据/非法 key 拒绝。此入口保留 low、只读与工具关闭的验收设置。
+- 只完成自定义 Responses 连接配置，未调用独立计数或固定 40 条；Anthropic 官方 40/40、OpenAI 官方 0/40 与 CARRY-01 `[~]` 保持。无生产 Go/agenthooks/依赖变化，不重复 Go 全量；M1/M2 和既有验收证据保留。
+- 最终核对通过：45 项任务/40 项测试状态保持，327 个本地链接/锚点与 56 个围栏标记、两份 Python AST、77 份归档/207 份既有评审/104 份 golden、日志仅追加、安装启动器/源码一致及私有权限、真实固定回复/日志摘要/配置等价、凭据和站点未入库；git diff --check 通过。没有重复 API 调用或 Go 构建，具体结果保存在原生报告。

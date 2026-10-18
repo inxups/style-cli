@@ -115,7 +115,15 @@ PYTHONDONTWRITEBYTECODE=1 python3 \
 
 2026-10-18 用户要求开始配置可自定义请求链接的 OpenAI API。独立模板位于 `/Users/inxups/.style-openai/settings.json`，目录权限 0700、文件权限 0600。填写 `request_url`（完整请求 URL，包含接口路径）、`api_key` 和 `model`；密钥仅保存在该仓库外文件，不发送到聊天或写入命令参数。创建时三个值为空，用户随后已填写；准备阶段尚未调用服务。
 
-计数接口使用实际支持的完整地址；若服务只支持 Responses 生成或 Chat Completions，也填写实际 endpoint，下一步先确认协议和兼容性。现有官方校准采集器仍固定官方地址，尚未读取此模板；不将生成接口当计数接口调用，不自动把自定义结果登记为官方 40 条校准。此步骤只准备配置，日常 Codex、Claude 和已有官方 Claude profile 保持原样。见[准备报告](../../docs/review/M3-OPENAI-CUSTOM-SETUP-2026-10-18.json)。
+用户随后指定用原生 codex-cli、隔离日常环境、直接 Responses。当前 `request_url` 填的是 HTTPS 根地址，独立入口将其规范为 `/v1` base URL，由原生 Codex 请求 Responses；也接受带 `/v1` 的 base URL 或完整 `/v1/responses` 地址。已成功完成固定回复连接验证，见[原生报告](../../docs/review/M3-OPENAI-CODEX-2026-10-18.json)与[可复跑采集器](../../docs/review/M3-OPENAI-CODEX-2026-10-18.py)。独立入口为 `codex-style-openai`，源码见[启动器](../../docs/review/M3-OPENAI-CODEX-LAUNCHER-2026-10-18.py)，每次读取私有 JSON 后直接执行本机 Codex；没有 HTTP 转发器。
+
+```sh
+codex-style-openai
+```
+
+配置和会话位于独立 `/Users/inxups/.style-openai/codex`，HOME/XDG/tmp 同样隔离；key 只注入专用进程环境，不写入生成的 TOML。当前验收配置为 low、read-only，关闭 shell 工具/网页搜索/重试；日常 Codex、Claude 和已有官方 Claude profile 原样。修改私有 JSON 的地址、key 或模型后，下次启动生效。
+
+此次是自定义服务的原生对话连接测试，未做 40 条计数校准；现有官方校准采集器仍固定官方地址，不读取此模板，不将自定义结果自动登记为官方结果。[准备报告](../../docs/review/M3-OPENAI-CUSTOM-SETUP-2026-10-18.json)保留未请求时的历史快照。
 
 ### 无 API key 的补充对照（M2-ALT-01）
 
