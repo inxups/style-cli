@@ -1,0 +1,175 @@
+{
+  "format": 1,
+  "date": "2026-10-18",
+  "task": "M3-CARRY-01",
+  "test": "M3-CARRY-01",
+  "source_commit": "47c64493272ce888a6ca4da6aabdc6b43d1d0044",
+  "collector_sha256": "0b9f1bc8ed42ef1f036a82c498cd017cb5a8beeb0410eedac27d0d391ec8c213",
+  "measurement": "Native Codex turn.completed input_tokens minus the fixed empty-rule baseline. Only model_instructions_file content varies; cached input is recorded, never subtracted.",
+  "service": "user-configured-custom-responses",
+  "model": "gpt-6.1-sol",
+  "model_is_configured_name": true,
+  "upstream_model_identity_independently_verified": false,
+  "cli_version": "codex-cli 0.159.3",
+  "wire_api": "responses",
+  "reasoning_effort": "low",
+  "corpus_sha256": "e73e9f3b638495de3836a1861d4639a20d9d6b82a2c23ace24f8355e3dc3afd5",
+  "style_binary_sha256": "fd548913f8a62018f73acd85d64a0b4004f9d8133ff0a0f1549f475497ea1ca6",
+  "source_inputs_verified": 299,
+  "production_plan_inputs_unchanged": true,
+  "user_message_sha256": "f3daf2941865055833e9db4c9bab5d1280281952bb1699514a28ee4c67256573",
+  "private_directory": "/private/tmp/style-m3-carry-codex-native-20261018",
+  "native_invocations": [
+    {
+      "label": "baseline-initial",
+      "instructions_sha256": "a2774596ab03ef9121dc46429cef735fc9311c501bc4c48597202ad945b559c1",
+      "config_template_sha256": "1b2aee74e16c87c9dff96dc360acd5dc6bb8407f1422f9ca4284a9ef67e04255",
+      "private_run_directory": "/private/tmp/style-m3-carry-codex-native-20261018/runs/000",
+      "exit_code": 0,
+      "duration_ms": 10186,
+      "raw_stdout_sha256": "7e1712bd127242b8b50749beca3b0dc3cdbe211edead917012ef9405eeda23f0",
+      "raw_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "usage": {
+        "input_tokens": 5142,
+        "cached_input_tokens": 0,
+        "output_tokens": 188
+      },
+      "working_files_unchanged": true,
+      "instructions_unchanged": true,
+      "passed": true
+    },
+    {
+      "label": "baseline-preflight-repeat",
+      "instructions_sha256": "a2774596ab03ef9121dc46429cef735fc9311c501bc4c48597202ad945b559c1",
+      "config_template_sha256": "1b2aee74e16c87c9dff96dc360acd5dc6bb8407f1422f9ca4284a9ef67e04255",
+      "private_run_directory": "/private/tmp/style-m3-carry-codex-native-20261018/runs/001",
+      "exit_code": 0,
+      "duration_ms": 9270,
+      "raw_stdout_sha256": "6fc259962d95b1d3935876191107625d72329c98f0fc82ce5e29bc69946bd71f",
+      "raw_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "usage": {
+        "input_tokens": 5142,
+        "cached_input_tokens": 0,
+        "output_tokens": 132
+      },
+      "working_files_unchanged": true,
+      "instructions_unchanged": true,
+      "passed": true
+    },
+    {
+      "label": "en-review-format",
+      "instructions_sha256": "e249b59a46c0b951d8c6dbd666903b2a757a9daf8840eb87d3dc3b7270c5e54e",
+      "config_template_sha256": "1b2aee74e16c87c9dff96dc360acd5dc6bb8407f1422f9ca4284a9ef67e04255",
+      "private_run_directory": "/private/tmp/style-m3-carry-codex-native-20261018/runs/002",
+      "exit_code": 0,
+      "duration_ms": 34524,
+      "raw_stdout_sha256": "037b91fd3843e4e5f902061489d2a65de9257fa434381af90d28fdf9d1e70c4b",
+      "raw_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "usage": {
+        "input_tokens": 17000,
+        "cached_input_tokens": 5096,
+        "output_tokens": 734
+      },
+      "working_files_unchanged": true,
+      "instructions_unchanged": true,
+      "passed": true
+    },
+    {
+      "label": "en-force-push",
+      "instructions_sha256": "e11685ac1afdcb70899b54dcc08ff3fc698846dae3011073f92ea57a1037141a",
+      "config_template_sha256": "1b2aee74e16c87c9dff96dc360acd5dc6bb8407f1422f9ca4284a9ef67e04255",
+      "private_run_directory": "/private/tmp/style-m3-carry-codex-native-20261018/runs/003",
+      "exit_code": 0,
+      "duration_ms": 24312,
+      "raw_stdout_sha256": "4a2fdc3f9efcb4f47ec508e2371e6dcc25c73ef1d6293bfa879deea9678322f4",
+      "raw_stderr_sha256": "4f90a192f7be6f1eab15ca18edbf67d0e0cf69a9f439ad6cb30bd6764d31b602",
+      "usage": {
+        "input_tokens": 10378,
+        "cached_input_tokens": 0,
+        "output_tokens": 276
+      },
+      "working_files_unchanged": true,
+      "instructions_unchanged": true,
+      "passed": true
+    },
+    {
+      "label": "en-test-evidence",
+      "instructions_sha256": "ba7e6a942d9be5c0b300e6df77232efaf0cc3fe38cec8314b922858a9953a268",
+      "config_template_sha256": "1b2aee74e16c87c9dff96dc360acd5dc6bb8407f1422f9ca4284a9ef67e04255",
+      "private_run_directory": "/private/tmp/style-m3-carry-codex-native-20261018/runs/004",
+      "exit_code": 0,
+      "duration_ms": 37409,
+      "raw_stdout_sha256": "727ce4359926a57682b7727762736392d9be8eb0dd7ae6fbb3e934d7a50686e3",
+      "raw_stderr_sha256": "f2c228c7bab9b07d83f67bf9e309ebb80568b0874f2a876c3ba5295b72fcc4db"
+    }
+  ],
+  "rules": [
+    {
+      "id": "en-review-format",
+      "language": "en",
+      "text_sha256": "41d012ed5d942d136951794ab78eb1627f19dbfaed999148cf488aaebf96aa9f",
+      "style_estimate": {
+        "tokens": 29,
+        "chars": 98
+      },
+      "input_tokens": 17000,
+      "incremental_input_tokens": 11858,
+      "instructions_sha256": "e249b59a46c0b951d8c6dbd666903b2a757a9daf8840eb87d3dc3b7270c5e54e",
+      "relative_error": -0.9975543936582898
+    },
+    {
+      "id": "en-force-push",
+      "language": "en",
+      "text_sha256": "02ba9bc3e7a52b19f50884749dcc6d8909168fbee866ec372470a9534b35955c",
+      "style_estimate": {
+        "tokens": 25,
+        "chars": 83
+      },
+      "input_tokens": 10378,
+      "incremental_input_tokens": 5236,
+      "instructions_sha256": "e11685ac1afdcb70899b54dcc08ff3fc698846dae3011073f92ea57a1037141a",
+      "relative_error": -0.9952253628724217
+    }
+  ],
+  "repeat_checks": [
+    {
+      "label": "baseline-preflight-repeat",
+      "expected": 5142,
+      "observed": 5142,
+      "passed": true
+    }
+  ],
+  "completed": 2,
+  "passed": false,
+  "production_coefficients_changed": false,
+  "accuracy_threshold": null,
+  "official_openai_calibration_completed": 0,
+  "anthropic_official_calibration_preserved": 40,
+  "isolation": [
+    "same fresh HOME/CODEX_HOME/XDG/tmp/work for all invocations",
+    "same native configuration, model and user message",
+    "only instruction file content varies",
+    "read-only and ephemeral",
+    "shell/multi-agent tools and search disabled",
+    "no inherited provider/OAuth/proxy/CODEX_SANDBOX",
+    "no HTTP adapter or forwarding",
+    "no request or stream retries"
+  ],
+  "limits": [
+    "Native CLI usage from the custom service is supplemental, not an official count endpoint result.",
+    "Only one completed turn with no tool use is accepted per invocation.",
+    "The CLI may include constant environment/envelope overhead; this is removed empirically by baseline subtraction.",
+    "Full serialized request bytes are not intercepted or claimed as verified.",
+    "No accuracy threshold, billing guarantee or production coefficient change."
+  ],
+  "baseline_input_tokens": 5142,
+  "failure": {
+    "error_type": "AssertionError",
+    "last_label": "en-test-evidence"
+  },
+  "daily_configuration_unchanged": true,
+  "private_settings_unchanged": true,
+  "native_invocation_count": 5,
+  "rejected_measurement_reason": "Native turn usage is cumulative across a variable number of Responses calls, even with one completed turn and no tool use. Do not use these deltas as calibration results.",
+  "controlled_measurement_accepted": false
+}

@@ -6,7 +6,7 @@
 
 本文件是 STYLE CLI M3 的持久化任务清单。每项完成后同步状态和可重复证据，测试矩阵见 [STYLE-M3-TESTS.md](STYLE-M3-TESTS.md)，执行记录追加到 [PROGRESS.md](PROGRESS.md)。M1、M2 已关闭并只读归档；上一里程碑的事实见 [M2 任务清单](STYLE-M2-TASKS.md)、[M2 测试矩阵](STYLE-M2-TESTS.md) 和 [M2 总验收报告](review/M2-DOCS-01-2026-10-17.json)。
 
-当前总状态：M3 于 2026-10-18 按用户确认的范围完成并关闭，[总验收](review/M3-FINAL-2026-10-18.json)和[文档关闭报告](review/M3-DOCS-01-2026-10-18.json)保留原受验源码的证据。补充 [M3-REMOVE-01 报告](review/M3-REMOVE-01-2026-10-18.json)验证删除 Claude 云端能力；本地两家各三条路线保留，C3 已取消。W1/REAL-04 仍待验；Anthropic 独立 API 产品计数验收已由 REAL-03 补测通过。官方估算校准现为 Anthropic 40/40、OpenAI 0/40；OpenAI 自定义 Responses 已由隔离原生 Codex CLI 验证连接；官方校准仍为 0/40，CARRY-01 保持部分完成、独立非阻塞。
+当前总状态：M3 于 2026-10-18 按用户确认的范围完成并关闭，[总验收](review/M3-FINAL-2026-10-18.json)和[文档关闭报告](review/M3-DOCS-01-2026-10-18.json)保留原受验源码的证据。补充 [M3-REMOVE-01 报告](review/M3-REMOVE-01-2026-10-18.json)验证删除 Claude 云端能力；本地两家各三条路线保留，C3 已取消。W1/REAL-04 仍待验；Anthropic 独立 API 产品计数验收已由 REAL-03 补测通过。官方估算校准现为 Anthropic 40/40、OpenAI 0/40；OpenAI 自定义 Responses 原生误差对照已跑完 40 条，其中 39 条有计数、1 条服务拒绝；官方 OpenAI 仍为 0/40，CARRY-01 保持部分完成、独立非阻塞。
 
 ## 范围与推进顺序
 
@@ -50,7 +50,9 @@ M3 继续完整支持 Codex 与 Claude Code；其他 harness 的完整接入留�
 
 2026-10-18 后续接入：用户要求配置可自定义请求地址的 OpenAI API，已建立仓库外私有配置模板；填写完整 URL、API key 和模型后先验证接口兼容性。配置准备阶段未请求服务，官方校准仍为 0/40；自定义服务的结果另记来源，不自动关闭官方遗留项。见[配置说明](../testdata/manual/README.md#m3-carry-01openai-自定义-api-配置)与[准备报告](review/M3-OPENAI-CUSTOM-SETUP-2026-10-18.json)。
 
-后续用户明确使用 codex-cli、隔离环境、直接 Responses。[原生连接报告](review/M3-OPENAI-CODEX-2026-10-18.json)记录 codex-cli 0.159.3 / gpt-6.1-sol / low 成功返回固定标记，独立 HOME/CODEX_HOME/空目录、日常配置原样且零工具调用。已建立独立 `codex-style-openai` 入口，生成配置与真实受验配置一致，7 项离线初始化/环境/无效配置检查通过。此次只验证连接对话，未做自定义或官方 40 条校准。
+后续用户明确使用 codex-cli、隔离环境、直接 Responses。[原生连接报告](review/M3-OPENAI-CODEX-2026-10-18.json)记录 codex-cli 0.159.3 / gpt-6.1-sol / low 成功返回固定标记，独立 HOME/CODEX_HOME/空目录、日常配置原样且零工具调用。已建立独立 `codex-style-openai` 入口，生成配置与真实受验配置一致，7 项离线初始化/环境/无效配置检查通过。初次仅验证连接，未做 40 条对照。后续用户要求开始测试，见下段。
+
+2026-10-18 自定义服务原生误差对照：[报告](review/M3-CARRY-01-CODEX-2026-10-18.json)覆盖原固定 40 条语料，39 条取得首个 Responses 请求的原生用量、1 条被服务策略拒绝（`en-concurrency`），没有改写或重试拒绝项。有效样本合计估算 1,177、输入增量 800，合计偏差 47.12%、逐条平均绝对误差 49.16%；基线 5,174 和 6 项复测一致。初始消息/原生实际指令、response 身份、两种原生日志计数相符，生产系数不改；统计只覆盖有效样本。该自定义服务结果不计入官方 OpenAI 0/40，本项继续 `[~]`。计数口径、失败和恢复见[指南](STYLE-COUNT.md#codex-自定义-responses-原生对照)。
 
 M3-CARRY-01 与 `--count=exact` 产品验收分别记录；前者的非阻塞决定不自动豁免后者的真实能力验证。其他新增环境阻塞也不自动豁免里程碑验收。2026-10-17 用户另明确延期 Claude 托管云端、Windows 主机真实运行、Anthropic 独立 API 计数（见本文件末尾范围决定）。
 

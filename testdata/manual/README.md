@@ -123,7 +123,37 @@ codex-style-openai
 
 配置和会话位于独立 `/Users/inxups/.style-openai/codex`，HOME/XDG/tmp 同样隔离；key 只注入专用进程环境，不写入生成的 TOML。当前验收配置为 low、read-only，关闭 shell 工具/网页搜索/重试；日常 Codex、Claude 和已有官方 Claude profile 原样。修改私有 JSON 的地址、key 或模型后，下次启动生效。
 
-此次是自定义服务的原生对话连接测试，未做 40 条计数校准；现有官方校准采集器仍固定官方地址，不读取此模板，不将自定义结果自动登记为官方结果。[准备报告](../../docs/review/M3-OPENAI-CUSTOM-SETUP-2026-10-18.json)保留未请求时的历史快照。
+初次仅验证自定义服务的原生对话连接；现有官方校准采集器仍固定官方地址，不读取此模板，不将自定义结果自动登记为官方结果。[准备报告](../../docs/review/M3-OPENAI-CUSTOM-SETUP-2026-10-18.json)保留未请求时的历史快照。
+
+### M3-CARRY-01：Codex 原生误差对照
+
+用户后续要求开始固定 40 条测试。[结果](../../docs/review/M3-CARRY-01-CODEX-2026-10-18.json)为 39 条计数、1 条服务策略拒绝（`en-concurrency`）；6 项复测稳定。参见[计数口径和指标](../../docs/STYLE-COUNT.md#codex-自定义-responses-原生对照)。只有原生 Codex 接触远端 Responses，没有 HTTP 转发器；配置与原始日志均保存在私有目录。
+
+[采集器](../../docs/review/M3-CARRY-01-CODEX-CALIBRATE-2026-10-18.py)读取仓库外 settings，验证已验二进制和 299 个构建输入，并以生产 `plan` 取得估算。每次使用全新输出目录：
+
+```sh
+PYTHONDONTWRITEBYTECODE=1 python3 \
+  docs/review/M3-CARRY-01-CODEX-CALIBRATE-2026-10-18.py \
+  --output-dir /tmp/NEW-native-calibration
+```
+
+若原组在服务拒绝后中断，[续跑工具](../../docs/review/M3-CARRY-01-CODEX-CONTINUE-2026-10-18.py)复用原组的同一个冻结采集函数、配置和目录，归档原报告，记录拒绝项后继续剩余样本；不会修改或重试被拒绝的正文。当前续跑入口针对已验的根地址配置，每组只续跑一次。实际执行命令：
+
+```sh
+PYTHONDONTWRITEBYTECODE=1 python3 \
+  docs/review/M3-CARRY-01-CODEX-CONTINUE-2026-10-18.py \
+  --directory /tmp/style-m3-carry-codex-measured-20261018
+```
+
+原生 `turn.completed` 可能汇总多个请求，不能直接当规则计数；首 response 的 `token_usage_record.usage` 和 `token_count` 必须一致。有效样本以空基线相减，缓存不扣除；CLI 加载规则时的首尾空白归一化与所有初始消息均由原生 rollout 验证。只测首请求输入增量，不以输出、整轮用量或账单替代。传输仅在零已记录响应时允许有上限的明确补跑，所有失败单列。续跑退出 0 表示全部语料已尝试且有效数据核对通过；报告的完整 `passed` 仍因拒绝项而为 false。完整校准仍未通过，官方 OpenAI 仍为 0/40，生产系数不改。
+
+[离线复核](../../docs/review/M3-CARRY-01-CODEX-VERIFY-2026-10-18.py)读取原私有证据，独立重算有效样本、三组指标、原生计数/上下文/复测，检查失败保留和文档；不调用模型或构建 Go：
+
+```sh
+PYTHONDONTWRITEBYTECODE=1 python3 \
+  docs/review/M3-CARRY-01-CODEX-VERIFY-2026-10-18.py \
+  /tmp/NEW-native-calibration-check.json
+```
 
 ### 无 API key 的补充对照（M2-ALT-01）
 

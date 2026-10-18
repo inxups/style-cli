@@ -43,4 +43,22 @@ style count rules.txt --count=exact --count-provider=anthropic --count-model=cla
 
 合计相对偏差为 `(估算合计 − 官方增量合计) / 官方增量合计`，负数表示低估。逐条平均绝对误差先对每条计算 `abs(估算 − 官方增量) / 官方增量` 再平均；最大为 18.92%，p95 为 17.95%。28 条低估、8 条高估、4 条一致，中文 20 条全部低估。结果只描述这组短规则及指定模型，没有约定准确率通过阈值，不据此承诺其他语料的误差范围或自动调整预算系数。
 
-逐条文本/请求/响应摘要与计数见[实测报告](review/M3-CARRY-01-ANTHROPIC-2026-10-18.json)，重跑方式见[采集器说明](../testdata/manual/README.md#m3-carry-01claude-官方校准)。此项使用官方计数接口，不生成回复，思考强度不参与计数；不作为新的 Claude Code hook 投递验收。OpenAI 依用户决定保留 0/40，CARRY-01 整体为部分完成。
+逐条文本/请求/响应摘要与计数见[实测报告](review/M3-CARRY-01-ANTHROPIC-2026-10-18.json)，重跑方式见[采集器说明](../testdata/manual/README.md#m3-carry-01claude-官方校准)。此项使用官方计数接口，不生成回复，思考强度不参与计数；不作为新的 Claude Code hook 投递验收。OpenAI 官方计数仍为 0/40；后续自定义服务的原生对照见下节，CARRY-01 整体继续部分完成。
+
+## Codex 自定义 Responses 原生对照
+
+2026-10-18 用户选择自己的 API 地址，并指定隔离的原生 codex-cli、直接 Responses。固定 40 条语料全部尝试：39 条取得计数，1 条被服务策略拒绝（`en-concurrency`）。拒绝项没有计数，正文保留；下表只统计有效样本。这是自定义服务经 Codex CLI 返回的用量对照，不能计入 OpenAI 官方计数接口的 0/40。模型配置为 `gpt-6.1-sol` / low，CLI 为 `codex-cli 0.159.3`；上游模型身份没有独立核实。
+
+所有样本共用新 HOME/CODEX_HOME/XDG/tmp、同一个空工作目录和固定用户消息 `Continue.`。只有规则指令文件内容变化；CLI 实际加载的是去首尾空白后的正文，原生日志逐条核对。额外的固定开发者指令要求只回复 OK，关闭 shell/agent 工具、搜索和原生重试。原生 `token_usage_record.usage` 按 response 身份取得首个请求用量，并与 `token_count.last_token_usage` 交叉核对；减去空基线 5,174 得到规则增量。缓存输入单列，不从输入总量中扣除。
+
+| 语料 | 有效条数 | STYLE 估算合计 | 原生首请求输入增量 | 合计相对偏差 | 逐条平均绝对误差 |
+|---|---:|---:|---:|---:|---:|
+| 英文 | 19 | 598 | 361 | 65.65% | 66.25% |
+| 中文 | 20 | 579 | 439 | 31.89% | 32.92% |
+| 全部有效样本 | 39 | 1,177 | 800 | 47.12% | 49.16% |
+
+合计偏差定义与上节一致；正数表示高估。有效样本最大绝对误差为 83.33%（`en-cost-report`），p95 为 78.95%；0 条低估、39 条高估、0 条一致。6 项空基线/中英文首尾复测全部一致，没有准确率通过阈值，生产估算系数保持原样。未取得计数的样本不纳入误差均值或合计。
+
+最终组共 49 次原生 CLI 启动，46 次取得可核对的首请求用量；服务策略拒绝 1 次、零响应传输失败 2 次均保留，传输恢复另记。初始可见消息、实际规则正文、模型/配置模板和输入文件保全已核对；没有截获完整序列化请求，不作完整请求/账单保证。[正式对照报告](review/M3-CARRY-01-CODEX-2026-10-18.json)区分 `suite_executed` / `available_measurements_verified` 与仍为 false 的完整通过状态。
+
+最初的 [turn 汇总法](review/M3-CARRY-01-CODEX-TURN-2026-10-18.json)、[首尾空白守卫](review/M3-CARRY-01-CODEX-TRIM-2026-10-18.json)和[传输中断预检](review/M3-CARRY-01-CODEX-TRANSPORT-2026-10-18.json)保持未通过，不混入正式统计。重跑与离线核对见[手册](../testdata/manual/README.md#m3-carry-01codex-原生误差对照)。
