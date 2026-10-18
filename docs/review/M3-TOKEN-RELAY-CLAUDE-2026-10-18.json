@@ -1,0 +1,354 @@
+{
+  "format": 1,
+  "date": "2026-10-18",
+  "task": "M3-REAL-03",
+  "test": "M3-TOKEN-01",
+  "source_commit": "ffea61626f42fc6eb86a48168f83dbcd5c7a278f",
+  "scope": "user-requested isolated Claude Code relay configuration and diagnostics; not STYLE production count acceptance",
+  "configuration": {
+    "launcher": "/Users/inxups/.local/bin/claude-relay",
+    "profile": "/Users/inxups/.claude-style-relay",
+    "settings_mode": "0600",
+    "profile_mode": "0700",
+    "launcher_mode": "0700",
+    "cli_version": "2.1.301",
+    "model": "claude-haiku-5-5",
+    "authentication_environment_name": "ANTHROPIC_AUTH_TOKEN",
+    "base_url_matches_private_input": true,
+    "token_matches_private_input": true,
+    "onboarding_completed": true,
+    "credentials_in_launcher": false,
+    "preexisting_daily_config_unchanged": true
+  },
+  "direct_messages": [
+    {
+      "stream": false,
+      "http_status": 200,
+      "exact_reply": true,
+      "elapsed_seconds": 2.605,
+      "tls_verification": true,
+      "response_sha256": "60735c62b6a8f7f1c69af31390982f3010783b624f43718a52126a407d6d0eb2",
+      "max_tokens": 32,
+      "usage": {
+        "cache_creation_input_tokens": 8641,
+        "cache_read_input_tokens": 0,
+        "input_tokens": 4,
+        "output_tokens": 14
+      },
+      "configured_model_observed": true,
+      "passed": true
+    },
+    {
+      "stream": true,
+      "http_status": 200,
+      "exact_reply": true,
+      "elapsed_seconds": 1.795,
+      "tls_verification": true,
+      "response_sha256": "75f4d34e1004fffab3b8c1a97ce704ac71177175c233470130d4b073553376ef",
+      "max_tokens": 32,
+      "stream_types": [
+        "message_start",
+        "content_block_start",
+        "content_block_delta",
+        "content_block_delta",
+        "content_block_stop",
+        "message_delta",
+        "message_stop"
+      ],
+      "passed": true
+    }
+  ],
+  "headless_diagnostics": [
+    {
+      "exit_code": 143,
+      "timed_out": true,
+      "elapsed_seconds": 60.044,
+      "is_error": null,
+      "exact_reply": false,
+      "usage": {},
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "passed": false,
+      "mode": "initial"
+    },
+    {
+      "exit_code": 1,
+      "timed_out": false,
+      "elapsed_seconds": 20.284,
+      "is_error": true,
+      "exact_reply": false,
+      "usage": {
+        "input_tokens": 0,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "output_tokens": 0
+      },
+      "stdout_sha256": "923d70126bfeb789c901d94cef8ebc29222b9433b7dc5e96b71ca5829860f34c",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "passed": false,
+      "mode": "normal"
+    },
+    {
+      "exit_code": 1,
+      "timed_out": false,
+      "elapsed_seconds": 20.205,
+      "is_error": true,
+      "exact_reply": false,
+      "usage": {
+        "input_tokens": 0,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "output_tokens": 0
+      },
+      "stdout_sha256": "381f2fdcbd6575d53eb6a76aea9ed0fbe66b9f604403096106e77c48305a0a56",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "passed": false,
+      "mode": "bare"
+    },
+    {
+      "exit_code": 1,
+      "timed_out": false,
+      "elapsed_seconds": 10.341,
+      "is_error": true,
+      "exact_reply": false,
+      "usage": {
+        "input_tokens": 0,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "output_tokens": 0
+      },
+      "stdout_sha256": "62d46b1c880736b9dc45c973deeabaef1eb4ae5ad500ea4ec3ee1e113ddadbe5",
+      "stderr_sha256": "339b441ba45a8533fa9d4e117220e92a0a79dd9ed5ad07c4689d7e7291da7b2a",
+      "passed": false,
+      "mode": "trace"
+    },
+    {
+      "exit_code": 1,
+      "timed_out": false,
+      "elapsed_seconds": 20.303,
+      "is_error": true,
+      "exact_reply": false,
+      "usage": {
+        "input_tokens": 0,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "output_tokens": 0
+      },
+      "stdout_sha256": "bf8ff74ba983d454c4bb04fbf7a271ab3bdaac6e43408f36089dd8c3bc394ac8",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "passed": false,
+      "mode": "ua"
+    },
+    {
+      "exit_code": 1,
+      "timed_out": false,
+      "elapsed_seconds": 31.513,
+      "is_error": true,
+      "exact_reply": false,
+      "usage": {
+        "input_tokens": 0,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "output_tokens": 0
+      },
+      "stdout_sha256": "8379ac98c6602602324a0d60941467bab13d0a7cfa7dfac57f18433d52846076",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "passed": false,
+      "mode": "forward"
+    },
+    {
+      "exit_code": 1,
+      "timed_out": false,
+      "elapsed_seconds": 20.295,
+      "is_error": true,
+      "exact_reply": false,
+      "usage": {
+        "input_tokens": 0,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "output_tokens": 0
+      },
+      "stdout_sha256": "afb16b64a0290249212647b8017c727c1410b07a268d2eef2e4bd75f1ac68ece",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "passed": false,
+      "mode": "default"
+    },
+    {
+      "exit_code": 1,
+      "timed_out": false,
+      "elapsed_seconds": 20.296,
+      "is_error": true,
+      "exact_reply": false,
+      "usage": {
+        "input_tokens": 0,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "output_tokens": 0
+      },
+      "stdout_sha256": "7b5bee4a74e3d33c501c69ba470b20ca553d32ed04faf63575dd1871cd7f39e8",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "passed": false,
+      "mode": "auth"
+    },
+    {
+      "exit_code": 1,
+      "timed_out": false,
+      "elapsed_seconds": 20.298,
+      "is_error": true,
+      "exact_reply": false,
+      "usage": {
+        "input_tokens": 0,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "output_tokens": 0
+      },
+      "stdout_sha256": "4d1ba0370f5f95cc91616b2cb7e39cacc28ce469d5600cc7541889aa380c442b",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "passed": false,
+      "mode": "light"
+    }
+  ],
+  "interactive_diagnostics": [
+    {
+      "exact_assistant_reply": false,
+      "login_required": false,
+      "api_timeout_seen": false,
+      "elapsed_seconds": 58.702,
+      "ui_setup_actions": [],
+      "terminal_sha256": "e2ba78d23678c450405ce8a9e8e52af4b9f3556f43f7f194909eaee1625012f4",
+      "passed": false,
+      "attempt": "1",
+      "model_request_verified": false,
+      "api_timeout_ms": null,
+      "default_tools": false
+    },
+    {
+      "exact_assistant_reply": false,
+      "login_required": false,
+      "api_timeout_seen": false,
+      "elapsed_seconds": 58.794,
+      "ui_setup_actions": [
+        "theme"
+      ],
+      "terminal_sha256": "de2ece4d3ced7e51b0893449769f28bbd64d5cf738353a3abe14ec8c79d234b2",
+      "passed": false,
+      "attempt": "2",
+      "model_request_verified": false,
+      "api_timeout_ms": null,
+      "default_tools": false
+    },
+    {
+      "exact_assistant_reply": false,
+      "login_required": false,
+      "api_timeout_seen": false,
+      "elapsed_seconds": 58.839,
+      "ui_setup_actions": [
+        "security_notice",
+        "theme",
+        "trust"
+      ],
+      "terminal_sha256": "65c0f146e710a86ca5dd48b9ceb452fc2ef0a787b275a9925b4fa8174bbb7ba6",
+      "passed": false,
+      "attempt": "3",
+      "model_request_verified": false,
+      "api_timeout_ms": null,
+      "default_tools": false
+    },
+    {
+      "exact_assistant_reply": false,
+      "login_required": false,
+      "api_timeout_seen": true,
+      "elapsed_seconds": 24.402,
+      "ui_setup_actions": [
+        "trust"
+      ],
+      "terminal_sha256": "2be2690b3367580ab977ff218d651149c1563aa0bc32e71dfc9d041f6184f58b",
+      "passed": false,
+      "attempt": "4",
+      "model_request_verified": true,
+      "api_timeout_ms": 20000,
+      "default_tools": false
+    },
+    {
+      "exact_assistant_reply": false,
+      "login_required": false,
+      "api_timeout_seen": true,
+      "elapsed_seconds": 34.32,
+      "ui_setup_actions": [
+        "trust"
+      ],
+      "terminal_sha256": "d705f44ba122a3349b256c6c601440f69c196a38dd23759102f7956d21f0de24",
+      "passed": false,
+      "attempt": "5",
+      "model_request_verified": true,
+      "api_timeout_ms": 30000,
+      "default_tools": true
+    }
+  ],
+  "client_conversation_verified": false,
+  "upstream_failure_cause": "unknown; backend request/error logs unavailable",
+  "next_step": "use claude-relay for the configured native CLI; unresolved API error requires request/error diagnostics, not another billing screenshot",
+  "milestone_states_unchanged": true,
+  "official_upstream_count_verified": false,
+  "production_style_count_tested": false,
+  "privacy": {
+    "credentials_and_endpoint_absent": true,
+    "original_terminal_and_server_logs": "private scratch only"
+  },
+  "reproduction": {
+    "cwd": "new empty trusted temporary directory",
+    "command": "API_TIMEOUT_MS=30000 CLAUDE_CODE_MAX_RETRIES=0 claude-relay --tools default --strict-mcp-config --mcp-config '{\"mcpServers\":{}}' --permission-mode default --prompt-suggestions false 'Reply with exactly STYLE_RELAY_OK and nothing else. Do not use tools.'",
+    "requires_terminal": true,
+    "result": "Request timed out; no exact assistant reply",
+    "direct_command": "claude-relay",
+    "direct_prompt": "只回复 STYLE_RELAY_OK，不使用工具。",
+    "direct_result": "Native interactive UI displayed API error · Retrying; no assistant response; cancelled retries and exited manually."
+  },
+  "direct_cli": {
+    "command": "claude-relay",
+    "arguments": [],
+    "temporary_working_directory": true,
+    "prompt": "只回复 STYLE_RELAY_OK，不使用工具。",
+    "native_interactive_ui": true,
+    "model": "claude-haiku-5-5",
+    "api_error_retrying_seen": true,
+    "exact_assistant_reply": false,
+    "cancelled_after_api_error": true,
+    "exit_code_after_manual_exit": 0,
+    "exit_code_is_not_conversation_acceptance": true,
+    "private_tool_evidence_sha256": "839a3ca859cbd640f6e3fd96f6b7b6044710710275f574b341b5aad738145a43",
+    "passed": false
+  },
+  "documentation_verification": {
+    "format": 1,
+    "passed": true,
+    "baseline_commit": "f97847ccdf289b4972cd6fa2d24ec3e705f82f19",
+    "task_ids": 45,
+    "test_ids": 40,
+    "all_tests_mapped": true,
+    "cancelled_tasks": [
+      "M3-T31"
+    ],
+    "cancelled_tests": [
+      "M3-A7",
+      "M3-C3"
+    ],
+    "archives_unchanged": 77,
+    "historical_review_files_unchanged": 192,
+    "goldens_unchanged": 104,
+    "progress_append_only": true,
+    "progress_prefix_sha256": "4c132bcd57dcbb1aca9ac9e6184b3f7f39f5980f3738be0cfc2c9a993d7a681e",
+    "removed_code_and_cleanup_absent": true,
+    "documents": 11,
+    "local_links_and_anchors": 622,
+    "fence_blocks": 108,
+    "python_syntax": true,
+    "git_diff_check": true,
+    "current_head_progress_append_only": true,
+    "private_config_values_absent_from_changes": true,
+    "changes_limited_to_four_documentation_files": true,
+    "prior_count_probe_and_report_unchanged": true,
+    "go_code_changed": false,
+    "go_tests_rerun": false
+  }
+}
