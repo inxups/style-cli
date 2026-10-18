@@ -95,27 +95,3 @@ func TestM3A14SixRouteFailLifecycleAndMarkerRemoval(t *testing.T) {
 		})
 	}
 }
-
-func TestM3A14CloudCarriesFailurePolicy(t *testing.T) {
-	s, _, root, source := a7Setup(t)
-	writeSyncFile(t, filepath.Join(source, "STYLE.yaml"), a14Manifest())
-	if _, err := s.Install(context.Background(), InstallRequest{Source: source, Harnesses: []string{"claude-code"}, Yes: true}); err != nil {
-		t.Fatal(err)
-	}
-	a7Export(t, s)
-	_, files, err := readCloud(root)
-	if err != nil {
-		t.Fatal(err)
-	}
-	var index compile.Index
-	if err = json.Unmarshal(files[cloudDir+"/index.json"], &index); err != nil || index.Format != 7 {
-		t.Fatal(index, err)
-	}
-	found := false
-	for _, entry := range index.Harnesses["claude-code"]["tool.pre"] {
-		found = found || entry.Fail == "closed"
-	}
-	if !found {
-		t.Fatal("cloud lost policy")
-	}
-}

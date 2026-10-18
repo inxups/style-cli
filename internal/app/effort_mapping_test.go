@@ -312,24 +312,6 @@ func TestM3A13CompiledMappingExplainAndNativeCodecParity(t *testing.T) {
 	}
 }
 
-func TestM3A13CloudCarriesMappingSnapshot(t *testing.T) {
-	s, _, root, source := a7Setup(t)
-	writeSyncFile(t, filepath.Join(source, "STYLE.yaml"), a13Manifest)
-	writeSyncFile(t, filepath.Join(s.project.Home, "effort.yaml"), a13Config("claude-code", "high"))
-	if _, err := s.Install(context.Background(), InstallRequest{Source: source, Harnesses: []string{"claude-code"}, Yes: true}); err != nil {
-		t.Fatal(err)
-	}
-	a7Export(t, s)
-	_, files, err := readCloud(root)
-	if err != nil {
-		t.Fatal(err)
-	}
-	var index compile.Index
-	if err = json.Unmarshal(files[cloudDir+"/index.json"], &index); err != nil || index.Format != 6 || index.EffortMapping["claude-code"]["future"] != "high" {
-		t.Fatal(index, err)
-	}
-}
-
 func TestM3A13CachedMappingChangeRemovalAndMissingRaw(t *testing.T) {
 	for _, h := range []string{"codex", "claude-code"} {
 		for _, mode := range []string{"change", "remove", "remove-builtin", "missing-raw"} {

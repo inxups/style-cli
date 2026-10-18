@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"io"
 	"log/slog"
-	"os"
 	"path/filepath"
 	"reflect"
 	"strings"
@@ -218,25 +217,5 @@ func TestM3A11ProviderExplainFactsAndRealCodecs(t *testing.T) {
 				}
 			})
 		}
-	}
-}
-func TestM3A11ProviderCloudBundle(t *testing.T) {
-	s, _, root, source := a7Setup(t)
-	writeSyncFile(t, filepath.Join(source, "STYLE.yaml"), a11Manifest())
-	if _, err := s.Install(context.Background(), InstallRequest{Source: source, Harnesses: []string{"claude-code"}, Yes: true}); err != nil {
-		t.Fatal(err)
-	}
-	a7Export(t, s)
-	_, files, err := readCloud(root)
-	if err != nil {
-		t.Fatal(err)
-	}
-	var index compile.Index
-	if err = json.Unmarshal(files[cloudDir+"/index.json"], &index); err != nil || index.Format != 4 {
-		t.Fatal(index.Format, err)
-	}
-	// The bundle contains selectors, not ambient service endpoints.
-	if strings.Contains(string(files[cloudDir+"/index.json"]), os.Getenv("ANTHROPIC_BASE_URL")) && os.Getenv("ANTHROPIC_BASE_URL") != "" {
-		t.Fatal("ambient endpoint exported")
 	}
 }

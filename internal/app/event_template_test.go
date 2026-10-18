@@ -85,22 +85,3 @@ func TestM3A10SixRouteLifecycleAndFrozen(t *testing.T) {
 		})
 	}
 }
-func TestM3A10CloudBundleRetainsFencedIndex(t *testing.T) {
-	s, base, root, source := a7Setup(t)
-	writeSyncFile(t, filepath.Join(source, "STYLE.yaml"), a10Manifest())
-	if _, err := s.Install(context.Background(), InstallRequest{Source: source, Harnesses: []string{"claude-code"}, Yes: true}); err != nil {
-		t.Fatal(err)
-	}
-	a7Export(t, s)
-	_, files, err := readCloud(root)
-	if err != nil {
-		t.Fatal(err)
-	}
-	var index compile.Index
-	if err = json.Unmarshal(files[cloudDir+"/index.json"], &index); err != nil || index.Format != 3 {
-		t.Fatal(index.Format, err)
-	}
-	if bytes.Contains(files[cloudDir+"/index.json"], []byte(base)) {
-		t.Fatal("private path leaked")
-	}
-}

@@ -101,7 +101,7 @@ func runHook(ctx context.Context, args []string, in io.Reader, out, errOut io.Wr
 			return projectHookFailure(ctx, args, in, out, errOut, enricher, provider, closed, projectFailure("project entry cannot override private binding flags"))
 		}
 		if provider == agenthooks.ProviderClaudeCode && os.Getenv("CLAUDE_CODE_REMOTE") == "true" {
-			return runCloudHook(ctx, args, in, out, errOut, enricher, closed)
+			return projectHookFailure(ctx, args, in, out, errOut, enricher, provider, closed, projectFailure("Claude cloud delivery is no longer supported; use a local Claude Code session"))
 		}
 		binding, err := projectRuntimeBinding(args, provider)
 		if err != nil {

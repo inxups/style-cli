@@ -1,17 +1,18 @@
 # STYLE CLI M3 测试清单
 
-更新时间：2026-10-17
+更新时间：2026-10-18
 
-最新授权：用户于 2026-10-17 要求“所有评审全部通过，完全完成M3”。T31/T32 恢复实施，后续设计先记录契约后直接推进；下文早期“暂缓/待用户评审”叙述保留决策背景，以本条和逐项证据为准。授权不替代实现、测试或真实环境验收。
+最新范围决定（2026-10-18）：用户要求删除 Claude 云端功能，确认未安装过、不保留清理逻辑。A7 标为已移除，C3 取消；M3-A19 验证删除结果及保留的本地路线。原完整实施授权与报告为历史记录。
 
 本文件记录 M3 测试矩阵与当前证据状态，任务及依赖见 [STYLE-M3-TASKS.md](STYLE-M3-TASKS.md)，运行记录追加到 [PROGRESS.md](PROGRESS.md)。[M1 测试](STYLE-M1-TESTS.md)、[M2 测试](STYLE-M2-TESTS.md) 已只读归档；历史通过结果不替代 M3 的新验收。
 
-当前状态：M3 于 2026-10-18 按用户确认范围完成并关闭。M3-00/BASE、A0–A18、P1/P2、B1–B4、C1/C2/C4/C5/C6、本地 exact、三平台 CI、FINAL 和 DOCS-01 全部通过；见[最终报告](review/M3-FINAL-2026-10-18.json)与[文档关闭核对](review/M3-DOCS-01-2026-10-18.json)。用户延期的 C3、W1/REAL-04 和 Anthropic 独立 API 保持待验，未算通过；M3-CARRY-01 官方校准仍两家各 0/40、非阻塞，RV-01 已关闭。
+当前状态：M3 原批准范围已于 2026-10-18 完成并关闭，原[最终报告](review/M3-FINAL-2026-10-18.json)与[文档核对](review/M3-DOCS-01-2026-10-18.json)保留原提交证据。当前补充移除 Claude 云端，[M3-A19](review/M3-REMOVE-01-2026-10-18.json)已通过；C3 已取消，不计通过。W1 与 Anthropic 独立 API 保持待验，M3-CARRY-01 仍两家各 0/40、非阻塞。
 
 ## 状态与验收规则
 
 - `[x]` 已通过且有可重复证据；`[ ]` 尚未实现或尚未执行。
 - `[~]` 部分验证或环境阻塞；`[!]` 失败或设计风险；`[?]` 等待真实环境。
+- `[-]` 用户取消或已移除，不计通过，编号和历史证据保留。
 - 每项记录源码提交、命令、环境、fixture/golden 或原生结果及退出码。未执行的预期不得写成结果。
 - 设计定稿后细化对应断言、具体命令和新格式；本矩阵不预先批准未定 schema、配置优先级或失败策略。
 - 准备自测、协议 stub、真实 harness 调用和模型投递分别取证。真实投递以原生加载/回调、完整上下文或请求证据交叉核对；模型回复和生成配置存在不能单独证明投递。
@@ -80,7 +81,7 @@ PYTHONDONTWRITEBYTECODE=1 python3 scripts/check_m2_rules_migration.py \
 - [x] **M3-A4 update**（M3-D2、M3-T21）：按已定稿 [D2 §9 的 A4-01–A4-12](review/M3-D2-SOURCES-2026-10-17.md#9-待执行的验收细化) 覆盖明确选包/无变化/预览确认、branch/tag/固定 OID/换 ref、本地原路径/link、版本/settings/native/replace、未选批准字节与效果变化阻止、跨包去重/预算、任一失败整批不安装。验证捕获后分支/输入漂移、各包与 approved/settings/index/explain/lock/hook/static 故障回滚、并发 guard、旧安装/三路线、报告和隐私；不连带批准未选 link/native。证据：[完整报告](review/M3-A4-2026-10-17.json)、[使用说明](STYLE-SOURCES.md#明确选包更新) 和 16 份新增 text/JSON golden。31 个新函数、244 个叶子用例（269 条含分组 pass，零新 fail/skip）覆盖 SHA-1/SHA-256 真实 Git、固定 OID 不回退、新 settings default/必填及影子值拒绝、旧批准保守边界、native 顺序/全量披露、多包联合效果、16 类确认漂移与私有输入 symlink、各包及文件 bytes/mode/mtime 恢复和失败备份。最终双 module fresh test 2,935 条 pass/0 fail、vet、app/source 与 agenthooks 全 module race、59 采集器通过；24 条既有 opt-in skip 单列。最终二进制运行 24 项更新 CLI/旧安装/基线 wire、40 smoke、16 真旧迁移、12 回退和 17 Git 门禁通过，SHA256 `7da4b1d4d7288c6305793d5db3677b325eb6c3c7f8e9d0b9a28f7f6afd55bf3a`。前期 fixture/原始锁构造、TLS 沙箱及错误的 M1 runtime 对照选择的失败和修正保留；最终未跳过 A4 用例。该次仅关闭 A4；A5、真实 B/C、Windows、CI 与官方两家各 0/40 未在该次关闭。
 - [x] **M3-A5 frozen**（M3-D2、M3-T22）：按已定稿 [D2 §9 的 A5-01–A5-12](review/M3-D2-SOURCES-2026-10-17.md#9-待执行的验收细化) 在固定根/绑定下重复整锁离线恢复。覆盖本地/单文件/Git/link 的完整快照、缓存非必需但无内容不成功、远端移动、缺 settings/approval、旧 lock 1/新 lock 2、编译/绑定差异、owner 允许恢复与外来文件拒绝、native/replace 确认、多包/并发/失败回滚。全程零 Git/网络/缓存写入，锁 bytes/mode/mtime 不变；不宣称跨根/项目或真实信任生效。证据：[完整报告](review/M3-A5-2026-10-17.json)、[使用说明](STYLE-SOURCES.md#整锁离线恢复) 和 16 份新增 text/JSON golden。21 个新函数、209 个叶子用例（228 条含分组 pass，零新 fail/skip）覆盖完整目录/单文件/批准/Git 缓存、SHA-1/SHA-256 固定来源、零 Git/检测/缓存写入、精确 lock/settings/approval、link trust、全锁联合去重/门禁、15 类确认漂移及无漂移对照、每包与逐文件失败回滚及保留失败备份。双 module fresh test 3,163 条 pass/0 fail，24 条既有 opt-in skip 单列；vet、app/source race 1,299 pass、59 采集器通过。最终二进制 SHA256 `abb2ce7ba60b11cf51ae02d85e8b248b06d7c7e2e004aa5509054863774ece6f` 运行 30 frozen CLI、24 update CLI、40 smoke、16 真旧迁移、12 回退、17 Git 门禁均通过。三路线 owner 允许且摘要可重现的缺失配置恢复通过；部分配置缺失无法重现 rendered 变更集摘要、缺失 Claude 已登记 rules 和程序路径改变均保守失败，不扩大 owner 权限。早期 fixture/分类、CLI 对照绑定和误写采集器入口的失败保留并修正。仅关闭 A5；D3 项目部分现已另获确认，真实 B/C、Windows、CI 和官方两家各 0/40 保持待验。
 - [x] **M3-A6 项目级路线**（M3-D3、M3-T30）：两家 fake/native 配置 fixture 覆盖用户/项目共存、不同项目同名包、嵌套目录、多 clone、范围显式选择与错误根。plan/install/list/sync/trust/doctor/uninstall 使用同一范围；index/state 不串用，现有文件字节/权限还原，native 归属与原生信任边界一致。按已确认项目部分的 [D3 §9](review/M3-D3-ROUTES-2026-10-17.md#9-待执行验收细化) 的 A6-01–A6-12 覆盖明确项目根/私有命名空间、跨范围同名冲突、新 clone 重现采用、Codex 静态动态降级、双根信任与逐文件恢复，见 [完整报告](review/M3-A6-2026-10-17.json)、[使用说明](STYLE-PROJECTS.md) 与 [built CLI 检查](../scripts/check_m3_project.py)。33 个新函数/166 个叶子用例全部通过（184 条含分组 pass、无新 fail/skip），44 份 text/JSON golden、18 项 CLI/真实 Git worktree 检查、逐包/逐文件/48 个取消检查点、9 类确认漂移及跨范围 guard 通过。最终双 module fresh test 3,347 pass/0 fail、24 项既有 opt-in skip，vet、相关 race、68 采集器、40 smoke、16 真旧迁移、12 回退、24 update、30 frozen、17 Git 门禁通过。最终二进制 SHA256 `31ed26797e2849a160ede978e43c108371fa31fc948039e8976a26e8509e0866`；首次 fixture/编译/分类失败、TLS 本地监听沙箱阻塞和修正重跑保留。仅关闭 A6，B2/C2 的原生加载/信任/真实投递不以离线结果替代。
-- [x] **M3-A7 云端交付产物**（M3-D3、M3-T31）：按定稿对隔离 clone/项目产物验证必要文件、运行时路径与加载前提，不依赖本机用户配置或私有临时绝对路径。缺配置/运行时和不支持环境给出明确结果；本项仅验产物与可移植性，云端实际生效另见 C3。按待评审 [D3 §9](review/M3-D3-ROUTES-2026-10-17.md#9-待执行验收细化) 的 A7-01–A7-06 覆盖显式批准 bundle 导出、全新 clone/预置 runner、相对路径与 sensitive-reserved 拒绝/普通值披露、缺依赖及陈旧 generation、失败恢复；本轮调查不关闭本项。 已通过 [本轮报告](review/M3-A7-2026-10-17.json)：A7-01–A7-06 全部通过，54 条新 pass 与 race，根 module 2,989 pass/0 fail、vet、8 项 built CLI、40 smoke；新 clone、原生 fixture/缺依赖、私有状态、篡改/版本拒绝、确认漂移、多包和取消恢复均取证。实际 C3 另验。
+- [-] **M3-A7 云端交付产物（已移除）**（M3-D3、M3-T31）：原 [A7 离线报告](review/M3-A7-2026-10-17.json)保留为历史，不代表当前能力。2026-10-18 用户删除功能，相关正向测试随实现移除；删除与本地路线回归改由 M3-A19 验证。真实 C3 取消，未标记通过。
 - [x] **M3-A8 Claude 插件路线**（M3-D3、M3-T32）：生成产物与 agenthooks 原生配置契约一致；覆盖重复安装、用户/项目/插件路线切换、多包、登记前后状态、native 及静态规则。卸载恢复外部文件/权限，无重复 handler 或残留；生成文件不等同于已登记或被真实 harness 加载。按待评审 [D3 §9](review/M3-D3-ROUTES-2026-10-17.md#9-待执行验收细化) 的 A8-01–A8-06 覆盖本地目录 marketplace、手动原生登记/卸载、user/plugin 互斥切换、静态 user rules 与原生数据库残留分别报告；本轮调查不关闭本项。 已通过 [A8 报告](review/M3-A8-2026-10-17.json)：11 个新测试函数、56 条新 pass、root/agenthooks 全量 3,555 pass/0 fail，专项 race、vet、8 项插件 built CLI、8 项云端 CLI、40 smoke 与旧迁移/replace 回归通过。登记元数据 fixture 不代表真实 C4。
 
 - [x] **M3-A9 refresh**（M3-D4、M3-T40）：按已确认 [D4 §9 的 A9-01–A9-12](review/M3-D4-REFRESH-2026-10-17.md#9-a9-待执行验收细化)覆盖 0/正整数/defaults/from、repeat 与 target 合法组合、system 动态与 Claude clock-only 订阅、同正文滚动间隔和无欠账。核对原生 ID/缺 ID/迟到事件、compact/resume/fork/子作用域、多进程时钟及 claim/释放、故障与快照，format 1/2 的真实旧程序门禁、原有 state/golden 和五路线生命周期。预算按单次全文，stats/explain 保持隐私和一致口径；设计报告中的旧行为回归不替代本项新功能验收。证据：[完整报告](review/M3-A9-2026-10-17.json)、[使用说明](STYLE-REFRESH.md) 和 [CLI 检查](../scripts/check_m3_refresh.py)。29 个新函数/85 个叶子用例、98 条含分组 pass；进程 helper 在父测试中以环境隔离启动，顶层非工作模式 skip 单列。双 module fresh test 3,445 pass/0 fail，24 条既有 opt-in skip（23 真实 e2e、1 性能）与 helper skip 单列；vet、state/engine/runtime/app race、68 采集器、50 refresh CLI、40 smoke、16 真旧迁移、12 回退、17 Git、24 update、30 frozen、18 项目 CLI 全部通过。实际 A6 旧二进制拒绝整份 format 2，旧 sync/trust/update/frozen 拒绝且 bytes/mode/mtime 不改；新源码冻结重建与规则变化审批/取消回滚通过。五路线各 50 次 hook 进程 p95 为 codex-user 13.962ms、codex-plugin 16.919ms、claude-user 9.269ms、codex-project 13.597ms、claude-project 13.623ms。最终二进制 SHA256 `5894f0ad248c3fe218ca91191ce6c5afdec48905fa837db0b680d63d79a8ef5c`；保留初期测试构造/编译、macOS 并发创建锁、采集器沙箱和修正重跑记录。macOS 本地运行与 Linux/Windows 交叉编译通过，后者不代表原生验收；仅关闭 A9，真实 B3/C5 和其他待验状态保持。
@@ -94,6 +95,7 @@ PYTHONDONTWRITEBYTECODE=1 python3 scripts/check_m2_rules_migration.py \
 - [x] **M3-A16 native 扩展**（M3-D10、M3-T60）：按评估结论覆盖获支持的 `async`/`onFailure`/非 command 类型及拒绝项、版本门槛、目录/单文件包和 from 覆盖。核对安装披露、sync/trust、owner/信任/卸载、原生执行约束及旧四字段兼容；native 仍不被虚构为 STYLE runtime stats/token 记录。 [A16 报告](review/M3-A16-2026-10-18.json)覆盖四字段保留与扩展拒绝结论：126 名称/格式/字段组合和 from 覆盖、六路线 108 次命令保全、冻结恢复；135 专项/race pass、根全量 3,880 pass/0 fail、24 agenthooks native pass、vet、40 五路线 CLI（旧 JSON/config 与外部 HTTP/MCP/prompt/agent/async command 保全）和 40 smoke 通过。初期 fixture 顺序/既有管理 gate 预期失败保留；源值不回显。
 - [x] **M3-A17 Windows 平台**（M3-D11、M3-T70）：支持的两家 user 路线、盘符/空格/Unicode/长路径、安全引用/owner、stdin/退出码、DACL、状态并发/清理和文件事务均完成 Windows 原生 CI。[完整报告](review/M3-A17-2026-10-18.json)固定 run 39055736061 / `b481396`：三平台全过；Windows 根 3,380/agenthooks 521 pass、0 fail，280/35 skip 逐项列明，生产 CLI 25 项全过。POSIX 回归保持；W1 实际 harness 与最终 CI-01 独立。
 - [x] **M3-A18 conformance 与升级**（M3-T80）：[报告](review/M3-A18-2026-10-18.json)固定双模块 fresh 4,412 pass/0 fail、25 既有 skip 单列；codec/stdout 白名单/golden、native/stats/跨包去重与旧包/锁/index/state 保持。六路线 36 项组合核对映射/provider/unknown/refresh/围栏/fail-closed、排序/零重复成本、frozen 状态保留与恢复；16 组真实旧布局迁移、12 组 replace 回退、40 smoke 和双 vet 通过，未重录旧 golden。
+- [x] **M3-A19 删除 Claude 云端能力**（M3-REMOVE-01）：export/项目 export 拒绝且零写入，帮助不再列出命令；项目 remote 分支不加载规则、不写状态并沿既有 codec 的 fail-open/fail-closed 返回。保留的本地用户/项目/插件路线通过安装、hook、诊断、升级/frozen、卸载回归；不保留旧产物清理。双 module fresh test 共 4,398 pass/0 fail，25 既有 skip 单列；双 vet、213 条专项 race、78 采集器、147 项 built CLI/六路线/真旧升级回退通过。证据：[运行报告](review/M3-REMOVE-01-2026-10-18.json)与[文档核对](review/M3-REMOVE-01-DOCS-2026-10-18.json)。当前 CI 增加删除回归，远端尚未重跑；旧三平台报告仍只对应原源码。
 
 M3-A2 缓存补充：Codex 0.159.3 原生插件使用独立缓存，三次真实旧根关联失败保留；按 [D1 补充](review/M3-D1-CODEX-CACHE-2026-10-18.md) 核对登记/source/固定执行文件后绑定缓存根，[回归报告](review/M3-A2-CODEX-CACHE-2026-10-18.json)与新真实插件整轮通过。更换 native 正文并通过原生 add 刷新后，新会话收到新正文且旧正文缺席；probe 不执行登记/刷新命令。
 
@@ -113,11 +115,11 @@ M3-A2 缓存补充：Codex 0.159.3 原生插件使用独立缓存，三次真实
 
 ## M3b：Claude Code 真实环境
 
-本地用户/项目/插件与云端分别记录。沿用隔离 runbook 和原生证据；交互操作沿既有授权范围执行，登录/钥匙串等需要用户交互时单列。固定版本、实际工作区信任范围和文件基线，安装/卸载分别启动新会话核对。
+当前验收本地用户/项目/插件三条路线；云端 C3 已取消。沿用隔离 runbook 和原生证据；交互操作沿既有授权范围执行，登录/钥匙串等需要用户交互时单列。固定版本、实际工作区信任范围和文件基线，安装/卸载分别启动新会话核对。
 
 - [x] **M3-C1 probe 与 explain**（M3-T10、M3-T11、M3-REAL-02）：真实交互会话产生可关联原生回调，用独立原生 hook 来源/事件证据对应收据/时间/session。固定原 payload/index、事件前 state 和补充事实后隔离解释，对照命中/去重/codec 输出与实际投递；当前 user 路线单独记录，后续新路线另验。核对未触发/超时、清理及卸载后新会话；进程祖先、callback-observed 或采集器手工调用均不单独替代原生/投递证据。 [六路线未触发/中断检查](review/M3-PROBE-NEGATIVE-2026-10-18.json)已通过：有效 index、12 次失败状态/完整清理与显式配置恢复；无模型调用，不据此关闭真实投递。 用户路线已通过[实际认证模型验收](review/M3-C-CLAUDE-USER-2026-10-18.json)，[项目路线](review/M3-C-CLAUDE-PROJECT-2026-10-18.json)也通过完整验收；[插件路线](review/M3-C-CLAUDE-PLUGIN-2026-10-18.json)也通过完整验收；[本地总报告](review/M3-REAL-02-LOCAL-2026-10-18.json)固定全部三条路线。
 - [x] **M3-C2 本地项目路线**（M3-T30、M3-REAL-02）：原生加载/指令附件或请求证据证明项目规则生效，用户规则与其他项目隔离；核对信任、动态/native 与静态位置、卸载恢复和新会话无残留。 [真实项目报告](review/M3-C-CLAUDE-PROJECT-2026-10-18.json)验证原生 UI 接受信任且正常退出、原生发现配置、其他项目无规则、native 新正文、frozen 与卸载/基线还原。
-- [?] **M3-C3 云端项目交付**（M3-T31、M3-REAL-02）：在实际云端会话中验证定稿支持的交付路径、规则发现、hook 运行和完整投递；记录 clone/运行时条件及卸载或移除后的新会话。无真实环境保持待验，本地 fixture 不代替云端结果。
+- [-] **M3-C3 云端项目交付（取消）**（M3-T31）：2026-10-18 用户要求删除 Claude 云端功能，本项退出范围。实际托管会话验收未执行，不计为通过；删除验证见 M3-A19。
 - [x] **M3-C4 插件路线**（M3-T32、M3-REAL-02）：[插件真实报告](review/M3-C-CLAUDE-PLUGIN-2026-10-18.json)已通过实际登记/启用插件、原生加载并触发目标规则；与已有用户/项目路线无重复投递，核对原生信任边界、禁用/卸载和外部文件恢复。
 - [x] **M3-C5 运行时扩展**（M3-T40–T45、M3-REAL-02）：真实事件序列核对 refresh、事件围栏、provider/unknown 和用户 effort 映射；对规则级 fail-closed 注入定稿允许的故障并验证工具行为，恢复后新会话正常。用原生证据与 state/stats 对照，明确静态规则 compact 等未覆盖边界。 用户路线已通过[实际认证模型验收](review/M3-C-CLAUDE-USER-2026-10-18.json)，[项目路线](review/M3-C-CLAUDE-PROJECT-2026-10-18.json)也通过完整验收；[插件路线](review/M3-C-CLAUDE-PLUGIN-2026-10-18.json)也通过完整验收；[本地总报告](review/M3-REAL-02-LOCAL-2026-10-18.json)固定全部三条路线。
 - [x] **M3-C6 native 扩展**（M3-T60、M3-REAL-02）：对 D10 获支持的能力验证实际原生事件、输出/失败行为、版本门槛及与 STYLE hook 共存；不支持项保留结论。核对 trust/卸载恢复及新会话不再触发，旧四字段命令继续可用。 用户路线已通过[实际认证模型验收](review/M3-C-CLAUDE-USER-2026-10-18.json)，[项目路线](review/M3-C-CLAUDE-PROJECT-2026-10-18.json)也通过完整验收；[插件路线](review/M3-C-CLAUDE-PLUGIN-2026-10-18.json)也通过完整验收；[本地总报告](review/M3-REAL-02-LOCAL-2026-10-18.json)固定全部三条路线。
@@ -130,7 +132,7 @@ M3-A2 缓存补充：Codex 0.159.3 原生插件使用独立缓存，三次真实
 ## CI 与最终验收
 
 - [x] **M3-CI-01 跨平台 CI**（M3-CI-01）：最终 headSha 在 Ubuntu/macOS/Windows 的适用 format/vet、双 module fresh test/build、采集器、smoke 与旧迁移/回退检查全部通过；平台脚本使用原生临时缓存和环境清理。记录逐 job/步骤结果，跳过项不得算通过，适用时验证 `GOWORK=off` 发布形态。 [最终报告](review/M3-CI-01-2026-10-18.json)固定受验源码 `2c24e5f9`、run `39064157115`：三 job 全过；Windows fresh/双架构构建/25 CLI 完成，skip 与真实 W1 分列；后续文档提交有源码等价性核对。
-- [x] **M3-FINAL 最终回归**（M3-FINAL）：M3-BASE-01、A0–A18、P1/P2、B1–B4、C1/C2/C4/C5/C6、本地 TOKEN-01 与 CI-01 按批准范围全部验收；关联同一最终源码/二进制或说明等价性，无未解释 golden/兼容性差异。C3、W1 与 Anthropic 独立 API 依用户明确决定延期，保持待验；CARRY-01 继续独立非阻塞，其他缺环境项不能自动豁免。 [最终报告](review/M3-FINAL-2026-10-18.json)固定同一生产源码/二进制的完整适用验收、三平台 CI、旧版兼容与延期边界；文档总验收已由 DOCS-01 独立完成。
+- [x] **M3-FINAL 最终回归**（M3-FINAL）：M3-BASE-01、A0–A18、P1/P2、B1–B4、C1/C2/C4/C5/C6、本地 TOKEN-01 与 CI-01 按批准范围全部验收；关联同一最终源码/二进制或说明等价性，无未解释 golden/兼容性差异。原验收时 C3、W1 与 Anthropic 独立 API 依用户决定延期；现 C3 取消，W1 与独立 API 继续待验；CARRY-01 继续独立非阻塞，其他缺环境项不能自动豁免。 [最终报告](review/M3-FINAL-2026-10-18.json)固定同一生产源码/二进制的完整适用验收、三平台 CI、旧版兼容与延期边界；文档总验收已由 DOCS-01 独立完成。
 - [x] **M3-DOCS-01 总文档验收**（M3-DOCS-01）：规范、命令帮助/示例、教程、adapter 总览和 M3 手册反映最终已验行为；任务/测试/日志证据互相对应，链接/围栏/摘要核对通过，历史归档未改。M3-FINAL 通过后关闭里程碑，并提示用户进行下一步规划。 [指南同步检查](review/M3-DOCS-GUIDES-2026-10-18.json)已覆盖当前实现、计数与失败策略/平台边界；本地真实、最终 CI 与 FINAL 已完成；[最终文档核对](review/M3-DOCS-01-2026-10-18.json)通过，关闭本项和本轮 M3。
 
 ## 2026-10-17 用户确认的延期真实验收

@@ -299,13 +299,13 @@ STYLE 的 hook 输出**只允许**这几样：`additionalContext`、`systemMessa
 - probe 等待现有 STYLE hook 的关联回调，只有本次私有租约/收据可新增；不改配置、信任、包、lock/index 或订阅面。OnAny 只提交不可变安全元数据，观察任务按 5ms/六层祖先预算异步捕获 OS 身份，不由正常 hook 退出等待；完整文件哈希由管理进程核对。观察器错误不得影响正常 hook，重放也不会触发真实 probe。真实事件本身的常规 state/stats/log 更新不被回滚。
 - callback-observed 与规则已投递分别记录；run ID/绑定/进程来源仅作本机关联，不是防同用户伪造的认证。B1/C1 还须独立原生来源、输出/投递和清理证据；A1/A2 fixture 不能提前关闭真实验收。
 
-### 8.10 M3-D3 项目与云端隔离评审稿
+### 8.10 M3-D3 项目隔离评审稿
 
-本节项目部分已获用户确认，由 T30 实现并通过 [A6](../review/M3-A6-2026-10-17.json)；云端/插件已于 2026-10-17 获用户批准、待实现，详见 [D3 范围契约](../review/M3-D3-ROUTES-2026-10-17.md)。项目入口只从进程 cwd/显式项目入口定位唯一受管声明，核对规范根与私有 binding；不能相信 payload.cwd 来选择另一个根，不调用 Git/网络/包编译。缺安装、歧义、换根或环境根不一致经 agenthooks 既有 codec/策略报告，不退到用户 index，不以管理退出码改变 fail-open/fail-closed。
+本节项目部分已获用户确认，由 T30 实现并通过 [A6](../review/M3-A6-2026-10-17.json)；插件已完成 T32/A8；云端功能于 2026-10-18 由用户决定移除，详见 [D3 范围契约](../review/M3-D3-ROUTES-2026-10-17.md)。项目入口只从进程 cwd/显式项目入口定位唯一受管声明，核对规范根与私有 binding；不能相信 payload.cwd 来选择另一个根，不调用 Git/网络/包编译。缺安装、歧义、换根或环境根不一致经 agenthooks 既有 codec/策略报告，不退到用户 index，不以管理退出码改变 fail-open/fail-closed。
 
 每个项目/clone 的 index/state/stats/codec cache/probe 分离，用户/项目不同名包允许同时生效，不承诺跨范围优先级/共同预算/正文去重；同一 harness 的同名包在管理入口阻断。项目 root 定位与绑定归 app；协议、事件与原生输出继续归 agenthooks，core 不识别项目/harness 配置。Claude 从子目录启动的静态向上发现与 hook settings 发现不同，不以其一推断另一种投递。
 
-云端入口只加载 manifest 验证过的预编译 bundle，状态写云端私有 HOME，不写仓库或自动下载/编译；固定 runner 的预置为外部前提。native 仍由原生执行，原文与依赖如实披露，不声称任意 shell 跨平台可用。插件禁用只停止插件 hook，静态 user rules 直到 STYLE uninstall 才移除；真实加载/信任和新会话无残留仍待 B2/C2–C4。
+云端 bundle 运行入口及专用状态目录已移除。Claude 项目 hook 遇到 `CLAUDE_CODE_REMOTE=true` 经原 codec/安装级失败策略返回不支持，不加载规则、不写状态，也不回退用户 index。本地项目继续严格核对私有 binding。插件禁用只停止插件 hook，静态 user rules 直到 STYLE uninstall 才移除；本地真实 B2/C2/C4 已通过。
 
 ### 8.11 M3-D4 refresh 状态隔离评审稿
 
@@ -313,7 +313,7 @@ STYLE 的 hook 输出**只允许**这几样：`additionalContext`、`systemMessa
 
 snapshot/explain 必须捕获新增状态并保留只读、严格解码、文件身份、总量和漂移检查；原生 ID、事件/模板正文和私有路径不得进入日志或说明。占位早于 stdout，进程崩溃可能损失本次补发，不能把 output 视为原生已投递。agenthooks 保持 codec、事件表与配置渲染职责；当前锁实现支持 macOS/Linux，Windows 仍待 D11/T70。新增 `refresh/<harness>.json` 为独立 format 1，单文件 4 MiB、收据与游标合计 40,000 项；snapshot 总限额仍为 16 MiB / 10,000 文件，源锁只读取得且不复制。冷路径清理先取得同一锁再隔离过期目录，活动写入者保持。实现/恢复边界见 [使用说明](../STYLE-REFRESH.md) 与 [A9](../review/M3-A9-2026-10-17.json)。
 
-M3-T31 的 Claude 项目入口在 `CLAUDE_CODE_REMOTE=true` 时实际校验 cloud entry v1；仅从根目录的完整 bundle 加载，状态位于仓库外 HOME。失败走原 codec/策略，不回落本机私有 binding。见[云端说明](../STYLE-CLOUD.md)。
+M3-T31 已移除，C3 已取消；当前运行时不再支持 cloud entry v1 或读取 cloud manifest。
 
 D5 模板字段/可用事件沿 §4 条件字段定义；`reads.event` 精确列出去掉 event. 的字段名，包/规则/from 取并集。来源由 adapter 声明，缺失默认空串且不从会话读历史正文。围栏不保证模型抗注入；stats/state/日志/trace 不记录原文，显式 explain wire 按诊断约定返回渲染输出。
 

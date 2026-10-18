@@ -2,11 +2,11 @@
 
 更新时间：2026-10-18
 
-最新授权：用户于 2026-10-17 要求“所有评审全部通过，完全完成M3”。T31/T32 恢复实施，后续设计先记录契约后直接推进；下文早期“暂缓/待用户评审”叙述保留决策背景，以本条和逐项证据为准。授权不替代实现、测试或真实环境验收。
+最新范围决定（2026-10-18）：用户要求删除 Claude 云端功能，并确认未安装过、无需保留清理逻辑。T31/A7 标为已移除，C3 取消；本地用户/项目/插件路线保留。原 2026-10-17 的完整实施授权及既有证据保留为历史。
 
 本文件是 STYLE CLI M3 的持久化任务清单。每项完成后同步状态和可重复证据，测试矩阵见 [STYLE-M3-TESTS.md](STYLE-M3-TESTS.md)，执行记录追加到 [PROGRESS.md](PROGRESS.md)。M1、M2 已关闭并只读归档；上一里程碑的事实见 [M2 任务清单](STYLE-M2-TASKS.md)、[M2 测试矩阵](STYLE-M2-TESTS.md) 和 [M2 总验收报告](review/M2-DOCS-01-2026-10-17.json)。
 
-当前总状态：M3 于 2026-10-18 按用户确认的范围完成并关闭。D0–D11、全部实现/A0–A18、P1/P2、两家各三条本地路线、本地 exact、最终三平台 CI、FINAL 与 DOCS-01 均通过。[总验收](review/M3-FINAL-2026-10-18.json)和[文档关闭报告](review/M3-DOCS-01-2026-10-18.json)固定证据。用户延期的 C3、W1/REAL-04、Anthropic 独立 API 保持待验；官方校准仍两家各 0/40、独立非阻塞。下一步进行下一里程碑规划。
+当前总状态：M3 于 2026-10-18 按用户确认的范围完成并关闭，[总验收](review/M3-FINAL-2026-10-18.json)和[文档关闭报告](review/M3-DOCS-01-2026-10-18.json)保留原受验源码的证据。补充 [M3-REMOVE-01 报告](review/M3-REMOVE-01-2026-10-18.json)验证删除 Claude 云端能力；本地两家各三条路线保留，C3 已取消。W1/REAL-04、Anthropic 独立 API 仍待验；官方校准两家各 0/40、独立非阻塞。
 
 ## 范围与推进顺序
 
@@ -17,7 +17,7 @@
 | 1 | 基线与架构 | M3-00、M3-01、M3-D0、M3-T00 |
 | 2 | 诊断 | M3-D1、M3-T10、M3-T11：`explain`、`probe` |
 | 3 | 来源与更新 | M3-D2、M3-T20–T22：Git 来源、`update`、`--frozen` |
-| 4 | 安装路线 | M3-D3、M3-T30–T32：项目级路线、Claude 云端会话、Claude 插件路线 |
+| 4 | 安装路线 | M3-D3、M3-T30、M3-T32：项目级路线、Claude 插件路线；T31 已移除 |
 | 5 | 运行时 | M3-D4–D8、M3-T40–T45：`refresh`、事件内容围栏、`provider`、`unknown`、用户 effort 映射、规则级 `fail: closed` |
 | 6 | 计数与平台 | M3-D9–D11、M3-T50、M3-T60、M3-T70：`--count=exact`、native 扩展评估、Windows |
 | 7 | 收尾 | M3-T80、M3-PREP-01/02、M3-REAL-01–04、M3-CI-01、M3-FINAL、M3-DOCS-01 |
@@ -31,6 +31,7 @@ M3 继续完整支持 Codex 与 Claude Code；其他 harness 的完整接入留�
 - `[x]` 已完成，且有命令、fixture、golden 或真实运行证据。
 - `[ ]` 尚未开始或尚未执行；`[~]` 部分完成或被环境阻塞。
 - `[!]` 已知问题或设计风险；`[?]` 等待真实环境验证。
+- `[-]` 用户取消或已移除，不计为验收通过；保留编号与历史证据。
 - `M3-D*` 为设计定稿，`M3-T*` 为实现，`M3-CARRY-*` 为遗留，`M3-RV-*` 为审查风险，`M3-PREP-*` 为真实验收准备；测试编号沿用 BASE、A、B、C、CI、DOCS，并增加 TOKEN、W。
 - 每条写明目标、依赖、产出和测试编号。设计项先回写相关 `docs/spec`，再进入实现。2026-10-17 用户明确“开始推进，所有评审全部通过，完全完成M3”，批准后续设计由 agent 定稿推进，并恢复 T31/T32；这项授权不替代测试和真实环境证据。
 - 提交消息带任务或测试编号，例如 `docs(M3-00): ...`、`feat(M3-T10): ...`。未通过的测试保持原状态，记录复现命令、原因、影响和下一步。
@@ -79,8 +80,8 @@ M3-CARRY-01 与 `--count=exact` 产品验收分别记录；前者的非阻塞决
 - [x] **M3-T21 update**：目标是按 D2 更新既有来源并保留授权边界。依赖：M3-T20。产出：明确选包、更新预览、版本/来源与 native 变更确认、未选批准基线、联合编译和多包事务/回滚错误报告，不连带批准其他包。测试：M3-A4。证据：[完整报告](review/M3-A4-2026-10-17.json)、[使用说明](STYLE-SOURCES.md#明确选包更新) 与 [built CLI 脚本](../scripts/check_m3_update.py)。31 个新函数/244 个叶子用例、16 份新增 golden、逐包/逐文件故障恢复、三路线 native/旧安装与 24 项 built CLI/基线 runtime 对照均通过；双 module fresh test/vet、app/source 和 agenthooks 全 module race、59 采集器、40 smoke、16 真旧迁移、12 回退及 17 Git 门禁通过。agenthooks 保留协议/渲染/owner/事务职责，仅完善类型化恢复错误、备份 mode/mtime 和恢复失败保留；T22/A5、真实投递、Windows 和远端 CI 不在本项关闭。
 - [x] **M3-T22 frozen 安装**：目标是按锁文件重现安装。依赖：M3-T21。产出：按 D2 定稿实现 `install --frozen` 的整锁离线恢复及本地/link/Git 兼容，保全锁字节/绑定/批准边界，缺必要内容或结果不匹配给出明确结果。测试：M3-A5。证据：[完整报告](review/M3-A5-2026-10-17.json)、[使用说明](STYLE-SOURCES.md#整锁离线恢复) 和 [built CLI 脚本](../scripts/check_m3_frozen.py)。21 个新函数/209 个叶子用例、16 份新增 golden、三路线离线恢复与逐包/逐文件回滚通过；双 module fresh test 3,163 条 pass/0 fail，vet、app/source race 1,299 条 pass、59 采集器、30 frozen CLI、24 update CLI、40 smoke、16 真旧迁移、12 回退及 17 Git 门禁通过。锁 bytes/mode/mtime/身份不变、零 Git/检测/缓存写入；agenthooks 无改动。无法重现旧 rendered 变更集摘要的部分配置修复及缺失 Claude 已登记 rules 保守拒绝，程序路径变更须先普通安装更新绑定。跨根/项目仍属 D3，真实投递/Windows/CI 未关闭。
 - [x] **M3-T30 项目级路线**：目标是支持 Codex/Claude 的本地项目安装。依赖：M3-D3 项目部分（已获用户确认）。产出：显式 `--project`、两条项目路线、规范根私有隔离、lock 3/声明/binding、用户同名冲突阻断、clone 整批重现确认及管理/诊断的一致生命周期。测试：M3-A6；真实验收 M3-B2、M3-C2。证据：[完整报告](review/M3-A6-2026-10-17.json)、[使用说明](STYLE-PROJECTS.md)、[CLI 检查脚本](../scripts/check_m3_project.py) 与 44 份新增 golden。33 个新函数/166 个叶子用例、18 项 built CLI/真实 Git worktree 检查、逐包/逐文件故障恢复与旧程序 format 3 拒绝通过；双 module fresh test 3,347 pass/0 fail、vet、相关 race、68 采集器及全部旧安装/来源门禁通过，24 项既有 opt-in skip 单列。agenthooks 保留协议/配置渲染/owner/文件事务职责，仅扩展项目 hook 与用户 trust 分根和归属摘要。仅关闭 T30/A6；D3 部分完成，云端/插件暂缓，真实 B2/C2、Windows 和远端 CI 待验。
-- [x] **M3-T31 Claude 云端交付**：目标是按 D3 提供经证据确认的项目交付方式（2026-10-17 用户恢复完整 M3 范围）。依赖：M3-T30。产出：所需项目产物、加载条件、路径/运行时可移植性检查和操作说明；无可用真实环境时明确待验，不能用本地配置存在代替云端生效。测试：M3-A7、M3-C3。证据：[A7 报告](review/M3-A7-2026-10-17.json)、[使用说明](STYLE-CLOUD.md)与 [CLI 检查](../scripts/check_m3_cloud.py)。54 条新 pass/race、根 module 2,989 pass、vet、8 项 built CLI 与 40 smoke 通过；明确导出批准 bundle、相对来源、私有云状态、摘要/版本拒绝、全预览、取消恢复、重导出与最后卸载。仅关闭产物验收，真实 C3 保持 `[?]`。
-- [x] **M3-T32 Claude 插件路线**：目标是按 D3 支持插件安装与卸载（2026-10-17 用户恢复完整 M3 范围）。依赖：M3-T31。产出：插件产物、登记/启用边界、与用户/项目路线切换及残留检查，复用 agenthooks 渲染。测试：M3-A8、M3-C4。证据：[A8 报告](review/M3-A8-2026-10-17.json)、[插件说明](STYLE-CLAUDE-PLUGIN.md)与 [CLI 检查](../scripts/check_m3_claude_plugin.py)。本地 marketplace/launcher、只读登记检查、互斥切换、多包/native 更新、lock 3 旧程序门禁与取消恢复通过；双 module fresh test 3,555 pass/0 fail、vet、专项 race、8 项插件 CLI、8 项云端 CLI、40 smoke 与旧迁移/replace 回归通过。仅关闭离线 A8，C4 真实登记/投递仍待验。
+- [-] **M3-T31 Claude 云端交付（已移除）**：2026-10-18 用户要求删除功能，且明确未安装过、不保留清理逻辑。原实现及 [A7 报告](review/M3-A7-2026-10-17.json)仅保留历史证据；当前无 export 命令、bundle runtime、专用状态或卸载兼容分支。测试：M3-A7、M3-C3、M3-A19。A7/C3 原编号保留，范围变更由 M3-REMOVE-01 / M3-A19 验证，C3 取消。
+- [x] **M3-T32 Claude 插件路线**：目标是按 D3 支持插件安装与卸载（2026-10-17 用户恢复完整 M3 范围）。依赖：M3-T30（T31 移除后不再依赖云端）。产出：插件产物、登记/启用边界、与用户/项目路线切换及残留检查，复用 agenthooks 渲染。测试：M3-A8、M3-C4。证据：[A8 报告](review/M3-A8-2026-10-17.json)、[插件说明](STYLE-CLAUDE-PLUGIN.md)与 [CLI 检查](../scripts/check_m3_claude_plugin.py)。本地 marketplace/launcher、只读登记检查、互斥切换、多包/native 更新、lock 3 旧程序门禁与取消恢复通过；双 module fresh test 3,555 pass/0 fail、vet、专项 race、8 项插件 CLI、8 项云端 CLI、40 smoke 与旧迁移/replace 回归通过。仅关闭离线 A8，C4 真实登记/投递仍待验。
 - [x] **M3-T40 refresh**：目标是按 D4 支持周期补发。依赖：M3-D4。产出：校验/plan/compile/runtime/state/stats 的一致实现和兼容 fixture。测试：M3-A9、M3-B3、M3-C5。证据：[完整报告](review/M3-A9-2026-10-17.json)、[使用说明](STYLE-REFRESH.md) 与 [built CLI 门禁](../scripts/check_m3_refresh.py)。29 个通过的新测试函数/85 个叶子用例（98 条含分组 pass），另有进程 helper 由父测试启动验证；覆盖滚动时钟/原生 ID、旧 claim 升级、生命周期、跨包去重、OS 锁/崩溃/清理、写入与回滚故障、只读 snapshot、严格 format 1/2 和五路线审批事务。双 module fresh test 3,445 pass/0 fail、vet、相关 race、68 采集器、50 refresh CLI 及全部旧门禁通过；五路线各 50 次进程采样 p95 为 9.269–16.919ms。24 项既有 opt-in skip 与 helper 的父进程非工作模式 skip 单列；agenthooks/go.mod/旧 golden 不改。仅关闭 T40/A9；真实 B3/C5、Windows、远端 CI 与官方计数不关闭。
 - [x] **M3-T41 事件内容模板**：目标是按 D5 开放经围栏处理的事件内容。依赖：M3-D5。产出：字段访问、转义/截断、模板与预算支持及敏感数据日志检查。测试：M3-A10、M3-B3、M3-C5。证据：[A10 报告](review/M3-A10-2026-10-17.json)和[使用说明](STYLE-EVENT-CONTENT.md)。11 个新函数、最终专项/race 57 pass；根 module 全量 3,079 pass/0 fail，35 项五路线 CLI、8 云端/8 插件 CLI、40 smoke 与 refresh 回归通过。agenthooks/旧 golden 未变，真实 B3/C5 待验。
 - [x] **M3-T42 provider 条件**：目标是按 D6 使用有来源依据的模型服务信息。依赖：M3-D6。产出：adapter 数据声明、状态更新和条件评估，区分 harness 标识与服务 provider。证据：[A11](review/M3-A11-2026-10-17.json)的六组来源/缓存/重放/格式与生命周期验收通过，双 module 3,707 pass/0 fail、95 新 pass、专项 race/vet、35 provider CLI/35 事件兼容/40 smoke；见[说明](STYLE-PROVIDER.md)。测试：M3-A11、M3-B3、M3-C5。
@@ -99,7 +100,7 @@ M3-CARRY-01 与 `--count=exact` 产品验收分别记录；前者的非阻塞决
 - [x] **M3-PREP-01 两家真实验收准备**：目标是准备可复核的 Codex/Claude runbook。依赖：M3-D1、M3-T11 和各功能设计。产出：[M3 手册](STYLE-M3-MANUAL.md)、固定源码/二进制/观察器副本、独立 native/请求采集与显式私有基线恢复。测试：M3-P1。[准备报告](review/M3-P1-2026-10-18.json)记录六路线安装/sync/卸载与 bytes/mode 干跑、全量 76 项采集器及最终 10 项 M3 自测、帮助/语法检查；新增原生时序、缺证据/漂移拒绝、短写入和 symlink 恢复保护。仅关闭准备，B/C 必须实际执行。
 - [x] **M3-PREP-02 云端、计数与 Windows 准备**：目标是明确特殊环境的执行条件。依赖：M3-PREP-01、M3-D3、M3-D9、M3-D11。产出：[手册 P2](STYLE-M3-MANUAL.md#延期环境-p2)和[准备报告](review/M3-P2-2026-10-18.json)。云端八项离线交付入口、local exact 两编码、API 缺 key 零请求拒绝通过；Windows 自动化依据 A17，真实 host/harness 入口另列。三类真实环境已由用户延期，保持待验；准备不计 C3/W1/API 成功。测试：M3-P2。
 - [x] **M3-REAL-01 Codex 真实验收**：目标是验证受支持路线上的实际调用与投递。依赖：M3-T80、M3-PREP-01。产出：固定版本下的诊断、项目隔离、运行时和 native 证据，以及卸载恢复；既有 user/plugin 两路线独立核对，新增项目路线另测。测试：M3-B1–B4。Codex 0.159.3 用户路线已完整通过[真实证据](review/M3-B-CODEX-USER-2026-10-18.json)，插件路线也通过[缓存修复后的完整真实验收](review/M3-B-CODEX-PLUGIN-2026-10-18.json)，项目及用户最终复验均完成，[三路线总报告](review/M3-REAL-01-2026-10-18.json)固定同一二进制及逐路线完整证据。 [六路线未触发/中断检查](review/M3-PROBE-NEGATIVE-2026-10-18.json)已通过：有效 index、12 次失败状态/完整清理与显式配置恢复；无模型调用，不据此关闭真实投递。
-- [~] **M3-REAL-02 Claude 真实验收**：目标是验证本地用户/项目/插件与云端支持范围。依赖：M3-T80、M3-PREP-01、M3-PREP-02。产出：真实回调、加载/投递、信任、运行时与卸载恢复证据；本地与云端分开判定。测试：M3-C1–C6。 Claude Code 2.1.301 用户路线已通过[真实验收](review/M3-C-CLAUDE-USER-2026-10-18.json)，[项目路线](review/M3-C-CLAUDE-PROJECT-2026-10-18.json)也已通过原生 UI 信任与实际模型完整验收；[插件路线](review/M3-C-CLAUDE-PLUGIN-2026-10-18.json)也完整通过。[本地总报告](review/M3-REAL-02-LOCAL-2026-10-18.json)关闭全部适用本地子项；本任务只因云端 C3 延期保留 `[~]`。 [六路线未触发/中断检查](review/M3-PROBE-NEGATIVE-2026-10-18.json)已通过：有效 index、12 次失败状态/完整清理与显式配置恢复；无模型调用，不据此关闭真实投递。
+- [x] **M3-REAL-02 Claude 真实验收**：目标是验证本地用户/项目/插件支持范围。依赖：M3-T80、M3-PREP-01。产出：真实回调、加载/投递、信任、运行时与卸载恢复证据。测试：M3-C1、M3-C2、M3-C4–C6；C3 已由用户取消。Claude Code 2.1.301 三条本地路线的独立真实证据见[本地总报告](review/M3-REAL-02-LOCAL-2026-10-18.json)。删除后的本地回归已由 [M3-A19](review/M3-REMOVE-01-2026-10-18.json)通过，按保留范围关闭；历史真实结果不重写，此次未重复模型调用。
 - [~] **M3-REAL-03 exact 真实计数**：目标是验证 D9 宣称的计数能力。依赖：M3-T50、M3-PREP-02，以及对应编码/接口环境。产出：真实计数结果、模型/编码版本、文本与请求摘要及报告范围；与旧校准遗留分别记录。测试：M3-TOKEN-01。 [最终二进制本地证据](review/M3-TOKEN-LOCAL-2026-10-18.json)：137 文本 × 两编码的 274 计数、共 287 CLI 检查及完整词表摘要通过；本次必过的本地子项已完成，独立 API 子项按用户决定保持 `[?]`，不计官方 40 条校准。
 - [?] **M3-REAL-04 Windows 真实验收**：目标是验证 Windows 上实际安装和 hook 执行。依赖：M3-T80、M3-PREP-02。产出：原生 shell、受支持 harness 路线、stdin/退出码、状态并发和卸载恢复证据；交叉编译不视为通过。测试：M3-W1。
 
@@ -109,7 +110,13 @@ M3-CARRY-01 与 `--count=exact` 产品验收分别记录；前者的非阻塞决
 - [x] **M3-FINAL 最终回归**：目标是关闭完整交付范围的验收。依赖：M3-REAL-01–04 中未延期的验收、M3-CI-01。产出：离线、升级/失败恢复、两家真实环境、exact 与 Windows 的一致证据；缺环境的必需验收不能自动转为非阻塞。测试：M3-FINAL。M3-CARRY-01 保留独立非阻塞状态。 [最终报告](review/M3-FINAL-2026-10-18.json)固定同一生产源码/二进制的完整适用验收、三平台 CI、旧版兼容与延期边界；文档总验收已由 DOCS-01 独立完成。
 - [x] **M3-DOCS-01 总文档验收**：目标是同步最终能力和限制并关闭 M3。依赖：M3-FINAL。产出：规范、教程、adapter 总览、M3 手册与任务/测试/进度记录一致，所有状态有证据，归档不改；关闭时提示用户规划下一里程碑。测试：M3-DOCS-01。 [指南同步检查](review/M3-DOCS-GUIDES-2026-10-18.json)已覆盖当前实现、计数与失败策略/平台边界；本地真实、最终 CI 与 FINAL 已完成；[最终文档核对](review/M3-DOCS-01-2026-10-18.json)通过，关闭本项和本轮 M3。
 
-早期按用户决定先完成项目路线、暂缓云端/插件，后由 2026-10-17 的完整实施授权恢复。D0–D11 和 T00–T80 现已全部完成，逐项历史证据保留；本轮适用的真实验收、最终 CI 与文档收尾也已完成，延期边界见上方条目。
+早期先做项目，后由 2026-10-17 授权完成实现与原适用范围验收；逐项报告保留历史。2026-10-18 用户再要求删除云端，T31/A7 移除、C3 取消，以本节下方最新范围决定和当前条目为准。
+
+## 2026-10-18 删除 Claude 云端功能
+
+- [x] **M3-REMOVE-01 删除 Claude 云端功能**：目标是按用户决定移除云端能力。依赖：用户明确取消 T31/C3；保留 T30/T32。产出：删除 export 命令/API、bundle 运行时及 cloud state、doctor/卸载分支和云端正向测试；当前设计/教程/矩阵同步。用户确认未安装过，不保留旧产物清理。测试：M3-A19，另复验本地六路线、旧版兼容、双 module test/vet 和采集器；历史 M1/M2、既有报告及 golden 不改，PROGRESS 仅追加。证据：[补充报告](review/M3-REMOVE-01-2026-10-18.json)和[文档检查](review/M3-REMOVE-01-DOCS-2026-10-18.json)。
+
+T31/A7 的历史通过记录不表示当前支持云端。C3 从未执行真实托管验收，此次为取消，不能标为通过。此前延期决定中的 W1 与独立 API 继续有效。原 FINAL/CI/源码绑定报告是原提交的快照，删除功能后的源码以本次补充报告为准。
 
 ## 后续 backlog
 

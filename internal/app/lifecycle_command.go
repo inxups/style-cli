@@ -272,14 +272,7 @@ func runUninstall(ctx context.Context, service *Service, args []string, out, err
 			fmt.Fprintf(errOut, "style uninstall: encode report: %v\n", err)
 			return ExitInvalid
 		}
-		if result.AwaitingConfirmation {
-			return ExitInvalid
-		}
 		return ExitOK
-	}
-	if result.AwaitingConfirmation {
-		fmt.Fprintf(out, "uninstall preview: packages=%v cloud_files=%v; pass --yes to apply\n", result.Removed, result.CloudFiles)
-		return ExitInvalid
 	}
 	for _, name := range result.Removed {
 		fmt.Fprintf(out, "uninstalled %s\n", name)

@@ -1,8 +1,8 @@
 # STYLE 当前 adapter 实现总览
 
-更新时间：2026-10-18。M3 已按确认范围完成并关闭，见[最终报告](review/M3-FINAL-2026-10-18.json)及[文档关闭核对](review/M3-DOCS-01-2026-10-18.json)。D0–D11、T00–T80/A0–A18、两家各三条本地真实路线、本地 exact、最终三平台 CI 和旧版本兼容均通过；源码与二进制摘要逐报告固定。用户延期的 C3、W1 和 Anthropic 独立 API 保持待验，官方校准各0/40仍非阻塞。范围、状态和隔离步骤见[M3 任务](STYLE-M3-TASKS.md)、[测试矩阵](STYLE-M3-TESTS.md)、[手册](STYLE-M3-MANUAL.md)。
+更新时间：2026-10-18。M3 已按确认范围完成并关闭，见[最终报告](review/M3-FINAL-2026-10-18.json)及[文档关闭核对](review/M3-DOCS-01-2026-10-18.json)。原关闭验收的 D0–D11、T00–T80/A0–A18、两家各三条本地真实路线、本地 exact、三平台 CI 和旧版本兼容均通过；源码与二进制摘要逐报告固定。用户已移除 Claude 云端能力，C3 取消，补充回归见[删除报告](review/M3-REMOVE-01-2026-10-18.json)；W1 和 Anthropic 独立 API 保持待验，官方校准各0/40仍非阻塞。范围、状态和隔离步骤见[M3 任务](STYLE-M3-TASKS.md)、[测试矩阵](STYLE-M3-TESTS.md)、[手册](STYLE-M3-MANUAL.md)。
 
-M1/M2 保持只读历史，M2 native/stats/去重/rules/replace 与真实验收事实继续有效。用户延期 C3 托管云端、W1 实际 Windows harness 和 Anthropic 独立 API；官方校准两家各0/40继续非阻塞。本地 exact 编码不替代官方模型校准。文中历史 provider 字段仍表示 harness，新的 when.provider 则表示模型服务配置请求。
+M1/M2 保持只读历史，M2 native/stats/去重/rules/replace 与真实验收事实继续有效。用户移除 Claude 云端能力；W1 实际 Windows harness 和 Anthropic 独立 API 继续延期；官方校准两家各0/40继续非阻塞。本地 exact 编码不替代官方模型校准。文中历史 provider 字段仍表示 harness，新的 when.provider 则表示模型服务配置请求。
 
 agenthooks 保留协议、事件、原生输出、配置渲染、owner/信任合并与文件事务职责；adapter 提供平台/数据/能力事实，core 保持通用匹配、预算和状态。M3 已移除名称校验白名单及 engine 的具体 Claude 输出分支，分别由注册表目录和输出能力替代。
 
@@ -455,7 +455,7 @@ agenthooks 继续负责协议、配置渲染、owner/trust 与文件事务；App
 
 ### 11.7 M3 frozen 离线验收
 
-M3-T22/A5 的 [`InstallFrozen`](../internal/app/frozen.go) 复用锁定 adapter、共享管理 guard/输入复核与 T21 多包事务；[`ReadLocked`](../internal/source/cache.go) 只校验既有完整缓存。agenthooks 的协议、配置渲染、owner/trust 和 ApplyFiles 保持原职责，无新增修改。恢复的固定绑定、批准和部分产物保守失败边界见 [使用说明](STYLE-SOURCES.md#整锁离线恢复)。项目 T30/A6 和后续云端/插件 T31/T32 均已完成，当前真实状态见 M3 矩阵。
+M3-T22/A5 的 [`InstallFrozen`](../internal/app/frozen.go) 复用锁定 adapter、共享管理 guard/输入复核与 T21 多包事务；[`ReadLocked`](../internal/source/cache.go) 只校验既有完整缓存。agenthooks 的协议、配置渲染、owner/trust 和 ApplyFiles 保持原职责，无新增修改。恢复的固定绑定、批准和部分产物保守失败边界见 [使用说明](STYLE-SOURCES.md#整锁离线恢复)。项目 T30/A6 和插件 T32/A8 已完成，云端 T31 已移除，当前真实状态见 M3 矩阵。
 
 [A5](review/M3-A5-2026-10-17.json) 的 21 个新函数/209 个叶子用例、16 份 golden、30 项 built CLI、三路线 owner 恢复与拒绝、app/source race 和完整兼容回归通过。旧 rendered 变更集摘要无法重现的部分修复保守失败；后续真实投递和平台结果见 [M3 测试矩阵](STYLE-M3-TESTS.md)。
 
@@ -471,7 +471,7 @@ M3-T22/A5 的 [`InstallFrozen`](../internal/app/frozen.go) 复用锁定 adapter�
 | Codex skill / 子 agent | 云端 skill 不支持且 plan 提示；原生工具名未采集。FINAL-07 已覆盖 fresh/fork/depth2 子 agent context、工具注入/阻断与独立 scope |
 | Claude | workspace trust 无法自动确认；Read新订阅热更新已测。所测环境未实现实际关闭思考，保留不产出none；六事件USER可见，clear来源启动USER未显示；SubagentStart不支持上下文注入 |
 | 成本与超限 | 官方计数仍各0/40、待API key；本地两编码对照不等于模型校准，真实订阅会话统计不代表逐规则成本或典型账单。两家原生文件预览已测，字符边界不等于token校准，Claude ASCII结果不外推Unicode边界 |
-| 路线与 provider | 六条 POSIX 路线和云端 bundle 已实现；Windows 仅两家 user。新增真实验收见 M3 矩阵，其他完整 harness adapter 留待 M4 |
+| 路线与 provider | 六条本地 POSIX 路线已实现，Claude 云端已移除；Windows 仅两家 user。新增真实验收见 M3 矩阵，其他完整 harness adapter 留待 M4 |
 | M2 Claude | C1–C4 真实交互通过，用户 rules/生产静态/去重/native/matcher/卸载恢复均有原生证据；D5 回退方案生效。新 rules compact 行为不由本次新会话验收外推 |
 | 运行时扩展 | provider/unknown、用户 effort 映射、refresh、围栏及规则级故障保护已实现；原生数据缺失和 index/宿主故障边界仍披露 |
 
@@ -487,15 +487,15 @@ U9控制配置补测已完成，见 [THINKING](review/M1-FINAL-06-THINKING-2026-
 
 ## 12. M3-D3 路线评审边界
 
-[安装范围与交付路线评审稿](review/M3-D3-ROUTES-2026-10-17.md)已结合 Claude Code 调查和静态加载补测回写规范；用户已确认先做项目级，T30 已实现并通过 [A6](review/M3-A6-2026-10-17.json)，后续完整 M3 授权已恢复并完成云端/插件实现。`codex-project`、`claude-project` 使用私有独立安装根、显式 --project、lock 3 与可移植入口；Codex 项目静态降级以免覆盖用户 developer_instructions，Claude 项目静态 rules 与 hook 发现分开报告。Claude 插件使用手动登记的本地 marketplace hook 载体，静态继续在用户 rules，原生缓存残留单列。
+[安装范围与交付路线评审稿](review/M3-D3-ROUTES-2026-10-17.md)已结合 Claude Code 调查和静态加载补测回写规范；用户已确认先做项目级，T30 已实现并通过 [A6](review/M3-A6-2026-10-17.json)，后续完整 M3 授权已完成插件实现；Claude 云端能力于 2026-10-18 另由用户移除。`codex-project`、`claude-project` 使用私有独立安装根、显式 --project、lock 3 与可移植入口；Codex 项目静态降级以免覆盖用户 developer_instructions，Claude 项目静态 rules 与 hook 发现分开报告。Claude 插件使用手动登记的本地 marketplace hook 载体，静态继续在用户 rules，原生缓存残留单列。
 
 本轮原生补测绑定 Codex 0.159.3 / Claude Code 2.1.301，仅以回环 stub 请求中的固定标记核对加载；未调用真实模型。该调查不替代 A6；A6 现已另行完成，A7/A8 和 Windows A17 后续已通过；真实 B2/C2–C4、最终 CI 和官方各0/40 的当前状态以 M3 矩阵为准，复核证据见 [D3 报告](review/M3-D3-DOCS-2026-10-17.json)。
 
-M3-T31 已提供 [Claude 云端 bundle 导出与入口](STYLE-CLOUD.md)，通过 [A7 离线验收](review/M3-A7-2026-10-17.json)。使用已批准的 claude-project 配置、预置 PATH runner、显式 remote 分支及私有 HOME 状态；实际托管 C3 仍待验。Claude 插件 T32/A8 已完成，实际原生登记/投递另属 C4。
+M3-T31 已由用户移除，C3 取消；[移除说明](STYLE-CLOUD.md)保留历史链接入口。当前没有 export、bundle 运行时或云端专用状态/清理分支。Claude 插件 T32/A8 与真实 C4 已完成。
 
 Claude plugin 的可选 `RegistrationInspector` 给出登记状态/原生命令/残留；`TransitionPlanner` 原子切换 user/plugin，active 或 unknown 登记阻止删除源目录。agenthooks 增加显式本地 marketplace 目标字段、渲染器与只读原生登记检查，零值保留既有 renderer 行为。锁允许仅 Claude plugin 的用户 format 3；项目仍须完整 binding。
 
-M3-T41 通过 [A10](review/M3-A10-2026-10-17.json)：两家 DataSource 对 event. 引用查询原 condition field 的来源；core 从本评估点 FieldReader 读取并进行 512 code point 截断/单行 JSON 围栏，agenthooks 协议与渲染不变。index 3 与 refresh 可组合，旧 index 继续可读；六路线管理/五路线实际配置启动器与云端 bundle 的离线验收通过。
+M3-T41 通过 [A10](review/M3-A10-2026-10-17.json)：两家 DataSource 对 event. 引用查询原 condition field 的来源；core 从本评估点 FieldReader 读取并进行 512 code point 截断/单行 JSON 围栏，agenthooks 协议与渲染不变。index 3 与 refresh 可组合，旧 index 继续可读；本地六路线管理/五路线实际配置启动器的离线验收通过；历史云端 bundle 验收对应的功能现已移除。
 
 ## 规则级故障保护
 

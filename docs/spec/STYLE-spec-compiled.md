@@ -209,11 +209,11 @@ T22/A5 的恢复实现与 [使用说明](../STYLE-SOURCES.md#整锁离线恢复)
 
 ### 10.2 M3-D3 范围与交付产物评审稿
 
-本节项目部分已获用户确认并由 T30 实现，通过 [A6](../review/M3-A6-2026-10-17.json)；云端/插件已于 2026-10-17 获用户批准、待实现，完整定义见 [D3 §3–7](../review/M3-D3-ROUTES-2026-10-17.md#3-存储根身份与兼容)。用户布局继续有效；项目的 lock/packages/approved/settings/build/state/cache/probes 分别位于用户基根 projects/规范路径摘要，项目声明和 hook 文件不包含机器绑定参数或私有 settings。两个 clone 的安装/信任独立，新 clone 只有重现候选并重新确认才能采用既有受管产物。项目声明 format 1 包含 effects_sha256、package_order 和 artifacts/static 摘要；lock 3 的 project 字段保存规范 root/base_home/home、entry_version、runner、声明摘要与各 harness config_dir/version/route，私有 binding 核对同一身份。多包首次复制安装可显式提供全部来源和各包 settings，采用的 STYLE 效果在卸载时移除，见 [项目说明](../STYLE-PROJECTS.md)。
+本节项目部分已获用户确认并由 T30 实现，通过 [A6](../review/M3-A6-2026-10-17.json)；插件已完成 T32/A8；云端功能于 2026-10-18 由用户决定移除，完整定义见 [D3 §3–7](../review/M3-D3-ROUTES-2026-10-17.md#3-存储根身份与兼容)。用户布局继续有效；项目的 lock/packages/approved/settings/build/state/cache/probes 分别位于用户基根 projects/规范路径摘要，项目声明和 hook 文件不包含机器绑定参数或私有 settings。两个 clone 的安装/信任独立，新 clone 只有重现候选并重新确认才能采用既有受管产物。项目声明 format 1 包含 effects_sha256、package_order 和 artifacts/static 摘要；lock 3 的 project 字段保存规范 root/base_home/home、entry_version、runner、声明摘要与各 harness config_dir/version/route，私有 binding 核对同一身份。多包首次复制安装可显式提供全部来源和各包 settings，采用的 STYLE 效果在卸载时移除，见 [项目说明](../STYLE-PROJECTS.md)。
 
 新路线使用 lock format=3 和显式 scope/binding，旧三路线保留 1/2，index format=1 不因项目增加字段；运行时不读取原锁/包。Codex 项目 append 静态槽位不可用，沿既有动态降级；Claude 项目写项目 rules。用户/项目同一 harness 同名包拒绝，不进行跨根编译去重或合并 state。
 
-cloud manifest format=1 与管理锁分开：相对路径/生成器与 runner 兼容版本/逐文件与 native 摘要、逻辑来源名，导出已批准 index/provenance，不包含私有绑定；sensitive-reserved 继续拒绝，普通字符串不自动识别为 secret，须完整披露。云端 state/stats/cache/probe 放私有 HOME。完整性不等于与当前源码同代，旧 bundle 要显式重新 export。Claude plugin 仅为 hook 载体，静态规则仍在用户 rules；禁用与完整移除分别验收。A6 已通过离线验收；A7/A8 尚未执行，真实 B2/C2–C4 保持待验。
+当前不再生成或读取 cloud manifest/bundle，也不保留 export receipt 或清理分支。Claude plugin 仍仅为 hook 载体，静态规则位于用户 rules；禁用与完整移除分别验收。A6/A8 和本地真实 B2/C2/C4 已通过；A7 为已移除功能的历史报告，C3 取消。
 
 ## 11. 依赖的 fork 改动
 
@@ -264,7 +264,7 @@ cloud manifest format=1 与管理锁分开：相对路径/生成器与 runner �
 
 **能力提醒**：Cursor 的 `additional_context` 能否送到模型各方说法矛盾；Gemini 会转义 `<>`；Kimi 只有提示词事件的纯文本能进上下文；Windsurf 完全不能注入；OpenCode 是进程内函数，每次请求重建系统提示词，不需要压缩处理。加这些 harness 时，压缩信号可能需要"信号和动作分开、延后补发"的做法（历史材料 `style-review/solution-2026-10-12.md` A2 未随本仓库分发），适配器接口里的 `CompactSignal()` 就是为它留的。
 
-M3-T31 已实现 cloud manifest format 1、相对逻辑来源、绑定文件摘要与私有 export receipt；支持显式重新导出和最后卸载的同事务移除，见[云端说明](../STYLE-CLOUD.md)。
+M3-T31 的云端导出、产物 schema 和专用卸载分支已移除；本地项目 lock 3 / 私有 binding 继续有效，见[项目说明](../STYLE-PROJECTS.md)。
 
 ## M3-D5 事件模板 index 3
 

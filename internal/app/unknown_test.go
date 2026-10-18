@@ -215,20 +215,3 @@ func TestM3A12FrozenMarkerMismatchIsReadOnly(t *testing.T) {
 		t.Fatal("non-strict lock accepted minimum marker")
 	}
 }
-
-func TestM3A12UnknownCloudBundle(t *testing.T) {
-	s, _, root, source := a7Setup(t)
-	writeSyncFile(t, filepath.Join(source, "STYLE.yaml"), a12Manifest())
-	if _, err := s.Install(context.Background(), InstallRequest{Source: source, Harnesses: []string{"claude-code"}, Yes: true}); err != nil {
-		t.Fatal(err)
-	}
-	a7Export(t, s)
-	_, files, err := readCloud(root)
-	if err != nil {
-		t.Fatal(err)
-	}
-	var index compile.Index
-	if err = json.Unmarshal(files[cloudDir+"/index.json"], &index); err != nil || index.Format != 5 {
-		t.Fatal(index.Format, err)
-	}
-}

@@ -148,7 +148,6 @@ func (s *Service) Doctor(ctx context.Context, request DoctorRequest) (DoctorResu
 			}
 		}
 	}
-	s.checkCloudExport(home, &result)
 	inventory, err := s.inspectAdapters(ctx, home, lock)
 	if err != nil {
 		return DoctorResult{}, err

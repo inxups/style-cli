@@ -2089,3 +2089,10 @@ Codex 0.159.3 与实际配置模型服务、固定生产 STYLE 二进制，在�
 - 主设计、adapter 总览、诊断/项目/真实手册、任务/测试当前入口同步到最终已验行为；保留 M2 已验事实及首次离线阶段的历史范围。Codex 插件原生缓存刷新、Claude 原生 trust/配置发现和 route 归因、本地 exact 与规则失败策略等边界有对应指南和实际结果。
 - 44 任务/39 测试及全部适用状态对应，当前 Markdown 的本地链接/锚点/围栏、77 份关闭归档（含 M1b）、101 份旧 golden、160 份既有历史 JSON、进度仅追加和963份源码绑定核对通过。[可复跑工具](review/M3-FINAL-VERIFY-2026-10-18.py)与[最终文档报告](review/M3-DOCS-01-2026-10-18.json)保留具体计数与命令。git diff --check 通过，最终 CI 后只有文档变更。
 - 关闭 DOCS-01 和用户批准范围的 M3。REAL-02/03 的混合状态仅表示延期子项，C3/W1/API 均未通过；官方两家各0/40仍非阻塞。提示用户进行下一步里程碑规划。
+
+## 2026-10-18 M3-REMOVE-01 删除 Claude 云端功能
+
+- 用户改为“claude云端功能删了吧”，并明确“没安装过，不需要保留清理逻辑”。删除 export 命令及 API、cloud manifest/bundle runtime、云端状态/cache/stats/probe、doctor/卸载 receipt 分支与专用 JSON 字段；没有保留旧产物清理。T31/A7 标记已移除，C3 取消、未计通过。Claude 本地 user/project/plugin 与 Codex 三条路线保留，agenthooks 协议/渲染/owner/事务代码未改。
+- 从 clean `f97847c` 开始；最终二进制 SHA256 `fd548913f8a62018f73acd85d64a0b4004f9d8133ff0a0f1549f475497ea1ca6`。临时三缓存、清理 CODEX_HOME/CODEX_SANDBOX 及 Claude/provider/effort 环境下，根 module 3,848 / agenthooks 550 pass、0 fail；2/23 条既有 skip 单列。双 vet、项目/Claude 插件/移除专项 race 213 pass、78 采集器通过。新增 3 个单元测试函数（7 条含分组 pass）及 11 项生产 CLI 检查证明 export 拒绝/零写入、remote 无投递/状态且保留 native fail-open/fail-closed、本地绑定与正常安装卸载。
+- 40 smoke、6 路线准备、18 项项目、8 项 Claude 插件、36 项六路线组合、12 replace、16 组真实旧布局升级通过，加上删除检查共 147 项；固定三份真实旧二进制及摘要。最初新增 fixture 的日志/会话去重断言、快照调用和误选较新旧版程序的失败保留，修正后只重跑受影响检查；最终全量通过。详见[补充报告](review/M3-REMOVE-01-2026-10-18.json)。此次没有调用模型或改动日常配置，既有真实投递报告保留原样，REAL-02 按保留的本地范围关闭。
+- 当前设计/教程/手册/任务和矩阵同步；云端指南改为移除说明以保留历史链接。45 任务/40 测试映射、当前链接/锚点/围栏、只读归档/既有报告/golden、日志仅追加和 git diff --check 由[可复跑检查](review/M3-REMOVE-01-VERIFY-2026-10-18.py)核对，见[结果](review/M3-REMOVE-01-DOCS-2026-10-18.json)。旧 FINAL/CI/源码绑定报告只证明原提交，本轮补充报告绑定删除后的代码；CI 增加删除检查，远端尚未重跑。W1、独立计数 API 继续待验，官方校准两家各0/40仍非阻塞。

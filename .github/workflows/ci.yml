@@ -77,6 +77,11 @@ jobs:
           PYTHONDONTWRITEBYTECODE: "1"
         run: python3 scripts/check_m3_acceptance_prep.py --binary "$RUNNER_TEMP/style" --report "$RUNNER_TEMP/m3-preparation.json"
 
+      - name: Check cloud removal and retained local project route
+        env:
+          PYTHONDONTWRITEBYTECODE: "1"
+        run: python3 scripts/check_m3_cloud_removed.py --binary "$RUNNER_TEMP/style" --report "$RUNNER_TEMP/m3-cloud-removed.json"
+
       - name: Check replace fallback and user style preservation
         env:
           PYTHONDONTWRITEBYTECODE: "1"

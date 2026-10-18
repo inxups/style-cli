@@ -4,7 +4,7 @@
 
 状态（2026-10-18）：M1、M2 已关闭并只读归档；M2 的 native、stats、跨包去重、Claude rules/迁移和 replace 回退及真实验收事实保留，见 [M2 任务](../STYLE-M2-TASKS.md)与[测试矩阵](../STYLE-M2-TESTS.md)。
 
-当前里程碑 M3 于 2026-10-18 按用户确认范围完成并关闭：D0–D11、全部实现/A0–A18、两家各三条本地真实路线、本地 exact 和最终 Ubuntu/macOS/Windows CI 均通过，[最终报告](../review/M3-FINAL-2026-10-18.json)与[文档关闭核对](../review/M3-DOCS-01-2026-10-18.json)固定证据。任务、测试和隔离操作见 [M3 清单](../STYLE-M3-TASKS.md)、[矩阵](../STYLE-M3-TESTS.md)、[手册](../STYLE-M3-MANUAL.md)。用户延期 C3、W1 和 Anthropic 独立 API，均未标记通过；官方校准两家各 0/40 仍独立非阻塞。M3-RV-01 已由注册表校验关闭，D8 已将 engine 输出差异改为 adapter 能力。下一步规划新里程碑。
+当前里程碑 M3 于 2026-10-18 按用户确认范围完成并关闭，原关闭验收覆盖：D0–D11、全部实现/A0–A18、两家各三条本地真实路线、本地 exact 和最终 Ubuntu/macOS/Windows CI 均通过，[最终报告](../review/M3-FINAL-2026-10-18.json)与[文档关闭核对](../review/M3-DOCS-01-2026-10-18.json)固定证据。任务、测试和隔离操作见 [M3 清单](../STYLE-M3-TASKS.md)、[矩阵](../STYLE-M3-TESTS.md)、[手册](../STYLE-M3-MANUAL.md)。用户已于同日要求移除 Claude 云端功能，C3 取消，删除后的补充验收见[报告](../review/M3-REMOVE-01-2026-10-18.json)；W1 和 Anthropic 独立 API 仍延期，未标记通过；官方校准两家各 0/40 仍独立非阻塞。M3-RV-01 已由注册表校验关闭，D8 已将 engine 输出差异改为 adapter 能力。下一步规划新里程碑。
 
 当前完整接入 Claude Code 与 Codex。Windows 支持两家 user 路线，POSIX 还支持项目及插件；本文接口示意须结合当前源码与[adapter 总览](../STYLE-ADAPTERS-CURRENT.md)阅读。
 
@@ -187,7 +187,7 @@ core 只消费通用目录/能力端口；agenthooks 继续负责协议、配置
 | `style update <name>` / `style update --all` | T21/A4 已完成：明确选择、预览/确认、多包事务（§4.2）；[使用说明](../STYLE-SOURCES.md#明确选包更新) | M3 |
 | `style install --frozen [--yes] [--json] [--allow-replace]` | T22/A5 已完成：当前整锁/绑定下离线恢复（§4.2）；[使用说明](../STYLE-SOURCES.md#整锁离线恢复) | M3 |
 | `--project <dir>` | T30/A6 已完成：显式项目安装、管理与诊断（§4.3）；[使用说明](../STYLE-PROJECTS.md) | M3 |
-| `export --target claude-cloud`、`claude-plugin` | T31/T32 已通过 A7/A8（§4.3）；`count/plan/explain --count=exact` 已通过 T50/A15 | M3 |
+| `claude-plugin` | T32/A8 已完成（§4.3）；T31 云端能力已移除；`count/plan/explain --count=exact` 已通过 T50/A15 | M3 |
 
 **选项说明**：
 - `--route h=r`：指定路线，例如 `codex=codex-user`、`codex=codex-plugin`、`claude-code=claude-user`。
@@ -237,17 +237,17 @@ T22/A5 的恢复实现与 [使用说明](../STYLE-SOURCES.md#整锁离线恢复)
 
 ### 4.3 M3-D3 安装范围与交付路线评审稿
 
-本节项目部分已于 2026-10-17 获用户确认，由 T30 实现并通过 [A6 离线验收](../review/M3-A6-2026-10-17.json)；云端和插件已实现并通过 A7/A8 离线验收；[完整契约、调查复核、失败边界和验收细化](../review/M3-D3-ROUTES-2026-10-17.md)是评审依据。Codex 0.159.3 / Claude 2.1.301 的原探针与五个新增静态场景不能替代 A6–A8 或真实 B2/C2–C4。
+本节项目部分已于 2026-10-17 获用户确认，由 T30 实现并通过 [A6 离线验收](../review/M3-A6-2026-10-17.json)；插件已实现并通过 A8 离线验收；云端 T31/A7 已由用户移除；[完整契约、调查复核、失败边界和验收细化](../review/M3-D3-ROUTES-2026-10-17.md)是评审依据。Codex 0.159.3 / Claude 2.1.301 的原探针与五个新增静态场景不能替代 A6–A8 或真实 B2/C2–C4。
 
 默认仍为用户范围；新增显式 `--project <dir>`，覆盖管理命令、诊断和状态查询，省略不自动选项目。规范路径摘要定位用户基根 `projects/<完整sha256>/` 中的独立安装；项目仅写可移植声明/启动器和 harness 文件，不把私有 lock/settings/state 提交入库。新 clone 必须重新取得明确来源、逐项重现受管候选并确认采用，不能靠声明自证信任。移动根、换 STYLE_HOME、嵌套 STYLE 项目及歧义明确拒绝；普通子目录和并列项目另测。
 
 项目范围只选 `codex-project`、`claude-project`。用户/项目不同名包可共存，同一 harness 同名包双向阻断；两个项目同名独立。Codex 项目不写 developer_instructions，沿既有动态降级，避免覆盖用户指令；项目 hook 在 R/.codex，哈希信任在用户 CODEX_HOME，STYLE 不写项目信任。Claude 写共享 settings.json 与项目 rules，动态要求从根启动；静态向上发现与 hook 发现分开诊断。
 
-T31 已实现 `style export --target claude-cloud --project <dir> [--yes] [--json]`：导出已批准预编译 bundle 与完整摘要，沿用 sensitive-reserved 拒绝、阻止结构化私有路径引用并完整披露普通值；单仓库 Anthropic 托管会话由环境预置固定 runner，SessionStart 不自动下载/取源/编译。state 等运行数据留在云端私有 HOME，缺运行时/摘要漂移不回落到用户 index。native 原文和外部依赖完整披露、实际云端另验。
+T31 云端功能已于 2026-10-18 由用户决定移除。当前没有 export 命令、预编译云端 bundle 加载或云端状态；用户确认未安装过，不保留清理逻辑。项目入口在 remote=true 时经原生 codec 明确报告不支持，保留本地绑定与失败策略。
 
 T32 已实现用户级 `claude-plugin`，本地目录 marketplace，`${CLAUDE_PLUGIN_ROOT}/scripts/style` 启动，不用顶层 bin；手动原生登记/卸载。与 claude-user hook 载体互斥切换，静态仍在用户 rules，插件禁用不代表静态移除。原生 CLI 的空键/缓存残留单列，不直接编辑原生数据库或承诺其字节还原。
 
-新项目/Claude 插件路线使用 lock format=3，旧程序必须先拒绝，新 scope/binding 进入批准身份；旧三路线 lock 1/2、index format=1 及默认语义保留。agenthooks 继续负责原生协议/renderer/owner/ApplyFiles；补项目 hook 与用户 trust 分根、按项目 owner 合并和可移植 argv，app 不自行写原生配置。文件事务沿 D2 捕获/确认/guard/回滚；A6/A7/A8 为 12/6/6 组，A6/A7/A8 已通过离线验收。T30 提供显式多来源整批 clone 激活与采用归属披露；项目声明 format 1、lock 3 和私有 binding 共同核对效果、根及 runner。T31/T32 已完成，D3 已定稿，真实 B2/C2/C4 已通过本地验收，C3 按用户决定延期。
+新项目/Claude 插件路线使用 lock format=3，旧程序必须先拒绝，新 scope/binding 进入批准身份；旧三路线 lock 1/2、index format=1 及默认语义保留。agenthooks 继续负责原生协议/renderer/owner/ApplyFiles；补项目 hook 与用户 trust 分根、按项目 owner 合并和可移植 argv，app 不自行写原生配置。文件事务沿 D2 捕获/确认/guard/回滚；A6/A8 的本地路线验收已通过，A7 原报告保留历史。T30 提供显式多来源整批 clone 激活与采用归属披露；项目声明 format 1、lock 3 和私有 binding 共同核对效果、根及 runner。T32 已完成，真实 B2/C2/C4 已通过本地验收；T31 已移除，C3 取消。
 
 ## 5. 本地布局、锁文件和状态
 
@@ -633,7 +633,7 @@ Codex 用 `shell -lc` 跑 hook 命令，登录 shell 会读用户的 profile：�
 ### 10.8 已知限制
 
 - `UserPromptSubmit` 不只在用户打字时触发，定时任务、后台子 agent 回报、别的会话发来的消息也会触发它【方案 N4】。`prompt.submitted` 规则会命中这些；默认 `repeat: session` 让它们不会反复注入。
-- Claude 的云端会话不读本机的 `~/.claude/settings.json`，用户级安装在那里不生效。M3 项目路线和显式云端 bundle 交付已实现，见[项目](../STYLE-PROJECTS.md)与[云端指南](../STYLE-CLOUD.md)；实际托管云会话 C3 仍待验。
+- Claude 托管云端已退出支持范围，T31 功能删除、C3 取消。当前支持本地用户、[项目](../STYLE-PROJECTS.md)和[插件路线](../STYLE-CLAUDE-PLUGIN.md)。
 - 未接受工作区信任的目录里，hook 不跑。
 - SessionStart 要快：第一次回复要等它跑完；`/clear` 时没跑完的结果会被丢弃【方案 N10】。
 
@@ -890,7 +890,7 @@ F1–F4、F10 是安装和协议层的问题，最好也提给上游。F5–F9 �
 | 里程碑 | 内容 |
 |---|---|
 | M2 | `target: native`；`style stats`；跨包去重（T8）；Claude 静态位置改用 `~/.claude/rules/`（U-C4）；评估 Claude 的 output style 能否做 `replace` |
-| M3 | `explain`、`probe`、`update`、git 来源、`--frozen`、项目级路线（含 Claude 云端会话）、Claude 插件路线、`--count=exact`、`refresh`（token 设计 T4）、事件内容带围栏进模板、`provider`、规则级 `fail: closed`、用户自定义 effort 映射、`unknown` 匹配、Windows |
+| M3 | `explain`、`probe`、`update`、git 来源、`--frozen`、本地项目级路线（Claude 云端已移除）、Claude 插件路线、`--count=exact`、`refresh`（token 设计 T4）、事件内容带围栏进模板、`provider`、规则级 `fail: closed`、用户自定义 effort 映射、`unknown` 匹配、Windows |
 | M4 | 其他 harness（Gemini、OpenCode、Cursor、Copilot、Kimi…），每家一个适配器；资料见规范附录 A |
 
 M2 最终状态（2026-10-17）：native、stats、跨包语义去重与 Claude 每包 rules/旧布局迁移已实现，Codex B1–B4 在 user/plugin 两路线通过。output style 未开放 replace，D5 保留现有 fallback；Claude C1–C4 真实交互验收已通过，D4 符合预期、D5 回退方案生效。M2 本地最终回归、远端 Ubuntu/macOS CI（`154506f`，run `39000483969`，59 项采集器）和总文档验收通过，M2 完成并关闭。无 key 补充对照已完成；官方计数仍各0/40、RV-01 仍为非阻塞已知风险，下一步规划处理，详见 [M2 任务清单](../STYLE-M2-TASKS.md) 和 [测试矩阵](../STYLE-M2-TESTS.md)。
@@ -940,7 +940,7 @@ Claude U9、U-C1/C2/C3/C5 已由用户界面观察、原生请求/hook及state�
 - Codex 会话中途 `/model` 改强度看不到，这是"只读配置"的代价；要不要补办法，M3 之后再说。
 - 只有开关的模型（Kimi、GLM）的开关从哪读：跟着这些 harness 一起推迟到 M4。
 
-M3-T31 已通过 [A7](../review/M3-A7-2026-10-17.json)，云端 export/entry v1 的当前行为见[使用说明](../STYLE-CLOUD.md)；C3 真实托管环境单独验收。
+M3-T31 已由用户移除，M3-C3 取消；原 [A7](../review/M3-A7-2026-10-17.json)只作历史，当前[移除说明](../STYLE-CLOUD.md)取代操作指南。删除功能后的验证由 M3-REMOVE-01 / M3-A19 记录。
 
 M3-T32 已通过 [A8](../review/M3-A8-2026-10-17.json)，本地 marketplace、登记边界与 user/plugin 切换见[插件说明](../STYLE-CLAUDE-PLUGIN.md)；生成后未登记退出 1，原生数据库只读检查。
 

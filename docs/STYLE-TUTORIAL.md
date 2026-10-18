@@ -876,7 +876,7 @@ style plan ./pkg --harness codex,claude-code --json
 - Codex 中途 `/model` 修改 effort 的可靠观测未纳入 M3；provider 表示配置请求，不能证明网关实际上游或账单主体。
 - native 保留 event/matcher/command/timeout 四字段；async、onFailure、HTTP/MCP/prompt/agent 类型明确拒绝，见[native 指南](STYLE-NATIVE.md)。
 - Windows 支持两家 user 路线与原生 exe；项目/插件路线和作者 POSIX native 不支持。自动化通过不等于 W1 的实际 harness 验收。
-- 用户已延期 Claude 托管云端 C3、Windows 实际主机/harness W1 和 Anthropic 独立计数 API；不得用本地 fixture 或编码对照替代。官方两家各 0/40 另为非阻塞遗留。
+- Claude 托管云端功能已由用户移除，C3 取消。Windows 实际主机/harness W1 和 Anthropic 独立计数 API 仍延期；不得用本地 fixture 或编码对照替代。官方两家各 0/40 另为非阻塞遗留。
 - 原生插件登记仍需按报告命令执行；文件存在、登记 enabled、回调 observed 和完整正文投递分别核对。Claude rules 的 compact 行为不由新会话验收外推。
 
 ## 16. M3 工作流程
@@ -893,7 +893,7 @@ style install --frozen --yes --json
 
 Git 来源必须显式 `git+https://`，支持公共 HTTPS、完整 ref 和子目录；安装记录固定 commit 和原始对象快照。frozen 仅按当前整锁与绑定离线恢复，不取得新 ref、不批准新源码。详细语法与失败恢复见[来源指南](STYLE-SOURCES.md)。
 
-### 16.2 项目、插件与云端
+### 16.2 项目与插件
 
 ```sh
 style install ./my-style --project . --harness codex,claude-code --yes --json
@@ -904,7 +904,7 @@ style uninstall --all --project . --yes --json
 
 项目 home 按规范根隔离；项目与 user 同名冲突、复制 clone 与原生工作区 trust 均有显式门禁，见[项目指南](STYLE-PROJECTS.md)。项目参数须沿用到管理、probe、explain 和 stats 等诊断命令。
 
-Claude 插件显式选 `--route claude-code=claude-plugin`，生成后 registration-required/退出1仍需原生登记；卸载先停用原生插件，见[插件指南](STYLE-CLAUDE-PLUGIN.md)。云端 export 交付已批准 bundle，不在远端自动取来源或编译，见[云端指南](STYLE-CLOUD.md)。
+Claude 插件显式选 `--route claude-code=claude-plugin`，生成后 registration-required/退出1仍需原生登记；卸载先停用原生插件，见[插件指南](STYLE-CLAUDE-PLUGIN.md)。
 
 ### 16.3 解释与实际回调
 
