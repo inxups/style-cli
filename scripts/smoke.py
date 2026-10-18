@@ -20,7 +20,7 @@ import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-EXAMPLE = ROOT / "example" / "terse-reviewer"
+EXAMPLE = ROOT / "testdata" / "packages" / "terse-reviewer"
 PROBES = ROOT / "testdata" / "manual" / "m1b-probes"
 CODEX_VERSION = "codex-cli 0.159.3"
 CLAUDE_VERSION = "2.1.300 (Claude Code)"

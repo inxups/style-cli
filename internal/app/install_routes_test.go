@@ -97,7 +97,7 @@ func TestRunInstallSwitchesRoutesWithoutResidueAndKeepsExternalConfig(t *testing
 
 func TestReinstallRejectsUnknownRouteAndDetectsStoredDrift(t *testing.T) {
 	service, home := inspectionFixture(t)
-	source := filepath.Join(repositoryRoot(t), "example", "terse-reviewer")
+	source := filepath.Join(repositoryRoot(t), "testdata", "packages", "terse-reviewer")
 	before, _ := os.ReadFile(filepath.Join(home, "style.lock.yaml"))
 	_, err := service.Install(context.Background(), InstallRequest{Source: source, Home: home, Yes: true, Routes: map[string]string{"codex": "missing"}})
 	if err == nil || !strings.Contains(err.Error(), "unknown route") {

@@ -28,7 +28,7 @@ func TestA1ValidateExampleAndEveryInvalidFixture(t *testing.T) {
 	root := repositoryRoot(t)
 	service := testService(t)
 	var stdout, stderr bytes.Buffer
-	if code := RunWithService(context.Background(), service, root, []string{"validate", "example/terse-reviewer", "--json"}, &stdout, &stderr); code != ExitOK {
+	if code := RunWithService(context.Background(), service, root, []string{"validate", "testdata/packages/terse-reviewer", "--json"}, &stdout, &stderr); code != ExitOK {
 		t.Fatalf("example exit=%d stdout=%s stderr=%s", code, stdout.String(), stderr.String())
 	}
 	// Keep the acceptance contract explicit so deleting a fixture cannot make

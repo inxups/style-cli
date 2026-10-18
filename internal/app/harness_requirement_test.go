@@ -46,7 +46,7 @@ func TestExampleRequirementsSkipOldAndUnknownHarnessesWithoutMutation(t *testing
 			home := filepath.Join(root, "style")
 			t.Setenv("STYLE_HOME", home)
 			var stdout, stderr bytes.Buffer
-			code := RunWithService(context.Background(), service, repositoryRoot(t), []string{"install", "example/terse-reviewer", "--harness", "codex,claude-code", "--yes"}, &stdout, &stderr)
+			code := RunWithService(context.Background(), service, repositoryRoot(t), []string{"install", "testdata/packages/terse-reviewer", "--harness", "codex,claude-code", "--yes"}, &stdout, &stderr)
 			if code != ExitOK || !strings.Contains(stdout.String(), "skipped terse-reviewer") || strings.Count(stdout.String(), "warning harness-version:") != 2 {
 				t.Fatalf("install exit=%d stdout=%s stderr=%s", code, stdout.String(), stderr.String())
 			}
@@ -58,7 +58,7 @@ func TestExampleRequirementsSkipOldAndUnknownHarnessesWithoutMutation(t *testing
 					t.Fatalf("skipped install changed %s: %q", path, got)
 				}
 			}
-			planned, err := service.Plan(context.Background(), PlanRequest{Source: filepath.Join(repositoryRoot(t), "example", "terse-reviewer"), Harnesses: []string{"codex,claude-code"}})
+			planned, err := service.Plan(context.Background(), PlanRequest{Source: filepath.Join(repositoryRoot(t), "testdata", "packages", "terse-reviewer"), Harnesses: []string{"codex,claude-code"}})
 			if err != nil || len(planned.Reports) != 0 || len(planned.Diagnostics) != 2 {
 				t.Fatalf("plan=%+v err=%v", planned, err)
 			}
@@ -77,7 +77,7 @@ func TestExampleRequirementsInstallOnlyCompatibleHarnessAndRebuildPerPackage(t *
 		t.Fatal(err)
 	}
 	before := readSyncFile(t, filepath.Join(root, "codex", "config.toml"))
-	result, err := service.Install(context.Background(), InstallRequest{Source: filepath.Join(repositoryRoot(t), "example", "terse-reviewer"), Home: home, Harnesses: []string{"codex,claude-code"}, Yes: true})
+	result, err := service.Install(context.Background(), InstallRequest{Source: filepath.Join(repositoryRoot(t), "testdata", "packages", "terse-reviewer"), Home: home, Harnesses: []string{"codex,claude-code"}, Yes: true})
 	if err != nil || !result.Changed || len(result.Reports) != 1 || result.Reports[0].Provider != "claude-code" {
 		t.Fatalf("install=%+v err=%v", result, err)
 	}

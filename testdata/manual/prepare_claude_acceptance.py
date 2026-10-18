@@ -36,7 +36,7 @@ def prepare(root, style, claude=None):
         (binary.parent / "claude").symlink_to(claude_command)
         environment["PATH"] = str(binary.parent) + os.pathsep + environment.get("PATH", "")
     records = []
-    for package in (REPO / "example/terse-reviewer", REPO / "testdata/manual/m1b-probes"):
+    for package in (REPO / "testdata/packages/terse-reviewer", REPO / "testdata/manual/m1b-probes"):
         command = [str(binary), "install", str(package), "--harness", "claude-code", "--yes", "--json"]
         result = subprocess.run(command, cwd=work, env=environment, capture_output=True, text=True, check=True)
         records.append(json.loads(result.stdout))

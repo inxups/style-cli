@@ -31,7 +31,7 @@ func TestA2NativePlanReports(t *testing.T) {
 	t.Setenv("CLAUDE_CONFIG_DIR", "")
 	root := repositoryRoot(t)
 	service := testService(t)
-	result, err := service.Plan(context.Background(), PlanRequest{Source: filepath.Join(root, "example", "terse-reviewer"), Harnesses: []string{"codex", "claude-code"}})
+	result, err := service.Plan(context.Background(), PlanRequest{Source: filepath.Join(root, "testdata", "packages", "terse-reviewer"), Harnesses: []string{"codex", "claude-code"}})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -81,7 +81,7 @@ func TestA2NativePlanReports(t *testing.T) {
 	}
 
 	var out, errOut bytes.Buffer
-	if code := RunWithService(context.Background(), service, root, []string{"plan", "example/terse-reviewer", "--harness=codex,claude-code", "--json"}, &out, &errOut); code != ExitOK {
+	if code := RunWithService(context.Background(), service, root, []string{"plan", "testdata/packages/terse-reviewer", "--harness=codex,claude-code", "--json"}, &out, &errOut); code != ExitOK {
 		t.Fatalf("plan --json exit=%d stderr=%s", code, errOut.String())
 	}
 	text := out.String()

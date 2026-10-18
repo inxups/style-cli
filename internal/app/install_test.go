@@ -88,7 +88,7 @@ func TestInstallWritesPackageLockIndexAndProviderRoute(t *testing.T) {
 	pluginDir := filepath.Join(styleHome, "adapters", "codex", "plugin")
 	service := testCodexInstallService(t, configDir, pluginDir)
 	result, err := service.Install(context.Background(), InstallRequest{
-		Source: filepath.Join(repositoryRoot(t), "example", "terse-reviewer"), Home: styleHome,
+		Source: filepath.Join(repositoryRoot(t), "testdata", "packages", "terse-reviewer"), Home: styleHome,
 		Harnesses: []string{"codex"}, Yes: true,
 	})
 	if err != nil {
@@ -124,7 +124,7 @@ func TestInstallWritesPackageLockIndexAndProviderRoute(t *testing.T) {
 		t.Fatalf("lock does not retain the route configuration root %q: %s", configDir, lock)
 	}
 	second, err := service.Install(context.Background(), InstallRequest{
-		Source: filepath.Join(repositoryRoot(t), "example", "terse-reviewer"), Home: styleHome,
+		Source: filepath.Join(repositoryRoot(t), "testdata", "packages", "terse-reviewer"), Home: styleHome,
 		Harnesses: []string{"codex"}, Yes: true,
 	})
 	if err != nil {
@@ -138,7 +138,7 @@ func TestInstallWritesPackageLockIndexAndProviderRoute(t *testing.T) {
 func TestInstallRequiresExplicitConfirmation(t *testing.T) {
 	root := t.TempDir()
 	service := testCodexInstallService(t, filepath.Join(root, "codex"), filepath.Join(root, "plugin"))
-	_, err := service.Install(context.Background(), InstallRequest{Source: filepath.Join(repositoryRoot(t), "example", "terse-reviewer"), Home: filepath.Join(root, "style")})
+	_, err := service.Install(context.Background(), InstallRequest{Source: filepath.Join(repositoryRoot(t), "testdata", "packages", "terse-reviewer"), Home: filepath.Join(root, "style")})
 	var usage *UsageError
 	if !errors.As(err, &usage) {
 		t.Fatalf("install without confirmation error = %v, want UsageError", err)
@@ -311,7 +311,7 @@ func TestRunInstallPrintsCapabilityAndCostReport(t *testing.T) {
 	t.Setenv("STYLE_HOME", styleHome)
 	service := testCodexInstallService(t, filepath.Join(root, "codex"), filepath.Join(root, "plugin"))
 	var stdout, stderr bytes.Buffer
-	code := RunWithService(context.Background(), service, repositoryRoot(t), []string{"install", "example/terse-reviewer", "--harness", "codex", "--yes"}, &stdout, &stderr)
+	code := RunWithService(context.Background(), service, repositoryRoot(t), []string{"install", "testdata/packages/terse-reviewer", "--harness", "codex", "--yes"}, &stdout, &stderr)
 	if code != ExitOK {
 		t.Fatalf("install exit=%d stdout=%s stderr=%s", code, stdout.String(), stderr.String())
 	}

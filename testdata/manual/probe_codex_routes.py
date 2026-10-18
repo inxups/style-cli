@@ -70,7 +70,7 @@ def finish_configuration_roundtrip(config, baseline, work):
 
 
 def run(probe, route, report):
-    example = str(REPO / "example/terse-reviewer")
+    example = str(REPO / "testdata/packages/terse-reviewer")
     probes = str(REPO / "testdata/manual/m1b-probes")
     config = probe.home / "config.toml"
     baseline = config.read_bytes()
@@ -243,7 +243,7 @@ def run(probe, route, report):
 
 
 def run_switches(probe, report):
-    example = str(REPO / "example/terse-reviewer")
+    example = str(REPO / "testdata/packages/terse-reviewer")
     config = probe.home / "config.toml"
     baseline = config.read_bytes()
 

@@ -20,7 +20,7 @@ func inspectionFixture(t *testing.T) (*Service, string) {
 	home := filepath.Join(root, "style")
 	service := testCodexInstallService(t, filepath.Join(root, "codex"), filepath.Join(home, "adapters", "codex", "plugin"))
 	_, err := service.Install(context.Background(), InstallRequest{Home: home,
-		Source: filepath.Join(repositoryRoot(t), "example", "terse-reviewer"), Yes: true, Harnesses: []string{"codex"}})
+		Source: filepath.Join(repositoryRoot(t), "testdata", "packages", "terse-reviewer"), Yes: true, Harnesses: []string{"codex"}})
 	if err != nil {
 		t.Fatal(err)
 	}

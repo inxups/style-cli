@@ -16,7 +16,7 @@ const fixtureLock = "sha256:0000000000000000000000000000000000000000000000000000
 
 func buildExampleIndex(t *testing.T) (Result, []byte) {
 	t.Helper()
-	root := filepath.Join("..", "..", "example", "terse-reviewer")
+	root := filepath.Join("..", "..", "testdata", "packages", "terse-reviewer")
 	pkg, err := spec.Load(root)
 	if err != nil {
 		t.Fatal(err)

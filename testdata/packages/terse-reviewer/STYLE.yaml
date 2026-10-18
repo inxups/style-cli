@@ -1,0 +1,83 @@
+# STYLE.yaml —— deterministic compile fixture
+spec: style/v0.3
+name: terse-reviewer
+version: 0.3.0
+description: deterministic compile fixture for STYLE index tests
+authors: [inxups]
+requires:
+  harness:
+    codex: '>=0.159.3'
+    claude-code: '>=2.1.300'
+settings:
+  - name: max_findings
+    description: maximum findings
+    default: "10"
+priority: 50
+budget:
+  per_rule: 400
+  per_event: 1200
+  always_on: 600
+defaults:
+  fallback: degrade
+rules:
+  - from: rules/no-todo-comments.md
+    priority: 40
+  - id: style
+    target: system
+    file: prompts/style.md
+  - id: session-info
+    target: system
+    file: prompts/session-info.md
+  - id: low-effort-guard
+    target: system
+    file: prompts/low-effort.md
+    when:
+      thinking_effort: "<=low"
+  - id: review-skill
+    target: skill
+    skill: code-review
+    file: prompts/skill-code-review.md
+  - id: after-git-diff
+    target: tool
+    tool: shell
+    when:
+      conditions:
+        - {field: tool.input.command, op: regex, pattern: '\bgit\s+(diff|log|show)\b'}
+    file: prompts/tool-git-diff.md
+  - id: before-create-pr
+    target: mcp
+    mcp: github/create_pull_request
+    at: before
+    file: prompts/mcp-create-pr.md
+    fallback: skip
+  - id: no-force-push
+    target: tool
+    tool: shell
+    action: block
+    when:
+      agent: any
+      conditions:
+        # shell_regex matches each simple command the shell would run, with quotes
+        # removed, so quoted text, comments and heredoc data do not match. The
+        # pattern accepts git by path (quoted when it has spaces) and git global
+        # options before push. After push, -o takes the rest of its cluster or
+        # the next word as a value; any other -f in a short-option cluster,
+        # --force, --mirror or a +refspec is a force push.
+        - {field: tool.input.command, op: shell_regex, pattern: '^(?:(?:\S*/)?git|''[^'']*/git'')(?:\s+(?:-[cC]|--(?:git-dir|work-tree|namespace|attr-source))\s+\S+|\s+-\S+)*\s+push(?:\s+(?:-(?:[^\s\-o][^\so]*)?o(?:\s+|)\S+|-(?:[^\s\-o][^\so]*)?|--\S*|[^\s-]\S*))*\s+(?:--force|--mirror|-[^\s\-o]*f\S*|\+\S+)(?:\s|$)'}
+    text: Do not force push; create a new commit.
+  - id: on-review-prompt
+    target: event
+    event: prompt.submitted
+    action: warn
+    when:
+      model: [gpt-5*, '**/claude-*']
+      harness: {name: codex}
+      conditions:
+        - {field: prompt, op: regex, pattern: '(?i)review|评审'}
+    text: Review request received. Keep findings concise.
+native_hooks:
+  - id: codex-only-notify
+    description: Runs the local notify command when a Codex turn stops.
+    codex:
+      event: Stop
+      command: notify

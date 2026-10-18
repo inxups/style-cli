@@ -26,7 +26,7 @@ func TestExamplePlanMatchesProviderGoldens(t *testing.T) {
 		t.Run(test.provider, func(t *testing.T) {
 			var output, errOutput bytes.Buffer
 			code := RunWithService(context.Background(), service, root, []string{
-				"plan", "example/terse-reviewer", "--harness", test.provider,
+				"plan", "testdata/packages/terse-reviewer", "--harness", test.provider,
 			}, &output, &errOutput)
 			if code != ExitOK {
 				t.Fatalf("plan exit = %d, stderr=%s, stdout=%s", code, errOutput.String(), output.String())

@@ -26,7 +26,7 @@ func TestUninstallRemovesOnlyStyleOwnerAndRestoresLastRoute(t *testing.T) {
 	if err := os.WriteFile(configPath, beforeExternal, 0o640); err != nil {
 		t.Fatal(err)
 	}
-	if _, err := service.Install(context.Background(), InstallRequest{Source: filepath.Join(repositoryRoot(t), "example", "terse-reviewer"), Home: styleHome, Harnesses: []string{"codex"}, Yes: true}); err != nil {
+	if _, err := service.Install(context.Background(), InstallRequest{Source: filepath.Join(repositoryRoot(t), "testdata", "packages", "terse-reviewer"), Home: styleHome, Harnesses: []string{"codex"}, Yes: true}); err != nil {
 		t.Fatal(err)
 	}
 	var output, errOutput bytes.Buffer
@@ -108,7 +108,7 @@ func TestUninstallRequiresConfirmationAndKeepsRemainingPackage(t *testing.T) {
 	root := t.TempDir()
 	styleHome := filepath.Join(root, "style")
 	service := testCodexInstallService(t, filepath.Join(root, "codex"), filepath.Join(root, "plugin"))
-	first := filepath.Join(repositoryRoot(t), "example", "terse-reviewer")
+	first := filepath.Join(repositoryRoot(t), "testdata", "packages", "terse-reviewer")
 	second := writeInstallPackage(t, filepath.Join(root, "second"), "spec: style/v0.3\nname: second\nversion: 0.1.0\ndescription: second\nrules:\n  - id: base\n    target: system\n    text: second\n")
 	if _, err := service.Install(context.Background(), InstallRequest{Source: first, Home: styleHome, Harnesses: []string{"codex"}, Yes: true}); err != nil {
 		t.Fatal(err)

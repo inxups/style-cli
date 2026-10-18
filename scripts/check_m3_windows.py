@@ -33,7 +33,7 @@ def main():
         }
         for path, data in baseline.items():
             path.parent.mkdir(parents=True,exist_ok=True);path.write_bytes(data)
-        package=ROOT/'example'/'terse-reviewer'
+        package=ROOT/'testdata'/'packages'/'terse-reviewer'
         result=run(['install',str(package),'--harness','codex,claude-code','--route','codex=codex-user','--route','claude-code=claude-user','--yes'])
         check(result.returncode==0,'install both user routes: '+result.stderr[-300:])
         for harness,config in [('codex',user/'.codex'/'hooks.json'),('claude-code',user/'.claude'/'settings.json')]:
