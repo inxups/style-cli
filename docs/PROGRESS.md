@@ -2096,3 +2096,10 @@ Codex 0.159.3 与实际配置模型服务、固定生产 STYLE 二进制，在�
 - 从 clean `f97847c` 开始；最终二进制 SHA256 `fd548913f8a62018f73acd85d64a0b4004f9d8133ff0a0f1549f475497ea1ca6`。临时三缓存、清理 CODEX_HOME/CODEX_SANDBOX 及 Claude/provider/effort 环境下，根 module 3,848 / agenthooks 550 pass、0 fail；2/23 条既有 skip 单列。双 vet、项目/Claude 插件/移除专项 race 213 pass、78 采集器通过。新增 3 个单元测试函数（7 条含分组 pass）及 11 项生产 CLI 检查证明 export 拒绝/零写入、remote 无投递/状态且保留 native fail-open/fail-closed、本地绑定与正常安装卸载。
 - 40 smoke、6 路线准备、18 项项目、8 项 Claude 插件、36 项六路线组合、12 replace、16 组真实旧布局升级通过，加上删除检查共 147 项；固定三份真实旧二进制及摘要。最初新增 fixture 的日志/会话去重断言、快照调用和误选较新旧版程序的失败保留，修正后只重跑受影响检查；最终全量通过。详见[补充报告](review/M3-REMOVE-01-2026-10-18.json)。此次没有调用模型或改动日常配置，既有真实投递报告保留原样，REAL-02 按保留的本地范围关闭。
 - 当前设计/教程/手册/任务和矩阵同步；云端指南改为移除说明以保留历史链接。45 任务/40 测试映射、当前链接/锚点/围栏、只读归档/既有报告/golden、日志仅追加和 git diff --check 由[可复跑检查](review/M3-REMOVE-01-VERIFY-2026-10-18.py)核对，见[结果](review/M3-REMOVE-01-DOCS-2026-10-18.json)。旧 FINAL/CI/源码绑定报告只证明原提交，本轮补充报告绑定删除后的代码；CI 增加删除检查，远端尚未重跑。W1、独立计数 API 继续待验，官方校准两家各0/40仍非阻塞。
+
+## 2026-10-18 M3-REAL-03 / TOKEN-01 中转计数兼容补充
+
+- 用户提供仓库外 0600 私有配置并授权测试 sub2api 中转。固定单个 user message、API 版本 2023-06-01，四条计数请求全部 HTTP 200，短英文/短中文/较长混合/英文重复为 16、24、3216、16；有效整数、正数、随长度增加和重复一致均通过。[脱敏报告](review/M3-TOKEN-RELAY-2026-10-18.json)与[可复跑探针](review/M3-TOKEN-RELAY-PROBE-2026-10-18.py)固定文本/请求/响应和脚本摘要。
+- 首次沙箱 DNS 失败，放行后发现 Python 默认 CA 缺失；采用系统 CA，保持证书校验。默认 Python 客户端收到 HTTP 403 / Cloudflare 1010，使用明确的 style-cli-count-probe/1.0 标识后通过。失败报告保留，不以退出码 0 代替 compatible/checks 断言。密钥、站点地址、原始服务端响应均不入库。
+- 此次是隔离 HTTP 中转兼容测试；STYLE 生产计数命令仍固定官方 endpoint，未提供中转参数，也未验证计数的官方上游来源。REAL-03/TOKEN-01 保持 `[~]`，官方独立 API 子项 `[?]`；CARRY-01 两家各 0/40，Windows W1 继续延期。无 Go/agenthooks 实现或依赖变更，不重跑 Go 全量。
+- 验证：45 项任务/40 项测试映射、619 个本地链接/锚点、108 个围栏、77 份归档/192 份历史评审/104 份 golden 原样、PROGRESS 自当前 HEAD 仅追加、探针 AST/报告摘要、私有配置值未进入改动以及 git diff --check 均通过。当前仅更新文档和手工探针，不关闭延期验收。

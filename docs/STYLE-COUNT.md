@@ -28,3 +28,5 @@ style count rules.txt --count=exact --count-provider=anthropic --count-model=YOU
 结果 `scope: anthropic-messages-request` 包含该最小消息请求的封装开销，披露模型、接口版本和请求摘要；它不是纯正文增量或两份请求的差值。文件空文本拒绝。没有自定义 endpoint、自动重试或重定向；15 秒超时、响应上限 1 MiB。缺 key/参数、网络、HTTP 或无效计数均报错，不静默退回估算，错误不回显服务端正文或 key。
 
 [离线 A15 报告](review/M3-A15-2026-10-18.json)覆盖独立 Python golden、两套完整词表摘要、API transport fixture 和命令兼容。Anthropic 真实 API 验收已由用户延期；官方校准 CARRY-01 仍两家各 0/40。许可见[第三方说明](../third_party/README.md)。
+
+2026-10-18 的 [sub2api 中转兼容测试](review/M3-TOKEN-RELAY-2026-10-18.json)使用仓库外的私有配置，对短英文、短中文、较长混合文本与重复请求取得 16、24、3216、16；有效整数、非空正数、长度变化和重复稳定检查通过。[探针](review/M3-TOKEN-RELAY-PROBE-2026-10-18.py)可使用自己的私有配置复跑。该结果不修改生产命令的固定 endpoint，也未验证中转的官方上游来源；REAL-03/TOKEN-01 保持部分完成，CARRY-01 仍各 0/40。

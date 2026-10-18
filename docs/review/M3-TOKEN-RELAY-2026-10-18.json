@@ -1,0 +1,203 @@
+{
+  "format": 1,
+  "task": "M3-REAL-03",
+  "test": "M3-TOKEN-01",
+  "date": "2026-10-18",
+  "source_commit": "1af158073ae084ba8fdf35cb7eff2517c0e3834e",
+  "scope": "user-configured relay compatibility; not official calibration or production STYLE endpoint acceptance",
+  "count_probe": {
+    "format": 1,
+    "task": "M3-REAL-03 / M3-TOKEN-01 relay compatibility probe",
+    "started_at": "2026-10-18T04:37:31.411421+00:00",
+    "endpoint_sha256": "fdba43fa0255c22113f5663bf5e7347c5cf9d06d3be5b180e8c13fe2387f297e",
+    "model_sha256": "26f6cf65acbd60862113d9e31ae957c4adf5fb966ae79f33a6fa8ac45e228e41",
+    "api_version": "2023-06-01",
+    "request_envelope": "one user message with string content",
+    "transport": {
+      "tls_verification": true,
+      "redirects": false,
+      "retries": 0,
+      "timeout_seconds": 15,
+      "response_limit_bytes": 1048576,
+      "ambient_proxy": false,
+      "ca_source": "system-pem",
+      "user_agent": "style-cli-count-probe/1.0",
+      "trusted_ca_count": 128
+    },
+    "probe_sha256": "b2edde4cd5675d371fb2d52aab6d346d52335786956152c56209037663cf8b40",
+    "production_cli": false,
+    "official_upstream_verified": false,
+    "generation_requests": 0,
+    "cases": [
+      {
+        "case": "english_short",
+        "text_utf8_bytes": 24,
+        "text_sha256": "7daabc544c302befb726a8f01d04f4e9729fa6898d29c74fe54dbde8497d8159",
+        "request_sha256": "0b7416eb70fb837f7ba97f51b9d50b78c597b418f9fd4a7bcf6f3d69ef47164f",
+        "http_status": 200,
+        "response_bytes": 19,
+        "response_sha256": "2760292747b197c18780f9d3beba4422e9ea852175d0a93c8b05ab2f090ec209",
+        "outcome": "valid_count",
+        "input_tokens": 16,
+        "elapsed_ms": 1117.297
+      },
+      {
+        "case": "chinese_short",
+        "text_utf8_bytes": 45,
+        "text_sha256": "b218d521f69081b8fb3963df285ce79aeab8ef223b7ae20fd6b1b4bb7fba23a3",
+        "request_sha256": "db5b9f7fb0c75d5053ee978fa2e787ea4baa5be4723855cdcfcfff8742e2c8a2",
+        "http_status": 200,
+        "response_bytes": 19,
+        "response_sha256": "3a39a8b3e1ac50b0bc8f1926a22083cdf587311186ab096b71d7e935a8f85bc3",
+        "outcome": "valid_count",
+        "input_tokens": 24,
+        "elapsed_ms": 821.252
+      },
+      {
+        "case": "mixed_long",
+        "text_utf8_bytes": 9113,
+        "text_sha256": "5adbba56d0e24e9779b21543f39e1626fa737c2816f01a1be26f686459a32baa",
+        "request_sha256": "b1454a6d2b4800bfd872eac60d719b839f22132a2a1ee2d1a937e0c360c763ba",
+        "http_status": 200,
+        "response_bytes": 21,
+        "response_sha256": "1d20892194e7aaec5511015c5fe99c52af436174aa105e002b50a86d6a5ee37c",
+        "outcome": "valid_count",
+        "input_tokens": 3216,
+        "elapsed_ms": 827.422
+      },
+      {
+        "case": "english_repeat",
+        "text_utf8_bytes": 24,
+        "text_sha256": "7daabc544c302befb726a8f01d04f4e9729fa6898d29c74fe54dbde8497d8159",
+        "request_sha256": "0b7416eb70fb837f7ba97f51b9d50b78c597b418f9fd4a7bcf6f3d69ef47164f",
+        "http_status": 200,
+        "response_bytes": 19,
+        "response_sha256": "2760292747b197c18780f9d3beba4422e9ea852175d0a93c8b05ab2f090ec209",
+        "outcome": "valid_count",
+        "input_tokens": 16,
+        "elapsed_ms": 888.204
+      }
+    ],
+    "checks": {
+      "all_four_valid": true,
+      "nonempty_text_positive": true,
+      "longer_text_increases_count": true,
+      "identical_request_stable": true
+    },
+    "compatible": true,
+    "finished_at": "2026-10-18T04:37:35.069383+00:00"
+  },
+  "probe_source": "docs/review/M3-TOKEN-RELAY-PROBE-2026-10-18.py",
+  "probe_source_sha256": "b2edde4cd5675d371fb2d52aab6d346d52335786956152c56209037663cf8b40",
+  "reproduction": {
+    "command": "python3 docs/review/M3-TOKEN-RELAY-PROBE-2026-10-18.py /path/to/private-config.json /tmp/private-count-probe",
+    "config_fields": [
+      "base_url",
+      "model",
+      "api_key"
+    ],
+    "config_and_output_permissions": "private; credentials never printed",
+    "success_criterion": "report.json compatible=true and all checks=true; exit code alone is not acceptance"
+  },
+  "earlier_attempts": [
+    {
+      "attempt": 1,
+      "cases": [
+        {
+          "case": "english_short",
+          "text_utf8_bytes": 24,
+          "text_sha256": "7daabc544c302befb726a8f01d04f4e9729fa6898d29c74fe54dbde8497d8159",
+          "request_sha256": "0b7416eb70fb837f7ba97f51b9d50b78c597b418f9fd4a7bcf6f3d69ef47164f",
+          "outcome": "transport_or_decode_error",
+          "error_class": "URLError",
+          "reason_class": "gaierror",
+          "elapsed_ms": 4.209
+        }
+      ],
+      "compatible": false
+    },
+    {
+      "attempt": 2,
+      "cases": [
+        {
+          "case": "english_short",
+          "text_utf8_bytes": 24,
+          "text_sha256": "7daabc544c302befb726a8f01d04f4e9729fa6898d29c74fe54dbde8497d8159",
+          "request_sha256": "0b7416eb70fb837f7ba97f51b9d50b78c597b418f9fd4a7bcf6f3d69ef47164f",
+          "outcome": "transport_or_decode_error",
+          "error_class": "URLError",
+          "reason_class": "SSLCertVerificationError",
+          "elapsed_ms": 958.678
+        }
+      ],
+      "compatible": false
+    },
+    {
+      "attempt": 3,
+      "cases": [
+        {
+          "case": "english_short",
+          "text_utf8_bytes": 24,
+          "text_sha256": "7daabc544c302befb726a8f01d04f4e9729fa6898d29c74fe54dbde8497d8159",
+          "request_sha256": "0b7416eb70fb837f7ba97f51b9d50b78c597b418f9fd4a7bcf6f3d69ef47164f",
+          "http_status": 403,
+          "response_bytes": 17,
+          "response_sha256": "2938e9f1284180959e33ab1718d0793a72ff6e4cdb8108c34dcd14e69446de5c",
+          "outcome": "http_error",
+          "error_category": "unspecified",
+          "elapsed_ms": 484.529
+        }
+      ],
+      "compatible": false,
+      "observed_cloudflare_error_code": 1010
+    }
+  ],
+  "production_style_cli_tested": false,
+  "official_upstream_verified": false,
+  "milestone_states_unchanged": {
+    "M3-REAL-03": "~",
+    "M3-TOKEN-01": "~",
+    "M3-CARRY-01": "?"
+  },
+  "official_calibration": {
+    "openai_completed": 0,
+    "anthropic_completed": 0,
+    "samples_per_provider": 40
+  },
+  "privacy": {
+    "credentials_committed": false,
+    "endpoint_disclosed": false,
+    "raw_server_responses_committed": false
+  },
+  "go_tests": "not rerun; no Go code, module, agenthooks, or production configuration changed",
+  "documentation_verification": {
+    "format": 1,
+    "passed": true,
+    "baseline_commit": "f97847ccdf289b4972cd6fa2d24ec3e705f82f19",
+    "task_ids": 45,
+    "test_ids": 40,
+    "all_tests_mapped": true,
+    "cancelled_tasks": [
+      "M3-T31"
+    ],
+    "cancelled_tests": [
+      "M3-A7",
+      "M3-C3"
+    ],
+    "archives_unchanged": 77,
+    "historical_review_files_unchanged": 192,
+    "goldens_unchanged": 104,
+    "progress_append_only": true,
+    "progress_prefix_sha256": "4c132bcd57dcbb1aca9ac9e6184b3f7f39f5980f3738be0cfc2c9a993d7a681e",
+    "removed_code_and_cleanup_absent": true,
+    "documents": 11,
+    "local_links_and_anchors": 619,
+    "fence_blocks": 108,
+    "python_syntax": true,
+    "git_diff_check": true,
+    "private_values_absent": true,
+    "progress_append_only_since_source_commit": true,
+    "production_unchanged_since_source_commit": true,
+    "report_and_probe_source_hash_verified": true
+  }
+}
