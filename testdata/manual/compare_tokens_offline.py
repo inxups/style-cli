@@ -8,7 +8,7 @@ import json
 from pathlib import Path
 import struct
 
-from calibrate_tokens import CORPUS, load_corpus, production_estimates, sha
+from calibrate_tokens import load_corpus, production_estimates, sha
 
 
 ENCODINGS = ("o200k_base", "cl100k_base")
@@ -72,15 +72,16 @@ def compare(corpus, estimates, encodings):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--style", required=True, type=Path)
+    parser.add_argument("--corpus", required=True, type=Path)
     parser.add_argument("--output", required=True, type=Path)
     args = parser.parse_args()
     # Optional manual dependency only; the normal CLI and CI do not require it.
     import tiktoken
 
-    corpus = load_corpus(CORPUS)
+    corpus = load_corpus(args.corpus)
     report = {"item": "M2-ALT-01", "format": 1,
               "measurement": "Local text-only encoding comparison; no model mapping or API request accounting is assumed.",
-              "corpus_sha256": sha(CORPUS.read_bytes()), "style_binary_sha256": sha(args.style.read_bytes()),
+              "corpus_sha256": sha(args.corpus.read_bytes()), "style_binary_sha256": sha(args.style.read_bytes()),
               "collector_sha256": sha(Path(__file__).read_bytes()),
               "tiktoken_version": importlib.metadata.version("tiktoken"),
               "encodings": compare(corpus, production_estimates(str(args.style.resolve()), corpus),

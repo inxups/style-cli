@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """M3-A3: real old-binary lock gate, runtime wire and invalid Git CLI inputs.
 
-Export an isolated fixture with TestM3A3ExportFormatTwoFixture first; see
-docs/STYLE-SOURCES.md. Uses no real harness, credentials or remote repository.
+Export an isolated fixture with TestM3A3ExportFormatTwoFixture first.
+Uses no real harness, credentials or remote repository.
 """
 
 import argparse

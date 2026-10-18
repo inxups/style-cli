@@ -23,11 +23,12 @@ def vocabulary_sha256(encoding):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--corpus', required=True, type=Path)
     parser.add_argument('--output', type=Path, default=Path('testdata/count/exact-text-v1.json'))
     args = parser.parse_args()
     import tiktoken
     assert importlib.metadata.version('tiktoken') == '0.12.0'
-    corpus = Path('testdata/manual/token-calibration-40.json')
+    corpus = args.corpus
     cases = [(item['id'], item['text']) for item in json.loads(corpus.read_text())['rules']]
     cases += [(str(i), text) for i, text in enumerate([
         '', ' ', '\r\n\t', 'hello world', '你好，世界！', '👩🏽\u200d💻🙂🇯🇵',

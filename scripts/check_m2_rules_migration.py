@@ -2,7 +2,7 @@
 """Offline upgrade acceptance using two actual STYLE binaries and version stubs.
 
 Usage: python3 scripts/check_m2_rules_migration.py --old-binary OLD --binary NEW
-       [--report docs/review/M2-A7-RULES-MIGRATION-2026-10-17.json]
+       [--report /tmp/style-rules-migration.json]
 Never launches a real harness or accesses its configuration or credentials.
 """
 

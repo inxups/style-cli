@@ -1,10 +1,10 @@
 import unittest
 
-from calibrate_tokens import load_corpus, CORPUS
 from compare_tokens_offline import compare, metrics
+from token_test_support import TokenCorpusTestCase
 
 
-class OfflineTokenReferenceTests(unittest.TestCase):
+class OfflineTokenReferenceTests(TokenCorpusTestCase):
     def test_statistics_keep_language_groups_and_per_rule_error(self):
         rows = [{"style_estimate": {"tokens": 20}, "ref": 10},
                 {"style_estimate": {"tokens": 10}, "ref": 20}]
@@ -17,10 +17,10 @@ class OfflineTokenReferenceTests(unittest.TestCase):
 
     def test_missing_rule_does_not_silently_reduce_coverage(self):
         with self.assertRaisesRegex(ValueError, "IDs"):
-            compare(load_corpus(CORPUS), {}, [])
+            compare(self.corpus, {}, [])
 
     def test_changed_rendering_and_invalid_counts_are_rejected(self):
-        corpus = load_corpus(CORPUS)
+        corpus = self.corpus
         for bad in ({"tokens": True, "chars": len(corpus["rules"][0]["text"])},
                     {"tokens": -1, "chars": len(corpus["rules"][0]["text"])},
                     {"tokens": 1, "chars": 0}):
@@ -34,7 +34,7 @@ class OfflineTokenReferenceTests(unittest.TestCase):
             def encode_ordinary(self, text):
                 return []
 
-        corpus = load_corpus(CORPUS)
+        corpus = self.corpus
         estimates = {row["id"]: {"tokens": 1, "chars": len(row["text"])} for row in corpus["rules"]}
         with self.assertRaisesRegex(ValueError, "Nonpositive"):
             compare(corpus, estimates, [EmptyEncoding()])

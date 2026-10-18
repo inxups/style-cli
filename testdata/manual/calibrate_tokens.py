@@ -13,7 +13,6 @@ import urllib.error
 import urllib.request
 
 
-CORPUS = Path(__file__).with_name("token-calibration-40.json")
 ENDPOINTS = {"openai": "https://api.openai.com/v1/responses/input_tokens", "anthropic": "https://api.anthropic.com/v1/messages/count_tokens"}
 
 
@@ -69,11 +68,11 @@ def production_estimates(style, corpus):
         return {row["rule"]: row["estimate"] for row in report["rules"]}
 
 
-def calibrate(style, models):
-    corpus = load_corpus(CORPUS)
+def calibrate(style, models, corpus_path):
+    corpus = load_corpus(corpus_path)
     estimates = production_estimates(style, corpus)
     report = {"item": "M1-FINAL-09", "at": datetime.datetime.now(datetime.timezone.utc).isoformat(),
-              "corpus_sha256": sha(CORPUS.read_bytes()), "style_binary_sha256": sha(Path(style).read_bytes()),
+              "corpus_sha256": sha(corpus_path.read_bytes()), "style_binary_sha256": sha(Path(style).read_bytes()),
               "measurement": "Official counter delta = same-shape rule request input_tokens minus fixed baseline input_tokens. STYLE estimates come from the real CLI, not an alternate tokenizer.",
               "providers": {}}
     for provider, model in models.items():
@@ -106,11 +105,12 @@ def calibrate(style, models):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--style", required=True)
+    parser.add_argument("--corpus", required=True, type=Path)
     parser.add_argument("--openai-model", required=True)
     parser.add_argument("--anthropic-model", required=True)
     parser.add_argument("--output", required=True, type=Path)
     args = parser.parse_args()
-    report = calibrate(args.style, {"openai": args.openai_model, "anthropic": args.anthropic_model})
+    report = calibrate(args.style, {"openai": args.openai_model, "anthropic": args.anthropic_model}, args.corpus)
     args.output.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n")
     print(json.dumps({"passed": report["passed"], "providers": {name: {key: row.get(key) for key in ("model", "status", "completed", "http_status")}
                                                              for name, row in report["providers"].items()}}, indent=2))
