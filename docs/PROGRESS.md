@@ -2120,3 +2120,10 @@ Codex 0.159.3 与实际配置模型服务、固定生产 STYLE 二进制，在�
 - 新建仓库外独立官方 profile 和 claude-official 原生 CLI 入口，固定官方地址、使用 ANTHROPIC_API_KEY，清理继承的第三方/provider/OAuth 覆盖且不指定模型。目录/启动器 0700、settings 0600；密钥初始留空，空 key 明确拒绝启动检查通过。已给用户填写位置；不复用中转密钥。详见[准备报告](review/M3-TOKEN-OFFICIAL-SETUP-2026-10-18.json)。
 - STYLE 生产计数实现本来固定官方 Count tokens endpoint，本轮无 Go/agenthooks/依赖变化。尚未调用官方 API，官方 Claude 对话及 REAL-03/TOKEN-01 的官方计数仍待验证；CARRY-01 两家各 0/40 和其他延期状态不变。
 - 验证：45 任务/40 测试映射、625 个本地链接/锚点、108 个围栏、77 份归档/192 份既有历史评审/104 份 golden 原样，以及三份已提交的中转历史材料原样；PROGRESS 自当前 HEAD 仅追加、五个文档文件的范围、私有 key 未进入变更和 git diff --check 通过。仅配置清理与文档更新，不重复 Go 全量。
+
+## 2026-10-18 M3-REAL-03 / TOKEN-01 官方 API 补测通过
+
+- 用户填写官方 key 并指定 Haiku 5.5 / low。官方模型列表 HTTP 200，确认 claude-haiku-5-5 处于 active 且支持 low/adaptive；独立配置持久化 model 与 effortLevel。直接原生 Claude Code 2.1.301 调用成功、固定标记回复匹配、无错误，API 1,081ms / 总计 1,757ms；凭据和原始回执仅保存在私有目录，日常 Claude/插件/shell 配置摘要及权限保持一致。
+- 已验生产二进制 SHA256 fd548913f8a62018f73acd85d64a0b4004f9d8133ff0a0f1549f475497ea1ca6 与全部构建源码输入逐项一致，无需重建。新隔离 HOME/STYLE_HOME/CODEX_HOME/CLAUDE_CONFIG_DIR 环境、不继承 CODEX_SANDBOX/provider/effort/proxy，仅注入官方 key；count/plan/explain 共 7 项检查、7 次官方 Count tokens 请求通过。英文/中文/较长混合/英文重复分别 17、21、583、17，文本/请求摘要、模型/版本/scope、重复稳定、缺 key 失败后恢复和输入 bytes/mode/mtime/inode 保全通过；plan 排除 native 输出。版本 fixture 不作为新增 harness 投递证据。
+- 证据见[官方补测报告](review/M3-TOKEN-OFFICIAL-2026-10-18.json)与[可复跑检查](review/M3-TOKEN-OFFICIAL-VERIFY-2026-10-18.py)。结合既有本地编码证据，关闭 REAL-03/TOKEN-01，计数指南/当前状态/手册同步；原延期决定、M1/M2 归档和既有报告保留。W1/REAL-04 继续延期；此次计数不是固定 40 条语料的估算校准，CARRY-01 两家各 0/40 仍非阻塞。
+- 文档核对使用[可复跑关闭检查](review/M3-TOKEN-OFFICIAL-DOCS-VERIFY-2026-10-18.py)：45 项任务/40 项测试及依赖映射、当前链接/锚点/围栏、77 份归档/199 份既有评审/104 份 golden 保全、日志自当前 HEAD 仅追加、299 个构建源码摘要、model/low 配置和私有 key 未进入变更均通过；git diff --check 通过。业务代码和 Go 依赖未变，不重复既有 Go 全量或模型调用。

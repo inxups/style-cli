@@ -6,7 +6,7 @@
 
 本文件记录 M3 测试矩阵与当前证据状态，任务及依赖见 [STYLE-M3-TASKS.md](STYLE-M3-TASKS.md)，运行记录追加到 [PROGRESS.md](PROGRESS.md)。[M1 测试](STYLE-M1-TESTS.md)、[M2 测试](STYLE-M2-TESTS.md) 已只读归档；历史通过结果不替代 M3 的新验收。
 
-当前状态：M3 原批准范围已于 2026-10-18 完成并关闭，原[最终报告](review/M3-FINAL-2026-10-18.json)与[文档核对](review/M3-DOCS-01-2026-10-18.json)保留原提交证据。当前补充移除 Claude 云端，[M3-A19](review/M3-REMOVE-01-2026-10-18.json)已通过；C3 已取消，不计通过。W1 与 Anthropic 独立 API 保持待验，M3-CARRY-01 仍两家各 0/40、非阻塞。
+当前状态：M3 原批准范围已于 2026-10-18 完成并关闭，原[最终报告](review/M3-FINAL-2026-10-18.json)与[文档核对](review/M3-DOCS-01-2026-10-18.json)保留原提交证据。当前补充移除 Claude 云端，[M3-A19](review/M3-REMOVE-01-2026-10-18.json)已通过；C3 已取消，不计通过。W1 保持待验，Anthropic 独立 API 产品计数已由 TOKEN-01 补测通过；M3-CARRY-01 仍两家各 0/40、非阻塞。
 
 ## 状态与验收规则
 
@@ -68,7 +68,7 @@ PYTHONDONTWRITEBYTECODE=1 python3 scripts/check_m2_rules_migration.py \
 
 ## 遗留项
 
-- [?] **M3-CARRY-01 官方校准**（M3-CARRY-01，承接 M2-CARRY-01）：固定 40 条中英各半语料，在两家官方计数接口上取得同结构基线增量，逐条对照生产估算。独立 API key 仍缺，当前各 0/40；依 [采集器说明](../testdata/manual/README.md) 和 [原阻塞报告](review/M1-FINAL-09-COUNTING-BLOCKED-2026-10-16.json) 有条件时重跑，固定模型/语料/请求摘要并保留失败。非阻塞状态沿用，不因建档通过，也不以 [M2 本地编码/订阅补充](review/M2-ALT-01-2026-10-17.md) 替代。
+- [?] **M3-CARRY-01 官方校准**（M3-CARRY-01，承接 M2-CARRY-01）：固定 40 条中英各半语料，在两家官方计数接口上取得同结构基线增量，逐条对照生产估算。Anthropic 官方 key 已通过本轮 exact 产品验收，但固定 40 条估算校准尚未执行，当前两家各 0/40；依 [采集器说明](../testdata/manual/README.md) 和 [原阻塞报告](review/M1-FINAL-09-COUNTING-BLOCKED-2026-10-16.json) 有条件时重跑，固定模型/语料/请求摘要并保留失败。非阻塞状态沿用，不因建档通过，也不以 [M2 本地编码/订阅补充](review/M2-ALT-01-2026-10-17.md) 替代。
 
 ## M3a：离线验收
 
@@ -126,13 +126,13 @@ M3-A2 缓存补充：Codex 0.159.3 原生插件使用独立缓存，三次真实
 
 ## 计数与 Windows 真实验收
 
-- [~] **M3-TOKEN-01 exact 能力**（M3-T50、M3-REAL-03）：对定稿支持的本地编码和真实计数接口运行生产 CLI，记录计数文本/请求摘要、模型/编码版本和结果；缺 key/模型/编码/网络时保留失败与待验，输出语义不扩大为全请求/账单精度。该产品验收与固定 40 条的官方估算校准 CARRY-01 分开。 [最终二进制本地证据](review/M3-TOKEN-LOCAL-2026-10-18.json)：137 文本 × 两编码的 274 计数、共 287 CLI 检查及完整词表摘要通过；本次必过的本地子项已完成，独立 API 子项按用户决定保持 `[?]`，不计官方 40 条校准。 此前[中转计数探针](review/M3-TOKEN-RELAY-2026-10-18.json)与[客户端诊断](review/M3-TOKEN-RELAY-CLAUDE-2026-10-18.json)仅保留历史事实。2026-10-18 用户撤回中转方案，已删除独立中转入口、配置及私有临时材料共 33 处，改为[官方 API 接入准备](review/M3-TOKEN-OFFICIAL-SETUP-2026-10-18.json)；官方真实计数仍待验，未关闭本项或官方校准。
+- [x] **M3-TOKEN-01 exact 能力**（M3-T50、M3-REAL-03）：对定稿支持的本地编码和真实计数接口运行生产 CLI，记录计数文本/请求摘要、模型/编码版本和结果；缺 key/模型/编码/网络时保留失败与待验，输出语义不扩大为全请求/账单精度。该产品验收与固定 40 条的官方估算校准 CARRY-01 分开。 [本地证据](review/M3-TOKEN-LOCAL-2026-10-18.json)已通过 137 文本 × 两编码及 287 CLI 检查；2026-10-18 用户提供官方 API key 后，[官方 API 补充验收](review/M3-TOKEN-OFFICIAL-2026-10-18.json)通过生产 count/plan/explain 的 7 项检查、7 次官方计数请求，短英文/中文/较长混合/英文重复为 17、21、583、17。固定删除云端后的已验二进制及全部源码摘要，缺 key 失败后真实成功、重复一致和输入保全通过；关闭本项。独立官方 Claude CLI 同时以 Haiku 5.5 / low 成功回复。此前中转方案已撤回，历史报告保留；不替代 CARRY-01 的两家各 40 条估算校准。
 - [?] **M3-W1 Windows 原生运行**（M3-T70、M3-REAL-04）：在支持的 Windows shell 与实际 harness 下执行安装、原生 hook、诊断、规则投递、状态并发与卸载恢复。记录 OS/shell/harness 版本和二进制摘要；原生 stdin/退出码、文件恢复及新会话无残留均需证据，交叉编译不计通过。
 
 ## CI 与最终验收
 
 - [x] **M3-CI-01 跨平台 CI**（M3-CI-01）：最终 headSha 在 Ubuntu/macOS/Windows 的适用 format/vet、双 module fresh test/build、采集器、smoke 与旧迁移/回退检查全部通过；平台脚本使用原生临时缓存和环境清理。记录逐 job/步骤结果，跳过项不得算通过，适用时验证 `GOWORK=off` 发布形态。 [最终报告](review/M3-CI-01-2026-10-18.json)固定受验源码 `2c24e5f9`、run `39064157115`：三 job 全过；Windows fresh/双架构构建/25 CLI 完成，skip 与真实 W1 分列；后续文档提交有源码等价性核对。
-- [x] **M3-FINAL 最终回归**（M3-FINAL）：M3-BASE-01、A0–A18、P1/P2、B1–B4、C1/C2/C4/C5/C6、本地 TOKEN-01 与 CI-01 按批准范围全部验收；关联同一最终源码/二进制或说明等价性，无未解释 golden/兼容性差异。原验收时 C3、W1 与 Anthropic 独立 API 依用户决定延期；现 C3 取消，W1 与独立 API 继续待验；CARRY-01 继续独立非阻塞，其他缺环境项不能自动豁免。 [最终报告](review/M3-FINAL-2026-10-18.json)固定同一生产源码/二进制的完整适用验收、三平台 CI、旧版兼容与延期边界；文档总验收已由 DOCS-01 独立完成。
+- [x] **M3-FINAL 最终回归**（M3-FINAL）：M3-BASE-01、A0–A18、P1/P2、B1–B4、C1/C2/C4/C5/C6、本地 TOKEN-01 与 CI-01 按批准范围全部验收；关联同一最终源码/二进制或说明等价性，无未解释 golden/兼容性差异。原验收时 C3、W1 与 Anthropic 独立 API 依用户决定延期；现 C3 取消，W1 继续待验，独立 API 已由后续 TOKEN-01 补测通过；CARRY-01 继续独立非阻塞，其他缺环境项不能自动豁免。 [最终报告](review/M3-FINAL-2026-10-18.json)固定同一生产源码/二进制的完整适用验收、三平台 CI、旧版兼容与延期边界；文档总验收已由 DOCS-01 独立完成。
 - [x] **M3-DOCS-01 总文档验收**（M3-DOCS-01）：规范、命令帮助/示例、教程、adapter 总览和 M3 手册反映最终已验行为；任务/测试/日志证据互相对应，链接/围栏/摘要核对通过，历史归档未改。M3-FINAL 通过后关闭里程碑，并提示用户进行下一步规划。 [指南同步检查](review/M3-DOCS-GUIDES-2026-10-18.json)已覆盖当前实现、计数与失败策略/平台边界；本地真实、最终 CI 与 FINAL 已完成；[最终文档核对](review/M3-DOCS-01-2026-10-18.json)通过，关闭本项和本轮 M3。
 
 ## 2026-10-17 用户确认的延期真实验收
@@ -140,3 +140,5 @@ M3-A2 缓存补充：Codex 0.159.3 原生插件使用独立缓存，三次真实
 用户明确“这些等以后再测试，先排除这些，继续”，指环境请求中 Claude 托管云端、Windows 主机真实运行和 Anthropic 独立计数 API。C3、W1/REAL-04 和 TOKEN-01 的 Anthropic API 子项保持 `[?]`，从本次 FINAL 必过集合排除，后续另测；不以 fixture/交叉编译/替代编码标记通过。其余 A/P/CI 与本地真实 B/C，以及可本地执行的 exact 编码仍需完成。
 
 六路线最终超时/中断复验使用缓存修复后二进制，见[最终报告](review/M3-PROBE-NEGATIVE-FINAL-2026-10-18.json)：12 次预期失败、有效 index 捕获、完整 cleanup 和配置/项目恢复均通过。
+
+2026-10-18 后续补测：用户提供官方 API key 并选择 Haiku 5.5 / low 后，REAL-03/TOKEN-01 的官方 API 子项已通过，以上原始延期决定保留历史语境。当前仍延期 W1/REAL-04；CARRY-01 两家各 0/40 继续单独记录。

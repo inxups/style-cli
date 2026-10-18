@@ -6,7 +6,7 @@
 
 本文件是 STYLE CLI M3 的持久化任务清单。每项完成后同步状态和可重复证据，测试矩阵见 [STYLE-M3-TESTS.md](STYLE-M3-TESTS.md)，执行记录追加到 [PROGRESS.md](PROGRESS.md)。M1、M2 已关闭并只读归档；上一里程碑的事实见 [M2 任务清单](STYLE-M2-TASKS.md)、[M2 测试矩阵](STYLE-M2-TESTS.md) 和 [M2 总验收报告](review/M2-DOCS-01-2026-10-17.json)。
 
-当前总状态：M3 于 2026-10-18 按用户确认的范围完成并关闭，[总验收](review/M3-FINAL-2026-10-18.json)和[文档关闭报告](review/M3-DOCS-01-2026-10-18.json)保留原受验源码的证据。补充 [M3-REMOVE-01 报告](review/M3-REMOVE-01-2026-10-18.json)验证删除 Claude 云端能力；本地两家各三条路线保留，C3 已取消。W1/REAL-04、Anthropic 独立 API 仍待验；官方校准两家各 0/40、独立非阻塞。
+当前总状态：M3 于 2026-10-18 按用户确认的范围完成并关闭，[总验收](review/M3-FINAL-2026-10-18.json)和[文档关闭报告](review/M3-DOCS-01-2026-10-18.json)保留原受验源码的证据。补充 [M3-REMOVE-01 报告](review/M3-REMOVE-01-2026-10-18.json)验证删除 Claude 云端能力；本地两家各三条路线保留，C3 已取消。W1/REAL-04 仍待验；Anthropic 独立 API 产品计数验收已由 REAL-03 补测通过，官方估算校准两家各 0/40、独立非阻塞。
 
 ## 范围与推进顺序
 
@@ -88,7 +88,7 @@ M3-CARRY-01 与 `--count=exact` 产品验收分别记录；前者的非阻塞决
 - [x] **M3-T43 unknown 匹配**：目标是按 D6 支持显式缺失值匹配。依赖：M3-T42。产出：校验、编译、匹配及 explain/plan 说明，旧规则缺值行为兼容。测试：M3-A12、M3-B3、M3-C5。 证据：[A12 报告](review/M3-A12-2026-10-17.json)和[使用说明](STYLE-UNKNOWN.md)覆盖四字段、计划/模板推断、两家 codec/explain、会话 canonical、index 5/严格锁/六路线与真旧程序零写入拒绝；仅离线验收，真实 B3/C5 独立。
 - [x] **M3-T44 用户 effort 映射**：目标是按 D7 支持可追溯的用户配置。依赖：M3-D7。产出：配置读取、映射与缓存失效、raw/approx 和 doctor/plan 诊断。测试：M3-A13、M3-B3、M3-C5。 证据：[A13 报告](review/M3-A13-2026-10-17.json)和[使用说明](STYLE-EFFORT-MAPPING.md)；严格配置/完整内置对照、用户覆盖/raw/approx、缓存变更/删除、六路线/frozen/云端、来源诊断/index 6/真旧程序保护均通过离线验收。
 - [x] **M3-T45 规则级 fail-closed**：目标是按 D8 实现被支持的失败策略。依赖：M3-D8。产出：规则校验、能力规划、运行时错误处理及安装级兼容；不支持的能力明确拒绝或按批准设计回退。测试：M3-A14、M3-B3、M3-C5。 [A14 报告](review/M3-A14-2026-10-18.json)：9 新函数/74 pass，根全量 3,416 pass、专项 race 同 74；vet、45 规则故障 CLI、35 映射兼容 CLI、40 smoke 通过。index 7/严格锁、六路线及 cloud、两家错误/恢复和默认边界完成，真实 B3/C5 后续。
-- [x] **M3-T50 exact 计数**：目标是按 D9 提供显式计数模式。依赖：M3-D9。产出：计数实现与文本/JSON 报告、可选依赖/凭据处理和确定性测试；缺 key 或联网失败不能标为计数成功。测试：M3-A15、M3-TOKEN-01。 [A15 报告](review/M3-A15-2026-10-18.json)和[计数指南](STYLE-COUNT.md)：137 文本 × 两编码及完整词表摘要、API transport fixture、三命令/旧 JSON 和预算兼容通过；9 新函数/329 专项 race pass，根全量 3,745 pass/0 fail，vet、287 计数 CLI、45 故障兼容/50 refresh CLI、40 smoke 通过。内置词表增加二进制体积，五路线 p95 24.602–33.887ms；本地连续段 4,096 字节拒绝边界已披露。TOKEN-01 本地生产验收在 REAL-03 汇总，API 保持延期。
+- [x] **M3-T50 exact 计数**：目标是按 D9 提供显式计数模式。依赖：M3-D9。产出：计数实现与文本/JSON 报告、可选依赖/凭据处理和确定性测试；缺 key 或联网失败不能标为计数成功。测试：M3-A15、M3-TOKEN-01。 [A15 报告](review/M3-A15-2026-10-18.json)和[计数指南](STYLE-COUNT.md)：137 文本 × 两编码及完整词表摘要、API transport fixture、三命令/旧 JSON 和预算兼容通过；9 新函数/329 专项 race pass，根全量 3,745 pass/0 fail，vet、287 计数 CLI、45 故障兼容/50 refresh CLI、40 smoke 通过。内置词表增加二进制体积，五路线 p95 24.602–33.887ms；本地连续段 4,096 字节拒绝边界已披露。TOKEN-01 本地及官方 API 生产验收均在 REAL-03 汇总，现已完成。
 - [x] **M3-T60 native 扩展结论落地**：目标是落实 D10 的逐项结论。依赖：M3-D10。产出：获支持字段/类型的校验、plan、配置/信任生命周期；不支持项的诊断与依据，保留旧四字段兼容。测试：M3-A16、M3-B4、M3-C6。 [A16 报告](review/M3-A16-2026-10-18.json)与[指南](STYLE-NATIVE.md)：3 新函数/135 专项和 race pass、根 3,880 pass/0 fail、24 agenthooks native renderer pass、vet、40 五路线 CLI/外部五类 hook 保全及 40 smoke 通过。六路线拒绝/零写入/frozen 恢复通过；native 仍四字段，诊断不回显值，B4/C6 独立待验。
 - [x] **M3-T70 Windows 适配**：目标是按 D11 完成支持范围内的平台实现。依赖：M3-D11。产出：路径/启动器、原生 exe 与 stdin/退出码、DACL/进程身份、状态锁/清理和文件事务及 Windows CI。测试：M3-A17、M3-W1、M3-CI-01。[A17 完整报告](review/M3-A17-2026-10-18.json)固定 `b481396` 和 run 39055736061，Ubuntu/macOS/Windows 全过；Windows 根模块 3,380、agenthooks 521 pass，0 fail；280/35 项明确前提 skip 单列，25 项生产 CLI 全过。前六轮失败与逐项修正见 PROGRESS；仅关闭支持范围的平台实现，用户延期的实际 harness W1 保持 `[?]`，最终 CI-01 另验。
 - [x] **M3-T80 conformance 与升级回归**：目标是核对新能力组合及 M2 兼容性。依赖：M3-T70。产出：六路线组合升级、实际旧二进制/旧状态迁移、共享 codec/白名单/golden、恢复与去重回归，原 golden 不改。测试：M3-A18。[完整报告](review/M3-A18-2026-10-18.json)：fresh root 3,881/agenthooks 531 pass、0 fail，既有 2/23 skip 单列；36 项六路线组合、16 组旧布局迁移、12 组 replace 回退、40 smoke 及双 vet 通过，迁移/组合检查接入 CI。真实验收独立。
@@ -101,7 +101,7 @@ M3-CARRY-01 与 `--count=exact` 产品验收分别记录；前者的非阻塞决
 - [x] **M3-PREP-02 云端、计数与 Windows 准备**：目标是明确特殊环境的执行条件。依赖：M3-PREP-01、M3-D3、M3-D9、M3-D11。产出：[手册 P2](STYLE-M3-MANUAL.md#延期环境-p2)和[准备报告](review/M3-P2-2026-10-18.json)。云端八项离线交付入口、local exact 两编码、API 缺 key 零请求拒绝通过；Windows 自动化依据 A17，真实 host/harness 入口另列。三类真实环境已由用户延期，保持待验；准备不计 C3/W1/API 成功。测试：M3-P2。
 - [x] **M3-REAL-01 Codex 真实验收**：目标是验证受支持路线上的实际调用与投递。依赖：M3-T80、M3-PREP-01。产出：固定版本下的诊断、项目隔离、运行时和 native 证据，以及卸载恢复；既有 user/plugin 两路线独立核对，新增项目路线另测。测试：M3-B1–B4。Codex 0.159.3 用户路线已完整通过[真实证据](review/M3-B-CODEX-USER-2026-10-18.json)，插件路线也通过[缓存修复后的完整真实验收](review/M3-B-CODEX-PLUGIN-2026-10-18.json)，项目及用户最终复验均完成，[三路线总报告](review/M3-REAL-01-2026-10-18.json)固定同一二进制及逐路线完整证据。 [六路线未触发/中断检查](review/M3-PROBE-NEGATIVE-2026-10-18.json)已通过：有效 index、12 次失败状态/完整清理与显式配置恢复；无模型调用，不据此关闭真实投递。
 - [x] **M3-REAL-02 Claude 真实验收**：目标是验证本地用户/项目/插件支持范围。依赖：M3-T80、M3-PREP-01。产出：真实回调、加载/投递、信任、运行时与卸载恢复证据。测试：M3-C1、M3-C2、M3-C4–C6；C3 已由用户取消。Claude Code 2.1.301 三条本地路线的独立真实证据见[本地总报告](review/M3-REAL-02-LOCAL-2026-10-18.json)。删除后的本地回归已由 [M3-A19](review/M3-REMOVE-01-2026-10-18.json)通过，按保留范围关闭；历史真实结果不重写，此次未重复模型调用。
-- [~] **M3-REAL-03 exact 真实计数**：目标是验证 D9 宣称的计数能力。依赖：M3-T50、M3-PREP-02，以及对应编码/接口环境。产出：真实计数结果、模型/编码版本、文本与请求摘要及报告范围；与旧校准遗留分别记录。测试：M3-TOKEN-01。 [最终二进制本地证据](review/M3-TOKEN-LOCAL-2026-10-18.json)：137 文本 × 两编码的 274 计数、共 287 CLI 检查及完整词表摘要通过；本次必过的本地子项已完成，独立 API 子项按用户决定保持 `[?]`，不计官方 40 条校准。 此前[中转计数探针](review/M3-TOKEN-RELAY-2026-10-18.json)与[客户端诊断](review/M3-TOKEN-RELAY-CLAUDE-2026-10-18.json)仅保留历史事实。2026-10-18 用户撤回中转方案，已删除独立中转入口、配置及私有临时材料共 33 处，改为[官方 API 接入准备](review/M3-TOKEN-OFFICIAL-SETUP-2026-10-18.json)；官方真实计数仍待验，未关闭本项或官方校准。
+- [x] **M3-REAL-03 exact 真实计数**：目标是验证 D9 宣称的计数能力。依赖：M3-T50、M3-PREP-02，以及对应编码/接口环境。产出：真实计数结果、模型/编码版本、文本与请求摘要及报告范围；与旧校准遗留分别记录。测试：M3-TOKEN-01。 [本地证据](review/M3-TOKEN-LOCAL-2026-10-18.json)已通过 137 文本 × 两编码及 287 CLI 检查；2026-10-18 用户提供官方 API key 后，[官方 API 补充验收](review/M3-TOKEN-OFFICIAL-2026-10-18.json)通过生产 count/plan/explain 的 7 项检查、7 次官方计数请求，短英文/中文/较长混合/英文重复为 17、21、583、17。固定删除云端后的已验二进制及全部源码摘要，缺 key 失败后真实成功、重复一致和输入保全通过；关闭本项。独立官方 Claude CLI 同时以 Haiku 5.5 / low 成功回复。此前中转方案已撤回，历史报告保留；不替代 CARRY-01 的两家各 40 条估算校准。
 - [?] **M3-REAL-04 Windows 真实验收**：目标是验证 Windows 上实际安装和 hook 执行。依赖：M3-T80、M3-PREP-02。产出：原生 shell、受支持 harness 路线、stdin/退出码、状态并发和卸载恢复证据；交叉编译不视为通过。测试：M3-W1。
 
 ## 里程碑收尾
@@ -116,7 +116,7 @@ M3-CARRY-01 与 `--count=exact` 产品验收分别记录；前者的非阻塞决
 
 - [x] **M3-REMOVE-01 删除 Claude 云端功能**：目标是按用户决定移除云端能力。依赖：用户明确取消 T31/C3；保留 T30/T32。产出：删除 export 命令/API、bundle 运行时及 cloud state、doctor/卸载分支和云端正向测试；当前设计/教程/矩阵同步。用户确认未安装过，不保留旧产物清理。测试：M3-A19，另复验本地六路线、旧版兼容、双 module test/vet 和采集器；历史 M1/M2、既有报告及 golden 不改，PROGRESS 仅追加。证据：[补充报告](review/M3-REMOVE-01-2026-10-18.json)和[文档检查](review/M3-REMOVE-01-DOCS-2026-10-18.json)。
 
-T31/A7 的历史通过记录不表示当前支持云端。C3 从未执行真实托管验收，此次为取消，不能标为通过。此前延期决定中的 W1 与独立 API 继续有效。原 FINAL/CI/源码绑定报告是原提交的快照，删除功能后的源码以本次补充报告为准。
+T31/A7 的历史通过记录不表示当前支持云端。C3 从未执行真实托管验收，此次为取消，不能标为通过。此前延期决定中的 W1 继续有效；独立 API 已在后续 REAL-03 补测通过。原 FINAL/CI/源码绑定报告是原提交的快照，删除功能后的源码以本次补充报告为准。
 
 ## 后续 backlog
 
@@ -136,3 +136,5 @@ T31/A7、T32/A8 现已完成离线实现验收；当前进入 D5/T41。D3 设计
 T41/A10 已完成；当前按依赖推进 D6/T42/T43，T31/T32 早期暂缓记载已由最新授权覆盖。
 
 六路线最终超时/中断复验使用缓存修复后二进制，见[最终报告](review/M3-PROBE-NEGATIVE-FINAL-2026-10-18.json)：12 次预期失败、有效 index 捕获、完整 cleanup 和配置/项目恢复均通过。
+
+2026-10-18 后续补测：用户提供官方 API key 并选择 Haiku 5.5 / low 后，REAL-03/TOKEN-01 的官方 API 子项已通过，以上原始延期决定保留历史语境。当前仍延期 W1/REAL-04；CARRY-01 两家各 0/40 继续单独记录。

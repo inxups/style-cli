@@ -1,6 +1,6 @@
 # M3 真实验收手册
 
-M3 已按用户确认范围关闭，原结果见[最终报告](review/M3-FINAL-2026-10-18.json)和[文档核对](review/M3-DOCS-01-2026-10-18.json)。2026-10-18 用户另要求删除 Claude 云端功能，C3 已取消。当前仅 Windows 实际 harness W1 和 Anthropic 独立计数 API 保持延期待验。本手册对应 P1/P2，状态以[任务清单](STYLE-M3-TASKS.md)和[测试矩阵](STYLE-M3-TESTS.md)为准。
+M3 已按用户确认范围关闭，原结果见[最终报告](review/M3-FINAL-2026-10-18.json)和[文档核对](review/M3-DOCS-01-2026-10-18.json)。2026-10-18 用户另要求删除 Claude 云端功能，C3 已取消。当前 Windows 实际 harness W1 保持延期待验；Anthropic 独立计数 API 已由 TOKEN-01 补测通过。本手册对应 P1/P2，状态以[任务清单](STYLE-M3-TASKS.md)和[测试矩阵](STYLE-M3-TESTS.md)为准。
 
 ## 构建与准备
 
@@ -65,4 +65,4 @@ Codex 的 user/plugin/project 和 Claude 的 user/plugin/project 分别使用新
 | TOKEN-01 API | 独立 ANTHROPIC_API_KEY 由本地安全环境注入、可计数模型 ID、官方 HTTPS 接口；按[计数指南](STYLE-COUNT.md)运行生产 CLI | 仅记录最小请求/文本摘要、模型、版本、计数和 scope；缺 key/网络或 API 错误失败，不退回估算。不使用 Claude 订阅凭据 |
 | W1 | 实际 Windows 主机、原生 STYLE.exe 和受支持的 Codex/Claude.exe、系统 PowerShell、私有配置与真实账号 | 两家 user 路线安装、原生 stdin/退出码、实际模型正文、DACL/并发状态及卸载；Windows 项目/插件和作者 POSIX native 明确不支持。CI 的版本 stub 不能关闭 W1 |
 
-本地 exact 可立即运行：`style count text.txt --count=exact --count-provider=openai --encoding=o200k_base --json`，再用 cl100k_base 复验；记录固定文本与编码版本，不宣称请求或账单精度。Anthropic API、W1 后续另测；C3 已取消，固定 40 条官方校准仍两家各 0/40、非阻塞。
+本地 exact 可立即运行：`style count text.txt --count=exact --count-provider=openai --encoding=o200k_base --json`，再用 cl100k_base 复验；记录固定文本与编码版本，不宣称请求或账单精度。Anthropic API 已于 2026-10-18 以官方 Haiku 5.5 通过生产 count/plan/explain 补测，见[验收报告](review/M3-TOKEN-OFFICIAL-2026-10-18.json)；W1 后续另测，C3 已取消，固定 40 条官方估算校准仍两家各 0/40、非阻塞。
