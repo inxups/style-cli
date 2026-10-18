@@ -8,10 +8,6 @@ requires:
   harness:
     codex: '>=0.159.3'
     claude-code: '>=2.1.300'
-reads:
-  model: true
-  thinking_effort: true
-  harness: [name]
 settings:
   - name: max_findings
     description: maximum findings

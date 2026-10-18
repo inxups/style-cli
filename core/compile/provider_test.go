@@ -11,9 +11,9 @@ import (
 
 func TestM3A11ProviderCompileFormatSchemaAndOldGate(t *testing.T) {
 	for _, rule := range []string{
-		"  - {id: r, target: event, event: tool.pre, reads: {provider: true}, when: {provider: custom.ID}, text: service}\n",
-		"  - {id: r, target: system, reads: {provider: true}, text: '{{provider | default: \"missing\"}}'}\n",
-		"  - {id: r, target: event, event: prompt.submitted, refresh: 3, reason: fixture, reads: {provider: true, event: [prompt]}, text: '{{provider}} {{event.prompt}}'}\n",
+		"  - {id: r, target: event, event: tool.pre, when: {provider: custom.ID}, text: service}\n",
+		"  - {id: r, target: system, text: '{{provider | default: \"missing\"}}'}\n",
+		"  - {id: r, target: event, event: prompt.submitted, refresh: 3, reason: fixture, text: '{{provider}} {{event.prompt}}'}\n",
 	} {
 		pkg := loadResolved(t, "provider", rule)
 		r, err := Build(Request{StyleVersion: "0.3.0", Packages: []PackageInput{inputFor(t, pkg, 1)}})

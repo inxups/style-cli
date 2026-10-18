@@ -140,7 +140,7 @@ func TestM3A15PlanDynamicRejectedBeforeNetwork(t *testing.T) {
 	root := t.TempDir()
 	t.Setenv("STYLE_HOME", filepath.Join(root, "home"))
 	source := filepath.Join(root, "source")
-	writeSyncFile(t, filepath.Join(source, "STYLE.yaml"), "spec: style/v0.3\nname: counted\nversion: 1.0.0\ndescription: dynamic fixture\nreads: {model: true}\nrules:\n  - {id: static, target: system, text: STATIC}\n  - {id: dynamic, target: event, event: tool.pre, text: '{{model | default: \"none\"}}'}\n")
+	writeSyncFile(t, filepath.Join(source, "STYLE.yaml"), "spec: style/v0.3\nname: counted\nversion: 1.0.0\ndescription: dynamic fixture\nrules:\n  - {id: static, target: system, text: STATIC}\n  - {id: dynamic, target: event, event: tool.pre, text: '{{model | default: \"none\"}}'}\n")
 	s.counter = &tokencount.Counter{Key: func() string { t.Fatal("dynamic plan accessed key"); return "" }, Client: &http.Client{Transport: a15Transport(func(*http.Request) (*http.Response, error) { t.Fatal("dynamic plan used network"); return nil, nil })}}
 	before := snapshotStatsTree(t, root)
 	req := PlanRequest{Source: source, Harnesses: []string{"codex"}, Count: tokencount.Options{Mode: "exact", Provider: "anthropic", Model: "claude-fixture"}}

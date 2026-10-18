@@ -200,7 +200,7 @@ func loadSingleBytes(root, name string, files map[string][]byte, data []byte) (*
 
 func isPackageField(key string) bool {
 	switch key {
-	case "spec", "name", "version", "description", "authors", "requires", "reads", "settings", "recommends", "budget", "defaults", "rules", "priority":
+	case "spec", "name", "version", "description", "authors", "requires", "settings", "recommends", "budget", "defaults", "rules", "priority":
 		return true
 	default:
 		return false

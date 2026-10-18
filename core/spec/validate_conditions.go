@@ -31,17 +31,14 @@ func (v *validator) validateWhen(value any, rule Rule, source string) {
 					}
 				}
 			}
-			v.requireRuntimeRead("model", source)
 		case "thinking_effort":
 			if !validEffortExpression(item) {
 				v.add("bad-effort-expr", source, "thinking_effort must be a tier, list of tiers, or ordered comparison")
 			}
-			v.requireRuntimeRead("thinking_effort", source)
 		case "thinking_effort_approx":
 			if _, ok := item.(bool); !ok {
 				v.add("invalid-schema", source, "when.thinking_effort_approx must be a boolean")
 			}
-			v.requireRuntimeRead("thinking_effort", source)
 		case "harness":
 			v.validateHarnessWhen(item, source)
 		case "agent":
@@ -60,7 +57,6 @@ func (v *validator) validateWhen(value any, rule Rule, source string) {
 					}
 				}
 			}
-			v.requireRuntimeRead("provider", source)
 		default:
 			v.add("invalid-schema", source, fmt.Sprintf("unknown when field %q", key))
 		}
@@ -87,7 +83,6 @@ func (v *validator) validateHarnessWhen(value any, source string) {
 				}
 			}
 		}
-		v.requireRuntimeRead("harness."+field, source)
 	}
 }
 

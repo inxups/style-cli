@@ -62,7 +62,6 @@ func catalogSource(t *testing.T, root, name, harness, position, format string) s
 		header += fmt.Sprintf("recommends: {%q: {effort: high}}\n", harness)
 	}
 	if position == "when" || position == "all" {
-		header += "reads: {harness: [name]}\n"
 		when = fmt.Sprintf("when: {harness: {name: %q}}\n", harness)
 	}
 	if format == "single" {
@@ -344,7 +343,7 @@ func TestM3A0FakeBudgetDiagnosticsSurviveCompileAndDedup(t *testing.T) {
 	}
 	var packages []installPackage
 	for index, name := range []string{"first", "second"} {
-		manifest := "spec: style/v0.3\nname: " + name + "\nversion: 1.0.0\ndescription: Catalog budget fixture\nreads: {harness: [name]}\nbudget: {per_rule: 1, per_event: 1, on: warn}\nrules:\n  - {id: r, target: event, event: prompt.submitted, repeat: turn, text: 'Shared budget instruction.', when: {harness: {name: fixture-harness}}}\n"
+		manifest := "spec: style/v0.3\nname: " + name + "\nversion: 1.0.0\ndescription: Catalog budget fixture\nbudget: {per_rule: 1, per_event: 1, on: warn}\nrules:\n  - {id: r, target: event, event: prompt.submitted, repeat: turn, text: 'Shared budget instruction.', when: {harness: {name: fixture-harness}}}\n"
 		source := writeInstallPackage(t, t.TempDir(), manifest)
 		validation, err := service.Validate(ctx, ValidateRequest{Source: source})
 		if err != nil || !validation.Valid() {

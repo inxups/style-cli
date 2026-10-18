@@ -12,7 +12,6 @@ MANIFEST = """spec: style/v0.3
 name: missing-data
 version: 1.0.0
 description: explicit unknown fixture
-reads: {model: true}
 rules:
   - {id: r, target: event, event: tool.pre, when: {model: unknown}, text: 'Unknown rule'}
 """

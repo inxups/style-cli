@@ -34,7 +34,6 @@ type Rule struct {
 // have been merged. Package retains the original parsed values for validation.
 type ResolvedPackage struct {
 	Package *Package
-	Reads   map[string]any
 	Rules   []Rule
 }
 

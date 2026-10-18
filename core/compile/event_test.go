@@ -13,7 +13,7 @@ import (
 )
 
 func TestM3A10CompileFormatEstimateAndLegacyGate(t *testing.T) {
-	pkg := loadResolved(t, "events", "  - id: r\n    target: event\n    event: prompt.submitted\n    reads: {event: [prompt]}\n    text: 'Review {{event.prompt}}'\n    refresh: 3\n    reason: event fixture\n")
+	pkg := loadResolved(t, "events", "  - id: r\n    target: event\n    event: prompt.submitted\n    text: 'Review {{event.prompt}}'\n    refresh: 3\n    reason: event fixture\n")
 	result, err := Build(Request{StyleVersion: "0.3.0", Packages: []PackageInput{inputFor(t, pkg, 1)}})
 	if err != nil {
 		t.Fatal(err)

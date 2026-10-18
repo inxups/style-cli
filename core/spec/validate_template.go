@@ -7,6 +7,8 @@ import (
 	stylewhen "github.com/inxups/style-cli/core/when"
 )
 
+var harnessTemplateFields = stringSet("name", "version", "cwd", "permission_mode", "agent", "session_id", "turn_id")
+
 var eventTemplateNames = []string{"prompt", "tool.name", "tool.input", "tool.added", "tool.output", "mcp.server", "mcp.tool", "skill.name"}
 
 func (v *validator) validateTemplate(text, source string, rule Rule) {
@@ -35,7 +37,6 @@ func (v *validator) validateTemplateName(name string, hasDefault bool, source st
 			v.add("undeclared-var", source, name+" is not a supported event variable")
 			return
 		}
-		v.requireRuntimeRead(name, source)
 		if !v.conditionFieldAvailable(field, rule) {
 			v.add("event-var-unavailable", source, name+" is unavailable for this target/event")
 		}
@@ -52,8 +53,7 @@ func (v *validator) validateTemplateName(name string, hasDefault bool, source st
 			v.add("undeclared-var", source, name+" is not declared")
 		}
 	case isRuntimeTemplateName(name):
-		v.requireRuntimeRead(runtimeReadForTemplate(name), source)
-		if strings.HasPrefix(name, "harness.") && name != "harness.session_id" && name != "harness.turn_id" && !harnessReadFields[strings.TrimPrefix(name, "harness.")] {
+		if strings.HasPrefix(name, "harness.") && !harnessTemplateFields[strings.TrimPrefix(name, "harness.")] {
 			v.add("undeclared-var", source, name+" is not a supported runtime variable")
 		}
 		if !hasDefault && !v.whenGuarantees(rule, name) {
@@ -69,13 +69,6 @@ func (v *validator) validateTemplateName(name string, hasDefault bool, source st
 
 func isRuntimeTemplateName(name string) bool {
 	return styletemplate.IsRuntimeVariable(name)
-}
-
-func runtimeReadForTemplate(name string) string {
-	if name == "thinking_effort_raw" {
-		return "thinking_effort_raw"
-	}
-	return name
 }
 
 func (v *validator) settingDeclared(name string) bool {

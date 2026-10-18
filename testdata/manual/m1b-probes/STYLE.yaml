@@ -2,9 +2,6 @@ spec: style/v0.3
 name: m1b-probes
 version: 0.1.0
 description: Explicit markers for user-operated M1b harness checks
-reads:
-  model: true
-  thinking_effort: true
 rules:
   - id: session-info
     target: system

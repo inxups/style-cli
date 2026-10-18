@@ -1,7 +1,7 @@
 package spec
 
 // Merge applies standard, package, rule-file, and from-entry values in
-// increasing precedence. Reads declarations are unioned across sources.
+// increasing precedence.
 // Disabled rules are omitted; Package remains available for validation of the
 // original declarations, including disabled rules.
 func Merge(pkg *Package) (*ResolvedPackage, error) {
@@ -10,10 +10,6 @@ func Merge(pkg *Package) (*ResolvedPackage, error) {
 	}
 	metadata := pkg.Metadata
 	packageDefaults := asStringMap(metadata["defaults"])
-	readDeclarations := []any{metadata["reads"]}
-	for _, rule := range pkg.Rules {
-		readDeclarations = append(readDeclarations, rule.Fields["reads"], rule.Overrides["reads"])
-	}
 	packagePriority, hasPackagePriority := metadata["priority"]
 	if !hasPackagePriority {
 		packagePriority = 50
@@ -25,7 +21,7 @@ func Merge(pkg *Package) (*ResolvedPackage, error) {
 		}
 	}
 
-	resolved := &ResolvedPackage{Package: pkg, Reads: unionReads(readDeclarations...)}
+	resolved := &ResolvedPackage{Package: pkg}
 	for _, original := range pkg.Rules {
 		effective := map[string]any{
 			"action":     "inject",
@@ -39,17 +35,12 @@ func Merge(pkg *Package) (*ResolvedPackage, error) {
 			effective[key] = cloneValue(value)
 		}
 		for key, value := range original.Fields {
-			if key != "reads" && key != "from" {
+			if key != "from" {
 				effective[key] = cloneValue(value)
 			}
 		}
 		for key, value := range original.Overrides {
-			if key != "reads" {
-				effective[key] = cloneValue(value)
-			}
-		}
-		if len(resolved.Reads) != 0 {
-			effective["reads"] = cloneMap(resolved.Reads)
+			effective[key] = cloneValue(value)
 		}
 		if _, ok := effective["at"]; !ok {
 			if effective["action"] == "block" {

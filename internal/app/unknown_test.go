@@ -14,7 +14,7 @@ import (
 )
 
 func a12Manifest() string {
-	return "spec: style/v0.3\nname: missing-data\nversion: 1.0.0\ndescription: missing data fixture\nreads: {model: true}\nrules:\n  - {id: r, target: event, event: tool.pre, when: {model: unknown}, text: 'Unknown rule'}\n"
+	return "spec: style/v0.3\nname: missing-data\nversion: 1.0.0\ndescription: missing data fixture\nrules:\n  - {id: r, target: event, event: tool.pre, when: {model: unknown}, text: 'Unknown rule'}\n"
 }
 
 func TestM3A12SixRouteUnknownLifecycleAndMarkerRemoval(t *testing.T) {

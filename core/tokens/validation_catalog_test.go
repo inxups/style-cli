@@ -13,7 +13,7 @@ func TestM3A0EmptySourceFallbackPreservesStructuralLintsForFakeHarness(t *testin
 	for _, repeat := range []string{"session", "turn"} {
 		t.Run(repeat, func(t *testing.T) {
 			rules := "  - id: r\n    target: event\n    event: prompt.submitted\n    repeat: " + repeat + "\n    text: body\n    when: {harness: {name: fixture}}\n"
-			pkg, planned, _ := loadPlan(t, "reads: {harness: [name]}\n", rules, adapter)
+			pkg, planned, _ := loadPlan(t, "", rules, adapter)
 			source := spec.ValidateWithCatalog(pkg.Package, spec.ValidationCatalog{Harnesses: []string{"fixture"}})
 			withSource, err := Analyze(pkg, planned, source...)
 			if err != nil {

@@ -71,7 +71,7 @@ func (v *validator) validateRuleFields(rule Rule, source string) {
 		if !ruleFields[key] && (!native || isPackageField(key)) {
 			v.add("invalid-schema", source, fmt.Sprintf("unknown rule field %q", key))
 		}
-		if isRuleFile && isPackageField(key) && key != "priority" && key != "reads" {
+		if isRuleFile && isPackageField(key) && key != "priority" {
 			v.add("rule-file-pkg-field", source, fmt.Sprintf("rule files cannot set package field %q", key))
 		}
 	}
@@ -301,7 +301,7 @@ func validRuleFieldValue(key string, value any) bool {
 		return ok
 	case "priority", "max_tokens":
 		return isNumber(value) && toFloat64(value) >= 0
-	case "reads", "when":
+	case "when":
 		return asStringMap(value) != nil
 	default:
 		return false

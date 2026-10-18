@@ -33,7 +33,7 @@ func TestValidateBlockReasonTokenLint(t *testing.T) {
 }
 
 func TestValidateT006AndT007Warnings(t *testing.T) {
-	longLivedVariable := testManifest("lint-t006", "reads:\n  harness: [session_id]\n", "  - id: base\n    target: system\n    text: '{{harness.session_id}}'\n")
+	longLivedVariable := testManifest("lint-t006", "", "  - id: base\n    target: system\n    text: '{{harness.session_id}}'\n")
 	if !hasDiagnostic(loadAndValidate(t, longLivedVariable, nil), "T006", SeverityWarning) {
 		t.Fatal("T006 warning missing for harness.session_id")
 	}

@@ -21,7 +21,6 @@ def manifest(name,combined):
            {'id':'first','target':'tool','tool':'shell','at':'before','priority':10,'text':'A18_FIRST'}]
     doc={'spec':'style/v0.3','name':name,'version':'1.0.1' if combined else '1.0.0','description':'Conformance upgrade fixture','rules':rules}
     if combined:
-        doc['reads']={'provider':True,'thinking_effort':True,'model':True,'event':['prompt']}
         rules[1].update(refresh=2,repeat='session',reason='Combined refresh acceptance',fail='closed',text='A18_FIRST provider={{provider}} effort={{thinking_effort}}',when={'provider':['fixture','anthropic'],'thinking_effort':'high'})
         rules.extend([{'id':'last','target':'tool','tool':'shell','at':'before','priority':90,'text':'A18_LAST'},
                       {'id':'unknown','target':'tool','tool':'shell','at':'before','when':{'model':'unknown'},'text':'A18_UNKNOWN'},

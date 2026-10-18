@@ -37,7 +37,7 @@ func TestM3A10RealCodecsFencedEventFields(t *testing.T) {
 			}
 			for _, tc := range cases {
 				t.Run(tc.field, func(t *testing.T) {
-					manifest := fmt.Sprintf("spec: style/v0.3\nname: event-content\nversion: 1.0.0\ndescription: content fixture\nreads: {event: [%s]}\nrules:\n  - {id: r, target: event, event: %s, text: '{{event.%s}}'}\n", tc.field, tc.event, tc.field)
+					manifest := fmt.Sprintf("spec: style/v0.3\nname: event-content\nversion: 1.0.0\ndescription: content fixture\nrules:\n  - {id: r, target: event, event: %s, text: '{{event.%s}}'}\n", tc.event, tc.field)
 					if tc.event == "skill.explicit" {
 						manifest = strings.Replace(manifest, "target: event, event: skill.explicit", "target: skill, skill: review, at: before", 1)
 					}

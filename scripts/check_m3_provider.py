@@ -15,7 +15,6 @@ MANIFEST = """spec: style/v0.3
 name: service-provider
 version: 1.0.0
 description: service selector fixture
-reads: {provider: true}
 rules:
   - id: r
     target: event

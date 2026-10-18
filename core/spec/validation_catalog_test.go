@@ -53,7 +53,7 @@ func TestM3A0CatalogControlsAllOrdinaryNames(t *testing.T) {
 						if list {
 							condition = "[" + condition + "]"
 						}
-						metadata := fmt.Sprintf("reads: {harness: [name]}\nrequires: {harness: {%q: '>=1.0.0'}}\nrecommends: {%q: {effort: high}}\n", name, name)
+						metadata := fmt.Sprintf("requires: {harness: {%q: '>=1.0.0'}}\nrecommends: {%q: {effort: high}}\n", name, name)
 						pkg := catalogPackage(t, format, metadata, condition)
 						if got := Validate(pkg); len(got) != 0 {
 							t.Fatalf("structure must not guess names: %+v", got)
@@ -105,7 +105,6 @@ func TestM3A0CatalogDiagnosticCompatibility(t *testing.T) {
 		{Code: "invalid-schema", Path: "STYLE.yaml", Severity: SeverityError, Message: `unknown recommends harness "mystery"`},
 		{Code: "invalid-schema", Path: "STYLE.yaml", Severity: SeverityError, Message: "recommends.mystery must be a mapping"},
 		{Code: "invalid-schema", Path: pkg.Rules[0].Source, Severity: SeverityError, Message: `unknown harness name "mystery"`},
-		{Code: "reads-missing", Path: pkg.Rules[0].Source, Severity: SeverityError, Message: "harness.name is used but not declared in reads.harness"},
 	}
 	for range 3 {
 		if got := ValidateWithCatalog(pkg, ValidationCatalog{Harnesses: []string{"codex", "claude-code"}}); !reflect.DeepEqual(got, want) {
@@ -113,9 +112,9 @@ func TestM3A0CatalogDiagnosticCompatibility(t *testing.T) {
 		}
 	}
 	for _, tc := range []struct{ name, metadata, condition, message string }{
-		{"requires type", "requires: {harness: false}\nreads: {harness: [name]}\n", "codex", "requires.harness must be a mapping"},
-		{"recommends type", "recommends: false\nreads: {harness: [name]}\n", "codex", "recommends must be a mapping"},
-		{"condition type", "reads: {harness: [name]}\n", "[codex, 3]", "when.harness.name must be a string or list of strings"},
+		{"requires type", "requires: {harness: false}\n", "codex", "requires.harness must be a mapping"},
+		{"recommends type", "recommends: false\n", "codex", "recommends must be a mapping"},
+		{"condition type", "", "[codex, 3]", "when.harness.name must be a string or list of strings"},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			pkg := catalogPackage(t, "directory", tc.metadata, tc.condition)
@@ -188,7 +187,7 @@ func TestM3A0ZeroCatalogAndConcurrentCatalogs(t *testing.T) {
 	if got := ValidateWithCatalog(generic, ValidationCatalog{}); len(got) != 0 {
 		t.Fatalf("generic package must not require a registered harness: %+v", got)
 	}
-	pkg := catalogPackage(t, "from", "reads: {harness: [name]}\n", "fixture-harness")
+	pkg := catalogPackage(t, "from", "", "fixture-harness")
 	var workers sync.WaitGroup
 	for index := range 16 {
 		workers.Add(1)

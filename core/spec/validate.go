@@ -1,12 +1,9 @@
 package spec
 
 type validator struct {
-	pkg             *Package
-	harnesses       map[string]bool // nil means structure/lint validation only
-	diagnostics     []Diagnostic
-	declaredReads   map[string]bool
-	declaredHarness map[string]bool
-	usedReads       map[string]bool
+	pkg         *Package
+	harnesses   map[string]bool // nil means structure/lint validation only
+	diagnostics []Diagnostic
 }
 
 // ValidationCatalog supplies the registered canonical harness names and the
@@ -17,7 +14,7 @@ type ValidationCatalog struct {
 	Native    NativeCatalog
 }
 
-// Validate checks structure, types, reads, templates and lints, returning
+// Validate checks structure, types, templates and lints, returning
 // stable, source-associated diagnostics. It does not check harness membership
 // or native capabilities. Package admission must use ValidateWithCatalog.
 // Load should be called first to report parse and filesystem errors.
@@ -37,17 +34,9 @@ func validate(pkg *Package, harnesses map[string]bool) []Diagnostic {
 	if pkg == nil {
 		return []Diagnostic{{Code: "invalid-package", Message: "package is nil", Severity: SeverityError}}
 	}
-	v := &validator{
-		pkg:             pkg,
-		harnesses:       harnesses,
-		declaredReads:   make(map[string]bool),
-		declaredHarness: make(map[string]bool),
-		usedReads:       make(map[string]bool),
-	}
+	v := &validator{pkg: pkg, harnesses: harnesses}
 	v.validatePackage()
-	v.collectReads()
 	v.validateRules()
-	v.reportUnusedReads()
 	v.validateUndeclaredRuleFiles()
 	return v.diagnostics
 }

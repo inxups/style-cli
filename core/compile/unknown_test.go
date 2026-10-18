@@ -9,9 +9,9 @@ import (
 )
 
 func TestM3A12UnknownCompileWholeFormat5Gate(t *testing.T) {
-	for _, tc := range []struct{ field, reads string }{{"model: unknown", "model: true"}, {"provider: unknown", "provider: true"}, {"thinking_effort: unknown", "thinking_effort: true"}, {"harness: {permission_mode: unknown}", "harness: [permission_mode]"}} {
-		t.Run(tc.field, func(t *testing.T) {
-			rules := "  - {id: missing, target: event, event: tool.pre, reads: {" + tc.reads + "}, when: {" + tc.field + "}, text: missing}\n  - {id: provider, target: event, event: tool.pre, reads: {provider: true}, text: '{{provider | default: \"missing\"}}'}\n  - {id: fenced, target: event, event: prompt.submitted, reads: {event: [prompt]}, refresh: 2, reason: fixture, text: '{{event.prompt}}'}\n"
+	for _, field := range []string{"model: unknown", "provider: unknown", "thinking_effort: unknown", "harness: {permission_mode: unknown}"} {
+		t.Run(field, func(t *testing.T) {
+			rules := "  - {id: missing, target: event, event: tool.pre, when: {" + field + "}, text: missing}\n  - {id: provider, target: event, event: tool.pre, text: '{{provider | default: \"missing\"}}'}\n  - {id: fenced, target: event, event: prompt.submitted, refresh: 2, reason: fixture, text: '{{event.prompt}}'}\n"
 			pkg := loadResolved(t, "unknown", rules)
 			result, err := Build(Request{StyleVersion: "0.3.0", Packages: []PackageInput{inputFor(t, pkg, 1)}})
 			if err != nil || result.Index.Format != UnknownFormat {
@@ -28,7 +28,7 @@ func TestM3A12UnknownCompileWholeFormat5Gate(t *testing.T) {
 				}
 			}
 			for _, spelling := range []string{"UnKnOwN", " unknown "} {
-				if tc.field != "model: unknown" && tc.field != "thinking_effort: unknown" || tc.field == "model: unknown" && spelling == " unknown " {
+				if field != "model: unknown" && field != "thinking_effort: unknown" || field == "model: unknown" && spelling == " unknown " {
 					continue
 				}
 				raw := bytes.ReplaceAll(data, []byte(`"unknown"`), []byte(`"`+spelling+`"`))

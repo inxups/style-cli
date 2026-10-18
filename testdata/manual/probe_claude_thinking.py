@@ -16,7 +16,7 @@ def run(probe, report):
     package = probe.root / "thinking-package"
     package.mkdir()
     (package / "STYLE.yaml").write_text(json.dumps({"spec": "style/v0.3", "name": "claude-thinking", "version": "0.1.0",
-        "description": "Observe native effort independently of thinking on/off", "reads": {"thinking_effort": True}, "rules": [
+        "description": "Observe native effort independently of thinking on/off", "rules": [
             {"id": "effort", "target": "event", "event": "tool.pre", "text": 'M1_FINAL_CLAUDE_EFFORT={{thinking_effort | default: "unknown"}}'}]}))
     report["install"] = probe.install(package)
     runner, log = probe.root / "observer.py", probe.root / "hook-effort.jsonl"

@@ -12,8 +12,8 @@ var (
 	semverPattern      = regexp.MustCompile(`^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(-((0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*)(\.(0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*))*))?(\+[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?$`)
 )
 
-var packageFields = stringSet("spec", "name", "version", "description", "authors", "requires", "reads", "settings", "recommends", "priority", "budget", "defaults", "rules")
-var ruleFields = stringSet("id", "target", "file", "text", "model_text", "action", "at", "when", "repeat", "fail", "refresh", "reinject_on_compact", "sources", "fallback", "priority", "max_tokens", "reason", "from", "enabled", "mode", "tool", "names", "mcp", "skill", "event", "reads")
+var packageFields = stringSet("spec", "name", "version", "description", "authors", "requires", "settings", "recommends", "priority", "budget", "defaults", "rules")
+var ruleFields = stringSet("id", "target", "file", "text", "model_text", "action", "at", "when", "repeat", "fail", "refresh", "reinject_on_compact", "sources", "fallback", "priority", "max_tokens", "reason", "from", "enabled", "mode", "tool", "names", "mcp", "skill", "event")
 var defaultsFields = stringSet("action", "at", "repeat", "fail", "refresh", "reinject_on_compact", "sources", "fallback", "priority", "max_tokens")
 
 func (v *validator) packageSource() string {

@@ -11,7 +11,7 @@ func TestDeduplicatedRowsKeepSourceBudgetsButHaveNoEffectiveCost(t *testing.T) {
 	adapter := fakeAdapter{static: true, caps: map[string]map[plan.Capability]bool{
 		plan.SessionStart: {plan.AddContext: true}, plan.PromptSubmitted: {plan.AddContext: true},
 	}}
-	pkg, planned, source := loadPlan(t, "budget: {per_rule: 1, per_event: 1, always_on: 1, on: error}\nreads: {model: true}\n", `  - {id: static, target: system, text: Long static text.}
+	pkg, planned, source := loadPlan(t, "budget: {per_rule: 1, per_event: 1, always_on: 1, on: error}\n", `  - {id: static, target: system, text: Long static text.}
   - {id: dynamic, target: system, text: 'Model {{model}}.'}
 `, adapter)
 	original, err := Analyze(pkg, planned, source...)

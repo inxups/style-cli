@@ -24,7 +24,6 @@ func a6Manifest(name string, priority float64) string {
 name: %s
 version: 0.1.0
 description: Cross-package dedup fixture
-reads: {model: true}
 defaults: {priority: %g}
 rules:
   - {id: static, target: system, text: Shared static instructions.}
@@ -449,7 +448,7 @@ func a6LongManifest(name, body, extra, target string) string {
 	if target == "system" {
 		selector = ""
 	}
-	return "spec: style/v0.3\nname: " + name + "\nversion: 0.1.0\ndescription: Dedup budget fixture\nreads: {model: true}\n" + extra + "rules:\n  - id: r\n    target: " + target + "\n" + selector + "    text: '" + body + "'\n"
+	return "spec: style/v0.3\nname: " + name + "\nversion: 0.1.0\ndescription: Dedup budget fixture\n" + extra + "rules:\n  - id: r\n    target: " + target + "\n" + selector + "    text: '" + body + "'\n"
 }
 
 func TestA6DedupBudgetUsesEffectiveOutputAndRejectsRealGrowth(t *testing.T) {

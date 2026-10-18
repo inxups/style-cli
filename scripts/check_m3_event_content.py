@@ -14,7 +14,6 @@ MANIFEST = """spec: style/v0.3
 name: event-content
 version: 1.0.0
 description: fenced event fixture
-reads: {event: [tool.input.command]}
 rules:
   - id: r
     target: event

@@ -12,7 +12,7 @@ import (
 )
 
 func a10Manifest() string {
-	return "spec: style/v0.3\nname: event-content\nversion: 1.0.0\ndescription: event fixture\nreads: {event: [tool.input.command]}\nrules:\n  - {id: r, target: event, event: tool.pre, text: 'Review {{event.tool.input.command}}'}\n"
+	return "spec: style/v0.3\nname: event-content\nversion: 1.0.0\ndescription: event fixture\nrules:\n  - {id: r, target: event, event: tool.pre, text: 'Review {{event.tool.input.command}}'}\n"
 }
 func TestM3A10SixRouteLifecycleAndFrozen(t *testing.T) {
 	for _, route := range []string{"codex-user", "codex-plugin", "claude-user", "claude-plugin", "codex-project", "claude-project"} {

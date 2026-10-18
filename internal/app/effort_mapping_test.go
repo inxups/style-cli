@@ -23,7 +23,7 @@ import (
 	"github.com/speakeasy-api/agenthooks"
 )
 
-const a13Manifest = "spec: style/v0.3\nname: effort-policy\nversion: 1.0.0\ndescription: effort policy fixture\nreads: {thinking_effort: true}\nrules:\n  - {id: r, target: event, event: tool.pre, repeat: every, text: 'Effort={{thinking_effort | default: \"missing\"}}/raw={{thinking_effort_raw | default: \"missing\"}}'}\n"
+const a13Manifest = "spec: style/v0.3\nname: effort-policy\nversion: 1.0.0\ndescription: effort policy fixture\nrules:\n  - {id: r, target: event, event: tool.pre, repeat: every, text: 'Effort={{thinking_effort | default: \"missing\"}}/raw={{thinking_effort_raw | default: \"missing\"}}'}\n"
 
 func a13Config(harness, tier string) string {
 	return "format: 1\nharnesses:\n  " + harness + ": {future: " + tier + ", high: low}\n"

@@ -17,7 +17,6 @@ const modelObserverManifest = `spec: style/v0.3
 name: model-observer
 version: 0.1.0
 description: model switch installation regression
-reads: {model: true}
 rules:
   - id: session
     target: system

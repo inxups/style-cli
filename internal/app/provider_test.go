@@ -22,7 +22,7 @@ import (
 )
 
 func a11Manifest() string {
-	return "spec: style/v0.3\nname: service-provider\nversion: 1.0.0\ndescription: service fixture\nreads: {provider: true}\nrules:\n  - {id: r, target: event, event: tool.pre, when: {provider: [openai, anthropic, bedrock]}, text: 'Service {{provider}}'}\n"
+	return "spec: style/v0.3\nname: service-provider\nversion: 1.0.0\ndescription: service fixture\nrules:\n  - {id: r, target: event, event: tool.pre, when: {provider: [openai, anthropic, bedrock]}, text: 'Service {{provider}}'}\n"
 }
 func TestM3A11SixRouteProviderLifecycleAndFrozen(t *testing.T) {
 	for _, route := range []string{"codex-user", "codex-plugin", "claude-user", "claude-plugin", "codex-project", "claude-project"} {

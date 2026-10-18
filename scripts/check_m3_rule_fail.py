@@ -12,7 +12,6 @@ MANIFEST = """spec: style/v0.3
 name: missing-data
 version: 1.0.0
 description: failure guard fixture
-reads: {model: true}
 rules:
   - {id: r, target: event, event: tool.pre, fail: closed, text: 'Guarded rule'}
 """

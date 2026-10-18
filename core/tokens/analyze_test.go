@@ -58,7 +58,7 @@ func TestAnalyzeAlwaysOnAndDynamicPlaceholders(t *testing.T) {
 	adapter := fakeAdapter{static: true, caps: map[string]map[plan.Capability]bool{
 		plan.SessionStart: {plan.AddContext: true}, plan.PromptSubmitted: {plan.AddContext: true},
 	}}
-	pkg, planned, source := loadPlan(t, "reads: {model: true}\n", rules, adapter)
+	pkg, planned, source := loadPlan(t, "", rules, adapter)
 	report, err := Analyze(pkg, planned, source...)
 	if err != nil {
 		t.Fatal(err)
@@ -250,10 +250,9 @@ func TestAnalyzeInstalledUsesStableEventLabels(t *testing.T) {
 }
 
 func TestAnalyzePropagatesSharedT005T006T007AndStableJSON(t *testing.T) {
-	metadata := "reads: {harness: [session_id]}\n"
 	rules := "  - id: blocker\n    target: tool\n    tool: shell\n    action: block\n    text: '" + strings.Repeat("界", 41) + "'\n  - id: repeated\n    target: event\n    event: prompt.submitted\n    repeat: every\n    text: '{{harness.session_id}}'\n"
 	adapter := fakeAdapter{caps: map[string]map[plan.Capability]bool{plan.ToolPre: {plan.Deny: true}, plan.PromptSubmitted: {plan.AddContext: true}}}
-	pkg, planned, source := loadPlan(t, metadata, rules, adapter)
+	pkg, planned, source := loadPlan(t, "", rules, adapter)
 	report, err := Analyze(pkg, planned, source...)
 	if err != nil {
 		t.Fatal(err)

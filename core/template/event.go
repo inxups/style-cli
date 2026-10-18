@@ -19,7 +19,7 @@ func IsEventVariable(name string) bool {
 	return EventFieldKnown(strings.TrimPrefix(name, "event."))
 }
 
-// EventFieldKnown is shared by reads declarations and template validation.
+// EventFieldKnown is shared by condition and template validation.
 func EventFieldKnown(field string) bool {
 	switch field {
 	case "prompt", "tool.name", "tool.input", "tool.added", "tool.output", "mcp.server", "mcp.tool", "skill.name":

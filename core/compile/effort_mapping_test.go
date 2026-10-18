@@ -10,7 +10,7 @@ import (
 
 func TestM3A13EffortMappingFormatSchemaAndSnapshot(t *testing.T) {
 	mapping := EffortMapping{"codex": {"ultra": "xhigh", "future": "high"}}
-	pkg := loadResolved(t, "mapped", "  - {id: r, target: event, event: tool.pre, reads: {model: true}, when: {model: unknown}, text: unknown}\n")
+	pkg := loadResolved(t, "mapped", "  - {id: r, target: event, event: tool.pre, when: {model: unknown}, text: unknown}\n")
 	result, err := Build(Request{StyleVersion: "x", Packages: []PackageInput{inputFor(t, pkg, 1)}, EffortMapping: mapping})
 	if err != nil || result.Index.Format != 6 {
 		t.Fatal(result.Index.Format, err)

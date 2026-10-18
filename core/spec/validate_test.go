@@ -22,7 +22,8 @@ func TestValidateRequiredCodes(t *testing.T) {
 		{"removed vars reference", "", "  - id: base\n    target: system\n    text: '{{vars.lang}}'\n", "undeclared-var", nil},
 		{"removed package reference", "", "  - id: base\n    target: system\n    text: '{{package.name}}'\n", "undeclared-var", nil},
 		{"removed rule reference", "", "  - id: base\n    target: system\n    text: '{{rule.id}}'\n", "undeclared-var", nil},
-		{"reads missing", "", "  - id: base\n    target: system\n    text: '{{model}}'\n", "reads-missing", nil},
+		{"removed reads field", "reads:\n  model: true\n", "  - id: base\n    target: system\n    text: body\n", "invalid-schema", nil},
+		{"removed rule reads field", "", "  - id: base\n    target: system\n    reads:\n      model: true\n    text: body\n", "invalid-schema", nil},
 		{"event variable", "", "  - id: base\n    target: system\n    text: '{{prompt}}'\n", "event-var-in-template", nil},
 		{"sensitive reserved", "settings:\n  - name: token\n    sensitive: true\n", "  - id: base\n    target: system\n    text: body\n", "sensitive-reserved", nil},
 		{"condition wrong event", "", "  - id: base\n    target: event\n    event: session.start\n    text: body\n    when:\n      conditions:\n        - field: tool.name\n          op: equals\n          pattern: Bash\n", "condition-field-wrong-event", nil},
@@ -74,15 +75,15 @@ func TestValidateImportedRulesAndWarnings(t *testing.T) {
 		})
 	}
 
-	manifest := testManifest("warnings", "reads:\n  model: true\n", "  - id: base\n    target: system\n    text: body\n")
+	manifest := testManifest("warnings", "", "  - id: base\n    target: system\n    text: body\n")
 	diagnostics := loadAndValidate(t, manifest, map[string]string{"rules/unused.md": "---\ntarget: system\n---\nnot loaded\n"})
-	if !hasDiagnostic(diagnostics, "undeclared-rule-file", SeverityWarning) || !hasDiagnostic(diagnostics, "reads-unused", SeverityWarning) {
-		t.Fatalf("Validate() diagnostics = %#v, want undeclared-rule-file and reads-unused warnings", diagnostics)
+	if !hasDiagnostic(diagnostics, "undeclared-rule-file", SeverityWarning) {
+		t.Fatalf("Validate() diagnostics = %#v, want undeclared-rule-file warning", diagnostics)
 	}
 }
 
 func TestValidateAcceptsDeclaredTemplateVariables(t *testing.T) {
-	packageFields := "reads:\n  model: true\nsettings:\n  - name: detail\n    default: concise\n"
+	packageFields := "settings:\n  - name: detail\n    default: concise\n"
 	rules := "  - id: base\n    target: system\n    text: '{{settings.detail}} {{model | default: \"unknown\"}}'\n    when:\n      model: gpt-*\n"
 	diagnostics := loadAndValidate(t, testManifest("valid-package", packageFields, rules), nil)
 	for _, diagnostic := range diagnostics {
@@ -92,12 +93,19 @@ func TestValidateAcceptsDeclaredTemplateVariables(t *testing.T) {
 	}
 }
 
-func TestValidateUsesRuleFileReadsDeclarations(t *testing.T) {
+func TestValidateRejectsRuleFileReads(t *testing.T) {
 	manifest := testManifest("rule-reads", "", "  - from: rules/base.md\n")
 	diagnostics := loadAndValidate(t, manifest, map[string]string{
-		"rules/base.md": "---\ntarget: system\nreads:\n  model: true\n---\nModel: {{model}}\n",
+		"rules/base.md": "---\ntarget: system\nreads:\n  model: true\n---\nModel: {{model | default: \"unknown\"}}\n",
 	})
-	for _, diagnostic := range diagnostics {
+	if !hasDiagnostic(diagnostics, "invalid-schema", SeverityError) {
+		t.Fatalf("Validate() diagnostics = %#v, want invalid-schema for removed reads", diagnostics)
+	}
+}
+
+func TestValidateRuntimeVariablesNeedNoDeclaration(t *testing.T) {
+	rules := "  - id: base\n    target: event\n    event: prompt.submitted\n    refresh: 3\n    reason: fixture\n    text: '{{model}} {{provider}} {{thinking_effort_raw}} {{harness.name}} {{event.prompt}}'\n    when:\n      model: gpt-*\n      provider: openai\n      thinking_effort: high\n      harness:\n        name: codex\n"
+	for _, diagnostic := range loadAndValidate(t, testManifest("runtime-vars", "", rules), nil) {
 		if diagnostic.Severity == SeverityError {
 			t.Fatalf("Validate() unexpected error: %#v", diagnostic)
 		}

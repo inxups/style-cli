@@ -14,13 +14,13 @@ func TestValidateDefaultsEnumEvenWhenRulesOverrideIt(t *testing.T) {
 	}
 }
 
-func TestValidateUnusedReadsFromFromOverride(t *testing.T) {
+func TestValidateRejectsRemovedReadsFromOverride(t *testing.T) {
 	manifest := testManifest("override-reads", "", "  - from: rules/base.md\n    reads:\n      model: true\n")
 	diagnostics := loadAndValidate(t, manifest, map[string]string{
 		"rules/base.md": "---\ntarget: system\n---\nStatic body.\n",
 	})
-	if !hasDiagnostic(diagnostics, "reads-unused", SeverityWarning) {
-		t.Fatalf("Validate() diagnostics = %#v, want reads-unused for from override", diagnostics)
+	if !hasDiagnostic(diagnostics, "invalid-schema", SeverityError) {
+		t.Fatalf("Validate() diagnostics = %#v, want invalid-schema for removed reads override", diagnostics)
 	}
 }
 

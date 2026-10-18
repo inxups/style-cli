@@ -34,7 +34,7 @@ func (compileAdapter) StaticLocation(mode string) (string, bool) {
 func loadResolved(t *testing.T, name, rules string) *spec.ResolvedPackage {
 	t.Helper()
 	root := t.TempDir()
-	manifest := "spec: style/v0.3\nname: " + name + "\nversion: 0.3.0\ndescription: compiler fixture\nreads: {model: true, thinking_effort: true, harness: [name]}\nsettings: [{name: tone, default: direct}, {name: voice, default: neutral}]\nrules:\n" + rules
+	manifest := "spec: style/v0.3\nname: " + name + "\nversion: 0.3.0\ndescription: compiler fixture\nsettings: [{name: tone, default: direct}, {name: voice, default: neutral}]\nrules:\n" + rules
 	if err := os.WriteFile(filepath.Join(root, "STYLE.yaml"), []byte(manifest), 0o600); err != nil {
 		t.Fatal(err)
 	}

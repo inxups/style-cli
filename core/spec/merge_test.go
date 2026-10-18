@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-func TestMergeAppliesPrecedenceAndUnionsReads(t *testing.T) {
+func TestMergeAppliesPrecedence(t *testing.T) {
 	root := t.TempDir()
 	manifest := strings.Join([]string{
 		"spec: style/v0.3",
@@ -16,9 +16,6 @@ func TestMergeAppliesPrecedenceAndUnionsReads(t *testing.T) {
 		"priority: 30",
 		"budget:",
 		"  per_rule: 240",
-		"reads:",
-		"  model: true",
-		"  harness: [name, cwd]",
 		"defaults:",
 		"  action: warn",
 		"  at: before",
@@ -35,17 +32,13 @@ func TestMergeAppliesPrecedenceAndUnionsReads(t *testing.T) {
 		"    when:",
 		"      model: codex-*",
 		"      thinking_effort: [high]",
-		"    reads:",
-		"      harness: [turn_id]",
 		"  - id: disabled",
 		"    target: tool",
 		"    text: Do not include.",
 		"    enabled: false",
 		"  - id: inline",
 		"    target: system",
-		"    text: Shares package reads.",
-		"    reads:",
-		"      harness: [version]",
+		"    text: Inline rule.",
 	}, "\n")
 	writeFile(t, root, "STYLE.yaml", manifest)
 	rule := strings.Join([]string{
@@ -61,9 +54,6 @@ func TestMergeAppliesPrecedenceAndUnionsReads(t *testing.T) {
 		"  model: claude-*",
 		"  thinking_effort: [low]",
 		"  provider: old-provider",
-		"reads:",
-		"  thinking_effort: true",
-		"  harness: [cwd, agent]",
 		"---",
 		"Merged rule.",
 	}, "\n")
@@ -101,15 +91,8 @@ func TestMergeAppliesPrecedenceAndUnionsReads(t *testing.T) {
 	if got, want := stringValues(fields["sources"]), []string{"startup"}; !reflect.DeepEqual(got, want) {
 		t.Errorf("effective sources = %#v, want %#v", got, want)
 	}
-	reads := asStringMap(fields["reads"])
-	if reads["model"] != true || reads["thinking_effort"] != true {
-		t.Errorf("effective reads = %#v, expected model and thinking_effort", reads)
-	}
-	if got, want := stringValues(reads["harness"]), []string{"name", "cwd", "agent", "turn_id", "version"}; !reflect.DeepEqual(got, want) {
-		t.Errorf("effective reads.harness = %#v, want %#v", got, want)
-	}
-	if !reflect.DeepEqual(merged.Reads, reads) || !reflect.DeepEqual(merged.Rules[1].Effective["reads"], reads) {
-		t.Errorf("all rule declarations must be unioned at package level: %#v", merged.Reads)
+	if _, ok := fields["reads"]; ok {
+		t.Errorf("effective fields unexpectedly contain reads: %#v", fields)
 	}
 	when := asStringMap(fields["when"])
 	if when["model"] != "codex-*" || !reflect.DeepEqual(stringValues(when["thinking_effort"]), []string{"high"}) {

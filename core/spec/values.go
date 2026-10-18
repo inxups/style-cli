@@ -86,46 +86,6 @@ func hasNonStringMapKey(value any) bool {
 	return false
 }
 
-func unionReads(values ...any) map[string]any {
-	merged := make(map[string]any)
-	events := make([]string, 0)
-	seenEvent := map[string]bool{}
-	harness := make([]string, 0)
-	seenHarness := make(map[string]bool)
-	for _, value := range values {
-		fields := asStringMap(value)
-		for key, item := range fields {
-			switch key {
-			case "model", "provider", "thinking_effort":
-				if enabled, ok := item.(bool); ok && enabled {
-					merged[key] = true
-				}
-			case "event":
-				for _, name := range stringValues(item) {
-					if !seenEvent[name] {
-						seenEvent[name] = true
-						events = append(events, name)
-					}
-				}
-			case "harness":
-				for _, name := range stringValues(item) {
-					if !seenHarness[name] {
-						seenHarness[name] = true
-						harness = append(harness, name)
-					}
-				}
-			}
-		}
-	}
-	if len(events) != 0 {
-		merged["event"] = events
-	}
-	if len(harness) != 0 {
-		merged["harness"] = harness
-	}
-	return merged
-}
-
 func stringValues(value any) []string {
 	switch typed := value.(type) {
 	case string:

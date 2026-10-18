@@ -6,13 +6,11 @@ import (
 )
 
 func TestValidateRejectsNonStringNestedYAMLKeys(t *testing.T) {
-	for _, field := range []string{"reads", "budget", "defaults", "when"} {
+	for _, field := range []string{"budget", "defaults", "when"} {
 		t.Run(field, func(t *testing.T) {
 			metadata := ""
 			rules := "  - id: base\n    target: system\n    text: body\n"
 			switch field {
-			case "reads":
-				metadata = "reads: {1: true}\n"
 			case "budget":
 				metadata = "budget: {1: 10}\n"
 			case "defaults":
@@ -33,7 +31,7 @@ func TestValidateRejectsNonStringKeysInRuleFilesAndOverrides(t *testing.T) {
 		rules := "  - from: rules/base.md\n"
 		file := "---\ntarget: native\ncodex: {nested: {1: value}}\n---\nbody\n"
 		if override {
-			rules += "    reads: {1: true}\n"
+			rules += "    when: {conditions: [{1: value}]}\n"
 			file = "---\ntarget: system\n---\nbody\n"
 		}
 		diagnostics := loadAndValidate(t, testManifest("rule-key-case", "", rules), map[string]string{"rules/base.md": file})

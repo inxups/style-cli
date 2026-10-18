@@ -66,7 +66,7 @@ func TestValidateConditionSelectorsAndOptionalFields(t *testing.T) {
 }
 
 func TestValidateHarnessNameValues(t *testing.T) {
-	pkg := catalogPackage(t, "directory", "reads: {harness: [name]}\n", "unknown")
+	pkg := catalogPackage(t, "directory", "", "unknown")
 	diagnostics := ValidateWithCatalog(pkg, ValidationCatalog{Harnesses: []string{"codex", "claude-code"}})
 	if !hasDiagnostic(diagnostics, "invalid-schema", SeverityError) {
 		t.Fatalf("Validate() diagnostics = %#v, want invalid harness name error", diagnostics)

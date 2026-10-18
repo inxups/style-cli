@@ -14,7 +14,6 @@ MANIFEST = """spec: style/v0.3
 name: effort-policy
 version: 1.0.0
 description: effort mapping fixture
-reads: {thinking_effort: true}
 rules:
   - id: r
     target: event

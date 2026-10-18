@@ -33,7 +33,7 @@ func TestA1ValidateExampleAndEveryInvalidFixture(t *testing.T) {
 	}
 	// Keep the acceptance contract explicit so deleting a fixture cannot make
 	// this suite green by silently reducing its scope.
-	want := strings.Fields("dup-id from-and-inline inline-missing-id file-and-text file-into-rules body-has-frontmatter rule-file-pkg-field empty-body override-target defaults-field undeclared-var reads-missing event-var-in-template sensitive-reserved condition-field-wrong-event bad-regex bad-effort-expr action-target block-after replace-non-system bad-name bad-id path-escape symlink file-too-large bad-encoding marker-in-body native-mapping native-field native-event native-matcher native-command native-timeout")
+	want := strings.Fields("dup-id from-and-inline inline-missing-id file-and-text file-into-rules body-has-frontmatter rule-file-pkg-field empty-body override-target defaults-field undeclared-var event-var-in-template sensitive-reserved condition-field-wrong-event bad-regex bad-effort-expr action-target block-after replace-non-system bad-name bad-id path-escape symlink file-too-large bad-encoding marker-in-body native-mapping native-field native-event native-matcher native-command native-timeout")
 	paths, err := filepath.Glob(filepath.Join(root, "testdata", "invalid", "*.yaml"))
 	if err != nil {
 		t.Fatal(err)
@@ -129,5 +129,28 @@ func TestValidateRejectsRemovedVarsField(t *testing.T) {
 	}
 	if !found["invalid-schema"] || !found["undeclared-var"] {
 		t.Fatalf("diagnostics = %s, want invalid-schema and undeclared-var", out.String())
+	}
+}
+
+func TestValidateRejectsRemovedReadsField(t *testing.T) {
+	root := repositoryRoot(t)
+	service := testService(t)
+	packageDir := writeInstallPackage(t, t.TempDir(), "spec: style/v0.3\nname: removed-reads\nversion: 0.1.0\ndescription: removed reads\nreads:\n  model: true\nrules:\n  - id: base\n    target: system\n    text: 'Model {{model | default: \"unknown\"}}.'\n")
+	var out, errOut bytes.Buffer
+	if exit := RunWithService(context.Background(), service, root, []string{"validate", packageDir, "--json"}, &out, &errOut); exit != ExitInvalid || errOut.Len() > 0 {
+		t.Fatalf("exit=%d stdout=%s stderr=%s", exit, out.String(), errOut.String())
+	}
+	var diagnostics []Diagnostic
+	if err := json.Unmarshal(out.Bytes(), &diagnostics); err != nil {
+		t.Fatal(err)
+	}
+	var errors []string
+	for _, diagnostic := range diagnostics {
+		if diagnostic.Severity == "error" {
+			errors = append(errors, diagnostic.Code)
+		}
+	}
+	if len(errors) != 1 || errors[0] != "invalid-schema" {
+		t.Fatalf("diagnostics = %s, want only invalid-schema", out.String())
 	}
 }

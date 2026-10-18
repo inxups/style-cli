@@ -7,7 +7,7 @@ import (
 
 // Normalize converts the YAML-decoded when mapping into its runtime form.
 // event is the normalized evaluation point used for the default agent scope.
-// Callers validate declarations, reads, and event availability separately.
+// Callers validate declarations and event availability separately.
 func Normalize(value map[string]any, event string) (Rule, error) {
 	rule := Rule{Event: event}
 	var err error
