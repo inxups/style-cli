@@ -132,7 +132,7 @@ func TestM3A0CatalogDiagnosticCompatibility(t *testing.T) {
 
 func TestM3A0NativeUsesNameSupersetAndCapabilitySubset(t *testing.T) {
 	surface := fakeNativeHarness{events: map[string]bool{"FixtureEvent": true}}
-	for _, format := range []string{"directory", "single"} {
+	for _, format := range []string{"directory", "snapshot"} {
 		for _, tc := range []struct {
 			name, harness, message string
 			catalog                ValidationCatalog
@@ -145,8 +145,8 @@ func TestM3A0NativeUsesNameSupersetAndCapabilitySubset(t *testing.T) {
 			{"stable names", "missing", `unknown field "missing": not a STYLE field or registered harness (registered: a, z)`, ValidationCatalog{Harnesses: []string{"z", "a", "z"}}},
 		} {
 			t.Run(format+"/"+tc.name, func(t *testing.T) {
-				fields := "target: native\n" + tc.harness + ": {event: FixtureEvent, matcher: '^ok$', command: 'printf never-run'}\n"
-				pkg := loadNativeRule(t, format, fields, "")
+				fields := tc.harness + ": {event: FixtureEvent, matcher: '^ok$', command: 'printf never-run'}\n"
+				pkg := loadNativeHook(t, format, fields, "")
 				got := ValidateWithCatalog(pkg, tc.catalog)
 				if tc.message == "" {
 					if len(got) != 0 {
@@ -154,20 +154,20 @@ func TestM3A0NativeUsesNameSupersetAndCapabilitySubset(t *testing.T) {
 					}
 					return
 				}
-				want := []Diagnostic{{Code: "native-field", Path: pkg.Rules[0].Source, Severity: SeverityError, Message: tc.message}}
+				want := []Diagnostic{{Code: "native-field", Path: pkg.NativeHooks[0].Source, Severity: SeverityError, Message: tc.message}}
 				if !reflect.DeepEqual(got, want) {
 					t.Fatalf("native membership = %+v, want %+v", got, want)
 				}
 			})
 		}
 		for _, fields := range []string{
-			"target: native\ncodex: {event: UnknownEvent, command: echo}\n",
-			"target: native\ncodex: {event: Stop, matcher: x, command: echo}\n",
-			"target: native\ncodex: {event: PreToolUse, matcher: '(', command: echo}\n",
-			"target: native\nclaude-code: {event: PreToolUse, matcher: '*', command: echo}\n",
-			"target: native\nunknown: {event: Stop, command: echo}\n",
+			"codex: {event: UnknownEvent, command: echo}\n",
+			"codex: {event: Stop, matcher: x, command: echo}\n",
+			"codex: {event: PreToolUse, matcher: '(', command: echo}\n",
+			"claude-code: {event: PreToolUse, matcher: '*', command: echo}\n",
+			"unknown: {event: Stop, command: echo}\n",
 		} {
-			pkg := loadNativeRule(t, format, fields, "")
+			pkg := loadNativeHook(t, format, fields, "")
 			legacy := append(Validate(pkg), ValidateNative(pkg, testNativeCatalog)...)
 			got := ValidateWithCatalog(pkg, ValidationCatalog{Harnesses: []string{"codex", "claude-code"}, Native: testNativeCatalog})
 			if !reflect.DeepEqual(got, legacy) {

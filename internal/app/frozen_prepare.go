@@ -216,6 +216,9 @@ func frozenContent(ctx context.Context, home string, item lockPackage, baseline 
 		return reflectStringMap(hashes, item.Files) && checkGitSnapshot(item, files) == nil
 	}
 	managed, storageErr := installedSnapshot(home, item)
+	if err := checkNativeFormat(item, managed); err != nil {
+		return nil, "", false, err
+	}
 	if item.Link {
 		if !item.LinkTrusted || storageErr != nil || !matches(managed) {
 			return nil, "", false, frozenPackageFailure("frozen-source-mismatch", item.Name, "live linked content must match the lock and already be trusted", storageErr)

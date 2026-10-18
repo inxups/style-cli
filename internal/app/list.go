@@ -69,9 +69,13 @@ func listLocked(ctx context.Context, home string, lock lockDocument) (ListResult
 			item.ChangedFiles = filesChanged(pkg, files)
 			item.HashMatches = len(item.ChangedFiles) == 0
 		}
+		currentFormatErr := checkNativeFormat(pkg, files)
 		baseline, available, baselineErr := loadApproval(home, pkg)
 		if baselineErr != nil {
 			item.Error = baselineErr.Error()
+			if spec.ErrorCode(baselineErr) == spec.NativeFormatRemoved {
+				item.NativeCount = len(baseline.Native)
+			}
 		} else if available && baseline.Native != nil {
 			item.NativeCount = len(baseline.Native)
 		} else {
@@ -86,7 +90,12 @@ func listLocked(ctx context.Context, home string, lock lockDocument) (ListResult
 						}
 					}
 				}
+			} else if spec.ErrorCode(err) == spec.NativeFormatRemoved {
+				item.Error = err.Error()
 			}
+		}
+		if currentFormatErr != nil {
+			item.Error = currentFormatErr.Error()
 		}
 		result.Packages = append(result.Packages, item)
 	}

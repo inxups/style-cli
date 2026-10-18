@@ -15,7 +15,7 @@ import (
 	"github.com/inxups/style-cli/internal/adapter"
 )
 
-// nativeEvents lists the Codex hook events a target: native rule may write
+// nativeEvents lists the Codex hook events a native hook may write
 // (CLI design §9.3), matching agenthooks' codexEventLabel. The value reports
 // whether the event accepts a matcher; M2 opens matchers on tool events only.
 var nativeEvents = map[string]bool{

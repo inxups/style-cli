@@ -229,7 +229,7 @@ func TestA7MigrationTrustKeepsOtherUnapprovedSourceAndNative(t *testing.T) {
 			home, config := filepath.Join(root, "style"), filepath.Join(root, "claude")
 			old := a7Service(t, config, true)
 			first := writeInstallPackage(t, filepath.Join(root, "first"), a7Manifest("first", "First"))
-			secondManifest := a7Manifest("second", "Approved second") + "  - {id: native, target: native, claude-code: {event: Stop, command: 'printf approved'}}\n"
+			secondManifest := a7Manifest("second", "Approved second") + "native_hooks:\n  - {id: native, claude-code: {event: Stop, command: 'printf approved'}}\n"
 			second := writeInstallPackage(t, filepath.Join(root, "second"), secondManifest)
 			a7Install(t, old, home, first, false)
 			a7Install(t, old, home, second, link)

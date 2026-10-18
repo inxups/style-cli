@@ -206,7 +206,7 @@ func TestM3A0ValidationNeverDetectsOrExecutesNativeCommands(t *testing.T) {
 	}
 	root := t.TempDir()
 	marker := filepath.Join(root, "must-not-exist")
-	manifest := fmt.Sprintf("spec: style/v0.3\nname: native-validation\nversion: 1.0.0\ndescription: Native validation fixture\nrules:\n  - id: native\n    target: native\n    codex: {event: Stop, command: %q}\n", "touch "+marker)
+	manifest := fmt.Sprintf("spec: style/v0.3\nname: native-validation\nversion: 1.0.0\ndescription: Native validation fixture\nnative_hooks:\n  - id: native\n    codex: {event: Stop, command: %q}\n", "touch "+marker)
 	source := writeInstallPackage(t, filepath.Join(root, "source"), manifest)
 	before := snapshotStatsTree(t, root)
 	result, err := service.Validate(context.Background(), ValidateRequest{Source: source})

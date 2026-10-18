@@ -43,7 +43,7 @@ def manifest(name, body, native=False):
             f"  - {{id: static, target: system, text: 'Static {body}'}}\n"
             f"  - {{id: runtime, target: tool, tool: shell, at: before, text: '{body}'}}\n")
     if native:
-        text += ("  - id: executable\n    target: native\n"
+        text += ("native_hooks:\n  - id: executable\n"
                  f"    codex: {{event: PreToolUse, matcher: '^Bash$', command: 'printf NATIVE-{body}', timeout: 17}}\n"
                  f"    claude-code: {{event: PreToolUse, matcher: '*', command: 'printf NATIVE-{body}', timeout: 17}}\n")
     return text

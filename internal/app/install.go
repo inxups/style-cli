@@ -755,12 +755,13 @@ func (s *Service) loadInstalledPackages(ctx context.Context, home string, lock l
 		if err := checkGitSnapshot(item, files); err != nil {
 			return nil, err
 		}
-		if item.Source.Git != nil {
-			if _, available, err := loadApproval(home, item); err != nil {
-				return nil, err
-			} else if !available {
-				return nil, fmt.Errorf("Git package %s has no approved provenance", item.Name)
-			}
+		if _, available, err := loadApproval(home, item); err != nil {
+			return nil, err
+		} else if item.Source.Git != nil && !available {
+			return nil, fmt.Errorf("Git package %s has no approved provenance", item.Name)
+		}
+		if err := checkNativeFormat(item, files); err != nil {
+			return nil, err
 		}
 		if !reflectStringMap(currentHashes, item.Files) {
 			return nil, &ConflictError{Message: fmt.Sprintf("installed package %q changed; run sync/trust before installing another package", item.Name)}

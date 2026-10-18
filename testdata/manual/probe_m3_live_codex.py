@@ -114,8 +114,8 @@ def run(probe, route, binding, report):
         probe.set_effort('low')
         report['checks']['M3-B3']['unknown_missing_effort_delivered']=True
         document=json.loads((source/'STYLE.yaml').read_text());document['version']='1.0.1'
-        for rule in document['rules']:
-            if rule['target']=='native':rule['codex']['timeout']=9
+        for rule in document['native_hooks']:
+            rule['codex']['timeout']=9
             if rule['id']=='native-start':rule['codex']['command']=rule['codex']['command'].replace(NATIVE_START,NATIVE_UPDATED)
         private_write(source/'STYLE.yaml',json.dumps(document,ensure_ascii=False,indent=2)+'\n')
         updated=style('update','--all','--yes')

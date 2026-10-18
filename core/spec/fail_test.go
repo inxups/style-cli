@@ -14,7 +14,6 @@ func TestM3A14FailValidation(t *testing.T) {
 		{"system", "", "{id: r, target: system, fail: closed, text: ok}", "fail-closed-target"},
 		{"after", "", "{id: r, target: tool, tool: shell, at: after, fail: closed, text: ok}", "fail-closed-target"},
 		{"post event", "", "{id: r, target: event, event: tool.post, fail: closed, text: ok}", "fail-closed-target"},
-		{"native", "", "{id: r, target: native, fail: closed, codex: {event: PreToolUse, command: true}}", "native-field"},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			ds := loadAndValidate(t, testManifest("guard", tc.defaults, "  - "+tc.rule+"\n"), nil)

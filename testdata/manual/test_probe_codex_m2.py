@@ -50,7 +50,7 @@ class M2NativeEvidenceTests(unittest.TestCase):
             root = Path(directory)
             package = native_fixture(SimpleNamespace(root=root))
             definition = json.loads((package / "STYLE.yaml").read_text())
-            self.assertEqual([rule['codex'].get('matcher') for rule in definition['rules'][:3]], [None, '^Bash$', '^Read$'])
+            self.assertEqual([rule['codex'].get('matcher') for rule in definition['native_hooks']], [None, '^Bash$', '^Read$'])
             log = root / "observations.jsonl"
             result = subprocess.run([sys.executable, "-I", str(root / "native-observer.py"), str(log), "native-start", BODIES["native-start"]],
                                     input=json.dumps({"hook_event_name": "SessionStart", "session_id": "session", "prompt": "DO_NOT_RECORD", "api_key": "DO_NOT_RECORD"}),

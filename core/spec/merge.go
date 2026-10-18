@@ -23,6 +23,9 @@ func Merge(pkg *Package) (*ResolvedPackage, error) {
 
 	resolved := &ResolvedPackage{Package: pkg}
 	for _, original := range pkg.Rules {
+		if err := rejectRemovedNative(original.Fields, original.Source); err != nil {
+			return nil, err
+		}
 		effective := map[string]any{
 			"action":     "inject",
 			"fallback":   "degrade",
@@ -76,11 +79,20 @@ func Merge(pkg *Package) (*ResolvedPackage, error) {
 		mergedRule.Fields = cloneMap(original.Fields)
 		mergedRule.Overrides = cloneMap(original.Overrides)
 		mergedRule.Effective = effective
-		if effective["target"] == "native" {
-			resolved.NativeHooks = append(resolved.NativeHooks, NativeHook{Index: original.Index, Source: original.Source, Fields: cloneMap(effective), Effective: cloneMap(effective)})
-		} else {
-			resolved.Rules = append(resolved.Rules, mergedRule)
+		resolved.Rules = append(resolved.Rules, mergedRule)
+	}
+	for _, original := range pkg.NativeHooks {
+		effective := map[string]any{"enabled": true, "priority": packagePriority, "fallback": "skip"}
+		for key, value := range original.Fields {
+			effective[key] = cloneValue(value)
 		}
+		if effective["enabled"] == false {
+			continue
+		}
+		hook := original
+		hook.Fields = cloneMap(original.Fields)
+		hook.Effective = effective
+		resolved.NativeHooks = append(resolved.NativeHooks, hook)
 	}
 	return resolved, nil
 }

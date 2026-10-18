@@ -67,8 +67,8 @@ func nativeInstallFixture(t *testing.T, route string) (*Service, string, string,
 func nativePackageYAML(name string) string {
 	return "spec: style/v0.3\nname: " + name + "\nversion: 0.1.0\ndescription: native test\nrules:\n" +
 		"  - id: runtime\n    target: tool\n    tool: shell\n    at: before\n    text: Be careful.\n" +
-		"  - id: later\n    priority: 80\n    target: native\n    codex: {event: PreToolUse, matcher: '^Bash$', command: 'printf later', timeout: 19}\n    claude-code: {event: PreToolUse, matcher: '*', command: 'printf later', timeout: 19}\n" +
-		"  - id: earlier\n    priority: 20.5\n    target: native\n    codex: {event: PreToolUse, matcher: '^Bash$', command: 'printf earlier'}\n    claude-code: {event: PreToolUse, matcher: '*', command: 'printf earlier'}\n"
+		"native_hooks:\n  - id: later\n    priority: 80\n    codex: {event: PreToolUse, matcher: '^Bash$', command: 'printf later', timeout: 19}\n    claude-code: {event: PreToolUse, matcher: '*', command: 'printf later', timeout: 19}\n" +
+		"  - id: earlier\n    priority: 20.5\n    codex: {event: PreToolUse, matcher: '^Bash$', command: 'printf earlier'}\n    claude-code: {event: PreToolUse, matcher: '*', command: 'printf earlier'}\n"
 }
 
 type nativeTestGroup struct {

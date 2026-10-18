@@ -3,14 +3,9 @@ manifest: |
   name: invalid-fixture
   version: 0.1.0
   description: invalid fixture
-  rules:
-    - from: rules/notify.md
-files:
-  "rules/notify.md": |
-    ---
-    target: native
-    claude-code:
-      event: Stop
-      command: notify
-      timeout: 601
-    ---
+  native_hooks:
+    - id: notify
+      claude-code:
+        event: Stop
+        command: notify
+        timeout: 601

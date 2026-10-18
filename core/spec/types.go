@@ -31,8 +31,8 @@ type Rule struct {
 	BodySource string
 }
 
-// ResolvedPackage contains the enabled rules after package and rule defaults
-// have been merged. Package retains the original parsed values for validation.
+// ResolvedPackage contains enabled rules and hooks with their own defaults
+// merged. Package retains the original parsed values for validation.
 type ResolvedPackage struct {
 	Package     *Package
 	Rules       []Rule
@@ -40,7 +40,7 @@ type ResolvedPackage struct {
 }
 
 // NativeHook is a command declaration, separate from model-facing rules.
-// Fields retain source declarations; Effective contains only hook management fields.
+// Fields retain source declarations; Effective includes hook defaults and mappings.
 type NativeHook struct {
 	Index     int
 	Source    string

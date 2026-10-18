@@ -10,7 +10,7 @@ import (
 	"github.com/inxups/style-cli/internal/adapter"
 )
 
-// nativeEvents lists the Claude Code hook events a target: native rule may
+// nativeEvents lists the Claude Code hook events a native hook may
 // write (CLI design §10.2), matching agenthooks' kindToClaude. The value
 // reports whether the event accepts a matcher; M2 opens tool events only.
 var nativeEvents = map[string]bool{

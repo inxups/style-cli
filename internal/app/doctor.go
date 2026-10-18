@@ -16,6 +16,7 @@ import (
 
 	"github.com/inxups/style-cli/core/compile"
 	"github.com/inxups/style-cli/core/engine"
+	"github.com/inxups/style-cli/core/spec"
 	"github.com/inxups/style-cli/core/state"
 	"github.com/inxups/style-cli/internal/adapter"
 	"github.com/inxups/style-cli/internal/saferead"
@@ -67,6 +68,9 @@ func (s *Service) Doctor(ctx context.Context, request DoctorRequest) (DoctorResu
 		}
 		result.Packages = listed.Packages
 		for _, pkg := range listed.Packages {
+			if strings.Contains(pkg.Error, spec.NativeFormatRemoved) {
+				result.add(spec.NativeFormatRemoved, "error", pkg.Name+": "+pkg.Error)
+			}
 			if !pkg.HashMatches {
 				if pkg.Git != nil {
 					result.add("git-snapshot-changed", "error", fmt.Sprintf("%s differs from its locked Git export; restore locked bytes or use a separate local/link source (%v %s)", pkg.Name, pkg.ChangedFiles, pkg.Error))

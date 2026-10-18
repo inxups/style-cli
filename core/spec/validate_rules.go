@@ -13,6 +13,10 @@ func (v *validator) validateRules() {
 		if source == "" {
 			source = fmt.Sprintf("rules[%d]", index)
 		}
+		if err := rejectRemovedNative(rule.Fields, source); err != nil {
+			v.add("native-format-removed", source, err.Error())
+			continue
+		}
 		v.validateRuleFields(rule, source)
 		if id, ok := rule.Fields["id"].(string); ok {
 			if !validRuleID(id) {
@@ -29,13 +33,6 @@ func (v *validator) validateRules() {
 		bodySource := rule.BodySource
 		if bodySource == "" {
 			bodySource = source
-		}
-		if isNativeRule(rule, v.pkg) {
-			// Native bodies are author notes: never rendered, injected or estimated.
-			if strings.Contains(rule.Body, "<!-- style:") {
-				v.add("marker-in-body", bodySource, "body contains a reserved STYLE marker")
-			}
-			continue
 		}
 		if strings.TrimSpace(rule.Body) == "" {
 			v.add("empty-body", bodySource, "rule body must not be empty")
@@ -65,10 +62,8 @@ func (v *validator) validateRuleFields(rule Rule, source string) {
 		v.add("invalid-schema", source, "YAML mappings must use string keys")
 	}
 	isRuleFile := strings.HasPrefix(filepath.ToSlash(source), "rules/")
-	native := isNativeRule(rule, v.pkg)
 	for _, key := range sortedMapKeys(fields) {
-		// On native rules other keys are harness mappings (validateNativeRule).
-		if !ruleFields[key] && (!native || isPackageField(key)) {
+		if !ruleFields[key] {
 			v.add("invalid-schema", source, fmt.Sprintf("unknown rule field %q", key))
 		}
 		if isRuleFile && isPackageField(key) && key != "priority" {
@@ -97,19 +92,14 @@ func (v *validator) validateRuleFields(rule Rule, source string) {
 		_, hasText := fields["text"]
 		if hasFile && hasText {
 			v.add("file-and-text", source, "file and text are mutually exclusive")
-		} else if !hasFile && !hasText && !native {
+		} else if !hasFile && !hasText {
 			v.add("invalid-schema", source, "inline rules require file or text")
 		}
 	}
 	for _, key := range sortedMapKeys(rule.Overrides) {
 		if !ruleFields[key] {
-			if !native || isPackageField(key) {
-				v.add("invalid-schema", source, fmt.Sprintf("unknown from override field %q", key))
-			}
+			v.add("invalid-schema", source, fmt.Sprintf("unknown from override field %q", key))
 			continue
-		}
-		if native && nativeEngineFields[key] {
-			continue // Reported once as native-field.
 		}
 		if !validRuleFieldValue(key, rule.Overrides[key]) {
 			v.add(ruleValueCode(key), source, fmt.Sprintf("invalid value type for from override %s", key))
@@ -117,9 +107,6 @@ func (v *validator) validateRuleFields(rule Rule, source string) {
 	}
 	for _, key := range sortedMapKeys(fields) {
 		value := fields[key]
-		if native && (!ruleFields[key] || nativeEngineFields[key]) {
-			continue // Harness mappings and native-field are checked by validateNativeRule.
-		}
 		if !validRuleFieldValue(key, value) {
 			v.add(ruleValueCode(key), source, fmt.Sprintf("invalid value type for rule field %s", key))
 		}
@@ -142,7 +129,7 @@ func (v *validator) validateRuleFields(rule Rule, source string) {
 		case "action":
 			valid = validRuleFieldEnum(key, value)
 		case "target":
-			valid = stringSet("system", "tool", "mcp", "skill", "event", "native")[value]
+			valid = stringSet("system", "tool", "mcp", "skill", "event")[value]
 		case "at":
 			valid = validRuleFieldEnum(key, value)
 		case "repeat":
@@ -156,7 +143,7 @@ func (v *validator) validateRuleFields(rule Rule, source string) {
 			v.add("invalid-schema", source, fmt.Sprintf("invalid %s value %q", key, value))
 		}
 	}
-	if when, exists := rule.Overrides["when"]; exists && !native {
+	if when, exists := rule.Overrides["when"]; exists {
 		v.validateWhen(when, rule, source)
 	}
 	if target, exists := fields["target"]; !exists || target == "" {
@@ -170,12 +157,6 @@ func (v *validator) validateRuleFields(rule Rule, source string) {
 	}
 	if isRuleFile && hasKey(fields, "from") {
 		v.add("invalid-schema", source, "from is only valid in STYLE.yaml")
-	}
-	if native {
-		// Native rules bypass the rule engine, so target, action and event
-		// combinations (and inherited defaults) do not apply.
-		v.validateNativeRule(rule, source)
-		return
 	}
 	if v.effectiveRuleString(rule, "fail", "open") == "closed" {
 		target := v.effectiveRuleString(rule, "target", "")

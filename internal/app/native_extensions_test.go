@@ -36,7 +36,7 @@ func TestM3A16SixRouteNativeExtensionsRejectBeforeWrites(t *testing.T) {
 			}
 			t.Setenv("STYLE_HOME", home)
 			marker := filepath.Join(t.TempDir(), "native-must-not-execute")
-			manifest := fmt.Sprintf("spec: style/v0.3\nname: extensions\nversion: 1.0.0\ndescription: native boundary fixture\nrules:\n  - {id: native, target: native, %s: {event: Stop, command: 'touch %s'}}\n", harness, marker)
+			manifest := fmt.Sprintf("spec: style/v0.3\nname: extensions\nversion: 1.0.0\ndescription: native boundary fixture\nnative_hooks:\n  - {id: native, %s: {event: Stop, command: 'touch %s'}}\n", harness, marker)
 			writeSyncFile(t, filepath.Join(source, "STYLE.yaml"), manifest)
 			installed, err := s.Install(context.Background(), InstallRequest{Home: home, Source: source, Harnesses: []string{harness}, Routes: map[string]string{harness: route}, Yes: true})
 			if err != nil {

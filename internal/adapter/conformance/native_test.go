@@ -15,8 +15,8 @@ import (
 
 func TestNativeRulesLeaveRuntimeOutputsAndStatsUnchanged(t *testing.T) {
 	baseline := read(t, filepath.Join(corpus, "STYLE.yaml"))
-	manifest := append(append([]byte(nil), baseline...), []byte(`  - id: native-output-boundary
-    target: native
+	manifest := append(append([]byte(nil), baseline...), []byte(`native_hooks:
+  - id: native-output-boundary
     codex: {event: PreToolUse, matcher: 'Bash', command: 'printf STYLE_NATIVE_MUST_NOT_RUN'}
     claude-code: {event: PreToolUse, matcher: 'Bash', command: 'printf STYLE_NATIVE_MUST_NOT_RUN'}
 `)...)

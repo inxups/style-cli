@@ -98,7 +98,7 @@ func TestA4NativeSourceChangesRequireTrustForOrdinaryAndLinkedPackages(t *testin
 		}, true},
 		{"timeout", func(s string) string { return strings.ReplaceAll(s, "timeout: 19", "timeout: 23") }, true},
 		{"add", func(s string) string {
-			return s + "  - id: added\n    target: native\n    codex: {event: Stop, command: 'printf added'}\n    claude-code: {event: Stop, command: 'printf added'}\n"
+			return s + "  - id: added\n    codex: {event: Stop, command: 'printf added'}\n    claude-code: {event: Stop, command: 'printf added'}\n"
 		}, true},
 		{"remove", func(s string) string { before, _, _ := strings.Cut(s, "  - id: earlier\n"); return before }, true},
 		{"priority", func(s string) string { return strings.ReplaceAll(s, "priority: 80", "priority: 5") }, false},
@@ -421,7 +421,7 @@ func TestA4LinkedNativePackageStillAutoSyncsOrdinaryEdits(t *testing.T) {
 func TestA4ClampedNativeTimeoutChangeStillRequiresTrust(t *testing.T) {
 	requirePOSIXFixture(t, "author native lifecycle requires POSIX")
 	service, home, _, source, _ := nativeInstallFixture(t, "codex-user")
-	manifest := "spec: style/v0.3\nname: native-test\nversion: 0.1.0\ndescription: cap\nrules:\n  - id: end\n    target: native\n    codex: {event: SessionEnd, command: 'true', timeout: 10}\n"
+	manifest := "spec: style/v0.3\nname: native-test\nversion: 0.1.0\ndescription: cap\nrules: []\nnative_hooks:\n  - id: end\n    codex: {event: SessionEnd, command: 'true', timeout: 10}\n"
 	writeSyncFile(t, filepath.Join(source, "STYLE.yaml"), manifest)
 	if _, err := service.Install(context.Background(), InstallRequest{Home: home, Source: source, Yes: true, Link: true, Harnesses: []string{"codex"}, Routes: map[string]string{"codex": "codex-user"}}); err != nil {
 		t.Fatal(err)

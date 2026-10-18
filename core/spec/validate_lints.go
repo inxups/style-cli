@@ -27,9 +27,6 @@ func (v *validator) validateLint(rule Rule, source string) {
 func modelEstimate(rule Rule, pkg *Package) (tokenestimate.Count, bool) {
 	action := effectiveRuleText(rule, pkg, "action", "inject")
 	target := effectiveRuleText(rule, pkg, "target", "")
-	if target == "native" {
-		return tokenestimate.Count{}, false
-	}
 	if action == "block" {
 		event := effectiveRuleText(rule, pkg, "event", "")
 		if target == "event" && event != "tool.pre" {

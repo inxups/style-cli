@@ -541,7 +541,7 @@ func TestA6DedupAmbiguityReportedAndNativeCommandsPreserved(t *testing.T) {
 			service, home, config, source, _ := nativeInstallFixture(t, "codex-user")
 			manifest := nativePackageYAML("first")
 			if ambiguous {
-				manifest += "  - {id: duplicate, target: tool, tool: shell, at: before, text: Be careful.}\n"
+				manifest = strings.Replace(manifest, "native_hooks:\n", "  - {id: duplicate, target: tool, tool: shell, at: before, text: Be careful.}\nnative_hooks:\n", 1)
 			}
 			writeSyncFile(t, filepath.Join(source, "STYLE.yaml"), manifest)
 			request := InstallRequest{Home: home, Source: source, Yes: true, Harnesses: []string{"codex"}, Routes: map[string]string{"codex": "codex-user"}}
@@ -563,10 +563,7 @@ func TestA6DedupAmbiguityReportedAndNativeCommandsPreserved(t *testing.T) {
 			}
 			for _, report := range result.Reports {
 				for _, rule := range report.Plan.Rules {
-					if rule.Target == "native" && rule.DeduplicatedInto != "" {
-						t.Fatal("native hook was folded")
-					}
-					if ambiguous && rule.Target != "native" {
+					if ambiguous {
 						if rule.DeduplicatedInto != "" || !strings.Contains(strings.Join(rule.Reasons, "\n"), "multiple equivalent rules in one package") {
 							t.Fatalf("ambiguous rule lacks explanation: %+v", rule)
 						}

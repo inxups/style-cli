@@ -696,7 +696,7 @@ func TestM3A4CandidateGatesAndBlockedCLI(t *testing.T) {
 					}
 				}
 			case "fallback-error":
-				next = "spec: style/v0.3\nname: first\nversion: 1.0.0\ndescription: blocked\nrules: [{id: native, target: native, fallback: error, codex: {event: Stop, command: 'printf PRIVATE-COMMAND'}}]\n"
+				next = "spec: style/v0.3\nname: first\nversion: 1.0.0\ndescription: blocked\nrules: []\nnative_hooks:\n  - {id: native, fallback: error, codex: {event: Stop, command: 'printf PRIVATE-COMMAND'}}\n"
 				d := s.definitions["codex"]
 				d.Facts = nonNativeFacts{d.Facts}
 				s.definitions["codex"] = d

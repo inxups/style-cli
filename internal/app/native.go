@@ -106,7 +106,6 @@ func nativeSourceFingerprint(item lockPackage, files map[string][]byte) (string,
 		return "", err
 	}
 	type declaration struct {
-		Index    int
 		Priority any
 		Mappings []spec.NativeMapping
 	}
@@ -116,7 +115,9 @@ func nativeSourceFingerprint(item lockPackage, files map[string][]byte) (string,
 		for i := range mappings {
 			mappings[i].HookID, _ = hookDeclaration.Effective["id"].(string)
 		}
-		declarations = append(declarations, declaration{Index: hookDeclaration.Index, Priority: hookDeclaration.Effective["priority"], Mappings: mappings})
+		// Slice order retains enabled declaration order without making disabled
+		// declarations part of the execution fingerprint.
+		declarations = append(declarations, declaration{Priority: hookDeclaration.Effective["priority"], Mappings: mappings})
 	}
 	data, err := json.Marshal(declarations)
 	return hashBytes(data), err
@@ -132,6 +133,16 @@ func loadNativeSource(item lockPackage, files map[string][]byte) (*spec.Resolved
 		return nil, err
 	}
 	return spec.Merge(pkg)
+}
+
+// Only the removed format is fatal here. Existing callers retain their own
+// validation and recovery policies for other malformed or missing content.
+func checkNativeFormat(item lockPackage, files map[string][]byte) error {
+	_, err := loadNativeSource(item, files)
+	if spec.ErrorCode(err) == spec.NativeFormatRemoved {
+		return err
+	}
+	return nil
 }
 
 func (s *Service) baselineNative(item lockPackage, baseline approvedSnapshot, adapters []installAdapter) ([]NativeHookReport, error) {

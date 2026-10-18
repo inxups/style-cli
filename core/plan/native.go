@@ -6,8 +6,8 @@ import (
 	"github.com/inxups/style-cli/core/spec"
 )
 
-// planNative resolves a target: native rule for one adapter (rules §3.10).
-// Native rules have no degradation ladder: a missing mapping is skipped
+// planNative resolves a native hook for one adapter (rules §3.10).
+// Native hooks have no degradation ladder: a missing mapping is skipped
 // regardless of fallback, and an unwritable mapping is skipped or, with
 // fallback: error, blocks installation.
 func planNative(hook spec.NativeHook, adapter Adapter) NativeHookPlan {
@@ -45,6 +45,6 @@ func planNative(hook spec.NativeHook, adapter Adapter) NativeHookPlan {
 		return result
 	}
 	result.Status = Skipped
-	result.Reasons = []string{err.Error() + "; native rules have no degradation ladder"}
+	result.Reasons = []string{err.Error() + "; native hooks have no degradation ladder"}
 	return result
 }

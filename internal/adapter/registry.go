@@ -59,7 +59,7 @@ func (r *Registry) Providers() []ProviderID {
 }
 
 // NativeCatalog returns the native hook surface of every provider that
-// accepts target: native rules, keyed by provider ID (rules §3.10).
+// accepts native_hooks declarations, keyed by provider ID (rules §3.10).
 func (r *Registry) NativeCatalog() spec.NativeCatalog {
 	catalog := make(spec.NativeCatalog)
 	if r == nil {
@@ -164,7 +164,7 @@ func (adapter planAdapter) BlindSpot(rule spec.Rule) (string, bool) {
 }
 
 // NativeHook implements plan.NativeAdapter for providers whose facts
-// support native rules; other providers report the mapping as unwritable.
+// support native hooks; other providers report the mapping as unwritable.
 func (adapter planAdapter) NativeHook(rule spec.NativeMapping) (plan.NativeEntry, error) {
 	native, ok := adapter.facts.(NativePlanningFacts)
 	if !ok {

@@ -20,7 +20,7 @@ import (
 )
 
 // TestA2NativePlanReports checks the M2-A2 plan contract for the example
-// native rule on both harnesses (rules §3.10).
+// native hook on both harnesses.
 func TestA2NativePlanReports(t *testing.T) {
 	// Offline planning must work with no installed harness or user configuration.
 	home := t.TempDir()
@@ -105,7 +105,7 @@ func TestA2NativeFallbackErrorBlocksInstallWithoutChanges(t *testing.T) {
 	for _, tc := range []struct {
 		fallback string
 		code     int
-	}{{"error", ExitBlocked}, {"skip", ExitOK}, {"degrade", ExitOK}} {
+	}{{"error", ExitBlocked}, {"skip", ExitOK}} {
 		t.Run(tc.fallback, func(t *testing.T) {
 			root := t.TempDir()
 			home, config := filepath.Join(root, "style"), filepath.Join(root, "codex")
@@ -121,7 +121,7 @@ func TestA2NativeFallbackErrorBlocksInstallWithoutChanges(t *testing.T) {
 				t.Fatal(err)
 			}
 			t.Setenv("STYLE_HOME", home)
-			source := writeInstallPackage(t, filepath.Join(root, "pkg"), "spec: style/v0.3\nname: native-fallback\nversion: 0.1.0\ndescription: native fallback\nrules:\n  - id: base\n    target: system\n    text: Base style.\n  - id: notify\n    target: native\n    fallback: "+tc.fallback+"\n    codex: {event: Stop, command: notify}\n")
+			source := writeInstallPackage(t, filepath.Join(root, "pkg"), "spec: style/v0.3\nname: native-fallback\nversion: 0.1.0\ndescription: native fallback\nrules:\n  - id: base\n    target: system\n    text: Base style.\nnative_hooks:\n  - id: notify\n    fallback: "+tc.fallback+"\n    codex: {event: Stop, command: notify}\n")
 			var out, errOut bytes.Buffer
 			code := RunWithService(context.Background(), service, root, []string{"install", source, "--harness=codex", "--yes"}, &out, &errOut)
 			if code != tc.code {

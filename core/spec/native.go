@@ -7,7 +7,7 @@ import (
 )
 
 // NativeHarness is the native hook surface one registered harness accepts
-// (rules §3.10). Adapters implement it; core/spec never names a harness.
+// Adapters implement it; core/spec never names a harness.
 type NativeHarness interface {
 	// NativeEvent reports whether event can be written and whether it
 	// accepts a matcher.
@@ -19,7 +19,7 @@ type NativeHarness interface {
 // NativeCatalog maps registered harness names to their native hook surface.
 type NativeCatalog map[string]NativeHarness
 
-// NativeRule is one harness mapping of a target: native rule.
+// NativeMapping is one harness mapping of a native hook.
 type NativeMapping struct {
 	Package string
 	HookID  string
@@ -32,65 +32,78 @@ type NativeMapping struct {
 
 const maxNativeTimeout = 600
 
-// nativeEngineFields are rule fields that only the rule engine interprets.
-// Writing one on a native rule is an error; inherited defaults are ignored.
-var nativeEngineFields = stringSet("action", "at", "when", "repeat", "fail", "refresh", "reinject_on_compact", "sources", "model_text", "max_tokens", "mode", "reason", "tool", "names", "mcp", "skill", "event")
+const NativeFormatRemoved = "native-format-removed"
 
+func rejectRemovedNative(fields map[string]any, source string) error {
+	if fields["target"] == "native" {
+		return parseErr(NativeFormatRemoved, source, NativeFormatRemoved+": target: native has been removed; move the declaration to STYLE.yaml native_hooks, uninstall the old package and reinstall it (use uninstall --all when multiple old packages remain)", nil)
+	}
+	return nil
+}
+
+var nativeHookFields = stringSet("id", "description", "enabled", "priority", "fallback")
 var nativeMappingFields = stringSet("event", "matcher", "command", "timeout")
 
-func isNativeRule(rule Rule, pkg *Package) bool {
-	return effectiveRuleText(rule, pkg, "target", "") == "native"
-}
-
-// nativeHarnessKeys returns the keys that are neither STYLE rule fields nor
-// package fields, so a native rule treats them as harness mappings. Keys from
-// a from: entry replace the rule file's mapping as a whole.
-func nativeHarnessKeys(rule Rule) []string {
-	seen := make(map[string]bool)
-	for _, values := range []map[string]any{rule.Fields, rule.Overrides} {
-		for key := range values {
-			if !ruleFields[key] && !isPackageField(key) {
-				seen[key] = true
+func (v *validator) validateNativeHooks() {
+	seen := map[string]string{}
+	for _, rule := range v.pkg.Rules {
+		if id, ok := rule.Fields["id"].(string); ok {
+			seen[id] = rule.Source
+		}
+	}
+	for _, hook := range v.pkg.NativeHooks {
+		source := hook.Source
+		if hasNonStringMapKey(hook.Fields) {
+			v.add("invalid-schema", source, "YAML mappings must use string keys")
+		}
+		id, ok := hook.Fields["id"].(string)
+		if !ok || !validRuleID(id) {
+			v.add("bad-id", source, "native hook requires a valid package-relative id")
+		} else {
+			if previous, exists := seen[id]; exists {
+				v.add("dup-id", source, fmt.Sprintf("native hook id %q duplicates %s", id, previous))
+			} else {
+				seen[id] = source
 			}
 		}
-	}
-	keys := make([]string, 0, len(seen))
-	for key := range seen {
-		keys = append(keys, key)
-	}
-	sort.Strings(keys)
-	return keys
-}
-
-func nativeMapping(rule Rule, harness string) (any, bool) {
-	if value, ok := rule.Overrides[harness]; ok {
-		return value, true
-	}
-	value, ok := rule.Fields[harness]
-	return value, ok
-}
-
-// validateNativeRule checks the harness-independent shape of a native rule.
-func (v *validator) validateNativeRule(rule Rule, source string) {
-	for _, values := range []map[string]any{rule.Fields, rule.Overrides} {
-		for _, key := range sortedMapKeys(values) {
-			if nativeEngineFields[key] {
-				v.add("native-field", source, fmt.Sprintf("native rules cannot set rule engine field %q", key))
+		for _, key := range sortedMapKeys(hook.Fields) {
+			value := hook.Fields[key]
+			switch key {
+			case "id":
+			case "description":
+				if _, ok := value.(string); !ok {
+					v.add("native-field", source, "native description must be a string")
+				}
+			case "enabled":
+				if _, ok := value.(bool); !ok {
+					v.add("native-field", source, "native enabled must be a boolean")
+				}
+			case "priority":
+				if !isNumber(value) {
+					v.add("native-field", source, "native priority must be a finite number")
+				}
+			case "fallback":
+				if value != "skip" && value != "error" {
+					v.add("native-field", source, "native fallback must be skip or error")
+				}
+			default:
+				if ruleFields[key] || isPackageField(key) {
+					v.add("native-field", source, fmt.Sprintf("native hooks cannot set field %q", key))
+				}
 			}
 		}
-	}
-	harnesses := nativeHarnessKeys(rule)
-	if len(harnesses) == 0 {
-		v.add("native-mapping", source, "native target requires at least one harness hook mapping")
-	}
-	for _, harness := range harnesses {
-		value, _ := nativeMapping(rule, harness)
-		mapping := asStringMap(value)
-		if mapping == nil {
-			v.add("native-mapping", source, fmt.Sprintf("native %s hook must be a mapping", harness))
-			continue
+		harnesses := nativeHookHarnessKeys(hook)
+		if len(harnesses) == 0 {
+			v.add("native-mapping", source, "native hook requires at least one harness hook mapping")
 		}
-		v.validateNativeMapping(harness, mapping, source)
+		for _, harness := range harnesses {
+			mapping := asStringMap(hook.Fields[harness])
+			if mapping == nil {
+				v.add("native-mapping", source, fmt.Sprintf("native %s hook must be a mapping", harness))
+				continue
+			}
+			v.validateNativeMapping(harness, mapping, source)
+		}
 	}
 }
 
@@ -200,7 +213,7 @@ func integerValue(value any) (int, bool) {
 	}
 }
 
-// ValidateNative checks only native rules against the supplied hook surfaces.
+// ValidateNative checks only native hooks against the supplied hook surfaces.
 // It is a low-level compatibility entry point; Validate plus ValidateNative
 // does not check ordinary harness references. Package admission must use
 // ValidateWithCatalog.
@@ -221,17 +234,10 @@ func validateNative(pkg *Package, catalog NativeCatalog, harnesses map[string]bo
 		sort.Strings(names)
 	}
 	v := &validator{pkg: pkg}
-	for index, rule := range pkg.Rules {
-		if !isNativeRule(rule, pkg) {
-			continue
-		}
-		source := rule.Source
-		if source == "" {
-			source = fmt.Sprintf("rules[%d]", index)
-		}
-		for _, harness := range nativeHarnessKeys(rule) {
-			value, _ := nativeMapping(rule, harness)
-			mapping := asStringMap(value)
+	for _, hook := range pkg.NativeHooks {
+		source := hook.Source
+		for _, harness := range nativeHookHarnessKeys(hook) {
+			mapping := asStringMap(hook.Fields[harness])
 			surface, registered := catalog[harness]
 			known := registered && surface != nil
 			if harnesses != nil {
@@ -281,7 +287,7 @@ func (catalog NativeCatalog) Names() []string {
 	return names
 }
 
-// NativeRules returns the harness mappings of a validated native rule in
+// NativeMappings returns the harness mappings of a validated native hook in
 // harness order. Mappings that are not well formed are omitted.
 func NativeMappings(hook NativeHook) []NativeMapping {
 	id, _ := hook.Fields["id"].(string)
@@ -319,7 +325,7 @@ func nativeExtensionReason(field string) string {
 func nativeHookHarnessKeys(hook NativeHook) []string {
 	var keys []string
 	for key := range hook.Fields {
-		if !ruleFields[key] && !isPackageField(key) && key != "description" {
+		if !nativeHookFields[key] && !ruleFields[key] && !isPackageField(key) {
 			keys = append(keys, key)
 		}
 	}

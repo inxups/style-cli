@@ -75,4 +75,9 @@ rules:
       conditions:
         - {field: prompt, op: regex, pattern: '(?i)review|评审'}
     text: Review request received. Keep findings concise.
-  - from: rules/codex-only-notify.md
+native_hooks:
+  - id: codex-only-notify
+    description: Runs the local notify command when a Codex turn stops.
+    codex:
+      event: Stop
+      command: notify

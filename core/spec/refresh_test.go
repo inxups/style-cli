@@ -44,8 +44,8 @@ func TestRefreshValidation(t *testing.T) {
 		})
 	}
 	for _, n := range []int{0, 1} {
-		rules := fmt.Sprintf("  - id: native\n    target: native\n    refresh: %d\n    codex: {event: SessionStart, command: 'echo ok'}\n", n)
-		if ds := loadAndValidate(t, testManifest("demo", "", rules), nil); !hasDiagnostic(ds, "native-field", SeverityError) {
+		rules := fmt.Sprintf("native_hooks:\n  - id: native\n    refresh: %d\n    codex: {event: SessionStart, command: 'echo ok'}\n", n)
+		if ds := loadAndValidate(t, nativeHookHeader+rules, nil); !hasDiagnostic(ds, "native-field", SeverityError) {
 			t.Fatal(ds)
 		}
 	}

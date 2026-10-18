@@ -119,7 +119,7 @@
           "rule": "terse-reviewer/on-review-prompt",
           "entry": "terse-reviewer/on-review-prompt@prompt.submitted",
           "src": "STYLE.yaml#on-review-prompt",
-          "src_sha256": "sha256:bac6d49df7b78eaf1f9141ff85260af611254a81f8edd0d6bb4163e1b0abf96a",
+          "src_sha256": "sha256:6d3e48b10cdc215251e80ccbe4831ea8bbd455b5fbac50d7ab79986ef5a5f3b4",
           "body_sha256": "sha256:d7410546ba0a3fc218c962c96a2526dc2cb381e0a1d7b95047d87b8f70815570",
           "order": [
             50,
@@ -493,7 +493,7 @@
           "rule": "terse-reviewer/no-force-push",
           "entry": "terse-reviewer/no-force-push@tool.pre",
           "src": "STYLE.yaml#no-force-push",
-          "src_sha256": "sha256:bac6d49df7b78eaf1f9141ff85260af611254a81f8edd0d6bb4163e1b0abf96a",
+          "src_sha256": "sha256:6d3e48b10cdc215251e80ccbe4831ea8bbd455b5fbac50d7ab79986ef5a5f3b4",
           "body_sha256": "sha256:fb48a21df69005425af64782ecf5c15b72716d04490b6474f277147569e37f4f",
           "order": [
             50,

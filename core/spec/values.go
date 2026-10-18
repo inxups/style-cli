@@ -8,10 +8,11 @@ func cloneMap(fields map[string]any) map[string]any {
 	return cloned
 }
 
-func cloneMapWithout(fields map[string]any, omitted string) map[string]any {
+func cloneMapWithout(fields map[string]any, omitted ...string) map[string]any {
 	cloned := make(map[string]any, len(fields))
+	excluded := stringSet(omitted...)
 	for key, value := range fields {
-		if key != omitted {
+		if !excluded[key] {
 			cloned[key] = cloneValue(value)
 		}
 	}

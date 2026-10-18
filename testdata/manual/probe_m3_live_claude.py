@@ -109,8 +109,8 @@ def run(probe,route,binding,report):
         probe.live_env['CLAUDE_EFFORT']='high'
         report['checks']['M3-C5']={'passed':True,'refresh_cumulative_outputs':[1,2,2],'fence_body_sha256':sha(fence.encode()),'provider':'anthropic','effort':{'raw':'high','canonical':'medium','approx':True},'unknown_missing_effort_delivered':True,'closed_fault':'malformed session state with valid index','denied_file_absent':True,'recovered_file_present':True}
         document=json.loads((source/'STYLE.yaml').read_text());document['version']='1.0.1'
-        for rule in document['rules']:
-            if rule['target']=='native':rule['claude-code']['timeout']=9
+        for rule in document['native_hooks']:
+            rule['claude-code']['timeout']=9
             if rule['id']=='native-start':rule['claude-code']['command']=rule['claude-code']['command'].replace(NATIVE_START,NATIVE_UPDATED)
         private_write(source/'STYLE.yaml',json.dumps(document,ensure_ascii=False,indent=2)+'\n')
         assert style('update','--all','--yes')['changed']

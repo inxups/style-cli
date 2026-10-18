@@ -37,6 +37,7 @@ func validate(pkg *Package, harnesses map[string]bool) []Diagnostic {
 	v := &validator{pkg: pkg, harnesses: harnesses}
 	v.validatePackage()
 	v.validateRules()
+	v.validateNativeHooks()
 	v.validateUndeclaredRuleFiles()
 	return v.diagnostics
 }

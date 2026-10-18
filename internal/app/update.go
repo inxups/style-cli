@@ -8,6 +8,7 @@ import (
 	"strings"
 	"unicode"
 
+	"github.com/inxups/style-cli/core/spec"
 	"github.com/inxups/style-cli/internal/source"
 )
 
@@ -134,6 +135,9 @@ type updateError struct {
 func (e *updateError) Error() string { return e.message }
 func (e *updateError) Unwrap() error { return e.cause }
 func updateFailure(code, message string, cause error) error {
+	if spec.ErrorCode(cause) == spec.NativeFormatRemoved {
+		return cause
+	}
 	return &updateError{code: code, message: message, cause: cause}
 }
 
@@ -151,6 +155,8 @@ func updateDiagnostic(err error) Diagnostic {
 		code, message = "installation-changed", "captured installation inputs changed; rerun update to review a fresh candidate"
 	case errors.Is(err, errManagementBusy):
 		code, message = "management-busy", "another management commit is active or its owner cannot be verified"
+	case spec.ErrorCode(err) == spec.NativeFormatRemoved:
+		code, message = spec.NativeFormatRemoved, err.Error()
 	case errors.As(err, &remote):
 		code, message = remote.Code, remote.Message
 	case errors.As(err, &failure):

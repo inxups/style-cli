@@ -465,7 +465,7 @@ func TestM3A3GitAdmissionUsesExistingGates(t *testing.T) {
 			case "unknown-harness":
 				manifest = header + "requires: {harness: {missing: '>=1.0.0'}}\n" + base
 			case "invalid-native":
-				manifest = header + "rules: [{id: raw, target: native, codex: {event: UnknownEvent, command: unsafe}}]\n"
+				manifest = header + "rules: []\nnative_hooks:\n  - {id: raw, codex: {event: UnknownEvent, command: unsafe}}\n"
 			case "budget":
 				manifest = header + "budget: {per_rule: 1, per_event: 1, always_on: 1, on: error}\n" + base
 			case "input-ceiling":

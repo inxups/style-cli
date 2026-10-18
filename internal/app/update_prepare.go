@@ -323,6 +323,9 @@ func (s *Service) captureUpdate(ctx context.Context, home string, item lockPacka
 			if err := checkGitSnapshot(item, stored); err != nil {
 				return candidate, err
 			}
+			if err := checkNativeFormat(item, stored); err != nil {
+				return candidate, err
+			}
 			if len(filesChanged(item, stored)) > 0 {
 				return candidate, updatePackageFailure("update-storage-changed", item.Name, "managed storage differs from the lock; restore it or use the existing local trust flow before updating", nil)
 			}

@@ -23,14 +23,19 @@ jobs:
     runs-on: ${{ matrix.os }}
     env:
       GOFLAGS: -mod=readonly
-      GOPATH: /tmp/style-cli-gopath
-      GOMODCACHE: /tmp/style-cli-gomodcache
-      GOCACHE: /tmp/style-cli-gocache
       GOWORK: "off"
+      UPDATE_GOLDEN: ""
     steps:
       - uses: actions/checkout@v6
         with:
           fetch-depth: 0
+
+      - name: Isolate Go caches
+        run: |
+          style_go_temp=$(mktemp -d "$RUNNER_TEMP/style-go.XXXXXX")
+          echo "GOPATH=$style_go_temp/gopath" >> "$GITHUB_ENV"
+          echo "GOMODCACHE=$style_go_temp/gomodcache" >> "$GITHUB_ENV"
+          echo "GOCACHE=$style_go_temp/gocache" >> "$GITHUB_ENV"
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -50,13 +55,13 @@ jobs:
       # AGENTS.md: CODEX_HOME and CODEX_SANDBOX change harness detection.
       - name: Vet
         run: |
-          env -u CODEX_HOME -u CODEX_SANDBOX go vet ./...
-          env -u CODEX_HOME -u CODEX_SANDBOX go vet -C agenthooks ./...
+          env -u CODEX_HOME -u CODEX_SANDBOX -u UPDATE_GOLDEN go vet ./...
+          env -u CODEX_HOME -u CODEX_SANDBOX -u UPDATE_GOLDEN go vet -C agenthooks ./...
 
       - name: Test
         run: |
-          env -u CODEX_HOME -u CODEX_SANDBOX go test ./... -count=1
-          env -u CODEX_HOME -u CODEX_SANDBOX go test -C agenthooks ./... -count=1
+          env -u CODEX_HOME -u CODEX_SANDBOX -u UPDATE_GOLDEN go test ./... -count=1
+          env -u CODEX_HOME -u CODEX_SANDBOX -u UPDATE_GOLDEN go test -C agenthooks ./... -count=1
 
       - name: Test acceptance collectors
         env:
@@ -65,7 +70,7 @@ jobs:
           python3 -m unittest discover -s testdata/manual -p 'test_*.py'
 
       - name: Build
-        run: env -u CODEX_HOME -u CODEX_SANDBOX go build -trimpath -o "$RUNNER_TEMP/style" ./cmd/style
+        run: env -u CODEX_HOME -u CODEX_SANDBOX -u UPDATE_GOLDEN go build -trimpath -o "$RUNNER_TEMP/style" ./cmd/style
 
       - name: Smoke test built binary
         env:
@@ -91,12 +96,15 @@ jobs:
         env:
           PYTHONDONTWRITEBYTECODE: "1"
         run: |
-          mkdir -p "$RUNNER_TEMP/style-legacy-source" "$RUNNER_TEMP/style-t44-source"
+          mkdir -p "$RUNNER_TEMP/style-legacy-source" "$RUNNER_TEMP/style-t44-source" "$RUNNER_TEMP/style-native-old-source"
           git archive 74a473d2e238af44c346da3807f46e1c9993176d | tar -x -C "$RUNNER_TEMP/style-legacy-source"
           git archive 664a46cc8bfa352601b7e124f367463ed7731792 | tar -x -C "$RUNNER_TEMP/style-t44-source"
-          env -u CODEX_HOME -u CODEX_SANDBOX go build -C "$RUNNER_TEMP/style-legacy-source" -trimpath -o "$RUNNER_TEMP/style-legacy" ./cmd/style
-          env -u CODEX_HOME -u CODEX_SANDBOX go build -C "$RUNNER_TEMP/style-t44-source" -trimpath -o "$RUNNER_TEMP/style-t44" ./cmd/style
-          env -u CODEX_HOME -u CODEX_SANDBOX go build -o "$RUNNER_TEMP/codex-fixture" ./testdata/provider/ancestor.go
+          git archive 755fa5614ea263c23b7538b17513fea0f8322801 | tar -x -C "$RUNNER_TEMP/style-native-old-source"
+          env -u CODEX_HOME -u CODEX_SANDBOX -u UPDATE_GOLDEN go build -C "$RUNNER_TEMP/style-legacy-source" -trimpath -o "$RUNNER_TEMP/style-legacy" ./cmd/style
+          env -u CODEX_HOME -u CODEX_SANDBOX -u UPDATE_GOLDEN go build -C "$RUNNER_TEMP/style-t44-source" -trimpath -o "$RUNNER_TEMP/style-t44" ./cmd/style
+          env -u CODEX_HOME -u CODEX_SANDBOX -u UPDATE_GOLDEN go build -o "$RUNNER_TEMP/codex-fixture" ./testdata/provider/ancestor.go
+          env -u CODEX_HOME -u CODEX_SANDBOX -u UPDATE_GOLDEN go build -C "$RUNNER_TEMP/style-native-old-source" -trimpath -o "$RUNNER_TEMP/style-native-old" ./cmd/style
+          python3 scripts/check_m3_native_extensions.py --binary "$RUNNER_TEMP/style" --old-binary "$RUNNER_TEMP/style-native-old" --report "$RUNNER_TEMP/native-migration.json"
           python3 scripts/check_m2_rules_migration.py --binary "$RUNNER_TEMP/style" --old-binary "$RUNNER_TEMP/style-legacy"
           python3 scripts/check_m3_conformance.py --binary "$RUNNER_TEMP/style" --old-binary "$RUNNER_TEMP/style-t44" --codex-ancestor "$RUNNER_TEMP/codex-fixture" --report "$RUNNER_TEMP/m3-conformance.json"
 
@@ -116,11 +124,13 @@ jobs:
       - name: Isolate caches and external environment
         shell: pwsh
         run: |
+          $styleGoTemp = Join-Path $env:RUNNER_TEMP ('style-go-' + [Guid]::NewGuid())
+          New-Item -ItemType Directory -Path $styleGoTemp | Out-Null
           foreach ($key in @('GOPATH','GOMODCACHE','GOCACHE')) {
-            "$key=$env:RUNNER_TEMP\style-$key" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+            "$key=$styleGoTemp\$key" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           }
           foreach ($item in Get-ChildItem Env:) {
-            if ($item.Name -match '^(CODEX_|CLAUDE_|STYLE_|ANTHROPIC_|OPENAI_)') {
+            if ($item.Name -match '^(CODEX_|CLAUDE_|STYLE_|ANTHROPIC_|OPENAI_|UPDATE_GOLDEN$)') {
               "$($item.Name)=" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
             }
           }

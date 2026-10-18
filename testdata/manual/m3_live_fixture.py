@@ -22,14 +22,14 @@ def package(root, harness):
     for name,event,matcher,marker in [('start','SessionStart',None,NATIVE_START),('prompt','UserPromptSubmit',None,''),('tool','PreToolUse','^Bash$',NATIVE_TOOL),('unmatched','PreToolUse','^Read$',UNMATCHED)]:
         hook={'event':event,'command':shlex.join([sys.executable,'-I',str(observer),str(root/'native-events'),marker]),'timeout':10}
         if matcher:hook['matcher']=matcher
-        native.append({'id':'native-'+name,'target':'native',harness:hook})
+        native.append({'id':'native-'+name,harness:hook})
     rules=[{'id':'static','target':'system','text':STATIC},
            {'id':'refresh','target':'system','repeat':'session','refresh':2,'reason':'Real M3 refresh acceptance','text':REFRESH},
            {'id':'facts','target':'event','event':'session.start','repeat':'session','text':'M3_FACTS provider={{provider | default: "unknown"}} effort={{thinking_effort | default: "unknown"}} raw={{thinking_effort_raw | default: "unknown"}}'},
            {'id':'unknown','target':'system','when':{'thinking_effort':'unknown'},'text':UNKNOWN},
            {'id':'fence','target':'event','event':'prompt.submitted','repeat':'every','text':'M3_EVENT {{event.prompt}}'},
-           {'id':'guard','target':'tool','tool':'shell','at':'before','repeat':'every','fail':'closed','text':GUARD},*native]
-    document={'spec':'style/v0.3','name':'m3-live','version':'1.0.0','description':'Isolated M3 native acceptance','rules':rules}
+           {'id':'guard','target':'tool','tool':'shell','at':'before','repeat':'every','fail':'closed','text':GUARD}]
+    document={'spec':'style/v0.3','name':'m3-live','version':'1.0.0','description':'Isolated M3 native acceptance','rules':rules,'native_hooks':native}
     private_write(source/'STYLE.yaml',json.dumps(document,ensure_ascii=False,indent=2)+'\n')
     return source
 

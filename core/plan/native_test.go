@@ -30,20 +30,18 @@ func (a nativeFake) NativeHook(rule spec.NativeMapping) (NativeEntry, error) {
 	return NativeEntry{Event: rule.Event, Matcher: rule.Matcher, Timeout: timeout}, nil
 }
 
-func nativeRule(id, fallback string, mappings map[string]any) spec.NativeHook {
-	planned := rule(id, "native", "inject", "", fallback, "Author note with {{ unparsed")
-	planned.Effective["action"] = "block" // inherited defaults must not leak into native plans
+func nativeHook(id, fallback string, mappings map[string]any) spec.NativeHook {
+	fields := map[string]any{"id": id, "fallback": fallback}
 	for harness, mapping := range mappings {
-		planned.Fields[harness] = mapping
-		planned.Effective[harness] = mapping
+		fields[harness] = mapping
 	}
-	return spec.NativeHook{Index: planned.Index, Source: planned.Source, Fields: planned.Fields, Effective: planned.Effective}
+	return spec.NativeHook{Source: "STYLE.yaml#native_hooks/" + id, Fields: fields, Effective: fields}
 }
 
-func TestNativeRulePlansToNativeHook(t *testing.T) {
+func TestNativeHookPlan(t *testing.T) {
 	var seen spec.NativeMapping
 	adapter := nativeFake{fakeAdapter: fakeAdapter{name: "codex"}, seen: &seen}
-	native := nativeRule("notify", "degrade", map[string]any{
+	native := nativeHook("notify", "skip", map[string]any{
 		"codex":       map[string]any{"event": "PreToolUse", "matcher": "^Bash$", "command": "notify"},
 		"claude-code": map[string]any{"event": "Stop", "command": "other"},
 	})
@@ -52,7 +50,7 @@ func TestNativeRulePlansToNativeHook(t *testing.T) {
 		t.Fatal(err)
 	}
 	got := report.NativeHooks[0]
-	want := NativeHookPlan{ID: "notify", Source: "STYLE.yaml#notify", Status: NativeHook,
+	want := NativeHookPlan{ID: "notify", Source: "STYLE.yaml#native_hooks/notify", Status: NativeHook,
 		Native: &NativeEntry{Event: "PreToolUse", Matcher: "^Bash$", Timeout: 60}}
 	if !reflect.DeepEqual(got, want) || report.Blocked {
 		t.Fatalf("native plan = %#v, want %#v", got, want)
@@ -69,8 +67,8 @@ func TestNativeRulePlansToNativeHook(t *testing.T) {
 	}
 }
 
-func TestNativeRuleWithoutMappingIsSkippedRegardlessOfFallback(t *testing.T) {
-	native := nativeRule("claude-only", "error", map[string]any{"claude-code": map[string]any{"event": "Stop", "command": "notify"}})
+func TestNativeHookWithoutMappingIsSkippedRegardlessOfFallback(t *testing.T) {
+	native := nativeHook("claude-only", "error", map[string]any{"claude-code": map[string]any{"event": "Stop", "command": "notify"}})
 	report, err := Build(&spec.ResolvedPackage{Package: packageWithName("demo"), NativeHooks: []spec.NativeHook{native}}, nativeFake{fakeAdapter: fakeAdapter{name: "codex"}})
 	if err != nil {
 		t.Fatal(err)
@@ -91,13 +89,12 @@ func TestUnwritableNativeMappingAppliesFallback(t *testing.T) {
 		fatal          bool
 		reason         string
 	}{
-		{"degrade", "degrade", nativeFake{fakeAdapter: fakeAdapter{name: "codex"}, err: unsupported}, Skipped, false, "codex cannot write Stop here; native rules have no degradation ladder"},
-		{"skip", "skip", nativeFake{fakeAdapter: fakeAdapter{name: "codex"}, err: unsupported}, Skipped, false, "codex cannot write Stop here; native rules have no degradation ladder"},
+		{"skip", "skip", nativeFake{fakeAdapter: fakeAdapter{name: "codex"}, err: unsupported}, Skipped, false, "codex cannot write Stop here; native hooks have no degradation ladder"},
 		{"error", "error", nativeFake{fakeAdapter: fakeAdapter{name: "codex"}, err: unsupported}, InstallError, true, "codex cannot write Stop here; fallback is error"},
 		{"no native support", "error", fakeAdapter{name: "codex"}, InstallError, true, "adapter codex does not support native hooks; fallback is error"},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
-			report, err := Build(&spec.ResolvedPackage{Package: packageWithName("demo"), NativeHooks: []spec.NativeHook{nativeRule("notify", tc.fallback, mapping)}}, tc.adapter)
+			report, err := Build(&spec.ResolvedPackage{Package: packageWithName("demo"), NativeHooks: []spec.NativeHook{nativeHook("notify", tc.fallback, mapping)}}, tc.adapter)
 			if err != nil {
 				t.Fatal(err)
 			}

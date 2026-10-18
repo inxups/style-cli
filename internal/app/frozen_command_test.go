@@ -120,7 +120,7 @@ func TestM3A5NativeReplaceAndBlockedCLI(t *testing.T) {
 				manifest = strings.ReplaceAll(manifest, "target: system", "target: system, mode: replace")
 			}
 			if gate == "fallback-error" {
-				manifest = "spec: style/v0.3\nname: first\nversion: 1.0.0\ndescription: blocked\nrules: [{id: native, target: native, fallback: error, codex: {event: Stop, command: 'printf PRIVATE-COMMAND'}}]\n"
+				manifest = "spec: style/v0.3\nname: first\nversion: 1.0.0\ndescription: blocked\nrules: []\nnative_hooks:\n  - {id: native, fallback: error, codex: {event: Stop, command: 'printf PRIVATE-COMMAND'}}\n"
 			}
 			s, home, config, origin, _ := nativeInstallFixture(t, "codex-user")
 			writeSyncFile(t, filepath.Join(origin, "STYLE.yaml"), manifest)

@@ -86,17 +86,18 @@ def prepare(root, style, claude):
                 "mode": path.stat().st_mode & 0o777} for path in config.rglob("*") if path.is_file()}
     write_private(root / "baseline.json", json.dumps(baseline, indent=2) + "\n")
     rules = [{"id": "shared", "target": "system", "text": STATIC_BODY}]
+    native_hooks = []
     for kind, event, matcher in (("start", "SessionStart", None), ("shell", "PreToolUse", "^Bash$"), ("read", "PreToolUse", "^Read$")):
         native = {"event": event, "command": shlex.join([sys.executable, str(observer), "--observe",
                   str(root / "native-observations.jsonl"), kind]), "timeout": 10}
         if matcher:
             native["matcher"] = matcher
-        rules.append({"id": "native-" + kind, "target": "native", "claude-code": native})
+        native_hooks.append({"id": "native-" + kind, "claude-code": native})
     installs = []
     for name, package_rules in (("first", rules), ("second", rules[:1])):
         package = root / ("m2-claude-" + name)
         write_private(package / "STYLE.yaml", json.dumps({"spec": "style/v0.3", "name": "m2-claude-" + name,
-            "version": "0.1.0", "description": "Isolated M2 Claude acceptance", "rules": package_rules}, indent=2))
+            "version": "0.1.0", "description": "Isolated M2 Claude acceptance", "rules": package_rules, "native_hooks": native_hooks if name == "first" else []}, indent=2))
         result = subprocess.run([str(binary), "install", str(package), "--harness", "claude-code", "--yes", "--json"],
                                 env=environment, cwd=root / "work", check=True, capture_output=True, text=True, timeout=60)
         installs.append(json.loads(result.stdout))

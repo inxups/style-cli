@@ -12,7 +12,7 @@ var (
 	semverPattern      = regexp.MustCompile(`^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(-((0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*)(\.(0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*))*))?(\+[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?$`)
 )
 
-var packageFields = stringSet("spec", "name", "version", "description", "authors", "requires", "settings", "recommends", "priority", "budget", "defaults", "rules")
+var packageFields = stringSet("spec", "name", "version", "description", "authors", "requires", "settings", "recommends", "priority", "budget", "defaults", "rules", "native_hooks")
 var ruleFields = stringSet("id", "target", "file", "text", "model_text", "action", "at", "when", "repeat", "fail", "refresh", "reinject_on_compact", "sources", "fallback", "priority", "max_tokens", "reason", "from", "enabled", "mode", "tool", "names", "mcp", "skill", "event")
 var defaultsFields = stringSet("action", "at", "repeat", "fail", "refresh", "reinject_on_compact", "sources", "fallback", "priority", "max_tokens")
 
@@ -28,13 +28,11 @@ func (v *validator) validatePackage() {
 	if hasNonStringMapKey(manifest) || hasNonStringMapKey(v.pkg.Metadata) {
 		v.add("invalid-schema", v.packageSource(), "YAML mappings must use string keys")
 	}
-	if v.pkg.SingleFile && hasKey(v.pkg.Metadata, "rules") {
-		v.add("invalid-schema", v.packageSource(), "single-file packages contain exactly one rule and cannot declare rules")
+	if v.pkg.SingleFile && (hasKey(v.pkg.Metadata, "rules") || hasKey(v.pkg.Metadata, "native_hooks")) {
+		v.add("invalid-schema", v.packageSource(), "single-file packages contain exactly one rule and cannot declare rules or native_hooks")
 	}
 	for _, key := range sortedMapKeys(manifest) {
-		// A native single-file rule may carry harness mappings; the rule
-		// checks report keys that are not registered harnesses.
-		singleFileRuleField := ruleFields[key] || manifest["target"] == "native"
+		singleFileRuleField := ruleFields[key]
 		if !packageFields[key] && (!v.pkg.SingleFile || !singleFileRuleField) {
 			v.add("invalid-schema", v.packageSource(), fmt.Sprintf("unknown package field %q", key))
 		}
@@ -81,8 +79,8 @@ func (v *validator) validatePackage() {
 		}
 	}
 	v.validateRecommends(v.pkg.Metadata["recommends"])
-	if !v.pkg.SingleFile && len(v.pkg.Rules) == 0 {
-		v.add("invalid-schema", v.packageSource(), "rules must contain at least one rule")
+	if !v.pkg.SingleFile && len(v.pkg.Rules) == 0 && len(v.pkg.NativeHooks) == 0 {
+		v.add("invalid-schema", v.packageSource(), "rules or native_hooks must contain at least one declaration")
 	}
 }
 

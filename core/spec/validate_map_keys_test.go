@@ -29,7 +29,7 @@ func TestValidateRejectsNonStringNestedYAMLKeys(t *testing.T) {
 func TestValidateRejectsNonStringKeysInRuleFilesAndOverrides(t *testing.T) {
 	for _, override := range []bool{false, true} {
 		rules := "  - from: rules/base.md\n"
-		file := "---\ntarget: native\ncodex: {nested: {1: value}}\n---\nbody\n"
+		file := "---\ntarget: system\nwhen: {conditions: [{1: value}]}\n---\nbody\n"
 		if override {
 			rules += "    when: {conditions: [{1: value}]}\n"
 			file = "---\ntarget: system\n---\nbody\n"

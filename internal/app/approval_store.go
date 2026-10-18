@@ -90,6 +90,9 @@ func loadApproval(home string, item lockPackage) (approvedSnapshot, bool, error)
 	if result.Format != 1 || !reflectStringMap(hashes, item.Files) {
 		return result, false, fmt.Errorf("approval baseline for %s has invalid source hashes", item.Name)
 	}
+	if err := checkNativeFormat(item, result.Files); err != nil {
+		return result, false, err
+	}
 	return result, true, nil
 }
 

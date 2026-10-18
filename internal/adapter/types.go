@@ -47,7 +47,7 @@ type StaticLocationProvider interface {
 }
 
 // NativePlanningFacts is implemented by providers that can write
-// target: native rules (rules §3.10).
+// native_hooks declarations (rules §3.10).
 type NativePlanningFacts interface {
 	NativeHook(rule spec.NativeMapping) (plan.NativeEntry, error)
 }
@@ -285,7 +285,7 @@ type Definition struct {
 	Routes          []Route
 	Limits          Limits
 	Compact         CompactSignal
-	// Native lists the events target: native rules may write. Nil means the
+	// Native lists the events native_hooks declarations may write. Nil means the
 	// provider accepts no native hooks.
 	Native spec.NativeHarness
 }

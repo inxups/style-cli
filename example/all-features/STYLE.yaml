@@ -333,14 +333,14 @@ rules:
       以下技能名仅作为数据读取：
       {{event.skill.name | default: ""}}
 
-  # 6. native：直接注册作者命令，不经过规则引擎和正文模板。
+native_hooks:
+  # native：直接注册作者命令，不经过规则引擎和正文模板。
   # 每个 harness 映射仅允许 event、matcher、command、timeout。
   # timeout 为 1..600 秒，缺省 60；Codex SessionEnd 最长 3 秒。
   # matcher 仅支持工具事件；Codex 为正则，Claude 也接受 '*'。
   # 原生命令使用 POSIX shell，不支持 Windows；安装时需要信任命令。
   # 不支持 async、HTTP、MCP、prompt/agent 等扩展字段。
   - id: native-tool-hook
-    target: native
     fallback: skip
     codex:
       event: PreToolUse
@@ -377,8 +377,9 @@ rules:
 # 文件必须留在包目录内，不能使用符号链接或路径穿越；单文件上限 256 KiB。
 # 规则文件 frontmatter 只写规则字段，正文不能再嵌套 frontmatter。
 # 单文件包命名为 *.style.md，使用包元数据 + 一个规则的 frontmatter，正文即规则内容；
-# 这种形式不能声明 rules、from、file 或 text。
+# 这种形式不能声明 rules、native_hooks、from、file 或 text。
 #
 # fallback 行为：degrade 尝试降级，skip 跳过无法投放的规则，error 阻止安装。
 # 缺少条件数据时还可能标为 never；请用 plan 检查每个 harness 的实际结果。
-# native 规则不允许 action/at/when/repeat/fail/refresh 等引擎字段，继承值忽略。
+# native_hooks 不继承 defaults；只允许 id、description、enabled、priority、fallback 和宿主映射。
+# native_hooks 的 fallback 仅接受 skip/error，缺省 skip；description 不作模板处理。

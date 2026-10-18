@@ -72,6 +72,9 @@ func (s *Service) prepareSync(ctx context.Context, request TrustRequest) (syncPr
 		if err != nil {
 			return prepared, err
 		}
+		if err := checkNativeFormat(item, files); err != nil {
+			return prepared, err
+		}
 		baselines[item.Name], baselineAvailable[item.Name] = baseline, available
 		snapshots[item.Name] = files
 		changed := filesChanged(item, files)

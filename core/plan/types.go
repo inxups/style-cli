@@ -26,9 +26,9 @@ type Adapter interface {
 	StaticLocation(mode string) (slot string, supported bool)
 }
 
-// NativeAdapter is implemented by adapters that can write target: native
-// rules (rules §3.10). An error means the mapping cannot be written on this
-// harness version or route; the planner then applies the rule's fallback.
+// NativeAdapter is implemented by adapters that can write native hooks.
+// An error means the mapping cannot be written on this harness version or
+// route; the planner then applies the hook's fallback.
 type NativeAdapter interface {
 	NativeHook(rule spec.NativeMapping) (NativeEntry, error)
 }

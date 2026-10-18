@@ -34,10 +34,10 @@ def write_private(path, text):
     path.chmod(0o600)
 
 
-def package(probe, name, rules):
+def package(probe, name, rules, native_hooks=()):
     path = probe.root / name
     write_private(path / "STYLE.yaml", json.dumps({"spec": "style/v0.3", "name": name,
-                  "version": "0.1.0", "description": "Isolated M2 native acceptance", "rules": rules}, indent=2) + "\n")
+                  "version": "0.1.0", "description": "Isolated M2 native acceptance", "rules": rules, "native_hooks": list(native_hooks)}, indent=2) + "\n")
     return path
 
 
@@ -53,7 +53,7 @@ finally:
  os.close(descriptor)
 print(json.dumps({"hookSpecificOutput": {"hookEventName": row["event"], "additionalContext": sys.argv[3]}}))
 ''')
-    rules = []
+    native_hooks = []
     for name, event, matcher in (("native-start", "SessionStart", None),
                                  ("native-shell", "PreToolUse", "^Bash$"),
                                  ("native-unmatched", "PreToolUse", "^Read$")):
@@ -61,10 +61,10 @@ print(json.dumps({"hookSpecificOutput": {"hookEventName": row["event"], "additio
                 str(probe.root / "native-observations.jsonl"), name, BODIES[name]]), "timeout": 10}
         if matcher:
             hook["matcher"] = matcher
-        rules.append({"id": name, "target": "native", "codex": hook})
-    rules += [{"id": "style-start", "target": "event", "event": "session.start", "repeat": "session", "text": BODIES["style-start"]},
+        native_hooks.append({"id": name, "codex": hook})
+    rules = [{"id": "style-start", "target": "event", "event": "session.start", "repeat": "session", "text": BODIES["style-start"]},
               {"id": "style-shell", "target": "tool", "tool": "shell", "at": "before", "repeat": "session", "text": BODIES["style-shell"]}]
-    return package(probe, "m2-native", rules)
+    return package(probe, "m2-native", rules, native_hooks)
 
 
 def delivery(call, body):

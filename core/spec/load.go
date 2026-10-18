@@ -62,19 +62,35 @@ func loadDirectoryFrom(root string, files map[string][]byte, source packageReade
 		return nil, err
 	}
 	pkg.Manifest = manifest
-	pkg.Metadata = cloneMapWithout(manifest, "rules")
-	rulesValue, ok := manifest["rules"]
-	if !ok {
-		return nil, parseErr("invalid-package", "STYLE.yaml", "missing rules list", nil)
+	pkg.Metadata = cloneMapWithout(manifest, "rules", "native_hooks")
+	var rules []any
+	if raw, exists := manifest["rules"]; exists {
+		var ok bool
+		rules, ok = raw.([]any)
+		if !ok {
+			return nil, parseErr("invalid-package", "STYLE.yaml", "rules must be a list", nil)
+		}
 	}
-	rules, ok := rulesValue.([]any)
-	if !ok {
-		return nil, parseErr("invalid-package", "STYLE.yaml", "rules must be a list", nil)
+	if raw, exists := manifest["native_hooks"]; exists {
+		hooks, ok := raw.([]any)
+		if !ok {
+			return nil, parseErr("invalid-package", "STYLE.yaml", "native_hooks must be a list", nil)
+		}
+		for index, rawHook := range hooks {
+			fields, ok := rawHook.(map[string]any)
+			if !ok {
+				return nil, parseErr("invalid-package", "STYLE.yaml", fmt.Sprintf("native_hooks[%d] must be a mapping", index), nil)
+			}
+			pkg.NativeHooks = append(pkg.NativeHooks, NativeHook{Index: index, Source: "STYLE.yaml#native_hooks/" + ruleID(fields, index), Fields: cloneMap(fields)})
+		}
 	}
 	for index, rawRule := range rules {
 		fields, ok := rawRule.(map[string]any)
 		if !ok {
 			return nil, parseErr("invalid-package", "STYLE.yaml", fmt.Sprintf("rules[%d] must be a mapping", index), nil)
+		}
+		if err := rejectRemovedNative(fields, "STYLE.yaml"); err != nil {
+			return nil, err
 		}
 		if fromValue, hasFrom := fields["from"]; hasFrom {
 			pattern, ok := fromValue.(string)
@@ -97,6 +113,9 @@ func loadDirectoryFrom(root string, files map[string][]byte, source packageReade
 				}
 				fileFields, err := parseYAMLMap(frontmatter, rel)
 				if err != nil {
+					return nil, err
+				}
+				if err := rejectRemovedNative(fileFields, rel); err != nil {
 					return nil, err
 				}
 				if _, declared := fileFields["id"]; !declared {
@@ -165,6 +184,9 @@ func loadSingleBytes(root, name string, files map[string][]byte, data []byte) (*
 	if err != nil {
 		return nil, err
 	}
+	if err := rejectRemovedNative(fields, name); err != nil {
+		return nil, err
+	}
 	metadata := make(map[string]any)
 	ruleFields := make(map[string]any)
 	for key, value := range fields {
@@ -200,7 +222,7 @@ func loadSingleBytes(root, name string, files map[string][]byte, data []byte) (*
 
 func isPackageField(key string) bool {
 	switch key {
-	case "spec", "name", "version", "description", "authors", "requires", "settings", "recommends", "budget", "defaults", "rules", "priority":
+	case "spec", "name", "version", "description", "authors", "requires", "settings", "recommends", "budget", "defaults", "rules", "native_hooks", "priority":
 		return true
 	default:
 		return false

@@ -16,7 +16,7 @@
           "link": false
         },
         "version": "0.1.0",
-        "content_sha256": "sha256:2760c098c961c6bd86637154f7ebfed700c3d41bf4da56bb87b4b6d48284fa8c",
+        "content_sha256": "sha256:464247cffef5989ec5aeb92b74be2af522b752c5aaf9f068839217659228525c",
         "settings": [],
         "replace": false,
         "link_trusted": false
@@ -28,7 +28,7 @@
           "link": false
         },
         "version": "0.1.0",
-        "content_sha256": "sha256:2760c098c961c6bd86637154f7ebfed700c3d41bf4da56bb87b4b6d48284fa8c",
+        "content_sha256": "sha256:464247cffef5989ec5aeb92b74be2af522b752c5aaf9f068839217659228525c",
         "settings": [],
         "replace": false,
         "link_trusted": false
@@ -139,7 +139,7 @@
         "native_hooks": [
           {
             "id": "later",
-            "source": "STYLE.yaml#later",
+            "source": "STYLE.yaml#native_hooks/later",
             "status": "native-hook",
             "native": {
               "event": "PreToolUse",
@@ -149,7 +149,7 @@
           },
           {
             "id": "earlier",
-            "source": "STYLE.yaml#earlier",
+            "source": "STYLE.yaml#native_hooks/earlier",
             "status": "native-hook",
             "native": {
               "event": "PreToolUse",

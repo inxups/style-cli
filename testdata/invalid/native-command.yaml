@@ -3,13 +3,8 @@ manifest: |
   name: invalid-fixture
   version: 0.1.0
   description: invalid fixture
-  rules:
-    - from: rules/notify.md
-files:
-  "rules/notify.md": |
-    ---
-    target: native
-    codex:
-      event: Stop
-      command: "notify; echo 'open"
-    ---
+  native_hooks:
+    - id: notify
+      codex:
+        event: Stop
+        command: "notify; echo 'open"
