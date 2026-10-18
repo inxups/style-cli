@@ -78,7 +78,7 @@ func inputFor(t *testing.T, pkg *spec.ResolvedPackage, sequence int) PackageInpu
 func TestBuildCompilesRuntimeAndStaticPlacements(t *testing.T) {
 	pkg := loadResolved(t, "compile-test", `  - id: static
     target: system
-    text: 'Keep {{settings.tone}} {{settings.voice}} {{package.name}} {{rule.id}}.'
+    text: 'Keep {{settings.tone}} {{settings.voice}}.'
   - id: dynamic-system
     target: system
     text: 'Model {{model | default: "unknown"}}.'
@@ -121,7 +121,7 @@ func TestBuildCompilesRuntimeAndStaticPlacements(t *testing.T) {
 	if got := result.Index.Static["codex"]; len(got) != 1 || got[0].Rule != "compile-test/static" || got[0].Slot != "developer_instructions" {
 		t.Fatalf("static entries = %#v", got)
 	}
-	if len(result.StaticBodies) != 1 || result.StaticBodies[0].Body != "Keep direct precise compile-test static." {
+	if len(result.StaticBodies) != 1 || result.StaticBodies[0].Body != "Keep direct precise." {
 		t.Fatalf("rendered static body = %#v", result.StaticBodies)
 	}
 	entries := result.Index.Harnesses["codex"]

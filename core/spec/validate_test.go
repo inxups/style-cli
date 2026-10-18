@@ -20,6 +20,8 @@ func TestValidateRequiredCodes(t *testing.T) {
 		{"undeclared variable", "", "  - id: base\n    target: system\n    text: '{{settings.unknown}}'\n", "undeclared-var", nil},
 		{"removed vars field", "vars:\n  lang: zh-CN\n", "  - id: base\n    target: system\n    text: body\n", "invalid-schema", nil},
 		{"removed vars reference", "", "  - id: base\n    target: system\n    text: '{{vars.lang}}'\n", "undeclared-var", nil},
+		{"removed package reference", "", "  - id: base\n    target: system\n    text: '{{package.name}}'\n", "undeclared-var", nil},
+		{"removed rule reference", "", "  - id: base\n    target: system\n    text: '{{rule.id}}'\n", "undeclared-var", nil},
 		{"reads missing", "", "  - id: base\n    target: system\n    text: '{{model}}'\n", "reads-missing", nil},
 		{"event variable", "", "  - id: base\n    target: system\n    text: '{{prompt}}'\n", "event-var-in-template", nil},
 		{"sensitive reserved", "settings:\n  - name: token\n    sensitive: true\n", "  - id: base\n    target: system\n    text: body\n", "sensitive-reserved", nil},
@@ -81,7 +83,7 @@ func TestValidateImportedRulesAndWarnings(t *testing.T) {
 
 func TestValidateAcceptsDeclaredTemplateVariables(t *testing.T) {
 	packageFields := "reads:\n  model: true\nsettings:\n  - name: detail\n    default: concise\n"
-	rules := "  - id: base\n    target: system\n    text: '{{settings.detail}} {{model | default: \"unknown\"}} {{rule.id}}'\n    when:\n      model: gpt-*\n"
+	rules := "  - id: base\n    target: system\n    text: '{{settings.detail}} {{model | default: \"unknown\"}}'\n    when:\n      model: gpt-*\n"
 	diagnostics := loadAndValidate(t, testManifest("valid-package", packageFields, rules), nil)
 	for _, diagnostic := range diagnostics {
 		if diagnostic.Severity == SeverityError {

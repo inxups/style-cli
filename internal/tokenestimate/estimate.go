@@ -19,9 +19,7 @@ type Count struct {
 
 // Context contains install-time values used by STYLE templates.
 type Context struct {
-	Package   map[string]any
-	Rule      map[string]any
-	Overrides map[string]any
+	Package map[string]any
 }
 
 // Estimate returns ceil(A/4 + C + 0.5*P), where A is ASCII letters/digits,
@@ -101,34 +99,21 @@ func RenderForEstimate(source string, context Context) (string, error) {
 	return rendered.String(), nil
 }
 
-// StaticValue resolves the package and rule variables available at install
-// time. The caller supplies source-level package and rule maps.
+// StaticValue resolves the settings variables available at install time. The
+// caller supplies the source-level package map.
 func StaticValue(context Context, name string) (string, bool) {
-	switch {
-	case strings.HasPrefix(name, "settings."):
-		settings, _ := context.Package["settings"].([]any)
-		settingName := strings.TrimPrefix(name, "settings.")
-		for _, setting := range settings {
-			fields, _ := setting.(map[string]any)
-			if fields != nil && fields["name"] == settingName {
-				if value, exists := fields["default"]; exists {
-					return fmt.Sprint(value), true
-				}
-				return "", true
+	settingName, ok := strings.CutPrefix(name, "settings.")
+	if !ok {
+		return "", false
+	}
+	settings, _ := context.Package["settings"].([]any)
+	for _, setting := range settings {
+		fields, _ := setting.(map[string]any)
+		if fields != nil && fields["name"] == settingName {
+			if value, exists := fields["default"]; exists {
+				return fmt.Sprint(value), true
 			}
-		}
-	case name == "package.name" || name == "package.version":
-		value, ok := context.Package[strings.TrimPrefix(name, "package.")]
-		if ok {
-			return fmt.Sprint(value), true
-		}
-	case name == "rule.id":
-		value, ok := context.Rule["id"]
-		if !ok {
-			value, ok = context.Overrides["id"]
-		}
-		if ok {
-			return fmt.Sprint(value), true
+			return "", true
 		}
 	}
 	return "", false

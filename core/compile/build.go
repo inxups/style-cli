@@ -51,7 +51,7 @@ func Build(request Request) (Result, error) {
 				result.Index.Static[report.Adapter] = make([]StaticEntry, 0)
 			}
 			for i, rule := range pkg.Rules {
-				context := tokenestimate.Context{Package: pkg.Package.Metadata, Rule: rule.Effective}
+				context := tokenestimate.Context{Package: pkg.Package.Metadata}
 				for _, placement := range report.Rules[i].Placements {
 					if err := appendPlacement(&result, pkg, info, rule, report.Rules[i], placement, report.Adapter, context); err != nil {
 						return Result{}, fmt.Errorf("compile: %s/%s: %w", info.Name, text(rule.Effective["id"]), err)

@@ -51,15 +51,6 @@ func (v *validator) validateTemplateName(name string, hasDefault bool, source st
 		if !v.settingDeclared(strings.TrimPrefix(name, "settings.")) {
 			v.add("undeclared-var", source, name+" is not declared")
 		}
-	case name == "package.name", name == "package.version":
-		key := strings.TrimPrefix(name, "package.")
-		if _, exists := v.pkg.Metadata[key]; !exists {
-			v.add("undeclared-var", source, name+" is not declared")
-		}
-	case name == "rule.id":
-		if _, exists := rule.Fields["id"]; !exists {
-			v.add("undeclared-var", source, name+" is not available")
-		}
 	case isRuntimeTemplateName(name):
 		v.requireRuntimeRead(runtimeReadForTemplate(name), source)
 		if strings.HasPrefix(name, "harness.") && name != "harness.session_id" && name != "harness.turn_id" && !harnessReadFields[strings.TrimPrefix(name, "harness.")] {

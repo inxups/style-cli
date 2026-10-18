@@ -24,7 +24,7 @@ func TestParseClassifiesPartsAndEscapedBraces(t *testing.T) {
 	if !parsed.IsDynamic() || parsed.Classify() != Dynamic {
 		t.Fatal("model variable should classify the template as dynamic")
 	}
-	static, err := Parse(`{{settings.lang}}/{{settings.detail}}/{{package.name}}/{{package.version}}/{{rule.id}}`)
+	static, err := Parse(`{{settings.lang}}/{{settings.detail}}`)
 	if err != nil {
 		t.Fatal(err)
 	}

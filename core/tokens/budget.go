@@ -53,8 +53,8 @@ func effectiveValue(rule spec.Rule, pkg *spec.ResolvedPackage, key string) (any,
 	return nil, false
 }
 
-func contextFor(rule spec.Rule, pkg *spec.ResolvedPackage) tokenestimate.Context {
-	context := tokenestimate.Context{Rule: rule.Fields, Overrides: rule.Overrides}
+func contextFor(pkg *spec.ResolvedPackage) tokenestimate.Context {
+	var context tokenestimate.Context
 	if pkg != nil && pkg.Package != nil {
 		context.Package = pkg.Package.Metadata
 	}

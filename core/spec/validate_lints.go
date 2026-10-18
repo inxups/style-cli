@@ -45,14 +45,14 @@ func modelEstimate(rule Rule, pkg *Package) (tokenestimate.Count, bool) {
 			}
 			source = text
 		} else {
-			rendered, err := tokenestimate.RenderForEstimate(source, estimateContext(rule, pkg))
+			rendered, err := tokenestimate.RenderForEstimate(source, estimateContext(pkg))
 			if err != nil {
 				return tokenestimate.Count{}, false
 			}
 			return tokenestimate.CountText(stylewarn.FirstSentence(rendered)), true
 		}
 	}
-	count, err := tokenestimate.EstimateTemplate(source, estimateContext(rule, pkg))
+	count, err := tokenestimate.EstimateTemplate(source, estimateContext(pkg))
 	if err != nil {
 		return tokenestimate.Count{}, false
 	}
@@ -87,8 +87,8 @@ func effectiveRuleValue(rule Rule, pkg *Package, key string) (any, bool) {
 	return nil, false
 }
 
-func estimateContext(rule Rule, pkg *Package) tokenestimate.Context {
-	context := tokenestimate.Context{Rule: rule.Fields, Overrides: rule.Overrides}
+func estimateContext(pkg *Package) tokenestimate.Context {
+	var context tokenestimate.Context
 	if pkg != nil {
 		context.Package = pkg.Metadata
 	}
@@ -130,7 +130,7 @@ func (v *validator) budgetSeverity() string {
 func estimateTokens(text string) int { return tokenestimate.Estimate(text) }
 
 func estimateTemplateTokens(text string, pkg *Package, rule Rule) int {
-	count, err := tokenestimate.EstimateTemplate(text, estimateContext(rule, pkg))
+	count, err := tokenestimate.EstimateTemplate(text, estimateContext(pkg))
 	if err != nil {
 		return tokenestimate.Estimate(text)
 	}

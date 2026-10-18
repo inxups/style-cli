@@ -142,8 +142,6 @@ func TestCrossPackageDedupUsesRenderedStaticBytes(t *testing.T) {
 	}{
 		{"settings and literal", "Use {{settings.voice}}.", "Use precise.", "precise", true},
 		{"different settings", "Use {{settings.voice}}.", "Use precise.", "other", false},
-		{"package variable", "Use {{package.name}}.", "Use {{package.name}}.", "precise", false},
-		{"rule variable", "Use {{rule.id}}.", "Use r.", "precise", true},
 		{"different whitespace", "Use precise.", "Use  precise.", "precise", false},
 		{"different Unicode", "é", "é", "precise", false},
 	}

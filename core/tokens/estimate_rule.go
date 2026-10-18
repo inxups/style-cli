@@ -65,21 +65,21 @@ func modelText(rule spec.Rule, placement plan.Placement, pkg *spec.ResolvedPacka
 					return "", false, nil
 				}
 			} else {
-				rendered, err := tokenestimate.RenderForEstimate(text, contextFor(rule, pkg))
+				rendered, err := tokenestimate.RenderForEstimate(text, contextFor(pkg))
 				if err != nil {
 					return "", false, err
 				}
 				return warn.FirstSentence(rendered), true, nil
 			}
 		} else {
-			rendered, err := tokenestimate.RenderForEstimate(text, contextFor(rule, pkg))
+			rendered, err := tokenestimate.RenderForEstimate(text, contextFor(pkg))
 			if err != nil {
 				return "", false, err
 			}
 			return warn.FirstSentence(rendered), true, nil
 		}
 	}
-	rendered, err := tokenestimate.RenderForEstimate(text, contextFor(rule, pkg))
+	rendered, err := tokenestimate.RenderForEstimate(text, contextFor(pkg))
 	if err != nil {
 		return "", false, err
 	}

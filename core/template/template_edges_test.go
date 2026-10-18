@@ -102,7 +102,7 @@ func TestRuntimeClassificationIncludesEventValues(t *testing.T) {
 			t.Errorf("IsRuntimeVariable(%q) = false", name)
 		}
 	}
-	for _, name := range []string{"settings.topic", "settings.style", "package.name", "package.version", "rule.id", "unknown"} {
+	for _, name := range []string{"settings.topic", "settings.style", "unknown"} {
 		if IsRuntimeVariable(name) {
 			t.Errorf("IsRuntimeVariable(%q) = true", name)
 		}
