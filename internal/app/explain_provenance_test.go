@@ -29,7 +29,7 @@ func a1AssertProvenance(t *testing.T, home string) compile.Provenance {
 		t.Fatalf("provenance %s %v", data, err)
 	}
 	var document map[string]json.RawMessage
-	if json.Unmarshal(data, &document) != nil || len(document) != 3 || document["harnesses"] == nil || document["rules"] != nil {
+	if json.Unmarshal(data, &document) != nil || len(document) != 4 || document["harnesses"] == nil || document["native_hooks"] == nil || provenance.Format != 2 || document["rules"] != nil {
 		t.Fatal("provenance differs from the D1 top-level contract")
 	}
 	info, err := os.Stat(filepath.Join(home, "build", "explain.json"))

@@ -165,7 +165,7 @@ func (adapter planAdapter) BlindSpot(rule spec.Rule) (string, bool) {
 
 // NativeHook implements plan.NativeAdapter for providers whose facts
 // support native rules; other providers report the mapping as unwritable.
-func (adapter planAdapter) NativeHook(rule spec.NativeRule) (plan.NativeEntry, error) {
+func (adapter planAdapter) NativeHook(rule spec.NativeMapping) (plan.NativeEntry, error) {
 	native, ok := adapter.facts.(NativePlanningFacts)
 	if !ok {
 		return plan.NativeEntry{}, fmt.Errorf("adapter %s does not support native hooks", adapter.provider)

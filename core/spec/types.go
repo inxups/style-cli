@@ -9,13 +9,14 @@ const MaxFileSize = 256 * 1024
 // Manifest and Rule.Fields retain source values so later validation and merge
 // stages can distinguish declared fields from defaults.
 type Package struct {
-	Root       string
-	Manifest   map[string]any
-	Metadata   map[string]any
-	Rules      []Rule
-	Files      map[string][]byte
-	SingleFile bool
-	inventory  []string // Non-nil for a complete in-memory snapshot.
+	Root        string
+	Manifest    map[string]any
+	Metadata    map[string]any
+	Rules       []Rule
+	NativeHooks []NativeHook
+	Files       map[string][]byte
+	SingleFile  bool
+	inventory   []string // Non-nil for a complete in-memory snapshot.
 }
 
 // Rule is one entry in rules[], or the sole rule in a single-file package.
@@ -33,8 +34,18 @@ type Rule struct {
 // ResolvedPackage contains the enabled rules after package and rule defaults
 // have been merged. Package retains the original parsed values for validation.
 type ResolvedPackage struct {
-	Package *Package
-	Rules   []Rule
+	Package     *Package
+	Rules       []Rule
+	NativeHooks []NativeHook
+}
+
+// NativeHook is a command declaration, separate from model-facing rules.
+// Fields retain source declarations; Effective contains only hook management fields.
+type NativeHook struct {
+	Index     int
+	Source    string
+	Fields    map[string]any
+	Effective map[string]any
 }
 
 // ParseError carries a stable machine-readable code for CLI diagnostics.

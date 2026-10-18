@@ -79,12 +79,12 @@ type ExplainStatic struct {
 	Status string `json:"status"`
 }
 type ExplainProvenance struct {
-	Status   string                   `json:"status"`
-	Coverage string                   `json:"coverage"`
-	SHA256   string                   `json:"sha256,omitempty"`
-	Rules    []compile.ProvenanceRule `json:"rules"`
-	Static   []ExplainStatic          `json:"static"`
-	Native   []compile.ProvenanceRule `json:"native"`
+	Status   string                         `json:"status"`
+	Coverage string                         `json:"coverage"`
+	SHA256   string                         `json:"sha256,omitempty"`
+	Rules    []compile.ProvenanceRule       `json:"rules"`
+	Static   []ExplainStatic                `json:"static"`
+	Native   []compile.ProvenanceNativeHook `json:"native"`
 }
 type ExplainResult struct {
 	Count             *tokencount.Result   `json:"count,omitempty"`
@@ -133,7 +133,7 @@ func (s *Service) Explain(ctx context.Context, request ExplainRequest) (ExplainR
 }
 
 func (s *Service) explain(ctx context.Context, request ExplainRequest, ops explainOps) (result ExplainResult, returned error) {
-	result = ExplainResult{Format: 1, Command: "explain", Status: "error", Harness: request.Harness, Event: request.Event, State: ExplainState{Mode: "empty"}, Facts: []ExplainFact{}, Points: []engine.PointTrace{}, Entries: []*engine.EntryTrace{}, CompileProvenance: ExplainProvenance{Status: "unavailable", Coverage: "index-only", Rules: []compile.ProvenanceRule{}, Static: []ExplainStatic{}, Native: []compile.ProvenanceRule{}}, Diagnostics: []ExplainDiagnostic{}}
+	result = ExplainResult{Format: 1, Command: "explain", Status: "error", Harness: request.Harness, Event: request.Event, State: ExplainState{Mode: "empty"}, Facts: []ExplainFact{}, Points: []engine.PointTrace{}, Entries: []*engine.EntryTrace{}, CompileProvenance: ExplainProvenance{Status: "unavailable", Coverage: "index-only", Rules: []compile.ProvenanceRule{}, Static: []ExplainStatic{}, Native: []compile.ProvenanceNativeHook{}}, Diagnostics: []ExplainDiagnostic{}}
 	result.Inputs.FailClosed = request.FailClosed
 	fail := func(code, message string) error {
 		result.Status = "error"
@@ -409,7 +409,7 @@ func (s *Service) explain(ctx context.Context, request ExplainRequest, ops expla
 }
 
 func (s *Service) explainProvenance(result *ExplainResult, request ExplainRequest, index compile.Index, indexBytes []byte) {
-	p := ExplainProvenance{Status: "unavailable", Coverage: "index-only", Rules: []compile.ProvenanceRule{}, Static: []ExplainStatic{}, Native: []compile.ProvenanceRule{}}
+	p := ExplainProvenance{Status: "unavailable", Coverage: "index-only", Rules: []compile.ProvenanceRule{}, Static: []ExplainStatic{}, Native: []compile.ProvenanceNativeHook{}}
 	for _, item := range index.Static[request.Harness] {
 		p.Static = append(p.Static, ExplainStatic{item, "static-not-replayed"})
 	}
@@ -432,13 +432,12 @@ func (s *Service) explainProvenance(result *ExplainResult, request ExplainReques
 		} else {
 			p.Status = "matched"
 			p.Coverage = "compiled-plan"
-			for _, rule := range provenance.Harnesses[request.Harness] {
-				if rule.Native != nil {
-					rule.Status = "native-not-executed"
-					p.Native = append(p.Native, rule)
-				} else {
-					p.Rules = append(p.Rules, rule)
+			p.Rules = append(p.Rules, provenance.Harnesses[request.Harness]...)
+			for _, hook := range provenance.NativeHooks[request.Harness] {
+				if hook.Native != nil {
+					hook.Status = "native-not-executed"
 				}
+				p.Native = append(p.Native, hook)
 			}
 		}
 	} else if !errors.Is(err, os.ErrNotExist) {

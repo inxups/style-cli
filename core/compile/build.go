@@ -106,7 +106,7 @@ func checkPlan(pkg *spec.ResolvedPackage, report plan.Report, seen map[string]bo
 	if report.Package != name || strings.TrimSpace(report.Adapter) == "" || seen[report.Adapter] {
 		return fmt.Errorf("compile: mismatched or duplicate harness plan for package %q", name)
 	}
-	if report.Blocked || len(pkg.Rules) != len(report.Rules) {
+	if report.Blocked || len(pkg.Rules) != len(report.Rules) || len(pkg.NativeHooks) != len(report.NativeHooks) {
 		return fmt.Errorf("compile: blocked or incomplete plan for package %q", name)
 	}
 	ids, indices := make(map[string]bool), make(map[int]bool)
@@ -117,9 +117,6 @@ func checkPlan(pkg *spec.ResolvedPackage, report plan.Report, seen map[string]bo
 			action = "inject"
 		}
 		target := text(rule.Effective["target"])
-		if target == "native" {
-			action = "" // Native rules carry no action (rules §3.10).
-		}
 		planned := report.Rules[i]
 		if id == "" || ids[id] || rule.Index < 0 || indices[rule.Index] || planned.ID != id ||
 			planned.Source != rule.Source || planned.Target != target || planned.Action != action || planned.Fatal ||
@@ -133,12 +130,31 @@ func checkPlan(pkg *spec.ResolvedPackage, report plan.Report, seen map[string]bo
 		}
 		ids[id], indices[rule.Index] = true, true
 	}
+	for i, hook := range pkg.NativeHooks {
+		planned := report.NativeHooks[i]
+		id := text(hook.Effective["id"])
+		if id == "" || ids[id] || planned.ID != id || planned.Source != hook.Source || planned.Fatal || (planned.Status != plan.NativeHook && planned.Status != plan.Skipped) || (planned.Status == plan.NativeHook) != (planned.Native != nil) {
+			return fmt.Errorf("compile: native hook %d does not match resolved package %q", i, name)
+		}
+		if planned.Native != nil {
+			matched := false
+			for _, mapping := range spec.NativeMappings(hook) {
+				if mapping.Harness == report.Adapter && mapping.Event == planned.Native.Event && mapping.Matcher == planned.Native.Matcher {
+					matched = true
+				}
+			}
+			if !matched || planned.Native.Timeout < 1 || planned.Native.Timeout > 600 {
+				return fmt.Errorf("compile: native hook %q has mismatched mapping", id)
+			}
+		}
+		ids[id] = true
+	}
 	return nil
 }
 
 func knownStatus(status plan.Status) bool {
 	switch status {
-	case plan.Native, plan.Degraded, plan.Partial, plan.Skipped, plan.Never, plan.NativeHook, plan.InstallError:
+	case plan.Native, plan.Degraded, plan.Partial, plan.Skipped, plan.Never, plan.InstallError:
 		return true
 	default:
 		return false

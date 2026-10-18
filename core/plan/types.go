@@ -30,7 +30,7 @@ type Adapter interface {
 // rules (rules §3.10). An error means the mapping cannot be written on this
 // harness version or route; the planner then applies the rule's fallback.
 type NativeAdapter interface {
-	NativeHook(rule spec.NativeRule) (NativeEntry, error)
+	NativeHook(rule spec.NativeMapping) (NativeEntry, error)
 }
 
 // NativeEntry is the adapter's resolution of one native mapping. It carries
@@ -43,10 +43,11 @@ type NativeEntry struct {
 
 // Report contains the deterministic plan for one adapter.
 type Report struct {
-	Package string     `json:"package"`
-	Adapter string     `json:"adapter"`
-	Rules   []RulePlan `json:"rules"`
-	Blocked bool       `json:"blocked"`
+	Package     string           `json:"package"`
+	Adapter     string           `json:"adapter"`
+	Rules       []RulePlan       `json:"rules"`
+	NativeHooks []NativeHookPlan `json:"native_hooks"`
+	Blocked     bool             `json:"blocked"`
 }
 
 // RulePlan is one user rule and its resulting runtime or static placements.
@@ -57,13 +58,22 @@ type RulePlan struct {
 	ID               string         `json:"id"`
 	Source           string         `json:"source"`
 	Target           string         `json:"target"`
-	Action           string         `json:"action,omitempty"` // empty for native rules
+	Action           string         `json:"action,omitempty"`
 	Status           Status         `json:"status"`
 	Needs            []string       `json:"needs,omitempty"`
-	Native           *NativeEntry   `json:"native,omitempty"`
 	Placements       []Placement    `json:"placements,omitempty"`
 	Reasons          []string       `json:"reasons,omitempty"`
 	Fatal            bool           `json:"fatal,omitempty"`
+}
+
+// NativeHookPlan describes one native declaration without executable content.
+type NativeHookPlan struct {
+	ID      string       `json:"id"`
+	Source  string       `json:"source"`
+	Status  Status       `json:"status"`
+	Native  *NativeEntry `json:"native,omitempty"`
+	Reasons []string     `json:"reasons,omitempty"`
+	Fatal   bool         `json:"fatal,omitempty"`
 }
 
 // Placement is one event hook or static slot selected by the planner.

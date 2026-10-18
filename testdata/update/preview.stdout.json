@@ -119,6 +119,7 @@
             ]
           }
         ],
+        "native_hooks": [],
         "blocked": false
       },
       "tokens": {

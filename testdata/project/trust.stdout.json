@@ -30,6 +30,7 @@
       "plan": {
         "adapter": "codex",
         "blocked": false,
+        "native_hooks": [],
         "package": "project-rules",
         "rules": [
           {
@@ -174,6 +175,7 @@
       "plan": {
         "adapter": "claude-code",
         "blocked": false,
+        "native_hooks": [],
         "package": "project-rules",
         "rules": [
           {

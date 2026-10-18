@@ -69,7 +69,7 @@ func checkRouteLifecycle(t *testing.T, withNative bool) {
 						writer = claude.DefaultFacts()
 					}
 					for _, id := range []string{"first", "second"} {
-						hook, err := writer.Native(spec.NativeRule{Package: "fixture", RuleID: id, Harness: string(provider), Event: "PreToolUse", Matcher: "Bash", Command: "printf native-" + id, Timeout: 17})
+						hook, err := writer.Native(spec.NativeMapping{Package: "fixture", HookID: id, Harness: string(provider), Event: "PreToolUse", Matcher: "Bash", Command: "printf native-" + id, Timeout: 17})
 						if err != nil {
 							t.Fatal(err)
 						}

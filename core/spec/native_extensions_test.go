@@ -61,7 +61,7 @@ func TestM3A16FromMappingReplacementPreservesFourFields(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			rules := NativeRules(merged.Rules[0])
+			rules := NativeMappings(merged.NativeHooks[0])
 			if len(rules) != 1 || rules[0].Command != "notify" {
 				t.Fatal(rules)
 			}

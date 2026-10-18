@@ -49,12 +49,12 @@ type StaticLocationProvider interface {
 // NativePlanningFacts is implemented by providers that can write
 // target: native rules (rules §3.10).
 type NativePlanningFacts interface {
-	NativeHook(rule spec.NativeRule) (plan.NativeEntry, error)
+	NativeHook(rule spec.NativeMapping) (plan.NativeEntry, error)
 }
 
 // NativeWriter translates a validated native rule into a route request.
 type NativeWriter interface {
-	Native(spec.NativeRule) (HookSpec, error)
+	Native(spec.NativeMapping) (HookSpec, error)
 }
 
 type NativeStatus struct {

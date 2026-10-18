@@ -76,7 +76,11 @@ func Merge(pkg *Package) (*ResolvedPackage, error) {
 		mergedRule.Fields = cloneMap(original.Fields)
 		mergedRule.Overrides = cloneMap(original.Overrides)
 		mergedRule.Effective = effective
-		resolved.Rules = append(resolved.Rules, mergedRule)
+		if effective["target"] == "native" {
+			resolved.NativeHooks = append(resolved.NativeHooks, NativeHook{Index: original.Index, Source: original.Source, Fields: cloneMap(effective), Effective: cloneMap(effective)})
+		} else {
+			resolved.Rules = append(resolved.Rules, mergedRule)
+		}
 	}
 	return resolved, nil
 }

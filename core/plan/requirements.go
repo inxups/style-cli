@@ -35,14 +35,6 @@ func RequirementFor(rule spec.Rule) (Requirement, error) {
 		Mode:     stringValue(effective["mode"]),
 		Repeat:   stringValue(effective["repeat"]),
 	}
-	if requirement.Target == "native" {
-		// Native rules bypass the rule engine: no action, data or events.
-		requirement.Action, requirement.Mode, requirement.Repeat = "", "", ""
-		if requirement.Fallback == "" {
-			requirement.Fallback = "degrade"
-		}
-		return requirement, nil
-	}
 	requirement.Refresh, _ = spec.RefreshInterval(effective["refresh"])
 	if requirement.Action == "" {
 		requirement.Action = "inject"

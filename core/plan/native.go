@@ -10,9 +10,11 @@ import (
 // Native rules have no degradation ladder: a missing mapping is skipped
 // regardless of fallback, and an unwritable mapping is skipped or, with
 // fallback: error, blocks installation.
-func planNative(rule spec.Rule, req Requirement, result RulePlan, adapter Adapter) RulePlan {
-	var mapping *spec.NativeRule
-	for _, candidate := range spec.NativeRules(rule) {
+func planNative(hook spec.NativeHook, adapter Adapter) NativeHookPlan {
+	result := NativeHookPlan{ID: stringValue(hook.Effective["id"]), Source: hook.Source}
+
+	var mapping *spec.NativeMapping
+	for _, candidate := range spec.NativeMappings(hook) {
 		if candidate.Harness == adapter.Name() {
 			candidate := candidate
 			mapping = &candidate
@@ -24,7 +26,7 @@ func planNative(rule spec.Rule, req Requirement, result RulePlan, adapter Adapte
 		result.Reasons = []string{"no native mapping for this harness"}
 		return result
 	}
-	mapping.RuleID = req.RuleID
+	mapping.HookID = result.ID
 	var err error
 	if native, ok := adapter.(NativeAdapter); ok {
 		var hook NativeEntry
@@ -36,7 +38,7 @@ func planNative(rule spec.Rule, req Requirement, result RulePlan, adapter Adapte
 	} else {
 		err = fmt.Errorf("adapter %s does not support native hooks", adapter.Name())
 	}
-	if req.Fallback == "error" {
+	if stringValue(hook.Effective["fallback"]) == "error" {
 		result.Status = InstallError
 		result.Fatal = true
 		result.Reasons = []string{err.Error() + "; fallback is error"}

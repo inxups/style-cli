@@ -51,7 +51,7 @@ func nativeHookReport(target installAdapter, hook adapter.HookSpec, declaredTime
 }
 
 func (compilation *installCompilation) appendNative(pkg installPackage, target installAdapter, report plan.Report) error {
-	for i, planned := range report.Rules {
+	for i, planned := range report.NativeHooks {
 		if planned.Status != plan.NativeHook {
 			continue
 		}
@@ -59,22 +59,22 @@ func (compilation *installCompilation) appendNative(pkg installPackage, target i
 		if !ok {
 			return fmt.Errorf("adapter %s planned a native hook without a native writer", target.provider)
 		}
-		rule := pkg.resolved.Rules[i]
-		for _, native := range spec.NativeRules(rule) {
+		hookDeclaration := pkg.resolved.NativeHooks[i]
+		for _, native := range spec.NativeMappings(hookDeclaration) {
 			if native.Harness != string(target.provider) {
 				continue
 			}
-			native.Package, native.RuleID = pkg.lock.Name, planned.ID
+			native.Package, native.HookID = pkg.lock.Name, planned.ID
 			hook, err := writer.Native(native)
 			if err != nil {
 				return fmt.Errorf("native %s/%s: %w", pkg.lock.Name, planned.ID, err)
 			}
-			priority, err := strconv.ParseFloat(fmt.Sprint(rule.Effective["priority"]), 64)
+			priority, err := strconv.ParseFloat(fmt.Sprint(hookDeclaration.Effective["priority"]), 64)
 			if err != nil {
 				return fmt.Errorf("native %s/%s: invalid priority", pkg.lock.Name, planned.ID)
 			}
 			compilation.native[target.provider] = append(compilation.native[target.provider], compiledNative{Hook: hook, Report: nativeHookReport(target, hook, native.Timeout),
-				Order: compile.Order{Priority: priority, PackageSeq: pkg.lock.Seq, RuleIndex: rule.Index}})
+				Order: compile.Order{Priority: priority, PackageSeq: pkg.lock.Seq, RuleIndex: hookDeclaration.Index}})
 		}
 	}
 	return nil
@@ -108,18 +108,15 @@ func nativeSourceFingerprint(item lockPackage, files map[string][]byte) (string,
 	type declaration struct {
 		Index    int
 		Priority any
-		Mappings []spec.NativeRule
+		Mappings []spec.NativeMapping
 	}
 	var declarations []declaration
-	for _, rule := range pkg.Rules {
-		if rule.Effective["target"] != "native" {
-			continue
-		}
-		mappings := spec.NativeRules(rule)
+	for _, hookDeclaration := range pkg.NativeHooks {
+		mappings := spec.NativeMappings(hookDeclaration)
 		for i := range mappings {
-			mappings[i].RuleID, _ = rule.Effective["id"].(string)
+			mappings[i].HookID, _ = hookDeclaration.Effective["id"].(string)
 		}
-		declarations = append(declarations, declaration{Index: rule.Index, Priority: rule.Effective["priority"], Mappings: mappings})
+		declarations = append(declarations, declaration{Index: hookDeclaration.Index, Priority: hookDeclaration.Effective["priority"], Mappings: mappings})
 	}
 	data, err := json.Marshal(declarations)
 	return hashBytes(data), err
@@ -156,15 +153,12 @@ func (s *Service) baselineNative(item lockPackage, baseline approvedSnapshot, ad
 		if !ok {
 			continue
 		}
-		for _, rule := range pkg.Rules {
-			if rule.Effective["target"] != "native" {
-				continue
-			}
-			for _, native := range spec.NativeRules(rule) {
+		for _, hookDeclaration := range pkg.NativeHooks {
+			for _, native := range spec.NativeMappings(hookDeclaration) {
 				if native.Harness != string(target.provider) {
 					continue
 				}
-				native.Package, native.RuleID = item.Name, fmt.Sprint(rule.Effective["id"])
+				native.Package, native.HookID = item.Name, fmt.Sprint(hookDeclaration.Effective["id"])
 				hook, err := writer.Native(native)
 				if err != nil {
 					return nil, err

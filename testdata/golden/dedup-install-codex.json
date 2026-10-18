@@ -153,6 +153,7 @@
           ]
         }
       ],
+      "native_hooks": [],
       "blocked": false
     },
     "tokens": {
@@ -489,6 +490,7 @@
           ]
         }
       ],
+      "native_hooks": [],
       "blocked": false
     },
     "tokens": {

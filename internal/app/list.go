@@ -79,11 +79,8 @@ func listLocked(ctx context.Context, home string, lock lockDocument) (ListResult
 				files = baseline.Files
 			}
 			if resolved, err := loadNativeSource(pkg, files); err == nil {
-				for _, rule := range resolved.Rules {
-					if rule.Effective["target"] != "native" {
-						continue
-					}
-					for _, native := range spec.NativeRules(rule) {
+				for _, hook := range resolved.NativeHooks {
+					for _, native := range spec.NativeMappings(hook) {
 						if _, ok := lock.Harnesses[native.Harness]; ok {
 							item.NativeCount++
 						}

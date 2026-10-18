@@ -25,6 +25,7 @@ Adapter: codex
 - runtime: native (inject tool)
   needs: agent
   -> tool.pre inject (native); capabilities: add-context
+Native hooks:
 - later: native-hook (native)
   -> native PreToolUse matcher ^Bash$; timeout 19s
 - earlier: native-hook (native)

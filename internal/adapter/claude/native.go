@@ -33,14 +33,14 @@ var nativeEvents = map[string]bool{
 
 // Native retains the author's command and uses the same effective fields as
 // planning. The shared renderer supplies the ownership prefix.
-func (f Facts) Native(rule spec.NativeRule) (adapter.HookSpec, error) {
+func (f Facts) Native(rule spec.NativeMapping) (adapter.HookSpec, error) {
 	entry, err := f.NativeHook(rule)
 	if err != nil {
 		return adapter.HookSpec{}, err
 	}
 	return adapter.HookSpec{NativeEvent: entry.Event, Matcher: entry.Matcher,
 		Extra:   map[string]any{"timeout_seconds": entry.Timeout},
-		Command: rule.Command, NativeTag: rule.Package + "/" + rule.RuleID}, nil
+		Command: rule.Command, NativeTag: rule.Package + "/" + rule.HookID}, nil
 }
 
 // NativeSurface describes Claude Code native hooks for core/spec validation.
@@ -66,7 +66,7 @@ const defaultNativeTimeout = 60
 
 // NativeHook resolves one native mapping for planning: the effective timeout
 // is the one the route will write.
-func (f Facts) NativeHook(rule spec.NativeRule) (plan.NativeEntry, error) {
+func (f Facts) NativeHook(rule spec.NativeMapping) (plan.NativeEntry, error) {
 	if runtime.GOOS == "windows" {
 		return plan.NativeEntry{}, fmt.Errorf("native author commands require POSIX; unavailable on Windows")
 	}

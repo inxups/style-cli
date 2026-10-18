@@ -134,11 +134,12 @@
                 "repeat": "session"
               }
             ]
-          },
+          }
+        ],
+        "native_hooks": [
           {
             "id": "later",
             "source": "STYLE.yaml#later",
-            "target": "native",
             "status": "native-hook",
             "native": {
               "event": "PreToolUse",
@@ -149,7 +150,6 @@
           {
             "id": "earlier",
             "source": "STYLE.yaml#earlier",
-            "target": "native",
             "status": "native-hook",
             "native": {
               "event": "PreToolUse",

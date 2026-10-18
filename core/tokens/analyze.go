@@ -29,7 +29,7 @@ func AnalyzeWithLayout(pkg *spec.ResolvedPackage, planned plan.Report, layout La
 	if pkg == nil || pkg.Package == nil {
 		return Report{}, fmt.Errorf("token analysis requires a resolved package")
 	}
-	if len(pkg.Rules) != len(planned.Rules) {
+	if len(pkg.Rules) != len(planned.Rules) || len(pkg.NativeHooks) != len(planned.NativeHooks) {
 		return Report{}, fmt.Errorf("token analysis requires one plan entry per resolved rule")
 	}
 	if layout == nil {
@@ -42,6 +42,14 @@ func AnalyzeWithLayout(pkg *spec.ResolvedPackage, planned plan.Report, layout La
 	}
 	limits := limitsFromPackage(pkg)
 	report := Report{Rules: make([]RuleEstimate, 0, len(pkg.Rules))}
+	for i, hook := range planned.NativeHooks {
+		if hook.ID != pkg.NativeHooks[i].Effective["id"] || hook.Source != pkg.NativeHooks[i].Source {
+			return Report{}, fmt.Errorf("native plan does not match resolved hook %d", i)
+		}
+		if hook.Status == plan.NativeHook && hook.Native != nil {
+			report.Unestimated = append(report.Unestimated, NativeOutput{RuleID: hook.ID, Event: hook.Native.Event})
+		}
+	}
 	eventTotals := make(map[string]*eventAccumulator)
 	effectiveTotals := make(map[string]*eventAccumulator)
 	var sourceAlwaysOn Estimate
@@ -49,12 +57,6 @@ func AnalyzeWithLayout(pkg *spec.ResolvedPackage, planned plan.Report, layout La
 		plannedRule := planned.Rules[index]
 		if plannedRule.ID == "" || plannedRule.ID != ruleID(rule) {
 			return Report{}, fmt.Errorf("plan rule %d does not match resolved rule", index)
-		}
-		if plannedRule.Target == "native" {
-			if plannedRule.Status == plan.NativeHook && plannedRule.Native != nil {
-				report.Unestimated = append(report.Unestimated, NativeOutput{RuleID: plannedRule.ID, Event: plannedRule.Native.Event})
-			}
-			continue
 		}
 		requirement, err := plan.RequirementFor(rule)
 		if err != nil {

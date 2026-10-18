@@ -20,9 +20,9 @@ type NativeHarness interface {
 type NativeCatalog map[string]NativeHarness
 
 // NativeRule is one harness mapping of a target: native rule.
-type NativeRule struct {
+type NativeMapping struct {
 	Package string
-	RuleID  string
+	HookID  string
 	Harness string
 	Event   string
 	Matcher string
@@ -283,16 +283,15 @@ func (catalog NativeCatalog) Names() []string {
 
 // NativeRules returns the harness mappings of a validated native rule in
 // harness order. Mappings that are not well formed are omitted.
-func NativeRules(rule Rule) []NativeRule {
-	id, _ := rule.Fields["id"].(string)
-	var result []NativeRule
-	for _, harness := range nativeHarnessKeys(rule) {
-		value, _ := nativeMapping(rule, harness)
-		mapping := asStringMap(value)
+func NativeMappings(hook NativeHook) []NativeMapping {
+	id, _ := hook.Fields["id"].(string)
+	var result []NativeMapping
+	for _, harness := range nativeHookHarnessKeys(hook) {
+		mapping := asStringMap(hook.Fields[harness])
 		if mapping == nil {
 			continue
 		}
-		native := NativeRule{RuleID: id, Harness: harness}
+		native := NativeMapping{HookID: id, Harness: harness}
 		native.Event, _ = mapping["event"].(string)
 		native.Matcher, _ = mapping["matcher"].(string)
 		native.Command, _ = mapping["command"].(string)
@@ -315,4 +314,15 @@ func nativeExtensionReason(field string) string {
 		return "only event, matcher, command and timeout are supported; typed HTTP, MCP, prompt, agent and exec extensions require separate ownership and authorization"
 	}
 	return ""
+}
+
+func nativeHookHarnessKeys(hook NativeHook) []string {
+	var keys []string
+	for key := range hook.Fields {
+		if !ruleFields[key] && !isPackageField(key) && key != "description" {
+			keys = append(keys, key)
+		}
+	}
+	sort.Strings(keys)
+	return keys
 }

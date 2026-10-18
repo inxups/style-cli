@@ -34,6 +34,7 @@ Adapter: claude-code
 - on-review-prompt: skipped (warn event)
   needs: agent, harness.name, model, prompt
   ! when.harness.name does not include this adapter
+Native hooks:
 - codex-only-notify: skipped (native)
   ! no native mapping for this harness
 Token (estimated; calibration pending):

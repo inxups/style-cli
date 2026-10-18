@@ -35,6 +35,7 @@ Adapter: codex
 - on-review-prompt: native (warn event)
   needs: agent, harness.name, model, prompt
   -> prompt.submitted warn (native); capabilities: add-context, system-message
+Native hooks:
 - codex-only-notify: native-hook (native)
   -> native Stop; timeout 60s
 Token (estimated; calibration pending):

@@ -24,9 +24,10 @@ func Build(pkg *spec.ResolvedPackage, adapter Adapter) (Report, error) {
 		return Report{}, fmt.Errorf("adapter name must not be empty")
 	}
 	report := Report{
-		Package: stringValue(pkg.Package.Metadata["name"]),
-		Adapter: adapterName,
-		Rules:   make([]RulePlan, 0, len(pkg.Rules)),
+		Package:     stringValue(pkg.Package.Metadata["name"]),
+		Adapter:     adapterName,
+		Rules:       make([]RulePlan, 0, len(pkg.Rules)),
+		NativeHooks: make([]NativeHookPlan, 0, len(pkg.NativeHooks)),
 	}
 	for _, rule := range pkg.Rules {
 		planned, err := planRule(rule, adapterName, adapter)
@@ -34,6 +35,11 @@ func Build(pkg *spec.ResolvedPackage, adapter Adapter) (Report, error) {
 			return Report{}, err
 		}
 		report.Rules = append(report.Rules, planned)
+		report.Blocked = report.Blocked || planned.Fatal
+	}
+	for _, hook := range pkg.NativeHooks {
+		planned := planNative(hook, adapter)
+		report.NativeHooks = append(report.NativeHooks, planned)
 		report.Blocked = report.Blocked || planned.Fatal
 	}
 	return report, nil
@@ -47,8 +53,6 @@ func planRule(rule spec.Rule, adapterName string, adapter Adapter) (RulePlan, er
 	result := RulePlan{ID: req.RuleID, Source: rule.Source, Target: req.Target,
 		Action: req.Action, Fail: req.Fail, Needs: append([]string(nil), req.Needs...)}
 	switch {
-	case req.Target == "native":
-		result = planNative(rule, req, result, adapter)
 	case !harnessSelectorMatches(rule, adapterName):
 		result.Status = Skipped
 		result.Reasons = []string{"when.harness.name does not include this adapter"}

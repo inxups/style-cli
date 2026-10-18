@@ -39,14 +39,14 @@ func TestA2NativePlanReports(t *testing.T) {
 	for _, report := range result.Reports {
 		reports[report.Provider] = report
 	}
-	native := func(report PlanReport) plan.RulePlan {
-		for _, rule := range report.Plan.Rules {
+	native := func(report PlanReport) plan.NativeHookPlan {
+		for _, rule := range report.Plan.NativeHooks {
 			if rule.ID == "codex-only-notify" {
 				return rule
 			}
 		}
 		t.Fatalf("%s plan has no codex-only-notify", report.Provider)
-		return plan.RulePlan{}
+		return plan.NativeHookPlan{}
 	}
 	if runtime.GOOS == "windows" {
 		for _, report := range reports {
@@ -58,7 +58,7 @@ func TestA2NativePlanReports(t *testing.T) {
 		return
 	}
 	codexRule := native(reports["codex"])
-	if codexRule.Status != plan.NativeHook || codexRule.Action != "" || codexRule.Needs != nil ||
+	if codexRule.Status != plan.NativeHook ||
 		!reflect.DeepEqual(codexRule.Native, &plan.NativeEntry{Event: "Stop", Timeout: 60}) {
 		t.Fatalf("codex native plan = %#v", codexRule)
 	}

@@ -225,10 +225,10 @@ func TestNativeHarnessKeysComeFromCatalog(t *testing.T) {
 
 func TestNativeRulesParsesMappings(t *testing.T) {
 	pkg := loadNativeRule(t, "directory", "target: native\nclaude-code: {event: PreToolUse, matcher: \"^Bash$\", command: notify, timeout: 10}\ncodex: {event: Stop, command: \"notify --done\"}\n", "")
-	got := NativeRules(pkg.Rules[0])
-	want := []NativeRule{
-		{RuleID: "native-rule", Harness: "claude-code", Event: "PreToolUse", Matcher: "^Bash$", Command: "notify", Timeout: 10},
-		{RuleID: "native-rule", Harness: "codex", Event: "Stop", Command: "notify --done"},
+	got := NativeMappings(NativeHook{Fields: pkg.Rules[0].Fields})
+	want := []NativeMapping{
+		{HookID: "native-rule", Harness: "claude-code", Event: "PreToolUse", Matcher: "^Bash$", Command: "notify", Timeout: 10},
+		{HookID: "native-rule", Harness: "codex", Event: "Stop", Command: "notify --done"},
 	}
 	if !reflect.DeepEqual(got, want) {
 		t.Fatalf("NativeRules() = %#v, want %#v", got, want)

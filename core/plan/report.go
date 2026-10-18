@@ -31,13 +31,6 @@ func (report Report) String() string {
 		if rule.DeduplicatedInto != "" {
 			fmt.Fprintf(&output, "  deduplicated into %s; no additional cost\n", rule.DeduplicatedInto)
 		}
-		if rule.Native != nil {
-			fmt.Fprintf(&output, "  -> native %s", rule.Native.Event)
-			if rule.Native.Matcher != "" {
-				fmt.Fprintf(&output, " matcher %s", rule.Native.Matcher)
-			}
-			fmt.Fprintf(&output, "; timeout %ds\n", rule.Native.Timeout)
-		}
 		for _, placement := range rule.Placements {
 			destination := placement.Event
 			if placement.StaticSlot != "" {
@@ -60,6 +53,23 @@ func (report Report) String() string {
 			}
 		}
 		for _, reason := range rule.Reasons {
+			fmt.Fprintf(&output, "  ! %s\n", reason)
+		}
+	}
+	if len(report.NativeHooks) > 0 {
+		output.WriteString("Native hooks:\n")
+	}
+	for _, hook := range report.NativeHooks {
+		fmt.Fprintf(&output, "- %s: %s (native)\n", hook.ID, hook.Status)
+		if hook.Native != nil {
+			fmt.Fprintf(&output, "  -> native %s", hook.Native.Event)
+			if hook.Native.Matcher != "" {
+				fmt.Fprintf(&output, " matcher %s", hook.Native.Matcher)
+			}
+			fmt.Fprintf(&output, "; timeout %ds\n", hook.Native.Timeout)
+		}
+
+		for _, reason := range hook.Reasons {
 			fmt.Fprintf(&output, "  ! %s\n", reason)
 		}
 	}
