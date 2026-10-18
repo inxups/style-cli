@@ -2135,3 +2135,9 @@ Codex 0.159.3 与实际配置模型服务、固定生产 STYLE 二进制，在�
 - [M3 采集器](review/M3-CARRY-01-CALIBRATE-2026-10-18.py)复用旧请求/语料与生产 plan；已验删除云端后二进制及全部 299 个构建输入匹配。独立 HOME/STYLE/Codex/Claude/版本 fixture，清理继承环境，固定 HTTPS/系统 CA、关闭代理/重定向及自动重试；逐请求回执实时保存在私有临时文件，key 与原始 headers 不入库。配置和 fixture 输入原样；版本 fixture 不作为新增 harness 投递验收。旧双供应商采集器因 OpenAI 未测退出 2，报告明确区分整体未完成和 Claude 测量成功，不将该退出码当作 Claude 失败或整体通过。
 - 既有采集器 3 项离线自测与独立指标算例通过；[离线复核](review/M3-CARRY-01-VERIFY-2026-10-18.py)逐条重建请求/增量并独立重算中英/整体指标、关联全部回执，重新运行两家生产 plan 确认估算与输入保全。当前任务/矩阵/规范/指南同步，M1/M2 归档、既有评审、golden 和固定语料保持原样，PROGRESS 仅追加，凭据未进入改动。生产 Go/agenthooks/依赖未变，不重复 Go 全量或真实模型调用；最终检查与提交结果见本节后续证据。
 - 最终验证：45 项任务/40 项测试映射、12 份当前 Markdown 的本地链接/锚点/围栏、77 份归档/202 份既有评审/104 份 golden 保全、进度仅追加、299 个构建输入、逐条计数/三组误差指标/46 份回执/5 项复测及两家生产 plan 独立复核通过；凭据未入库，git diff --check 通过。[核对结果](review/M3-CARRY-01-DOCS-2026-10-18.json)保留可复跑证据。
+
+## 2026-10-18 M3-CARRY-01 OpenAI 自定义 API 配置准备
+
+- 用户要求开始配置 OpenAI，支持自定义请求链接与 API key。建立仓库外 `/Users/inxups/.style-openai/settings.json`，三个字段为 `request_url`、`api_key`、`model`，创建时均留空；目录 0700、文件 0600，JSON 结构和日常 Codex/Claude/官方 Claude 配置保全检查通过。已提供填写位置，凭据不进仓库、聊天或命令参数。见[准备报告](review/M3-OPENAI-CUSTOM-SETUP-2026-10-18.json)。
+- 本轮仅建配置模板，尚未发起 OpenAI 或自定义 API 请求；填写后先核对完整 endpoint 和协议，再测试兼容性。既有官方采集器、生产 Go/agenthooks/依赖和估算系数未改；自定义服务的测量单列来源，OpenAI 官方 0/40、Anthropic 40/40、CARRY-01 部分完成状态不变。
+- 用户回复已填写后，三项均有值；地址为自定义 HTTPS 根地址，模型为 gpt-6.1-sol，接口路径待兼容性预检确认。配置准备检查通过：45 项任务/40 项测试映射与状态、320 个本地链接/锚点、54 个围栏标记、77 份归档/206 份既有评审/104 份 golden 保全、日志仅追加、私有 JSON/权限及 key/地址未入库，git diff --check 通过。仅文档和仓库外配置准备，不重复 Go 全量。

@@ -111,6 +111,12 @@ PYTHONDONTWRITEBYTECODE=1 python3 \
 ```
 
 
+### M3-CARRY-01：OpenAI 自定义 API 配置
+
+2026-10-18 用户要求开始配置可自定义请求链接的 OpenAI API。独立模板位于 `/Users/inxups/.style-openai/settings.json`，目录权限 0700、文件权限 0600。填写 `request_url`（完整请求 URL，包含接口路径）、`api_key` 和 `model`；密钥仅保存在该仓库外文件，不发送到聊天或写入命令参数。创建时三个值为空，用户随后已填写；准备阶段尚未调用服务。
+
+计数接口使用实际支持的完整地址；若服务只支持 Responses 生成或 Chat Completions，也填写实际 endpoint，下一步先确认协议和兼容性。现有官方校准采集器仍固定官方地址，尚未读取此模板；不将生成接口当计数接口调用，不自动把自定义结果登记为官方 40 条校准。此步骤只准备配置，日常 Codex、Claude 和已有官方 Claude profile 保持原样。见[准备报告](../../docs/review/M3-OPENAI-CUSTOM-SETUP-2026-10-18.json)。
+
 ### 无 API key 的补充对照（M2-ALT-01）
 
 `compare_tokens_offline.py` 对同一 40 条语料读取生产 CLI 估算，分别比较具名本地编码 `o200k_base` / `cl100k_base` 的纯正文计数及固定前缀的本地文本增量。它不假设模型映射，不包含请求封装/工具/隐藏指令，不代表 Claude 官方分词。`completed` 仅说明对照完整；没有准确性通过阈值。生产估算系数保持不变，官方校准继续 pending。
