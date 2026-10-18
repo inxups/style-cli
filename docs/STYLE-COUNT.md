@@ -29,4 +29,4 @@ style count rules.txt --count=exact --count-provider=anthropic --count-model=YOU
 
 [离线 A15 报告](review/M3-A15-2026-10-18.json)覆盖独立 Python golden、两套完整词表摘要、API transport fixture 和命令兼容。Anthropic 真实 API 验收已由用户延期；官方校准 CARRY-01 仍两家各 0/40。许可见[第三方说明](../third_party/README.md)。
 
-2026-10-18 的 [sub2api 中转兼容测试](review/M3-TOKEN-RELAY-2026-10-18.json)使用仓库外的私有配置，对短英文、短中文、较长混合文本与重复请求取得 16、24、3216、16；有效整数、非空正数、长度变化和重复稳定检查通过。[探针](review/M3-TOKEN-RELAY-PROBE-2026-10-18.py)可使用自己的私有配置复跑。该结果不修改生产命令的固定 endpoint，也未验证中转的官方上游来源；REAL-03/TOKEN-01 保持部分完成，CARRY-01 仍各 0/40。
+2026-10-18 用户已撤回中转方案，改用 Anthropic 官方 API；独立中转入口、配置和私有临时测试材料已清理，见[官方接入准备](review/M3-TOKEN-OFFICIAL-SETUP-2026-10-18.json)。此前[中转兼容结果](review/M3-TOKEN-RELAY-2026-10-18.json)仅保留历史事实，不作为当前接入步骤或官方验收。官方真实 API 仍待验，REAL-03/TOKEN-01 保持部分完成，CARRY-01 仍两家各 0/40。
