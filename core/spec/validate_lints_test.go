@@ -26,9 +26,9 @@ func TestValidateBlockReasonTokenLint(t *testing.T) {
 	}
 
 	longValue := strings.Repeat("a", 161)
-	manifest := testManifest("lint-static-variable", "vars:\n  long: "+quoteYAML(longValue)+"\n", "  - id: base\n    target: tool\n    tool: shell\n    action: block\n    text: '{{vars.long}}'\n")
+	manifest := testManifest("lint-static-variable", "settings:\n  - name: long\n    default: "+quoteYAML(longValue)+"\n", "  - id: base\n    target: tool\n    tool: shell\n    action: block\n    text: '{{settings.long}}'\n")
 	if !hasDiagnostic(loadAndValidate(t, manifest, nil), "T005", SeverityWarning) {
-		t.Fatal("T005 warning missing for a long static variable value")
+		t.Fatal("T005 warning missing for a long static setting value")
 	}
 }
 

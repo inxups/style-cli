@@ -16,7 +16,6 @@ func TestValidateRejectsNonFiniteNumbers(t *testing.T) {
 			{name: "rule max tokens", ruleFields: "    max_tokens: " + number + "\n"},
 			{name: "override priority", override: "    priority: " + number + "\n"},
 			{name: "override max tokens", override: "    max_tokens: " + number + "\n"},
-			{name: "vars", metadata: "vars: {number: " + number + "}\n"},
 		}
 		for _, field := range []string{"per_rule", "per_event", "always_on"} {
 			cases = append(cases, struct{ name, metadata, ruleFields, override string }{
@@ -41,7 +40,7 @@ func TestValidateRejectsNonFiniteNumbers(t *testing.T) {
 
 func TestValidatedFiniteNumbersEncodeAsJSON(t *testing.T) {
 	root := t.TempDir()
-	writeFile(t, root, "STYLE.yaml", testManifest("finite-values", "priority: 3.5\nvars: {number: 1.5}\nbudget: {per_rule: 100.5}\ndefaults: {priority: 2.5, max_tokens: 50}\n", "  - id: base\n    target: system\n    text: body\n"))
+	writeFile(t, root, "STYLE.yaml", testManifest("finite-values", "priority: 3.5\nbudget: {per_rule: 100.5}\ndefaults: {priority: 2.5, max_tokens: 50}\n", "  - id: base\n    target: system\n    text: body\n"))
 	pkg, err := Load(root)
 	if err != nil {
 		t.Fatal(err)

@@ -7,13 +7,13 @@ import (
 )
 
 func TestParseClassifiesPartsAndEscapedBraces(t *testing.T) {
-	parsed, err := Parse(`Hello \{{literal}} {{vars.lang}} / {{model | default: "unknown"}}.`)
+	parsed, err := Parse(`Hello \{{literal}} {{settings.lang}} / {{model | default: "unknown"}}.`)
 	if err != nil {
 		t.Fatal(err)
 	}
 	want := []Part{
 		{Kind: TextPart, Text: "Hello {{literal}} "},
-		{Kind: VariablePart, Name: "vars.lang"},
+		{Kind: VariablePart, Name: "settings.lang"},
 		{Kind: TextPart, Text: " / "},
 		{Kind: VariablePart, Name: "model", Default: "unknown", HasDefault: true},
 		{Kind: TextPart, Text: "."},
@@ -24,7 +24,7 @@ func TestParseClassifiesPartsAndEscapedBraces(t *testing.T) {
 	if !parsed.IsDynamic() || parsed.Classify() != Dynamic {
 		t.Fatal("model variable should classify the template as dynamic")
 	}
-	static, err := Parse(`{{vars.lang}}/{{settings.detail}}/{{package.name}}/{{package.version}}/{{rule.id}}`)
+	static, err := Parse(`{{settings.lang}}/{{settings.detail}}/{{package.name}}/{{package.version}}/{{rule.id}}`)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -34,24 +34,24 @@ func TestParseClassifiesPartsAndEscapedBraces(t *testing.T) {
 }
 
 func TestRenderDefaultsAndStaticGuard(t *testing.T) {
-	parsed, err := Parse(`{{model}}|{{model | default: "unknown"}}|{{vars.lang}}`)
+	parsed, err := Parse(`{{model}}|{{model | default: "unknown"}}|{{settings.lang}}`)
 	if err != nil {
 		t.Fatal(err)
 	}
 	if got := parsed.Render(map[string]string{"model": "gpt-5"}); got != "gpt-5|gpt-5|" {
 		t.Fatalf("Render missing value = %q", got)
 	}
-	if got := parsed.Render(map[string]string{"model": "", "vars.lang": "zh"}); got != "||zh" {
+	if got := parsed.Render(map[string]string{"model": "", "settings.lang": "zh"}); got != "||zh" {
 		t.Fatalf("Render present empty value = %q", got)
 	}
 	if _, err := parsed.RenderStatic(map[string]string{}); err == nil {
 		t.Fatal("RenderStatic should reject dynamic templates")
 	}
-	static, err := Parse(`{{vars.lang}}/{{settings.detail | default: 'concise'}}`)
+	static, err := Parse(`{{settings.lang}}/{{settings.detail | default: 'concise'}}`)
 	if err != nil {
 		t.Fatal(err)
 	}
-	got, err := static.RenderStatic(map[string]string{"vars.lang": "zh"})
+	got, err := static.RenderStatic(map[string]string{"settings.lang": "zh"})
 	if err != nil || got != "zh/concise" {
 		t.Fatalf("RenderStatic = %q, %v", got, err)
 	}
@@ -80,7 +80,7 @@ func TestRuntimeVariableClassification(t *testing.T) {
 			t.Errorf("IsRuntimeVariable(%q) = false", name)
 		}
 	}
-	if IsRuntimeVariable("vars.lang") {
-		t.Fatal("vars.lang is an install-time variable")
+	if IsRuntimeVariable("settings.lang") {
+		t.Fatal("settings.lang is an install-time variable")
 	}
 }

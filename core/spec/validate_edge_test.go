@@ -69,7 +69,7 @@ func TestValidateAcceptsWellFormedTargetSelectors(t *testing.T) {
 }
 
 func TestValidateFromOverrideTemplateAndSelector(t *testing.T) {
-	manifest := testManifest("from-override", "vars:\n  known: value\n", "  - from: rules/base.md\n    tool: file.write\n    model_text: '{{vars.missing}}'\n")
+	manifest := testManifest("from-override", "settings:\n  - name: known\n    default: value\n", "  - from: rules/base.md\n    tool: file.write\n    model_text: '{{settings.missing}}'\n")
 	diagnostics := loadAndValidate(t, manifest, map[string]string{
 		"rules/base.md": "---\ntarget: tool\naction: warn\n---\nBase body.\n",
 	})

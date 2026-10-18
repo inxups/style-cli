@@ -12,8 +12,6 @@ reads:
   model: true
   thinking_effort: true
   harness: [name]
-vars:
-  lang: zh-CN
 settings:
   - name: max_findings
     description: maximum findings

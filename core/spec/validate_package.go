@@ -12,7 +12,7 @@ var (
 	semverPattern      = regexp.MustCompile(`^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(-((0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*)(\.(0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*))*))?(\+[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?$`)
 )
 
-var packageFields = stringSet("spec", "name", "version", "description", "authors", "requires", "reads", "vars", "settings", "recommends", "priority", "budget", "defaults", "rules")
+var packageFields = stringSet("spec", "name", "version", "description", "authors", "requires", "reads", "settings", "recommends", "priority", "budget", "defaults", "rules")
 var ruleFields = stringSet("id", "target", "file", "text", "model_text", "action", "at", "when", "repeat", "fail", "refresh", "reinject_on_compact", "sources", "fallback", "priority", "max_tokens", "reason", "from", "enabled", "mode", "tool", "names", "mcp", "skill", "event", "reads")
 var defaultsFields = stringSet("action", "at", "repeat", "fail", "refresh", "reinject_on_compact", "sources", "fallback", "priority", "max_tokens")
 
@@ -57,7 +57,6 @@ func (v *validator) validatePackage() {
 		v.add("invalid-schema", v.packageSource(), "authors must be a string or list of strings")
 	}
 	v.validateRequires(v.pkg.Metadata["requires"])
-	v.validateVars(v.pkg.Metadata["vars"])
 	v.validateSettings(v.pkg.Metadata["settings"])
 	v.validateBudget(v.pkg.Metadata["budget"])
 	if priority, exists := v.pkg.Metadata["priority"]; exists && !isNumber(priority) {
@@ -134,23 +133,6 @@ func validVersionConstraint(value string) bool {
 		}
 	}
 	return semverPattern.MatchString(value)
-}
-
-func (v *validator) validateVars(value any) {
-	source := v.packageSource()
-	if value == nil {
-		return
-	}
-	vars := asStringMap(value)
-	if vars == nil {
-		v.add("invalid-schema", source, "vars must be a mapping")
-		return
-	}
-	for _, key := range sortedMapKeys(vars) {
-		if key == "" || strings.ContainsAny(key, ".{}| \t\r\n") || !isScalar(vars[key]) {
-			v.add("invalid-schema", source, fmt.Sprintf("vars.%s must have a simple name and scalar value", key))
-		}
-	}
 }
 
 func (v *validator) validateSettings(value any) {

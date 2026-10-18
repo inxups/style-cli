@@ -34,7 +34,7 @@ func (compileAdapter) StaticLocation(mode string) (string, bool) {
 func loadResolved(t *testing.T, name, rules string) *spec.ResolvedPackage {
 	t.Helper()
 	root := t.TempDir()
-	manifest := "spec: style/v0.3\nname: " + name + "\nversion: 0.3.0\ndescription: compiler fixture\nreads: {model: true, thinking_effort: true, harness: [name]}\nvars: {tone: direct}\nsettings: [{name: voice, default: neutral}]\nrules:\n" + rules
+	manifest := "spec: style/v0.3\nname: " + name + "\nversion: 0.3.0\ndescription: compiler fixture\nreads: {model: true, thinking_effort: true, harness: [name]}\nsettings: [{name: tone, default: direct}, {name: voice, default: neutral}]\nrules:\n" + rules
 	if err := os.WriteFile(filepath.Join(root, "STYLE.yaml"), []byte(manifest), 0o600); err != nil {
 		t.Fatal(err)
 	}
@@ -78,7 +78,7 @@ func inputFor(t *testing.T, pkg *spec.ResolvedPackage, sequence int) PackageInpu
 func TestBuildCompilesRuntimeAndStaticPlacements(t *testing.T) {
 	pkg := loadResolved(t, "compile-test", `  - id: static
     target: system
-    text: 'Keep {{vars.tone}} {{settings.voice}} {{package.name}} {{rule.id}}.'
+    text: 'Keep {{settings.tone}} {{settings.voice}} {{package.name}} {{rule.id}}.'
   - id: dynamic-system
     target: system
     text: 'Model {{model | default: "unknown"}}.'
@@ -247,7 +247,7 @@ func TestBuildHashesLoadedSourceBytes(t *testing.T) {
 	pkg := loadResolved(t, "hash-test", `  - id: source
     target: event
     event: prompt.submitted
-    text: 'Hash {{vars.tone}}.'
+    text: 'Hash {{settings.tone}}.'
 `)
 	want := sha256.Sum256(pkg.Package.Files["STYLE.yaml"])
 	result, err := Build(Request{StyleVersion: "1.0.0", Packages: []PackageInput{inputFor(t, pkg, 1)}})

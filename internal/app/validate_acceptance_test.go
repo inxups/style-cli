@@ -108,3 +108,26 @@ func TestA1ValidateExampleAndEveryInvalidFixture(t *testing.T) {
 		})
 	}
 }
+
+func TestValidateRejectsRemovedVarsField(t *testing.T) {
+	root := repositoryRoot(t)
+	service := testService(t)
+	packageDir := writeInstallPackage(t, t.TempDir(), "spec: style/v0.3\nname: removed-vars\nversion: 0.1.0\ndescription: removed vars\nvars:\n  lang: zh-CN\nrules:\n  - id: base\n    target: system\n    text: 'Use {{vars.lang}}.'\n")
+	var out, errOut bytes.Buffer
+	if exit := RunWithService(context.Background(), service, root, []string{"validate", packageDir, "--json"}, &out, &errOut); exit != ExitInvalid || errOut.Len() > 0 {
+		t.Fatalf("exit=%d stdout=%s stderr=%s", exit, out.String(), errOut.String())
+	}
+	var diagnostics []Diagnostic
+	if err := json.Unmarshal(out.Bytes(), &diagnostics); err != nil {
+		t.Fatal(err)
+	}
+	found := map[string]bool{}
+	for _, diagnostic := range diagnostics {
+		if diagnostic.Severity == "error" {
+			found[diagnostic.Code] = true
+		}
+	}
+	if !found["invalid-schema"] || !found["undeclared-var"] {
+		t.Fatalf("diagnostics = %s, want invalid-schema and undeclared-var", out.String())
+	}
+}

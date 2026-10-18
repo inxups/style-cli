@@ -83,7 +83,7 @@ func TestM3A15CountCLIReadOnlyAndInvalidInput(t *testing.T) {
 	})
 }
 
-const a15Manifest = "spec: style/v0.3\nname: counted\nversion: 1.0.0\ndescription: exact text fixture\nvars: {tone: direct}\nsettings: [{name: voice, default: plain}]\nrules:\n  - {id: static, target: system, text: '{{vars.tone}} {{settings.voice}}'}\n  - {id: warning, target: tool, tool: shell, at: before, action: warn, text: 'PRIVATE USER TEXT', model_text: hello world}\n  - {id: one, target: tool, tool: shell, at: before, text: hello world}\n  - {id: two, target: tool, tool: shell, at: before, text: hello world}\n  - {id: prompt, target: event, event: prompt.submitted, action: block, text: user only reason}\n"
+const a15Manifest = "spec: style/v0.3\nname: counted\nversion: 1.0.0\ndescription: exact text fixture\nsettings: [{name: tone, default: direct}, {name: voice, default: plain}]\nrules:\n  - {id: static, target: system, text: '{{settings.tone}} {{settings.voice}}'}\n  - {id: warning, target: tool, tool: shell, at: before, action: warn, text: 'PRIVATE USER TEXT', model_text: hello world}\n  - {id: one, target: tool, tool: shell, at: before, text: hello world}\n  - {id: two, target: tool, tool: shell, at: before, text: hello world}\n  - {id: prompt, target: event, event: prompt.submitted, action: block, text: user only reason}\n"
 
 func TestM3A15PlanCountsCompiledTextAndPreservesEstimate(t *testing.T) {
 	s := testService(t)

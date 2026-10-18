@@ -1,1 +1,1 @@
-Review code concisely in {{vars.lang}}. Lead with the conclusion and cite file:line for findings.
+Review code concisely in zh-CN. Lead with the conclusion and cite file:line for findings.

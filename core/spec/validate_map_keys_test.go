@@ -6,13 +6,11 @@ import (
 )
 
 func TestValidateRejectsNonStringNestedYAMLKeys(t *testing.T) {
-	for _, field := range []string{"vars", "reads", "budget", "defaults", "when"} {
+	for _, field := range []string{"reads", "budget", "defaults", "when"} {
 		t.Run(field, func(t *testing.T) {
 			metadata := ""
 			rules := "  - id: base\n    target: system\n    text: body\n"
 			switch field {
-			case "vars":
-				metadata = "vars: {1: value}\n"
 			case "reads":
 				metadata = "reads: {1: true}\n"
 			case "budget":
@@ -52,7 +50,7 @@ func TestAsStringMapRejectsLossyConversion(t *testing.T) {
 	if got := asStringMap(map[any]any{"1": "value"}); !reflect.DeepEqual(got, map[string]any{"1": "value"}) {
 		t.Fatalf("valid string keys changed: %#v", got)
 	}
-	if diagnostics := loadAndValidate(t, testManifest("string-key", "vars: {'1': value}\n", "  - id: base\n    target: system\n    text: body\n"), nil); hasDiagnostic(diagnostics, "invalid-schema", SeverityError) {
+	if diagnostics := loadAndValidate(t, testManifest("string-key", "budget: {'per_rule': 100}\n", "  - id: base\n    target: system\n    text: body\n"), nil); hasDiagnostic(diagnostics, "invalid-schema", SeverityError) {
 		t.Fatalf("quoted string key rejected: %#v", diagnostics)
 	}
 }

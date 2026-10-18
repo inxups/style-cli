@@ -6,4 +6,4 @@ manifest: |
   rules:
     - id: base
       target: system
-      text: '{{vars.missing}}'
+      text: '{{settings.missing}}'

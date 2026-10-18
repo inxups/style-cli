@@ -30,18 +30,18 @@ func TestEstimateTemplateUsesStaticValuesAndRuntimePlaceholders(t *testing.T) {
 		Package: map[string]any{
 			"name":    "sample",
 			"version": "1.2.3",
-			"vars":    map[string]any{"language": "日本語"},
-			"settings": []any{map[string]any{
-				"name": "tone", "default": "precise",
-			}},
+			"settings": []any{
+				map[string]any{"name": "language", "default": "日本語"},
+				map[string]any{"name": "tone", "default": "precise"},
+			},
 		},
 		Rule: map[string]any{"id": "review"},
 	}
-	got, err := EstimateTemplate("{{package.name}}/{{package.version}} {{vars.language}} {{settings.tone}} {{rule.id}} {{model}} {{harness.cwd}}", context)
+	got, err := EstimateTemplate("{{package.name}}/{{package.version}} {{settings.language}} {{settings.tone}} {{rule.id}} {{model}} {{harness.cwd}}", context)
 	if err != nil {
 		t.Fatal(err)
 	}
-	rendered, err := RenderForEstimate("{{package.name}}/{{package.version}} {{vars.language}} {{settings.tone}} {{rule.id}} {{model}} {{harness.cwd}}", context)
+	rendered, err := RenderForEstimate("{{package.name}}/{{package.version}} {{settings.language}} {{settings.tone}} {{rule.id}} {{model}} {{harness.cwd}}", context)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -54,7 +54,7 @@ func TestEstimateTemplateUsesStaticValuesAndRuntimePlaceholders(t *testing.T) {
 }
 
 func TestEstimateTemplateUsesDefaultForUnavailableStaticName(t *testing.T) {
-	got, err := EstimateTemplate("{{vars.missing | default: \"Fallback\"}}", Context{})
+	got, err := EstimateTemplate("{{settings.missing | default: \"Fallback\"}}", Context{})
 	if err != nil {
 		t.Fatal(err)
 	}

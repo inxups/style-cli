@@ -13,8 +13,6 @@ func TestLoadDirectoryExpandsDeclaredRulesInManifestOrder(t *testing.T) {
 name: review-helper
 version: 1.2.3
 description: Review style
-vars:
-  language: Chinese
 rules:
   - id: base
     target: system

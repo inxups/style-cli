@@ -188,6 +188,21 @@ func TestInstallSettingsArePersisted(t *testing.T) {
 	}
 }
 
+func TestInstallSetRejectsFormerVarsName(t *testing.T) {
+	root := t.TempDir()
+	packageDir := writeInstallPackage(t, filepath.Join(root, "plain"), "spec: style/v0.3\nname: plain\nversion: 0.1.0\ndescription: plain\nrules:\n  - id: base\n    target: system\n    text: body\n")
+	styleHome := filepath.Join(root, "style")
+	service := testCodexInstallService(t, filepath.Join(root, "codex"), filepath.Join(root, "plugin"))
+	_, err := service.Install(context.Background(), InstallRequest{Source: packageDir, Home: styleHome, Harnesses: []string{"codex"}, Settings: map[string]string{"lang": "zh-CN"}, Yes: true})
+	var usage *UsageError
+	if !errors.As(err, &usage) || !strings.Contains(err.Error(), `unknown setting "lang"`) {
+		t.Fatalf("install --set lang error = %v", err)
+	}
+	if _, err := os.Stat(filepath.Join(styleHome, "style.lock.yaml")); !errors.Is(err, os.ErrNotExist) {
+		t.Fatalf("lock written after rejected --set: %v", err)
+	}
+}
+
 func TestInstallRejectsMissingSettingAndRuntimeRequirementWithoutMutation(t *testing.T) {
 	root := t.TempDir()
 	service := testCodexInstallService(t, filepath.Join(root, "codex"), filepath.Join(root, "plugin"))

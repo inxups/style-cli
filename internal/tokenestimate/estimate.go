@@ -105,12 +105,6 @@ func RenderForEstimate(source string, context Context) (string, error) {
 // time. The caller supplies source-level package and rule maps.
 func StaticValue(context Context, name string) (string, bool) {
 	switch {
-	case strings.HasPrefix(name, "vars."):
-		vars, _ := context.Package["vars"].(map[string]any)
-		value, ok := vars[strings.TrimPrefix(name, "vars.")]
-		if ok {
-			return fmt.Sprint(value), true
-		}
 	case strings.HasPrefix(name, "settings."):
 		settings, _ := context.Package["settings"].([]any)
 		settingName := strings.TrimPrefix(name, "settings.")

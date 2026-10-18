@@ -17,7 +17,9 @@ func TestValidateRequiredCodes(t *testing.T) {
 		{"missing inline id", "", "  - target: system\n    text: body\n", "inline-missing-id", nil},
 		{"file and text", "", "  - id: base\n    target: system\n    file: body.md\n    text: inline\n", "file-and-text", map[string]string{"body.md": "body\n"}},
 		{"defaults field", "defaults:\n  target: system\n", "  - id: base\n    target: system\n    text: body\n", "defaults-field", nil},
-		{"undeclared variable", "", "  - id: base\n    target: system\n    text: '{{vars.unknown}}'\n", "undeclared-var", nil},
+		{"undeclared variable", "", "  - id: base\n    target: system\n    text: '{{settings.unknown}}'\n", "undeclared-var", nil},
+		{"removed vars field", "vars:\n  lang: zh-CN\n", "  - id: base\n    target: system\n    text: body\n", "invalid-schema", nil},
+		{"removed vars reference", "", "  - id: base\n    target: system\n    text: '{{vars.lang}}'\n", "undeclared-var", nil},
 		{"reads missing", "", "  - id: base\n    target: system\n    text: '{{model}}'\n", "reads-missing", nil},
 		{"event variable", "", "  - id: base\n    target: system\n    text: '{{prompt}}'\n", "event-var-in-template", nil},
 		{"sensitive reserved", "settings:\n  - name: token\n    sensitive: true\n", "  - id: base\n    target: system\n    text: body\n", "sensitive-reserved", nil},
@@ -78,8 +80,8 @@ func TestValidateImportedRulesAndWarnings(t *testing.T) {
 }
 
 func TestValidateAcceptsDeclaredTemplateVariables(t *testing.T) {
-	packageFields := "reads:\n  model: true\nvars:\n  lang: zh-CN\nsettings:\n  - name: detail\n    default: concise\n"
-	rules := "  - id: base\n    target: system\n    text: '{{vars.lang}} {{settings.detail}} {{model | default: \"unknown\"}} {{rule.id}}'\n    when:\n      model: gpt-*\n"
+	packageFields := "reads:\n  model: true\nsettings:\n  - name: detail\n    default: concise\n"
+	rules := "  - id: base\n    target: system\n    text: '{{settings.detail}} {{model | default: \"unknown\"}} {{rule.id}}'\n    when:\n      model: gpt-*\n"
 	diagnostics := loadAndValidate(t, testManifest("valid-package", packageFields, rules), nil)
 	for _, diagnostic := range diagnostics {
 		if diagnostic.Severity == SeverityError {
@@ -146,7 +148,7 @@ func hasDiagnostic(diagnostics []Diagnostic, code, severity string) bool {
 }
 
 func TestValidateStableDiagnosticOrder(t *testing.T) {
-	manifest := testManifest("valid-package", "", "  - id: base\n    target: system\n    text: '{{vars.missing}} {{model}}'\n")
+	manifest := testManifest("valid-package", "", "  - id: base\n    target: system\n    text: '{{settings.missing}} {{model}}'\n")
 	root := t.TempDir()
 	writeFile(t, root, "STYLE.yaml", manifest)
 	pkg, err := Load(root)

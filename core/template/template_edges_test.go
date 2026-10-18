@@ -69,13 +69,13 @@ func TestParseRejectsMalformedExpressions(t *testing.T) {
 }
 
 func TestPartsAreDetachedAndStaticRenderingUsesDefaults(t *testing.T) {
-	parsed, err := Parse(`{{vars.topic}} / {{settings.style | default: "concise"}}`)
+	parsed, err := Parse(`{{settings.topic}} / {{settings.style | default: "concise"}}`)
 	if err != nil {
 		t.Fatal(err)
 	}
 	parts := parsed.Parts()
 	want := []Part{
-		{Kind: VariablePart, Name: "vars.topic"},
+		{Kind: VariablePart, Name: "settings.topic"},
 		{Kind: TextPart, Text: " / "},
 		{Kind: VariablePart, Name: "settings.style", Default: "concise", HasDefault: true},
 	}
@@ -83,10 +83,10 @@ func TestPartsAreDetachedAndStaticRenderingUsesDefaults(t *testing.T) {
 		t.Fatalf("Parts() = %#v, want %#v", parts, want)
 	}
 	parts[0].Name = "changed"
-	if parsed.Parts()[0].Name != "vars.topic" {
+	if parsed.Parts()[0].Name != "settings.topic" {
 		t.Fatal("Parts() returned mutable internal parts")
 	}
-	got, err := parsed.RenderStatic(map[string]string{"vars.topic": "reviews"})
+	got, err := parsed.RenderStatic(map[string]string{"settings.topic": "reviews"})
 	if err != nil || got != "reviews / concise" {
 		t.Fatalf("RenderStatic() = %q, %v", got, err)
 	}
@@ -102,7 +102,7 @@ func TestRuntimeClassificationIncludesEventValues(t *testing.T) {
 			t.Errorf("IsRuntimeVariable(%q) = false", name)
 		}
 	}
-	for _, name := range []string{"vars.topic", "settings.style", "package.name", "package.version", "rule.id", "unknown"} {
+	for _, name := range []string{"settings.topic", "settings.style", "package.name", "package.version", "rule.id", "unknown"} {
 		if IsRuntimeVariable(name) {
 			t.Errorf("IsRuntimeVariable(%q) = true", name)
 		}

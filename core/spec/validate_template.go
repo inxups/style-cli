@@ -47,11 +47,6 @@ func (v *validator) validateTemplateName(name string, hasDefault bool, source st
 		return
 	}
 	switch {
-	case strings.HasPrefix(name, "vars."):
-		vars := asStringMap(v.pkg.Metadata["vars"])
-		if vars == nil || !hasKey(vars, strings.TrimPrefix(name, "vars.")) {
-			v.add("undeclared-var", source, name+" is not declared")
-		}
 	case strings.HasPrefix(name, "settings."):
 		if !v.settingDeclared(strings.TrimPrefix(name, "settings.")) {
 			v.add("undeclared-var", source, name+" is not declared")
