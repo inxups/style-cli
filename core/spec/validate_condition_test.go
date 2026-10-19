@@ -29,6 +29,20 @@ func TestValidateConditionSelectorsAndOptionalFields(t *testing.T) {
 			want: "negated-optional-field", severity: SeverityWarning,
 		},
 		{
+			name: "empty not_contains pattern",
+			rule: "  - id: base\n    target: tool\n    tool: shell\n    text: body\n    when:\n      conditions:\n        - field: tool.input\n          op: not_contains\n          pattern: \"\"\n",
+			want: "empty-pattern", severity: SeverityError,
+		},
+		{
+			name: "empty contains pattern",
+			rule: "  - id: base\n    target: tool\n    tool: shell\n    text: body\n    when:\n      conditions:\n        - field: tool.input\n          op: contains\n          pattern: \"\"\n",
+			want: "empty-pattern", severity: SeverityError,
+		},
+		{
+			name: "empty equals pattern stays valid",
+			rule: "  - id: base\n    target: tool\n    tool: shell\n    text: body\n    when:\n      conditions:\n        - field: tool.input\n          op: equals\n          pattern: \"\"\n",
+		},
+		{
 			name: "tool added on mcp rule",
 			rule: "  - id: base\n    target: mcp\n    mcp: server/tool\n    text: body\n    when:\n      conditions:\n        - field: tool.added\n          op: contains\n          pattern: TODO\n",
 			want: "condition-field-wrong-event", severity: SeverityError,

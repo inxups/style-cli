@@ -10,6 +10,10 @@ import (
 
 var effortLevels = stringSet("none", "minimal", "low", "medium", "high", "xhigh", "max")
 var conditionOperators = stringSet("regex", "shell_regex", "contains", "equals", "not_contains", "starts_with", "ends_with")
+
+// Substring operators are constant for an empty pattern: contains, starts_with
+// and ends_with always match while not_contains never does.
+var emptyPatternOperators = stringSet("contains", "not_contains", "starts_with", "ends_with")
 var validEvents = stringSet("session.start", "prompt.submitted", "tool.pre", "tool.post", "tool.error", "subagent.start")
 
 func (v *validator) validateWhen(value any, rule Rule, source string) {
@@ -155,6 +159,9 @@ func (v *validator) validateConditions(value any, rule Rule, source string) {
 		}
 		if !conditionOperators[op] {
 			v.add("invalid-schema", conditionSource, fmt.Sprintf("unknown condition op %q", op))
+		}
+		if pattern == "" && emptyPatternOperators[op] {
+			v.add("empty-pattern", conditionSource, fmt.Sprintf("%s requires a non-empty pattern; an empty pattern makes the condition constant", op))
 		}
 		if op == "regex" || op == "shell_regex" {
 			if _, err := regexp.Compile(pattern); err != nil {
