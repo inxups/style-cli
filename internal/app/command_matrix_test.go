@@ -31,7 +31,6 @@ type matrixCase struct {
 	exit    int
 	code    string // expected JSON diagnostic code when the command fails
 	noJSON  bool
-	pending string // "text" or "json": a mode whose fix has not landed yet
 }
 
 func newMatrixFixture(t *testing.T, kind string) matrixFixture {
@@ -183,7 +182,7 @@ func TestCommandMatrix(t *testing.T) {
 	requirePOSIXFixture(t, "the matrix uses POSIX project and native fixtures")
 	for _, row := range commandMatrix {
 		for _, jsonMode := range []bool{false, true} {
-			if jsonMode && row.noJSON || row.pending == map[bool]string{false: "text", true: "json"}[jsonMode] {
+			if jsonMode && row.noJSON {
 				continue
 			}
 			t.Run(row.name+map[bool]string{false: "/text", true: "/json"}[jsonMode], func(t *testing.T) {
