@@ -11,11 +11,11 @@
 | `style-yaml/package.md` | 包级元数据 | `spec` `name` `version` `description` `authors` `priority` | 待写 |
 | `style-yaml/requires.md` | 依赖、设置与推荐 | `requires` `settings` `recommends` | 待写 |
 | `style-yaml/budget.md` | token 预算 | `budget`（`per_rule` `per_event` `always_on` `on`） | 待写 |
-| `style-yaml/defaults.md` | 包级默认值与推导默认值 | `defaults` | 待写 |
+| [style-yaml/defaults.md](style-yaml/defaults.md) | 包级默认值与推导默认值 | `defaults` | 已完成 |
 | `style-yaml/rules.md` | 规则来源与正文 | `rules` `id` `file` `text` `from` `model_text` `enabled` `priority` `max_tokens` `reason` | 待写 |
 | `style-yaml/target.md` | 规则作用对象 | `target` `tool` `names` `mcp` `skill` `event` `sources` `mode` | 待写 |
 | `style-yaml/action.md` | 规则动作与时机 | `action` `at` `repeat` `fail` `refresh` `reinject_on_compact` | 待写 |
-| `style-yaml/fallback.md` | 落点不可用时的处理与降级路径 | `fallback`（`degrade` `skip` `error`） | 待写 |
+| [style-yaml/fallback.md](style-yaml/fallback.md) | 落点不可用时的处理与降级路径 | `fallback`（`degrade` `skip` `error`） | 已完成 |
 | `style-yaml/when.md` | 条件匹配 | `when`（`model` `thinking_effort` `thinking_effort_approx` `harness` `agent` `conditions` `provider`） | 待写 |
 | `style-yaml/native-hooks.md` | 原生 hook 声明 | `native_hooks`（`event` `matcher` `command` `timeout`） | 待写 |
 | `style-yaml/diagnostics.md` | 诊断码总表 | — | 待写 |
