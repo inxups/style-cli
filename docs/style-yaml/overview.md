@@ -72,6 +72,8 @@ tone.style.md              # 单文件包：front matter + 正文
 
 ### 加载之后
 
+加载阶段的错误（如 `file-not-found`、`invalid-yaml`）会立即中止，一次只报告一个；修复后再运行才能看到下一个。
+
 1. **校验**：依次检查包级字段、规则、原生 hook 和未声明的规则文件，生成诊断（`core/spec/validate.go`）。有 error 级诊断时，`style validate` 返回非零退出码，包不能安装。
 2. **合并默认值**：为每条规则计算最终值，移除 `enabled: false` 的规则，见 [defaults.md](defaults.md)（`core/spec/merge.go`）。
 3. **计划**：针对每个 harness 计算规则的落点和降级情况，见 [fallback.md](fallback.md)。用 `style plan` 查看。
