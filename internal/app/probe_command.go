@@ -15,7 +15,7 @@ import (
 func runProbe(ctx context.Context, s *Service, args []string, out, errOut io.Writer) int {
 	request, jsonMode, err := parseProbeArgs(args)
 	if err == nil {
-		request.Harnesses, err = s.harnessArgs(request.Harnesses)
+		_, err = s.parseHarnesses(request.Harnesses)
 	}
 	if err != nil {
 		return probeCommand.usageError(errOut, err)

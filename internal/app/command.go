@@ -54,7 +54,7 @@ func runValidate(ctx context.Context, service *Service, workDir string, args []s
 func runPlan(ctx context.Context, service *Service, workDir string, args []string, out, errOut io.Writer) int {
 	request, jsonOutput, err := parsePlanArgs(args)
 	if err == nil {
-		request.Harnesses, err = service.harnessArgs(request.Harnesses)
+		_, err = service.parseHarnesses(request.Harnesses)
 	}
 	if err != nil {
 		return planCommand.usageError(errOut, err)

@@ -1,12 +1,9 @@
 package app
 
 import (
-	"errors"
 	"fmt"
 	"io"
 	"strings"
-
-	"github.com/inxups/style-cli/internal/adapter"
 )
 
 type flagKind int
@@ -277,43 +274,4 @@ func printUsage(out io.Writer) {
 	fmt.Fprintln(out, "Global:")
 	fmt.Fprintln(out, "  "+projectFlagsUsage+" scopes plan, installation and diagnostic commands to a project.")
 	fmt.Fprintln(out, "  style help <command> (or <command> --help) shows advanced and project options.")
-}
-
-// harnessArgs canonicalizes --harness values for every command: repeatable,
-// comma lists, any case, the claude alias and auto. Unknown or empty names are
-// usage errors. The result keeps auto as its own entry and drops duplicates.
-func (s *Service) harnessArgs(values []string) ([]string, error) {
-	var harnesses []string
-	seen := map[string]bool{}
-	for _, raw := range values {
-		for _, value := range strings.Split(raw, ",") {
-			value = strings.ToLower(strings.TrimSpace(value))
-			if value == "claude" {
-				value = "claude-code"
-			}
-			if value == "" {
-				return nil, fmt.Errorf("empty harness in --harness %q", raw)
-			}
-			if _, ok := s.definitions[adapter.ProviderID(value)]; !ok && value != "auto" {
-				return nil, fmt.Errorf("unknown harness %q", value)
-			}
-			if !seen[value] {
-				seen[value] = true
-				harnesses = append(harnesses, value)
-			}
-		}
-	}
-	return harnesses, nil
-}
-
-// singleHarness is harnessArgs for commands that read one harness's payload.
-func (s *Service) singleHarness(values []string) (string, error) {
-	harnesses, err := s.harnessArgs(values)
-	if err != nil {
-		return "", err
-	}
-	if len(harnesses) != 1 || harnesses[0] == "auto" {
-		return "", errors.New("select exactly one harness")
-	}
-	return harnesses[0], nil
 }

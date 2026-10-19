@@ -153,23 +153,11 @@ func (s *Service) Probe(ctx context.Context, request ProbeRequest) (result Probe
 	if err != nil {
 		return result, fail("probe-not-installed", "Installed STYLE lock is invalid.")
 	}
-	selected := []adapter.ProviderID{}
-	auto := len(request.Harnesses) == 0
-	for _, harness := range request.Harnesses {
-		if harness == "claude" {
-			harness = "claude-code"
-		}
-		if harness == "auto" {
-			auto = true
-			continue
-		}
-		if _, ok := s.definitions[adapter.ProviderID(harness)]; !ok {
-			return result, fail("runtime-unavailable", "Harness is not registered for runtime observation.")
-		}
-		if !slices.Contains(selected, adapter.ProviderID(harness)) {
-			selected = append(selected, adapter.ProviderID(harness))
-		}
+	harnesses, err := s.parseHarnesses(request.Harnesses)
+	if err != nil {
+		return result, fail("runtime-unavailable", "Harness is not registered for runtime observation.")
 	}
+	selected, auto := slices.Clone(harnesses.Named), harnesses.Auto
 	if auto {
 		for _, id := range s.providers() {
 			if lock.Harnesses[string(id)].Route != "" && !slices.Contains(selected, id) {

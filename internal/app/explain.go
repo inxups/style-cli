@@ -146,9 +146,9 @@ func (s *Service) explain(ctx context.Context, request ExplainRequest, ops expla
 	if err := checkContext(ctx); err != nil {
 		return result, fail("cancelled", "Replay was cancelled.")
 	}
-	if request.Harness == "claude" {
-		request.Harness = "claude-code"
-		result.Harness = request.Harness
+	if name := string(harnessName(request.Harness)); name != request.Harness {
+		request.Harness = name
+		result.Harness = name
 	}
 	if _, ok := s.definitions[adapter.ProviderID(request.Harness)]; !ok {
 		return result, fail("harness-unknown", "Harness is not registered.")

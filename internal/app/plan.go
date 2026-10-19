@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"math"
 	"sort"
-	"strings"
 
 	"github.com/inxups/style-cli/core/plan"
 	"github.com/inxups/style-cli/core/spec"
@@ -243,41 +242,23 @@ func cacheCostFactor(position, requests int) float64 {
 }
 
 func (s *Service) selectProviders(ctx context.Context, values []string) ([]adapter.ProviderID, error) {
-	if len(values) == 0 {
-		values = []string{"auto"}
+	selection, err := s.parseHarnesses(values)
+	if err != nil {
+		return nil, err
 	}
 	selected := make(map[adapter.ProviderID]bool)
-	requested := make(map[adapter.ProviderID]bool)
-	for _, raw := range values {
-		for _, value := range strings.Split(raw, ",") {
-			value = strings.TrimSpace(strings.ToLower(value))
-			if value == "" {
-				continue
+	if selection.Auto {
+		for _, provider := range s.providers() {
+			_, installed, err := s.definitions[provider].Detect(ctx)
+			if err != nil {
+				return nil, err
 			}
-			if value == "auto" {
-				for _, provider := range s.providers() {
-					definition := s.definitions[provider]
-					_, installed, err := definition.Detect(ctx)
-					if err != nil {
-						return nil, err
-					}
-					if installed {
-						selected[provider] = true
-					}
-				}
-				continue
+			if installed {
+				selected[provider] = true
 			}
-			if value == "claude" {
-				value = "claude-code"
-			}
-			provider := adapter.ProviderID(value)
-			if _, ok := s.definitions[provider]; !ok {
-				return nil, &UsageError{Message: fmt.Sprintf("unknown harness %q", value)}
-			}
-			requested[provider] = true
 		}
 	}
-	for provider := range requested {
+	for _, provider := range selection.Named {
 		selected[provider] = true
 	}
 	providers := make([]adapter.ProviderID, 0, len(selected))

@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"maps"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -776,58 +777,34 @@ func (s *Service) loadInstalledPackages(ctx context.Context, home string, lock l
 }
 
 func (s *Service) installAdapters(ctx context.Context, request InstallRequest, lock lockDocument) ([]installAdapter, error) {
-	selected := make(map[adapter.ProviderID]bool)
+	harnesses, err := s.parseHarnesses(request.Harnesses)
+	if err != nil {
+		return nil, err
+	}
 	requested := make(map[adapter.ProviderID]bool)
-	for _, raw := range request.Harnesses {
-		for _, value := range strings.Split(raw, ",") {
-			value = strings.ToLower(strings.TrimSpace(value))
-			if value == "auto" {
-				continue
-			}
-			if value == "claude" {
-				value = "claude-code"
-			}
-			provider := adapter.ProviderID(value)
-			if _, ok := s.definitions[provider]; !ok {
-				return nil, &UsageError{Message: fmt.Sprintf("unknown harness %q", value)}
-			}
-			requested[provider] = true
-		}
+	for _, provider := range harnesses.Named {
+		requested[provider] = true
 	}
 	for raw := range request.Routes {
-		name := strings.ToLower(strings.TrimSpace(raw))
-		if name == "claude" {
-			name = "claude-code"
-		}
-		provider := adapter.ProviderID(name)
+		provider := harnessName(raw)
 		if _, ok := s.definitions[provider]; !ok {
 			return nil, &UsageError{Message: fmt.Sprintf("unknown harness %q in --route", raw)}
 		}
 		requested[provider] = true
 	}
-	for _, raw := range request.FailClosed {
-		for _, value := range strings.Split(raw, ",") {
-			value = strings.ToLower(strings.TrimSpace(value))
-			if value == "claude" {
-				value = "claude-code"
-			}
-			if value != "claude-code" {
-				return nil, &UsageError{Message: "--fail-closed is supported only by claude-code"}
-			}
-			provider := adapter.ProviderID(value)
-			if _, ok := s.definitions[provider]; !ok {
-				return nil, &UsageError{Message: "--fail-closed requires the claude-code adapter"}
-			}
-			requested[provider] = true
+	for _, provider := range splitHarnesses(request.FailClosed) {
+		if provider != "claude-code" {
+			return nil, &UsageError{Message: "--fail-closed is supported only by claude-code"}
 		}
+		if _, ok := s.definitions[provider]; !ok {
+			return nil, &UsageError{Message: "--fail-closed requires the claude-code adapter"}
+		}
+		requested[provider] = true
 	}
-	for provider := range requested {
-		selected[provider] = true
-	}
-	if len(request.Harnesses) == 0 || hasAuto(request.Harnesses) {
+	selected := maps.Clone(requested)
+	if harnesses.Auto {
 		for provider := range s.definitions {
-			definition := s.definitions[provider]
-			_, detected, err := definition.Detect(ctx)
+			_, detected, err := s.definitions[provider].Detect(ctx)
 			if err != nil {
 				return nil, err
 			}
@@ -926,17 +903,6 @@ func (s *Service) installAdapters(ctx context.Context, request InstallRequest, l
 	return result, nil
 }
 
-func hasAuto(values []string) bool {
-	for _, raw := range values {
-		for _, value := range strings.Split(raw, ",") {
-			if strings.EqualFold(strings.TrimSpace(value), "auto") {
-				return true
-			}
-		}
-	}
-	return false
-}
-
 func providerOrder(provider adapter.ProviderID) int {
 	if provider == adapter.ProviderID("codex") {
 		return 0
@@ -951,8 +917,10 @@ func routeRequest(routes map[string]string, provider adapter.ProviderID) string 
 	if value := routes[string(provider)]; value != "" {
 		return value
 	}
-	if provider == adapter.ProviderID("claude-code") {
-		return routes["claude"]
+	for name, value := range routes {
+		if harnessName(name) == provider {
+			return value
+		}
 	}
 	return ""
 }
@@ -1136,15 +1104,7 @@ func staticBlocksForProvider(bodies []compile.StaticBody, provider adapter.Provi
 }
 
 func containsProvider(values []string, provider adapter.ProviderID) bool {
-	for _, raw := range values {
-		for _, value := range strings.Split(raw, ",") {
-			value = strings.ToLower(strings.TrimSpace(value))
-			if value == string(provider) || provider == adapter.ProviderID("claude-code") && value == "claude" {
-				return true
-			}
-		}
-	}
-	return false
+	return slices.Contains(splitHarnesses(values), provider)
 }
 
 func cloneExtra(source map[string]any) map[string]any {
