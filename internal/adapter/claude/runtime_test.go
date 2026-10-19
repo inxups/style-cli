@@ -235,6 +235,31 @@ func TestEnricherMapsClaudeToolFieldsAddedMCPAndOutput(t *testing.T) {
 			t.Fatalf("tool error point = %#v", point)
 		}
 	})
+
+	t.Run("Bash failure also evaluates tool.post", func(t *testing.T) {
+		for _, tc := range []struct{ errorText, want string }{
+			{"Exit code 3\nout-line\nerr-line", "out-line\nerr-line"},
+			{"Exit code 7", ""},
+			{"Command timed out", "Command timed out"},
+		} {
+			event := claudeRuntimeEvent(agenthooks.KindToolError, "PostToolUseFailure", `{"session_id":"s8","tool_name":"Bash","tool_input":{"command":"x"}}`)
+			tool := agenthooks.ToolCall{Name: "Bash", Canonical: agenthooks.ToolShell, Input: json.RawMessage(`{"command":"x"}`)}
+			post := &agenthooks.ToolPostEvent{Event: *event, Tool: tool, Failed: true, Error: tc.errorText}
+			input, _, err := NewEnricher().Enrich(event, post, state.Session{}, state.Scope{SessionID: "s8", AgentID: "main"})
+			if err != nil {
+				t.Fatal(err)
+			}
+			if len(input.Points) != 2 || input.Points[0].Name != plan.ToolError || input.Points[1].Name != plan.ToolPost {
+				t.Fatalf("points = %#v", input.Points)
+			}
+			if got, ok := input.Points[0].When.Fields.ReadConditionField("tool.output"); !ok || got != tc.errorText {
+				t.Errorf("tool.error tool.output for %q = %q, %v", tc.errorText, got, ok)
+			}
+			if got, ok := input.Points[1].When.Fields.ReadConditionField("tool.output"); !ok || got != tc.want {
+				t.Errorf("tool.post tool.output for %q = %q, %v; want %q", tc.errorText, got, ok, tc.want)
+			}
+		}
+	})
 }
 
 func TestEnricherProjectsImplicitSkillAndSubagentScope(t *testing.T) {

@@ -54,6 +54,36 @@ func TestClaudeNativeFailureMatchesToolOutputCondition(t *testing.T) {
 	}
 }
 
+func TestClaudeNativeFailureEvaluatesToolPostEntries(t *testing.T) {
+	entry := runtimeTestEntry("pkg/after", "tool.post", "event", "inject", staticBody("AFTER_FAILURE_MATCHED"))
+	// The fixture error is the bare "Exit code 7" line, so the output is empty.
+	entry.When.Conditions = []when.Condition{{Field: "tool.output", Op: "equals", Pattern: ""}}
+	store, err := state.New(t.TempDir())
+	if err != nil {
+		t.Fatal(err)
+	}
+	core, err := engine.New(runtimeTestIndex(map[string][]compile.Entry{"tool.post": {entry}}), store)
+	if err != nil {
+		t.Fatal(err)
+	}
+	runtime, err := New(core, store, claudeadapter.NewEnricher(), agenthooks.ProviderClaudeCode, false)
+	if err != nil {
+		t.Fatal(err)
+	}
+	payload, err := os.ReadFile("../../agenthooks/agenthookstest/fixtures/claude/post_tool_use_failure.json")
+	if err != nil {
+		t.Fatal(err)
+	}
+	var stdout, stderr bytes.Buffer
+	if code := runtime.Run(context.Background(), claudeRunArgs(), bytes.NewReader(payload), &stdout, &stderr); code != 0 {
+		t.Fatalf("Run exit=%d stderr=%q", code, stderr.String())
+	}
+	want := `{"hookSpecificOutput":{"additionalContext":"AFTER_FAILURE_MATCHED","hookEventName":"PostToolUseFailure"}}`
+	if stdout.String() != want {
+		t.Fatalf("tool.post on failure: got %s, want %s", stdout.String(), want)
+	}
+}
+
 func TestRunDecodesClaudeHookAndEmitsOnlyWhitelistedBlock(t *testing.T) {
 	root := t.TempDir()
 	store, err := state.New(root)

@@ -37,6 +37,17 @@
         "tool.input.command": "false",
         "tool.output": "exit 1"
       }
+    },
+    {
+      "name": "tool.post",
+      "canonical": "shell",
+      "tool": "Bash",
+      "fields": {
+        "cwd": "/work/repo",
+        "tool.input": "{\"command\":\"false\"}",
+        "tool.input.command": "false",
+        "tool.output": "exit 1"
+      }
     }
   ],
   "persisted_model": "test-model"

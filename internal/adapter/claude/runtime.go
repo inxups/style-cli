@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"regexp"
 	"strconv"
 	"strings"
 
@@ -190,7 +191,13 @@ func (enricher *Enricher) Enrich(event *agenthooks.Event, typed any, session sta
 		if !ok {
 			return engine.Input{}, tokens.InputLimit{}, fmt.Errorf("claude adapter: tool.error has typed event %T", typed)
 		}
-		input.Points = []engine.Point{claudeToolPoint(event, plan.ToolError, &toolEvent.Tool, toolEvent, variables, typed)}
+		// Claude Code reports failed calls only as PostToolUseFailure, while
+		// Codex reports them as PostToolUse. Evaluate tool.post rules here too
+		// so after-tool rules fire on the same calls on both harnesses.
+		input.Points = []engine.Point{
+			claudeToolPoint(event, plan.ToolError, &toolEvent.Tool, toolEvent, variables, typed),
+			claudeToolPoint(event, plan.ToolPost, &toolEvent.Tool, toolEvent, variables, typed),
+		}
 	case agenthooks.KindSubagentStart:
 		if _, ok := typed.(*agenthooks.SubagentStartEvent); !ok {
 			return engine.Input{}, tokens.InputLimit{}, fmt.Errorf("claude adapter: subagent.start has typed event %T", typed)
@@ -353,6 +360,12 @@ func claudeToolPoint(event *agenthooks.Event, pointName string, tool *agenthooks
 		}
 		if post.Error != "" && fields["tool.output"] == "" {
 			fields["tool.output"] = post.Error
+			if pointName == plan.ToolPost && fields["tool.canonical"] == string(agenthooks.ToolShell) {
+				// A failed Bash call has no tool_response; its error is the
+				// command output behind an "Exit code N" line. tool.post sees
+				// only the output, matching Codex; tool.error keeps the error.
+				fields["tool.output"] = claudeExitCodePrefix.ReplaceAllString(post.Error, "")
+			}
 		}
 	}
 	if event.Session.CWD != "" || hasRawField(event, "cwd") {
@@ -394,6 +407,10 @@ func claudeAdded(tool *agenthooks.ToolCall) (string, bool) {
 	value, available := rawFieldValue(raw)
 	return value, available
 }
+
+// claudeExitCodePrefix matches the status line Claude Code puts before a failed
+// Bash call's output in the PostToolUseFailure error.
+var claudeExitCodePrefix = regexp.MustCompile(`^Exit code -?[0-9]+(?:\n|$)`)
 
 // claudeShellOutput decodes a Bash {stdout, stderr} response. Claude Code
 // 2.1.301 already folds stderr into stdout; a non-empty stderr is appended

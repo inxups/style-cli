@@ -1089,6 +1089,12 @@ func hooksForProvider(provider adapter.ProviderID, index compile.Index) []adapte
 				matcher = "^(" + matcher + ")$"
 			}
 			hooks = append(hooks, adapter.HookSpec{NativeEvent: native, Matcher: matcher, Points: []string{event}})
+			if event == plan.ToolPost {
+				// Claude Code reports a failed tool call, such as a non-zero shell
+				// exit, only as PostToolUseFailure. tool.post rules also see those
+				// calls so they fire on the same calls as on Codex.
+				hooks = append(hooks, adapter.HookSpec{NativeEvent: "PostToolUseFailure", Matcher: matcher, Points: []string{plan.ToolPost}})
+			}
 		}
 	}
 	if refresh {
