@@ -27,7 +27,7 @@ func (o Options) Validate() error {
 	}
 	if !o.Exact() {
 		if o.Provider != "" || o.Encoding != "" || o.Model != "" {
-			return fmt.Errorf("count: provider, encoding and model require --count=exact")
+			return fmt.Errorf("count: provider, encoding and model require --exact")
 		}
 		return nil
 	}
@@ -38,10 +38,10 @@ func (o Options) Validate() error {
 		}
 	case "anthropic":
 		if !modelID.MatchString(o.Model) || o.Encoding != "" {
-			return fmt.Errorf("count: anthropic requires --count-model and no encoding")
+			return fmt.Errorf("count: --exact anthropic:<model> requires a valid model id and no encoding")
 		}
 	default:
-		return fmt.Errorf("count: exact requires explicit --count-provider=openai or anthropic")
+		return fmt.Errorf("count: --exact requires explicit provider openai or anthropic")
 	}
 	return nil
 }
