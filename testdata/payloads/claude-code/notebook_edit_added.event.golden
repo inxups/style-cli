@@ -1,0 +1,45 @@
+{
+  "native": "PostToolUse",
+  "kind": "tool.post",
+  "session": {
+    "ID": "conformance",
+    "TurnID": "prompt-1",
+    "CWD": "/work/repo",
+    "WorkspaceRoots": [
+      "/work/repo"
+    ],
+    "TranscriptPath": "/work/home/.claude/projects/-work-repo/conformance.jsonl",
+    "Model": "",
+    "Effort": "",
+    "EffortRaw": "medium",
+    "EffortApprox": null,
+    "HarnessVersion": "",
+    "PermissionMode": "default",
+    "UserEmail": ""
+  },
+  "variables": {
+    "harness.agent": "main",
+    "harness.cwd": "/work/repo",
+    "harness.name": "claude-code",
+    "harness.permission_mode": "default",
+    "harness.session_id": "conformance",
+    "harness.turn_id": "prompt-1",
+    "harness.version": "2.1.315",
+    "thinking_effort": "medium",
+    "thinking_effort_approx": "false",
+    "thinking_effort_raw": "medium"
+  },
+  "points": [
+    {
+      "name": "tool.post",
+      "canonical": "file.edit",
+      "tool": "NotebookEdit",
+      "fields": {
+        "cwd": "/work/repo",
+        "tool.added": "print(\"TODO nb\")",
+        "tool.input": "{\"cell_id\":\"c1\",\"new_source\":\"print(\\\"TODO nb\\\")\",\"notebook_path\":\"/work/repo/nb.ipynb\"}",
+        "tool.output": "{\"new_source\":\"print(\\\"TODO nb\\\")\",\"old_source\":\"print(1)\\n\",\"cell_type\":\"code\",\"language\":\"python\",\"edit_mode\":\"replace\",\"cell_id\":\"c1\",\"error\":\"\",\"notebook_path\":\"/work/repo/nb.ipynb\",\"original_file\":\"{\\\"cells\\\":[{\\\"cell_type\\\":\\\"code\\\",\\\"execution_count\\\":null,\\\"id\\\":\\\"c1\\\",\\\"metadata\\\":{},\\\"outputs\\\":[],\\\"source\\\":[\\\"print(1)\\\\n\\\"]}],\\\"nbformat\\\":4,\\\"nbformat_minor\\\":5}\",\"updated_file\":\"{\\n \\\"cells\\\": [\\n  {\\n   \\\"cell_type\\\": \\\"code\\\",\\n   \\\"execution_count\\\": null,\\n   \\\"id\\\": \\\"c1\\\",\\n   \\\"metadata\\\": {},\\n   \\\"outputs\\\": [],\\n   \\\"source\\\": \\\"print(\\\\\\\"TODO nb\\\\\\\")\\\"\\n  }\\n ],\\n \\\"nbformat\\\": 4,\\n \\\"nbformat_minor\\\": 5\\n}\"}"
+      }
+    }
+  ]
+}

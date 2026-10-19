@@ -379,23 +379,56 @@ func claudeToolPoint(event *agenthooks.Event, pointName string, tool *agenthooks
 	return newPoint(event, pointName, variables, fields, tool, name)
 }
 
+// claudeAdded returns the text a file tool adds: Edit new_string, Write
+// content, NotebookEdit new_source (Claude Code 2.1.301), and the MultiEdit
+// edits[].new_string values joined by newlines for releases that still ship
+// MultiEdit.
 func claudeAdded(tool *agenthooks.ToolCall) (string, bool) {
 	if tool == nil {
-		return "", false
-	}
-	var key string
-	switch strings.ToLower(tool.Name) {
-	case "edit":
-		key = "new_string"
-	case "write":
-		key = "content"
-	default:
 		return "", false
 	}
 	input := tool.Input
 	if len(input) == 0 {
 		input = tool.RawInput
 	}
+	switch strings.ToLower(tool.Name) {
+	case "edit":
+		return claudeInputString(input, "new_string")
+	case "write":
+		return claudeInputString(input, "content")
+	case "notebookedit":
+		var edit struct {
+			EditMode string `json:"edit_mode"`
+		}
+		if json.Unmarshal(input, &edit) != nil || edit.EditMode == "delete" {
+			return "", false
+		}
+		return claudeInputString(input, "new_source")
+	case "multiedit":
+		var multi struct {
+			Edits []struct {
+				NewString *string `json:"new_string"`
+			} `json:"edits"`
+		}
+		if json.Unmarshal(input, &multi) != nil {
+			return "", false
+		}
+		added := make([]string, 0, len(multi.Edits))
+		for _, edit := range multi.Edits {
+			if edit.NewString != nil {
+				added = append(added, *edit.NewString)
+			}
+		}
+		if len(added) == 0 {
+			return "", false
+		}
+		return strings.Join(added, "\n"), true
+	default:
+		return "", false
+	}
+}
+
+func claudeInputString(input json.RawMessage, key string) (string, bool) {
 	var fields map[string]json.RawMessage
 	if json.Unmarshal(input, &fields) != nil {
 		return "", false
@@ -404,8 +437,7 @@ func claudeAdded(tool *agenthooks.ToolCall) (string, bool) {
 	if !ok {
 		return "", false
 	}
-	value, available := rawFieldValue(raw)
-	return value, available
+	return rawFieldValue(raw)
 }
 
 // claudeExitCodePrefix matches the status line Claude Code puts before a failed

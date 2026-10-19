@@ -160,6 +160,31 @@ func TestEnricherMapsClaudeToolFieldsAddedMCPAndOutput(t *testing.T) {
 		}
 	})
 
+	t.Run("NotebookEdit and MultiEdit added text", func(t *testing.T) {
+		for _, tc := range []struct {
+			name, input, want string
+			ok                bool
+		}{
+			// Claude Code 2.1.301 NotebookEdit input.
+			{"NotebookEdit", `{"notebook_path":"/w/nb.ipynb","cell_id":"c1","new_source":"print(\"TODO nb\")"}`, `print("TODO nb")`, true},
+			{"NotebookEdit", `{"notebook_path":"/w/nb.ipynb","cell_id":"c1","new_source":"x = 1","edit_mode":"insert"}`, "x = 1", true},
+			{"NotebookEdit", `{"notebook_path":"/w/nb.ipynb","cell_id":"c1","new_source":"","edit_mode":"delete"}`, "", false},
+			// MultiEdit is absent from 2.1.301; this is its earlier input shape.
+			{"MultiEdit", `{"file_path":"x.go","edits":[{"old_string":"a","new_string":"uno"},{"old_string":"b","new_string":"dos\nTODO three"}]}`, "uno\ndos\nTODO three", true},
+			{"MultiEdit", `{"file_path":"x.go","edits":[]}`, "", false},
+		} {
+			event := claudeRuntimeEvent(agenthooks.KindToolPre, "PreToolUse", `{"session_id":"s9","tool_name":"`+tc.name+`","tool_input":`+tc.input+`}`)
+			tool := agenthooks.ToolCall{Name: tc.name, Canonical: agenthooks.ToolFileEdit, Input: json.RawMessage(tc.input)}
+			input, _, err := NewEnricher().Enrich(event, &agenthooks.ToolPreEvent{Event: *event, Tool: tool}, state.Session{}, state.Scope{SessionID: "s9", AgentID: "main"})
+			if err != nil {
+				t.Fatal(err)
+			}
+			if got, ok := input.Points[0].When.Fields.ReadConditionField("tool.added"); ok != tc.ok || got != tc.want {
+				t.Errorf("%s %s tool.added = %q, %v; want %q, %v", tc.name, tc.input, got, ok, tc.want, tc.ok)
+			}
+		}
+	})
+
 	t.Run("Write MCP output", func(t *testing.T) {
 		event := claudeRuntimeEvent(agenthooks.KindToolPost, "PostToolUse", `{"session_id":"s5","tool_name":"mcp__calendar__create_event","tool_input":{"title":"holiday","nested":{"ok":true}},"tool_response":{"created":true}}`)
 		tool := agenthooks.ToolCall{Name: "mcp__calendar__create_event", Canonical: agenthooks.ToolMCP, Input: json.RawMessage(`{"title":"holiday","nested":{"ok":true}}`), MCP: &agenthooks.MCPCall{Server: "calendar", Tool: "create_event"}}
