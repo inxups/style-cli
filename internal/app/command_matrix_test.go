@@ -171,6 +171,7 @@ var commandMatrix = []matrixCase{
 
 	{name: "project missing value", fixture: "project", args: []string{"list", "--project"}, exit: ExitUsage},
 	{name: "project unsupported", fixture: "project", args: []string{"init", "x", "--project", "$ROOT"}, exit: ExitUsage, noJSON: true},
+	{name: "project usage after binding", fixture: "project", args: []string{"uninstall", "--project", "$ROOT"}, exit: ExitUsage},
 	{name: "project unbound", fixture: "project", args: []string{"list", "--project", "$WORK/missing"}, exit: ExitInvalid, code: "project-binding-invalid"},
 	{name: "project list ok", fixture: "project", args: []string{"list", "--project", "$ROOT"}, exit: ExitOK},
 	{name: "project trust missing", fixture: "project", args: []string{"trust", "missing", "--project", "$ROOT"}, input: "y\n", exit: ExitInvalid, code: "request-rejected"},
@@ -336,7 +337,7 @@ func TestProjectSourceUsageNamesOneCondition(t *testing.T) {
 	} {
 		var out, errOut bytes.Buffer
 		exit := RunWithServiceInput(context.Background(), s, base, test.args, strings.NewReader(""), &out, &errOut)
-		if exit != ExitUsage || !strings.HasPrefix(errOut.String(), "style install: "+test.want) {
+		if exit != ExitUsage || out.Len() != 0 || !strings.HasPrefix(errOut.String(), "style install: "+test.want) {
 			t.Errorf("%v: exit=%d stdout=%q stderr=%q", test.args[2:min(len(test.args), 6)], exit, &out, &errOut)
 		}
 	}

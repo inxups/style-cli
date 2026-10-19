@@ -81,15 +81,35 @@ func runProjectCommand(ctx context.Context, service *Service, workDir string, ar
 	}
 	if !jsonRequested(args) {
 		// Text output streams, so a confirmation prompt follows its preview.
-		fmt.Fprintf(out, "scope=project root=%s home=%s\n", scoped.project.Root, scoped.project.Home)
-		fmt.Fprintln(out, "prerequisites: style on harness PATH; same STYLE_HOME; external workspace trust; Claude starts at project root; Codex uses canonical path")
-		if coexisting := scoped.coexistingUserPackages(); len(coexisting) > 0 {
-			data, _ := json.Marshal(coexisting)
-			fmt.Fprintf(out, "coexisting user packages: %s (separate budget/state)\n", data)
-		}
+		// The header waits for the command's first stdout write: a usage
+		// error leaves stdout empty.
+		out = &headerWriter{out: out, header: func(out io.Writer) {
+			fmt.Fprintf(out, "scope=project root=%s home=%s\n", scoped.project.Root, scoped.project.Home)
+			fmt.Fprintln(out, "prerequisites: style on harness PATH; same STYLE_HOME; external workspace trust; Claude starts at project root; Codex uses canonical path")
+			if coexisting := scoped.coexistingUserPackages(); len(coexisting) > 0 {
+				data, _ := json.Marshal(coexisting)
+				fmt.Fprintf(out, "coexisting user packages: %s (separate budget/state)\n", data)
+			}
+		}}
 	}
 	return RunWithServiceInput(ctx, scoped, workDir, clean, in, out, errOut)
 }
+
+// headerWriter writes header once, before the first write that reaches out.
+type headerWriter struct {
+	out     io.Writer
+	header  func(io.Writer)
+	written bool
+}
+
+func (w *headerWriter) Write(p []byte) (int, error) {
+	if !w.written {
+		w.written = true
+		w.header(w.out)
+	}
+	return w.out.Write(p)
+}
+
 func runScopedStats(ctx context.Context, s *Service, args []string, out, errOut io.Writer) int {
 	if s.project == nil {
 		return runStats(ctx, args, out, errOut)
