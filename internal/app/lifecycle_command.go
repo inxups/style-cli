@@ -131,9 +131,13 @@ func parseInstallArgs(args []string) (InstallRequest, bool, error) {
 	}
 	request := InstallRequest{
 		Source: parsed.Arg(0), Ref: parsed.String("--ref"), Path: parsed.String("--path"),
-		Harnesses: parsed.List("--harness"), FailClosed: parsed.List("--fail-closed"), ProjectSources: parsed.List("--project-source"),
+		Harnesses: parsed.List("--harness"), ProjectSources: parsed.List("--project-source"),
 		Yes: parsed.Bool("--yes"), Link: parsed.Bool("--link"), AllowReplace: parsed.Bool("--allow-replace"),
 		Settings: map[string]string{}, Routes: map[string]string{}, ProjectSettings: map[string]string{},
+	}
+	if parsed.Bool("--fail-closed") {
+		// Fail-closed is a Claude Code installation mode; it also selects that harness.
+		request.FailClosed = []string{"claude-code"}
 	}
 	for _, value := range parsed.List("--route") {
 		if err := parseRoute(request.Routes, value); err != nil {

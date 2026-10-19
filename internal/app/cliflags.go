@@ -229,7 +229,7 @@ var (
 		{Name: "--route", Kind: flagList, Value: "h=r", Group: groupAdvanced},
 		{Name: "--link", Kind: flagBool, Group: groupAdvanced},
 		{Name: "--allow-replace", Kind: flagBool, Group: groupAdvanced},
-		{Name: "--fail-closed", Kind: flagList, Value: "h", Group: groupAdvanced},
+		{Name: "--fail-closed", Kind: flagBool, Group: groupAdvanced},
 		{Name: "--project-source", Kind: flagList, Value: "source", Group: groupProject},
 		{Name: "--project-set", Kind: flagList, Value: "package.key=value", Group: groupProject},
 	}}
