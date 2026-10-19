@@ -60,10 +60,8 @@ func runPlan(ctx context.Context, service *Service, workDir string, args []strin
 		return planCommand.usageError(errOut, err)
 	}
 	if request.Source == "" {
-		fmt.Fprintln(errOut, "style plan: source is required")
-		return ExitUsage
-	}
-	if !source.Remote(request.Source) && !filepath.IsAbs(request.Source) {
+		request.Source = workDir
+	} else if !source.Remote(request.Source) && !filepath.IsAbs(request.Source) {
 		request.Source = filepath.Join(workDir, request.Source)
 	}
 	result, err := service.Plan(ctx, request)

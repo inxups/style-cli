@@ -201,7 +201,7 @@ var (
 	initCommand     = commandSpec{Name: "init", Args: "[name]", MaxArgs: 1, Flags: []flagSpec{{Name: "--single", Kind: flagBool}}}
 	validateCommand = commandSpec{Name: "validate", Args: "[source]", MaxArgs: 1, Flags: []flagSpec{refFlag, pathFlag, jsonFlag}}
 	countCommand    = commandSpec{Name: "count", Args: "<UTF-8-file>", MaxArgs: 1, Flags: []flagSpec{exactFlag, jsonFlag}}
-	planCommand     = commandSpec{Name: "plan", Args: "<source>", MaxArgs: 1, Project: true, Flags: []flagSpec{
+	planCommand     = commandSpec{Name: "plan", Args: "[source]", MaxArgs: 1, Project: true, Flags: []flagSpec{
 		refFlag, pathFlag, {Name: "--harness", Kind: flagList, Value: "auto|codex,claude-code"}, exactFlag, jsonFlag,
 		{Name: "--assume-requests", Kind: flagString, Value: "N", Group: groupAdvanced},
 		{Name: "--assume-triggers", Kind: flagString, Value: "N", Group: groupAdvanced},

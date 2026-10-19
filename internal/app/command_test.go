@@ -84,6 +84,13 @@ func TestRunPlanJSONAndArgumentErrors(t *testing.T) {
 	if got := report.Reports[0].SessionCost; got.Requests != 10 || got.Triggers != 2 {
 		t.Fatalf("session assumptions = %#v, want requests=10 triggers=2", got)
 	}
+	var implicit, explicit bytes.Buffer
+	if code := RunWithService(context.Background(), service, filepath.Join(root, "demo"), []string{"plan", "--harness=codex", "--json"}, &implicit, &bytes.Buffer{}); code != ExitOK {
+		t.Fatalf("plan without source exit = %d: %s", code, implicit.String())
+	}
+	if code := RunWithService(context.Background(), service, filepath.Join(root, "demo"), []string{"plan", ".", "--harness=codex", "--json"}, &explicit, &bytes.Buffer{}); code != ExitOK || implicit.String() != explicit.String() {
+		t.Fatalf("plan without source = %s, plan . = %s", implicit.String(), explicit.String())
+	}
 	var errOut bytes.Buffer
 	if code := RunWithService(context.Background(), service, root, []string{"plan", "demo", "--harness", "missing"}, &bytes.Buffer{}, &errOut); code != ExitInvalid {
 		t.Fatalf("unknown harness exit = %d, stderr=%s", code, errOut.String())
@@ -121,7 +128,7 @@ func TestCommandsShowHelpAndUseStableFailureExitCodes(t *testing.T) {
 		want string
 	}{
 		{args: []string{"validate", "--help"}, want: "style validate [source] [--ref ref] [--path repo-path] [--json]\n"},
-		{args: []string{"plan", "--help"}, want: "style plan <source> [--ref ref] [--path repo-path] [--harness auto|codex,claude-code]... [--exact openai:<encoding>|anthropic:<model>] [--json]\n  advanced: [--assume-requests N] [--assume-triggers N]\n  project: [--project dir] [--style-home dir]\n"},
+		{args: []string{"plan", "--help"}, want: "style plan [source] [--ref ref] [--path repo-path] [--harness auto|codex,claude-code]... [--exact openai:<encoding>|anthropic:<model>] [--json]\n  advanced: [--assume-requests N] [--assume-triggers N]\n  project: [--project dir] [--style-home dir]\n"},
 	} {
 		var output, errOutput bytes.Buffer
 		if code := RunWithService(context.Background(), service, t.TempDir(), test.args, &output, &errOutput); code != ExitOK {
