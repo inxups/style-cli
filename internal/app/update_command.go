@@ -5,6 +5,8 @@ import (
 	"errors"
 	"fmt"
 	"io"
+
+	"github.com/inxups/style-cli/internal/source"
 )
 
 func runUpdate(ctx context.Context, service *Service, args []string, in io.Reader, out, errOut io.Writer) int {
@@ -62,6 +64,9 @@ func parseUpdateArgs(args []string) (UpdateRequest, bool, error) {
 	}
 	if request.All && request.Ref != "" {
 		return request, false, fmt.Errorf("--ref requires a single Git package")
+	}
+	if request.Ref != "" && !source.ValidRef(request.Ref) {
+		return request, false, errors.New("source-invalid: --ref requires a full branch/tag ref or commit OID")
 	}
 	return request, parsed.Bool("--json"), nil
 }

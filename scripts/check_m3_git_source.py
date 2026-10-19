@@ -126,11 +126,12 @@ def main():
             for source in inputs:
                 result = run(new, cli_env, [command, *source, "--json"])
                 output = result.stdout + result.stderr
-                assert result.returncode == 1 and "source-invalid" in output, (command, source, result)
+                # A malformed address is a usage error: exit 2, nothing on stdout.
+                assert result.returncode == 2 and result.stdout == "" and "source-invalid" in result.stderr, (command, source, result)
                 assert "CANARY" not in output, "credentials leaked into a diagnostic"
                 assert not marker.exists() and not cli_home.exists(), "invalid input reached Git or wrote home"
                 cases.append({"command": command, "input_class": "invalid_remote_or_combination",
-                              "exit_code": 1, "no_git_no_home_write": True, "secret_absent": True})
+                              "exit_code": 2, "no_git_no_home_write": True, "secret_absent": True})
 
     report = {"status": "passed", "new_binary_sha256": digest(new),
               "old_binary_sha256": digest(old),

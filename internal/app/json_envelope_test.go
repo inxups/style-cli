@@ -164,6 +164,7 @@ func TestUsageAndRejectedErrorsExitCodes(t *testing.T) {
 		{[]string{"install", "demo", "--route", "bogus=x"}, ExitUsage},
 		{[]string{"install", "demo", "--harness", "codex", "--route", "codex=bogus"}, ExitUsage},
 		{[]string{"install", "demo", "--project-set", "demo.k=v"}, ExitUsage},
+		{[]string{"install", "git+https://example.invalid/repo.git?x=1", "--json"}, ExitUsage},
 		{[]string{"trust", "missing"}, ExitInvalid},
 		{[]string{"install", "demo", "--harness", "codex", "--set", "unknown=v"}, ExitInvalid},
 	} {
@@ -185,7 +186,6 @@ func TestJSONFailuresKeepTheirCodes(t *testing.T) {
 		args []string
 		code string
 	}{
-		{[]string{"install", "git+https://example.invalid/repo.git?x=1", "--json"}, "source-invalid"},
 		{[]string{"install", "missing", "--json"}, "invalid-package"},
 		{[]string{"plan", "missing", "--json"}, "invalid-package"},
 		{[]string{"install", "demo", "--harness", "codex", "--set", "unknown=v", "--json"}, "request-rejected"},

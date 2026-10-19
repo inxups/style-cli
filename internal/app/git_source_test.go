@@ -437,10 +437,22 @@ func TestM3A3FlagsFailBeforeAcquisition(t *testing.T) {
 			t.Run(command+address, func(t *testing.T) {
 				var out, errOut bytes.Buffer
 				exit := RunWithService(context.Background(), s, t.TempDir(), []string{command, testgit.URL + address, "--json"}, &out, &errOut)
-				if exit != ExitInvalid || !strings.Contains(out.String()+errOut.String(), "source-invalid") {
+				// A malformed address is a usage error: nothing on stdout.
+				if exit != ExitUsage || out.Len() != 0 || !strings.Contains(errOut.String(), "source-invalid") {
 					t.Fatalf("%d %s %s", exit, &out, &errOut)
 				}
 			})
+		}
+	}
+	for _, args := range [][]string{
+		{"install", testgit.URL, "--link"},
+		{"install", ".", "--project", ".", "--project-source", testgit.URL + "?ref=main"},
+		{"install", "http://example.invalid/repo.git"},
+		{"update", "demo", "--ref", "main"},
+	} {
+		var out, errOut bytes.Buffer
+		if exit := RunWithService(context.Background(), s, t.TempDir(), append(args, "--json"), &out, &errOut); exit != ExitUsage || out.Len() != 0 || !strings.Contains(errOut.String(), "source-invalid") {
+			t.Fatalf("%v: %d %s %s", args, exit, &out, &errOut)
 		}
 	}
 	if _, err := s.Install(context.Background(), InstallRequest{Source: testgit.URL, Link: true, Home: t.TempDir()}); source.Code(err) != "source-invalid" {

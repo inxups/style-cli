@@ -132,6 +132,14 @@ func parseInstallArgs(args []string) (InstallRequest, bool, error) {
 		Link: parsed.Bool("--link"), AllowReplace: parsed.Bool("--allow-replace"),
 		Settings: map[string]string{}, Routes: map[string]string{}, ProjectSettings: map[string]string{},
 	}
+	for _, value := range append([]string{request.Source}, request.ProjectSources...) {
+		if err := sourceArgument(value); err != nil {
+			return InstallRequest{}, false, err
+		}
+	}
+	if request.Link && source.Remote(request.Source) {
+		return InstallRequest{}, false, errors.New("source-invalid: Git sources cannot use --link")
+	}
 	if parsed.Bool("--fail-closed") {
 		// Fail-closed is a Claude Code installation mode; it also selects that harness.
 		request.FailClosed = []string{"claude-code"}

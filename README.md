@@ -81,7 +81,8 @@ payload and requires exactly one named harness. Unknown names are usage errors.
 
 Exit codes: `0` success, `1` the request was rejected or failed, `2` the command
 line could not be parsed (unknown command, option, harness or route; missing,
-malformed or conflicting argument), `3` `sync` found changes awaiting `trust`,
+malformed or conflicting argument, including a malformed Git source address or
+`--ref`), `3` `sync` found changes awaiting `trust`,
 `4` blocked by policy or budget. A well-formed request that the package, the
 installation or the detected harnesses cannot satisfy (a missing `--set`, an
 undetected harness, a package that is not installed) exits `1`. Hook invocations never exit `2`, which harnesses treat as a block.

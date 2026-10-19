@@ -39,6 +39,16 @@ func (s *Service) acquireGit(ctx context.Context, request source.Request) (sourc
 	return snapshot, &SourceReport{Kind: snapshot.Kind, Path: snapshot.Path, Git: snapshot.Git, CacheHit: snapshot.CacheHit, GitVersion: snapshot.GitVersion}, nil
 }
 
+// sourceArgument checks a source as the command line spells it: a malformed
+// Git address is a usage error, before any home, cache or Git is touched.
+func sourceArgument(value string) error {
+	if !source.Remote(value) {
+		return nil
+	}
+	_, err := source.Parse(source.Request{Source: value})
+	return err
+}
+
 func localSourceOptions(ref, p string) error {
 	if ref != "" || p != "" {
 		return &source.Error{Code: "source-invalid", Message: "ref and package path require a git+https source"}
