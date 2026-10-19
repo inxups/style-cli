@@ -97,7 +97,7 @@ func RunWithService(ctx context.Context, service *Service, workDir string, args 
 		return runUninstall(ctx, service, args[1:], out, errOut)
 	case "sync", "trust":
 		return runSync(ctx, service, args[0], args[1:], out, errOut)
-	case "list", "doctor", "adapters":
+	case "list", "doctor":
 		return runInspect(ctx, service, workDir, args[0], args[1:], out, errOut)
 	case "probe":
 		return runProbe(ctx, service, args[1:], out, errOut)

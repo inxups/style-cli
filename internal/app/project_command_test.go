@@ -55,7 +55,7 @@ func TestM3A6CommandGolden(t *testing.T) {
 			if jsonMode {
 				suffix = "json"
 			}
-			for _, phase := range []string{"plan", "preview", "apply", "list", "adapters", "sync", "trust", "update", "stats", "uninstall", "error"} {
+			for _, phase := range []string{"plan", "preview", "apply", "list", "sync", "trust", "update", "stats", "uninstall", "error"} {
 				args := []string{}
 				switch phase {
 				case "plan":
@@ -91,7 +91,7 @@ func TestM3A6CommandGolden(t *testing.T) {
 				if code != want {
 					t.Fatal(phase, code, &out, &errOut)
 				}
-				if phase == "preview" || phase == "error" || phase == "plan" || phase == "list" || phase == "adapters" || phase == "stats" {
+				if phase == "preview" || phase == "error" || phase == "plan" || phase == "list" || phase == "stats" {
 					a4AssertState(t, before, base, root)
 				}
 				if jsonMode {

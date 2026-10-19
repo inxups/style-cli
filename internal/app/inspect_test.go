@@ -133,7 +133,7 @@ func TestRunInspectionCommandsJSONHelpAndErrors(t *testing.T) {
 	service, home := inspectionFixture(t)
 	t.Setenv("STYLE_HOME", home)
 	t.Setenv("SHELL", "/bin/sh")
-	for _, command := range []string{"list", "adapters", "doctor"} {
+	for _, command := range []string{"list", "doctor"} {
 		var stdout, stderr bytes.Buffer
 		code := RunWithService(context.Background(), service, t.TempDir(), []string{command, "--json"}, &stdout, &stderr)
 		if code != 0 || stderr.Len() != 0 || !json.Valid(stdout.Bytes()) {
@@ -146,6 +146,13 @@ func TestRunInspectionCommandsJSONHelpAndErrors(t *testing.T) {
 		if code := RunWithService(context.Background(), service, "", []string{command, "--bad"}, &stdout, &stderr); code != 1 {
 			t.Fatalf("bad option %s = %d", command, code)
 		}
+	}
+	var doctorText, removed bytes.Buffer
+	if RunWithService(context.Background(), service, t.TempDir(), []string{"doctor"}, &doctorText, &bytes.Buffer{}); !strings.Contains(doctorText.String(), "  limit: ") {
+		t.Fatalf("doctor text omits the adapter inventory: %s", doctorText.String())
+	}
+	if code := RunWithService(context.Background(), service, t.TempDir(), []string{"adapters", "--json"}, &bytes.Buffer{}, &removed); code != ExitUsage || !strings.Contains(removed.String(), `unknown command "adapters"`) {
+		t.Fatalf("removed adapters command = %d %s", code, removed.String())
 	}
 	if err := os.WriteFile(filepath.Join(home, "build", "index.json"), []byte("broken"), 0o600); err != nil {
 		t.Fatal(err)

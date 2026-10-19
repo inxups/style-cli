@@ -78,7 +78,7 @@ def main():
                 assert b"<!-- style:first -->" in legacy.read_bytes()
                 before = tree(style_home, config)
                 for command in (("plan", first, "--harness", "claude-code", "--json"), ("list", "--json"),
-                                ("adapters", "--json"), ("doctor", "--json"), ("stats", "--json")):
+                                ("doctor", "--json"), ("stats", "--json")):
                     output = run(new, env, *command)
                     if command[0] == "doctor":
                         assert output["healthy"], output["diagnostics"]

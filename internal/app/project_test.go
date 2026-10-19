@@ -190,7 +190,7 @@ func TestM3A6ProjectCLIAndZeroWriteFailures(t *testing.T) {
 	if json.Unmarshal(out.Bytes(), &report) != nil || report["scope"] == nil {
 		t.Fatal(&out)
 	}
-	for _, command := range []string{"list", "adapters", "stats"} {
+	for _, command := range []string{"list", "doctor", "stats"} {
 		out.Reset()
 		errOut.Reset()
 		if code := RunWithService(context.Background(), s, root, []string{command, "--project=.", "--json"}, &out, &errOut); code != 0 {

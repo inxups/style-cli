@@ -254,8 +254,7 @@ var (
 			{Name: "--state-dir", Kind: flagString, Value: "d", Group: groupAdvanced},
 			{Name: "--facts", Kind: flagString, Value: "f", Group: groupAdvanced},
 			{Name: "--provenance", Kind: flagString, Value: "f", Group: groupAdvanced}})}
-	probeCommand    = commandSpec{Name: "probe", Project: true, Flags: []flagSpec{{Name: "--harness", Kind: flagString, Value: "h"}, {Name: "--timeout", Kind: flagString, Value: "60s"}, jsonFlag}}
-	adaptersCommand = commandSpec{Name: "adapters", Project: true, Flags: []flagSpec{jsonFlag}}
+	probeCommand = commandSpec{Name: "probe", Project: true, Flags: []flagSpec{{Name: "--harness", Kind: flagString, Value: "h"}, {Name: "--timeout", Kind: flagString, Value: "60s"}, jsonFlag}}
 )
 
 // commandSections orders the top-level help.
@@ -265,7 +264,7 @@ var commandSections = []struct {
 }{
 	{"Authoring", []commandSpec{initCommand, validateCommand, countCommand, planCommand}},
 	{"Installation", []commandSpec{installCommand, restoreCommand, updateCommand, uninstallCommand, syncCommand, trustCommand}},
-	{"Diagnostics", []commandSpec{listCommand, doctorCommand, adaptersCommand, probeCommand, statsCommand, explainCommand}},
+	{"Diagnostics", []commandSpec{listCommand, doctorCommand, probeCommand, statsCommand, explainCommand}},
 }
 
 func lookupCommand(name string) (commandSpec, bool) {

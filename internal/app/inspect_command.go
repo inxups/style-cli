@@ -19,20 +19,6 @@ func runInspect(ctx context.Context, service *Service, workDir, command string, 
 	switch command {
 	case "list":
 		value, err = service.List(ctx, ListRequest{})
-	case "adapters":
-		var result AdaptersResult
-		result, err = service.Adapters(ctx)
-		for _, report := range result.Adapters {
-			if report.Error != "" {
-				exit = ExitInvalid
-			}
-			for _, route := range report.Routes {
-				if route.Error != "" {
-					exit = ExitInvalid
-				}
-			}
-		}
-		value = result
 	case "doctor":
 		var result DoctorResult
 		result, err = service.Doctor(ctx, DoctorRequest{WorkDir: workDir, ResetState: reset})
@@ -55,12 +41,10 @@ func runInspect(ctx context.Context, service *Service, workDir, command string, 
 	switch result := value.(type) {
 	case ListResult:
 		writeListText(out, result.Packages)
-	case AdaptersResult:
-		writeAdaptersText(out, result.Adapters, true)
 	case DoctorResult:
 		fmt.Fprintf(out, "healthy=%t\n", result.Healthy)
 		writeListText(out, result.Packages)
-		writeAdaptersText(out, result.Adapters, false)
+		writeAdaptersText(out, result.Adapters)
 		for _, native := range result.Native {
 			fmt.Fprintf(out, "native %s %s: %s; event=%s matcher=%q timeout=%ds command=%s\n", native.Harness, native.Rule,
 				native.Status, native.Event, native.Matcher, native.Timeout, native.Command)
@@ -99,7 +83,7 @@ func writeListText(out io.Writer, packages []InstalledPackage) {
 	}
 }
 
-func writeAdaptersText(out io.Writer, reports []AdapterReport, verbose bool) {
+func writeAdaptersText(out io.Writer, reports []AdapterReport) {
 	for _, report := range reports {
 		fmt.Fprintf(out, "%s: detected=%t version=%s config=%s\n", report.Provider, report.Detected, report.Version, report.ConfigDir)
 		if report.Error != "" {
@@ -110,9 +94,6 @@ func writeAdaptersText(out io.Writer, reports []AdapterReport, verbose bool) {
 			if route.Error != "" {
 				fmt.Fprintf(out, "    error: %s\n", route.Error)
 			}
-		}
-		if !verbose {
-			continue
 		}
 		fmt.Fprintf(out, "  limit: %d %s approximate=%t overflow=%s; %s\n", report.Limit.Value, report.Limit.Unit, report.Limit.Approximate, report.Limit.Overflow, report.Limit.Source)
 		for _, slot := range report.Static {
