@@ -27,8 +27,8 @@ def main():
             text.write_bytes(item['text'].encode())
             before = snapshot(root)
             for encoding, expected in item['tokens'].items():
-                result = json.loads(run(binary, env, 'count', text, '--count=exact',
-                                        '--count-provider=openai', '--encoding='+encoding, '--json').stdout)['count']
+                result = json.loads(run(binary, env, 'count', text, '--exact=openai:'+encoding,
+                                        '--json').stdout)['count']
                 assert result['tokens'] == expected and result['text_sha256'] == 'sha256:'+item['sha256']
                 assert result['scope'] == 'utf8-text-encoding' and result['implementation'].endswith('@v0.7.0')
                 assert snapshot(root) == before
@@ -36,8 +36,8 @@ def main():
                        text_sha256=item['sha256'])
         text.write_text('PRIVATE COUNT INPUT')
         before = snapshot(root)
-        failure = run(binary, env, 'count', text, '--count=exact', '--count-provider=anthropic',
-                      '--count-model=claude-fixture', '--json', want=1)
+        failure = run(binary, env, 'count', text, '--exact=anthropic:claude-fixture',
+                      '--json', want=1)
         assert not failure.stdout and 'PRIVATE COUNT INPUT' not in failure.stderr
         assert 'ANTHROPIC_API_KEY' in failure.stderr and snapshot(root) == before
         record(cases, 'api', 'missing-key-fails-without-text-disclosure')
@@ -46,11 +46,11 @@ def main():
             source.mkdir()
             (source / 'STYLE.yaml').write_text(manifest('counted', 'hello world', native=True))
             baseline = run(old, env, 'plan', source, '--harness='+provider, '--json')
-            for mode in ((), ('--count=estimate',)):
+            for mode in ((),):
                 result = run(binary, env, 'plan', source, '--harness='+provider, *mode, '--json')
                 assert (result.stdout, result.stderr) == (baseline.stdout, baseline.stderr)
                 record(cases, provider, 'plan-default-estimate-byte-compatibility', explicit=bool(mode))
-            exact_args = ('--count=exact', '--count-provider=openai', '--encoding=o200k_base')
+            exact_args = ('--exact=openai:o200k_base',)
             counted = json.loads(run(binary, env, 'plan', source, '--harness='+provider, *exact_args, '--json').stdout)
             report = counted['reports'][0]
             assert len(report.pop('counts')) == 2 and report.pop('count_scope')
@@ -64,7 +64,7 @@ def main():
                             '--index', home / 'build/index.json', '--json')
             before = snapshot(home, codex, claude, source, payload.parent / 'not-present')
             baseline = run(old, env, *explain_args)
-            for mode in ((), ('--count=estimate',)):
+            for mode in ((),):
                 result = run(binary, env, *explain_args, *mode)
                 assert (result.stdout, result.stderr) == (baseline.stdout, baseline.stderr)
                 record(cases, provider, 'explain-default-estimate-byte-compatibility', explicit=bool(mode))

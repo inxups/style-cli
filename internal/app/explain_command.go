@@ -43,9 +43,12 @@ func parseExplainArgs(args []string) (ExplainRequest, bool, error) {
 		return ExplainRequest{}, false, err
 	}
 	request := ExplainRequest{
-		Count: countOptions(parsed), Harness: parsed.String("--harness"), Event: parsed.String("--event"), Payload: parsed.String("--payload"),
+		Harness: parsed.String("--harness"), Event: parsed.String("--event"), Payload: parsed.String("--payload"),
 		Index: parsed.String("--index"), StateDir: parsed.String("--state-dir"), Facts: parsed.String("--facts"), Provenance: parsed.String("--provenance"),
 		FailClosed: parsed.Bool("--fail-closed"),
+	}
+	if request.Count, err = countOptions(parsed); err != nil {
+		return request, false, err
 	}
 	if strings.Contains(request.Harness, ",") || request.Harness == "auto" {
 		return request, false, fmt.Errorf("select exactly one harness")

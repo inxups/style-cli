@@ -68,7 +68,7 @@ def main():
             check(result.returncode==0,' '.join(command)+': '+result.stdout[-2000:]+result.stderr[-500:])
         for encoding in ['o200k_base','cl100k_base']:
             text=root/'输入.txt';text.write_text('Hello 世界\n',encoding='utf-8')
-            result=run(['count',str(text),'--count=exact','--count-provider=openai','--encoding='+encoding,'--json'])
+            result=run(['count',str(text),'--exact=openai:'+encoding,'--json'])
             check(result.returncode==0,'exact '+encoding+': '+result.stderr[-200:])
         check(run(['uninstall','terse-reviewer','--yes']).returncode==0,'uninstall')
         for path,data in baseline.items():

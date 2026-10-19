@@ -189,38 +189,24 @@ func (c commandSpec) usageError(errOut io.Writer, err error) int {
 }
 
 var (
-	jsonFlag       = flagSpec{Name: "--json", Kind: flagBool}
-	yesFlag        = flagSpec{Name: "--yes", Kind: flagBool}
-	allFlag        = flagSpec{Name: "--all", Kind: flagBool, Hidden: true}
-	refFlag        = flagSpec{Name: "--ref", Kind: flagString, Value: "ref"}
-	pathFlag       = flagSpec{Name: "--path", Kind: flagString, Value: "repo-path"}
-	replaceFlag    = flagSpec{Name: "--allow-replace", Kind: flagBool}
-	countFlagSpecs = []flagSpec{
-		{Name: "--count", Kind: flagString, Value: "estimate|exact"},
-		{Name: "--count-provider", Kind: flagString, Value: "openai|anthropic"},
-		{Name: "--encoding", Kind: flagString, Value: "name"},
-		{Name: "--count-model", Kind: flagString, Value: "id"},
-	}
+	jsonFlag    = flagSpec{Name: "--json", Kind: flagBool}
+	yesFlag     = flagSpec{Name: "--yes", Kind: flagBool}
+	allFlag     = flagSpec{Name: "--all", Kind: flagBool, Hidden: true}
+	refFlag     = flagSpec{Name: "--ref", Kind: flagString, Value: "ref"}
+	pathFlag    = flagSpec{Name: "--path", Kind: flagString, Value: "repo-path"}
+	replaceFlag = flagSpec{Name: "--allow-replace", Kind: flagBool}
+	exactFlag   = flagSpec{Name: "--exact", Kind: flagString, Value: "openai:<encoding>|anthropic:<model>"}
 )
-
-func withFlags(groups ...[]flagSpec) []flagSpec {
-	var flags []flagSpec
-	for _, group := range groups {
-		flags = append(flags, group...)
-	}
-	return flags
-}
 
 var (
 	initCommand     = commandSpec{Name: "init", Args: "[name]", MaxArgs: 1, Flags: []flagSpec{{Name: "--single", Kind: flagBool}}}
 	validateCommand = commandSpec{Name: "validate", Args: "[source]", MaxArgs: 1, Flags: []flagSpec{refFlag, pathFlag, jsonFlag}}
-	countCommand    = commandSpec{Name: "count", Args: "<UTF-8-file>", MaxArgs: 1, Flags: withFlags(countFlagSpecs, []flagSpec{jsonFlag})}
-	planCommand     = commandSpec{Name: "plan", Args: "<source>", MaxArgs: 1, Project: true, Flags: withFlags(
-		[]flagSpec{refFlag, pathFlag, {Name: "--harness", Kind: flagList, Value: "auto|codex,claude-code"}},
-		countFlagSpecs,
-		[]flagSpec{jsonFlag,
-			{Name: "--assume-requests", Kind: flagString, Value: "N", Group: groupAdvanced},
-			{Name: "--assume-triggers", Kind: flagString, Value: "N", Group: groupAdvanced}})}
+	countCommand    = commandSpec{Name: "count", Args: "<UTF-8-file>", MaxArgs: 1, Flags: []flagSpec{exactFlag, jsonFlag}}
+	planCommand     = commandSpec{Name: "plan", Args: "<source>", MaxArgs: 1, Project: true, Flags: []flagSpec{
+		refFlag, pathFlag, {Name: "--harness", Kind: flagList, Value: "auto|codex,claude-code"}, exactFlag, jsonFlag,
+		{Name: "--assume-requests", Kind: flagString, Value: "N", Group: groupAdvanced},
+		{Name: "--assume-triggers", Kind: flagString, Value: "N", Group: groupAdvanced},
+	}}
 	installCommand = commandSpec{Name: "install", Args: "<source>", MaxArgs: 1, Project: true, Flags: []flagSpec{
 		refFlag, pathFlag,
 		{Name: "--harness", Kind: flagList, Value: "h"},
@@ -241,19 +227,17 @@ var (
 	trustCommand     = commandSpec{Name: "trust", Args: "<name>", MaxArgs: 1, Project: true, Flags: []flagSpec{replaceFlag, yesFlag, jsonFlag}}
 	doctorCommand    = commandSpec{Name: "doctor", Project: true, Flags: []flagSpec{{Name: "--reset-state", Kind: flagBool}, jsonFlag}}
 	statsCommand     = commandSpec{Name: "stats", Project: true, Flags: []flagSpec{{Name: "--by", Kind: flagString, Value: "rule|session"}, {Name: "--since", Kind: flagString, Value: "<duration|RFC3339>"}, jsonFlag}}
-	explainCommand   = commandSpec{Name: "explain", Project: true, Flags: withFlags(
-		[]flagSpec{
-			{Name: "--harness", Kind: flagString, Value: "h", Required: true},
-			{Name: "--payload", Kind: flagString, Value: "f.json", Required: true},
-			{Name: "--event", Kind: flagString, Value: "NativeEvent"},
-			{Name: "--fail-closed", Kind: flagBool},
-		},
-		countFlagSpecs,
-		[]flagSpec{jsonFlag,
-			{Name: "--index", Kind: flagString, Value: "f", Group: groupAdvanced},
-			{Name: "--state-dir", Kind: flagString, Value: "d", Group: groupAdvanced},
-			{Name: "--facts", Kind: flagString, Value: "f", Group: groupAdvanced},
-			{Name: "--provenance", Kind: flagString, Value: "f", Group: groupAdvanced}})}
+	explainCommand   = commandSpec{Name: "explain", Project: true, Flags: []flagSpec{
+		{Name: "--harness", Kind: flagString, Value: "h", Required: true},
+		{Name: "--payload", Kind: flagString, Value: "f.json", Required: true},
+		{Name: "--event", Kind: flagString, Value: "NativeEvent"},
+		{Name: "--fail-closed", Kind: flagBool},
+		exactFlag, jsonFlag,
+		{Name: "--index", Kind: flagString, Value: "f", Group: groupAdvanced},
+		{Name: "--state-dir", Kind: flagString, Value: "d", Group: groupAdvanced},
+		{Name: "--facts", Kind: flagString, Value: "f", Group: groupAdvanced},
+		{Name: "--provenance", Kind: flagString, Value: "f", Group: groupAdvanced},
+	}}
 	probeCommand = commandSpec{Name: "probe", Project: true, Flags: []flagSpec{{Name: "--harness", Kind: flagString, Value: "h"}, {Name: "--timeout", Kind: flagString, Value: "60s"}, jsonFlag}}
 )
 

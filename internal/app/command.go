@@ -124,7 +124,10 @@ func parsePlanArgs(args []string) (PlanRequest, bool, error) {
 	if err != nil {
 		return PlanRequest{}, false, err
 	}
-	request := PlanRequest{Source: parsed.Arg(0), Ref: parsed.String("--ref"), Path: parsed.String("--path"), Harnesses: parsed.List("--harness"), Count: countOptions(parsed)}
+	request := PlanRequest{Source: parsed.Arg(0), Ref: parsed.String("--ref"), Path: parsed.String("--path"), Harnesses: parsed.List("--harness")}
+	if request.Count, err = countOptions(parsed); err != nil {
+		return PlanRequest{}, false, err
+	}
 	for _, option := range []struct {
 		name  string
 		value *int

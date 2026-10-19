@@ -96,3 +96,23 @@ func TestInstallFailClosedIsClaudeCodeBoolean(t *testing.T) {
 		}
 	}
 }
+
+func TestExactCountOptionNamesProviderExplicitly(t *testing.T) {
+	for _, test := range []struct {
+		value                     string
+		provider, encoding, model string
+	}{{"openai:o200k_base", "openai", "o200k_base", ""}, {"anthropic:claude-opus-5-5", "anthropic", "", "claude-opus-5-5"}} {
+		options, err := countOptions(parsedArgs{values: map[string][]string{"--exact": {test.value}}})
+		if err != nil || options.Mode != "exact" || options.Provider != test.provider || options.Encoding != test.encoding || options.Model != test.model || options.Validate() != nil {
+			t.Fatalf("%s: options=%+v err=%v", test.value, options, err)
+		}
+	}
+	if options, err := countOptions(parsedArgs{values: map[string][]string{}}); err != nil || options.Exact() {
+		t.Fatalf("default must estimate: %+v %v", options, err)
+	}
+	for _, value := range []string{"openai", "openai:", ":o200k_base", "claude-opus-5-5", "gemini:x"} {
+		if _, err := countOptions(parsedArgs{values: map[string][]string{"--exact": {value}}}); err == nil {
+			t.Fatalf("%s accepted", value)
+		}
+	}
+}

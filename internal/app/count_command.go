@@ -5,22 +5,44 @@ import (
 	"fmt"
 	"io"
 	"path/filepath"
+	"strings"
 	"unicode/utf8"
 
 	"github.com/inxups/style-cli/internal/saferead"
 	"github.com/inxups/style-cli/internal/tokencount"
 )
 
-func countOptions(parsed parsedArgs) tokencount.Options {
-	return tokencount.Options{Mode: parsed.String("--count"), Provider: parsed.String("--count-provider"), Encoding: parsed.String("--encoding"), Model: parsed.String("--count-model")}
+// countOptions maps --exact provider:target onto explicit counter options;
+// without it counts stay local estimates. Provider is never inferred.
+func countOptions(parsed parsedArgs) (tokencount.Options, error) {
+	if !parsed.Has("--exact") {
+		return tokencount.Options{}, nil
+	}
+	provider, target, ok := strings.Cut(parsed.String("--exact"), ":")
+	options := tokencount.Options{Mode: "exact", Provider: provider}
+	switch {
+	case !ok || target == "":
+		return options, fmt.Errorf("--exact requires openai:<encoding> or anthropic:<model>")
+	case provider == "openai":
+		options.Encoding = target
+	case provider == "anthropic":
+		options.Model = target
+	default:
+		return options, fmt.Errorf("--exact provider must be openai or anthropic")
+	}
+	return options, nil
 }
 func runCount(ctx context.Context, s *Service, workDir string, args []string, out, errOut io.Writer) int {
 	parsed, err := countCommand.parse(args)
 	if err != nil {
 		return countCommand.usageError(errOut, err)
 	}
+	options, err := countOptions(parsed)
+	if err != nil {
+		return countCommand.usageError(errOut, err)
+	}
 	fail := func(err error) int { fmt.Fprintln(errOut, "style count:", err); return ExitInvalid }
-	options, path, jsonMode := countOptions(parsed), parsed.Arg(0), parsed.Bool("--json")
+	path, jsonMode := parsed.Arg(0), parsed.Bool("--json")
 	if path == "" {
 		return fail(fmt.Errorf("UTF-8 file is required"))
 	}

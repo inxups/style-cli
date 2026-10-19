@@ -34,7 +34,7 @@ func TestM3A15CountCLIReadOnlyAndInvalidInput(t *testing.T) {
 	writeSyncFile(t, path, "hello world")
 	s.counter = &tokencount.Counter{Key: func() string { t.Fatal("local counter read key"); return "" }, Client: &http.Client{Transport: a15Transport(func(*http.Request) (*http.Response, error) { t.Fatal("local counter used network"); return nil, nil })}}
 	before := snapshotStatsTree(t, root)
-	for _, args := range [][]string{{"count", path, "--json"}, {"count", path, "--count=exact", "--count-provider=openai", "--encoding=o200k_base", "--json"}, {"count", path, "--count", "exact", "--count-provider", "openai", "--encoding", "cl100k_base"}} {
+	for _, args := range [][]string{{"count", path, "--json"}, {"count", path, "--exact=openai:o200k_base", "--json"}, {"count", path, "--exact", "openai:cl100k_base"}} {
 		var out, logs bytes.Buffer
 		code := RunWithService(context.Background(), s, root, args, &out, &logs)
 		if code != 0 || logs.Len() != 0 || strings.Contains(out.String(), "hello world") {
@@ -50,7 +50,7 @@ func TestM3A15CountCLIReadOnlyAndInvalidInput(t *testing.T) {
 	if !reflect.DeepEqual(before, snapshotStatsTree(t, root)) {
 		t.Fatal("count modified input tree")
 	}
-	for _, bad := range [][]string{{"count"}, {"count", path, "--count=exact"}, {"count", path, "--count=exact", "--count-provider=openai", "--encoding=auto"}, {"count", path, "--count-model=x"}, {"count", path, "--count=exact", "--count=exact"}, {"count", path, "--encoding"}, {"count", path, path}} {
+	for _, bad := range [][]string{{"count"}, {"count", path, "--exact=openai"}, {"count", path, "--exact=openai:"}, {"count", path, "--exact=openai:auto"}, {"count", path, "--exact=bogus:x"}, {"count", path, "--exact=anthropic:bad model"}, {"count", path, "--exact=openai:o200k_base", "--exact=openai:o200k_base"}, {"count", path, "--exact"}, {"count", path, "--count=exact"}, {"count", path, "--count-provider=openai"}, {"count", path, path}} {
 		var out, logs bytes.Buffer
 		if code := RunWithService(context.Background(), s, root, bad, &out, &logs); code != 1 || out.Len() != 0 {
 			t.Fatal(bad, code, out.String())
@@ -66,7 +66,7 @@ func TestM3A15CountCLIReadOnlyAndInvalidInput(t *testing.T) {
 				t.Fatal(err)
 			}
 			var out, logs bytes.Buffer
-			if code := RunWithService(context.Background(), s, root, []string{"count", f, "--count=exact", "--count-provider=openai", "--encoding=o200k_base", "--json"}, &out, &logs); code != 1 || out.Len() != 0 {
+			if code := RunWithService(context.Background(), s, root, []string{"count", f, "--exact=openai:o200k_base", "--json"}, &out, &logs); code != 1 || out.Len() != 0 {
 				t.Fatal(code, out.String())
 			}
 		})
@@ -130,7 +130,7 @@ func TestM3A15PlanCountsCompiledTextAndPreservesEstimate(t *testing.T) {
 		t.Fatal("exact plan wrote input tree")
 	}
 	var out, logs bytes.Buffer
-	code := RunWithService(context.Background(), s, root, []string{"plan", source, "--harness=codex", "--count=exact", "--count-provider=openai", "--encoding=o200k_base", "--json"}, &out, &logs)
+	code := RunWithService(context.Background(), s, root, []string{"plan", source, "--harness=codex", "--exact=openai:o200k_base", "--json"}, &out, &logs)
 	if code != 0 || !strings.Contains(out.String(), `"counts"`) || strings.Contains(out.String(), "PRIVATE USER TEXT") {
 		t.Fatal(code, out.String(), logs.String())
 	}
