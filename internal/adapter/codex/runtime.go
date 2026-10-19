@@ -500,11 +500,14 @@ func patchText(input json.RawMessage) (string, bool) {
 	return patch, true
 }
 
+// apply_patch marks files with "*** " lines and has no unified-diff "+++"
+// headers, so every "+" line is added content, including content that itself
+// starts with "++".
 func addedPatchLines(patch string) string {
 	lines := strings.Split(patch, "\n")
 	added := make([]string, 0, len(lines))
 	for _, line := range lines {
-		if strings.HasPrefix(line, "+") && !strings.HasPrefix(line, "+++") {
+		if strings.HasPrefix(line, "+") {
 			added = append(added, strings.TrimPrefix(line, "+"))
 		}
 	}

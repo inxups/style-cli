@@ -166,11 +166,11 @@ func TestEnricherCreatesPromptAndExplicitSkillPoints(t *testing.T) {
 
 func TestEnricherMapsToolInputPatchFieldsAndMCP(t *testing.T) {
 	t.Run("apply patch added lines", func(t *testing.T) {
-		event := runtimeEvent(agenthooks.KindToolPre, "PreToolUse", `{"session_id":"s2","turn_id":"t8","cwd":"/repo","permission_mode":"on-request","tool_name":"apply_patch","tool_input":{"command":"*** Begin Patch\n*** Update File: x.go\n@@\n-old\n+new TODO\n+++ b/x.go\n+++literal\n"}}`)
+		event := runtimeEvent(agenthooks.KindToolPre, "PreToolUse", `{"session_id":"s2","turn_id":"t8","cwd":"/repo","permission_mode":"on-request","tool_name":"apply_patch","tool_input":{"command":"*** Begin Patch\n*** Update File: x.go\n@@\n-old\n+new TODO\n+++count; // FIXME\n*** End Patch\n"}}`)
 		tool := agenthooks.ToolCall{
 			Name: "apply_patch", Canonical: agenthooks.ToolFileEdit,
-			Input:    json.RawMessage(`{"command":"*** Begin Patch\n*** Update File: x.go\n@@\n-old\n+new TODO\n+++ b/x.go\n+++literal\n"}`),
-			RawInput: json.RawMessage(`{"command":"*** Begin Patch\n*** Update File: x.go\n@@\n-old\n+new TODO\n+++ b/x.go\n+++literal\n"}`),
+			Input:    json.RawMessage(`{"command":"*** Begin Patch\n*** Update File: x.go\n@@\n-old\n+new TODO\n+++count; // FIXME\n*** End Patch\n"}`),
+			RawInput: json.RawMessage(`{"command":"*** Begin Patch\n*** Update File: x.go\n@@\n-old\n+new TODO\n+++count; // FIXME\n*** End Patch\n"}`),
 		}
 		pre := &agenthooks.ToolPreEvent{Event: *event, Tool: tool}
 		input, _, err := NewEnricher().Enrich(event, pre, state.Session{Model: "gpt-5"}, state.Scope{SessionID: "s2", AgentID: "main", PromptCount: 8})
@@ -181,7 +181,7 @@ func TestEnricherMapsToolInputPatchFieldsAndMCP(t *testing.T) {
 		if point.Name != "tool.pre" || point.ToolName != "apply_patch" || point.CanonicalTool != "file.edit" || !point.Capabilities.Deny || !point.Capabilities.AddContext {
 			t.Fatalf("tool point = %#v", point)
 		}
-		if got, ok := point.When.Fields.ReadConditionField("tool.added"); !ok || got != "new TODO" {
+		if got, ok := point.When.Fields.ReadConditionField("tool.added"); !ok || got != "new TODO\n++count; // FIXME" {
 			t.Fatalf("tool.added = %q, %v; want new additions only", got, ok)
 		}
 		if got, ok := point.When.Fields.ReadConditionField("tool.input.command"); !ok || !strings.Contains(got, "+new TODO") {
