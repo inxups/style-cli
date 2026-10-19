@@ -3,18 +3,18 @@
   "command": "plan",
   "status": "ok",
   "scope": {
+    "kind": "project",
+    "root": "$FIXTURE/project ' space",
     "base_home": "$FIXTURE/private",
-    "budget_scope": "selected installation only; active user packages have a separate budget and state",
-    "coexisting_user_packages": {},
+    "home": "$PROJECT_HOME",
     "external_prerequisites": [
       "style must be available on the harness PATH",
       "harness workspace trust remains external",
       "launch Claude Code at the project root",
       "launch Codex through the canonical project path"
     ],
-    "home": "$PROJECT_HOME",
-    "kind": "project",
-    "root": "$FIXTURE/project ' space"
+    "coexisting_user_packages": {},
+    "budget_scope": "selected installation only; active user packages have a separate budget and state"
   },
   "diagnostics": [],
   "result": {

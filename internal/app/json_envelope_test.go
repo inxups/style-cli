@@ -55,7 +55,7 @@ func TestJSONEnvelopeWrapsEveryReport(t *testing.T) {
 			if err := json.Unmarshal(out.Bytes(), &envelope); err != nil {
 				t.Fatal(err)
 			}
-			if envelope.Format != envelopeFormat || envelope.Command != test.args[0] || envelope.Status != test.status || envelope.Scope["kind"] != "user" || envelope.Scope["home"] != home {
+			if envelope.Format != envelopeFormat || envelope.Command != test.args[0] || envelope.Status != test.status || !reflect.DeepEqual(envelope.Scope, map[string]any{"kind": "user", "home": home}) {
 				t.Fatalf("envelope = %+v", envelope)
 			}
 			var diagnostics []Diagnostic
@@ -76,6 +76,44 @@ func TestJSONEnvelopeWrapsEveryReport(t *testing.T) {
 			t.Fatalf("%v exit=%d stdout=%q", args, code, out.String())
 		}
 	}
+}
+
+func TestEnvelopeScopeKeyOrder(t *testing.T) {
+	root := t.TempDir()
+	service := testService(t)
+	service.project = &projectScope{Root: root, Base: filepath.Join(root, "base"), Home: filepath.Join(root, "home")}
+	data, err := json.Marshal(service.jsonScope())
+	if err != nil {
+		t.Fatal(err)
+	}
+	if keys := objectKeys(t, data); !reflect.DeepEqual(keys, []string{"kind", "root", "base_home", "home", "external_prerequisites", "coexisting_user_packages", "budget_scope"}) {
+		t.Fatalf("project scope keys = %v", keys)
+	}
+	service.project = nil
+	t.Setenv("STYLE_HOME", root)
+	home, _ := json.Marshal(root)
+	if data, _ = json.Marshal(service.jsonScope()); string(data) != `{"kind":"user","home":`+string(home)+`}` {
+		t.Fatalf("user scope = %s", data)
+	}
+}
+
+// objectKeys returns a JSON object's member names in document order.
+func objectKeys(t *testing.T, data []byte) []string {
+	t.Helper()
+	decoder := json.NewDecoder(bytes.NewReader(data))
+	if _, err := decoder.Token(); err != nil {
+		t.Fatal(err)
+	}
+	var keys []string
+	for decoder.More() {
+		token, _ := decoder.Token()
+		keys = append(keys, token.(string))
+		var skip json.RawMessage
+		if err := decoder.Decode(&skip); err != nil {
+			t.Fatal(err)
+		}
+	}
+	return keys
 }
 
 func TestEnvelopeStatusMirrorsExitCode(t *testing.T) {

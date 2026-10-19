@@ -3,8 +3,8 @@
   "command": "restore",
   "status": "error",
   "scope": {
-    "home": "$FIXTURE/style",
-    "kind": "user"
+    "kind": "user",
+    "home": "$FIXTURE/style"
   },
   "diagnostics": [],
   "result": {

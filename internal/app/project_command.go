@@ -32,7 +32,7 @@ func runProjectCommand(ctx context.Context, service *Service, workDir string, ar
 			return ExitInvalid
 		}
 		if jsonRequested(args) {
-			return runJSON(args[0], map[string]any{"kind": "project"}, out, errOut, report)
+			return runJSON(args[0], envelopeScope{Kind: "project"}, out, errOut, report)
 		}
 		return report(io.Discard, errOut)
 	}
@@ -79,7 +79,7 @@ func runProjectCommand(ctx context.Context, service *Service, workDir string, ar
 		// Text output streams, so a confirmation prompt follows its preview.
 		fmt.Fprintf(out, "scope=project root=%s home=%s\n", scoped.project.Root, scoped.project.Home)
 		fmt.Fprintln(out, "prerequisites: style on harness PATH; same STYLE_HOME; external workspace trust; Claude starts at project root; Codex uses canonical path")
-		if coexisting := scoped.jsonScope()["coexisting_user_packages"].(map[string][]string); len(coexisting) > 0 {
+		if coexisting := scoped.coexistingUserPackages(); len(coexisting) > 0 {
 			data, _ := json.Marshal(coexisting)
 			fmt.Fprintf(out, "coexisting user packages: %s (separate budget/state)\n", data)
 		}

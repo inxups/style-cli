@@ -3,8 +3,8 @@
   "command": "update",
   "status": "ok",
   "scope": {
-    "home": "$FIXTURE/style",
-    "kind": "user"
+    "kind": "user",
+    "home": "$FIXTURE/style"
   },
   "diagnostics": [],
   "result": {

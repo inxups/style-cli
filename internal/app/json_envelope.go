@@ -19,7 +19,7 @@ type jsonEnvelope struct {
 	Format      int               `json:"format"`
 	Command     string            `json:"command"`
 	Status      string            `json:"status"`
-	Scope       map[string]any    `json:"scope"`
+	Scope       any               `json:"scope"`
 	Diagnostics []json.RawMessage `json:"diagnostics"`
 	Result      json.RawMessage   `json:"result"`
 }
@@ -48,7 +48,7 @@ func envelopeStatus(code int) string {
 }
 
 // runJSON captures a command's report and writes it wrapped in the envelope.
-func runJSON(command string, scope map[string]any, out, errOut io.Writer, run func(out, errOut io.Writer) int) int {
+func runJSON(command string, scope any, out, errOut io.Writer, run func(out, errOut io.Writer) int) int {
 	var report bytes.Buffer
 	failures := &failureLines{prefix: "style " + command + ": ", next: errOut}
 	code := run(&report, failures)
@@ -66,7 +66,7 @@ func runJSON(command string, scope map[string]any, out, errOut io.Writer, run fu
 	return code
 }
 
-func wrapReport(command string, code int, scope map[string]any, report []byte, failures []string) (jsonEnvelope, error) {
+func wrapReport(command string, code int, scope any, report []byte, failures []string) (jsonEnvelope, error) {
 	envelope := jsonEnvelope{Format: envelopeFormat, Command: command, Status: envelopeStatus(code), Scope: scope, Diagnostics: []json.RawMessage{}, Result: json.RawMessage("null")}
 	if report = bytes.TrimSpace(report); len(report) > 0 {
 		result, diagnostics, err := splitDiagnostics(report)
@@ -157,15 +157,42 @@ func (w *failureLines) Write(p []byte) (int, error) {
 	return w.next.Write(p)
 }
 
-// jsonScope describes where a command ran.
-func (s *Service) jsonScope() map[string]any {
+// envelopeScope and projectEnvelopeScope describe where a command ran. Struct
+// fields keep "kind" first and every other key in a fixed order.
+type envelopeScope struct {
+	Kind string `json:"kind"`
+	Home string `json:"home,omitempty"`
+}
+
+type projectEnvelopeScope struct {
+	Kind                   string              `json:"kind"`
+	Root                   string              `json:"root"`
+	BaseHome               string              `json:"base_home"`
+	Home                   string              `json:"home"`
+	ExternalPrerequisites  []string            `json:"external_prerequisites"`
+	CoexistingUserPackages map[string][]string `json:"coexisting_user_packages"`
+	BudgetScope            string              `json:"budget_scope"`
+}
+
+func (s *Service) jsonScope() any {
 	if s.project == nil {
-		scope := map[string]any{"kind": "user"}
+		scope := envelopeScope{Kind: "user"}
 		if home, err := s.resolveStyleHome(""); err == nil {
-			scope["home"] = home
+			scope.Home = home
 		}
 		return scope
 	}
+	return projectEnvelopeScope{
+		Kind: "project", Root: s.project.Root, BaseHome: s.project.Base, Home: s.project.Home,
+		ExternalPrerequisites:  []string{"style must be available on the harness PATH", "harness workspace trust remains external", "launch Claude Code at the project root", "launch Codex through the canonical project path"},
+		CoexistingUserPackages: s.coexistingUserPackages(),
+		BudgetScope:            "selected installation only; active user packages have a separate budget and state",
+	}
+}
+
+// coexistingUserPackages lists the user-scope packages active next to a
+// project installation, by harness.
+func (s *Service) coexistingUserPackages() map[string][]string {
 	coexisting := map[string][]string{}
 	if user, err := loadLock(s.project.Base); err == nil {
 		for id := range user.Harnesses {
@@ -175,10 +202,5 @@ func (s *Service) jsonScope() map[string]any {
 			sort.Strings(coexisting[id])
 		}
 	}
-	return map[string]any{
-		"kind": "project", "root": s.project.Root, "base_home": s.project.Base, "home": s.project.Home,
-		"external_prerequisites":   []string{"style must be available on the harness PATH", "harness workspace trust remains external", "launch Claude Code at the project root", "launch Codex through the canonical project path"},
-		"coexisting_user_packages": coexisting,
-		"budget_scope":             "selected installation only; active user packages have a separate budget and state",
-	}
+	return coexisting
 }
