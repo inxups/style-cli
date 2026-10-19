@@ -144,6 +144,10 @@ func TestSplitDiagnosticsKeepsMemberOrder(t *testing.T) {
 	if err != nil || string(result) != "null" || len(diagnostics) != 1 {
 		t.Fatalf("array result=%s diagnostics=%s err=%v", result, diagnostics, err)
 	}
+	result, diagnostics, err = splitDiagnostics([]byte(`{"diagnostics":[{"code":"c"}]}`))
+	if err != nil || string(result) != "null" || len(diagnostics) != 1 {
+		t.Fatalf("diagnostics-only result=%s diagnostics=%s err=%v", result, diagnostics, err)
+	}
 }
 
 func TestUsageAndRejectedErrorsExitCodes(t *testing.T) {
@@ -195,6 +199,10 @@ func TestJSONFailuresKeepTheirCodes(t *testing.T) {
 		var diagnostics []Diagnostic
 		if err := decodeReport(out.Bytes(), &diagnostics); err != nil || len(diagnostics) != 1 || diagnostics[0].Code != test.code {
 			t.Fatalf("%v diagnostics = %+v, %v; want %s", test.args, diagnostics, err, test.code)
+		}
+		var envelope jsonEnvelope
+		if err := json.Unmarshal(out.Bytes(), &envelope); err != nil || string(envelope.Result) != "null" {
+			t.Fatalf("%v result = %s, %v; want null", test.args, envelope.Result, err)
 		}
 	}
 }

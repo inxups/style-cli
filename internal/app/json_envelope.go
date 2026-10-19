@@ -91,7 +91,9 @@ func wrapReport(command string, code int, scope any, report []byte, failures []s
 }
 
 // splitDiagnostics moves a report's top-level diagnostics into the envelope and
-// keeps every other member in order. A bare array report is all diagnostics.
+// keeps every other member in order. A report that holds nothing but
+// diagnostics (a bare array, or an object with no other member) has a null
+// result.
 func splitDiagnostics(report []byte) (json.RawMessage, []json.RawMessage, error) {
 	var diagnostics []json.RawMessage
 	switch report[0] {
@@ -133,6 +135,9 @@ func splitDiagnostics(report []byte) (json.RawMessage, []json.RawMessage, error)
 		result.Write(name)
 		result.WriteByte(':')
 		result.Write(value)
+	}
+	if result.Len() == 1 {
+		return json.RawMessage("null"), diagnostics, nil
 	}
 	result.WriteByte('}')
 	return result.Bytes(), diagnostics, nil

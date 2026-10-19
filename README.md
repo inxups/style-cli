@@ -106,8 +106,9 @@ prerequisites). `diagnostics` holds the report's top-level diagnostics. A
 failed command adds one entry carrying the error's own code (for example
 `source-invalid`, `invalid-package`, `request-rejected`, `conflict`), or
 `command-failed` when the error has none. `result`
-is the command's report, or `null` when the command failed before producing
-one; reports may keep their own `format` and `status` fields. Usage errors
+is the command's report, or `null` when the report holds nothing beyond
+diagnostics (for example a command that failed before producing one); reports
+may keep their own `format` and `status` fields. Usage errors
 (exit `2`) write nothing to stdout.
 
 The following forms were removed without compatibility entry points:

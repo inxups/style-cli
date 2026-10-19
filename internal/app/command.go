@@ -70,7 +70,14 @@ func runPlan(ctx context.Context, service *Service, workDir string, args []strin
 		return commandExit(err)
 	}
 	if jsonOutput {
-		if err := encodeJSON(out, result); err != nil {
+		var report any = result
+		if result.Package == "" && len(result.Reports) == 0 {
+			// Like the text output, a package that did not load has no plan.
+			report = struct {
+				Diagnostics []Diagnostic `json:"diagnostics"`
+			}{result.Diagnostics}
+		}
+		if err := encodeJSON(out, report); err != nil {
 			fmt.Fprintf(errOut, "style plan: encode report: %v\n", err)
 			return ExitInvalid
 		}
