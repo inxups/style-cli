@@ -143,7 +143,7 @@ func TestRunInspectionCommandsJSONHelpAndErrors(t *testing.T) {
 		if code := RunWithService(context.Background(), service, "", []string{command, "--help"}, &stdout, &stderr); code != 0 || !strings.Contains(stdout.String(), "style "+command) {
 			t.Fatalf("help %s = %d %s", command, code, stdout.String())
 		}
-		if code := RunWithService(context.Background(), service, "", []string{command, "--bad"}, &stdout, &stderr); code != 1 {
+		if code := RunWithService(context.Background(), service, "", []string{command, "--bad"}, &stdout, &stderr); code != ExitUsage {
 			t.Fatalf("bad option %s = %d", command, code)
 		}
 	}

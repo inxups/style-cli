@@ -3,6 +3,7 @@ package app
 import (
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"strconv"
@@ -34,6 +35,10 @@ func runStatsAtHome(ctx context.Context, args []string, out, errOut io.Writer, n
 	}
 	result, err := statsAt(ctx, request, now)
 	if err != nil {
+		var usageErr *UsageError
+		if errors.As(err, &usageErr) {
+			return statsCommand.usageError(errOut, err)
+		}
 		fmt.Fprintf(errOut, "style stats: %v\n", err)
 		return ExitInvalid
 	}

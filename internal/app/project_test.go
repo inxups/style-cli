@@ -217,12 +217,20 @@ func TestM3A6CrossScopeSameNameRejectedBothDirections(t *testing.T) {
 	}
 }
 func TestM3A6ProjectCLIAndZeroWriteFailures(t *testing.T) {
-	for _, args := range [][]string{{"list", "--project"}, {"list", "--project="}, {"list", "--project", "--json"}, {"list", "--project=missing", "--json"}, {"init", "--project=."}, {"validate", "--project=."}, {"list", "--project=.", "--project=."}} {
+	for _, test := range []struct {
+		args []string
+		want int
+	}{
+		{[]string{"list", "--project"}, ExitUsage}, {[]string{"list", "--project="}, ExitUsage}, {[]string{"list", "--project", "--json"}, ExitUsage},
+		{[]string{"list", "--project=missing", "--json"}, ExitInvalid}, {[]string{"init", "--project=."}, ExitUsage},
+		{[]string{"validate", "--project=."}, ExitUsage}, {[]string{"list", "--project=.", "--project=."}, ExitUsage},
+	} {
+		args := test.args
 		t.Run(strings.Join(args, " "), func(t *testing.T) {
 			s, base, root, _ := a6Setup(t)
 			before := a4State(t, base, root)
 			var out, errOut bytes.Buffer
-			if code := RunWithService(context.Background(), s, root, args, &out, &errOut); code != 1 || errOut.Len() == 0 {
+			if code := RunWithService(context.Background(), s, root, args, &out, &errOut); code != test.want || errOut.Len() == 0 {
 				t.Fatal(code, &out, &errOut)
 			}
 			a4AssertState(t, before, base, root)

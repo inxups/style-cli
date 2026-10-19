@@ -52,7 +52,7 @@ func TestM3A15CountCLIReadOnlyAndInvalidInput(t *testing.T) {
 	}
 	for _, bad := range [][]string{{"count"}, {"count", path, "--exact=openai"}, {"count", path, "--exact=openai:"}, {"count", path, "--exact=openai:auto"}, {"count", path, "--exact=bogus:x"}, {"count", path, "--exact=anthropic:bad model"}, {"count", path, "--exact=openai:o200k_base", "--exact=openai:o200k_base"}, {"count", path, "--exact"}, {"count", path, "--count=exact"}, {"count", path, "--count-provider=openai"}, {"count", path, path}} {
 		var out, logs bytes.Buffer
-		if code := RunWithService(context.Background(), s, root, bad, &out, &logs); code != 1 || out.Len() != 0 {
+		if code := RunWithService(context.Background(), s, root, bad, &out, &logs); code != ExitUsage || out.Len() != 0 {
 			t.Fatal(bad, code, out.String())
 		}
 	}

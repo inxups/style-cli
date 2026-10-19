@@ -51,7 +51,8 @@ func runHook(ctx context.Context, args []string, in io.Reader, out, errOut io.Wr
 			version = strings.TrimPrefix(arg, "--harness-version=")
 		}
 	}
-	invalid := func(message string) int { fmt.Fprintln(errOut, "style hook: "+message); return ExitUsage }
+	// Exit 2 means "block" to Claude Code, so malformed hook commands stay at 1.
+	invalid := func(message string) int { fmt.Fprintln(errOut, "style hook: "+message); return ExitInvalid }
 	if sentinel < 0 || sentinel+1 >= len(args) || args[sentinel+1] != "run" {
 		return invalid("expected agenthooks run")
 	}

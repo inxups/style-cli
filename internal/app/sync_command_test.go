@@ -51,7 +51,12 @@ func TestRunSyncAndTrustExitCodesAndDiffOutput(t *testing.T) {
 	if code := run("sync"); code != ExitOK || !strings.Contains(stdout.String(), "changed=false") {
 		t.Fatalf("idempotent sync code=%d stdout=%s stderr=%s", code, stdout.String(), stderr.String())
 	}
-	for _, args := range [][]string{{"sync", "extra"}, {"sync", "--yes"}, {"trust", "editable", "--yes"}, {"trust"}, {"trust", "editable", "extra"}, {"trust", "editable", "--unknown"}, {"trust", "missing"}} {
+	for _, args := range [][]string{{"sync", "extra"}, {"sync", "--yes"}, {"trust", "editable", "--yes"}, {"trust"}, {"trust", "editable", "extra"}, {"trust", "editable", "--unknown"}} {
+		if code := run(args...); code != ExitUsage {
+			t.Fatalf("%v code=%d", args, code)
+		}
+	}
+	for _, args := range [][]string{{"trust", "missing"}} {
 		if code := run(args...); code != ExitInvalid {
 			t.Fatalf("%v code=%d", args, code)
 		}

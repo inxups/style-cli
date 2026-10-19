@@ -69,7 +69,7 @@ func TestM3A5SelectionAndCLIOptions(t *testing.T) {
 			a5Offline(t, s)
 			before := a4State(t, home, config)
 			var out, errOut bytes.Buffer
-			if code := RunWithService(context.Background(), s, t.TempDir(), args, &out, &errOut); code != 1 || out.Len() != 0 || errOut.Len() == 0 {
+			if code := RunWithService(context.Background(), s, t.TempDir(), args, &out, &errOut); code != ExitUsage || out.Len() != 0 || errOut.Len() == 0 {
 				t.Fatalf("exit=%d out=%s err=%s", code, &out, &errOut)
 			}
 			a4AssertState(t, before, home, config)

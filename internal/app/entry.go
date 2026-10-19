@@ -9,9 +9,11 @@ import (
 )
 
 const (
-	ExitOK          = 0
-	ExitInvalid     = 1
-	ExitUsage       = ExitInvalid
+	ExitOK      = 0
+	ExitInvalid = 1
+	// ExitUsage reports a command line that could not be parsed into a
+	// request. Requests the service rejects use ExitInvalid.
+	ExitUsage       = 2
 	ExitConflict    = ExitInvalid
 	ExitSyncChanged = 3
 	ExitBlocked     = 4
@@ -36,12 +38,12 @@ func RunWithInput(ctx context.Context, args []string, in io.Reader, out, errOut 
 	service, err := DefaultService()
 	if err != nil {
 		fmt.Fprintf(errOut, "style: %v\n", err)
-		return ExitUsage
+		return ExitInvalid
 	}
 	workDir, err := os.Getwd()
 	if err != nil {
 		fmt.Fprintf(errOut, "style: resolve working directory: %v\n", err)
-		return ExitUsage
+		return ExitInvalid
 	}
 	return RunWithServiceInput(ctx, service, workDir, args, in, out, errOut)
 }
@@ -62,7 +64,7 @@ func RunWithServiceInput(ctx context.Context, service *Service, workDir string, 
 	}
 	if service == nil {
 		fmt.Fprintln(errOut, "style: service is required")
-		return ExitUsage
+		return ExitInvalid
 	}
 	if len(args) == 0 || args[0] == "--help" || args[0] == "-h" || args[0] == "help" && len(args) == 1 {
 		printUsage(out)

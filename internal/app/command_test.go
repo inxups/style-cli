@@ -85,7 +85,7 @@ func TestRunPlanJSONAndArgumentErrors(t *testing.T) {
 		t.Fatalf("session assumptions = %#v, want requests=10 triggers=2", got)
 	}
 	var errOut bytes.Buffer
-	if code := RunWithService(context.Background(), service, root, []string{"plan", "demo", "--harness", "missing"}, &bytes.Buffer{}, &errOut); code != ExitUsage {
+	if code := RunWithService(context.Background(), service, root, []string{"plan", "demo", "--harness", "missing"}, &bytes.Buffer{}, &errOut); code != ExitInvalid {
 		t.Fatalf("unknown harness exit = %d, stderr=%s", code, errOut.String())
 	}
 	if !strings.Contains(errOut.String(), "unknown harness") {
@@ -131,7 +131,7 @@ func TestCommandsShowHelpAndUseStableFailureExitCodes(t *testing.T) {
 			t.Fatalf("%v output=%q stderr=%q, want %q", test.args, output.String(), errOutput.String(), test.want)
 		}
 	}
-	if ExitOK != 0 || ExitInvalid != 1 || ExitUsage != 1 || ExitConflict != 1 || ExitSyncChanged != 3 || ExitBlocked != 4 {
+	if ExitOK != 0 || ExitInvalid != 1 || ExitUsage != 2 || ExitConflict != 1 || ExitSyncChanged != 3 || ExitBlocked != 4 {
 		t.Fatalf("unexpected public exit code mapping: ok=%d invalid=%d usage=%d conflict=%d sync=%d blocked=%d", ExitOK, ExitInvalid, ExitUsage, ExitConflict, ExitSyncChanged, ExitBlocked)
 	}
 }

@@ -524,7 +524,7 @@ func TestA6DedupCannotBypassSourceBudgets(t *testing.T) {
 			wantCode, diagnosticText := ExitBlocked, errOut.String()
 			if test.code == "T001" {
 				// Static T001 is already a source validation error before planning.
-				wantCode, diagnosticText = ExitUsage, out.String()
+				wantCode, diagnosticText = ExitInvalid, out.String()
 			} else if !strings.Contains(diagnosticText, "single-package second") {
 				t.Fatalf("source budget lost its scope: %s", diagnosticText)
 			}

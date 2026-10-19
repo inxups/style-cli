@@ -428,7 +428,7 @@ func TestM3A3FlagsFailBeforeAcquisition(t *testing.T) {
 			t.Run(command+fmt.Sprint(flags), func(t *testing.T) {
 				var out, errOut bytes.Buffer
 				args := append([]string{command, testgit.URL}, flags...)
-				if exit := RunWithService(context.Background(), s, t.TempDir(), args, &out, &errOut); exit != ExitInvalid {
+				if exit := RunWithService(context.Background(), s, t.TempDir(), args, &out, &errOut); exit != ExitUsage {
 					t.Fatalf("%d %s %s", exit, &out, &errOut)
 				}
 			})

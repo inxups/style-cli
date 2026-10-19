@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"path/filepath"
@@ -35,6 +36,10 @@ func runProjectCommand(ctx context.Context, service *Service, workDir string, ar
 		fmt.Fprintf(errOut, "style %s: %v\n", args[0], err)
 		if jsonMode {
 			_ = encodeJSON(out, map[string]any{"status": "error", "diagnostics": []Diagnostic{{Code: "project-invalid", Severity: "error", Message: err.Error()}}})
+		}
+		var usageErr *UsageError
+		if errors.As(err, &usageErr) {
+			return ExitUsage
 		}
 		return ExitInvalid
 	}

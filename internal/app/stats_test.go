@@ -157,7 +157,7 @@ func TestA5StatsWindowsAndUsage(t *testing.T) {
 	} {
 		var out, errOut bytes.Buffer
 		code := runStatsAt(context.Background(), args, &out, &errOut, now)
-		if code != 1 || out.Len() != 0 || errOut.Len() == 0 {
+		if code != ExitUsage || out.Len() != 0 || errOut.Len() == 0 {
 			t.Fatalf("args=%v: exit=%d stdout=%s stderr=%s", args, code, &out, &errOut)
 		}
 	}

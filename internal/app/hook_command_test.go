@@ -16,7 +16,7 @@ func TestHookCommandRejectsUnsupportedInvocationWithoutStdout(t *testing.T) {
 		t.Run(strings.Join(args, " "), func(t *testing.T) {
 			var stdout, stderr bytes.Buffer
 			code := RunWithInput(context.Background(), args, strings.NewReader(`{}`), &stdout, &stderr)
-			if code != ExitUsage || stdout.Len() != 0 || stderr.Len() == 0 {
+			if code != ExitInvalid || stdout.Len() != 0 || stderr.Len() == 0 {
 				t.Fatalf("invalid hook code=%d stdout=%q stderr=%q", code, stdout.String(), stderr.String())
 			}
 		})

@@ -67,6 +67,11 @@ continues to use `style/v0.3`; there is no migration command.
 on a command line) also shows advanced and project options. Boolean flags take
 no value (`--json`, not `--json=true`).
 
+Exit codes: `0` success, `1` the request was rejected or failed, `2` the command
+line could not be parsed (unknown command or option, missing or malformed
+argument), `3` `sync` found changes awaiting `trust`, `4` blocked by policy or
+budget. Hook invocations never exit `2`, which harnesses treat as a block.
+
 `install`, `restore`, `update`, `trust` and `uninstall` print a preview and ask
 `[y/N]` on stderr before changing anything; only `y` or `yes` read from stdin
 applies the change. No input, end of input or any other answer cancels without

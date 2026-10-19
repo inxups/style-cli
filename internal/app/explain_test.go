@@ -109,7 +109,7 @@ func TestM3A1CLIContractAndDeterministicReports(t *testing.T) {
 		{"--harness", "codex", "--harness", "codex", "--event", "PreToolUse", "--payload", "x", "--json"}, {"--bogus", "x", "--json"}, {"--harness", "codex", "--event", "PreToolUse", "--payload", "--json"},
 	} {
 		var out, errOut bytes.Buffer
-		if RunWithService(context.Background(), service, root, append([]string{"explain"}, bad...), &out, &errOut) != 1 || out.Len() != 0 || errOut.Len() == 0 {
+		if RunWithService(context.Background(), service, root, append([]string{"explain"}, bad...), &out, &errOut) != ExitUsage || out.Len() != 0 || errOut.Len() == 0 {
 			t.Fatalf("usage accepted %v: %s %s", bad, out.String(), errOut.String())
 		}
 	}

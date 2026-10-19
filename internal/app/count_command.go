@@ -44,10 +44,10 @@ func runCount(ctx context.Context, s *Service, workDir string, args []string, ou
 	fail := func(err error) int { fmt.Fprintln(errOut, "style count:", err); return ExitInvalid }
 	path, jsonMode := parsed.Arg(0), parsed.Bool("--json")
 	if path == "" {
-		return fail(fmt.Errorf("UTF-8 file is required"))
+		return countCommand.usageError(errOut, fmt.Errorf("UTF-8 file is required"))
 	}
 	if err := options.Validate(); err != nil {
-		return fail(err)
+		return countCommand.usageError(errOut, err)
 	}
 	if !filepath.IsAbs(path) {
 		path = filepath.Join(workDir, path)

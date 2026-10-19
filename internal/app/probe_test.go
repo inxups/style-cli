@@ -659,7 +659,7 @@ func TestM3A2CLIUsageJSONAndTerminalSafety(t *testing.T) {
 		t.Run(strings.Join(args, "_"), func(t *testing.T) {
 			var out, stderr bytes.Buffer
 			code := RunWithService(context.Background(), testService(t), t.TempDir(), append([]string{"probe"}, args...), &out, &stderr)
-			if code != 1 || out.Len() != 0 || stderr.Len() == 0 {
+			if code != ExitUsage || out.Len() != 0 || stderr.Len() == 0 {
 				t.Fatalf("usage %v: %d %q %q", args, code, out.String(), stderr.String())
 			}
 		})

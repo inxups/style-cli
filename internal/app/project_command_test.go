@@ -89,8 +89,11 @@ func TestM3A6CommandGolden(t *testing.T) {
 				var out, errOut bytes.Buffer
 				code := RunWithServiceInput(context.Background(), s, root, args, input, &out, &errOut)
 				want := 0
-				if phase == "preview" || phase == "error" {
-					want = 1
+				switch phase {
+				case "preview":
+					want = ExitInvalid
+				case "error":
+					want = ExitUsage
 				}
 				if code != want {
 					t.Fatal(phase, code, &out, &errOut)
