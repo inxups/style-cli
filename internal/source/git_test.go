@@ -56,6 +56,14 @@ func TestM3A3SourceSyntax(t *testing.T) {
 			}
 		})
 	}
+	t.Run("address-rule", func(t *testing.T) {
+		for _, address := range []string{"git+https://user@example.invalid/repo.git", testgit.URL + "#x"} {
+			_, err := source.Parse(source.Request{Source: address})
+			if err == nil || strings.Contains(err.Error(), "query") || !strings.Contains(err.Error(), "?ref=") {
+				t.Fatalf("%s: %v", address, err)
+			}
+		}
+	})
 	t.Run("address", func(t *testing.T) {
 		separate, err := source.Parse(source.Request{Source: "git+https://example.invalid/team/repo.git", Ref: "refs/tags/v1@x+b", Path: "packages/中文"})
 		if err != nil {

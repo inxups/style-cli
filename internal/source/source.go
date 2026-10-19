@@ -93,7 +93,7 @@ func Parse(r Request) (Selector, error) {
 	}
 	u, err := url.Parse(r.Source[4:])
 	if err != nil || u == nil || !strings.EqualFold(u.Scheme, "https") || u.Hostname() == "" || u.Opaque != "" || u.User != nil || u.RawQuery != "" || u.ForceQuery || strings.Contains(r.Source, "#") || u.Path == "" || !strings.HasPrefix(u.Path, "/") || hasControl(r.Source) || hasControl(u.Path) {
-		return Selector{}, fail("source-invalid", "Git source requires an HTTPS repository URL without credentials, query or fragment")
+		return Selector{}, fail("source-invalid", sourceAddressRule)
 	}
 	u.Scheme, u.Host = "https", strings.ToLower(u.Host)
 	if r.Ref != "" && !ValidRef(r.Ref) {
@@ -109,11 +109,13 @@ func Parse(r Request) (Selector, error) {
 	return Selector{u.String(), r.Ref, p}, nil
 }
 
+const sourceAddressRule = "Git source requires an HTTPS repository URL without credentials or fragment; the only selectors are //package/path and ?ref="
+
 // splitAddress removes the ?ref= query and //package/path selectors and leaves
 // the repository URL for the strict checks in Parse.
 func splitAddress(value string) (repository, ref, p string, err error) {
 	if strings.Contains(value, "#") || hasControl(value) {
-		return "", "", "", fail("source-invalid", "Git source requires an HTTPS repository URL without credentials, query or fragment")
+		return "", "", "", fail("source-invalid", sourceAddressRule)
 	}
 	if i := strings.IndexByte(value, '?'); i >= 0 {
 		// Path unescaping keeps "+" literal: it is valid in ref names (v1.0.0+build).
