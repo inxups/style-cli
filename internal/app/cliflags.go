@@ -195,7 +195,6 @@ var (
 	jsonFlag    = flagSpec{Name: "--json", Kind: flagBool}
 	allFlag     = flagSpec{Name: "--all", Kind: flagBool, Hidden: true}
 	refFlag     = flagSpec{Name: "--ref", Kind: flagString, Value: "ref"}
-	pathFlag    = flagSpec{Name: "--path", Kind: flagString, Value: "repo-path"}
 	replaceFlag = flagSpec{Name: "--allow-replace", Kind: flagBool}
 	harnessFlag = flagSpec{Name: "--harness", Kind: flagList, Value: "auto|h[,h]"}
 	exactFlag   = flagSpec{Name: "--exact", Kind: flagString, Value: "openai:<encoding>|anthropic:<model>"}
@@ -203,15 +202,15 @@ var (
 
 var (
 	initCommand     = commandSpec{Name: "init", Args: "[name]", MaxArgs: 1, Flags: []flagSpec{{Name: "--single", Kind: flagBool}}}
-	validateCommand = commandSpec{Name: "validate", Args: "[source]", MaxArgs: 1, Flags: []flagSpec{refFlag, pathFlag, jsonFlag}}
+	validateCommand = commandSpec{Name: "validate", Args: "[source]", MaxArgs: 1, Flags: []flagSpec{jsonFlag}}
 	countCommand    = commandSpec{Name: "count", Args: "<UTF-8-file>", MaxArgs: 1, Flags: []flagSpec{exactFlag, jsonFlag}}
 	planCommand     = commandSpec{Name: "plan", Args: "[source]", MaxArgs: 1, Project: true, Flags: []flagSpec{
-		refFlag, pathFlag, harnessFlag, exactFlag, jsonFlag,
+		harnessFlag, exactFlag, jsonFlag,
 		{Name: "--assume-requests", Kind: flagString, Value: "N", Group: groupAdvanced},
 		{Name: "--assume-triggers", Kind: flagString, Value: "N", Group: groupAdvanced},
 	}}
 	installCommand = commandSpec{Name: "install", Args: "<source>", MaxArgs: 1, Project: true, Flags: []flagSpec{
-		refFlag, pathFlag, harnessFlag,
+		harnessFlag,
 		{Name: "--set", Kind: flagList, Value: "k=v"},
 		jsonFlag,
 		{Name: "--route", Kind: flagList, Value: "h=r", Group: groupAdvanced},

@@ -68,9 +68,28 @@ func Remote(value string) bool {
 	return strings.Contains(value, "://") || strings.HasPrefix(strings.ToLower(value), "git+")
 }
 
+// Parse accepts the source address git+https://host/repo[//package/path][?ref=R]
+// (go-getter syntax). "//" cannot occur in a canonical package path, and refs
+// may contain "@", so neither "@" nor a fragment delimits selectors. Request
+// Ref and Path are the same selectors for callers that already hold them
+// separately; giving one in both places is an error.
 func Parse(r Request) (Selector, error) {
 	if len(r.Source) < 4 || !strings.EqualFold(r.Source[:4], "git+") {
 		return Selector{}, fail("source-invalid", "use an explicit git+https source")
+	}
+	repository, ref, p, err := splitAddress(r.Source)
+	if err != nil {
+		return Selector{}, err
+	}
+	if ref != "" && r.Ref != "" || p != "" && r.Path != "" {
+		return Selector{}, fail("source-invalid", "ref and package path may each be given only once")
+	}
+	r.Source = repository
+	if ref != "" {
+		r.Ref = ref
+	}
+	if p != "" {
+		r.Path = p
 	}
 	u, err := url.Parse(r.Source[4:])
 	if err != nil || u == nil || !strings.EqualFold(u.Scheme, "https") || u.Hostname() == "" || u.Opaque != "" || u.User != nil || u.RawQuery != "" || u.ForceQuery || strings.Contains(r.Source, "#") || u.Path == "" || !strings.HasPrefix(u.Path, "/") || hasControl(r.Source) || hasControl(u.Path) {
@@ -80,7 +99,7 @@ func Parse(r Request) (Selector, error) {
 	if r.Ref != "" && !ValidRef(r.Ref) {
 		return Selector{}, fail("source-invalid", "ref must be a canonical branch/tag ref or a full lowercase commit OID")
 	}
-	p := r.Path
+	p = r.Path
 	if p == "" {
 		p = "."
 	}
@@ -88,6 +107,38 @@ func Parse(r Request) (Selector, error) {
 		return Selector{}, fail("source-invalid", "package path must be a canonical repository-relative path")
 	}
 	return Selector{u.String(), r.Ref, p}, nil
+}
+
+// splitAddress removes the ?ref= query and //package/path selectors and leaves
+// the repository URL for the strict checks in Parse.
+func splitAddress(value string) (repository, ref, p string, err error) {
+	if strings.Contains(value, "#") || hasControl(value) {
+		return "", "", "", fail("source-invalid", "Git source requires an HTTPS repository URL without credentials, query or fragment")
+	}
+	if i := strings.IndexByte(value, '?'); i >= 0 {
+		query, perr := url.ParseQuery(value[i+1:])
+		if perr != nil || len(query) != 1 || len(query["ref"]) != 1 || query["ref"][0] == "" {
+			return "", "", "", fail("source-invalid", "the only source query is a single non-empty ref=")
+		}
+		value, ref = value[:i], query["ref"][0]
+	}
+	authority := strings.Index(value, "://")
+	if authority < 0 {
+		return value, ref, "", nil
+	}
+	pathStart := strings.IndexByte(value[authority+3:], '/')
+	if pathStart < 0 {
+		return value, ref, "", nil
+	}
+	pathStart += authority + 3
+	if j := strings.Index(value[pathStart:], "//"); j >= 0 {
+		escaped := value[pathStart+j+2:]
+		if p, err = url.PathUnescape(escaped); err != nil || p == "" {
+			return "", "", "", fail("source-invalid", "package path must be a canonical repository-relative path")
+		}
+		value = value[:pathStart+j]
+	}
+	return value, ref, p, nil
 }
 
 var oidPattern = regexp.MustCompile(`^(?:[0-9a-f]{40}|[0-9a-f]{64})$`)

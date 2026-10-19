@@ -42,6 +42,32 @@ func TestM3A3SourceSyntax(t *testing.T) {
 			}
 		})
 	}
+	for _, c := range []struct{ name, url, ref, path string }{
+		{"empty-ref", testgit.URL + "?ref=", "", ""}, {"two-refs", testgit.URL + "?ref=refs/heads/a&ref=refs/heads/b", "", ""}, {"other-query", testgit.URL + "?ref=refs/heads/main&CANARY=1", "", ""},
+		{"ref-fragment", testgit.URL + "?ref=refs/heads/main#CANARY", "", ""}, {"short-address-ref", testgit.URL + "?ref=main", "", ""},
+		{"ref-twice", testgit.URL + "?ref=refs/heads/main", "refs/heads/main", ""}, {"path-twice", testgit.URL + "//pkg", "", "pkg"},
+		{"empty-address-path", testgit.URL + "//", "", ""}, {"address-empty-segment", testgit.URL + "//pkg//other", "", ""}, {"address-parent", testgit.URL + "//pkg/../other", "", ""},
+		{"address-escape", testgit.URL + "//%ZZ", "", ""}, {"address-without-repository", "git+https://example.invalid//pkg", "", ""},
+	} {
+		t.Run(c.name, func(t *testing.T) {
+			_, err := source.Parse(source.Request{Source: c.url, Ref: c.ref, Path: c.path})
+			if source.Code(err) != "source-invalid" || strings.Contains(err.Error(), "CANARY") {
+				t.Fatalf("unsafe or missing failure: %v", err)
+			}
+		})
+	}
+	t.Run("address", func(t *testing.T) {
+		separate, err := source.Parse(source.Request{Source: "git+https://example.invalid/team/repo.git", Ref: "refs/tags/v1@x", Path: "packages/中文"})
+		if err != nil {
+			t.Fatal(err)
+		}
+		for _, address := range []string{"git+https://example.invalid/team/repo.git//packages/中文?ref=refs/tags/v1@x", "git+https://example.invalid/team/repo.git//packages/%E4%B8%AD%E6%96%87?ref=refs%2Ftags%2Fv1%40x"} {
+			combined, err := source.Parse(source.Request{Source: address})
+			if err != nil || combined != separate || combined.URL != "https://example.invalid/team/repo.git" {
+				t.Fatalf("%s: %+v %v, want %+v", address, combined, err, separate)
+			}
+		}
+	})
 	t.Run("canonical", func(t *testing.T) {
 		p, err := source.Parse(source.Request{Source: "git+HTTPS://EXAMPLE.invalid/Team/a%2Fb.git/", Ref: "refs/heads/feature/name", Path: "packages/中文"})
 		if err != nil || p.URL != "https://example.invalid/Team/a%2Fb.git/" || p.Path != "packages/中文" {

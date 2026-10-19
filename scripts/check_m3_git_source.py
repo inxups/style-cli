@@ -120,7 +120,7 @@ def main():
             inputs = [
                 ["git+https://user:CANARY@example.invalid/repo.git"],
                 ["git+http://example.invalid/repo"],
-                [str(local), "--ref", "refs/heads/main"],
+                ["git+https://example.invalid/repo.git//pkg?ref=main"],
             ]
             for source in inputs:
                 result = run(new, cli_env, [command, *source, "--json"])

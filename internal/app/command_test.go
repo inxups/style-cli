@@ -127,8 +127,8 @@ func TestCommandsShowHelpAndUseStableFailureExitCodes(t *testing.T) {
 		args []string
 		want string
 	}{
-		{args: []string{"validate", "--help"}, want: "style validate [source] [--ref ref] [--path repo-path] [--json]\n"},
-		{args: []string{"plan", "--help"}, want: "style plan [source] [--ref ref] [--path repo-path] [--harness auto|h[,h]]... [--exact openai:<encoding>|anthropic:<model>] [--json]\n  advanced: [--assume-requests N] [--assume-triggers N]\n  project: [--project dir] [--style-home dir]\n"},
+		{args: []string{"validate", "--help"}, want: "style validate [source] [--json]\n"},
+		{args: []string{"plan", "--help"}, want: "style plan [source] [--harness auto|h[,h]]... [--exact openai:<encoding>|anthropic:<model>] [--json]\n  advanced: [--assume-requests N] [--assume-triggers N]\n  project: [--project dir] [--style-home dir]\n"},
 	} {
 		var output, errOutput bytes.Buffer
 		if code := RunWithService(context.Background(), service, t.TempDir(), test.args, &output, &errOutput); code != ExitOK {

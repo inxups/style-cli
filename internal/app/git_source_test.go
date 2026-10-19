@@ -88,7 +88,7 @@ func TestM3A3GitCLIAndLifecycle(t *testing.T) {
 			for _, command := range []string{"validate", "plan", "install"} {
 				t.Run("preview-"+command, func(t *testing.T) {
 					before := a3Installed(t, home, config)
-					args := []string{command, testgit.URL, "--ref=refs/heads/main", "--path", "pkg", "--json"}
+					args := []string{command, testgit.URL + "//pkg?ref=refs/heads/main", "--json"}
 					if command != "validate" {
 						args = append(args, "--harness", nativeProvider(route))
 					}
@@ -424,24 +424,25 @@ func TestM3A3FlagsFailBeforeAcquisition(t *testing.T) {
 		return source.Snapshot{}, nil
 	})
 	for _, command := range []string{"validate", "plan", "install"} {
-		for _, flags := range [][]string{{"--ref"}, {"--path="}, {"--ref=refs/heads/main", "--ref=refs/heads/other"}, {"--path=pkg", "--path=other"}} {
+		// Selectors live in the source address; the old flags are unknown options.
+		for _, flags := range [][]string{{"--ref=refs/heads/main"}, {"--path=pkg"}} {
 			t.Run(command+fmt.Sprint(flags), func(t *testing.T) {
 				var out, errOut bytes.Buffer
 				args := append([]string{command, testgit.URL}, flags...)
-				if exit := RunWithService(context.Background(), s, t.TempDir(), args, &out, &errOut); exit != ExitUsage {
+				if exit := RunWithService(context.Background(), s, t.TempDir(), args, &out, &errOut); exit != ExitUsage || !strings.Contains(errOut.String(), "unknown option") {
 					t.Fatalf("%d %s %s", exit, &out, &errOut)
 				}
 			})
 		}
-	}
-	for _, command := range []string{"validate", "plan", "install"} {
-		t.Run(command+"-local-ref", func(t *testing.T) {
-			var out, errOut bytes.Buffer
-			exit := RunWithService(context.Background(), s, t.TempDir(), []string{command, "local", "--ref=refs/heads/main", "--json"}, &out, &errOut)
-			if exit != ExitInvalid || !strings.Contains(out.String()+errOut.String(), "source-invalid") {
-				t.Fatalf("%d %s %s", exit, &out, &errOut)
-			}
-		})
+		for _, address := range []string{"?ref=", "?ref=main", "?ref=refs/heads/a&ref=refs/heads/b", "?path=pkg", "//", "//pkg//other", "//../pkg"} {
+			t.Run(command+address, func(t *testing.T) {
+				var out, errOut bytes.Buffer
+				exit := RunWithService(context.Background(), s, t.TempDir(), []string{command, testgit.URL + address, "--json"}, &out, &errOut)
+				if exit != ExitInvalid || !strings.Contains(out.String()+errOut.String(), "source-invalid") {
+					t.Fatalf("%d %s %s", exit, &out, &errOut)
+				}
+			})
+		}
 	}
 	if _, err := s.Install(context.Background(), InstallRequest{Source: testgit.URL, Link: true, Home: t.TempDir()}); source.Code(err) != "source-invalid" {
 		t.Fatal(err)

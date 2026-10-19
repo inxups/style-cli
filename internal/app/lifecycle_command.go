@@ -138,7 +138,7 @@ func parseInstallArgs(args []string) (InstallRequest, bool, error) {
 		return InstallRequest{}, false, err
 	}
 	request := InstallRequest{
-		Source: parsed.Arg(0), Ref: parsed.String("--ref"), Path: parsed.String("--path"),
+		Source:    parsed.Arg(0),
 		Harnesses: parsed.List("--harness"), ProjectSources: parsed.List("--project-source"),
 		Link: parsed.Bool("--link"), AllowReplace: parsed.Bool("--allow-replace"),
 		Settings: map[string]string{}, Routes: map[string]string{}, ProjectSettings: map[string]string{},

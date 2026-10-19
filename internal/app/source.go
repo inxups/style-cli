@@ -24,6 +24,10 @@ func (s *Service) acquireGit(ctx context.Context, request source.Request) (sourc
 		return source.Snapshot{}, nil, err
 	}
 	request.Home = home
+	// Reject malformed addresses before any acquirer can start Git.
+	if _, err := source.Parse(request); err != nil {
+		return source.Snapshot{}, nil, err
+	}
 	resolver := s.sources
 	if resolver == nil {
 		resolver = &source.Resolver{}
@@ -37,7 +41,7 @@ func (s *Service) acquireGit(ctx context.Context, request source.Request) (sourc
 
 func localSourceOptions(ref, p string) error {
 	if ref != "" || p != "" {
-		return &source.Error{Code: "source-invalid", Message: "--ref and --path require a git+https source"}
+		return &source.Error{Code: "source-invalid", Message: "ref and package path require a git+https source"}
 	}
 	return nil
 }

@@ -113,7 +113,7 @@ func parseValidateArgs(args []string) (ValidateRequest, bool, error) {
 	if err != nil {
 		return ValidateRequest{}, false, err
 	}
-	return ValidateRequest{Source: parsed.Arg(0), Ref: parsed.String("--ref"), Path: parsed.String("--path")}, parsed.Bool("--json"), nil
+	return ValidateRequest{Source: parsed.Arg(0)}, parsed.Bool("--json"), nil
 }
 
 func parsePlanArgs(args []string) (PlanRequest, bool, error) {
@@ -121,7 +121,7 @@ func parsePlanArgs(args []string) (PlanRequest, bool, error) {
 	if err != nil {
 		return PlanRequest{}, false, err
 	}
-	request := PlanRequest{Source: parsed.Arg(0), Ref: parsed.String("--ref"), Path: parsed.String("--path"), Harnesses: parsed.List("--harness")}
+	request := PlanRequest{Source: parsed.Arg(0), Harnesses: parsed.List("--harness")}
 	if request.Count, err = countOptions(parsed); err != nil {
 		return PlanRequest{}, false, err
 	}

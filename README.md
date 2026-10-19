@@ -67,6 +67,13 @@ continues to use `style/v0.3`; there is no migration command.
 on a command line) also shows advanced and project options. Boolean flags take
 no value (`--json`, not `--json=true`).
 
+A source is a local directory or file, or a Git address in go-getter form:
+`git+https://host/org/repo.git//package/path?ref=refs/tags/v1`. The `//path`
+and `?ref=` selectors are optional (default: repository root and the remote
+HEAD); refs are canonical `refs/heads/…`, `refs/tags/…` or full commit OIDs.
+Each `--project-source` carries its own selectors. `update NAME --ref REF`
+switches the ref of an installed Git package.
+
 `--harness` means the same everywhere: it is repeatable, takes comma lists, any
 case and the `claude` alias, and `auto` (the default) selects detected harnesses
 (`plan`, `install`) or every installed one (`probe`). `explain` reads a single
@@ -93,6 +100,7 @@ The following forms were removed without compatibility entry points:
 | `--count=exact --count-provider=P --encoding=E` / `--count-model=M` | `--exact openai:E` / `--exact anthropic:M` |
 | `install --fail-closed claude-code` | `install --fail-closed` |
 | `--yes` on `install`, `restore`, `update`, `trust`, `uninstall` | answer `y` to the prompt (stdin) |
+| `--ref R --path P` on `validate`, `plan`, `install` | `git+https://…/repo.git//P?ref=R` |
 
 `explain --event` is optional; the event is read from the payload's
 `hook_event_name`, and an explicit `--event` must match it.
