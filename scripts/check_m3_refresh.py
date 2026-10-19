@@ -130,7 +130,7 @@ def main():
                 assert snapshot(base, codex, claude, project) == before, (command, rejected.stdout, rejected.stderr)
             record(cases, route, "actual-old-management-conservative-zero-write", commands=4)
             for command in (("sync",), ("trust", "periodic", "--yes"),
-                            ("update", "--all", "--yes"), ("install", "--frozen", "--yes")):
+                            ("update", "--all", "--yes"), ("restore", "--yes")):
                 run(new, env, *command, *scope, "--json")
             doctor = json.loads(run(new, env, "doctor", *scope, "--json").stdout)
             assert any(d["code"] == "refresh-index-2" for d in doctor["diagnostics"])
@@ -138,7 +138,7 @@ def main():
             clock = state_file.read_bytes()
             (home / "build/index.json").unlink()
             (home / "build/explain.json").unlink()
-            run(new, env, "install", "--frozen", *scope, "--yes", "--json")
+            run(new, env, "restore", *scope, "--yes", "--json")
             assert json.loads(index_path.read_text()) == index
             assert state_file.read_bytes() == clock
             record(cases, route, "frozen-exact-policy-clock-preserved")

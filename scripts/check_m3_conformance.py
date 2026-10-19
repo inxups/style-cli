@@ -110,7 +110,7 @@ def main():
             record(cases,route,'combined-fail-closed-and-recovery')
             original_index=index.read_bytes();lock=home/'style.lock.yaml';locked=lock.read_bytes();clock=snapshot(home/'state')
             (home/'effort.yaml').write_text('invalid current mapping');index.unlink();(home/'build/explain.json').unlink()
-            run(binary,env,'install','--frozen',*scope,'--yes','--json')
+            run(binary,env,'restore',*scope,'--yes','--json')
             assert index.read_bytes()==original_index and lock.read_bytes()==locked and snapshot(home/'state')==clock
             before=snapshot(base,codex,claude,project)
             run(old,{**env,'STYLE_HOME':str(home)},'sync',want=1)

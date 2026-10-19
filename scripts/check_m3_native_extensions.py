@@ -71,7 +71,7 @@ def main():
                           ('sync', *scope, '--json'),
                           ('trust', 'native-compat', *scope, '--yes', '--json'),
                           ('update', '--all', *scope, '--yes', '--json'),
-                          ('install', '--frozen', *scope, '--yes', '--json')]
+                          ('restore', *scope, '--yes', '--json')]
             for operation in operations:
                 result = run(runner, env, *operation, want=1)
                 output = result.stdout + result.stderr

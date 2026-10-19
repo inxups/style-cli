@@ -8,17 +8,17 @@ import (
 )
 
 func parseFrozenArgs(args []string) (FrozenRequest, bool, error) {
-	parsed, err := frozenCommand.parse(args)
+	parsed, err := restoreCommand.parse(args)
 	if err != nil {
 		return FrozenRequest{}, false, err
 	}
 	return FrozenRequest{Yes: parsed.Bool("--yes"), AllowReplace: parsed.Bool("--allow-replace")}, parsed.Bool("--json"), nil
 }
 
-func runFrozen(ctx context.Context, s *Service, args []string, out, errOut io.Writer) int {
+func runRestore(ctx context.Context, s *Service, args []string, out, errOut io.Writer) int {
 	request, jsonOutput, err := parseFrozenArgs(args)
 	if err != nil {
-		return frozenCommand.usageError(errOut, err)
+		return restoreCommand.usageError(errOut, err)
 	}
 	written := false
 	if !jsonOutput {
@@ -43,9 +43,9 @@ func runFrozen(ctx context.Context, s *Service, args []string, out, errOut io.Wr
 		if runErr != nil {
 			writeDiagnostics(errOut, result.Diagnostics)
 		} else if result.AwaitingConfirmation {
-			fmt.Fprintln(errOut, "approval required; review the frozen recovery and rerun with --yes")
+			fmt.Fprintln(errOut, "approval required; review the restore preview and rerun with --yes")
 		} else {
-			fmt.Fprintf(out, "frozen install %s (changed=%t)\n", result.Status, result.Changed)
+			fmt.Fprintf(out, "restore %s (changed=%t)\n", result.Status, result.Changed)
 		}
 	}
 	var blocked *BlockedError
@@ -63,5 +63,5 @@ func writeFrozenPreview(out io.Writer, result FrozenResult) {
 	for _, content := range result.Contents {
 		fmt.Fprintf(out, "  %s: snapshot=%s storage_repair=%t\n", content.Package, content.Snapshot, content.StorageRepair)
 	}
-	writeSourceTransactionPreview(out, result.UpdateResult, "Frozen install")
+	writeSourceTransactionPreview(out, result.UpdateResult, "Restore")
 }

@@ -118,7 +118,7 @@ def main():
             mapping_file.write_text('invalid live mapping')
             (home / 'build/index.json').unlink()
             (home / 'build/explain.json').unlink()
-            run(binary, env, 'install', '--frozen', *scope, '--yes', '--json')
+            run(binary, env, 'restore', *scope, '--yes', '--json')
             assert json.loads(index_path.read_text()) == index and (home / 'style.lock.yaml').read_text() == lock
             record(cases, route, 'frozen-rebuild-uses-approved-lock-not-live-mapping')
             config('low')

@@ -54,7 +54,7 @@ def main():
         lock = user/'.style'/'style.lock.yaml'; before_lock=lock.read_bytes()
         installed = user/'.style'/'packages'/'terse-reviewer'/'STYLE.yaml'; before_package=installed.read_bytes()
         installed.write_bytes(b'corrupt managed package')
-        frozen=run(['install','--frozen','--yes','--json'])
+        frozen=run(['restore','--yes','--json'])
         check(frozen.returncode==0,'offline frozen restoration: '+frozen.stderr[-300:])
         check(installed.read_bytes()==before_package,'frozen restores exact locked package bytes')
         check(lock.read_bytes()==before_lock,'frozen preserves exact lock bytes')

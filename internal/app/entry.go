@@ -91,6 +91,8 @@ func RunWithService(ctx context.Context, service *Service, workDir string, args 
 		return runInstall(ctx, service, workDir, args[1:], out, errOut)
 	case "update":
 		return runUpdate(ctx, service, args[1:], out, errOut)
+	case "restore":
+		return runRestore(ctx, service, args[1:], out, errOut)
 	case "uninstall":
 		return runUninstall(ctx, service, args[1:], out, errOut)
 	case "sync", "trust":
@@ -113,7 +115,4 @@ func RunWithService(ctx context.Context, service *Service, workDir string, args 
 func printCommandHelp(out io.Writer, name string) {
 	command, _ := lookupCommand(name)
 	fmt.Fprintln(out, command.usage())
-	if name == "install" {
-		fmt.Fprintln(out, frozenCommand.usage())
-	}
 }

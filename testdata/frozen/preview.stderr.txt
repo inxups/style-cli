@@ -1,1 +1,1 @@
-approval required; review the frozen recovery and rerun with --yes
+approval required; review the restore preview and rerun with --yes

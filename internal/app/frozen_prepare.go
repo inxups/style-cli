@@ -32,7 +32,7 @@ func (s *Service) prepareFrozen(ctx context.Context, request FrozenRequest) (p p
 	}
 	tx.inputs, err = s.captureManagement(tx.home)
 	if err != nil {
-		return p, updateFailure("installation-changed", "cannot capture frozen installation inputs safely", err)
+		return p, updateFailure("installation-changed", "cannot capture installation inputs for restore safely", err)
 	}
 	if err := checkUpdatePrivateInputs(tx.home, tx.inputs); err != nil {
 		return p, err

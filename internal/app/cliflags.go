@@ -233,7 +233,7 @@ var (
 		{Name: "--project-source", Kind: flagList, Value: "source", Group: groupProject},
 		{Name: "--project-set", Kind: flagList, Value: "package.key=value", Group: groupProject},
 	}}
-	frozenCommand    = commandSpec{Name: "install", Project: true, Flags: []flagSpec{{Name: "--frozen", Kind: flagBool, Required: true}, replaceFlag, yesFlag, jsonFlag}}
+	restoreCommand   = commandSpec{Name: "restore", Project: true, Flags: []flagSpec{replaceFlag, yesFlag, jsonFlag}}
 	updateCommand    = commandSpec{Name: "update", Args: "<name|--all>", MaxArgs: 1, Project: true, Flags: []flagSpec{allFlag, refFlag, replaceFlag, yesFlag, jsonFlag}}
 	uninstallCommand = commandSpec{Name: "uninstall", Args: "<name|--all>", MaxArgs: 1, Project: true, Flags: []flagSpec{allFlag, yesFlag, jsonFlag}}
 	listCommand      = commandSpec{Name: "list", Project: true, Flags: []flagSpec{jsonFlag}}
@@ -264,7 +264,7 @@ var commandSections = []struct {
 	Commands []commandSpec
 }{
 	{"Authoring", []commandSpec{initCommand, validateCommand, countCommand, planCommand}},
-	{"Installation", []commandSpec{installCommand, updateCommand, uninstallCommand, syncCommand, trustCommand}},
+	{"Installation", []commandSpec{installCommand, restoreCommand, updateCommand, uninstallCommand, syncCommand, trustCommand}},
 	{"Diagnostics", []commandSpec{listCommand, doctorCommand, adaptersCommand, probeCommand, statsCommand, explainCommand}},
 }
 

@@ -19,13 +19,13 @@ from check_m3_update import fixture, manifest, record, run, sha, snapshot
 def document(result):
     assert result.stderr == "", result.stderr
     value = json.loads(result.stdout)
-    assert value["format"] == 1 and value["command"] == "install --frozen"
+    assert value["format"] == 1 and value["command"] == "restore"
     assert value["locked_source"] is True
     return value
 
 
 def frozen(binary, env, *flags, want=0):
-    return document(run(binary, env, "install", "--frozen", "--json", *flags, want=want))
+    return document(run(binary, env, "restore", "--json", *flags, want=want))
 
 
 def main():
@@ -91,7 +91,7 @@ def main():
             assert result["contents"] == [{"package": "first", "snapshot": "approved", "storage_repair": True}]
             assert snapshot(*roots) == before
             record(cases, route, "json-preview", approved_snapshot=True, readonly=True)
-            text = run(new, env, "install", "--frozen", want=1)
+            text = run(new, env, "restore", want=1)
             assert "printf NATIVE-Locked." in text.stdout and "approval required" in text.stderr
             assert snapshot(*roots) == before
             record(cases, route, "text-preview", native_disclosed=True, readonly=True)
@@ -106,8 +106,8 @@ def main():
             assert result["status"] == "unchanged" and snapshot(*roots) == before
             record(cases, route, "repeat", zero_installation_changes=True)
             for flags in (("source",), ("--ref=refs/heads/main",), ("--set=k=v",),
-                          ("--route=x",), ("--frozen=true",), ("--project",)):
-                invalid = run(new, env, "install", "--frozen", *flags, want=1)
+                          ("--route=x",), ("--frozen",), ("--project",)):
+                invalid = run(new, env, "restore", *flags, want=1)
                 assert invalid.stdout == "" and invalid.stderr
             assert snapshot(*roots) == before
             record(cases, route, "usage-refusal", combinations=6)

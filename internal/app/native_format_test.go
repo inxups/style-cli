@@ -68,7 +68,7 @@ func TestNativeFormatRemovedManagementIsAtomic(t *testing.T) {
 			before := a4State(t, home, config)
 			for _, args := range [][]string{
 				{"sync", "--json"}, {"trust", "native-test", "--yes", "--json"},
-				{"update", "--all", "--yes", "--json"}, {"install", "--frozen", "--yes", "--json"},
+				{"update", "--all", "--yes", "--json"}, {"restore", "--yes", "--json"},
 				{"install", candidate, "--harness=codex", "--route=codex=codex-user", "--yes", "--json"},
 			} {
 				var out, errOut bytes.Buffer

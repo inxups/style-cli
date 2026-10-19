@@ -62,20 +62,20 @@ func a5Reject(t *testing.T, s *Service, home, config, code string) {
 	check()
 }
 func TestM3A5SelectionAndCLIOptions(t *testing.T) {
-	for _, args := range [][]string{{"--frozen", "source"}, {"source", "--frozen"}, {"--frozen", "--all"}, {"--frozen", "--harness=codex"}, {"--frozen", "--harness", "codex"}, {"--frozen", "--route=codex=codex-user"}, {"--frozen", "--set=k=v"}, {"--frozen", "--link"}, {"--frozen", "--ref=refs/heads/main"}, {"--frozen", "--path=pkg"}, {"--frozen", "--fail-closed=claude-code"}, {"--frozen", "--lock=other"}, {"--frozen", "--project"}, {"--frozen", "--yes", "--yes"}, {"--frozen", "--frozen"}, {"--frozen=true"}, {"--frozen", "--json", "--json"}, {"--frozen", "--allow-replace", "--allow-replace"}} {
+	for _, args := range [][]string{{"restore", "source"}, {"restore", "--all"}, {"restore", "--harness=codex"}, {"restore", "--harness", "codex"}, {"restore", "--route=codex=codex-user"}, {"restore", "--set=k=v"}, {"restore", "--link"}, {"restore", "--ref=refs/heads/main"}, {"restore", "--path=pkg"}, {"restore", "--fail-closed=claude-code"}, {"restore", "--lock=other"}, {"restore", "--project"}, {"restore", "--yes", "--yes"}, {"restore", "--frozen"}, {"restore", "--json", "--json"}, {"restore", "--allow-replace", "--allow-replace"}, {"install", "--frozen"}, {"install", "--frozen", "--yes"}} {
 		t.Run(strings.Join(args, " "), func(t *testing.T) {
 			s, home, config, _ := a4Setup(t, "codex-user", a4Manifest("first", "Locked."), false)
 			t.Setenv("STYLE_HOME", home)
 			a5Offline(t, s)
 			before := a4State(t, home, config)
 			var out, errOut bytes.Buffer
-			if code := RunWithService(context.Background(), s, t.TempDir(), append([]string{"install"}, args...), &out, &errOut); code != 1 || out.Len() != 0 || errOut.Len() == 0 {
+			if code := RunWithService(context.Background(), s, t.TempDir(), args, &out, &errOut); code != 1 || out.Len() != 0 || errOut.Len() == 0 {
 				t.Fatalf("exit=%d out=%s err=%s", code, &out, &errOut)
 			}
 			a4AssertState(t, before, home, config)
 		})
 	}
-	for _, args := range [][]string{{"--frozen"}, {"--json", "--frozen", "--yes", "--allow-replace"}} {
+	for _, args := range [][]string{{}, {"--json", "--yes", "--allow-replace"}} {
 		if _, _, err := parseFrozenArgs(args); err != nil {
 			t.Fatal(err)
 		}
@@ -110,7 +110,7 @@ func TestM3A5NoopAndBuildRecovery(t *testing.T) {
 				check := a5Lock(t, home)
 				before := a4State(t, home, config)
 				preview, err := s.InstallFrozen(context.Background(), FrozenRequest{Home: home})
-				if err != nil || preview.LockSHA256 != hashBytes(raw) || !preview.LockedSource || preview.Command != "install --frozen" || len(preview.Native) != fixtureNativeCount(2) || len(preview.Reports) != 1 {
+				if err != nil || preview.LockSHA256 != hashBytes(raw) || !preview.LockedSource || preview.Command != "restore" || len(preview.Native) != fixtureNativeCount(2) || len(preview.Reports) != 1 {
 					t.Fatalf("preview=%+v %v", preview, err)
 				}
 				a4AssertState(t, before, home, config)

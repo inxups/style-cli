@@ -12,9 +12,6 @@ import (
 )
 
 func runInstall(ctx context.Context, service *Service, workDir string, args []string, out, errOut io.Writer) int {
-	if frozenInvocation(args) {
-		return runFrozen(ctx, service, args, out, errOut)
-	}
 	request, jsonOutput, err := parseInstallArgs(args)
 	if err != nil {
 		return installCommand.usageError(errOut, err)

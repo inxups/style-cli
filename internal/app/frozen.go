@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"strings"
 )
 
 // FrozenRequest restores the entire current lock. It has no source, settings,
@@ -30,7 +29,7 @@ type FrozenResult struct {
 
 func newFrozenResult() FrozenResult {
 	result := FrozenResult{UpdateResult: newUpdateResult(), LockedSource: true, Contents: []FrozenContent{}}
-	result.Command = "install --frozen"
+	result.Command = "restore"
 	return result
 }
 
@@ -65,7 +64,7 @@ func (s *Service) InstallFrozen(ctx context.Context, request FrozenRequest) (res
 		}
 		confirmed, err = request.Confirm(preview)
 		if err != nil {
-			return result, updateFailure("confirmation-failed", "frozen install confirmation did not complete", err)
+			return result, updateFailure("confirmation-failed", "restore confirmation did not complete", err)
 		}
 	}
 	if !confirmed {
@@ -82,14 +81,14 @@ func frozenDiagnostic(err error) Diagnostic {
 	switch diagnostic.Code {
 	case "update-failed":
 		diagnostic.Code = "frozen-failed"
-		diagnostic.Message = "frozen install could not be completed; inspect the installation before retrying"
+		diagnostic.Message = "restore could not be completed; inspect the installation before retrying"
 	case "canceled":
-		diagnostic.Message = "frozen install was canceled; any incomplete installation changes were rolled back"
+		diagnostic.Message = "restore was canceled; any incomplete installation changes were rolled back"
 	case "installation-changed":
-		diagnostic.Message = "captured installation inputs changed; rerun frozen install to review a fresh recovery plan"
+		diagnostic.Message = "captured installation inputs changed; rerun style restore to review a fresh recovery plan"
 	case "update-apply-failed":
 		diagnostic.Code = "frozen-apply-failed"
-		diagnostic.Message = "cannot apply frozen recovery; inspect the installation before retrying"
+		diagnostic.Message = "cannot apply restore; inspect the installation before retrying"
 	}
 	return diagnostic
 }
@@ -111,11 +110,3 @@ func frozenKeys(values map[string]string) []string {
 }
 
 // Recognition does not reinterpret values or paths as regular install inputs.
-func frozenInvocation(args []string) bool {
-	for _, arg := range args {
-		if arg == "--frozen" || strings.HasPrefix(arg, "--frozen=") {
-			return true
-		}
-	}
-	return false
-}

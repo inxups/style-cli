@@ -12,9 +12,6 @@ func TestCommandHelpWorksInAnyPosition(t *testing.T) {
 	for _, section := range commandSections {
 		for _, command := range section.Commands {
 			want := command.usage() + "\n"
-			if command.Name == "install" {
-				want += frozenCommand.usage() + "\n"
-			}
 			for _, args := range [][]string{
 				{command.Name, "--help"},
 				{command.Name, "operand", "-h"},

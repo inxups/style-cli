@@ -1,6 +1,6 @@
 Lock: $LOCK_SHA256; locked_source=true
   first: snapshot=managed storage_repair=false
-Frozen install: unchanged; selected=["first"]
+Restore: unchanged; selected=["first"]
 first (seq=1):
   before: version="0.1.0" source="$FIXTURE/source" kind=dir link=false link_trusted=false replace=false content=sha256:464247cffef5989ec5aeb92b74be2af522b752c5aaf9f068839217659228525c
   after: version="0.1.0" source="$FIXTURE/source" kind=dir link=false link_trusted=false replace=false content=sha256:464247cffef5989ec5aeb92b74be2af522b752c5aaf9f068839217659228525c
@@ -48,4 +48,4 @@ Native commands:
   codex first/later: event=PreToolUse matcher="^Bash$" timeout=19s
     command: printf later
     route: codex-user; trust=preseed; Codex hooks.state is pre-seeded
-frozen install unchanged (changed=false)
+restore unchanged (changed=false)

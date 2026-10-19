@@ -61,7 +61,7 @@ func TestM3A5CommandGoldenAndSingleJSON(t *testing.T) {
 				suffix = "json"
 			}
 			for _, phase := range []string{"preview", "apply", "unchanged", "error"} {
-				args := []string{"install", "--frozen"}
+				args := []string{"restore"}
 				if jsonOutput {
 					args = append(args, "--json")
 				}
@@ -93,7 +93,7 @@ func TestM3A5CommandGoldenAndSingleJSON(t *testing.T) {
 					if err := decoder.Decode(&result); err != nil {
 						t.Fatal(err)
 					}
-					if decoder.Decode(new(any)) != io.EOF || result.Format != 1 || result.Command != "install --frozen" || !result.LockedSource || result.LockSHA256 != digest || errOut.Len() != 0 {
+					if decoder.Decode(new(any)) != io.EOF || result.Format != 1 || result.Command != "restore" || !result.LockedSource || result.LockSHA256 != digest || errOut.Len() != 0 {
 						t.Fatalf("JSON=%s stderr=%s", &out, &errOut)
 					}
 					if phase != "error" && len(result.Native) != fixtureNativeCount(2) {
@@ -140,7 +140,7 @@ func TestM3A5NativeReplaceAndBlockedCLI(t *testing.T) {
 			before := a4State(t, home, config)
 			check := a5Lock(t, home)
 			var out, errOut bytes.Buffer
-			exit := RunWithService(context.Background(), s, t.TempDir(), []string{"install", "--frozen", "--yes", "--json"}, &out, &errOut)
+			exit := RunWithService(context.Background(), s, t.TempDir(), []string{"restore", "--yes", "--json"}, &out, &errOut)
 			want := ExitBlocked
 			if gate == "replace" {
 				want = ExitInvalid

@@ -97,13 +97,13 @@ def main():
                 run(old, dict(env, STYLE_HOME=str(home)), *command, want=1)
                 assert snapshot(base, codex, claude, project) == before
             record(cases, route, 'actual-T44-runtime-six-management-commands-refuse-zero-write')
-            for command in (('sync',), ('update', '--all', '--yes'), ('install', '--frozen', '--yes')):
+            for command in (('sync',), ('update', '--all', '--yes'), ('restore', '--yes')):
                 run(binary, env, *command, *scope, '--json')
             doctor = json.loads(run(binary, env, 'doctor', *scope, '--json').stdout)
             assert any(d['code'] == 'runtime-index-7' for d in doctor['diagnostics'])
             (home / 'build/index.json').unlink()
             (home / 'build/explain.json').unlink()
-            run(binary, env, 'install', '--frozen', *scope, '--yes', '--json')
+            run(binary, env, 'restore', *scope, '--yes', '--json')
             assert json.loads(index_path.read_text()) == index
             assert (home / 'style.lock.yaml').read_text() == lock
             record(cases, route, 'new-management-frozen-exact-lock-rebuild-doctor')

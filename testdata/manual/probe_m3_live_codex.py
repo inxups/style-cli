@@ -126,7 +126,7 @@ def run(probe, route, binding, report):
         assert not probe.delivery(revised,NATIVE_START)['complete_body']
         lock=probe.store/'style.lock.yaml';locked=lock.read_bytes();manifest=probe.store/'packages/m3-live/STYLE.yaml';original=manifest.read_bytes()
         private_write(manifest,'corrupt managed source')
-        style('install','--frozen','--yes')
+        style('restore','--yes')
         assert manifest.read_bytes()==original and lock.read_bytes()==locked
         if scope:
             assert not (base_store/'state').exists()

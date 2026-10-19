@@ -61,7 +61,7 @@ def main():
             assert str(root) not in json.dumps(declaration)
             record(cases, route, "install-format3-private-scope")
             for command in (("list",), ("sync",), ("trust", "project-rules", "--yes"),
-                            ("update", "--all", "--yes"), ("install", "--frozen", "--yes"),
+                            ("update", "--all", "--yes"), ("restore", "--yes"),
                             ("doctor",), ("stats",)):
                 report = json.loads(run(new, env, *command, "--project", project, "--json").stdout)
                 assert report["scope"]["home"] == str(home)
