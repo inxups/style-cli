@@ -586,6 +586,13 @@ func flattenJSONFields(destination map[string]string, prefix string, raw json.Ra
 				destination[path] = encoded
 			}
 			for key, child := range typed {
+				// A path segment always means one level of nesting. A key that
+				// is empty or contains a dot would share a path with a nested
+				// value, such as {"a.b":1,"a":{"b":2}}, and the winner would
+				// depend on map order; leave it to the whole-value JSON field.
+				if key == "" || strings.Contains(key, ".") {
+					continue
+				}
 				walk(path+"."+key, child)
 			}
 		case []any:

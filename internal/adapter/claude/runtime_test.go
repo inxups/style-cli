@@ -379,3 +379,26 @@ func TestEnricherVariablesIncludeClaudeHarnessFacts(t *testing.T) {
 		t.Fatalf("prompt values = %#v", input.Points[0].Values)
 	}
 }
+
+func TestFlattenJSONFieldsSkipsDottedAndEmptyKeys(t *testing.T) {
+	raw := json.RawMessage(`{"a.b":"dot","a":{"b":"nested"},"":"empty","x":{"c.d":{"e":"deep"}}}`)
+	want := map[string]string{
+		"p":     `{"":"empty","a":{"b":"nested"},"a.b":"dot","x":{"c.d":{"e":"deep"}}}`,
+		"p.a":   `{"b":"nested"}`,
+		"p.a.b": "nested",
+		"p.x":   `{"c.d":{"e":"deep"}}`,
+	}
+	// Map iteration order varies between runs; the result must not.
+	for range 50 {
+		got := map[string]string{}
+		flattenJSONFields(got, "p", raw)
+		if len(got) != len(want) {
+			t.Fatalf("fields = %#v", got)
+		}
+		for key, value := range want {
+			if got[key] != value {
+				t.Fatalf("%s = %q, want %q (fields %#v)", key, got[key], value, got)
+			}
+		}
+	}
+}
