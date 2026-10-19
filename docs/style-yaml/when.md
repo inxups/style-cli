@@ -230,6 +230,7 @@ when:
 - `regex` 和 `shell_regex` 的 `pattern` 必须是有效的 RE2 正则（诊断码 `bad-regex`）。
 - `field` 必须是已知字段（诊断码 `invalid-schema`），并且在规则的评估点上可用（诊断码 `condition-field-wrong-event`）。
 - 对可能缺失的字段（`tool.added`、`tool.input.<路径>`）使用 `not_contains` 会报警告：字段缺失时条件不成立，不会命中（诊断码 `negated-optional-field`）。
+- 对整个 `tool.input` 写条件会报警告，建议改用解码后的 `tool.input.<路径>`（诊断码 `whole-tool-input`）。
 
 ## 行为
 
@@ -321,6 +322,7 @@ rules:
 | `empty-pattern` | error | 子串类运算符的 `pattern` 为空 |
 | `condition-field-wrong-event` | error | 条件字段在规则的评估点上不可用 |
 | `negated-optional-field` | warning | 对可能缺失的字段使用 `not_contains` |
+| `whole-tool-input` | warning | 条件字段是整个 `tool.input` |
 
 ## 相关
 
