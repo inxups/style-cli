@@ -84,6 +84,39 @@ func TestClaudeNativeFailureEvaluatesToolPostEntries(t *testing.T) {
 	}
 }
 
+func TestClaudeInterruptedFailureSkipsToolPostEntries(t *testing.T) {
+	post := runtimeTestEntry("pkg/after", "tool.post", "event", "inject", staticBody("AFTER_MATCHED"))
+	failure := runtimeTestEntry("pkg/failure", "tool.error", "event", "inject", staticBody("ERROR_MATCHED"))
+	store, err := state.New(t.TempDir())
+	if err != nil {
+		t.Fatal(err)
+	}
+	core, err := engine.New(runtimeTestIndex(map[string][]compile.Entry{"tool.post": {post}, "tool.error": {failure}}), store)
+	if err != nil {
+		t.Fatal(err)
+	}
+	runtime, err := New(core, store, claudeadapter.NewEnricher(), agenthooks.ProviderClaudeCode, false)
+	if err != nil {
+		t.Fatal(err)
+	}
+	payload, err := os.ReadFile("../../agenthooks/agenthookstest/fixtures/claude/post_tool_use_failure.json")
+	if err != nil {
+		t.Fatal(err)
+	}
+	interrupted := bytes.Replace(payload, []byte(`"is_interrupt": false`), []byte(`"is_interrupt": true`), 1)
+	if bytes.Equal(interrupted, payload) {
+		t.Fatal("fixture has no is_interrupt field to flip")
+	}
+	var stdout, stderr bytes.Buffer
+	if code := runtime.Run(context.Background(), claudeRunArgs(), bytes.NewReader(interrupted), &stdout, &stderr); code != 0 {
+		t.Fatalf("Run exit=%d stderr=%q", code, stderr.String())
+	}
+	want := `{"hookSpecificOutput":{"additionalContext":"ERROR_MATCHED","hookEventName":"PostToolUseFailure"}}`
+	if stdout.String() != want {
+		t.Fatalf("interrupted failure: got %s, want %s", stdout.String(), want)
+	}
+}
+
 func TestRunDecodesClaudeHookAndEmitsOnlyWhitelistedBlock(t *testing.T) {
 	root := t.TempDir()
 	store, err := state.New(root)

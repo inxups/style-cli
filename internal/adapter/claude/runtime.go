@@ -194,10 +194,12 @@ func (enricher *Enricher) Enrich(event *agenthooks.Event, typed any, session sta
 		}
 		// Claude Code reports failed calls only as PostToolUseFailure, while
 		// Codex reports them as PostToolUse. Evaluate tool.post rules here too
-		// so after-tool rules fire on the same calls on both harnesses.
-		input.Points = []engine.Point{
-			claudeToolPoint(event, plan.ToolError, &toolEvent.Tool, toolEvent, variables, typed),
-			claudeToolPoint(event, plan.ToolPost, &toolEvent.Tool, toolEvent, variables, typed),
+		// so after-tool rules fire on the same calls on both harnesses. A call
+		// the user interrupted did not run to completion, so it reaches only
+		// tool.error rules.
+		input.Points = []engine.Point{claudeToolPoint(event, plan.ToolError, &toolEvent.Tool, toolEvent, variables, typed)}
+		if !claudeInterrupted(event) {
+			input.Points = append(input.Points, claudeToolPoint(event, plan.ToolPost, &toolEvent.Tool, toolEvent, variables, typed))
 		}
 	case agenthooks.KindSubagentStart:
 		if _, ok := typed.(*agenthooks.SubagentStartEvent); !ok {
@@ -526,6 +528,13 @@ func claudeAgentID(event *agenthooks.Event) string {
 		return event.Agent.ID
 	}
 	return ""
+}
+
+// claudeInterrupted reports whether a PostToolUseFailure payload carries
+// is_interrupt: true.
+func claudeInterrupted(event *agenthooks.Event) bool {
+	var interrupted bool
+	return json.Unmarshal(event.RawField("is_interrupt"), &interrupted) == nil && interrupted
 }
 
 func hasRawField(event *agenthooks.Event, path string) bool {

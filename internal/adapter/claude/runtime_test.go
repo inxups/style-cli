@@ -3,6 +3,7 @@ package claude
 import (
 	"encoding/json"
 	"reflect"
+	"slices"
 	"strings"
 	"testing"
 
@@ -259,6 +260,32 @@ func TestEnricherMapsClaudeToolFieldsAddedMCPAndOutput(t *testing.T) {
 		point := input.Points[0]
 		if point.Name != plan.ToolError || point.Values["tool.added"] != "body" || point.Values["tool.output"] != "permission denied" {
 			t.Fatalf("tool error point = %#v", point)
+		}
+	})
+
+	t.Run("interrupted failure reaches only tool.error", func(t *testing.T) {
+		for _, tc := range []struct {
+			interrupt string
+			points    []string
+		}{
+			{`,"is_interrupt":true`, []string{plan.ToolError}},
+			{`,"is_interrupt":false`, []string{plan.ToolError, plan.ToolPost}},
+			{``, []string{plan.ToolError, plan.ToolPost}},
+		} {
+			event := claudeRuntimeEvent(agenthooks.KindToolError, "PostToolUseFailure", `{"session_id":"s11","tool_name":"Bash","tool_input":{"command":"sleep 60"},"error":"Exit code 130"`+tc.interrupt+`}`)
+			tool := agenthooks.ToolCall{Name: "Bash", Canonical: agenthooks.ToolShell, Input: json.RawMessage(`{"command":"sleep 60"}`)}
+			post := &agenthooks.ToolPostEvent{Event: *event, Tool: tool, Failed: true, Error: "Exit code 130"}
+			input, _, err := NewEnricher().Enrich(event, post, state.Session{}, state.Scope{SessionID: "s11", AgentID: "main"})
+			if err != nil {
+				t.Fatal(err)
+			}
+			names := make([]string, 0, len(input.Points))
+			for _, point := range input.Points {
+				names = append(names, point.Name)
+			}
+			if !slices.Equal(names, tc.points) {
+				t.Errorf("points for %q = %v, want %v", tc.interrupt, names, tc.points)
+			}
 		}
 	})
 
