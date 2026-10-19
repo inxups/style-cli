@@ -14,6 +14,10 @@ func runInit(ctx context.Context, service *Service, workDir string, args []strin
 		return initCommand.usageError(errOut, err)
 	}
 	result, err := service.Init(ctx, InitRequest{Name: parsed.Arg(0), OutputDir: workDir, Single: parsed.Bool("--single")})
+	var usage *UsageError
+	if errors.As(err, &usage) {
+		return initCommand.usageError(errOut, err)
+	}
 	if err != nil {
 		fmt.Fprintf(errOut, "style init: %v\n", err)
 		var conflictErr *ConflictError

@@ -23,7 +23,7 @@ func (err *ConflictError) Error() string {
 	if err.Message != "" {
 		return err.Message
 	}
-	return fmt.Sprintf("app: init destination already exists: %s", err.Path)
+	return fmt.Sprintf("init destination already exists: %s", err.Path)
 }
 
 // InitRequest describes the package skeleton to create. If Name is omitted,
@@ -54,7 +54,7 @@ func (s *Service) Init(ctx context.Context, request InitRequest) (InitResult, er
 	}
 	absDir, err := filepath.Abs(dir)
 	if err != nil {
-		return InitResult{}, fmt.Errorf("app: resolve init directory: %w", err)
+		return InitResult{}, fmt.Errorf("resolve init directory: %w", err)
 	}
 	name := strings.TrimSpace(request.Name)
 	nameProvided := name != ""
@@ -62,7 +62,11 @@ func (s *Service) Init(ctx context.Context, request InitRequest) (InitResult, er
 		name = defaultPackageName(absDir)
 	}
 	if !initNamePattern.MatchString(name) {
-		return InitResult{}, fmt.Errorf("app: invalid package name %q; use lowercase letters, digits, and hyphens", name)
+		message := fmt.Sprintf("invalid package name %q; use lowercase letters, digits, and hyphens", name)
+		if nameProvided {
+			return InitResult{}, &UsageError{Message: message}
+		}
+		return InitResult{}, errors.New(message + " (derived from the directory name; pass a name)")
 	}
 	if request.Single {
 		path := filepath.Join(absDir, name+".style.md")
@@ -91,14 +95,14 @@ func createDirectoryPackage(path, name string, existing bool) error {
 	if existing {
 		info, err := os.Stat(path)
 		if err != nil {
-			return fmt.Errorf("app: inspect init directory %s: %w", path, err)
+			return fmt.Errorf("inspect init directory %s: %w", path, err)
 		}
 		if !info.IsDir() {
-			return fmt.Errorf("app: init destination is not a directory: %s", path)
+			return fmt.Errorf("init destination is not a directory: %s", path)
 		}
 		entries, err := os.ReadDir(path)
 		if err != nil {
-			return fmt.Errorf("app: read init directory %s: %w", path, err)
+			return fmt.Errorf("read init directory %s: %w", path, err)
 		}
 		if len(entries) != 0 {
 			return &ConflictError{Path: path}
@@ -107,10 +111,10 @@ func createDirectoryPackage(path, name string, existing bool) error {
 		if _, err := os.Lstat(path); err == nil {
 			return &ConflictError{Path: path}
 		} else if !errors.Is(err, os.ErrNotExist) {
-			return fmt.Errorf("app: inspect init destination %s: %w", path, err)
+			return fmt.Errorf("inspect init destination %s: %w", path, err)
 		}
 		if err := os.Mkdir(path, 0o755); err != nil {
-			return fmt.Errorf("app: create package directory %s: %w", path, err)
+			return fmt.Errorf("create package directory %s: %w", path, err)
 		}
 		created = append(created, path)
 	}
@@ -124,12 +128,12 @@ func createDirectoryPackage(path, name string, existing bool) error {
 		if err := os.Mkdir(directory, 0o755); err != nil {
 			if !errors.Is(err, os.ErrExist) {
 				rollback()
-				return fmt.Errorf("app: create %s: %w", subdir, err)
+				return fmt.Errorf("create %s: %w", subdir, err)
 			}
 			info, statErr := os.Stat(directory)
 			if statErr != nil || !info.IsDir() {
 				rollback()
-				return fmt.Errorf("app: init path %s is not a directory", directory)
+				return fmt.Errorf("init path %s is not a directory", directory)
 			}
 			continue
 		}
@@ -191,16 +195,16 @@ func writeNewFile(path string, data []byte, mode os.FileMode) error {
 		if errors.Is(err, os.ErrExist) {
 			return &ConflictError{Path: path}
 		}
-		return fmt.Errorf("app: create %s: %w", path, err)
+		return fmt.Errorf("create %s: %w", path, err)
 	}
 	if _, err := file.Write(data); err != nil {
 		_ = file.Close()
 		_ = os.Remove(path)
-		return fmt.Errorf("app: write %s: %w", path, err)
+		return fmt.Errorf("write %s: %w", path, err)
 	}
 	if err := file.Close(); err != nil {
 		_ = os.Remove(path)
-		return fmt.Errorf("app: close %s: %w", path, err)
+		return fmt.Errorf("close %s: %w", path, err)
 	}
 	return nil
 }
