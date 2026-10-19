@@ -59,3 +59,21 @@ an existing installation:
 Old installed source or approval snapshots produce `native-format-removed` and
 require reinstalling. `list` and `doctor` keep those packages visible. This change
 continues to use `style/v0.3`; there is no migration command.
+
+## Command line
+
+`style --help` lists every command; `style help COMMAND` (or `--help` anywhere
+on a command line) also shows advanced and project options. Boolean flags take
+no value (`--json`, not `--json=true`).
+
+The following forms were removed without compatibility entry points:
+
+| Removed | Use instead |
+| --- | --- |
+| `style install --frozen` | `style restore` |
+| `style adapters` | `style doctor` (text and JSON include the adapter inventory) |
+| `--count=exact --count-provider=P --encoding=E` / `--count-model=M` | `--exact openai:E` / `--exact anthropic:M` |
+| `install --fail-closed claude-code` | `install --fail-closed` |
+
+`explain --event` is optional; the event is read from the payload's
+`hook_event_name`, and an explicit `--event` must match it.
