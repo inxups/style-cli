@@ -7,7 +7,7 @@
 | 文件 | 内容 | 关键字 | 状态 |
 |---|---|---|---|
 | [_template.md](_template.md) | 标准页面模板 | — | 已完成 |
-| `style-yaml/overview.md` | 包的形态（目录包、单文件包）、加载流程、默认值合并顺序 | — | 待写 |
+| [style-yaml/overview.md](style-yaml/overview.md) | 包的形态（目录包、单文件包）、加载流程、默认值合并顺序 | — | 已完成 |
 | `style-yaml/package.md` | 包级元数据 | `spec` `name` `version` `description` `authors` `priority` | 待写 |
 | `style-yaml/requires.md` | 依赖、设置与推荐 | `requires` `settings` `recommends` | 待写 |
 | `style-yaml/budget.md` | token 预算 | `budget`（`per_rule` `per_event` `always_on` `on`） | 待写 |
