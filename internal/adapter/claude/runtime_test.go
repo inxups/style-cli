@@ -179,6 +179,28 @@ func TestEnricherMapsClaudeToolFieldsAddedMCPAndOutput(t *testing.T) {
 		}
 	})
 
+	t.Run("Bash object output", func(t *testing.T) {
+		// Claude Code 2.1.301 PostToolUse sends Bash tool_response as an object.
+		response := `{"stdout":"hello world\na\nb","stderr":"","interrupted":false,"isImage":false,"noOutputExpected":false}`
+		event := claudeRuntimeEvent(agenthooks.KindToolPost, "PostToolUse", `{"session_id":"s6","tool_name":"Bash","tool_input":{"command":"echo hi"},"tool_response":`+response+`}`)
+		tool := agenthooks.ToolCall{Name: "Bash", Canonical: agenthooks.ToolShell, Input: json.RawMessage(`{"command":"echo hi"}`)}
+		post := &agenthooks.ToolPostEvent{Event: *event, Tool: tool, Output: json.RawMessage(response)}
+		input, _, err := NewEnricher().Enrich(event, post, state.Session{}, state.Scope{SessionID: "s6", AgentID: "main"})
+		if err != nil {
+			t.Fatal(err)
+		}
+		point := input.Points[0]
+		for field, want := range map[string]string{"tool.output": response, "tool.output.stdout": "hello world\na\nb", "tool.output.stderr": "", "tool.output.interrupted": "false"} {
+			if got, ok := point.When.Fields.ReadConditionField(field); !ok || got != want {
+				t.Errorf("field %q = %q, %v; want %q", field, got, ok, want)
+			}
+		}
+		rule := when.Rule{Agent: []string{"*"}, Conditions: []when.Condition{{Field: "tool.output.stdout", Op: "regex", Pattern: `(?m)^a$`}}}
+		if !when.Match(rule, point.When) {
+			t.Fatal("tool.output.stdout should match decoded multi-line output")
+		}
+	})
+
 	t.Run("Write added text", func(t *testing.T) {
 		event := claudeRuntimeEvent(agenthooks.KindToolError, "PostToolUseFailure", `{"session_id":"s6","tool_name":"Write","tool_input":{"file_path":"x.txt","content":"body"},"tool_error":"permission denied"}`)
 		tool := agenthooks.ToolCall{Name: "Write", Canonical: agenthooks.ToolFileWrite, Input: json.RawMessage(`{"file_path":"x.txt","content":"body"}`)}

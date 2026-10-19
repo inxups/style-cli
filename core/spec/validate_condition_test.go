@@ -48,6 +48,25 @@ func TestValidateConditionSelectorsAndOptionalFields(t *testing.T) {
 			want: "whole-tool-input", severity: SeverityWarning,
 		},
 		{
+			name: "whole tool output",
+			rule: "  - id: base\n    target: tool\n    tool: shell\n    at: after\n    text: body\n    when:\n      conditions:\n        - field: tool.output\n          op: contains\n          pattern: FAIL\n",
+			want: "whole-tool-output", severity: SeverityWarning,
+		},
+		{
+			name: "tool output path after tool",
+			rule: "  - id: base\n    target: tool\n    tool: shell\n    at: after\n    text: body\n    when:\n      conditions:\n        - field: tool.output.stdout\n          op: contains\n          pattern: FAIL\n",
+		},
+		{
+			name: "tool output path before tool",
+			rule: "  - id: base\n    target: tool\n    tool: shell\n    at: before\n    text: body\n    when:\n      conditions:\n        - field: tool.output.stdout\n          op: contains\n          pattern: FAIL\n",
+			want: "condition-field-wrong-event", severity: SeverityError,
+		},
+		{
+			name: "negative operation on tool output path",
+			rule: "  - id: base\n    target: tool\n    tool: shell\n    at: after\n    text: body\n    when:\n      conditions:\n        - field: tool.output.stdout\n          op: not_contains\n          pattern: FAIL\n",
+			want: "negated-optional-field", severity: SeverityWarning,
+		},
+		{
 			name: "tool added on mcp rule",
 			rule: "  - id: base\n    target: mcp\n    mcp: server/tool\n    text: body\n    when:\n      conditions:\n        - field: tool.added\n          op: contains\n          pattern: TODO\n",
 			want: "condition-field-wrong-event", severity: SeverityError,

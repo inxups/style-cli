@@ -217,7 +217,7 @@ func TestEnricherMapsToolInputPatchFieldsAndMCP(t *testing.T) {
 		}
 		for field, want := range map[string]string{
 			"mcp.server": "calendar", "mcp.tool": "create_event",
-			"tool.input.nested.title": "holiday", "tool.output": `{"ok":true}`,
+			"tool.input.nested.title": "holiday", "tool.output": `{"ok":true}`, "tool.output.ok": "true",
 			"tool.input.nested":      `{"tags":["work","personal"],"title":"holiday"}`,
 			"tool.input.nested.tags": `[` + `"work"` + `,` + `"personal"` + `]`,
 		} {

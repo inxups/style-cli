@@ -336,6 +336,9 @@ func toolPoint(event *agenthooks.Event, tool *agenthooks.ToolCall, post *agentho
 	}
 	if post != nil && len(post.Output) > 0 {
 		if output, available := rawFieldValue(post.Output); available {
+			// Object responses also expose decoded tool.output.<path> fields;
+			// tool.output keeps the response text as sent.
+			flattenJSONFields(fields, "tool.output", post.Output)
 			fields["tool.output"] = output
 		}
 	}

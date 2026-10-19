@@ -35,7 +35,8 @@
         "cwd": "/work/repo",
         "tool.input": "{\"command\":\"go test ./...\"}",
         "tool.input.command": "go test ./...",
-        "tool.output": "{\"stdout\":\"ok\\tall tests pass\",\"stderr\":\"\",\"interrupted\":false}"
+        "tool.output": "{\"stdout\":\"ok\\tall tests pass\",\"stderr\":\"\",\"interrupted\":false}",
+        "tool.output.stdout": "ok\tall tests pass"
       }
     }
   ]

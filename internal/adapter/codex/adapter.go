@@ -120,8 +120,8 @@ func toolFieldAvailable(field string, post bool) bool {
 		field == "tool.added" || field == "mcp.server" || field == "mcp.tool" || field == "skill.name" || field == "cwd" {
 		return true
 	}
-	if post && field == "tool.output" {
-		return true
+	if field == "tool.output" || strings.HasPrefix(field, "tool.output.") {
+		return post
 	}
 	return strings.HasPrefix(field, "tool.input.")
 }

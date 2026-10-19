@@ -180,6 +180,11 @@ func (v *validator) validateConditions(value any, rule Rule, source string) {
 			// escaped, key names are part of the text, and anchors see the braces.
 			v.warn("whole-tool-input", conditionSource, "tool.input is the whole input as JSON text; match a decoded value such as tool.input.command instead")
 		}
+		if field == "tool.output" && v.conditionFieldAvailable(field, rule) {
+			// Object tool responses, such as Claude Code's Bash {stdout, stderr},
+			// arrive as JSON text with the same escaping and key-name pitfalls.
+			v.warn("whole-tool-output", conditionSource, "tool.output may be the whole tool response as JSON text; match a decoded value such as tool.output.stdout when the harness returns an object")
+		}
 	}
 }
 
@@ -187,7 +192,12 @@ func conditionFieldKnown(field string) bool {
 	if stringSet("prompt", "tool.name", "tool.canonical", "tool.input", "tool.added", "tool.output", "mcp.server", "mcp.tool", "skill.name", "cwd")[field] {
 		return true
 	}
-	return strings.HasPrefix(field, "tool.input.") && len(field) > len("tool.input.")
+	for _, prefix := range []string{"tool.input.", "tool.output."} {
+		if strings.HasPrefix(field, prefix) && len(field) > len(prefix) {
+			return true
+		}
+	}
+	return false
 }
 
 func (v *validator) conditionFieldAvailable(field string, rule Rule) bool {
@@ -229,7 +239,7 @@ func (v *validator) conditionFieldAvailable(field string, rule Rule) bool {
 	if field == "prompt" {
 		return allowedEvents["prompt.submitted"] || allowedEvents["skill.explicit"]
 	}
-	if field == "tool.output" {
+	if field == "tool.output" || strings.HasPrefix(field, "tool.output.") {
 		return allowedEvents["tool.post"]
 	}
 	if strings.HasPrefix(field, "mcp.") {
@@ -262,7 +272,7 @@ func (v *validator) conditionFieldAvailable(field string, rule Rule) bool {
 }
 
 func (v *validator) conditionFieldOptional(field string, rule Rule) bool {
-	if field == "tool.added" || strings.HasPrefix(field, "tool.input.") {
+	if field == "tool.added" || strings.HasPrefix(field, "tool.input.") || strings.HasPrefix(field, "tool.output.") {
 		return true
 	}
 	target := v.effectiveRuleString(rule, "target", "")

@@ -338,6 +338,10 @@ func claudeToolPoint(event *agenthooks.Event, pointName string, tool *agenthooks
 	if post != nil {
 		if len(post.Output) > 0 {
 			if output, available := rawFieldValue(post.Output); available {
+				// Object responses (Bash stdout/stderr, Edit patches) also expose
+				// decoded tool.output.<path> fields; tool.output keeps the
+				// response text as sent.
+				flattenJSONFields(fields, "tool.output", post.Output)
 				fields["tool.output"] = output
 			}
 		}

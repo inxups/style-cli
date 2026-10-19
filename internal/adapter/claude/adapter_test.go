@@ -68,6 +68,9 @@ func TestClaudeFactsReportCapabilitiesDataAndStaticSlot(t *testing.T) {
 		{plan.ToolPre, "tool.output", false},
 		{plan.ToolPost, "tool.output", true},
 		{plan.ToolError, "tool.output", false},
+		{plan.ToolPre, "tool.output.stdout", false},
+		{plan.ToolPost, "tool.output.stdout", true},
+		{plan.ToolError, "tool.output.stdout", false},
 		{plan.ToolError, "tool.added", false},
 		{plan.ToolPost, "tool.added", true},
 	} {

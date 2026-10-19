@@ -236,7 +236,7 @@ func (f Facts) DataSource(point, field string) adapter.DataAvailability {
 		// Native errors are normalized by the codec, but M1's condition
 		// schema exposes tool.output and tool.added only at their specified
 		// pre/post points. Do not advertise them for tool.error planning.
-		if field != "tool.output" && field != "tool.added" && claudeToolFieldAvailable(field, false) {
+		if field != "tool.output" && !strings.HasPrefix(field, "tool.output.") && field != "tool.added" && claudeToolFieldAvailable(field, false) {
 			return adapter.DataAvailability{Available: true, Source: "Claude PostToolUseFailure payload"}
 		}
 	case plan.SubagentStart:
@@ -252,6 +252,9 @@ func claudeToolFieldAvailable(field string, post bool) bool {
 	case "tool.name", "tool.canonical", "tool.input", "tool.added", "mcp.server", "mcp.tool", "skill.name", "cwd":
 		return true
 	case "tool.output":
+		return post
+	}
+	if strings.HasPrefix(field, "tool.output.") {
 		return post
 	}
 	return strings.HasPrefix(field, "tool.input.")

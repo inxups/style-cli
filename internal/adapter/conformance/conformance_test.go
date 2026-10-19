@@ -112,7 +112,7 @@ func (observer observedEnricher) Enrich(event *agenthooks.Event, typed any, sess
 	observer.projection.Variables = input.Variables
 	for _, point := range input.Points {
 		fields := map[string]string{}
-		for _, key := range []string{"cwd", "prompt", "tool.input", "tool.input.command", "tool.output", "tool.added", "skill.name", "mcp.server", "mcp.tool"} {
+		for _, key := range []string{"cwd", "prompt", "tool.input", "tool.input.command", "tool.output", "tool.output.stdout", "tool.added", "skill.name", "mcp.server", "mcp.tool"} {
 			if value, ok := point.When.Fields.ReadConditionField(key); ok {
 				fields[key] = value
 			}
