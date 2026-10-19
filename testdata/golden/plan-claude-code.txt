@@ -57,6 +57,12 @@ Token (estimated; calibration pending):
   PostToolUse NotebookEdit: 11 tokens / 35 chars
   PostToolUse Skill: 19 tokens / 62 chars
   PostToolUse Write: 11 tokens / 35 chars
+  PostToolUseFailure Bash: 23 tokens / 78 chars
+  PostToolUseFailure Edit: 11 tokens / 35 chars
+  PostToolUseFailure MultiEdit: 11 tokens / 35 chars
+  PostToolUseFailure NotebookEdit: 11 tokens / 35 chars
+  PostToolUseFailure Skill: 19 tokens / 62 chars
+  PostToolUseFailure Write: 11 tokens / 35 chars
   PreToolUse Bash: 12 tokens / 39 chars
   PreToolUse mcp: 21 tokens / 68 chars
   SessionStart: 59 tokens / 213 chars

@@ -43,7 +43,8 @@ func TestProviderLayoutUsesNativeAggregateBuckets(t *testing.T) {
 			provider:  "claude-code",
 			rule:      spec.Rule{Effective: map[string]any{"target": "tool", "tool": []any{"file.edit", "file.write"}}},
 			placement: plan.Placement{Event: plan.ToolPost},
-			want:      []string{"PostToolUse Edit", "PostToolUse MultiEdit", "PostToolUse NotebookEdit", "PostToolUse Write"},
+			want: []string{"PostToolUse Edit", "PostToolUse MultiEdit", "PostToolUse NotebookEdit", "PostToolUse Write",
+				"PostToolUseFailure Edit", "PostToolUseFailure MultiEdit", "PostToolUseFailure NotebookEdit", "PostToolUseFailure Write"},
 		},
 		{
 			name:      "native and canonical selectors are additive",

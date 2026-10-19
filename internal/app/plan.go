@@ -349,10 +349,18 @@ func (layout providerLayout) Buckets(rule spec.Rule, placement plan.Placement) [
 		if len(groups) == 0 {
 			groups = []string{"*"}
 		}
-		result := make([]tokens.Bucket, 0, len(groups))
-		for _, group := range groups {
-			bucketLabel := label + " " + group
-			result = append(result, tokens.Bucket{Key: string(layout) + "\x00" + bucketLabel, Label: bucketLabel})
+		labels := []string{label}
+		if event == plan.ToolPost && layout == "claude-code" {
+			// Claude Code tool.post rules also run on PostToolUseFailure and
+			// share that hook's output with tool.error rules.
+			labels = append(labels, "PostToolUseFailure")
+		}
+		result := make([]tokens.Bucket, 0, len(groups)*len(labels))
+		for _, native := range labels {
+			for _, group := range groups {
+				bucketLabel := native + " " + group
+				result = append(result, tokens.Bucket{Key: string(layout) + "\x00" + bucketLabel, Label: bucketLabel})
+			}
 		}
 		return result
 	}
