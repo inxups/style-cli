@@ -70,7 +70,9 @@ rules:
 | 可选值 | `shell` / `file.read` / `file.write` / `file.edit` / `search` / `fetch` / `task` / `mcp` / `other` / `*` |
 | 可写入 defaults | 否 |
 
-跨 harness 的规范工具分类（canonical tool）。STYLE 把各 harness 的原生工具名归入这些类别，例如 Claude Code 的 `Bash` 和 Codex 的 shell 工具都归入 `shell`。`*` 匹配所有工具。
+跨 harness 的规范工具分类（canonical tool）。STYLE 把各 harness 的原生工具名归入这些类别，例如 Claude Code 和 Codex 的 `Bash` 工具都归入 `shell`。`*` 匹配所有工具。
+
+> `tool` 的取值不做校验。把原生名写进 `tool`（例如 `tool: Bash`）不会报错，在 Claude Code 上计划也显示 `native`，但运行时永远不会匹配，因为它只和规范分类比较。原生名要写在 `names` 里。
 
 约束：
 

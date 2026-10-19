@@ -115,7 +115,7 @@ rules:
 | 可选值 | `open` / `closed` |
 | 可写入 defaults | 是 |
 
-STYLE 自身的处理器在某个事件上出错（例如索引损坏、状态读写失败）时：
+STYLE 自身的处理器在某个事件上出错（例如安装索引无效，无法可靠评估规则）时：
 
 - `open`：放行，不输出。
 - `closed`：拒绝该事件。保护范围是整个原生事件，`when` 条件不会缩小这个范围。
@@ -155,7 +155,7 @@ STYLE 自身的处理器在某个事件上出错（例如索引损坏、状态�
 | 可选值 | `true` / `false` |
 | 可写入 defaults | 是 |
 
-`true` 时，上下文压缩后清除这条规则的去重记录，下次命中时重新输出；`session.start` 规则还会自动把 `compact` 加入 `sources`。
+`true` 时，上下文压缩后这条规则的 `session` 去重重新计数，下次命中时重新输出；`session.start` 规则还会自动把 `compact` 加入 `sources`。
 
 约束：
 
@@ -163,7 +163,7 @@ STYLE 自身的处理器在某个事件上出错（例如索引损坏、状态�
 
 ## 行为
 
-1. **去重的键**：`repeat: session` 的键由会话代次、压缩轮次（仅 `reinject_on_compact: true` 时计入）、规则 id 和输出内容的哈希组成。`repeat: turn` 用轮次 id（harness 不提供时用提示计数）代替会话代次。所以正文渲染结果变化时会再次输出（`core/state/dedup.go` `repeatName`）。
+1. **去重的键**：`repeat: session` 的键由会话代次、压缩轮次（仅 `reinject_on_compact: true` 时计入）、规则 id 和输出内容的哈希组成。`repeat: turn` 的键由会话代次、轮次 id（harness 不提供时用提示计数）、规则 id 和输出内容的哈希组成，不受压缩影响。两种键都包含输出内容，所以正文渲染结果变化时会再次输出（`core/state/dedup.go` `repeatName`）。
 2. **会话来源**（`core/state/state.go`）：
    - `startup`：开始全新的作用域，清空去重记录。
    - `clear`：会话代次加一，`session` 去重重新开始。

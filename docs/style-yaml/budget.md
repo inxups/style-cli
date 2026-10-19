@@ -92,8 +92,8 @@ rules:
 4. **级别**：`on: warn` 时上述诊断都是 warning；`on: error` 时都是 error。
 5. **命令行为**（`internal/app/command.go`）：
    - `style validate` 检查 `T001`，并对每个已注册的 harness 估算 `T002`、`T004`。出现 error 时退出码为 1。
-   - `style plan` 在 `Token` 段报告估算值和诊断。有 error 级 token 诊断时退出码为 4，计划被拒绝。
-6. **安装后的总量**：安装、更新、同步时，会把同一 harness 上所有已安装包的输出按事件合计。超过 adapter 输入上限的 80% 时报 `T003`（error）。adapter 上限可用 `style adapters` 查看，例如 Codex 约 2500 tokens，Claude Code 10000 字符（`core/tokens/installed.go`）。
+   - `style plan` 先做校验：`T001` 为 error 时校验失败，退出码为 1，不输出计划。校验通过后在 `Token` 段报告估算值和诊断；`T002`、`T004` 为 error 时退出码为 4，计划被拒绝。
+6. **安装后的总量**：安装、更新、同步、卸载等需要重新编译已安装包的操作，会把同一 harness 上所有已安装包的输出按事件合计。超过 adapter 输入上限的 80% 时报 `T003`（error），操作被阻止。adapter 上限可用 `style adapters` 查看，例如 Codex 约 2500 tokens，Claude Code 10000 字符（`core/tokens/installed.go`）。
 7. **估算是近似值**：估算是离线计算的，输出标注 `estimated; calibration pending`，与模型实际计费的 token 数可能不同。
 
 ## 示例

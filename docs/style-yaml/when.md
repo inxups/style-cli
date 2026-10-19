@@ -229,7 +229,7 @@ when:
 - `contains`、`starts_with`、`ends_with`、`not_contains` 的 `pattern` 不能为空，否则条件恒真或恒假（诊断码 `empty-pattern`）。
 - `regex` 和 `shell_regex` 的 `pattern` 必须是有效的 RE2 正则（诊断码 `bad-regex`）。
 - `field` 必须是已知字段（诊断码 `invalid-schema`），并且在规则的评估点上可用（诊断码 `condition-field-wrong-event`）。
-- 对可能缺失的字段（`tool.added`、`tool.input.<路径>`）使用 `not_contains` 会报警告：字段缺失时条件不成立，不会命中（诊断码 `negated-optional-field`）。
+- 对可能缺失的字段使用 `not_contains` 会报警告。可能缺失的字段包括 `tool.added`、`tool.input.<路径>`，system 和 skill 规则上的 `prompt`，以及 event 规则上的 `mcp.*`。字段缺失时条件不成立，不会命中（诊断码 `negated-optional-field`）。
 - 对整个 `tool.input` 写条件会报警告，建议改用解码后的 `tool.input.<路径>`（诊断码 `whole-tool-input`）。
 
 ## 行为

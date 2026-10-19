@@ -68,7 +68,7 @@ sources:
 | 0 | 成功；只有 warning 时也是 0 |
 | 1 | 加载失败、有 error 级诊断，或命令用法错误 |
 | 3 | `style sync` 检测到变更 |
-| 4 | 计划被拒绝：有规则为 `install-error`，或有 error 级 token 诊断 |
+| 4 | 计划被拒绝：有规则为 `install-error`，或 `T002` / `T004` 为 error（`T001` 为 error 时校验就失败，退出码为 1） |
 
 ## 诊断码
 
