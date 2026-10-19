@@ -160,7 +160,10 @@ func (s *Service) explain(ctx context.Context, request ExplainRequest, ops expla
 	if request.FailClosed && provider != agenthooks.ProviderClaudeCode {
 		return result, fail("fail-closed-unsupported", "Installation fail-closed is available only for Claude Code.")
 	}
-	if !agenthooks.RecognizesNativeEvent(provider, request.Event) && !(provider == agenthooks.ProviderClaudeCode && request.Event == "PostModelSwitch") {
+	supported := func(event string) bool {
+		return agenthooks.RecognizesNativeEvent(provider, event) || provider == agenthooks.ProviderClaudeCode && event == "PostModelSwitch"
+	}
+	if request.Event != "" && !supported(request.Event) {
 		return result, fail("event-unsupported", "Native event is not supported by the selected runtime.")
 	}
 	payload, err := saferead.ReadFile(request.Payload, 32<<20)
@@ -175,6 +178,13 @@ func (s *Service) explain(ctx context.Context, request ExplainRequest, ops expla
 	var native, sessionID, agentID, toolName string
 	if json.Unmarshal(raw["hook_event_name"], &native) != nil || native == "" || json.Unmarshal(raw["session_id"], &sessionID) != nil || sessionID == "" {
 		return result, fail("payload-invalid", "Native event and session ID must be nonempty strings.")
+	}
+	if request.Event == "" {
+		// The payload is authoritative; an explicit --event only cross-checks it.
+		request.Event, result.Event = native, native
+		if !supported(native) {
+			return result, fail("event-unsupported", "Native event is not supported by the selected runtime.")
+		}
 	}
 	if native != request.Event {
 		return result, fail("event-mismatch", "Native event differs from the payload event.")

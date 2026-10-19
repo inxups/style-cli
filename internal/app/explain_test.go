@@ -90,8 +90,22 @@ func TestM3A1CLIContractAndDeterministicReports(t *testing.T) {
 	if RunWithService(context.Background(), service, root, args[:len(args)-1], &text, &stderr) != 0 || strings.Contains(text.String(), "\x1b") {
 		t.Fatalf("unsafe text report %s", text.String())
 	}
+	var inferred bytes.Buffer
+	if exit := RunWithService(context.Background(), service, root, []string{"explain", "--harness", request.Harness, "--payload", request.Payload, "--index", request.Index, "--json"}, &inferred, &stderr); exit != 0 || !bytes.Equal(first.Bytes(), inferred.Bytes()) {
+		t.Fatalf("event not inferred from payload: exit=%d %s", exit, inferred.String())
+	}
+	bogus := filepath.Join(t.TempDir(), "bogus.json")
+	writeSyncFile(t, bogus, `{"session_id":"s","hook_event_name":"Bogus"}`)
+	var unsupported bytes.Buffer
+	if exit := RunWithService(context.Background(), service, root, []string{"explain", "--harness", request.Harness, "--payload", bogus, "--index", request.Index, "--json"}, &unsupported, &stderr); exit != 1 || !strings.Contains(unsupported.String(), `"event-unsupported"`) || !strings.Contains(unsupported.String(), `"event": "Bogus"`) {
+		t.Fatalf("inferred unsupported event: exit=%d %s", exit, unsupported.String())
+	}
+	var mismatch bytes.Buffer
+	if exit := RunWithService(context.Background(), service, root, []string{"explain", "--harness", request.Harness, "--event", "SessionStart", "--payload", request.Payload, "--index", request.Index, "--json"}, &mismatch, &stderr); exit != 1 || !strings.Contains(mismatch.String(), `"event-mismatch"`) {
+		t.Fatalf("explicit event mismatch: exit=%d %s", exit, mismatch.String())
+	}
 	for _, bad := range [][]string{
-		{"--json"}, {"--harness", "auto", "--event", "PreToolUse", "--payload", "x"}, {"--harness", "codex,claude-code", "--event", "PreToolUse", "--payload", "x"},
+		{"--json"}, {"--harness", "codex", "--event", "PreToolUse"}, {"--harness", "auto", "--event", "PreToolUse", "--payload", "x"}, {"--harness", "codex,claude-code", "--event", "PreToolUse", "--payload", "x"},
 		{"--harness", "codex", "--harness", "codex", "--event", "PreToolUse", "--payload", "x", "--json"}, {"--bogus", "x", "--json"}, {"--harness", "codex", "--event", "PreToolUse", "--payload", "--json"},
 	} {
 		var out, errOut bytes.Buffer

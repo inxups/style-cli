@@ -244,8 +244,8 @@ var (
 	explainCommand   = commandSpec{Name: "explain", Project: true, Flags: withFlags(
 		[]flagSpec{
 			{Name: "--harness", Kind: flagString, Value: "h", Required: true},
-			{Name: "--event", Kind: flagString, Value: "NativeEvent", Required: true},
 			{Name: "--payload", Kind: flagString, Value: "f.json", Required: true},
+			{Name: "--event", Kind: flagString, Value: "NativeEvent"},
 			{Name: "--fail-closed", Kind: flagBool},
 		},
 		countFlagSpecs,
