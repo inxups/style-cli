@@ -31,7 +31,8 @@ type UninstallResult struct {
 	Routes           []string                  `json:"routes"`
 	Changed          bool                      `json:"changed"`
 	// AwaitingConfirmation reports a declined preview; nothing was changed.
-	AwaitingConfirmation bool `json:"awaiting_confirmation,omitempty"`
+	AwaitingConfirmation bool         `json:"awaiting_confirmation,omitempty"`
+	Diagnostics          []Diagnostic `json:"diagnostics,omitempty"`
 }
 
 // Uninstall removes selected packages and rebuilds each managed adapter route

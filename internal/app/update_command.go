@@ -26,6 +26,9 @@ func runUpdate(ctx context.Context, service *Service, args []string, in io.Reade
 	}
 	result, runErr := service.Update(ctx, request)
 	if jsonOutput {
+		if runErr == nil && result.AwaitingConfirmation {
+			result.Diagnostics = append(result.Diagnostics, declinedDiagnostic("update"))
+		}
 		if err := encodeJSON(out, result); err != nil {
 			fmt.Fprintf(errOut, "style update: %v\n", err)
 			return ExitInvalid

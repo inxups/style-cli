@@ -48,6 +48,9 @@ func runSync(ctx context.Context, service *Service, command string, args []strin
 		return commandExit(err)
 	}
 	if jsonOutput {
+		if result.AwaitingConfirmation {
+			result.Diagnostics = append(result.Diagnostics, declinedDiagnostic(command))
+		}
 		if err := encodeJSON(out, result); err != nil {
 			fmt.Fprintf(errOut, "style %s: %v\n", command, err)
 			return ExitInvalid

@@ -33,3 +33,9 @@ func isTerminal(in io.Reader) bool {
 	info, err := file.Stat()
 	return err == nil && info.Mode()&os.ModeCharDevice != 0
 }
+
+// declinedDiagnostic explains a --json report whose preview was not
+// confirmed: the preview stays the result and nothing was changed.
+func declinedDiagnostic(command string) Diagnostic {
+	return Diagnostic{Code: "confirmation-declined", Severity: "error", Message: command + " was not confirmed; nothing was changed"}
+}

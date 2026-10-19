@@ -16,7 +16,13 @@
     "coexisting_user_packages": {},
     "budget_scope": "selected installation only; active user packages have a separate budget and state"
   },
-  "diagnostics": [],
+  "diagnostics": [
+    {
+      "code": "confirmation-declined",
+      "severity": "error",
+      "message": "install was not confirmed; nothing was changed"
+    }
+  ],
   "result": {
     "package": "project-rules",
     "version": "1.0.0",

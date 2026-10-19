@@ -107,7 +107,8 @@ prerequisites; a project that cannot be bound reports only the requested
 root). `diagnostics` holds the report's top-level diagnostics. A
 failed command adds one entry carrying the error's own code (for example
 `source-invalid`, `invalid-package`, `request-rejected`, `conflict`), or
-`command-failed` when the error has none. `result`
+`command-failed` when the error has none. A preview that was not confirmed
+exits `1` with `confirmation-declined`, and the preview stays the result. `result`
 is the command's report, or `null` when the report holds nothing beyond
 diagnostics (for example a command that failed before producing one); reports
 may keep their own `format` and `status` fields. Usage errors

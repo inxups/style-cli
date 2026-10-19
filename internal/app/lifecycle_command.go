@@ -45,6 +45,7 @@ func runInstall(ctx context.Context, service *Service, workDir string, args []st
 	if err != nil {
 		if result.AwaitingConfirmation {
 			if jsonOutput {
+				result.Diagnostics = append(result.Diagnostics, declinedDiagnostic("install"))
 				_ = encodeJSON(out, result)
 			} else {
 				fmt.Fprintln(errOut, "install canceled; nothing was changed")
@@ -201,6 +202,7 @@ func runUninstall(ctx context.Context, service *Service, args []string, in io.Re
 	if err != nil {
 		if result.AwaitingConfirmation {
 			if jsonOutput {
+				result.Diagnostics = append(result.Diagnostics, declinedDiagnostic("uninstall"))
 				_ = encodeJSON(out, result)
 			} else {
 				fmt.Fprintln(errOut, "uninstall canceled; nothing was changed")

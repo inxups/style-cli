@@ -6,7 +6,13 @@
     "kind": "user",
     "home": "$FIXTURE/style"
   },
-  "diagnostics": [],
+  "diagnostics": [
+    {
+      "code": "confirmation-declined",
+      "severity": "error",
+      "message": "restore was not confirmed; nothing was changed"
+    }
+  ],
   "result": {
     "format": 1,
     "command": "restore",

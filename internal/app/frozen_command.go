@@ -32,6 +32,9 @@ func runRestore(ctx context.Context, s *Service, args []string, in io.Reader, ou
 	}
 	result, runErr := s.InstallFrozen(ctx, request)
 	if jsonOutput {
+		if runErr == nil && result.AwaitingConfirmation {
+			result.Diagnostics = append(result.Diagnostics, declinedDiagnostic("restore"))
+		}
 		if err := encodeJSON(out, result); err != nil {
 			fmt.Fprintf(errOut, "style restore: encode report: %v\n", err)
 			return ExitInvalid
