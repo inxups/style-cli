@@ -339,10 +339,16 @@ func claudeToolPoint(event *agenthooks.Event, pointName string, tool *agenthooks
 		if len(post.Output) > 0 {
 			if output, available := rawFieldValue(post.Output); available {
 				// Object responses (Bash stdout/stderr, Edit patches) also expose
-				// decoded tool.output.<path> fields; tool.output keeps the
-				// response text as sent.
+				// decoded tool.output.<path> fields. Shell tool.output is the
+				// decoded command output so rules match the same text as on
+				// Codex; other tools keep the response JSON text.
 				flattenJSONFields(fields, "tool.output", post.Output)
 				fields["tool.output"] = output
+				if fields["tool.canonical"] == string(agenthooks.ToolShell) {
+					if text, ok := claudeShellOutput(post.Output); ok {
+						fields["tool.output"] = text
+					}
+				}
 			}
 		}
 		if post.Error != "" && fields["tool.output"] == "" {
@@ -387,6 +393,27 @@ func claudeAdded(tool *agenthooks.ToolCall) (string, bool) {
 	}
 	value, available := rawFieldValue(raw)
 	return value, available
+}
+
+// claudeShellOutput decodes a Bash {stdout, stderr} response. Claude Code
+// 2.1.301 already folds stderr into stdout; a non-empty stderr is appended
+// on its own line.
+func claudeShellOutput(raw json.RawMessage) (string, bool) {
+	var response struct {
+		Stdout *string `json:"stdout"`
+		Stderr string  `json:"stderr"`
+	}
+	if json.Unmarshal(raw, &response) != nil || response.Stdout == nil {
+		return "", false
+	}
+	text := *response.Stdout
+	if response.Stderr != "" {
+		if text != "" {
+			text += "\n"
+		}
+		text += response.Stderr
+	}
+	return text, true
 }
 
 func claudeToolMCP(tool *agenthooks.ToolCall) *agenthooks.MCPCall {

@@ -190,14 +190,35 @@ func TestEnricherMapsClaudeToolFieldsAddedMCPAndOutput(t *testing.T) {
 			t.Fatal(err)
 		}
 		point := input.Points[0]
-		for field, want := range map[string]string{"tool.output": response, "tool.output.stdout": "hello world\na\nb", "tool.output.stderr": "", "tool.output.interrupted": "false"} {
+		for field, want := range map[string]string{"tool.output": "hello world\na\nb", "tool.output.stdout": "hello world\na\nb", "tool.output.stderr": "", "tool.output.interrupted": "false"} {
 			if got, ok := point.When.Fields.ReadConditionField(field); !ok || got != want {
 				t.Errorf("field %q = %q, %v; want %q", field, got, ok, want)
 			}
 		}
-		rule := when.Rule{Agent: []string{"*"}, Conditions: []when.Condition{{Field: "tool.output.stdout", Op: "regex", Pattern: `(?m)^a$`}}}
-		if !when.Match(rule, point.When) {
-			t.Fatal("tool.output.stdout should match decoded multi-line output")
+		for _, field := range []string{"tool.output", "tool.output.stdout"} {
+			rule := when.Rule{Agent: []string{"*"}, Conditions: []when.Condition{{Field: field, Op: "regex", Pattern: `(?m)^a$`}}}
+			if !when.Match(rule, point.When) {
+				t.Fatalf("%s should match decoded multi-line output", field)
+			}
+		}
+	})
+
+	t.Run("Bash output appends stderr", func(t *testing.T) {
+		for _, tc := range []struct{ response, want string }{
+			{`{"stdout":"out","stderr":"err"}`, "out\nerr"},
+			{`{"stdout":"","stderr":"err"}`, "err"},
+			{`"plain text"`, "plain text"},
+		} {
+			event := claudeRuntimeEvent(agenthooks.KindToolPost, "PostToolUse", `{"session_id":"s7","tool_name":"Bash","tool_input":{"command":"x"},"tool_response":`+tc.response+`}`)
+			tool := agenthooks.ToolCall{Name: "Bash", Canonical: agenthooks.ToolShell, Input: json.RawMessage(`{"command":"x"}`)}
+			post := &agenthooks.ToolPostEvent{Event: *event, Tool: tool, Output: json.RawMessage(tc.response)}
+			input, _, err := NewEnricher().Enrich(event, post, state.Session{}, state.Scope{SessionID: "s7", AgentID: "main"})
+			if err != nil {
+				t.Fatal(err)
+			}
+			if got, ok := input.Points[0].When.Fields.ReadConditionField("tool.output"); !ok || got != tc.want {
+				t.Errorf("tool.output for %s = %q, %v; want %q", tc.response, got, ok, tc.want)
+			}
 		}
 	})
 

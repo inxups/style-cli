@@ -1,6 +1,9 @@
 package spec
 
-import "testing"
+import (
+	"strings"
+	"testing"
+)
 
 func TestValidateConditionSelectorsAndOptionalFields(t *testing.T) {
 	cases := []struct {
@@ -49,7 +52,7 @@ func TestValidateConditionSelectorsAndOptionalFields(t *testing.T) {
 		},
 		{
 			name: "whole tool output",
-			rule: "  - id: base\n    target: tool\n    tool: shell\n    at: after\n    text: body\n    when:\n      conditions:\n        - field: tool.output\n          op: contains\n          pattern: FAIL\n",
+			rule: "  - id: base\n    target: tool\n    tool: file.edit\n    at: after\n    text: body\n    when:\n      conditions:\n        - field: tool.output\n          op: contains\n          pattern: FAIL\n",
 			want: "whole-tool-output", severity: SeverityWarning,
 		},
 		{
@@ -100,6 +103,17 @@ func TestValidateConditionSelectorsAndOptionalFields(t *testing.T) {
 				t.Fatalf("Validate() diagnostics = %#v, want %s/%s", diagnostics, tc.want, tc.severity)
 			}
 		})
+	}
+}
+
+func TestValidateWholeToolOutputSkipsShellOnlyRules(t *testing.T) {
+	shell := "  - id: base\n    target: tool\n    tool: shell\n    at: after\n    text: body\n    when:\n      conditions:\n        - field: tool.output\n          op: contains\n          pattern: FAIL\n"
+	if diagnostics := loadAndValidate(t, testManifest("condition-case", "", shell), nil); hasDiagnostic(diagnostics, "whole-tool-output", SeverityWarning) {
+		t.Fatalf("shell-only rule should not warn: %#v", diagnostics)
+	}
+	native := strings.Replace(shell, "tool: shell\n", "names: Bash\n", 1)
+	if diagnostics := loadAndValidate(t, testManifest("condition-case", "", native), nil); !hasDiagnostic(diagnostics, "whole-tool-output", SeverityWarning) {
+		t.Fatalf("native names rule should still warn: %#v", diagnostics)
 	}
 }
 

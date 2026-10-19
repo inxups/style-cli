@@ -180,12 +180,31 @@ func (v *validator) validateConditions(value any, rule Rule, source string) {
 			// escaped, key names are part of the text, and anchors see the braces.
 			v.warn("whole-tool-input", conditionSource, "tool.input is the whole input as JSON text; match a decoded value such as tool.input.command instead")
 		}
-		if field == "tool.output" && v.conditionFieldAvailable(field, rule) {
-			// Object tool responses, such as Claude Code's Bash {stdout, stderr},
-			// arrive as JSON text with the same escaping and key-name pitfalls.
-			v.warn("whole-tool-output", conditionSource, "tool.output may be the whole tool response as JSON text; match a decoded value such as tool.output.stdout when the harness returns an object")
+		if field == "tool.output" && v.conditionFieldAvailable(field, rule) && !v.ruleOnlyShell(rule) {
+			// Shell output is decoded text on every adapter. Other object tool
+			// responses, such as Claude Code's Edit patch, arrive as JSON text
+			// with the same escaping and key-name pitfalls as tool.input.
+			v.warn("whole-tool-output", conditionSource, "tool.output may be the whole tool response as JSON text for non-shell tools; match a decoded value such as tool.output.<path> instead")
 		}
 	}
+}
+
+// ruleOnlyShell reports whether a rule selects only the canonical shell tool.
+// Native names selectors are not resolved here, so they do not qualify.
+func (v *validator) ruleOnlyShell(rule Rule) bool {
+	if v.effectiveRuleString(rule, "target", "") != "tool" || len(v.effectiveRuleStringValues(rule, "names")) > 0 {
+		return false
+	}
+	tools := v.effectiveRuleStringValues(rule, "tool")
+	if len(tools) == 0 {
+		return false
+	}
+	for _, tool := range tools {
+		if tool != "shell" {
+			return false
+		}
+	}
+	return true
 }
 
 func conditionFieldKnown(field string) bool {
