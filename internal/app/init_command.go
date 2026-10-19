@@ -6,20 +6,14 @@ import (
 	"fmt"
 	"io"
 	"path/filepath"
-	"strings"
 )
 
 func runInit(ctx context.Context, service *Service, workDir string, args []string, out, errOut io.Writer) int {
-	if isHelp(args) {
-		fmt.Fprintln(out, "style init [name] [--single]")
-		return ExitOK
-	}
-	name, single, err := parseInitArgs(args)
+	parsed, err := initCommand.parse(args)
 	if err != nil {
-		fmt.Fprintf(errOut, "style init: %v\n", err)
-		return ExitUsage
+		return initCommand.usageError(errOut, err)
 	}
-	result, err := service.Init(ctx, InitRequest{Name: name, OutputDir: workDir, Single: single})
+	result, err := service.Init(ctx, InitRequest{Name: parsed.Arg(0), OutputDir: workDir, Single: parsed.Bool("--single")})
 	if err != nil {
 		fmt.Fprintf(errOut, "style init: %v\n", err)
 		var conflictErr *ConflictError
@@ -38,26 +32,4 @@ func runInit(ctx context.Context, service *Service, workDir string, args []strin
 		fmt.Fprintf(out, "created package %s\n", displayPath)
 	}
 	return ExitOK
-}
-
-func parseInitArgs(args []string) (string, bool, error) {
-	var name string
-	single := false
-	for _, arg := range args {
-		switch arg {
-		case "--single":
-			single = true
-		case "--help", "-h":
-			return "", false, errors.New("usage: style init [name] [--single]")
-		default:
-			if strings.HasPrefix(arg, "-") {
-				return "", false, fmt.Errorf("unknown option %q", arg)
-			}
-			if name != "" {
-				return "", false, errors.New("only one package name is allowed")
-			}
-			name = arg
-		}
-	}
-	return name, single, nil
 }

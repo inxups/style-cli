@@ -680,7 +680,7 @@ func TestM3A2CLIUsageJSONAndTerminalSafety(t *testing.T) {
 	}
 	out.Reset()
 	stderr.Reset()
-	if code = RunWithService(context.Background(), f.service, f.root, []string{"probe", "--help"}, &out, &stderr); code != 0 || !strings.Contains(out.String(), probeUsage) || stderr.Len() != 0 {
+	if code = RunWithService(context.Background(), f.service, f.root, []string{"probe", "--help"}, &out, &stderr); code != 0 || !strings.Contains(out.String(), probeCommand.usage()) || stderr.Len() != 0 {
 		t.Fatal("help failed")
 	}
 	report.Targets = []ProbeTarget{{Harness: "evil\x1b[31m\n", Route: "route\x1b[0m", Status: "unavailable", Origin: "unverified"}}

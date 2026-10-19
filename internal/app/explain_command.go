@@ -6,24 +6,13 @@ import (
 	"fmt"
 	"io"
 	"path/filepath"
-	"strconv"
 	"strings"
 )
-
-const explainUsage = "style explain --harness h --event NativeEvent --payload f.json [--index f] [--state-dir d] [--facts f] [--provenance f] [--fail-closed] " + countFlags + " [--json]"
 
 func runExplain(ctx context.Context, s *Service, workDir string, args []string, out, errOut io.Writer) int {
 	request, jsonMode, err := parseExplainArgs(args)
 	if err != nil {
-		fmt.Fprintln(errOut, "style explain: "+err.Error())
-		fmt.Fprintln(errOut, explainUsage)
-		return ExitUsage
-	}
-	for _, arg := range args {
-		if arg == "--help" || arg == "-h" {
-			fmt.Fprintln(out, explainUsage)
-			return ExitOK
-		}
+		return explainCommand.usageError(errOut, err)
 	}
 	for _, path := range []*string{&request.Payload, &request.Index, &request.StateDir, &request.Facts, &request.Provenance} {
 		if *path != "" && !filepath.IsAbs(*path) {
@@ -49,75 +38,19 @@ func runExplain(ctx context.Context, s *Service, workDir string, args []string, 
 	return ExitOK
 }
 func parseExplainArgs(args []string) (ExplainRequest, bool, error) {
-	request := ExplainRequest{}
-	jsonMode := false
-	seen := map[string]bool{}
-	for i := 0; i < len(args); i++ {
-		if handled, err := parseCountOption(args, &i, &request.Count); handled {
-			if err != nil {
-				return request, false, err
-			}
-			continue
-		}
-		arg, value, inline := strings.Cut(args[i], "=")
-		if arg == "--help" || arg == "-h" {
-			return request, false, nil
-		}
-		if seen[arg] {
-			return request, false, fmt.Errorf("duplicate option %q", arg)
-		}
-		seen[arg] = true
-		if arg == "--json" || arg == "--fail-closed" {
-			b := true
-			var err error
-			if inline {
-				b, err = strconv.ParseBool(value)
-				if err != nil {
-					return request, false, fmt.Errorf("invalid boolean option %s", arg)
-				}
-			}
-			if arg == "--json" {
-				jsonMode = b
-			} else {
-				request.FailClosed = b
-			}
-			continue
-		}
-		var target *string
-		switch arg {
-		case "--harness":
-			target = &request.Harness
-		case "--event":
-			target = &request.Event
-		case "--payload":
-			target = &request.Payload
-		case "--index":
-			target = &request.Index
-		case "--state-dir":
-			target = &request.StateDir
-		case "--facts":
-			target = &request.Facts
-		case "--provenance":
-			target = &request.Provenance
-		default:
-			return request, false, fmt.Errorf("unknown option %q", arg)
-		}
-		if !inline {
-			i++
-			if i >= len(args) || strings.HasPrefix(args[i], "--") {
-				return request, false, fmt.Errorf("missing value for %s", arg)
-			}
-			value = args[i]
-		}
-		if value == "" {
-			return request, false, fmt.Errorf("empty option %s", arg)
-		}
-		*target = value
+	parsed, err := explainCommand.parse(args)
+	if err != nil {
+		return ExplainRequest{}, false, err
 	}
-	if request.Harness == "" || request.Event == "" || request.Payload == "" || strings.Contains(request.Harness, ",") || request.Harness == "auto" {
-		return request, false, fmt.Errorf("one harness, native event and payload are required")
+	request := ExplainRequest{
+		Count: countOptions(parsed), Harness: parsed.String("--harness"), Event: parsed.String("--event"), Payload: parsed.String("--payload"),
+		Index: parsed.String("--index"), StateDir: parsed.String("--state-dir"), Facts: parsed.String("--facts"), Provenance: parsed.String("--provenance"),
+		FailClosed: parsed.Bool("--fail-closed"),
 	}
-	return request, jsonMode, nil
+	if strings.Contains(request.Harness, ",") || request.Harness == "auto" {
+		return request, false, fmt.Errorf("select exactly one harness")
+	}
+	return request, parsed.Bool("--json"), nil
 }
 func writeExplainText(out io.Writer, result ExplainResult) {
 	quote := func(value string) string { encoded, _ := json.Marshal(value); return string(encoded) }

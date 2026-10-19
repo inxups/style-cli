@@ -7,26 +7,15 @@ import (
 	"io"
 	"os"
 	"os/signal"
-	"strconv"
 	"strings"
 	"syscall"
 	"time"
 )
 
-const probeUsage = "style probe [--harness h] [--timeout 60s] [--json]"
-
 func runProbe(ctx context.Context, s *Service, args []string, out, errOut io.Writer) int {
 	request, jsonMode, err := parseProbeArgs(args)
 	if err != nil {
-		fmt.Fprintln(errOut, "style probe: "+err.Error())
-		fmt.Fprintln(errOut, probeUsage)
-		return ExitUsage
-	}
-	for _, arg := range args {
-		if arg == "--help" || arg == "-h" {
-			fmt.Fprintln(out, probeUsage)
-			return ExitOK
-		}
+		return probeCommand.usageError(errOut, err)
 	}
 	request.Ready = func(ready ProbeReady) error {
 		if _, err := fmt.Fprintf(errOut, "probe ready: run_id=%s; trigger a subscribed event in your harness session.\n", ready.RunID); err != nil {
@@ -57,57 +46,22 @@ func runProbe(ctx context.Context, s *Service, args []string, out, errOut io.Wri
 	return ExitOK
 }
 func parseProbeArgs(args []string) (ProbeRequest, bool, error) {
-	request := ProbeRequest{Timeout: time.Minute}
-	jsonMode := false
-	seen := map[string]bool{}
-	for index := 0; index < len(args); index++ {
-		arg, value, inline := strings.Cut(args[index], "=")
-		if arg == "--help" || arg == "-h" {
-			return request, false, nil
+	parsed, err := probeCommand.parse(args)
+	if err != nil {
+		return ProbeRequest{}, false, err
+	}
+	request := ProbeRequest{Harness: parsed.String("--harness"), Timeout: time.Minute}
+	if parsed.Has("--timeout") {
+		duration, err := time.ParseDuration(parsed.String("--timeout"))
+		if err != nil || duration < time.Second || duration > 10*time.Minute {
+			return request, false, fmt.Errorf("timeout must be between 1s and 10m")
 		}
-		if seen[arg] {
-			return request, false, fmt.Errorf("duplicate option %q", arg)
-		}
-		seen[arg] = true
-		if arg == "--json" {
-			boolean := true
-			var err error
-			if inline {
-				boolean, err = strconv.ParseBool(value)
-				if err != nil {
-					return request, false, fmt.Errorf("invalid boolean option %s", arg)
-				}
-			}
-			jsonMode = boolean
-			continue
-		}
-		if arg != "--harness" && arg != "--timeout" {
-			return request, false, fmt.Errorf("unknown option %q", arg)
-		}
-		if !inline {
-			index++
-			if index >= len(args) || strings.HasPrefix(args[index], "--") {
-				return request, false, fmt.Errorf("missing value for %s", arg)
-			}
-			value = args[index]
-		}
-		if value == "" {
-			return request, false, fmt.Errorf("empty option %s", arg)
-		}
-		if arg == "--harness" {
-			request.Harness = value
-		} else {
-			duration, err := time.ParseDuration(value)
-			if err != nil || duration < time.Second || duration > 10*time.Minute {
-				return request, false, fmt.Errorf("timeout must be between 1s and 10m")
-			}
-			request.Timeout = duration
-		}
+		request.Timeout = duration
 	}
 	if request.Harness == "auto" || strings.Contains(request.Harness, ",") {
 		return request, false, fmt.Errorf("select one harness or omit --harness")
 	}
-	return request, jsonMode, nil
+	return request, parsed.Bool("--json"), nil
 }
 func probeQuote(value string) string { encoded, _ := json.Marshal(value); return string(encoded) }
 func writeProbeText(out io.Writer, result ProbeResult) {

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strings"
 )
 
 const (
@@ -57,8 +58,21 @@ func RunWithService(ctx context.Context, service *Service, workDir string, args 
 		fmt.Fprintln(errOut, "style: service is required")
 		return ExitUsage
 	}
-	if len(args) == 0 || args[0] == "help" || args[0] == "--help" || args[0] == "-h" {
+	if len(args) == 0 || args[0] == "--help" || args[0] == "-h" || args[0] == "help" && len(args) == 1 {
 		printUsage(out)
+		return ExitOK
+	}
+	if args[0] == "help" {
+		if _, ok := lookupCommand(args[1]); !ok || len(args) > 2 {
+			fmt.Fprintf(errOut, "style help: unknown command %q\n", strings.Join(args[1:], " "))
+			printUsage(errOut)
+			return ExitUsage
+		}
+		printCommandHelp(out, args[1])
+		return ExitOK
+	}
+	if _, ok := lookupCommand(args[0]); ok && helpRequested(args[1:]) {
+		printCommandHelp(out, args[0])
 		return ExitOK
 	}
 	if projectInvocation(args) {
@@ -96,22 +110,10 @@ func RunWithService(ctx context.Context, service *Service, workDir string, args 
 	}
 }
 
-func printUsage(out io.Writer) {
-	fmt.Fprintln(out, countUsage)
-	fmt.Fprintln(out, "Project scope: add --project <existing-dir> to management, diagnostic and stats commands.")
-	fmt.Fprintln(out, "style init [name] [--single]")
-	fmt.Fprintln(out, "style validate [source] [--ref ref] [--path repo-path] [--json]")
-	fmt.Fprintln(out, "style plan <source> [--ref ref] [--path repo-path] [--harness auto|codex,claude-code] [--assume-requests N] [--assume-triggers N] "+countFlags+" [--json]")
-	fmt.Fprintln(out, "style install <source> [--ref ref] [--path repo-path] [--harness h] [--route h=r] [--set k=v] [--link] [--allow-replace] [--fail-closed h] [--yes] [--json]")
-	fmt.Fprintln(out, frozenUsage)
-	fmt.Fprintln(out, updateUsage)
-	fmt.Fprintln(out, "style uninstall <name|--all> [--yes] [--json]")
-	fmt.Fprintln(out, "style list [--json]")
-	fmt.Fprintln(out, "style sync [--json]")
-	fmt.Fprintln(out, "style trust <name> [--allow-replace] [--yes] [--json]")
-	fmt.Fprintln(out, "style doctor [--reset-state] [--json]")
-	fmt.Fprintln(out, statsUsage)
-	fmt.Fprintln(out, explainUsage)
-	fmt.Fprintln(out, probeUsage)
-	fmt.Fprintln(out, "style adapters [--json]")
+func printCommandHelp(out io.Writer, name string) {
+	command, _ := lookupCommand(name)
+	fmt.Fprintln(out, command.usage())
+	if name == "install" {
+		fmt.Fprintln(out, frozenCommand.usage())
+	}
 }

@@ -5,41 +5,20 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"strings"
 )
 
 func runSync(ctx context.Context, service *Service, command string, args []string, out, errOut io.Writer) int {
-	usage := "style sync [--json]"
-	if command == "trust" {
-		usage = "style trust <name> [--allow-replace] [--yes] [--json]"
+	spec, _ := lookupCommand(command)
+	parsed, err := spec.parse(args)
+	if err == nil && command == "trust" && parsed.Arg(0) == "" {
+		err = errors.New("package name is required")
 	}
-	if isHelp(args) {
-		fmt.Fprintln(out, usage)
-		return ExitOK
+	if err != nil {
+		return spec.usageError(errOut, err)
 	}
-	request := TrustRequest{}
-	jsonOutput := false
-	for _, arg := range args {
-		switch {
-		case arg == "--json":
-			jsonOutput = true
-		case arg == "--yes" && command == "trust":
-			request.Yes = true
-		case arg == "--allow-replace" && command == "trust":
-			request.AllowReplace = true
-		case command == "trust" && !strings.HasPrefix(arg, "-") && request.Name == "":
-			request.Name = arg
-		default:
-			fmt.Fprintf(errOut, "style %s: unexpected argument %q\n", command, arg)
-			return ExitUsage
-		}
-	}
-	if command == "trust" && request.Name == "" {
-		fmt.Fprintln(errOut, usage)
-		return ExitUsage
-	}
+	request := TrustRequest{Name: parsed.Arg(0), Yes: parsed.Bool("--yes"), AllowReplace: parsed.Bool("--allow-replace")}
+	jsonOutput := parsed.Bool("--json")
 	var result SyncResult
-	var err error
 	previewWritten := false
 	if command == "trust" {
 		if !jsonOutput {

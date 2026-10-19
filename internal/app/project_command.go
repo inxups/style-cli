@@ -38,9 +38,7 @@ func runProjectCommand(ctx context.Context, service *Service, workDir string, ar
 		}
 		return ExitInvalid
 	}
-	switch args[0] {
-	case "plan", "install", "update", "uninstall", "list", "sync", "trust", "doctor", "stats", "probe", "explain", "adapters":
-	default:
+	if command, ok := lookupCommand(args[0]); !ok || !command.Project {
 		return fail(&UsageError{Message: "--project is not supported by this command"})
 	}
 	var root, base string

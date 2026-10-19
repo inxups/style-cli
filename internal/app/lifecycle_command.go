@@ -15,16 +15,9 @@ func runInstall(ctx context.Context, service *Service, workDir string, args []st
 	if frozenInvocation(args) {
 		return runFrozen(ctx, service, args, out, errOut)
 	}
-	if isHelp(args) {
-		fmt.Fprintln(out, "style install <source> [--ref ref] [--path repo-path] [--harness h] [--route h=r] [--set k=v] [--link] [--allow-replace] [--fail-closed h] [--yes] [--json]")
-		fmt.Fprintln(out, frozenUsage)
-		fmt.Fprintln(out, "Project: --project <dir>; a fresh multi-package installation also accepts repeatable --project-source <source> and --project-set package.key=value.")
-		return ExitOK
-	}
 	request, jsonOutput, err := parseInstallArgs(args)
 	if err != nil {
-		fmt.Fprintf(errOut, "style install: %v\n", err)
-		return ExitUsage
+		return installCommand.usageError(errOut, err)
 	}
 	if request.Source == "" {
 		fmt.Fprintln(errOut, "style install: source is required")
@@ -135,98 +128,32 @@ func writeInstallPreview(out io.Writer, result InstallResult) {
 }
 
 func parseInstallArgs(args []string) (InstallRequest, bool, error) {
-	request := InstallRequest{Settings: map[string]string{}, Routes: map[string]string{}, ProjectSettings: map[string]string{}}
-	jsonOutput := false
-	for index := 0; index < len(args); index++ {
-		if handled, err := parseSourceOption(args, &index, &request.Ref, &request.Path); handled {
-			if err != nil {
-				return InstallRequest{}, false, err
-			}
-			continue
-		}
-		arg := args[index]
-		switch {
-		case arg == "--project-source" || arg == "--project-set":
-			if index+1 >= len(args) || strings.HasPrefix(args[index+1], "-") || args[index+1] == "" {
-				return InstallRequest{}, false, fmt.Errorf("%s requires a value", arg)
-			}
-			index++
-			if arg == "--project-source" {
-				request.ProjectSources = append(request.ProjectSources, args[index])
-			} else if err := parseSetting(request.ProjectSettings, args[index]); err != nil {
-				return InstallRequest{}, false, err
-			}
-		case strings.HasPrefix(arg, "--project-source="):
-			value := strings.TrimPrefix(arg, "--project-source=")
-			if value == "" {
-				return InstallRequest{}, false, errors.New("--project-source requires a value")
-			}
-			request.ProjectSources = append(request.ProjectSources, value)
-		case strings.HasPrefix(arg, "--project-set="):
-			if err := parseSetting(request.ProjectSettings, strings.TrimPrefix(arg, "--project-set=")); err != nil {
-				return InstallRequest{}, false, err
-			}
-		case arg == "--json":
-			jsonOutput = true
-		case arg == "--yes":
-			request.Yes = true
-		case arg == "--link":
-			request.Link = true
-		case arg == "--allow-replace":
-			request.AllowReplace = true
-		case arg == "--harness":
-			if index+1 >= len(args) {
-				return InstallRequest{}, false, errors.New("--harness requires a value")
-			}
-			request.Harnesses = append(request.Harnesses, args[index+1])
-			index++
-		case strings.HasPrefix(arg, "--harness="):
-			request.Harnesses = append(request.Harnesses, strings.TrimPrefix(arg, "--harness="))
-		case arg == "--route":
-			if index+1 >= len(args) {
-				return InstallRequest{}, false, errors.New("--route requires harness=route")
-			}
-			if err := parseRoute(request.Routes, args[index+1]); err != nil {
-				return InstallRequest{}, false, err
-			}
-			index++
-		case strings.HasPrefix(arg, "--route="):
-			if err := parseRoute(request.Routes, strings.TrimPrefix(arg, "--route=")); err != nil {
-				return InstallRequest{}, false, err
-			}
-		case arg == "--set":
-			if index+1 >= len(args) {
-				return InstallRequest{}, false, errors.New("--set requires name=value")
-			}
-			if err := parseSetting(request.Settings, args[index+1]); err != nil {
-				return InstallRequest{}, false, err
-			}
-			index++
-		case strings.HasPrefix(arg, "--set="):
-			if err := parseSetting(request.Settings, strings.TrimPrefix(arg, "--set=")); err != nil {
-				return InstallRequest{}, false, err
-			}
-		case arg == "--fail-closed":
-			if index+1 >= len(args) {
-				return InstallRequest{}, false, errors.New("--fail-closed requires a harness")
-			}
-			request.FailClosed = append(request.FailClosed, args[index+1])
-			index++
-		case strings.HasPrefix(arg, "--fail-closed="):
-			request.FailClosed = append(request.FailClosed, strings.TrimPrefix(arg, "--fail-closed="))
-		case arg == "--help", arg == "-h":
-			return InstallRequest{}, false, errors.New("usage: style install <source> [options]")
-		default:
-			if strings.HasPrefix(arg, "-") {
-				return InstallRequest{}, false, fmt.Errorf("unknown option %q", arg)
-			}
-			if request.Source != "" {
-				return InstallRequest{}, false, errors.New("only one source path is allowed")
-			}
-			request.Source = arg
+	parsed, err := installCommand.parse(args)
+	if err != nil {
+		return InstallRequest{}, false, err
+	}
+	request := InstallRequest{
+		Source: parsed.Arg(0), Ref: parsed.String("--ref"), Path: parsed.String("--path"),
+		Harnesses: parsed.List("--harness"), FailClosed: parsed.List("--fail-closed"), ProjectSources: parsed.List("--project-source"),
+		Yes: parsed.Bool("--yes"), Link: parsed.Bool("--link"), AllowReplace: parsed.Bool("--allow-replace"),
+		Settings: map[string]string{}, Routes: map[string]string{}, ProjectSettings: map[string]string{},
+	}
+	for _, value := range parsed.List("--route") {
+		if err := parseRoute(request.Routes, value); err != nil {
+			return InstallRequest{}, false, err
 		}
 	}
-	return request, jsonOutput, nil
+	for _, option := range []struct {
+		name     string
+		settings map[string]string
+	}{{"--set", request.Settings}, {"--project-set", request.ProjectSettings}} {
+		for _, value := range parsed.List(option.name) {
+			if err := parseSetting(option.settings, value); err != nil {
+				return InstallRequest{}, false, err
+			}
+		}
+	}
+	return request, parsed.Bool("--json"), nil
 }
 
 func parseRoute(routes map[string]string, value string) error {
@@ -248,14 +175,9 @@ func parseSetting(settings map[string]string, value string) error {
 }
 
 func runUninstall(ctx context.Context, service *Service, args []string, out, errOut io.Writer) int {
-	if isHelp(args) {
-		fmt.Fprintln(out, "style uninstall <name|--all> [--yes] [--json]")
-		return ExitOK
-	}
 	request, jsonOutput, err := parseUninstallArgs(args)
 	if err != nil {
-		fmt.Fprintf(errOut, "style uninstall: %v\n", err)
-		return ExitUsage
+		return uninstallCommand.usageError(errOut, err)
 	}
 	result, err := service.Uninstall(ctx, request)
 	if err != nil {
@@ -285,33 +207,16 @@ func runUninstall(ctx context.Context, service *Service, args []string, out, err
 }
 
 func parseUninstallArgs(args []string) (UninstallRequest, bool, error) {
-	request := UninstallRequest{}
-	jsonOutput := false
-	for _, arg := range args {
-		switch arg {
-		case "--yes":
-			request.Yes = true
-		case "--all":
-			request.All = true
-		case "--json":
-			jsonOutput = true
-		case "--help", "-h":
-			return UninstallRequest{}, false, errors.New("usage: style uninstall <name|--all> [--yes] [--json]")
-		default:
-			if strings.HasPrefix(arg, "-") {
-				return UninstallRequest{}, false, fmt.Errorf("unknown option %q", arg)
-			}
-			if request.Name != "" {
-				return UninstallRequest{}, false, errors.New("only one package name is allowed")
-			}
-			request.Name = arg
-		}
+	parsed, err := uninstallCommand.parse(args)
+	if err != nil {
+		return UninstallRequest{}, false, err
 	}
+	request := UninstallRequest{Name: parsed.Arg(0), All: parsed.Bool("--all"), Yes: parsed.Bool("--yes")}
 	if request.Name == "" && !request.All {
 		return UninstallRequest{}, false, errors.New("package name or --all is required")
 	}
 	if request.Name != "" && request.All {
 		return UninstallRequest{}, false, errors.New("package name cannot be combined with --all")
 	}
-	return request, jsonOutput, nil
+	return request, parsed.Bool("--json"), nil
 }

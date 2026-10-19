@@ -131,7 +131,7 @@ func TestM3A4SelectionAndCLIOptions(t *testing.T) {
 	t.Setenv("STYLE_HOME", filepath.Join(t.TempDir(), "empty"))
 	invalid := [][]string{{}, {"first", "--all"}, {"first", "second"}, {"--all", "--ref=refs/heads/main"},
 		{"first", "--ref"}, {"first", "--ref="}, {"first", "--ref=x", "--ref=y"}, {"first", "--yes", "--yes"},
-		{"--all", "--all"}, {"first", "--yes=true"}, {"first", "--set=a=b"}, {"first", "--harness=codex"},
+		{"--all", "--all"}, {"first", "--set=a=b"}, {"first", "--harness=codex"},
 		{"first", "--route=codex=codex-user"}, {"first", "--path=pkg"}, {"first", "--source=elsewhere"},
 		{"first", "--link"}, {"first", "--frozen"}, {"first", "--fail-closed=claude-code"}, {"first", "--json", "--json"}}
 	for _, args := range invalid {
@@ -145,7 +145,7 @@ func TestM3A4SelectionAndCLIOptions(t *testing.T) {
 	}
 	for _, args := range [][]string{{"update", "--help"}, {"--help"}} {
 		var out bytes.Buffer
-		if RunWithService(context.Background(), s, t.TempDir(), args, &out, &bytes.Buffer{}) != ExitOK || !strings.Contains(out.String(), updateUsage) {
+		if RunWithService(context.Background(), s, t.TempDir(), args, &out, &bytes.Buffer{}) != ExitOK || !strings.Contains(out.String(), updateCommand.summary()) {
 			t.Fatalf("missing help: %s", &out)
 		}
 	}

@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io"
 	"path/filepath"
-	"strings"
 
 	"github.com/inxups/style-cli/internal/source"
 )
@@ -73,35 +72,4 @@ func snapshotName(kind, p string) string {
 		return filepath.Base(p)
 	}
 	return ""
-}
-
-func parseSourceOption(args []string, index *int, ref, p *string) (bool, error) {
-	arg := args[*index]
-	for _, option := range []struct {
-		name  string
-		value *string
-	}{{"--ref", ref}, {"--path", p}} {
-		if arg != option.name && !strings.HasPrefix(arg, option.name+"=") {
-			continue
-		}
-		value := ""
-		if arg == option.name {
-			if *index+1 >= len(args) {
-				return true, fmt.Errorf("%s requires a value", option.name)
-			}
-			*index++
-			value = args[*index]
-		} else {
-			value = strings.TrimPrefix(arg, option.name+"=")
-		}
-		if value == "" || strings.HasPrefix(value, "--") {
-			return true, fmt.Errorf("%s requires a value", option.name)
-		}
-		if *option.value != "" {
-			return true, fmt.Errorf("%s may only be specified once", option.name)
-		}
-		*option.value = value
-		return true, nil
-	}
-	return false, nil
 }

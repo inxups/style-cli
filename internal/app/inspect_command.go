@@ -8,28 +8,13 @@ import (
 )
 
 func runInspect(ctx context.Context, service *Service, workDir, command string, args []string, out, errOut io.Writer) int {
-	usage := "style " + command + " [--json]"
-	if command == "doctor" {
-		usage = "style doctor [--reset-state] [--json]"
+	spec, _ := lookupCommand(command)
+	parsed, err := spec.parse(args)
+	if err != nil {
+		return spec.usageError(errOut, err)
 	}
-	if isHelp(args) {
-		fmt.Fprintln(out, usage)
-		return ExitOK
-	}
-	jsonOutput, reset := false, false
-	for _, arg := range args {
-		switch {
-		case arg == "--json":
-			jsonOutput = true
-		case arg == "--reset-state" && command == "doctor":
-			reset = true
-		default:
-			fmt.Fprintf(errOut, "style %s: unknown argument %q\n", command, arg)
-			return ExitUsage
-		}
-	}
+	jsonOutput, reset := parsed.Bool("--json"), parsed.Bool("--reset-state")
 	var value any
-	var err error
 	exit := ExitOK
 	switch command {
 	case "list":

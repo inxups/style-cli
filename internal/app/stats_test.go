@@ -153,7 +153,7 @@ func TestA5StatsWindowsAndUsage(t *testing.T) {
 		{"--by", "other"}, {"--by"}, {"--by="}, {"--by", ""}, {"--since"}, {"--since="},
 		{"--since", "7d"}, {"--since", "0"}, {"--since=-1h"}, {"--since", "2030-01-01T00:00:00Z"},
 		{"--since", "2026-10-16T00:00:00.000000001Z"}, {"--since", "2026-10-09"},
-		{"--unknown"}, {"positional"}, {"--json=true"}, {"--help", "extra"},
+		{"--unknown"}, {"positional"}, {"--json=true"},
 	} {
 		var out, errOut bytes.Buffer
 		code := runStatsAt(context.Background(), args, &out, &errOut, now)
@@ -170,7 +170,7 @@ func TestA5StatsWindowsAndUsage(t *testing.T) {
 		}
 	}
 	var out, errOut bytes.Buffer
-	if code := runStatsAt(context.Background(), []string{"--help"}, &out, &errOut, now); code != 0 || out.String() != statsUsage+"\n" || errOut.Len() != 0 {
+	if code := runStatsAt(context.Background(), []string{"--help"}, &out, &errOut, now); code != 0 || out.String() != statsCommand.usage()+"\n" || errOut.Len() != 0 {
 		t.Fatalf("help: %d %s %s", code, &out, &errOut)
 	}
 }

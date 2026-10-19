@@ -5,20 +5,12 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"strings"
 )
 
-const updateUsage = "style update <name|--all> [--ref ref] [--allow-replace] [--yes] [--json]"
-
 func runUpdate(ctx context.Context, service *Service, args []string, out, errOut io.Writer) int {
-	if isHelp(args) {
-		fmt.Fprintln(out, updateUsage)
-		return ExitOK
-	}
 	request, jsonOutput, err := parseUpdateArgs(args)
 	if err != nil {
-		fmt.Fprintf(errOut, "style update: %v\n%s\n", err, updateUsage)
-		return ExitUsage
+		return updateCommand.usageError(errOut, err)
 	}
 	previewWritten := false
 	if !jsonOutput {
@@ -60,45 +52,18 @@ func runUpdate(ctx context.Context, service *Service, args []string, out, errOut
 }
 
 func parseUpdateArgs(args []string) (UpdateRequest, bool, error) {
-	request := UpdateRequest{}
-	jsonOutput := false
-	seen := map[string]bool{}
-	for i := 0; i < len(args); i++ {
-		arg := args[i]
-		flag, _, _ := strings.Cut(arg, "=")
-		if strings.HasPrefix(arg, "--") {
-			if seen[flag] {
-				return request, false, fmt.Errorf("%s may only be specified once", flag)
-			}
-			seen[flag] = true
-		}
-		switch {
-		case arg == "--all":
-			request.All = true
-		case arg == "--yes":
-			request.Yes = true
-		case arg == "--allow-replace":
-			request.AllowReplace = true
-		case arg == "--json":
-			jsonOutput = true
-		case arg == "--ref" || strings.HasPrefix(arg, "--ref="):
-			path := ""
-			if _, err := parseSourceOption(args, &i, &request.Ref, &path); err != nil {
-				return request, false, err
-			}
-		case !strings.HasPrefix(arg, "-") && request.Name == "":
-			request.Name = arg
-		default:
-			return request, false, fmt.Errorf("unexpected argument %q", arg)
-		}
+	parsed, err := updateCommand.parse(args)
+	if err != nil {
+		return UpdateRequest{}, false, err
 	}
+	request := UpdateRequest{Name: parsed.Arg(0), All: parsed.Bool("--all"), Ref: parsed.String("--ref"), Yes: parsed.Bool("--yes"), AllowReplace: parsed.Bool("--allow-replace")}
 	if (request.Name == "") == !request.All {
 		return request, false, fmt.Errorf("specify exactly one package name or --all")
 	}
 	if request.All && request.Ref != "" {
 		return request, false, fmt.Errorf("--ref requires a single Git package")
 	}
-	return request, jsonOutput, nil
+	return request, parsed.Bool("--json"), nil
 }
 
 func writeUpdatePreview(out io.Writer, result UpdateResult) {

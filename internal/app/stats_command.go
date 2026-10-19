@@ -11,8 +11,6 @@ import (
 	"time"
 )
 
-const statsUsage = "style stats [--by rule|session] [--since <duration|RFC3339>] [--json]"
-
 func runStats(ctx context.Context, args []string, out, errOut io.Writer) int {
 	return runStatsAt(ctx, args, out, errOut, time.Now())
 }
@@ -22,15 +20,15 @@ func runStatsAt(ctx context.Context, args []string, out, errOut io.Writer, now t
 }
 
 func runStatsAtHome(ctx context.Context, args []string, out, errOut io.Writer, now time.Time, home string) int {
-	if isHelp(args) {
-		fmt.Fprintln(out, statsUsage)
+	if helpRequested(args) {
+		fmt.Fprintln(out, statsCommand.usage())
 		return ExitOK
 	}
-	request, jsonOutput, err := parseStatsArgs(args)
+	parsed, err := statsCommand.parse(args)
 	if err != nil {
-		fmt.Fprintf(errOut, "style stats: %v\nusage: %s\n", err, statsUsage)
-		return ExitUsage
+		return statsCommand.usageError(errOut, err)
 	}
+	request, jsonOutput := StatsRequest{By: parsed.String("--by"), Since: parsed.String("--since")}, parsed.Bool("--json")
 	if home != "" {
 		request.Home = home
 	}
@@ -53,35 +51,6 @@ func runStatsAtHome(ctx context.Context, args []string, out, errOut io.Writer, n
 		return ExitInvalid
 	}
 	return ExitOK
-}
-
-func parseStatsArgs(args []string) (StatsRequest, bool, error) {
-	request := StatsRequest{}
-	jsonOutput := false
-	for i := 0; i < len(args); i++ {
-		arg := args[i]
-		switch {
-		case arg == "--json":
-			jsonOutput = true
-		case arg == "--by" || arg == "--since":
-			if i+1 >= len(args) || args[i+1] == "" {
-				return request, false, fmt.Errorf("%s requires a value", arg)
-			}
-			i++
-			if arg == "--by" {
-				request.By = args[i]
-			} else {
-				request.Since = args[i]
-			}
-		case strings.HasPrefix(arg, "--by=") && len(arg) > len("--by="):
-			request.By = strings.TrimPrefix(arg, "--by=")
-		case strings.HasPrefix(arg, "--since=") && len(arg) > len("--since="):
-			request.Since = strings.TrimPrefix(arg, "--since=")
-		default:
-			return request, false, fmt.Errorf("unknown argument %q", arg)
-		}
-	}
-	return request, jsonOutput, nil
 }
 
 func writeStatsText(out io.Writer, result StatsResult) {

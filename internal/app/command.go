@@ -15,14 +15,9 @@ import (
 )
 
 func runValidate(ctx context.Context, service *Service, workDir string, args []string, out, errOut io.Writer) int {
-	if isHelp(args) {
-		fmt.Fprintln(out, "style validate [source] [--ref ref] [--path repo-path] [--json]")
-		return ExitOK
-	}
 	request, jsonOutput, err := parseValidateArgs(args)
 	if err != nil {
-		fmt.Fprintf(errOut, "style validate: %v\n", err)
-		return ExitUsage
+		return validateCommand.usageError(errOut, err)
 	}
 	if request.Source == "" {
 		request.Source = workDir
@@ -60,14 +55,9 @@ func runValidate(ctx context.Context, service *Service, workDir string, args []s
 }
 
 func runPlan(ctx context.Context, service *Service, workDir string, args []string, out, errOut io.Writer) int {
-	if isHelp(args) {
-		fmt.Fprintln(out, "style plan <source> [--ref ref] [--path repo-path] [--harness auto|codex,claude-code] [--assume-requests N] [--assume-triggers N] "+countFlags+" [--json]")
-		return ExitOK
-	}
 	request, jsonOutput, err := parsePlanArgs(args)
 	if err != nil {
-		fmt.Fprintf(errOut, "style plan: %v\n", err)
-		return ExitUsage
+		return planCommand.usageError(errOut, err)
 	}
 	if request.Source == "" {
 		fmt.Fprintln(errOut, "style plan: source is required")
@@ -122,101 +112,30 @@ func runPlan(ctx context.Context, service *Service, workDir string, args []strin
 }
 
 func parseValidateArgs(args []string) (ValidateRequest, bool, error) {
-	var request ValidateRequest
-	jsonOutput := false
-	for index := 0; index < len(args); index++ {
-		if handled, err := parseSourceOption(args, &index, &request.Ref, &request.Path); handled {
-			if err != nil {
-				return ValidateRequest{}, false, err
-			}
-			continue
-		}
-		arg := args[index]
-		switch arg {
-		case "--json":
-			jsonOutput = true
-		case "--help", "-h":
-			return ValidateRequest{}, false, errors.New("usage: style validate [source] [--ref ref] [--path repo-path] [--json]")
-		default:
-			if strings.HasPrefix(arg, "-") {
-				return ValidateRequest{}, false, fmt.Errorf("unknown option %q", arg)
-			}
-			if request.Source != "" {
-				return ValidateRequest{}, false, errors.New("only one source path is allowed")
-			}
-			request.Source = arg
-		}
+	parsed, err := validateCommand.parse(args)
+	if err != nil {
+		return ValidateRequest{}, false, err
 	}
-	return request, jsonOutput, nil
+	return ValidateRequest{Source: parsed.Arg(0), Ref: parsed.String("--ref"), Path: parsed.String("--path")}, parsed.Bool("--json"), nil
 }
 
 func parsePlanArgs(args []string) (PlanRequest, bool, error) {
-	request := PlanRequest{}
-	jsonOutput := false
-	for index := 0; index < len(args); index++ {
-		if handled, err := parseCountOption(args, &index, &request.Count); handled {
-			if err != nil {
-				return PlanRequest{}, false, err
+	parsed, err := planCommand.parse(args)
+	if err != nil {
+		return PlanRequest{}, false, err
+	}
+	request := PlanRequest{Source: parsed.Arg(0), Ref: parsed.String("--ref"), Path: parsed.String("--path"), Harnesses: parsed.List("--harness"), Count: countOptions(parsed)}
+	for _, option := range []struct {
+		name  string
+		value *int
+	}{{"--assume-requests", &request.AssumeRequests}, {"--assume-triggers", &request.AssumeTriggers}} {
+		if parsed.Has(option.name) {
+			if *option.value, err = positiveInt(parsed.String(option.name)); err != nil {
+				return PlanRequest{}, false, fmt.Errorf("%s %w", option.name, err)
 			}
-			continue
-		}
-		if handled, err := parseSourceOption(args, &index, &request.Ref, &request.Path); handled {
-			if err != nil {
-				return PlanRequest{}, false, err
-			}
-			continue
-		}
-		arg := args[index]
-		switch {
-		case arg == "--json":
-			jsonOutput = true
-		case arg == "--harness":
-			if index+1 >= len(args) {
-				return PlanRequest{}, false, errors.New("--harness requires a value")
-			}
-			index++
-			request.Harnesses = append(request.Harnesses, args[index])
-		case strings.HasPrefix(arg, "--harness="):
-			request.Harnesses = append(request.Harnesses, strings.TrimPrefix(arg, "--harness="))
-		case arg == "--assume-requests", arg == "--assume-triggers":
-			if index+1 >= len(args) {
-				return PlanRequest{}, false, fmt.Errorf("%s requires a value", arg)
-			}
-			value, err := strconv.Atoi(args[index+1])
-			if err != nil || value <= 0 {
-				return PlanRequest{}, false, fmt.Errorf("%s requires a positive integer", arg)
-			}
-			if arg == "--assume-requests" {
-				request.AssumeRequests = value
-			} else {
-				request.AssumeTriggers = value
-			}
-			index++
-		case strings.HasPrefix(arg, "--assume-requests="):
-			value, err := positiveInt(strings.TrimPrefix(arg, "--assume-requests="))
-			if err != nil {
-				return PlanRequest{}, false, fmt.Errorf("--assume-requests: %w", err)
-			}
-			request.AssumeRequests = value
-		case strings.HasPrefix(arg, "--assume-triggers="):
-			value, err := positiveInt(strings.TrimPrefix(arg, "--assume-triggers="))
-			if err != nil {
-				return PlanRequest{}, false, fmt.Errorf("--assume-triggers: %w", err)
-			}
-			request.AssumeTriggers = value
-		case arg == "--help", arg == "-h":
-			return PlanRequest{}, false, errors.New("usage: style plan <source> [--harness auto|h1,h2]")
-		default:
-			if strings.HasPrefix(arg, "-") {
-				return PlanRequest{}, false, fmt.Errorf("unknown option %q", arg)
-			}
-			if request.Source != "" {
-				return PlanRequest{}, false, errors.New("only one source path is allowed")
-			}
-			request.Source = arg
 		}
 	}
-	return request, jsonOutput, nil
+	return request, parsed.Bool("--json"), nil
 }
 
 func positiveInt(value string) (int, error) {
@@ -292,10 +211,6 @@ func writePlanText(out io.Writer, result PlanResult) {
 		fmt.Fprintf(out, "  session cost (requests=%d triggers=%d): %.1f always-on + %.1f triggered = %.1f units\n", report.SessionCost.Requests, report.SessionCost.Triggers, report.SessionCost.AlwaysOn, report.SessionCost.Triggered, report.SessionCost.Total)
 		fmt.Fprintln(out, "  scenario only: 1.25x cache write + 0.1x later hits; assumes an eligible unchanged prefix within cache lifetime; not billing")
 	}
-}
-
-func isHelp(args []string) bool {
-	return len(args) == 1 && (args[0] == "--help" || args[0] == "-h")
 }
 
 func formatNumber(value float64) string {
