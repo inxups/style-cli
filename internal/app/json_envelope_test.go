@@ -206,3 +206,30 @@ func TestJSONFailuresKeepTheirCodes(t *testing.T) {
 		}
 	}
 }
+
+func TestProjectBindingFailuresKeepTheirCode(t *testing.T) {
+	service := testService(t)
+	root := t.TempDir()
+	t.Setenv("STYLE_HOME", filepath.Join(root, "home"))
+	missing := filepath.Join(root, "missing")
+	var out, errOut bytes.Buffer
+	if code := RunWithService(context.Background(), service, root, []string{"list", "--project", missing, "--json"}, &out, &errOut); code != ExitInvalid {
+		t.Fatalf("exit = %d; stderr=%s", code, &errOut)
+	}
+	var envelope struct {
+		Scope       map[string]string
+		Diagnostics []Diagnostic
+	}
+	if err := json.Unmarshal(out.Bytes(), &envelope); err != nil {
+		t.Fatal(err)
+	}
+	if want := map[string]string{"kind": "project", "root": missing}; !reflect.DeepEqual(envelope.Scope, want) {
+		t.Fatalf("scope = %v, want %v", envelope.Scope, want)
+	}
+	if len(envelope.Diagnostics) != 1 || envelope.Diagnostics[0].Code != "project-binding-invalid" || envelope.Diagnostics[0].Message != "project directory must exist" {
+		t.Fatalf("diagnostics = %+v", envelope.Diagnostics)
+	}
+	if !strings.Contains(errOut.String(), "style list: project-binding-invalid: project directory must exist") {
+		t.Fatalf("stderr = %q", &errOut)
+	}
+}

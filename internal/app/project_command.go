@@ -20,6 +20,7 @@ func projectInvocation(args []string) bool {
 	return false
 }
 func runProjectCommand(ctx context.Context, service *Service, workDir string, args []string, in io.Reader, out, errOut io.Writer) int {
+	var root, base string
 	fail := func(err error) int {
 		var usageErr *UsageError
 		if errors.As(err, &usageErr) {
@@ -28,18 +29,21 @@ func runProjectCommand(ctx context.Context, service *Service, workDir string, ar
 		}
 		report := func(out, errOut io.Writer) int {
 			fmt.Fprintf(errOut, "style %s: %v\n", args[0], err)
-			_ = encodeJSON(out, map[string]any{"diagnostics": []Diagnostic{{Code: "project-invalid", Severity: "error", Message: err.Error()}}})
+			diagnostic := failureDiagnostic(err)
+			if diagnostic.Code == "command-failed" {
+				diagnostic.Code = "project-invalid"
+			}
+			_ = encodeJSON(out, map[string][]Diagnostic{"diagnostics": {diagnostic}})
 			return ExitInvalid
 		}
 		if jsonRequested(args) {
-			return runJSON(args[0], envelopeScope{Kind: "project"}, out, errOut, report)
+			return runJSON(args[0], envelopeScope{Kind: "project", Root: root}, out, errOut, report)
 		}
 		return report(io.Discard, errOut)
 	}
 	if command, ok := lookupCommand(args[0]); !ok || !command.Project {
 		return fail(&UsageError{Message: "--project is not supported by this command"})
 	}
-	var root, base string
 	clean := []string{args[0]}
 	seen := map[string]bool{}
 	for i := 1; i < len(args); i++ {

@@ -103,7 +103,7 @@ func within(root, path string) bool {
 	return err == nil && !filepath.IsAbs(rel) && rel != ".." && !strings.HasPrefix(rel, ".."+string(filepath.Separator))
 }
 func projectFailure(message string) error {
-	return &ConflictError{Message: "project-binding-invalid: " + message}
+	return &codedError{Code: "project-binding-invalid", Err: &ConflictError{Message: "project-binding-invalid: " + message}}
 }
 
 // ForProject returns an isolated service; it never changes environment or cwd.

@@ -103,7 +103,8 @@ Every `--json` report is one envelope:
 
 `status` mirrors the exit code (`ok`, `error`, `needs-trust`, `blocked`).
 `scope` is `user` or `project` (with the project root, homes and
-prerequisites). `diagnostics` holds the report's top-level diagnostics. A
+prerequisites; a project that cannot be bound reports only the requested
+root). `diagnostics` holds the report's top-level diagnostics. A
 failed command adds one entry carrying the error's own code (for example
 `source-invalid`, `invalid-package`, `request-rejected`, `conflict`), or
 `command-failed` when the error has none. `result`

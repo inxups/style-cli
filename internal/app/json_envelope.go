@@ -171,10 +171,11 @@ func failureDiagnostic(err error) Diagnostic {
 	var rejected *RejectedError
 	var conflict *ConflictError
 	var blocked *BlockedError
-	code := "command-failed"
+	code, message := "command-failed", err.Error()
 	switch {
 	case errors.As(err, &coded):
 		code = coded.Code
+		message = strings.TrimPrefix(message, code+": ")
 	case errors.As(err, &rejected):
 		code = "request-rejected"
 	case errors.As(err, &conflict):
@@ -182,7 +183,7 @@ func failureDiagnostic(err error) Diagnostic {
 	case errors.As(err, &blocked):
 		code = "blocked"
 	}
-	return Diagnostic{Code: code, Severity: spec.SeverityError, Message: err.Error()}
+	return Diagnostic{Code: code, Severity: spec.SeverityError, Message: message}
 }
 
 // failureLines forwards stderr and remembers "style <command>: ..." errors.
@@ -209,9 +210,11 @@ func (w *failureLines) Write(p []byte) (int, error) {
 }
 
 // envelopeScope and projectEnvelopeScope describe where a command ran. Struct
-// fields keep "kind" first and every other key in a fixed order.
+// fields keep "kind" first and every other key in a fixed order. A project
+// command that fails before its binding exists reports only the requested root.
 type envelopeScope struct {
 	Kind string `json:"kind"`
+	Root string `json:"root,omitempty"`
 	Home string `json:"home,omitempty"`
 }
 
