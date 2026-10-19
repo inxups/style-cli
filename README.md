@@ -94,6 +94,11 @@ writes, so scripts and CI answer explicitly, for example
 `echo y | style install SOURCE --json`. With `--json` the preview and prompt go
 to stderr and stdout carries only the final report.
 
+In text mode a failing command explains itself on stderr: diagnostics from
+`validate`, `plan`, `install`, `sync` and `trust` go there, while the reports of
+`doctor`, `explain` and `probe` stay on stdout and stderr gets a one-line
+`style COMMAND: …` summary.
+
 Every `--json` report is one envelope:
 
 ```json

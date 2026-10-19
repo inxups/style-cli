@@ -61,6 +61,17 @@ func runInspect(ctx context.Context, service *Service, workDir, command string, 
 		}
 		fmt.Fprintf(out, "state: expired=%d reset=%t; legacy stats without estimate=%d\n", result.ExpiredSessions, result.StateReset, result.LegacyStats)
 		writeDiagnostics(out, result.Diagnostics)
+		if !result.Healthy {
+			summary := "unhealthy"
+			for _, diagnostic := range result.Diagnostics {
+				if diagnostic.Severity == "error" {
+					summary += ": " + diagnostic.Code + ": " + diagnostic.Message
+					break
+				}
+			}
+			// The report stays on stdout; stderr says why the exit code is 1.
+			fmt.Fprintf(errOut, "style doctor: %s\n", summary)
+		}
 	}
 	return exit
 }

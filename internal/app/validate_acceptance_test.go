@@ -83,7 +83,8 @@ func TestA1ValidateExampleAndEveryInvalidFixture(t *testing.T) {
 				}
 				var out, errOut bytes.Buffer
 				exit := RunWithService(context.Background(), service, root, args, &out, &errOut)
-				if exit != ExitInvalid || errOut.Len() > 0 {
+				// Text diagnostics go to stderr; --json keeps them in the report.
+				if exit != ExitInvalid || jsonOutput && errOut.Len() > 0 || !jsonOutput && out.Len() > 0 {
 					t.Fatalf("exit=%d stdout=%s stderr=%s", exit, out.String(), errOut.String())
 				}
 				if jsonOutput {
@@ -100,8 +101,8 @@ func TestA1ValidateExampleAndEveryInvalidFixture(t *testing.T) {
 					if !found {
 						t.Fatalf("expected error %s, got %s", code, out.String())
 					}
-				} else if !strings.Contains(out.String(), code+" ") && !strings.Contains(out.String(), code+":") {
-					t.Fatalf("missing text diagnostic %s: %s", code, out.String())
+				} else if !strings.Contains(errOut.String(), code+" ") && !strings.Contains(errOut.String(), code+":") {
+					t.Fatalf("missing text diagnostic %s: %s", code, errOut.String())
 				}
 			}
 		})

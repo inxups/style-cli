@@ -57,7 +57,7 @@ func runInstall(ctx context.Context, service *Service, workDir string, args []st
 			if jsonOutput {
 				_ = encodeJSON(out, validationErr.Diagnostics)
 			} else {
-				writeDiagnostics(out, validationErr.Diagnostics)
+				writeDiagnostics(errOut, validationErr.Diagnostics)
 			}
 			return ExitInvalid
 		}

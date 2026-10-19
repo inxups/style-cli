@@ -40,7 +40,7 @@ func runSync(ctx context.Context, service *Service, command string, args []strin
 			if jsonOutput {
 				_ = encodeJSON(out, validation.Diagnostics)
 			} else {
-				writeDiagnostics(out, validation.Diagnostics)
+				writeDiagnostics(errOut, validation.Diagnostics)
 			}
 		} else {
 			commandFailure(out, errOut, jsonOutput, command, err)

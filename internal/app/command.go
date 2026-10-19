@@ -40,7 +40,7 @@ func runValidate(ctx context.Context, service *Service, workDir string, args []s
 		}
 	} else {
 		writeSource(out, result.Source)
-		writeDiagnostics(out, result.Diagnostics)
+		writeDiagnostics(errOut, result.Diagnostics)
 		if len(result.Diagnostics) == 0 {
 			fmt.Fprintln(out, "valid")
 		}
@@ -82,7 +82,7 @@ func runPlan(ctx context.Context, service *Service, workDir string, args []strin
 			return ExitInvalid
 		}
 	} else {
-		writeDiagnostics(out, result.Diagnostics)
+		writeDiagnostics(errOut, result.Diagnostics)
 		if result.Package != "" || len(result.Reports) > 0 {
 			writePlanText(out, result)
 			for _, report := range result.Reports {

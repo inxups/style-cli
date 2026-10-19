@@ -36,6 +36,17 @@ func runExplain(ctx context.Context, s *Service, workDir string, args []string, 
 		}
 	}
 	if runErr != nil {
+		if !jsonMode {
+			// The report stays on stdout; stderr says why the exit code is 1.
+			summary := runErr.Error()
+			for _, diagnostic := range result.Diagnostics {
+				if diagnostic.Severity == "error" {
+					summary = diagnostic.Code + ": " + diagnostic.Message
+					break
+				}
+			}
+			fmt.Fprintf(errOut, "style explain: %s\n", summary)
+		}
 		return ExitInvalid
 	}
 	return ExitOK

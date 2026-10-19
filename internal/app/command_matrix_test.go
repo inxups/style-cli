@@ -99,7 +99,7 @@ var commandMatrix = []matrixCase{
 
 	{name: "validate extra arg", args: []string{"validate", "a", "b"}, exit: ExitUsage},
 	{name: "validate malformed git", args: []string{"validate", "git+https://example.invalid/r.git?ref=main"}, exit: ExitUsage},
-	{name: "validate missing", args: []string{"validate", "$WORK/missing"}, exit: ExitInvalid, code: "invalid-package", pending: "text"},
+	{name: "validate missing", args: []string{"validate", "$WORK/missing"}, exit: ExitInvalid, code: "invalid-package"},
 	{name: "validate ok", args: []string{"validate", "$SRC"}, exit: ExitOK},
 
 	{name: "count no file", args: []string{"count"}, exit: ExitUsage},
@@ -107,7 +107,7 @@ var commandMatrix = []matrixCase{
 	{name: "count ok", args: []string{"count", "$WORK/text.txt"}, exit: ExitOK},
 
 	{name: "plan unknown harness", args: []string{"plan", "$SRC", "--harness", "bogus"}, exit: ExitUsage},
-	{name: "plan missing", args: []string{"plan", "$WORK/missing"}, exit: ExitInvalid, code: "invalid-package", pending: "text"},
+	{name: "plan missing", args: []string{"plan", "$WORK/missing"}, exit: ExitInvalid, code: "invalid-package"},
 	{name: "plan ok", args: []string{"plan", "$SRC", "--harness", "codex"}, exit: ExitOK},
 
 	{name: "install no source", args: []string{"install"}, exit: ExitUsage},
@@ -154,7 +154,7 @@ var commandMatrix = []matrixCase{
 
 	{name: "doctor extra arg", args: []string{"doctor", "x"}, exit: ExitUsage},
 	{name: "doctor ok", args: []string{"doctor"}, exit: ExitOK},
-	{name: "doctor broken lock", args: []string{"doctor"}, setup: brokenLock, exit: ExitInvalid, code: "lock-invalid", pending: "text"},
+	{name: "doctor broken lock", args: []string{"doctor"}, setup: brokenLock, exit: ExitInvalid, code: "lock-invalid"},
 
 	{name: "stats unknown by", args: []string{"stats", "--by", "bogus"}, exit: ExitUsage},
 	{name: "stats malformed since", args: []string{"stats", "--since", "bogus"}, exit: ExitUsage},
@@ -162,12 +162,12 @@ var commandMatrix = []matrixCase{
 
 	{name: "explain no harness", args: []string{"explain", "--payload", "$WORK/payload.json"}, exit: ExitUsage},
 	{name: "explain auto harness", args: []string{"explain", "--harness", "auto", "--payload", "$WORK/payload.json"}, exit: ExitUsage},
-	{name: "explain missing payload", args: []string{"explain", "--harness", "codex", "--payload", "$WORK/missing.json"}, exit: ExitInvalid, pending: "text"},
+	{name: "explain missing payload", args: []string{"explain", "--harness", "codex", "--payload", "$WORK/missing.json"}, exit: ExitInvalid},
 	{name: "explain ok", args: []string{"explain", "--harness", "codex", "--payload", "$WORK/payload.json"}, exit: ExitOK},
 
 	{name: "probe unknown harness", args: []string{"probe", "--harness", "bogus"}, exit: ExitUsage},
 	{name: "probe malformed timeout", args: []string{"probe", "--timeout", "bogus"}, exit: ExitUsage},
-	{name: "probe not installed", args: []string{"probe", "--harness", "claude-code"}, exit: ExitInvalid, pending: "text"},
+	{name: "probe not installed", args: []string{"probe", "--harness", "claude-code"}, exit: ExitInvalid},
 
 	{name: "project missing value", fixture: "project", args: []string{"list", "--project"}, exit: ExitUsage},
 	{name: "project unsupported", fixture: "project", args: []string{"init", "x", "--project", "$ROOT"}, exit: ExitUsage, noJSON: true},
