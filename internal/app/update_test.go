@@ -833,3 +833,16 @@ func a4OldTimes(t *testing.T, home, config string) {
 		}
 	}
 }
+
+func TestUpdateRejectsRequestsTheInstallationCannotSatisfy(t *testing.T) {
+	s, home, _, _ := a4Setup(t, "codex-user", a4Manifest("first", "Before."), false)
+	for _, request := range []UpdateRequest{
+		{Home: home, Name: "missing", Yes: true},
+		{Home: home, Name: "first", Ref: "refs/heads/main", Yes: true},
+	} {
+		result, err := s.Update(context.Background(), request)
+		if err == nil || len(result.Diagnostics) != 1 || result.Diagnostics[0].Code != "request-rejected" {
+			t.Fatalf("%+v: diagnostics=%+v err=%v", request, result.Diagnostics, err)
+		}
+	}
+}

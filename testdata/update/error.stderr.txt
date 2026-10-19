@@ -1,1 +1,1 @@
-source-invalid: the selected package is not installed
+request-rejected: the selected package is not installed

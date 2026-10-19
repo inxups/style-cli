@@ -83,7 +83,7 @@ func (s *Service) prepareUpdate(ctx context.Context, request UpdateRequest) (p p
 	for _, item := range ordered {
 		if request.All || item.Name == request.Name {
 			if request.Ref != "" && item.Source.Git == nil {
-				return p, updateFailure("source-invalid", "--ref requires a single Git package", nil)
+				return p, updateFailure("request-rejected", "--ref requires a single Git package", nil)
 			}
 			changeIndex[item.Name] = len(p.result.Changes)
 			p.result.Selected = append(p.result.Selected, item.Name)
@@ -92,7 +92,7 @@ func (s *Service) prepareUpdate(ctx context.Context, request UpdateRequest) (p p
 		}
 	}
 	if !request.All && len(p.result.Selected) == 0 {
-		return p, updateFailure("source-invalid", "the selected package is not installed", nil)
+		return p, updateFailure("request-rejected", "the selected package is not installed", nil)
 	}
 	if len(ordered) == 0 {
 		return p, nil

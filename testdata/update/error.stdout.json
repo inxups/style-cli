@@ -8,7 +8,7 @@
   },
   "diagnostics": [
     {
-      "code": "source-invalid",
+      "code": "request-rejected",
       "severity": "error",
       "message": "the selected package is not installed"
     }
