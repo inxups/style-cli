@@ -14,7 +14,7 @@
 | [style-yaml/defaults.md](style-yaml/defaults.md) | 包级默认值与推导默认值 | `defaults` | 已完成 |
 | [style-yaml/rules.md](style-yaml/rules.md) | 规则来源、正文与模板语法 | `rules` `id` `file` `text` `from` `model_text` `enabled` `reason` | 已完成 |
 | [style-yaml/target.md](style-yaml/target.md) | 规则作用对象 | `target` `tool` `names` `mcp` `skill` `event` `sources` `mode` | 已完成 |
-| `style-yaml/action.md` | 规则动作与时机 | `action` `at` `repeat` `fail` `refresh` `reinject_on_compact` | 待写 |
+| [style-yaml/action.md](style-yaml/action.md) | 规则动作与时机 | `action` `at` `repeat` `fail` `refresh` `reinject_on_compact` | 已完成 |
 | [style-yaml/fallback.md](style-yaml/fallback.md) | 落点不可用时的处理与降级路径 | `fallback`（`degrade` `skip` `error`） | 已完成 |
 | `style-yaml/when.md` | 条件匹配 | `when`（`model` `thinking_effort` `thinking_effort_approx` `harness` `agent` `conditions` `provider`） | 待写 |
 | `style-yaml/native-hooks.md` | 原生 hook 声明 | `native_hooks`（`event` `matcher` `command` `timeout`） | 待写 |

@@ -143,7 +143,7 @@ rules:
     action: block
     when:
       conditions:
-        - field: tool.input
+        - field: tool.input.command
           op: contains
           pattern: "git push --force"
     text: Force push is not allowed.
