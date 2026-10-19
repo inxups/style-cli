@@ -116,11 +116,15 @@ func splitAddress(value string) (repository, ref, p string, err error) {
 		return "", "", "", fail("source-invalid", "Git source requires an HTTPS repository URL without credentials, query or fragment")
 	}
 	if i := strings.IndexByte(value, '?'); i >= 0 {
-		query, perr := url.ParseQuery(value[i+1:])
-		if perr != nil || len(query) != 1 || len(query["ref"]) != 1 || query["ref"][0] == "" {
+		// Path unescaping keeps "+" literal: it is valid in ref names (v1.0.0+build).
+		raw, ok := strings.CutPrefix(value[i+1:], "ref=")
+		if ok && !strings.Contains(raw, "&") {
+			ref, err = url.PathUnescape(raw)
+		}
+		if !ok || strings.Contains(raw, "&") || err != nil || ref == "" {
 			return "", "", "", fail("source-invalid", "the only source query is a single non-empty ref=")
 		}
-		value, ref = value[:i], query["ref"][0]
+		value = value[:i]
 	}
 	authority := strings.Index(value, "://")
 	if authority < 0 {

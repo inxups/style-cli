@@ -47,7 +47,7 @@ func TestM3A3SourceSyntax(t *testing.T) {
 		{"ref-fragment", testgit.URL + "?ref=refs/heads/main#CANARY", "", ""}, {"short-address-ref", testgit.URL + "?ref=main", "", ""},
 		{"ref-twice", testgit.URL + "?ref=refs/heads/main", "refs/heads/main", ""}, {"path-twice", testgit.URL + "//pkg", "", "pkg"},
 		{"empty-address-path", testgit.URL + "//", "", ""}, {"address-empty-segment", testgit.URL + "//pkg//other", "", ""}, {"address-parent", testgit.URL + "//pkg/../other", "", ""},
-		{"address-escape", testgit.URL + "//%ZZ", "", ""}, {"address-without-repository", "git+https://example.invalid//pkg", "", ""},
+		{"address-escape", testgit.URL + "//%ZZ", "", ""}, {"ref-escape", testgit.URL + "?ref=refs/heads/%ZZ", "", ""}, {"ref-not-first", testgit.URL + "?CANARY=1&ref=refs/heads/main", "", ""}, {"address-without-repository", "git+https://example.invalid//pkg", "", ""},
 	} {
 		t.Run(c.name, func(t *testing.T) {
 			_, err := source.Parse(source.Request{Source: c.url, Ref: c.ref, Path: c.path})
@@ -57,11 +57,11 @@ func TestM3A3SourceSyntax(t *testing.T) {
 		})
 	}
 	t.Run("address", func(t *testing.T) {
-		separate, err := source.Parse(source.Request{Source: "git+https://example.invalid/team/repo.git", Ref: "refs/tags/v1@x", Path: "packages/中文"})
+		separate, err := source.Parse(source.Request{Source: "git+https://example.invalid/team/repo.git", Ref: "refs/tags/v1@x+b", Path: "packages/中文"})
 		if err != nil {
 			t.Fatal(err)
 		}
-		for _, address := range []string{"git+https://example.invalid/team/repo.git//packages/中文?ref=refs/tags/v1@x", "git+https://example.invalid/team/repo.git//packages/%E4%B8%AD%E6%96%87?ref=refs%2Ftags%2Fv1%40x"} {
+		for _, address := range []string{"git+https://example.invalid/team/repo.git//packages/中文?ref=refs/tags/v1@x+b", "git+https://example.invalid/team/repo.git//packages/%E4%B8%AD%E6%96%87?ref=refs%2Ftags%2Fv1%40x%2Bb"} {
 			combined, err := source.Parse(source.Request{Source: address})
 			if err != nil || combined != separate || combined.URL != "https://example.invalid/team/repo.git" {
 				t.Fatalf("%s: %+v %v, want %+v", address, combined, err, separate)
