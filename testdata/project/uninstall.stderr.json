@@ -1,1 +1,4 @@
+Uninstall: remove project-rules
+route: claude-code=claude-project
+route: codex=codex-project
 Uninstall all packages? [y/N] 

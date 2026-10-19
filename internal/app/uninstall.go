@@ -19,6 +19,9 @@ type UninstallRequest struct {
 	All  bool
 	Home string
 	Yes  bool
+	// Confirm sees the planned removal before any write; without Yes or a
+	// confirming callback nothing changes.
+	Confirm func(UninstallResult) (bool, error)
 }
 
 type UninstallResult struct {
@@ -27,6 +30,8 @@ type UninstallResult struct {
 	Remaining        []string                  `json:"remaining"`
 	Routes           []string                  `json:"routes"`
 	Changed          bool                      `json:"changed"`
+	// AwaitingConfirmation reports a declined preview; nothing was changed.
+	AwaitingConfirmation bool `json:"awaiting_confirmation,omitempty"`
 }
 
 // Uninstall removes selected packages and rebuilds each managed adapter route
@@ -35,9 +40,6 @@ type UninstallResult struct {
 func (s *Service) Uninstall(ctx context.Context, request UninstallRequest) (final UninstallResult, runErr error) {
 	if err := checkContext(ctx); err != nil {
 		return UninstallResult{}, err
-	}
-	if !request.Yes {
-		return UninstallResult{}, &RejectedError{Message: "uninstall requires confirmation"}
 	}
 	if request.All == (strings.TrimSpace(request.Name) != "") {
 		return UninstallResult{}, &UsageError{Message: "specify one package name or --all"}
@@ -200,6 +202,17 @@ func (s *Service) Uninstall(ctx context.Context, request UninstallRequest) (fina
 	if err = inputs.planned(changes); err != nil {
 		return result, err
 	}
+	sort.Strings(result.Routes)
+	confirmed := request.Yes
+	if !confirmed && request.Confirm != nil {
+		if confirmed, err = request.Confirm(result); err != nil {
+			return result, err
+		}
+	}
+	if !confirmed {
+		result.AwaitingConfirmation = true
+		return result, &RejectedError{Message: "uninstall requires confirmation"}
+	}
 	guard, err := acquireInputs(ctx, inputs, home)
 	if err != nil {
 		return result, err
@@ -246,7 +259,6 @@ func (s *Service) Uninstall(ctx context.Context, request UninstallRequest) (fina
 	}
 	committed = true
 	result.Changed = true
-	sort.Strings(result.Routes)
 	return result, nil
 }
 

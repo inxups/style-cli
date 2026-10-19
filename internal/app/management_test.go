@@ -350,3 +350,41 @@ func TestM3A3NoGitDuringNetworkIndependentCommands(t *testing.T) {
 		t.Fatal("ordinary hook or inspection started Git")
 	}
 }
+
+func TestUninstallChecksBeforeAskingAndReportsCancel(t *testing.T) {
+	s, home, config, _ := a3Fixture(t, "codex-user")
+	ctx := context.Background()
+	if _, err := s.Install(ctx, a3Request(home, "codex-user")); err != nil {
+		t.Fatal(err)
+	}
+	t.Setenv("STYLE_HOME", home)
+	before := a3Installed(t, home, config)
+	run := func(input string, args ...string) (int, string, string) {
+		var out, errOut bytes.Buffer
+		code := RunWithServiceInput(ctx, s, t.TempDir(), args, strings.NewReader(input), &out, &errOut)
+		return code, out.String(), errOut.String()
+	}
+
+	code, out, errOut := run("", "uninstall", "missing", "--json")
+	var diagnostics []Diagnostic
+	if err := decodeReport([]byte(out), &diagnostics); code != ExitInvalid || err != nil || len(diagnostics) != 1 || diagnostics[0].Code != "conflict" || strings.Contains(errOut, "[y/N]") {
+		t.Fatalf("missing package: exit=%d diagnostics=%+v err=%v stderr=%q", code, diagnostics, err, errOut)
+	}
+
+	code, out, errOut = run("n\n", "uninstall", "native-test", "--json")
+	var canceled UninstallResult
+	if err := decodeReport([]byte(out), &canceled); code != ExitInvalid || err != nil || !canceled.AwaitingConfirmation || !reflect.DeepEqual(canceled.Removed, []string{"native-test"}) || !strings.Contains(errOut, "Uninstall: remove native-test") {
+		t.Fatalf("json cancel: exit=%d result=%+v err=%v stderr=%q", code, canceled, err, errOut)
+	}
+	code, out, errOut = run("", "uninstall", "--all")
+	if code != ExitInvalid || !strings.Contains(out, "Uninstall: remove native-test") || !strings.Contains(errOut, "uninstall canceled") {
+		t.Fatalf("text cancel: exit=%d stdout=%q stderr=%q", code, out, errOut)
+	}
+	if !reflect.DeepEqual(before, a3Installed(t, home, config)) {
+		t.Fatal("canceled uninstall changed the installation")
+	}
+
+	if code, _, errOut = run("y\n", "uninstall", "native-test"); code != ExitOK {
+		t.Fatalf("confirmed uninstall: exit=%d stderr=%q", code, errOut)
+	}
+}

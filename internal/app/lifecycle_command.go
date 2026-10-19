@@ -181,12 +181,24 @@ func runUninstall(ctx context.Context, service *Service, args []string, in io.Re
 	if request.All {
 		question = "Uninstall all packages?"
 	}
-	if request.Yes = confirmInput(in, errOut, question); !request.Yes {
-		fmt.Fprintln(errOut, "uninstall canceled; nothing was changed")
-		return ExitInvalid
+	request.Confirm = func(preview UninstallResult) (bool, error) {
+		previewOut := out
+		if jsonOutput {
+			previewOut = errOut
+		}
+		writeUninstallPreview(previewOut, preview)
+		return confirmInput(in, errOut, question), nil
 	}
 	result, err := service.Uninstall(ctx, request)
 	if err != nil {
+		if result.AwaitingConfirmation {
+			if jsonOutput {
+				_ = encodeJSON(out, result)
+			} else {
+				fmt.Fprintln(errOut, "uninstall canceled; nothing was changed")
+			}
+			return ExitInvalid
+		}
 		commandFailure(out, errOut, jsonOutput, "uninstall", err)
 		return commandExit(err)
 	}
@@ -205,6 +217,17 @@ func runUninstall(ctx context.Context, service *Service, args []string, in io.Re
 		fmt.Fprintf(out, "route updated: %s\n", route)
 	}
 	return ExitOK
+}
+
+func writeUninstallPreview(out io.Writer, preview UninstallResult) {
+	fmt.Fprintf(out, "Uninstall: remove %s\n", strings.Join(preview.Removed, ", "))
+	if len(preview.Remaining) > 0 {
+		fmt.Fprintf(out, "remaining: %s\n", strings.Join(preview.Remaining, ", "))
+	}
+	for _, route := range preview.Routes {
+		fmt.Fprintf(out, "route: %s\n", route)
+	}
+	writeStaticMigrations(out, preview.StaticMigrations)
 }
 
 func parseUninstallArgs(args []string) (UninstallRequest, bool, error) {
