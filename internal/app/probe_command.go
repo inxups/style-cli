@@ -14,6 +14,9 @@ import (
 
 func runProbe(ctx context.Context, s *Service, args []string, out, errOut io.Writer) int {
 	request, jsonMode, err := parseProbeArgs(args)
+	if err == nil {
+		request.Harnesses, err = s.harnessArgs(request.Harnesses)
+	}
 	if err != nil {
 		return probeCommand.usageError(errOut, err)
 	}
@@ -50,16 +53,13 @@ func parseProbeArgs(args []string) (ProbeRequest, bool, error) {
 	if err != nil {
 		return ProbeRequest{}, false, err
 	}
-	request := ProbeRequest{Harness: parsed.String("--harness"), Timeout: time.Minute}
+	request := ProbeRequest{Harnesses: parsed.List("--harness"), Timeout: time.Minute}
 	if parsed.Has("--timeout") {
 		duration, err := time.ParseDuration(parsed.String("--timeout"))
 		if err != nil || duration < time.Second || duration > 10*time.Minute {
 			return request, false, fmt.Errorf("timeout must be between 1s and 10m")
 		}
 		request.Timeout = duration
-	}
-	if request.Harness == "auto" || strings.Contains(request.Harness, ",") {
-		return request, false, fmt.Errorf("select one harness or omit --harness")
 	}
 	return request, parsed.Bool("--json"), nil
 }

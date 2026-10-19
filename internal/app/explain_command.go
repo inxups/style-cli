@@ -11,6 +11,9 @@ import (
 
 func runExplain(ctx context.Context, s *Service, workDir string, args []string, out, errOut io.Writer) int {
 	request, jsonMode, err := parseExplainArgs(args)
+	if err == nil {
+		request.Harness, err = s.singleHarness([]string{request.Harness})
+	}
 	if err != nil {
 		return explainCommand.usageError(errOut, err)
 	}
@@ -43,15 +46,12 @@ func parseExplainArgs(args []string) (ExplainRequest, bool, error) {
 		return ExplainRequest{}, false, err
 	}
 	request := ExplainRequest{
-		Harness: parsed.String("--harness"), Event: parsed.String("--event"), Payload: parsed.String("--payload"),
+		Harness: strings.Join(parsed.List("--harness"), ","), Event: parsed.String("--event"), Payload: parsed.String("--payload"),
 		Index: parsed.String("--index"), StateDir: parsed.String("--state-dir"), Facts: parsed.String("--facts"), Provenance: parsed.String("--provenance"),
 		FailClosed: parsed.Bool("--fail-closed"),
 	}
 	if request.Count, err = countOptions(parsed); err != nil {
 		return request, false, err
-	}
-	if strings.Contains(request.Harness, ",") || request.Harness == "auto" {
-		return request, false, fmt.Errorf("select exactly one harness")
 	}
 	return request, parsed.Bool("--json"), nil
 }

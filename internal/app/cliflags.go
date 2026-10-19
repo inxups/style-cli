@@ -1,9 +1,12 @@
 package app
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"strings"
+
+	"github.com/inxups/style-cli/internal/adapter"
 )
 
 type flagKind int
@@ -194,6 +197,7 @@ var (
 	refFlag     = flagSpec{Name: "--ref", Kind: flagString, Value: "ref"}
 	pathFlag    = flagSpec{Name: "--path", Kind: flagString, Value: "repo-path"}
 	replaceFlag = flagSpec{Name: "--allow-replace", Kind: flagBool}
+	harnessFlag = flagSpec{Name: "--harness", Kind: flagList, Value: "auto|h[,h]"}
 	exactFlag   = flagSpec{Name: "--exact", Kind: flagString, Value: "openai:<encoding>|anthropic:<model>"}
 )
 
@@ -202,13 +206,12 @@ var (
 	validateCommand = commandSpec{Name: "validate", Args: "[source]", MaxArgs: 1, Flags: []flagSpec{refFlag, pathFlag, jsonFlag}}
 	countCommand    = commandSpec{Name: "count", Args: "<UTF-8-file>", MaxArgs: 1, Flags: []flagSpec{exactFlag, jsonFlag}}
 	planCommand     = commandSpec{Name: "plan", Args: "[source]", MaxArgs: 1, Project: true, Flags: []flagSpec{
-		refFlag, pathFlag, {Name: "--harness", Kind: flagList, Value: "auto|codex,claude-code"}, exactFlag, jsonFlag,
+		refFlag, pathFlag, harnessFlag, exactFlag, jsonFlag,
 		{Name: "--assume-requests", Kind: flagString, Value: "N", Group: groupAdvanced},
 		{Name: "--assume-triggers", Kind: flagString, Value: "N", Group: groupAdvanced},
 	}}
 	installCommand = commandSpec{Name: "install", Args: "<source>", MaxArgs: 1, Project: true, Flags: []flagSpec{
-		refFlag, pathFlag,
-		{Name: "--harness", Kind: flagList, Value: "h"},
+		refFlag, pathFlag, harnessFlag,
 		{Name: "--set", Kind: flagList, Value: "k=v"},
 		jsonFlag,
 		{Name: "--route", Kind: flagList, Value: "h=r", Group: groupAdvanced},
@@ -227,7 +230,7 @@ var (
 	doctorCommand    = commandSpec{Name: "doctor", Project: true, Flags: []flagSpec{{Name: "--reset-state", Kind: flagBool}, jsonFlag}}
 	statsCommand     = commandSpec{Name: "stats", Project: true, Flags: []flagSpec{{Name: "--by", Kind: flagString, Value: "rule|session"}, {Name: "--since", Kind: flagString, Value: "<duration|RFC3339>"}, jsonFlag}}
 	explainCommand   = commandSpec{Name: "explain", Project: true, Flags: []flagSpec{
-		{Name: "--harness", Kind: flagString, Value: "h", Required: true},
+		{Name: "--harness", Kind: flagList, Value: "h", Required: true},
 		{Name: "--payload", Kind: flagString, Value: "f.json", Required: true},
 		{Name: "--event", Kind: flagString, Value: "NativeEvent"},
 		{Name: "--fail-closed", Kind: flagBool},
@@ -237,7 +240,7 @@ var (
 		{Name: "--facts", Kind: flagString, Value: "f", Group: groupAdvanced},
 		{Name: "--provenance", Kind: flagString, Value: "f", Group: groupAdvanced},
 	}}
-	probeCommand = commandSpec{Name: "probe", Project: true, Flags: []flagSpec{{Name: "--harness", Kind: flagString, Value: "h"}, {Name: "--timeout", Kind: flagString, Value: "60s"}, jsonFlag}}
+	probeCommand = commandSpec{Name: "probe", Project: true, Flags: []flagSpec{harnessFlag, {Name: "--timeout", Kind: flagString, Value: "60s"}, jsonFlag}}
 )
 
 // commandSections orders the top-level help.
@@ -275,4 +278,43 @@ func printUsage(out io.Writer) {
 	fmt.Fprintln(out, "Global:")
 	fmt.Fprintln(out, "  "+projectFlagsUsage+" scopes plan, installation and diagnostic commands to a project.")
 	fmt.Fprintln(out, "  style help <command> (or <command> --help) shows advanced and project options.")
+}
+
+// harnessArgs canonicalizes --harness values for every command: repeatable,
+// comma lists, any case, the claude alias and auto. Unknown or empty names are
+// usage errors. The result keeps auto as its own entry and drops duplicates.
+func (s *Service) harnessArgs(values []string) ([]string, error) {
+	var harnesses []string
+	seen := map[string]bool{}
+	for _, raw := range values {
+		for _, value := range strings.Split(raw, ",") {
+			value = strings.ToLower(strings.TrimSpace(value))
+			if value == "claude" {
+				value = "claude-code"
+			}
+			if value == "" {
+				return nil, fmt.Errorf("empty harness in --harness %q", raw)
+			}
+			if _, ok := s.definitions[adapter.ProviderID(value)]; !ok && value != "auto" {
+				return nil, fmt.Errorf("unknown harness %q", value)
+			}
+			if !seen[value] {
+				seen[value] = true
+				harnesses = append(harnesses, value)
+			}
+		}
+	}
+	return harnesses, nil
+}
+
+// singleHarness is harnessArgs for commands that read one harness's payload.
+func (s *Service) singleHarness(values []string) (string, error) {
+	harnesses, err := s.harnessArgs(values)
+	if err != nil {
+		return "", err
+	}
+	if len(harnesses) != 1 || harnesses[0] == "auto" {
+		return "", errors.New("select exactly one harness")
+	}
+	return harnesses[0], nil
 }

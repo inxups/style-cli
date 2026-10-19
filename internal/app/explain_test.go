@@ -106,7 +106,7 @@ func TestM3A1CLIContractAndDeterministicReports(t *testing.T) {
 	}
 	for _, bad := range [][]string{
 		{"--json"}, {"--harness", "codex", "--event", "PreToolUse"}, {"--harness", "auto", "--event", "PreToolUse", "--payload", "x"}, {"--harness", "codex,claude-code", "--event", "PreToolUse", "--payload", "x"},
-		{"--harness", "codex", "--harness", "codex", "--event", "PreToolUse", "--payload", "x", "--json"}, {"--bogus", "x", "--json"}, {"--harness", "codex", "--event", "PreToolUse", "--payload", "--json"},
+		{"--harness", "codex", "--harness", "claude-code", "--event", "PreToolUse", "--payload", "x", "--json"}, {"--harness", "missing", "--event", "PreToolUse", "--payload", "x"}, {"--bogus", "x", "--json"}, {"--harness", "codex", "--event", "PreToolUse", "--payload", "--json"},
 	} {
 		var out, errOut bytes.Buffer
 		if RunWithService(context.Background(), service, root, append([]string{"explain"}, bad...), &out, &errOut) != ExitUsage || out.Len() != 0 || errOut.Len() == 0 {

@@ -13,6 +13,9 @@ import (
 
 func runInstall(ctx context.Context, service *Service, workDir string, args []string, in io.Reader, out, errOut io.Writer) int {
 	request, jsonOutput, err := parseInstallArgs(args)
+	if err == nil {
+		request.Harnesses, err = service.harnessArgs(request.Harnesses)
+	}
 	if err != nil {
 		return installCommand.usageError(errOut, err)
 	}

@@ -244,17 +244,25 @@ func a2Protected(t *testing.T, root string) map[string]a2FileState {
 }
 
 func TestM3A2TargetsReadOnlyAndSuccessfulCallbacks(t *testing.T) {
-	for _, mode := range []string{"codex-user", "codex-plugin", "claude-user", "all", "alias"} {
+	for _, mode := range []string{"codex-user", "codex-plugin", "claude-user", "all", "alias", "auto", "list"} {
 		t.Run(mode, func(t *testing.T) {
 			selection := mode
-			if mode == "alias" {
+			switch mode {
+			case "alias":
 				selection = "claude-user"
+			case "auto", "list":
+				selection = "all"
 			}
 			fixture := a2Install(t, selection)
 			before := a2Protected(t, fixture.root)
 			request := ProbeRequest{Home: fixture.home, Timeout: time.Second}
-			if mode == "alias" {
-				request.Harness = "claude"
+			switch mode {
+			case "alias":
+				request.Harnesses = []string{"claude"}
+			case "auto":
+				request.Harnesses = []string{"auto"}
+			case "list":
+				request.Harnesses = []string{"claude-code", "codex"}
 			}
 			request.Ready = func(ready ProbeReady) error {
 				for _, target := range ready.Targets {
@@ -267,7 +275,7 @@ func TestM3A2TargetsReadOnlyAndSuccessfulCallbacks(t *testing.T) {
 				t.Fatalf("probe: %+v %v", result, err)
 			}
 			expected := 1
-			if mode == "all" {
+			if selection == "all" {
 				expected = 2
 			}
 			if len(result.Targets) != expected {
@@ -278,7 +286,7 @@ func TestM3A2TargetsReadOnlyAndSuccessfulCallbacks(t *testing.T) {
 					t.Fatalf("target: %+v", target)
 				}
 			}
-			if mode == "all" && result.Targets[0].Harness != "codex" {
+			if mode == "all" && result.Targets[0].Harness != "codex" || mode == "list" && result.Targets[0].Harness != "claude-code" {
 				t.Fatal("report order changed")
 			}
 			if after := a2Protected(t, fixture.root); !reflect.DeepEqual(before, after) {
@@ -349,7 +357,7 @@ func TestM3A2CancellationDuringReceiptValidation(t *testing.T) {
 }
 
 func TestM3A2ProbePreflightRefusals(t *testing.T) {
-	for _, mode := range []string{"missing-home", "missing-lock", "bad-lock", "empty-packages", "uninstalled", "unknown", "auto", "list", "duration", "missing-route", "no-port", "missing-config", "bad-config", "command-drift", "old-runtime", "native-missing", "process-permission", "no-runtime-hook", "plugin-disabled", "home-symlink", "lock-symlink"} {
+	for _, mode := range []string{"missing-home", "missing-lock", "bad-lock", "empty-packages", "uninstalled", "unknown", "list", "duration", "missing-route", "no-port", "missing-config", "bad-config", "command-drift", "old-runtime", "native-missing", "process-permission", "no-runtime-hook", "plugin-disabled", "home-symlink", "lock-symlink"} {
 		t.Run(mode, func(t *testing.T) {
 			route := "codex-user"
 			if mode == "no-runtime-hook" {
@@ -377,17 +385,14 @@ func TestM3A2ProbePreflightRefusals(t *testing.T) {
 				writeLock(f.home, lock)
 				expected = "probe-not-installed"
 			case "uninstalled":
-				request.Harness = "claude-code"
+				request.Harnesses = []string{"claude-code"}
 				expected = "probe-not-installed"
 			case "unknown":
-				request.Harness = "other"
+				request.Harnesses = []string{"other"}
 				expected = "runtime-unavailable"
-			case "auto":
-				request.Harness = "auto"
-				expected = "probe-usage"
 			case "list":
-				request.Harness = "codex,claude-code"
-				expected = "probe-usage"
+				request.Harnesses = []string{"codex", "claude-code"}
+				expected = "probe-not-installed"
 			case "duration":
 				request.Timeout = time.Millisecond
 				expected = "probe-usage"
@@ -655,7 +660,7 @@ func TestM3A2InstallationDriftAndLeaseOwnership(t *testing.T) {
 }
 
 func TestM3A2CLIUsageJSONAndTerminalSafety(t *testing.T) {
-	for _, args := range [][]string{{"--timeout", "0s"}, {"--timeout", "999ms"}, {"--timeout", "11m"}, {"--timeout", "nonsense"}, {"--timeout"}, {"--harness"}, {"--harness", "auto"}, {"--harness", "codex,claude-code"}, {"--json=bad"}, {"--json", "--json"}, {"--unknown"}, {"operand"}, {"--harness="}} {
+	for _, args := range [][]string{{"--timeout", "0s"}, {"--timeout", "999ms"}, {"--timeout", "11m"}, {"--timeout", "nonsense"}, {"--timeout"}, {"--harness"}, {"--harness", "missing"}, {"--harness", "codex,"}, {"--json=bad"}, {"--json", "--json"}, {"--unknown"}, {"operand"}, {"--harness="}} {
 		t.Run(strings.Join(args, "_"), func(t *testing.T) {
 			var out, stderr bytes.Buffer
 			code := RunWithService(context.Background(), testService(t), t.TempDir(), append([]string{"probe"}, args...), &out, &stderr)

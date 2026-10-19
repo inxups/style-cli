@@ -67,6 +67,11 @@ continues to use `style/v0.3`; there is no migration command.
 on a command line) also shows advanced and project options. Boolean flags take
 no value (`--json`, not `--json=true`).
 
+`--harness` means the same everywhere: it is repeatable, takes comma lists, any
+case and the `claude` alias, and `auto` (the default) selects detected harnesses
+(`plan`, `install`) or every installed one (`probe`). `explain` reads a single
+payload and requires exactly one named harness. Unknown names are usage errors.
+
 Exit codes: `0` success, `1` the request was rejected or failed, `2` the command
 line could not be parsed (unknown command or option, missing or malformed
 argument), `3` `sync` found changes awaiting `trust`, `4` blocked by policy or

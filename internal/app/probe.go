@@ -10,6 +10,7 @@ import (
 	"path/filepath"
 	"reflect"
 	"runtime"
+	"slices"
 	"sort"
 	"strings"
 	"time"
@@ -22,9 +23,11 @@ import (
 )
 
 type ProbeRequest struct {
-	Home, Harness string
-	Timeout       time.Duration
-	Ready         func(ProbeReady) error
+	Home string
+	// Harnesses selects targets; empty or auto selects every locked harness.
+	Harnesses []string
+	Timeout   time.Duration
+	Ready     func(ProbeReady) error
 }
 type ProbeReady struct {
 	RunID   string
@@ -126,13 +129,6 @@ func (s *Service) Probe(ctx context.Context, request ProbeRequest) (result Probe
 	if request.Timeout < time.Second || request.Timeout > 10*time.Minute {
 		return result, fail("probe-usage", "Timeout must be between 1s and 10m.")
 	}
-	harness := request.Harness
-	if harness == "claude" {
-		harness = "claude-code"
-	}
-	if harness == "auto" || strings.Contains(harness, ",") {
-		return result, fail("probe-usage", "Select one harness or omit --harness.")
-	}
 	deps := defaultProbeDependencies()
 	if s.probeDeps != nil {
 		deps = *s.probeDeps
@@ -158,14 +154,25 @@ func (s *Service) Probe(ctx context.Context, request ProbeRequest) (result Probe
 		return result, fail("probe-not-installed", "Installed STYLE lock is invalid.")
 	}
 	selected := []adapter.ProviderID{}
-	if harness != "" {
+	auto := len(request.Harnesses) == 0
+	for _, harness := range request.Harnesses {
+		if harness == "claude" {
+			harness = "claude-code"
+		}
+		if harness == "auto" {
+			auto = true
+			continue
+		}
 		if _, ok := s.definitions[adapter.ProviderID(harness)]; !ok {
 			return result, fail("runtime-unavailable", "Harness is not registered for runtime observation.")
 		}
-		selected = append(selected, adapter.ProviderID(harness))
-	} else {
+		if !slices.Contains(selected, adapter.ProviderID(harness)) {
+			selected = append(selected, adapter.ProviderID(harness))
+		}
+	}
+	if auto {
 		for _, id := range s.providers() {
-			if lock.Harnesses[string(id)].Route != "" {
+			if lock.Harnesses[string(id)].Route != "" && !slices.Contains(selected, id) {
 				selected = append(selected, id)
 			}
 		}

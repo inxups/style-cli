@@ -342,7 +342,7 @@ func TestM3A3NoGitDuringNetworkIndependentCommands(t *testing.T) {
 	}
 	// The native executable is deliberately absent; this exercises lock 2 and
 	// route preflight without contacting any harness or source transport.
-	observed, err := s.Probe(ctx, ProbeRequest{Home: home, Harness: "codex", Timeout: time.Second})
+	observed, err := s.Probe(ctx, ProbeRequest{Home: home, Harnesses: []string{"codex"}, Timeout: time.Second})
 	if err == nil || len(observed.Targets) != 1 || !a2HasCode(observed, "origin-unverified") || observed.Targets[0].CallbackObserved {
 		t.Fatalf("probe %+v %v", observed, err)
 	}
