@@ -191,7 +191,7 @@ func TestJSONFailuresKeepTheirCodes(t *testing.T) {
 		{[]string{"plan", "missing", "--json"}, "invalid-package"},
 		{[]string{"install", "demo", "--harness", "codex", "--set", "unknown=v", "--json"}, "request-rejected"},
 		{[]string{"trust", "missing", "--json"}, "request-rejected"},
-		{[]string{"uninstall", "missing", "--json"}, "conflict"},
+		{[]string{"uninstall", "missing", "--json"}, "request-rejected"},
 	} {
 		var out, errOut bytes.Buffer
 		if code := RunWithServiceInput(context.Background(), service, root, test.args, strings.NewReader("y\n"), &out, &errOut); code != ExitInvalid {

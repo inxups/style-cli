@@ -132,7 +132,7 @@ var commandMatrix = []matrixCase{
 	{name: "update broken lock", args: []string{"update", "first"}, setup: brokenLock, exit: ExitInvalid},
 
 	{name: "uninstall no name", args: []string{"uninstall"}, exit: ExitUsage},
-	{name: "uninstall missing", args: []string{"uninstall", "missing"}, input: "y\n", exit: ExitInvalid, code: "request-rejected", pending: "json"},
+	{name: "uninstall missing", args: []string{"uninstall", "missing"}, input: "y\n", exit: ExitInvalid, code: "request-rejected"},
 	{name: "uninstall declined", args: []string{"uninstall", "first"}, input: "n\n", exit: ExitInvalid, code: "confirmation-declined"},
 	{name: "uninstall ok", args: []string{"uninstall", "first"}, input: "y\n", exit: ExitOK},
 	{name: "uninstall broken lock", args: []string{"uninstall", "first"}, setup: brokenLock, input: "y\n", exit: ExitInvalid},
@@ -174,7 +174,7 @@ var commandMatrix = []matrixCase{
 	{name: "project unbound", fixture: "project", args: []string{"list", "--project", "$WORK/missing"}, exit: ExitInvalid, code: "project-binding-invalid"},
 	{name: "project list ok", fixture: "project", args: []string{"list", "--project", "$ROOT"}, exit: ExitOK},
 	{name: "project trust missing", fixture: "project", args: []string{"trust", "missing", "--project", "$ROOT"}, input: "y\n", exit: ExitInvalid, code: "request-rejected"},
-	{name: "project uninstall missing", fixture: "project", args: []string{"uninstall", "missing", "--project", "$ROOT"}, input: "y\n", exit: ExitInvalid, code: "request-rejected", pending: "json"},
+	{name: "project uninstall missing", fixture: "project", args: []string{"uninstall", "missing", "--project", "$ROOT"}, input: "y\n", exit: ExitInvalid, code: "request-rejected"},
 	{name: "project uninstall declined", fixture: "project", args: []string{"uninstall", "--all", "--project", "$ROOT"}, input: "n\n", exit: ExitInvalid, code: "confirmation-declined"},
 }
 

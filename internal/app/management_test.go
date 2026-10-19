@@ -367,7 +367,7 @@ func TestUninstallChecksBeforeAskingAndReportsCancel(t *testing.T) {
 
 	code, out, errOut := run("", "uninstall", "missing", "--json")
 	var diagnostics []Diagnostic
-	if err := decodeReport([]byte(out), &diagnostics); code != ExitInvalid || err != nil || len(diagnostics) != 1 || diagnostics[0].Code != "conflict" || strings.Contains(errOut, "[y/N]") {
+	if err := decodeReport([]byte(out), &diagnostics); code != ExitInvalid || err != nil || len(diagnostics) != 1 || diagnostics[0].Code != "request-rejected" || strings.Contains(errOut, "[y/N]") {
 		t.Fatalf("missing package: exit=%d diagnostics=%+v err=%v stderr=%q", code, diagnostics, err, errOut)
 	}
 

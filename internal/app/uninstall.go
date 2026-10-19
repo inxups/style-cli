@@ -67,7 +67,10 @@ func (s *Service) Uninstall(ctx context.Context, request UninstallRequest) (fina
 		}
 	}
 	if len(removeSet) == 0 {
-		return UninstallResult{}, &ConflictError{Message: "no matching installed package"}
+		if request.All {
+			return UninstallResult{}, &RejectedError{Message: "no packages are installed"}
+		}
+		return UninstallResult{}, &RejectedError{Message: fmt.Sprintf("package %q is not installed", request.Name)}
 	}
 	result := UninstallResult{Removed: make([]string, 0, len(removeSet)), Remaining: make([]string, 0), Routes: make([]string, 0)}
 	remainingLock := lockDocument{Format: lock.Format, Project: lock.Project, Packages: make([]lockPackage, 0, len(lock.Packages)), Harnesses: cloneHarnesses(lock.Harnesses)}
