@@ -129,32 +129,32 @@ var commandMatrix = []matrixCase{
 	{name: "update missing", args: []string{"update", "missing"}, exit: ExitInvalid, code: "request-rejected"},
 	{name: "update declined", args: []string{"update", "first"}, setup: changedSource, input: "n\n", exit: ExitInvalid, code: "confirmation-declined"},
 	{name: "update ok", args: []string{"update", "first"}, setup: changedSource, input: "y\n", exit: ExitOK},
-	{name: "update broken lock", args: []string{"update", "first"}, setup: brokenLock, exit: ExitInvalid},
+	{name: "update broken lock", args: []string{"update", "first"}, setup: brokenLock, exit: ExitInvalid, code: "lock-invalid"},
 
 	{name: "uninstall no name", args: []string{"uninstall"}, exit: ExitUsage},
 	{name: "uninstall missing", args: []string{"uninstall", "missing"}, input: "y\n", exit: ExitInvalid, code: "request-rejected"},
 	{name: "uninstall declined", args: []string{"uninstall", "first"}, input: "n\n", exit: ExitInvalid, code: "confirmation-declined"},
 	{name: "uninstall ok", args: []string{"uninstall", "first"}, input: "y\n", exit: ExitOK},
-	{name: "uninstall broken lock", args: []string{"uninstall", "first"}, setup: brokenLock, input: "y\n", exit: ExitInvalid},
+	{name: "uninstall broken lock", args: []string{"uninstall", "first"}, setup: brokenLock, input: "y\n", exit: ExitInvalid, code: "lock-invalid"},
 
 	{name: "sync extra arg", args: []string{"sync", "x"}, exit: ExitUsage},
 	{name: "sync ok", args: []string{"sync"}, exit: ExitOK},
 	{name: "sync needs trust", fixture: "linked", args: []string{"sync"}, setup: changedSource, exit: ExitSyncChanged},
-	{name: "sync broken lock", args: []string{"sync"}, setup: brokenLock, exit: ExitInvalid},
+	{name: "sync broken lock", args: []string{"sync"}, setup: brokenLock, exit: ExitInvalid, code: "lock-invalid"},
 
 	{name: "trust no name", args: []string{"trust"}, exit: ExitUsage},
 	{name: "trust missing", args: []string{"trust", "missing"}, input: "y\n", exit: ExitInvalid, code: "request-rejected"},
 	{name: "trust declined", fixture: "linked", args: []string{"trust", "first"}, setup: changedSource, input: "n\n", exit: ExitInvalid, code: "confirmation-declined"},
 	{name: "trust ok", fixture: "linked", args: []string{"trust", "first"}, setup: changedSource, input: "y\n", exit: ExitOK},
-	{name: "trust broken lock", args: []string{"trust", "first"}, setup: brokenLock, input: "y\n", exit: ExitInvalid},
+	{name: "trust broken lock", args: []string{"trust", "first"}, setup: brokenLock, input: "y\n", exit: ExitInvalid, code: "lock-invalid"},
 
 	{name: "list extra arg", args: []string{"list", "x"}, exit: ExitUsage},
 	{name: "list ok", args: []string{"list"}, exit: ExitOK},
-	{name: "list broken lock", args: []string{"list"}, setup: brokenLock, exit: ExitInvalid},
+	{name: "list broken lock", args: []string{"list"}, setup: brokenLock, exit: ExitInvalid, code: "lock-invalid"},
 
 	{name: "doctor extra arg", args: []string{"doctor", "x"}, exit: ExitUsage},
 	{name: "doctor ok", args: []string{"doctor"}, exit: ExitOK},
-	{name: "doctor broken lock", args: []string{"doctor"}, setup: brokenLock, exit: ExitInvalid, pending: "text"},
+	{name: "doctor broken lock", args: []string{"doctor"}, setup: brokenLock, exit: ExitInvalid, code: "lock-invalid", pending: "text"},
 
 	{name: "stats unknown by", args: []string{"stats", "--by", "bogus"}, exit: ExitUsage},
 	{name: "stats malformed since", args: []string{"stats", "--since", "bogus"}, exit: ExitUsage},

@@ -28,8 +28,8 @@ func runInspect(ctx context.Context, service *Service, workDir, command string, 
 		}
 	}
 	if err != nil {
-		fmt.Fprintf(errOut, "style %s: %v\n", command, err)
-		return ExitInvalid
+		commandFailure(out, errOut, jsonOutput, command, err)
+		return commandExit(err)
 	}
 	if jsonOutput {
 		if err := encodeJSON(out, value); err != nil {

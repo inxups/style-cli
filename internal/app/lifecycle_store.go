@@ -88,12 +88,19 @@ func loadLock(home string) (lockDocument, error) {
 		return lockDocument{Format: lockFormat, Packages: []lockPackage{}, Harnesses: map[string]lockHarness{}}, nil
 	}
 	if err != nil {
-		return lockDocument{}, fmt.Errorf("read lock: %w", err)
+		return lockDocument{}, &codedError{Code: "lock-invalid", Err: fmt.Errorf("read lock: %w", err)}
 	}
 	return decodeLock(data)
 }
 
-func decodeLock(data []byte) (lockDocument, error) {
+// decodeLock reports every rejected lock as lock-invalid without changing
+// the error text.
+func decodeLock(data []byte) (lock lockDocument, err error) {
+	defer func() {
+		if err != nil {
+			err = &codedError{Code: "lock-invalid", Err: err}
+		}
+	}()
 	if data == nil {
 		return lockDocument{Format: lockFormat, Packages: []lockPackage{}, Harnesses: map[string]lockHarness{}}, nil
 	}
