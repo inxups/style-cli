@@ -680,6 +680,14 @@ func (s *Service) projectFiles(home string, old lockDocument, next *lockDocument
 			desired.Static = nil
 		}
 		if len(old.Packages) == 0 && declaration != nil {
+			// Digests omit an absent Claude settings.json, so check declared hooks exist.
+			for rel, digest := range declaration.Artifacts {
+				if (rel == ".claude/settings.json" || rel == ".codex/hooks.json") && !emptyProjectDigest(digest) {
+					if _, e := os.Lstat(filepath.Join(p.Root, filepath.FromSlash(rel))); e != nil {
+						return nil, projectFailure("clone is missing a declared hook artifact")
+					}
+				}
+			}
 			for _, target := range adapters {
 				digester := target.route.(interface {
 					ProjectDigest(func(string) ([]byte, error)) (map[string]string, error)

@@ -120,6 +120,53 @@ func TestM3A6ProjectLifecycle(t *testing.T) {
 		})
 	}
 }
+func TestM3A6ClaudeProjectStaticOnlyNeedsNoSettings(t *testing.T) {
+	s, base, root, hooked := a6Setup(t)
+	static := writeInstallPackage(t, filepath.Join(filepath.Dir(root), "static"),
+		"spec: style/v0.3\nname: static-only\nversion: 1.0.0\ndescription: x\nrules:\n  - {id: static, target: system, text: hi}\n")
+	claudeOnly := []string{"claude-code"}
+	scoped := a6Scope(t, s, root, base)
+	if _, err := scoped.Install(context.Background(), InstallRequest{Source: static, Harnesses: claudeOnly, Yes: true}); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := os.Stat(filepath.Join(root, ".claude/rules/style-static-only.md")); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := os.Stat(filepath.Join(root, ".claude/settings.json")); !errors.Is(err, os.ErrNotExist) {
+		t.Fatalf("static-only install wrote settings.json: %v", err)
+	}
+	clone := filepath.Join(filepath.Dir(root), "clone")
+	if err := os.CopyFS(clone, os.DirFS(root)); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := a6Scope(t, s, clone, base).Install(context.Background(), InstallRequest{Source: static, Harnesses: claudeOnly, Yes: true}); err != nil {
+		t.Fatal("static-only clone:", err)
+	}
+	if _, err := scoped.Uninstall(context.Background(), UninstallRequest{All: true, Yes: true}); err != nil {
+		t.Fatal(err)
+	}
+	for _, name := range []string{projectDeclarationPath, projectLauncherPath, ".claude/rules/style-static-only.md", ".claude/settings.json"} {
+		if _, e := os.Stat(filepath.Join(root, name)); !errors.Is(e, os.ErrNotExist) {
+			t.Fatalf("remains %s %v", name, e)
+		}
+	}
+
+	// A clone still must carry the hook settings its declaration names.
+	if _, err := scoped.Install(context.Background(), InstallRequest{Source: hooked, Harnesses: claudeOnly, Yes: true}); err != nil {
+		t.Fatal(err)
+	}
+	missing := filepath.Join(filepath.Dir(root), "missing")
+	if err := os.CopyFS(missing, os.DirFS(root)); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Remove(filepath.Join(missing, ".claude/settings.json")); err != nil {
+		t.Fatal(err)
+	}
+	_, err := a6Scope(t, s, missing, base).Install(context.Background(), InstallRequest{Source: hooked, Harnesses: claudeOnly, Yes: true})
+	if err == nil || !strings.Contains(err.Error(), "missing a declared hook artifact") {
+		t.Fatalf("clone without declared settings.json: %v", err)
+	}
+}
 func TestM3A6ScopesAreIndependent(t *testing.T) {
 	s, base, root, source := a6Setup(t)
 	other := filepath.Join(filepath.Dir(root), "second")

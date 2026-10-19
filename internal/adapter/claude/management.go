@@ -1,6 +1,8 @@
 package claude
 
 import (
+	"errors"
+	"os"
 	"path/filepath"
 
 	"github.com/speakeasy-api/agenthooks/install"
@@ -14,6 +16,14 @@ func (r *route) ManagementPaths() ([]string, error) {
 	return append(paths, filepath.Join(r.dir, "CLAUDE.md"), filepath.Join(r.dir, "rules")), err
 }
 
+// ProjectDigest omits a missing settings.json: a project with only static
+// rules never plans hooks, so the file need not exist.
 func (r *route) ProjectDigest(read func(string) ([]byte, error)) (map[string]string, error) {
-	return install.ProjectDigest(r.manifest(nil), r.target(), read)
+	digest, err := install.ProjectDigest(r.manifest(nil), r.target(), read)
+	if errors.Is(err, os.ErrNotExist) && r.project {
+		if _, e := read(filepath.Join(r.dir, "settings.json")); errors.Is(e, os.ErrNotExist) {
+			return map[string]string{}, nil
+		}
+	}
+	return digest, err
 }
