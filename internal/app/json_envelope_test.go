@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"path/filepath"
 	"reflect"
 	"strings"
@@ -230,6 +231,22 @@ func TestProjectBindingFailuresKeepTheirCode(t *testing.T) {
 		t.Fatalf("diagnostics = %+v", envelope.Diagnostics)
 	}
 	if !strings.Contains(errOut.String(), "style list: project-binding-invalid: project directory must exist") {
+		t.Fatalf("stderr = %q", &errOut)
+	}
+}
+
+type brokenWriter struct{}
+
+func (brokenWriter) Write([]byte) (int, error) { return 0, errors.New("broken pipe") }
+
+func TestRestoreNamesItselfWhenTheReportCannotBeWritten(t *testing.T) {
+	service := testService(t)
+	t.Setenv("STYLE_HOME", filepath.Join(t.TempDir(), "home"))
+	var errOut bytes.Buffer
+	if code := runRestore(context.Background(), service, []string{"--json"}, strings.NewReader(""), brokenWriter{}, &errOut); code != ExitInvalid {
+		t.Fatalf("exit = %d", code)
+	}
+	if !strings.HasPrefix(errOut.String(), "style restore: encode report: ") {
 		t.Fatalf("stderr = %q", &errOut)
 	}
 }
