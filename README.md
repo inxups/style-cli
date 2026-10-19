@@ -51,10 +51,11 @@ an existing installation:
 
 1. Move each declaration into `STYLE.yaml` under `native_hooks`, remove `target`,
    and move any Markdown notes into `description`.
-2. Run `style uninstall PACKAGE --yes` in the original scope. If remaining old
-   packages prevent rebuilding, use `style uninstall --all --yes`.
-3. Reinstall the migrated sources with `style install SOURCE --yes` and the same
-   harness, route and project options; review the disclosed native commands.
+2. Run `style uninstall PACKAGE` in the original scope and answer `y`. If
+   remaining old packages prevent rebuilding, use `style uninstall --all`.
+3. Reinstall the migrated sources with `style install SOURCE` and the same
+   harness, route and project options; review the disclosed native commands
+   before answering `y`.
 
 Old installed source or approval snapshots produce `native-format-removed` and
 require reinstalling. `list` and `doctor` keep those packages visible. This change
@@ -66,6 +67,13 @@ continues to use `style/v0.3`; there is no migration command.
 on a command line) also shows advanced and project options. Boolean flags take
 no value (`--json`, not `--json=true`).
 
+`install`, `restore`, `update`, `trust` and `uninstall` print a preview and ask
+`[y/N]` on stderr before changing anything; only `y` or `yes` read from stdin
+applies the change. No input, end of input or any other answer cancels without
+writes, so scripts and CI answer explicitly, for example
+`echo y | style install SOURCE --json`. With `--json` the preview and prompt go
+to stderr and stdout carries only the final report.
+
 The following forms were removed without compatibility entry points:
 
 | Removed | Use instead |
@@ -74,6 +82,7 @@ The following forms were removed without compatibility entry points:
 | `style adapters` | `style doctor` (text and JSON include the adapter inventory) |
 | `--count=exact --count-provider=P --encoding=E` / `--count-model=M` | `--exact openai:E` / `--exact anthropic:M` |
 | `install --fail-closed claude-code` | `install --fail-closed` |
+| `--yes` on `install`, `restore`, `update`, `trust`, `uninstall` | answer `y` to the prompt (stdin) |
 
 `explain --event` is optional; the event is read from the payload's
 `hook_event_name`, and an explicit `--event` must match it.

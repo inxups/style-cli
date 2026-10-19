@@ -1,1 +1,2 @@
-approval required; review the update preview and rerun with --yes
+Apply this update? [y/N] 
+update canceled; nothing was changed

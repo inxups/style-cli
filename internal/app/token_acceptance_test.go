@@ -61,13 +61,13 @@ func TestA18SecondInstallT003BlocksWithoutAnyChanges(t *testing.T) {
 		}
 	}
 	var out, errOut bytes.Buffer
-	if code := RunWithService(context.Background(), service, root, []string{"install", first, "--harness=codex", "--yes"}, &out, &errOut); code != ExitOK {
+	if code := RunWithServiceInput(context.Background(), service, root, []string{"install", first, "--harness=codex"}, approve(), &out, &errOut); code != ExitOK {
 		t.Fatalf("first exit=%d stdout=%s stderr=%s", code, out.String(), errOut.String())
 	}
 	before := installedTree(t, home, config)
 	out.Reset()
 	errOut.Reset()
-	if code := RunWithService(context.Background(), service, root, []string{"install", second, "--harness=codex", "--yes"}, &out, &errOut); code != ExitBlocked || !strings.Contains(errOut.String(), "T003") || !strings.Contains(errOut.String(), "installed estimate") {
+	if code := RunWithServiceInput(context.Background(), service, root, []string{"install", second, "--harness=codex"}, approve(), &out, &errOut); code != ExitBlocked || !strings.Contains(errOut.String(), "T003") || !strings.Contains(errOut.String(), "installed estimate") {
 		t.Fatalf("second exit=%d stdout=%s stderr=%s", code, out.String(), errOut.String())
 	}
 	if !reflect.DeepEqual(before, installedTree(t, home, config)) {

@@ -28,13 +28,13 @@ def main():
             binding.add_copy('native_observer_copy',root/'native-observer.py',binding.files['native_observer'])
             run(binary,env,'validate',source,'--json')
             expected=1 if route=='claude-plugin' else 0
-            installed=json.loads(run(binary,env,'install',source,'--harness',harness,'--route',harness+'='+route,*scope,'--yes','--json',want=expected).stdout)
+            installed=json.loads(run(binary,env,'install',source,'--harness',harness,'--route',harness+'='+route,*scope,'--json',want=expected, confirm=True).stdout)
             assert installed['changed']
             home=Path(installed['scope']['home']) if scope else base
             (home/'effort.yaml').write_text('format: 1\nharnesses:\n  '+harness+': {high: medium, low: high}\n')
             run(binary,env,'sync',*scope,'--json')
             assert json.loads((home/'build/index.json').read_text())['format']==7
-            run(binary,env,'uninstall','--all',*scope,'--yes','--json')
+            run(binary,env,'uninstall','--all',*scope,'--json', confirm=True)
             assert not (home/'build/index.json').exists() and not (home/'style.lock.yaml').exists()
             restored=[baseline.verify() for baseline in profiles]
             binding.verify()

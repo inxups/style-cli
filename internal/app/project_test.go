@@ -183,7 +183,7 @@ func TestM3A6ProjectCLIAndZeroWriteFailures(t *testing.T) {
 	}
 	s, base, root, source := a6Setup(t)
 	var out, errOut bytes.Buffer
-	if code := RunWithService(context.Background(), s, root, []string{"install", source, "--project", root, "--yes", "--json"}, &out, &errOut); code != 0 {
+	if code := RunWithServiceInput(context.Background(), s, root, []string{"install", source, "--project", root, "--json"}, approve(), &out, &errOut); code != 0 {
 		t.Fatal(code, &out, &errOut)
 	}
 	var report map[string]json.RawMessage

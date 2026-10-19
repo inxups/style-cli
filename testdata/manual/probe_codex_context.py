@@ -49,7 +49,7 @@ def fixture(probe):
             {"id": "child-block", "target": "tool", "tool": "shell", "action": "block", "when": {"agent": "any",
                 "conditions": [{"field": "tool.input.command", "op": "contains", "pattern": "STYLE_SCOPE_BLOCK"}]}, "text": "M1_FINAL_CHILD_BLOCKED"}]}, indent=2))
     probe.evidence_markers = (HISTORY, DEFAULT, CHILD, TOOL)
-    return probe.style_command("install", str(package), "--harness", "codex", "--route", "codex=codex-user", "--yes")
+    return probe.style_command("install", str(package), "--harness", "codex", "--route", "codex=codex-user", confirm=True)
 
 
 def output_rows(call, rule):

@@ -70,15 +70,20 @@ def fixture(root):
     return env, style, codex, claude, stub
 
 
-def run(binary, env, *args, want=0, payload=None):
-    result = subprocess.run([str(binary), *map(str, args)], env=env, input=payload,
+def run(binary, env, *args, want=0, payload=None, confirm=False):
+    # confirm answers a mutating command's y/N prompt; otherwise stdin is closed
+    # so an unexpected prompt declines instead of waiting on the terminal.
+    assert not (confirm and payload is not None)
+    stdin = {"input": "y\n"} if confirm else {"input": payload} if payload is not None else {"stdin": subprocess.DEVNULL}
+    result = subprocess.run([str(binary), *map(str, args)], env=env, **stdin,
                             text=True, capture_output=True, timeout=30)
     assert result.returncode == want, (args, result.returncode, result.stdout, result.stderr)
     return result
 
 
 def document(result):
-    assert result.stderr == "", result.stderr
+    # Prompting commands write their preview and y/N prompt to stderr.
+    assert result.stderr == "" or result.stderr.endswith(" [y/N] \n"), result.stderr
     value = json.loads(result.stdout)
     assert value["format"] == 1 and value["command"] == "update", value
     return value
@@ -107,7 +112,7 @@ def main():
             source_file = source / "STYLE.yaml"
             source_file.write_text(manifest("first", "Old.", native=True))
             run(new, env, "install", source, "--harness", provider,
-                "--route", f"{provider}={route}", "--yes", "--json")
+                "--route", f"{provider}={route}", "--json", confirm=True)
             # update and runtime must not discover a new harness or launch Git.
             marker = root / "unexpected-executable"
             for name in ("codex", "claude", "git"):
@@ -126,10 +131,10 @@ def main():
             record(cases, route, "json-preview", unchanged=True, native_disclosed=True)
             text = run(new, env, "update", "first", want=1)
             assert "printf NATIVE-Old." in text.stdout and "printf NATIVE-New." in text.stdout
-            assert "Locked routes:" in text.stdout and "approval required" in text.stderr
+            assert "Locked routes:" in text.stdout and "update canceled" in text.stderr
             assert snapshot(*roots) == before
             record(cases, route, "text-preview", unchanged=True, before_after_disclosed=True)
-            applied = document(run(new, env, "update", "first", "--yes", "--json"))
+            applied = document(run(new, env, "update", "first", "--json", confirm=True))
             assert applied["status"] == "applied" and applied["changed"]
             index = json.loads((home / "build" / "index.json").read_bytes())
             assert index["format"] == 1 and index["packages"][0]["seq"] == 1
@@ -137,11 +142,11 @@ def main():
             assert b"printf NATIVE" not in (home / "build" / "index.json").read_bytes()
             record(cases, route, "apply", version="0.5.0", seq=1, runtime_format=1)
             before = snapshot(*roots)
-            unchanged = document(run(new, env, "update", "--all", "--yes", "--json"))
+            unchanged = document(run(new, env, "update", "--all", "--json", confirm=True))
             assert unchanged["status"] == "unchanged" and not unchanged["changed"]
             assert snapshot(*roots) == before, "no-op replaced a file or changed mtime"
             record(cases, route, "unchanged", bytes_mode_mtime_inode_preserved=True)
-            invalid = document(run(new, env, "update", "missing", "--yes", "--json", want=1))
+            invalid = document(run(new, env, "update", "missing", "--json", want=1, confirm=True))
             assert invalid["status"] == "error" and invalid["changes"] == []
             assert snapshot(*roots) == before
             record(cases, route, "single-error-json", unchanged=True)
@@ -184,17 +189,17 @@ def main():
             if provider == "claude-code":
                 # The fixed M1 binary uses claude_md. update must not perform
                 # the migration assigned to the existing management flow.
-                error = document(run(new, env, "update", "legacy", "--yes", "--json", want=1))
+                error = document(run(new, env, "update", "legacy", "--json", want=1, confirm=True))
                 assert any(d["code"] == "update-binding-changed" for d in error["diagnostics"])
                 assert snapshot(home, codex, claude) == before
                 record(cases, route, "old-layout-update-refused", unchanged=True)
                 run(new, env, "sync", "--json")
-            result = document(run(new, env, "update", "legacy", "--yes", "--json"))
+            result = document(run(new, env, "update", "legacy", "--json", confirm=True))
             assert result["status"] == "applied" and result["changed"]
             run(new, env, "sync", "--json")
-            run(new, env, "trust", "legacy", "--yes", "--json")
+            run(new, env, "trust", "legacy", "--json", confirm=True)
             assert document(run(new, env, "update", "--all", "--json"))["status"] == "unchanged"
-            run(new, env, "uninstall", "--all", "--yes", "--json")
+            run(new, env, "uninstall", "--all", "--json", confirm=True)
             record(cases, route, "real-old-install-update-lifecycle", legacy_format=1)
     report = {"format": 1, "test": "M3-A4-built-cli", "status": "passed",
               "binary_sha256": sha(new), "old_binary_sha256": sha(old),

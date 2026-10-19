@@ -62,7 +62,7 @@ func a5Reject(t *testing.T, s *Service, home, config, code string) {
 	check()
 }
 func TestM3A5SelectionAndCLIOptions(t *testing.T) {
-	for _, args := range [][]string{{"restore", "source"}, {"restore", "--all"}, {"restore", "--harness=codex"}, {"restore", "--harness", "codex"}, {"restore", "--route=codex=codex-user"}, {"restore", "--set=k=v"}, {"restore", "--link"}, {"restore", "--ref=refs/heads/main"}, {"restore", "--path=pkg"}, {"restore", "--fail-closed=claude-code"}, {"restore", "--lock=other"}, {"restore", "--project"}, {"restore", "--yes", "--yes"}, {"restore", "--frozen"}, {"restore", "--json", "--json"}, {"restore", "--allow-replace", "--allow-replace"}, {"install", "--frozen"}, {"install", "--frozen", "--yes"}} {
+	for _, args := range [][]string{{"restore", "source"}, {"restore", "--yes"}, {"restore", "--all"}, {"restore", "--harness=codex"}, {"restore", "--harness", "codex"}, {"restore", "--route=codex=codex-user"}, {"restore", "--set=k=v"}, {"restore", "--link"}, {"restore", "--ref=refs/heads/main"}, {"restore", "--path=pkg"}, {"restore", "--fail-closed=claude-code"}, {"restore", "--lock=other"}, {"restore", "--project"}, {"restore", "--yes", "--yes"}, {"restore", "--frozen"}, {"restore", "--json", "--json"}, {"restore", "--allow-replace", "--allow-replace"}, {"install", "--frozen"}, {"install", "--frozen", "--yes"}} {
 		t.Run(strings.Join(args, " "), func(t *testing.T) {
 			s, home, config, _ := a4Setup(t, "codex-user", a4Manifest("first", "Locked."), false)
 			t.Setenv("STYLE_HOME", home)
@@ -75,7 +75,7 @@ func TestM3A5SelectionAndCLIOptions(t *testing.T) {
 			a4AssertState(t, before, home, config)
 		})
 	}
-	for _, args := range [][]string{{}, {"--json", "--yes", "--allow-replace"}} {
+	for _, args := range [][]string{{}, {"--json", "--allow-replace"}} {
 		if _, _, err := parseFrozenArgs(args); err != nil {
 			t.Fatal(err)
 		}

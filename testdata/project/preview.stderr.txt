@@ -1,1 +1,2 @@
-style install: installation requires capability confirmation; pass --yes in non-interactive mode
+Install with these capabilities? [y/N]
+install canceled; nothing was changed

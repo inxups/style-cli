@@ -47,7 +47,7 @@ def main():
             preview = json.loads(run(binary, env, 'install', source, *scope, *selection, '--json', want=1).stdout)
             assert preview['awaiting_confirmation'] and snapshot(base, codex, claude, project) == before
             record(cases, route, 'preview-zero-write')
-            installed = json.loads(run(binary, env, 'install', source, *scope, *selection, '--yes', '--json').stdout)
+            installed = json.loads(run(binary, env, 'install', source, *scope, *selection, '--json', confirm=True).stdout)
             home = Path(installed['scope']['home']) if scope else base
             index_path = home / 'build/index.json'
             index = json.loads(index_path.read_text())
@@ -95,16 +95,16 @@ def main():
                 run(old, dict(env, STYLE_HOME=str(home)), *command, want=1)
                 assert snapshot(base, codex, claude, project) == before
             record(cases, route, 'actual-old-runtime-and-management-refuse-zero-write')
-            for command in (('sync',), ('update', '--all', '--yes'), ('restore', '--yes')):
-                run(binary, env, *command, *scope, '--json')
+            for command in (('sync',), ('update', '--all'), ('restore',)):
+                run(binary, env, *command, *scope, '--json', confirm=True)
             doctor = json.loads(run(binary, env, 'doctor', *scope, '--json').stdout)
             assert any(d['code'] == 'event-index-3' for d in doctor['diagnostics'])
             (home / 'build/index.json').unlink()
             (home / 'build/explain.json').unlink()
-            run(binary, env, 'restore', *scope, '--yes', '--json')
+            run(binary, env, 'restore', *scope, '--json', confirm=True)
             assert json.loads(index_path.read_text()) == index
             record(cases, route, 'new-management-frozen-rebuild-and-doctor')
-            run(binary, env, 'uninstall', '--all', *scope, '--yes', '--json')
+            run(binary, env, 'uninstall', '--all', *scope, '--json', confirm=True)
             record(cases, route, 'uninstall')
     args.report.write_text(json.dumps(dict(format=1, binary_sha256=sha(binary),
                                           old_binary_sha256=sha(old), real_harness=False, cases=cases), indent=2) + '\n')

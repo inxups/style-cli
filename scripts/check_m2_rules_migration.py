@@ -33,8 +33,10 @@ def package(root, name):
     return source
 
 
-def run(binary, env, *args):
-    result = subprocess.run([str(binary), *map(str, args)], env=env,
+def run(binary, env, *args, confirm=False):
+    # The current binary takes approval on stdin; the old one uses --yes.
+    stdin = {"input": "y\n"} if confirm else {"stdin": subprocess.DEVNULL}
+    result = subprocess.run([str(binary), *map(str, args)], env=env, **stdin,
                             capture_output=True, text=True, timeout=60)
     assert result.returncode == 0, (args, result.returncode, result.stdout, result.stderr)
     return json.loads(result.stdout)
@@ -86,16 +88,16 @@ def main():
                 assert tree(style_home, config) == before, "read-only commands mutated old installation"
                 expected = {"first", "second"}
                 if entrypoint == "install":
-                    command = ("install", package(root, "third"), "--harness", "claude-code", "--yes", "--json")
+                    command = ("install", package(root, "third"), "--harness", "claude-code", "--json")
                     expected.add("third")
                 elif entrypoint == "sync":
                     command = ("sync", "--json")
                 elif entrypoint == "trust":
-                    command = ("trust", "first", "--yes", "--json")
+                    command = ("trust", "first", "--json")
                 else:
-                    command = ("uninstall", "first", "--yes", "--json")
+                    command = ("uninstall", "first", "--json")
                     expected.remove("first")
-                migrated = run(new, env, *command)
+                migrated = run(new, env, *command, confirm=True)
                 assert len(migrated["static_migrations"]) == 2, migrated
                 assert not migrated.get("needs_trust"), migrated
                 assert {path.stem.removeprefix("style-") for path in foreign.parent.glob("style-*.md")} == expected
@@ -113,7 +115,7 @@ def main():
                 repeat = run(new, env, "sync", "--json")
                 assert not repeat["changed"] and not repeat.get("static_migrations"), repeat
                 assert run(new, env, "doctor", "--json")["healthy"]
-                run(new, env, "uninstall", "--all", "--yes", "--json")
+                run(new, env, "uninstall", "--all", "--json", confirm=True)
                 assert not list(foreign.parent.glob("style-*.md"))
                 assert foreign.read_bytes() == b"Unrelated user rules.\n"
                 if original is not None:

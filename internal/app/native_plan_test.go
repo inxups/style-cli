@@ -123,7 +123,7 @@ func TestA2NativeFallbackErrorBlocksInstallWithoutChanges(t *testing.T) {
 			t.Setenv("STYLE_HOME", home)
 			source := writeInstallPackage(t, filepath.Join(root, "pkg"), "spec: style/v0.3\nname: native-fallback\nversion: 0.1.0\ndescription: native fallback\nrules:\n  - id: base\n    target: system\n    text: Base style.\nnative_hooks:\n  - id: notify\n    fallback: "+tc.fallback+"\n    codex: {event: Stop, command: notify}\n")
 			var out, errOut bytes.Buffer
-			code := RunWithService(context.Background(), service, root, []string{"install", source, "--harness=codex", "--yes"}, &out, &errOut)
+			code := RunWithServiceInput(context.Background(), service, root, []string{"install", source, "--harness=codex"}, approve(), &out, &errOut)
 			if code != tc.code {
 				t.Fatalf("install exit=%d, want %d; stdout=%s stderr=%s", code, tc.code, out.String(), errOut.String())
 			}

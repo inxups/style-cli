@@ -43,8 +43,8 @@ func TestRunInstallSwitchesRoutesWithoutResidueAndKeepsExternalConfig(t *testing
 	previousRoute := ""
 	for _, route := range fixtureRoutes(t, []string{"codex-plugin", "codex-user", "codex-plugin", "codex-user"}) {
 		var stdout, stderr bytes.Buffer
-		args := []string{"install", source, "--harness=codex", "--route=codex=" + route, "--yes", "--json"}
-		code := RunWithService(context.Background(), service, root, args, &stdout, &stderr)
+		args := []string{"install", source, "--harness=codex", "--route=codex=" + route, "--json"}
+		code := RunWithServiceInput(context.Background(), service, root, args, approve(), &stdout, &stderr)
 		var result InstallResult
 		if err := json.Unmarshal(stdout.Bytes(), &result); err != nil || code != 0 || result.Changed != (route != previousRoute) {
 			t.Fatalf("%s exit=%d err=%v stdout=%s stderr=%s", route, code, err, stdout.String(), stderr.String())
@@ -70,7 +70,7 @@ func TestRunInstallSwitchesRoutesWithoutResidueAndKeepsExternalConfig(t *testing
 			t.Fatal("Windows runtime owner residue", string(hooks))
 		}
 		stdout.Reset()
-		if code := RunWithService(context.Background(), service, root, args, &stdout, &stderr); code != 0 {
+		if code := RunWithServiceInput(context.Background(), service, root, args, approve(), &stdout, &stderr); code != 0 {
 			t.Fatalf("repeat %s: exit=%d %s", route, code, stderr.String())
 		}
 		if err := json.Unmarshal(stdout.Bytes(), &result); err != nil || result.Changed {

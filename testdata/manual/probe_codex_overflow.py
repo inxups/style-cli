@@ -37,7 +37,7 @@ def install_guard(probe, harness):
     (probe.root / "claude").mkdir(exist_ok=True)
     config = probe.home / "config.toml" if harness == "codex" else probe.root / "claude/settings.json"
     before = config.read_bytes() if config.exists() else None
-    result = subprocess.run([probe.style, "install", str(package), "--harness", harness, "--yes", "--json"],
+    result = subprocess.run([probe.style, "install", str(package), "--harness", harness, "--json"], input="y\n",
                             cwd=probe.work, env=probe.env, capture_output=True, text=True, timeout=60)
     assert result.returncode == 4 and "T003" in result.stderr
     assert (config.read_bytes() if config.exists() else None) == before

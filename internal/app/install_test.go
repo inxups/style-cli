@@ -239,7 +239,7 @@ func TestInstallRequiresReplaceConfirmationAndCommandYes(t *testing.T) {
 	}
 	t.Setenv("STYLE_HOME", styleHome)
 	var stdout, stderr bytes.Buffer
-	if code := RunWithService(context.Background(), service, root, []string{"install", replace, "--harness", "codex", "--yes"}, &stdout, &stderr); code != ExitInvalid || stderr.Len() == 0 {
+	if code := RunWithServiceInput(context.Background(), service, root, []string{"install", replace, "--harness", "codex"}, approve(), &stdout, &stderr); code != ExitInvalid || stderr.Len() == 0 {
 		t.Fatalf("replace install without --allow-replace code=%d stdout=%q stderr=%q", code, stdout.String(), stderr.String())
 	}
 	if _, statErr := os.Stat(styleHome); !errors.Is(statErr, os.ErrNotExist) {
@@ -311,7 +311,7 @@ func TestRunInstallPrintsCapabilityAndCostReport(t *testing.T) {
 	t.Setenv("STYLE_HOME", styleHome)
 	service := testCodexInstallService(t, filepath.Join(root, "codex"), filepath.Join(root, "plugin"))
 	var stdout, stderr bytes.Buffer
-	code := RunWithService(context.Background(), service, repositoryRoot(t), []string{"install", "testdata/packages/terse-reviewer", "--harness", "codex", "--yes"}, &stdout, &stderr)
+	code := RunWithServiceInput(context.Background(), service, repositoryRoot(t), []string{"install", "testdata/packages/terse-reviewer", "--harness", "codex"}, approve(), &stdout, &stderr)
 	if code != ExitOK {
 		t.Fatalf("install exit=%d stdout=%s stderr=%s", code, stdout.String(), stderr.String())
 	}

@@ -51,7 +51,7 @@ def main():
             assert snapshot(base, codex, claude, project) == before
             record(cases, route, "preview-zero-write")
             installed = json.loads(run(new, env, "install", source, "--project", project,
-                                       "--harness", provider, "--yes", "--json").stdout)
+                                       "--harness", provider, "--json", confirm=True).stdout)
             home = Path(installed["scope"]["home"])
             assert home.parent == base / "projects"
             assert "format: 3" in (home / "style.lock.yaml").read_text()
@@ -60,10 +60,9 @@ def main():
             assert declaration["effects_sha256"].startswith("sha256:")
             assert str(root) not in json.dumps(declaration)
             record(cases, route, "install-format3-private-scope")
-            for command in (("list",), ("sync",), ("trust", "project-rules", "--yes"),
-                            ("update", "--all", "--yes"), ("restore", "--yes"),
-                            ("doctor",), ("stats",)):
-                report = json.loads(run(new, env, *command, "--project", project, "--json").stdout)
+            for command in (("list",), ("sync",), ("trust", "project-rules"),
+                            ("update", "--all"), ("restore",), ("doctor",), ("stats",)):
+                report = json.loads(run(new, env, *command, "--project", project, "--json", confirm=True).stdout)
                 assert report["scope"]["home"] == str(home)
             record(cases, route, "management-scope-consistency", commands=7)
             before = snapshot(base, codex, claude, project)
@@ -113,13 +112,13 @@ def main():
             assert not (base / "state").exists()
             record(cases, route, "unbound-clone-no-user-fallback")
             adopted = json.loads(run(new, env, "install", source, "--project", clone,
-                                     "--harness", provider, "--yes", "--json").stdout)
+                                     "--harness", provider, "--json", confirm=True).stdout)
             assert adopted["scope"]["home"] != str(home)
             assert adopted["project_adoption"] is True
             result = invoke_hook(dynamic, env, clone, payload)
             assert result.returncode == 0 and "Project." in result.stdout
             record(cases, route, "clone-explicit-activation-independent-state", real_git_worktree=True)
-            run(new, env, "uninstall", "--all", "--project", clone, "--yes")
+            run(new, env, "uninstall", "--all", "--project", clone, confirm=True)
             assert not (clone / ".style/project.json").exists()
             assert not (clone / ".style/hooks/style").exists()
             clone_native = clone / native_path.relative_to(project)

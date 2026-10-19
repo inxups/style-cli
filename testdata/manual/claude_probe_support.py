@@ -187,7 +187,7 @@ class ClaudeProbe:
         return call
 
     def install(self, package):
-        result = subprocess.run([str(self.style), "install", str(package), "--harness", "claude-code", "--yes", "--json"],
+        result = subprocess.run([str(self.style), "install", str(package), "--harness", "claude-code", "--json"], input="y\n",
                                 cwd=self.work, env=self.env, capture_output=True, text=True, timeout=60, check=True)
         return json.loads(result.stdout)
 

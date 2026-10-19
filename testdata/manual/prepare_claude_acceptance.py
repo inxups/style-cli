@@ -37,8 +37,8 @@ def prepare(root, style, claude=None):
         environment["PATH"] = str(binary.parent) + os.pathsep + environment.get("PATH", "")
     records = []
     for package in (REPO / "testdata/packages/terse-reviewer", REPO / "testdata/manual/m1b-probes"):
-        command = [str(binary), "install", str(package), "--harness", "claude-code", "--yes", "--json"]
-        result = subprocess.run(command, cwd=work, env=environment, capture_output=True, text=True, check=True)
+        command = [str(binary), "install", str(package), "--harness", "claude-code", "--json"]
+        result = subprocess.run(command, input="y\n", cwd=work, env=environment, capture_output=True, text=True, check=True)
         records.append(json.loads(result.stdout))
 
     package = root / "boundary"
@@ -57,7 +57,7 @@ def prepare(root, style, claude=None):
         rules.append(rule)
     (package / "STYLE.yaml").write_text(json.dumps({"spec": "style/v0.3", "name": "claude-boundary", "version": "0.1.0",
         "description": "User-operated isolated Claude visibility probes", "rules": rules}, indent=2))
-    result = subprocess.run([str(binary), "install", str(package), "--harness", "claude-code", "--yes", "--json"],
+    result = subprocess.run([str(binary), "install", str(package), "--harness", "claude-code", "--json"], input="y\n",
                             cwd=work, env=environment, capture_output=True, text=True, check=True)
     records.append(json.loads(result.stdout))
     settings = config / "settings.json"
@@ -90,8 +90,8 @@ def prepare(root, style, claude=None):
     launcher.chmod(0o700)
     hot_script = root / "install-hot.sh"
     hot_script.write_text("#!/bin/sh\nset -eu\n" + "\n".join("export " + key + "=" + shlex.quote(value) for key, value in
-        (("STYLE_HOME", str(store)), ("CLAUDE_CONFIG_DIR", str(config)))) + "\nexec " + shlex.quote(str(binary)) +
-        " install " + shlex.quote(str(hot)) + " --harness claude-code --yes --json\n")
+        (("STYLE_HOME", str(store)), ("CLAUDE_CONFIG_DIR", str(config)))) + "\nprintf 'y\\n' | " + shlex.quote(str(binary)) +
+        " install " + shlex.quote(str(hot)) + " --harness claude-code --json\n")
     hot_script.chmod(0o700)
     report = {"item": "M1-FINAL-06", "status": "prepared-awaiting-real-user-session", "scratch": str(root),
               "style_binary_sha256": hashlib.sha256(binary.read_bytes()).hexdigest(), "install": records,

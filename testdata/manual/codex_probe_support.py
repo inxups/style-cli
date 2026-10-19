@@ -173,9 +173,10 @@ class NativeProbe:
         path.write_text(text)
         path.chmod(0o600)
 
-    def style_command(self, *args, expected=0):
+    def style_command(self, *args, expected=0, confirm=False):
+        # confirm answers the y/N prompt of a mutating command.
         done = subprocess.run([self.style, *args, "--json"], env=self.env, cwd=self.work,
-                              input="", text=True, capture_output=True, timeout=60)
+                              input="y\n" if confirm else "", text=True, capture_output=True, timeout=60)
         if done.returncode != expected:
             raise AssertionError(f"style {args[0]} exit {done.returncode}, expected {expected}")
         return json.loads(done.stdout)

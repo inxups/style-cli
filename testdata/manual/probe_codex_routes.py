@@ -81,7 +81,7 @@ def run(probe, route, report):
         print(f"{route} {name}: passed", flush=True)
 
     def install(source=example, selected=route):
-        return probe.style_command("install", source, "--harness", "codex", "--route", f"codex={selected}", "--yes")
+        return probe.style_command("install", source, "--harness", "codex", "--route", f"codex={selected}", confirm=True)
 
     install()
     if route == "codex-plugin":
@@ -89,7 +89,7 @@ def run(probe, route, report):
     initial_config = config.read_bytes()
     install(probes)
     probe.style_command("sync")
-    probe.style_command("uninstall", "m1b-probes", "--yes")
+    probe.style_command("uninstall", "m1b-probes", confirm=True)
     probe.style_command("sync")
     assert config.read_bytes() == initial_config
     install(probes)
@@ -199,11 +199,11 @@ def run(probe, route, report):
     assert preview["awaiting_confirmation"] and (probe.store / "build/index.json").read_bytes() == old_index
     old = probe.invoke("b9-before-trust", "Reply only STYLE_BEFORE_TRUST. Do not use tools.")
     assert old["exit"] == 0 and "M1_FINAL_B9" not in request_text(old)
-    probe.style_command("trust", "terse-reviewer", "--yes")
+    probe.style_command("trust", "terse-reviewer", confirm=True)
     new = probe.invoke("b9-after-trust", "Reply only STYLE_AFTER_TRUST. Do not use tools.")
     assert new["exit"] == 0 and "M1_FINAL_B9" in request_text(new)
     manifest.write_text(old_body)
-    probe.style_command("trust", "terse-reviewer", "--yes")
+    probe.style_command("trust", "terse-reviewer", confirm=True)
     passed("B9", {"before_session": old["session_id"], "after_session": new["session_id"], "preview_read_only": True})
 
     server = AppServer(probe)
@@ -235,7 +235,7 @@ def run(probe, route, report):
     # Registration is a separate Codex lifecycle; remove it before STYLE.
     if route == "codex-plugin":
         report["unregistration"] = unregister_plugin(probe)
-    probe.style_command("uninstall", "--all", "--yes")
+    probe.style_command("uninstall", "--all", confirm=True)
     roundtrip = finish_configuration_roundtrip(config, baseline, probe.work)
     assert not (probe.home / "hooks.json").exists()
     passed("B8", {**roundtrip, "no_user_hooks_file": True})
@@ -248,7 +248,7 @@ def run_switches(probe, report):
     baseline = config.read_bytes()
 
     def install(route):
-        probe.style_command("install", example, "--harness", "codex", "--route", f"codex={route}", "--yes")
+        probe.style_command("install", example, "--harness", "codex", "--route", f"codex={route}", confirm=True)
 
     install("codex-user")
     user_config, user_hooks = config.read_bytes(), (probe.home / "hooks.json").read_bytes()
@@ -274,7 +274,7 @@ def run_switches(probe, report):
         report["switches"].append({"route": route, "session_id": call["session_id"],
                                    "native_hook_spans": spans, "no_duplicate_injection": True})
         print(f"B10 switch to {route}: passed", flush=True)
-    probe.style_command("uninstall", "--all", "--yes")
+    probe.style_command("uninstall", "--all", confirm=True)
     assert config.read_bytes() == baseline and not (probe.home / "hooks.json").exists()
     report.update(passed=True, configuration_byte_roundtrip=True)
 

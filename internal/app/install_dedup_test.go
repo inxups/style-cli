@@ -480,13 +480,13 @@ func TestA6DedupBudgetUsesEffectiveOutputAndRejectsRealGrowth(t *testing.T) {
 			}
 			before := installedTree(t, home, config)
 			var out, errOut bytes.Buffer
-			code := RunWithService(context.Background(), service, root, []string{"install", second, "--yes", "--harness=codex", "--json"}, &out, &errOut)
+			code := RunWithServiceInput(context.Background(), service, root, []string{"install", second, "--harness=codex", "--json"}, approve(), &out, &errOut)
 			if scenario == "identical" {
 				var result InstallResult
 				if err := json.Unmarshal(out.Bytes(), &result); err != nil {
 					t.Fatalf("decode %s: %v", out.String(), err)
 				}
-				if code != ExitOK || errOut.Len() != 0 || len(result.Reports) != 2 || result.Reports[1].Tokens.Rules[0].DeduplicatedInto != "first/r" || len(result.Reports[1].Tokens.Events) != 0 {
+				if code != ExitOK || !strings.HasSuffix(errOut.String(), "[y/N] \n") || len(result.Reports) != 2 || result.Reports[1].Tokens.Rules[0].DeduplicatedInto != "first/r" || len(result.Reports[1].Tokens.Events) != 0 {
 					t.Fatalf("effective legal install: %d %s %s", code, out.String(), errOut.String())
 				}
 				if entries := a6Index(t, home).Harnesses["codex"][plan.ToolPre]; len(entries) != 1 || entries[0].Rule != "first/r" {
@@ -520,7 +520,7 @@ func TestA6DedupCannotBypassSourceBudgets(t *testing.T) {
 			}
 			before := installedTree(t, home, config)
 			var out, errOut bytes.Buffer
-			code := RunWithService(context.Background(), service, root, []string{"install", second, "--yes", "--harness=codex"}, &out, &errOut)
+			code := RunWithServiceInput(context.Background(), service, root, []string{"install", second, "--harness=codex"}, approve(), &out, &errOut)
 			wantCode, diagnosticText := ExitBlocked, errOut.String()
 			if test.code == "T001" {
 				// Static T001 is already a source validation error before planning.

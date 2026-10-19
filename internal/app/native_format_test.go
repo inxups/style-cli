@@ -67,12 +67,12 @@ func TestNativeFormatRemovedManagementIsAtomic(t *testing.T) {
 			candidate := writeInstallPackage(t, filepath.Join(filepath.Dir(source), "candidate"), a4Manifest("candidate", "Body."))
 			before := a4State(t, home, config)
 			for _, args := range [][]string{
-				{"sync", "--json"}, {"trust", "native-test", "--yes", "--json"},
-				{"update", "--all", "--yes", "--json"}, {"restore", "--yes", "--json"},
-				{"install", candidate, "--harness=codex", "--route=codex=codex-user", "--yes", "--json"},
+				{"sync", "--json"}, {"trust", "native-test", "--json"},
+				{"update", "--all", "--json"}, {"restore", "--json"},
+				{"install", candidate, "--harness=codex", "--route=codex=codex-user", "--json"},
 			} {
 				var out, errOut bytes.Buffer
-				code := RunWithService(context.Background(), service, source, args, &out, &errOut)
+				code := RunWithServiceInput(context.Background(), service, source, args, approve(), &out, &errOut)
 				output := out.String() + errOut.String()
 				if code != ExitInvalid || !strings.Contains(output, spec.NativeFormatRemoved) || !strings.Contains(output, "uninstall") {
 					t.Fatalf("%v exit=%d stdout=%s stderr=%s", args, code, &out, &errOut)

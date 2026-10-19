@@ -130,7 +130,7 @@ func TestM3A4SelectionAndCLIOptions(t *testing.T) {
 	s := testService(t)
 	t.Setenv("STYLE_HOME", filepath.Join(t.TempDir(), "empty"))
 	invalid := [][]string{{}, {"first", "--all"}, {"first", "second"}, {"--all", "--ref=refs/heads/main"},
-		{"first", "--ref"}, {"first", "--ref="}, {"first", "--ref=x", "--ref=y"}, {"first", "--yes", "--yes"},
+		{"first", "--ref"}, {"first", "--ref="}, {"first", "--ref=x", "--ref=y"}, {"first", "--yes"},
 		{"--all", "--all"}, {"first", "--set=a=b"}, {"first", "--harness=codex"},
 		{"first", "--route=codex=codex-user"}, {"first", "--path=pkg"}, {"first", "--source=elsewhere"},
 		{"first", "--link"}, {"first", "--frozen"}, {"first", "--fail-closed=claude-code"}, {"first", "--json", "--json"}}
@@ -705,7 +705,7 @@ func TestM3A4CandidateGatesAndBlockedCLI(t *testing.T) {
 			t.Setenv("STYLE_HOME", home)
 			before := a4State(t, home, config)
 			var out, errOut bytes.Buffer
-			exit := RunWithService(context.Background(), s, t.TempDir(), []string{"update", "first", "--yes", "--json"}, &out, &errOut)
+			exit := RunWithServiceInput(context.Background(), s, t.TempDir(), []string{"update", "first", "--json"}, approve(), &out, &errOut)
 			var result UpdateResult
 			if err := json.Unmarshal(out.Bytes(), &result); err != nil || errOut.Len() != 0 {
 				t.Fatalf("single JSON: %s %s %v", &out, &errOut, err)

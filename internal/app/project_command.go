@@ -21,7 +21,7 @@ func projectInvocation(args []string) bool {
 	}
 	return false
 }
-func runProjectCommand(ctx context.Context, service *Service, workDir string, args []string, out, errOut io.Writer) int {
+func runProjectCommand(ctx context.Context, service *Service, workDir string, args []string, in io.Reader, out, errOut io.Writer) int {
 	jsonMode := false
 	for _, arg := range args {
 		if arg == "--json" {
@@ -77,8 +77,6 @@ func runProjectCommand(ctx context.Context, service *Service, workDir string, ar
 	if err != nil {
 		return fail(err)
 	}
-	var report bytes.Buffer
-	code := RunWithService(ctx, scoped, workDir, clean, &report, errOut)
 	scope := map[string]any{"kind": "project", "root": scoped.project.Root, "base_home": scoped.project.Base, "home": scoped.project.Home, "external_prerequisites": []string{"style must be available on the harness PATH", "harness workspace trust remains external", "launch Claude Code at the project root", "launch Codex through the canonical project path"}}
 	coexisting := map[string][]string{}
 	if user, e := loadLock(scoped.project.Base); e == nil {
@@ -92,6 +90,8 @@ func runProjectCommand(ctx context.Context, service *Service, workDir string, ar
 	scope["coexisting_user_packages"] = coexisting
 	scope["budget_scope"] = "selected installation only; active user packages have a separate budget and state"
 	if jsonMode {
+		var report bytes.Buffer
+		code := RunWithServiceInput(ctx, scoped, workDir, clean, in, &report, errOut)
 		value := map[string]any{}
 		if report.Len() > 0 {
 			var raw any
@@ -110,18 +110,16 @@ func runProjectCommand(ctx context.Context, service *Service, workDir string, ar
 		if err = encodeJSON(out, value); err != nil {
 			return ExitInvalid
 		}
-	} else {
-		fmt.Fprintf(out, "scope=project root=%s home=%s\n", scoped.project.Root, scoped.project.Home)
-		fmt.Fprintln(out, "prerequisites: style on harness PATH; same STYLE_HOME; external workspace trust; Claude starts at project root; Codex uses canonical path")
-		if len(coexisting) > 0 {
-			data, _ := json.Marshal(coexisting)
-			fmt.Fprintf(out, "coexisting user packages: %s (separate budget/state)\n", data)
-		}
-		if _, err = io.Copy(out, &report); err != nil {
-			return ExitInvalid
-		}
+		return code
 	}
-	return code
+	// Text output streams, so a confirmation prompt follows its preview.
+	fmt.Fprintf(out, "scope=project root=%s home=%s\n", scoped.project.Root, scoped.project.Home)
+	fmt.Fprintln(out, "prerequisites: style on harness PATH; same STYLE_HOME; external workspace trust; Claude starts at project root; Codex uses canonical path")
+	if len(coexisting) > 0 {
+		data, _ := json.Marshal(coexisting)
+		fmt.Fprintf(out, "coexisting user packages: %s (separate budget/state)\n", data)
+	}
+	return RunWithServiceInput(ctx, scoped, workDir, clean, in, out, errOut)
 }
 func runScopedStats(ctx context.Context, s *Service, args []string, out, errOut io.Writer) int {
 	if s.project == nil {

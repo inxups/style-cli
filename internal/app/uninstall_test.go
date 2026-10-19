@@ -30,7 +30,7 @@ func TestUninstallRemovesOnlyStyleOwnerAndRestoresLastRoute(t *testing.T) {
 		t.Fatal(err)
 	}
 	var output, errOutput bytes.Buffer
-	code := RunWithService(context.Background(), service, root, []string{"uninstall", "terse-reviewer", "--yes"}, &output, &errOutput)
+	code := RunWithServiceInput(context.Background(), service, root, []string{"uninstall", "terse-reviewer"}, approve(), &output, &errOutput)
 	if code != ExitOK {
 		t.Fatalf("uninstall exit=%d stdout=%s stderr=%s", code, output.String(), errOutput.String())
 	}
@@ -145,7 +145,7 @@ func TestRunUninstallAllPreservesLinkedSource(t *testing.T) {
 		t.Fatal(err)
 	}
 	var output, errOutput bytes.Buffer
-	code := RunWithService(context.Background(), service, root, []string{"uninstall", "--all", "--yes", "--json"}, &output, &errOutput)
+	code := RunWithServiceInput(context.Background(), service, root, []string{"uninstall", "--all", "--json"}, approve(), &output, &errOutput)
 	if code != ExitOK {
 		t.Fatalf("uninstall --all exit=%d stdout=%s stderr=%s", code, output.String(), errOutput.String())
 	}

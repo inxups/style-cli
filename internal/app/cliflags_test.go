@@ -3,9 +3,13 @@ package app
 import (
 	"bytes"
 	"context"
+	"io"
 	"strings"
 	"testing"
 )
+
+// approve answers one confirmation prompt with yes.
+func approve() io.Reader { return strings.NewReader("y\n") }
 
 func TestCommandHelpWorksInAnyPosition(t *testing.T) {
 	service := testService(t)
@@ -114,5 +118,18 @@ func TestExactCountOptionNamesProviderExplicitly(t *testing.T) {
 		if _, err := countOptions(parsedArgs{values: map[string][]string{"--exact": {value}}}); err == nil {
 			t.Fatalf("%s accepted", value)
 		}
+	}
+}
+
+func TestConfirmInputRequiresExplicitYes(t *testing.T) {
+	for input, want := range map[string]bool{"y\n": true, "YES\n": true, " y \n": true, "y": true, "": false, "\n": false, "n\n": false, "yep\n": false} {
+		var prompt bytes.Buffer
+		if got := confirmInput(strings.NewReader(input), &prompt, "Apply?"); got != want || prompt.String() != "Apply? [y/N] \n" {
+			t.Fatalf("%q: got %t prompt %q", input, got, prompt.String())
+		}
+	}
+	var prompt bytes.Buffer
+	if confirmInput(nil, &prompt, "Apply?") || prompt.String() != "Apply? [y/N] \n" {
+		t.Fatalf("nil input approved or prompt %q", prompt.String())
 	}
 }

@@ -188,8 +188,8 @@ func TestM3A8PluginCLIRegistrationRequired(t *testing.T) {
 	s, home, config, source := a8Setup(t)
 	var out, errOut bytes.Buffer
 	t.Setenv("STYLE_HOME", home)
-	args := []string{"install", source, "--harness=claude-code", "--route=claude-code=claude-plugin", "--yes", "--json"}
-	if code := RunWithService(context.Background(), s, filepath.Dir(home), args, &out, &errOut); code != 1 || errOut.Len() != 0 {
+	args := []string{"install", source, "--harness=claude-code", "--route=claude-code=claude-plugin", "--json"}
+	if code := RunWithServiceInput(context.Background(), s, filepath.Dir(home), args, approve(), &out, &errOut); code != 1 || !strings.HasSuffix(errOut.String(), "[y/N] \n") {
 		t.Fatal(code, &out, &errOut)
 	}
 	var report InstallResult
@@ -199,7 +199,7 @@ func TestM3A8PluginCLIRegistrationRequired(t *testing.T) {
 	a8Registration(t, report.Registration[0], config, "enabled")
 	out.Reset()
 	errOut.Reset()
-	if code := RunWithService(context.Background(), s, filepath.Dir(home), args, &out, &errOut); code != 0 {
+	if code := RunWithServiceInput(context.Background(), s, filepath.Dir(home), args, approve(), &out, &errOut); code != 0 {
 		t.Fatal(code, &out, &errOut)
 	}
 }

@@ -63,13 +63,13 @@ func TestM3A6CommandGolden(t *testing.T) {
 				case "preview":
 					args = []string{"install", source}
 				case "apply":
-					args = []string{"install", source, "--yes"}
+					args = []string{"install", source}
 				case "update":
-					args = []string{"update", "--all", "--yes"}
+					args = []string{"update", "--all"}
 				case "trust":
-					args = []string{"trust", "project-rules", "--yes"}
+					args = []string{"trust", "project-rules"}
 				case "uninstall":
-					args = []string{"uninstall", "--all", "--yes"}
+					args = []string{"uninstall", "--all"}
 				case "error":
 					args = []string{"list", "--project="}
 				default:
@@ -81,9 +81,13 @@ func TestM3A6CommandGolden(t *testing.T) {
 				if jsonMode {
 					args = append(args, "--json")
 				}
+				var input io.Reader
+				if phase == "apply" || phase == "update" || phase == "trust" || phase == "uninstall" {
+					input = approve()
+				}
 				before := a4State(t, base, root)
 				var out, errOut bytes.Buffer
-				code := RunWithService(context.Background(), s, root, args, &out, &errOut)
+				code := RunWithServiceInput(context.Background(), s, root, args, input, &out, &errOut)
 				want := 0
 				if phase == "preview" || phase == "error" {
 					want = 1

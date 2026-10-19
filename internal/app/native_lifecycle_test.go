@@ -71,7 +71,7 @@ func TestA4NativeInstallDisclosesBeforeConfirmationWithoutWriting(t *testing.T) 
 				}
 				out.Reset()
 				errOut.Reset()
-				if code := RunWithService(context.Background(), service, filepath.Dir(source), append(args, "--yes"), &out, &errOut); code != ExitOK {
+				if code := RunWithServiceInput(context.Background(), service, filepath.Dir(source), args, approve(), &out, &errOut); code != ExitOK {
 					t.Fatalf("confirmed exit=%d %s", code, errOut.String())
 				}
 				assertNativeInstalled(t, home, config, route, "native-test")

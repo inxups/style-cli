@@ -1,1 +1,2 @@
-approval required; review the restore preview and rerun with --yes
+Apply this restore? [y/N] 
+restore canceled; nothing was changed

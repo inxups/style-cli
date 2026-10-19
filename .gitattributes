@@ -3,3 +3,7 @@
 # Preserve exact CLI output, including intentional space-only report lines.
 testdata/update/*.txt whitespace=-blank-at-eol
 testdata/frozen/*.txt whitespace=-blank-at-eol
+# Confirmation prompts end with "[y/N] " and JSON-mode previews go to stderr.
+testdata/update/*.stderr.json whitespace=-blank-at-eol
+testdata/frozen/*.stderr.json whitespace=-blank-at-eol
+testdata/project/*.stderr.* whitespace=-blank-at-eol

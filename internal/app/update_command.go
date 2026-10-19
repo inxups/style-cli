@@ -7,20 +7,20 @@ import (
 	"io"
 )
 
-func runUpdate(ctx context.Context, service *Service, args []string, out, errOut io.Writer) int {
+func runUpdate(ctx context.Context, service *Service, args []string, in io.Reader, out, errOut io.Writer) int {
 	request, jsonOutput, err := parseUpdateArgs(args)
 	if err != nil {
 		return updateCommand.usageError(errOut, err)
 	}
 	previewWritten := false
-	if !jsonOutput {
-		yes := request.Yes
-		request.Yes = false
-		request.Confirm = func(preview UpdateResult) (bool, error) {
-			writeUpdatePreview(out, preview)
-			previewWritten = true
-			return yes, nil
+	request.Confirm = func(preview UpdateResult) (bool, error) {
+		previewOut := out
+		if jsonOutput {
+			previewOut = errOut
 		}
+		writeUpdatePreview(previewOut, preview)
+		previewWritten = !jsonOutput
+		return confirmInput(in, errOut, "Apply this update?"), nil
 	}
 	result, runErr := service.Update(ctx, request)
 	if jsonOutput {
@@ -36,7 +36,7 @@ func runUpdate(ctx context.Context, service *Service, args []string, out, errOut
 			// Only the sanitized structured diagnostics go to routine errors.
 			writeDiagnostics(errOut, result.Diagnostics)
 		} else if result.AwaitingConfirmation {
-			fmt.Fprintln(errOut, "approval required; review the update preview and rerun with --yes")
+			fmt.Fprintln(errOut, "update canceled; nothing was changed")
 		} else {
 			fmt.Fprintf(out, "update %s (changed=%t)\n", result.Status, result.Changed)
 		}
@@ -56,7 +56,7 @@ func parseUpdateArgs(args []string) (UpdateRequest, bool, error) {
 	if err != nil {
 		return UpdateRequest{}, false, err
 	}
-	request := UpdateRequest{Name: parsed.Arg(0), All: parsed.Bool("--all"), Ref: parsed.String("--ref"), Yes: parsed.Bool("--yes"), AllowReplace: parsed.Bool("--allow-replace")}
+	request := UpdateRequest{Name: parsed.Arg(0), All: parsed.Bool("--all"), Ref: parsed.String("--ref"), AllowReplace: parsed.Bool("--allow-replace")}
 	if (request.Name == "") == !request.All {
 		return request, false, fmt.Errorf("specify exactly one package name or --all")
 	}

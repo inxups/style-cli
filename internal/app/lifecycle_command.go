@@ -11,7 +11,7 @@ import (
 	"github.com/inxups/style-cli/internal/source"
 )
 
-func runInstall(ctx context.Context, service *Service, workDir string, args []string, out, errOut io.Writer) int {
+func runInstall(ctx context.Context, service *Service, workDir string, args []string, in io.Reader, out, errOut io.Writer) int {
 	request, jsonOutput, err := parseInstallArgs(args)
 	if err != nil {
 		return installCommand.usageError(errOut, err)
@@ -29,19 +29,24 @@ func runInstall(ctx context.Context, service *Service, workDir string, args []st
 		}
 	}
 	previewWritten := false
-	if !jsonOutput {
-		yes := request.Yes
-		request.Yes = false
-		request.Confirm = func(preview InstallResult) (bool, error) {
-			writeInstallPreview(out, preview)
-			previewWritten = true
-			return yes, nil
+	request.Confirm = func(preview InstallResult) (bool, error) {
+		previewOut := out
+		if jsonOutput {
+			previewOut = errOut
 		}
+		writeInstallPreview(previewOut, preview)
+		previewWritten = !jsonOutput
+		return confirmInput(in, errOut, "Install with these capabilities?"), nil
 	}
 	result, err := service.Install(ctx, request)
 	if err != nil {
-		if result.AwaitingConfirmation && jsonOutput {
-			_ = encodeJSON(out, result)
+		if result.AwaitingConfirmation {
+			if jsonOutput {
+				_ = encodeJSON(out, result)
+			} else {
+				fmt.Fprintln(errOut, "install canceled; nothing was changed")
+			}
+			return ExitInvalid
 		}
 		var usageErr *UsageError
 		var conflictErr *ConflictError
@@ -132,7 +137,7 @@ func parseInstallArgs(args []string) (InstallRequest, bool, error) {
 	request := InstallRequest{
 		Source: parsed.Arg(0), Ref: parsed.String("--ref"), Path: parsed.String("--path"),
 		Harnesses: parsed.List("--harness"), ProjectSources: parsed.List("--project-source"),
-		Yes: parsed.Bool("--yes"), Link: parsed.Bool("--link"), AllowReplace: parsed.Bool("--allow-replace"),
+		Link: parsed.Bool("--link"), AllowReplace: parsed.Bool("--allow-replace"),
 		Settings: map[string]string{}, Routes: map[string]string{}, ProjectSettings: map[string]string{},
 	}
 	if parsed.Bool("--fail-closed") {
@@ -175,10 +180,18 @@ func parseSetting(settings map[string]string, value string) error {
 	return nil
 }
 
-func runUninstall(ctx context.Context, service *Service, args []string, out, errOut io.Writer) int {
+func runUninstall(ctx context.Context, service *Service, args []string, in io.Reader, out, errOut io.Writer) int {
 	request, jsonOutput, err := parseUninstallArgs(args)
 	if err != nil {
 		return uninstallCommand.usageError(errOut, err)
+	}
+	question := "Uninstall " + request.Name + "?"
+	if request.All {
+		question = "Uninstall all packages?"
+	}
+	if request.Yes = confirmInput(in, errOut, question); !request.Yes {
+		fmt.Fprintln(errOut, "uninstall canceled; nothing was changed")
+		return ExitInvalid
 	}
 	result, err := service.Uninstall(ctx, request)
 	if err != nil {
@@ -212,7 +225,7 @@ func parseUninstallArgs(args []string) (UninstallRequest, bool, error) {
 	if err != nil {
 		return UninstallRequest{}, false, err
 	}
-	request := UninstallRequest{Name: parsed.Arg(0), All: parsed.Bool("--all"), Yes: parsed.Bool("--yes")}
+	request := UninstallRequest{Name: parsed.Arg(0), All: parsed.Bool("--all")}
 	if request.Name == "" && !request.All {
 		return UninstallRequest{}, false, errors.New("package name or --all is required")
 	}

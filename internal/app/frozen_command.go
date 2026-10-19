@@ -12,23 +12,23 @@ func parseFrozenArgs(args []string) (FrozenRequest, bool, error) {
 	if err != nil {
 		return FrozenRequest{}, false, err
 	}
-	return FrozenRequest{Yes: parsed.Bool("--yes"), AllowReplace: parsed.Bool("--allow-replace")}, parsed.Bool("--json"), nil
+	return FrozenRequest{AllowReplace: parsed.Bool("--allow-replace")}, parsed.Bool("--json"), nil
 }
 
-func runRestore(ctx context.Context, s *Service, args []string, out, errOut io.Writer) int {
+func runRestore(ctx context.Context, s *Service, args []string, in io.Reader, out, errOut io.Writer) int {
 	request, jsonOutput, err := parseFrozenArgs(args)
 	if err != nil {
 		return restoreCommand.usageError(errOut, err)
 	}
 	written := false
-	if !jsonOutput {
-		yes := request.Yes
-		request.Yes = false
-		request.Confirm = func(preview FrozenResult) (bool, error) {
-			writeFrozenPreview(out, preview)
-			written = true
-			return yes, nil
+	request.Confirm = func(preview FrozenResult) (bool, error) {
+		previewOut := out
+		if jsonOutput {
+			previewOut = errOut
 		}
+		writeFrozenPreview(previewOut, preview)
+		written = !jsonOutput
+		return confirmInput(in, errOut, "Apply this restore?"), nil
 	}
 	result, runErr := s.InstallFrozen(ctx, request)
 	if jsonOutput {
@@ -43,7 +43,7 @@ func runRestore(ctx context.Context, s *Service, args []string, out, errOut io.W
 		if runErr != nil {
 			writeDiagnostics(errOut, result.Diagnostics)
 		} else if result.AwaitingConfirmation {
-			fmt.Fprintln(errOut, "approval required; review the restore preview and rerun with --yes")
+			fmt.Fprintln(errOut, "restore canceled; nothing was changed")
 		} else {
 			fmt.Fprintf(out, "restore %s (changed=%t)\n", result.Status, result.Changed)
 		}

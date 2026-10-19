@@ -54,7 +54,7 @@ func TestM3A16SixRouteNativeExtensionsRejectBeforeWrites(t *testing.T) {
 				writeSyncFile(t, managed, invalid)
 				writeSyncFile(t, filepath.Join(candidate, "STYLE.yaml"), strings.Replace(invalid, "name: extensions", "name: candidate", 1))
 
-				commands := [][]string{{"validate", source, "--json"}, {"plan", source, "--harness=" + harness, "--json"}, {"install", candidate, "--harness=" + harness, "--route=" + harness + "=" + route, "--yes", "--json"}, {"update", "--all", "--yes", "--json"}, {"sync", "--json"}, {"trust", "extensions", "--yes", "--json"}}
+				commands := [][]string{{"validate", source, "--json"}, {"plan", source, "--harness=" + harness, "--json"}, {"install", candidate, "--harness=" + harness, "--route=" + harness + "=" + route, "--json"}, {"update", "--all", "--json"}, {"sync", "--json"}, {"trust", "extensions", "--json"}}
 				for _, command := range commands {
 					if command[0] == "sync" || command[0] == "trust" {
 						writeSyncFile(t, managed, invalid)
@@ -63,7 +63,7 @@ func TestM3A16SixRouteNativeExtensionsRejectBeforeWrites(t *testing.T) {
 					}
 					before := installedTree(t, roots...)
 					var out, logs bytes.Buffer
-					code := RunWithService(context.Background(), s, source, command, &out, &logs)
+					code := RunWithServiceInput(context.Background(), s, source, command, approve(), &out, &logs)
 					expectedCode := 1
 					expectedDiagnostic := "not supported;"
 					if command[0] == "update" {

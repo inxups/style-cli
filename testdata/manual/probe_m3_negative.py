@@ -55,12 +55,12 @@ def main():
     project_baseline=PrivateBaseline(work,['.codex/hooks.json','.codex/config.toml','.claude/settings.json','.claude/rules/style-m3-live.md','.style/project.json','.style/hooks/style'])
     source=package(probe.root,args.harness);registered=None;plugin_name=None
     report={'format':1,'harness':args.harness,'harness_version':version,'route':args.route,'passed':False,'models_invoked':False,'authentication_profile_read':False,'local_http_server':False}
-    def style(*argv,expected=0):
-        result=subprocess.run([str(probe.style),*argv,*scope,'--json'],cwd=probe.work,env=env,capture_output=True,text=True,timeout=20)
+    def style(*argv,expected=0,confirm=False):
+        result=subprocess.run([str(probe.style),*argv,*scope,'--json'],cwd=probe.work,env=env,input='y\n' if confirm else '',capture_output=True,text=True,timeout=20)
         assert result.returncode==expected,(argv[0],result.returncode)
         return json.loads(result.stdout)
     try:
-        installed=style('install',str(source),'--harness',args.harness,'--route',args.harness+'='+args.route,'--yes',expected=1 if args.route=='claude-plugin' else 0)
+        installed=style('install',str(source),'--harness',args.harness,'--route',args.harness+'='+args.route,expected=1 if args.route=='claude-plugin' else 0, confirm=True)
         if args.route=='codex-plugin':register_plugin(probe);registered='codex'
         if args.route=='claude-plugin':
             entry=installed['registration'][0];plugin_name=entry['plugin'];registered=plugin_name.split('@')[1]
@@ -85,7 +85,7 @@ def main():
         elif registered:
             probe.native_command('plugin','uninstall',plugin_name,'--scope','user','--json')
             probe.native_command('plugin','marketplace','remove',registered,'--scope','user','--json');registered=None
-        style('uninstall','--all','--yes');baseline.restore()
+        style('uninstall','--all', confirm=True);baseline.restore()
         report['restoration']=baseline.verify();report['project_restoration']=project_baseline.verify()
         report['binding']=binding.verify();report['passed']=True
     except Exception as error:

@@ -46,7 +46,7 @@ def main():
             (source / 'STYLE.yaml').write_text(MANIFEST)
             scope = ('--project', project) if route.endswith('-project') else ()
             selection = ('--harness', provider, '--route', provider + '=' + route)
-            installed = json.loads(run(binary, env, 'install', source, *scope, *selection, '--yes', '--json').stdout)
+            installed = json.loads(run(binary, env, 'install', source, *scope, *selection, '--json', confirm=True).stdout)
             home = Path(installed['scope']['home']) if scope else base
             index_path = home / 'build/index.json'
             assert json.loads(index_path.read_text())['format'] == 1
@@ -118,7 +118,7 @@ def main():
             mapping_file.write_text('invalid live mapping')
             (home / 'build/index.json').unlink()
             (home / 'build/explain.json').unlink()
-            run(binary, env, 'restore', *scope, '--yes', '--json')
+            run(binary, env, 'restore', *scope, '--json', confirm=True)
             assert json.loads(index_path.read_text()) == index and (home / 'style.lock.yaml').read_text() == lock
             record(cases, route, 'frozen-rebuild-uses-approved-lock-not-live-mapping')
             config('low')
@@ -140,7 +140,7 @@ def main():
                              '--provider=' + provider, payload=payload)
             assert 'Effort=missing/raw=future' in compatible.stdout and 'level=ERROR' not in compatible.stderr
             record(cases, route, 'removal-clears-tier-approx-provenance-and-old-runtime-management-compatible')
-            run(binary, env, 'uninstall', '--all', *scope, '--yes', '--json')
+            run(binary, env, 'uninstall', '--all', *scope, '--json', confirm=True)
             record(cases, route, 'uninstall')
     args.report.write_text(json.dumps(dict(format=1, binary_sha256=sha(binary), old_binary_sha256=sha(old),
                                           real_harness=False, cases=cases), indent=2) + '\n')

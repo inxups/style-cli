@@ -36,8 +36,8 @@ def run(probe, route, binding, report):
     base_store=probe.store
     source=package(probe.root,'codex')
     binding.add_copy('native_observer_copy',probe.root/'native-observer.py',Path(__file__).with_name('m3_native_observer.py'))
-    def style(*args,expected=0): return probe.style_command(*args,*scope,expected=expected)
-    result=style('install',str(source),'--harness','codex','--route','codex='+route,'--yes')
+    def style(*args,expected=0,confirm=False): return probe.style_command(*args,*scope,expected=expected,confirm=confirm)
+    result=style('install',str(source),'--harness','codex','--route','codex='+route, confirm=True)
     if scope:probe.store=Path(result['scope']['home'])
     probe.store.mkdir(exist_ok=True)
     private_write(probe.store/'effort.yaml','format: 1\nharnesses:\n  codex: {low: high}\n')
@@ -118,7 +118,7 @@ def run(probe, route, binding, report):
             rule['codex']['timeout']=9
             if rule['id']=='native-start':rule['codex']['command']=rule['codex']['command'].replace(NATIVE_START,NATIVE_UPDATED)
         private_write(source/'STYLE.yaml',json.dumps(document,ensure_ascii=False,indent=2)+'\n')
-        updated=style('update','--all','--yes')
+        updated=style('update','--all', confirm=True)
         assert updated['changed']
         if registered:probe.native_command('plugin','add','style-runtime@style','--json')
         revised=probe.invoke('updated-native','Reply exactly OK. Do not use tools.')
@@ -126,7 +126,7 @@ def run(probe, route, binding, report):
         assert not probe.delivery(revised,NATIVE_START)['complete_body']
         lock=probe.store/'style.lock.yaml';locked=lock.read_bytes();manifest=probe.store/'packages/m3-live/STYLE.yaml';original=manifest.read_bytes()
         private_write(manifest,'corrupt managed source')
-        style('restore','--yes')
+        style('restore', confirm=True)
         assert manifest.read_bytes()==original and lock.read_bytes()==locked
         if scope:
             assert not (base_store/'state').exists()
@@ -138,7 +138,7 @@ def run(probe, route, binding, report):
         report['checks']['M3-B2']={'passed':True,'route':route,'update_and_frozen_locked_bytes':True,'project_other_workspace_isolation':bool(scope),'trust_scope':'native exec at canonical fixture project; TUI prompts and other clones not inferred'}
         report['checks']['M3-B4']={'passed':True,'native_start':probe.delivery(first,NATIVE_START),'native_tool':probe.delivery(tool,NATIVE_TOOL),'unmatched_delivered':False,'timeout':10,'matcher':'^Bash$','updated_timeout':9,'updated_native_body':probe.delivery(revised,NATIVE_UPDATED),'old_native_body_absent_after_update':True,'native_cache_refresh':bool(registered)}
         if registered:unregister_plugin(probe);registered=False
-        style('uninstall','--all','--yes')
+        style('uninstall','--all', confirm=True)
         baseline.verify()
         after=probe.invoke('uninstalled','Reply exactly OK. Do not use tools.')
         assert after['exit']==0 and not after['hook_spans']

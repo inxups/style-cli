@@ -76,10 +76,10 @@ def main():
             record(cases,route,'actual-old-install-lock-index-state')
             (source/'STYLE.yaml').write_text(manifest('first',True))
             (home/'effort.yaml').write_text('format: 1\nharnesses:\n  '+harness+': {future: high}\n')
-            run(binary,env,'update','--all',*scope,'--yes','--json')
+            run(binary,env,'update','--all',*scope,'--json', confirm=True)
             (stub/'style').unlink();(stub/'style').symlink_to(binary)
             alias=root/'alias';alias.mkdir();(alias/'STYLE.yaml').write_text(manifest('second',True))
-            installed=json.loads(run(binary,env,'install',alias,*scope,*selection,'--yes','--json').stdout)
+            installed=json.loads(run(binary,env,'install',alias,*scope,*selection,'--json', confirm=True).stdout)
             second=next(r for r in installed['reports'] if r['plan']['package']=='second')
             assert all(r.get('deduplicated_into','').startswith('first/') for r in second['plan']['rules'])
             assert second['session_cost']['total']==0
@@ -110,7 +110,7 @@ def main():
             record(cases,route,'combined-fail-closed-and-recovery')
             original_index=index.read_bytes();lock=home/'style.lock.yaml';locked=lock.read_bytes();clock=snapshot(home/'state')
             (home/'effort.yaml').write_text('invalid current mapping');index.unlink();(home/'build/explain.json').unlink()
-            run(binary,env,'restore',*scope,'--yes','--json')
+            run(binary,env,'restore',*scope,'--json', confirm=True)
             assert index.read_bytes()==original_index and lock.read_bytes()==locked and snapshot(home/'state')==clock
             before=snapshot(base,codex,claude,project)
             run(old,{**env,'STYLE_HOME':str(home)},'sync',want=1)
@@ -119,12 +119,12 @@ def main():
             (home/'effort.yaml').unlink()
             # Removal still recompiles the remaining package, so restore valid mapping.
             (home/'effort.yaml').write_text('format: 1\nharnesses:\n  '+harness+': {future: high}\n')
-            run(binary,env,'uninstall','first',*scope,'--yes','--json')
+            run(binary,env,'uninstall','first',*scope,'--json', confirm=True)
             output=invoke('PreToolUse',session='remaining');assert output.count('A18_FIRST')==1
             assert 'second/first' in (home/'build/index.json').read_text()
             if route=='claude-plugin':
                 settings['enabledPlugins'][registration['plugin']]=False;settings_path.write_text(json.dumps(settings))
-            run(binary,env,'uninstall','--all',*scope,'--yes','--json')
+            run(binary,env,'uninstall','--all',*scope,'--json', confirm=True)
             assert not index.exists()
             record(cases,route,'canonical-promotion-and-last-uninstall')
     args.report.write_text(json.dumps({'format':1,'passed':True,'real_harness':False,'binary_sha256':sha(binary),'old_binary_sha256':sha(old),'ancestor_sha256':sha(args.codex_ancestor),'cases':cases},indent=2)+'\n')

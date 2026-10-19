@@ -98,7 +98,7 @@ def prepare(root, style, claude):
         package = root / ("m2-claude-" + name)
         write_private(package / "STYLE.yaml", json.dumps({"spec": "style/v0.3", "name": "m2-claude-" + name,
             "version": "0.1.0", "description": "Isolated M2 Claude acceptance", "rules": package_rules, "native_hooks": native_hooks if name == "first" else []}, indent=2))
-        result = subprocess.run([str(binary), "install", str(package), "--harness", "claude-code", "--yes", "--json"],
+        result = subprocess.run([str(binary), "install", str(package), "--harness", "claude-code", "--json"], input="y\n",
                                 env=environment, cwd=root / "work", check=True, capture_output=True, text=True, timeout=60)
         installs.append(json.loads(result.stdout))
     prefix = "exec env -i " + " ".join(shlex.quote(key + "=" + value) for key, value in environment.items()) + " "

@@ -29,10 +29,10 @@ def run(probe,route,binding,report):
     source=package(probe.root,'claude-code')
     binding.add_copy('native_observer_copy',probe.root/'native-observer.py',Path(__file__).with_name('m3_native_observer.py'))
     binding.add_copy('runtime_binary_copy',probe.style,binding.files['style_binary'])
-    def style(*args,expected=0):return probe.style_command(*args,scope=scope,expected=expected)
+    def style(*args,expected=0,confirm=False):return probe.style_command(*args,scope=scope,expected=expected,confirm=confirm)
     registered=None;installed_plugin=False;base_store=probe.store
     try:
-        result=style('install',str(source),'--harness','claude-code','--route','claude-code='+route,'--yes',expected=1 if route=='claude-plugin' else 0)
+        result=style('install',str(source),'--harness','claude-code','--route','claude-code='+route,expected=1 if route=='claude-plugin' else 0, confirm=True)
         if scope:probe.store=Path(result['scope']['home'])
         private_write(probe.store/'effort.yaml','format: 1\nharnesses:\n  claude-code: {high: medium}\n')
         style('sync')
@@ -113,12 +113,12 @@ def run(probe,route,binding,report):
             rule['claude-code']['timeout']=9
             if rule['id']=='native-start':rule['claude-code']['command']=rule['claude-code']['command'].replace(NATIVE_START,NATIVE_UPDATED)
         private_write(source/'STYLE.yaml',json.dumps(document,ensure_ascii=False,indent=2)+'\n')
-        assert style('update','--all','--yes')['changed']
+        assert style('update','--all', confirm=True)['changed']
         updated=probe.live('updated-native','Reply exactly OK. Do not use tools.')
         assert updated['exit']==0 and probe.delivery(updated,NATIVE_UPDATED)['complete_body']
         assert not probe.delivery(updated,NATIVE_START)['complete_body']
         lock=probe.store/'style.lock.yaml';locked=lock.read_bytes();manifest=probe.store/'packages/m3-live/STYLE.yaml';original=manifest.read_bytes()
-        private_write(manifest,'corrupt managed source');style('restore','--yes')
+        private_write(manifest,'corrupt managed source');style('restore', confirm=True)
         assert manifest.read_bytes()==original and lock.read_bytes()==locked
         if scope:
             assert not (base_store/'state').exists()
@@ -131,7 +131,7 @@ def run(probe,route,binding,report):
         report['checks']['M3-C6']={'passed':True,'native_start':probe.delivery(first,NATIVE_START),'native_tool':probe.delivery(healthy,NATIVE_TOOL),'unmatched_delivered':False,'matcher':'^Bash$','initial_timeout':10,'updated_timeout':9,'updated_native_body':probe.delivery(updated,NATIVE_UPDATED),'old_native_body_absent_after_update':True,'D10_extensions':'explicitly unsupported; four-field command only'}
         if installed_plugin:probe.native_command('plugin','uninstall',result['registration'][0]['plugin'],'--scope','user','--json');installed_plugin=False
         if registered:probe.native_command('plugin','marketplace','remove',registered,'--scope','user','--json');registered=None
-        style('uninstall','--all','--yes')
+        style('uninstall','--all', confirm=True)
         # Native plugin registration can leave empty registration containers.
         # Restore only this explicit private profile after successful uninstall.
         baseline.restore();project_baseline.verify()

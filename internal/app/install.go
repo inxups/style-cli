@@ -398,7 +398,7 @@ func (s *Service) Install(ctx context.Context, request InstallRequest) (final In
 	}
 	if !confirmed {
 		result.AwaitingConfirmation = true
-		return result, &UsageError{Message: "installation requires capability confirmation; pass --yes in non-interactive mode"}
+		return result, &UsageError{Message: "installation requires capability confirmation"}
 	}
 	if len(plannedChanges) == 0 {
 		if err = inputs.verify(); err != nil {

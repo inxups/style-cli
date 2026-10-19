@@ -46,7 +46,7 @@ func TestExampleRequirementsSkipOldAndUnknownHarnessesWithoutMutation(t *testing
 			home := filepath.Join(root, "style")
 			t.Setenv("STYLE_HOME", home)
 			var stdout, stderr bytes.Buffer
-			code := RunWithService(context.Background(), service, repositoryRoot(t), []string{"install", "testdata/packages/terse-reviewer", "--harness", "codex,claude-code", "--yes"}, &stdout, &stderr)
+			code := RunWithServiceInput(context.Background(), service, repositoryRoot(t), []string{"install", "testdata/packages/terse-reviewer", "--harness", "codex,claude-code"}, approve(), &stdout, &stderr)
 			if code != ExitOK || !strings.Contains(stdout.String(), "skipped terse-reviewer") || strings.Count(stdout.String(), "warning harness-version:") != 2 {
 				t.Fatalf("install exit=%d stdout=%s stderr=%s", code, stdout.String(), stderr.String())
 			}

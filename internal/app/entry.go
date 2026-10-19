@@ -43,11 +43,17 @@ func RunWithInput(ctx context.Context, args []string, in io.Reader, out, errOut 
 		fmt.Fprintf(errOut, "style: resolve working directory: %v\n", err)
 		return ExitUsage
 	}
-	return RunWithService(ctx, service, workDir, args, out, errOut)
+	return RunWithServiceInput(ctx, service, workDir, args, in, out, errOut)
 }
 
-// RunWithService keeps command tests independent of process cwd and installed providers.
+// RunWithService keeps command tests independent of process cwd and installed
+// providers. Without input every confirmation prompt is declined.
 func RunWithService(ctx context.Context, service *Service, workDir string, args []string, out, errOut io.Writer) int {
+	return RunWithServiceInput(ctx, service, workDir, args, nil, out, errOut)
+}
+
+// RunWithServiceInput answers confirmation prompts from in.
+func RunWithServiceInput(ctx context.Context, service *Service, workDir string, args []string, in io.Reader, out, errOut io.Writer) int {
 	if out == nil {
 		out = io.Discard
 	}
@@ -76,7 +82,7 @@ func RunWithService(ctx context.Context, service *Service, workDir string, args 
 		return ExitOK
 	}
 	if projectInvocation(args) {
-		return runProjectCommand(ctx, service, workDir, args, out, errOut)
+		return runProjectCommand(ctx, service, workDir, args, in, out, errOut)
 	}
 	switch args[0] {
 	case "init":
@@ -88,15 +94,15 @@ func RunWithService(ctx context.Context, service *Service, workDir string, args 
 	case "plan":
 		return runPlan(ctx, service, workDir, args[1:], out, errOut)
 	case "install":
-		return runInstall(ctx, service, workDir, args[1:], out, errOut)
+		return runInstall(ctx, service, workDir, args[1:], in, out, errOut)
 	case "update":
-		return runUpdate(ctx, service, args[1:], out, errOut)
+		return runUpdate(ctx, service, args[1:], in, out, errOut)
 	case "restore":
-		return runRestore(ctx, service, args[1:], out, errOut)
+		return runRestore(ctx, service, args[1:], in, out, errOut)
 	case "uninstall":
-		return runUninstall(ctx, service, args[1:], out, errOut)
+		return runUninstall(ctx, service, args[1:], in, out, errOut)
 	case "sync", "trust":
-		return runSync(ctx, service, args[0], args[1:], out, errOut)
+		return runSync(ctx, service, args[0], args[1:], in, out, errOut)
 	case "list", "doctor":
 		return runInspect(ctx, service, workDir, args[0], args[1:], out, errOut)
 	case "probe":

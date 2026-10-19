@@ -20,8 +20,9 @@ def snapshot(*roots, mtime=False):
             for root in roots for path in root.rglob("*") if path.is_file()}
 
 
-def run(binary, env, args, expected):
-    result = subprocess.run([str(binary), *map(str, args)], env=env,
+def run(binary, env, args, expected, confirm=False):
+    stdin = {"input": "y\n"} if confirm else {"stdin": subprocess.DEVNULL}
+    result = subprocess.run([str(binary), *map(str, args)], env=env, **stdin,
                             capture_output=True, text=True, timeout=60)
     assert result.returncode == expected, (args, result.returncode, result.stdout, result.stderr)
     return result
@@ -77,12 +78,12 @@ def main():
                     else:
                         assert f"- candidate: {status}" in planned.stdout and "  -> " not in planned.stdout
                     assert snapshot(*roots, mtime=True) == untouched, "plan wrote configuration"
-                    unauthorized = run(binary, env, ["install", source, "--harness", provider, "--yes", *flags], 1)
+                    unauthorized = run(binary, env, ["install", source, "--harness", provider, *flags], 1, confirm=True)
                     assert "--allow-replace" in unauthorized.stderr
                     assert snapshot(*roots, mtime=True) == untouched, "missing authorization wrote configuration"
                     route = "codex-user" if provider == "codex" else "claude-user"
                     installed = run(binary, env, ["install", source, "--harness", provider,
-                        "--route", f"{provider}={route}", "--allow-replace", "--yes", *flags], exit_code)
+                        "--route", f"{provider}={route}", "--allow-replace", *flags], exit_code, confirm=True)
                     assert json.loads(settings.read_bytes())["outputStyle"] == "user-existing"
                     assert snapshot(claude) == {path: state for path, state in original.items() if Path(path).is_relative_to(claude)}, "user output style tree changed"
                     if fallback == "error":
@@ -96,7 +97,7 @@ def main():
                         index = json.loads((style_home / "build" / "index.json").read_bytes())
                         assert not index["static"].get(provider), index
                         assert not any(index["harnesses"].get(provider, {}).values()), index
-                        run(binary, env, ["uninstall", "--all", "--yes", *flags], 0)
+                        run(binary, env, ["uninstall", "--all", *flags], 0, confirm=True)
                         assert snapshot(codex, claude) == original, "round trip changed user configuration"
                     cases.append({"provider": provider, "fallback": fallback,
                                   "format": "json" if json_output else "text", "plan_status": status,

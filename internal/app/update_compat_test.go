@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"io"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -302,15 +303,16 @@ func TestM3A4CommandGoldenAndSingleJSON(t *testing.T) {
 			}
 			for _, phase := range []string{"preview", "apply", "unchanged", "error"} {
 				args := append([]string{"update", "first"}, flags...)
+				var input io.Reader
 				if phase == "apply" {
-					args = append(args, "--yes")
+					input = approve()
 				}
 				if phase == "error" {
 					args[1] = "missing"
 				}
 				before := a4State(t, home, config)
 				var out, errOut bytes.Buffer
-				exit := RunWithService(context.Background(), s, t.TempDir(), args, &out, &errOut)
+				exit := RunWithServiceInput(context.Background(), s, t.TempDir(), args, input, &out, &errOut)
 				want := ExitOK
 				if phase == "preview" || phase == "error" {
 					want = ExitInvalid
@@ -324,7 +326,7 @@ func TestM3A4CommandGoldenAndSingleJSON(t *testing.T) {
 				if jsonOutput {
 					decoder := json.NewDecoder(bytes.NewReader(out.Bytes()))
 					var result UpdateResult
-					if err := decoder.Decode(&result); err != nil || decoder.More() || result.Command != "update" || result.Format != 1 || errOut.Len() != 0 {
+					if err := decoder.Decode(&result); err != nil || decoder.More() || result.Command != "update" || result.Format != 1 {
 						t.Fatalf("JSON=%s err=%v stderr=%s", &out, err, &errOut)
 					}
 				}

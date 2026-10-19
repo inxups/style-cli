@@ -7,7 +7,7 @@ import (
 	"io"
 )
 
-func runSync(ctx context.Context, service *Service, command string, args []string, out, errOut io.Writer) int {
+func runSync(ctx context.Context, service *Service, command string, args []string, in io.Reader, out, errOut io.Writer) int {
 	spec, _ := lookupCommand(command)
 	parsed, err := spec.parse(args)
 	if err == nil && command == "trust" && parsed.Arg(0) == "" {
@@ -16,19 +16,19 @@ func runSync(ctx context.Context, service *Service, command string, args []strin
 	if err != nil {
 		return spec.usageError(errOut, err)
 	}
-	request := TrustRequest{Name: parsed.Arg(0), Yes: parsed.Bool("--yes"), AllowReplace: parsed.Bool("--allow-replace")}
+	request := TrustRequest{Name: parsed.Arg(0), AllowReplace: parsed.Bool("--allow-replace")}
 	jsonOutput := parsed.Bool("--json")
 	var result SyncResult
 	previewWritten := false
 	if command == "trust" {
-		if !jsonOutput {
-			yes := request.Yes
-			request.Yes = false
-			request.Confirm = func(preview SyncResult) (bool, error) {
-				writeSyncChanges(out, preview, true)
-				previewWritten = true
-				return yes, nil
+		request.Confirm = func(preview SyncResult) (bool, error) {
+			previewOut := out
+			if jsonOutput {
+				previewOut = errOut
 			}
+			writeSyncChanges(previewOut, preview, true)
+			previewWritten = !jsonOutput
+			return confirmInput(in, errOut, "Approve this snapshot?"), nil
 		}
 		result, err = service.Trust(ctx, request)
 	} else {
@@ -61,7 +61,7 @@ func runSync(ctx context.Context, service *Service, command string, args []strin
 			writeSyncChanges(out, result, command == "trust")
 		}
 		if result.AwaitingConfirmation {
-			fmt.Fprintln(errOut, "approval required; review the diff and rerun trust with --yes")
+			fmt.Fprintln(errOut, "trust canceled; nothing was approved")
 		} else if command == "trust" || len(result.NeedsTrust) == 0 {
 			fmt.Fprintf(out, "%s complete (changed=%t, expired sessions=%d)\n", command, result.Changed, result.ExpiredSessions)
 		}

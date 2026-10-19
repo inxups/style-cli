@@ -37,7 +37,7 @@ func (s *Service) Uninstall(ctx context.Context, request UninstallRequest) (fina
 		return UninstallResult{}, err
 	}
 	if !request.Yes {
-		return UninstallResult{}, &UsageError{Message: "uninstall requires confirmation; pass --yes in non-interactive mode"}
+		return UninstallResult{}, &UsageError{Message: "uninstall requires confirmation"}
 	}
 	if request.All == (strings.TrimSpace(request.Name) != "") {
 		return UninstallResult{}, &UsageError{Message: "specify one package name or --all"}

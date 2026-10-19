@@ -190,7 +190,6 @@ func (c commandSpec) usageError(errOut io.Writer, err error) int {
 
 var (
 	jsonFlag    = flagSpec{Name: "--json", Kind: flagBool}
-	yesFlag     = flagSpec{Name: "--yes", Kind: flagBool}
 	allFlag     = flagSpec{Name: "--all", Kind: flagBool, Hidden: true}
 	refFlag     = flagSpec{Name: "--ref", Kind: flagString, Value: "ref"}
 	pathFlag    = flagSpec{Name: "--path", Kind: flagString, Value: "repo-path"}
@@ -211,7 +210,7 @@ var (
 		refFlag, pathFlag,
 		{Name: "--harness", Kind: flagList, Value: "h"},
 		{Name: "--set", Kind: flagList, Value: "k=v"},
-		yesFlag, jsonFlag,
+		jsonFlag,
 		{Name: "--route", Kind: flagList, Value: "h=r", Group: groupAdvanced},
 		{Name: "--link", Kind: flagBool, Group: groupAdvanced},
 		{Name: "--allow-replace", Kind: flagBool, Group: groupAdvanced},
@@ -219,12 +218,12 @@ var (
 		{Name: "--project-source", Kind: flagList, Value: "source", Group: groupProject},
 		{Name: "--project-set", Kind: flagList, Value: "package.key=value", Group: groupProject},
 	}}
-	restoreCommand   = commandSpec{Name: "restore", Project: true, Flags: []flagSpec{replaceFlag, yesFlag, jsonFlag}}
-	updateCommand    = commandSpec{Name: "update", Args: "<name|--all>", MaxArgs: 1, Project: true, Flags: []flagSpec{allFlag, refFlag, replaceFlag, yesFlag, jsonFlag}}
-	uninstallCommand = commandSpec{Name: "uninstall", Args: "<name|--all>", MaxArgs: 1, Project: true, Flags: []flagSpec{allFlag, yesFlag, jsonFlag}}
+	restoreCommand   = commandSpec{Name: "restore", Project: true, Flags: []flagSpec{replaceFlag, jsonFlag}}
+	updateCommand    = commandSpec{Name: "update", Args: "<name|--all>", MaxArgs: 1, Project: true, Flags: []flagSpec{allFlag, refFlag, replaceFlag, jsonFlag}}
+	uninstallCommand = commandSpec{Name: "uninstall", Args: "<name|--all>", MaxArgs: 1, Project: true, Flags: []flagSpec{allFlag, jsonFlag}}
 	listCommand      = commandSpec{Name: "list", Project: true, Flags: []flagSpec{jsonFlag}}
 	syncCommand      = commandSpec{Name: "sync", Project: true, Flags: []flagSpec{jsonFlag}}
-	trustCommand     = commandSpec{Name: "trust", Args: "<name>", MaxArgs: 1, Project: true, Flags: []flagSpec{replaceFlag, yesFlag, jsonFlag}}
+	trustCommand     = commandSpec{Name: "trust", Args: "<name>", MaxArgs: 1, Project: true, Flags: []flagSpec{replaceFlag, jsonFlag}}
 	doctorCommand    = commandSpec{Name: "doctor", Project: true, Flags: []flagSpec{{Name: "--reset-state", Kind: flagBool}, jsonFlag}}
 	statsCommand     = commandSpec{Name: "stats", Project: true, Flags: []flagSpec{{Name: "--by", Kind: flagString, Value: "rule|session"}, {Name: "--since", Kind: flagString, Value: "<duration|RFC3339>"}, jsonFlag}}
 	explainCommand   = commandSpec{Name: "explain", Project: true, Flags: []flagSpec{

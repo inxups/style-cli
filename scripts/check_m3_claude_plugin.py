@@ -31,7 +31,7 @@ def main():
         assert preview['registration'][0]['state'] == 'registration-required'
         assert snapshot(base, codex, claude) == before
         record(cases, 'claude-plugin', 'preview-registration-no-write')
-        installed = json.loads(run(binary, env, 'install', source, *selection, '--yes', '--json', want=1).stdout)
+        installed = json.loads(run(binary, env, 'install', source, *selection, '--json', want=1, confirm=True).stdout)
         registration = installed['registration'][0]
         market = Path(registration['marketplace'])
         plugin = market / 'plugins/style-runtime'
@@ -62,7 +62,7 @@ def main():
         settings = json.loads(settings_path.read_text()) if settings_path.exists() else {}
         settings['enabledPlugins'] = {registration['plugin']: True}
         settings_path.write_text(json.dumps(settings))
-        repeated = json.loads(run(binary, env, 'install', source, *selection, '--yes', '--json').stdout)
+        repeated = json.loads(run(binary, env, 'install', source, *selection, '--json', confirm=True).stdout)
         assert not repeated['changed'] and repeated['registration'][0]['state'] == 'enabled'
         record(cases, 'claude-plugin', 'registered-enabled-observation-not-delivery')
         raw = json.loads((plugin / 'hooks/hooks.json').read_text())
@@ -77,20 +77,20 @@ def main():
         assert 'Static Plugin.' in (claude / 'rules/style-plugin-rules.md').read_text()
         record(cases, 'claude-plugin', 'configured-launcher-ordinary-wire-and-external-static')
         before = snapshot(base, claude)
-        run(binary, env, 'uninstall', '--all', '--yes', want=1)
-        run(binary, env, 'install', source, '--harness=claude-code', '--route=claude-code=claude-user', '--yes', want=1)
+        run(binary, env, 'uninstall', '--all', want=1, confirm=True)
+        run(binary, env, 'install', source, '--harness=claude-code', '--route=claude-code=claude-user', want=1, confirm=True)
         assert snapshot(base, claude) == before
         record(cases, 'claude-plugin', 'active-plugin-removal-and-switch-blocked')
         settings['enabledPlugins'][registration['plugin']] = False
         settings_path.write_text(json.dumps(settings))
         native_before = snapshot(metadata)
-        run(binary, env, 'install', source, '--harness=claude-code', '--route=claude-code=claude-user', '--yes', '--json')
+        run(binary, env, 'install', source, '--harness=claude-code', '--route=claude-code=claude-user', '--json', confirm=True)
         assert snapshot(metadata) == native_before
         assert not (plugin / 'scripts/style').exists()
         assert '--owner=style' in settings_path.read_text()
         assert 'Static Plugin.' in (claude / 'rules/style-plugin-rules.md').read_text()
         record(cases, 'claude-plugin', 'disabled-plugin-switch-keeps-native-db-and-static')
-        run(binary, env, 'uninstall', '--all', '--yes')
+        run(binary, env, 'uninstall', '--all', confirm=True)
         assert snapshot(metadata) == native_before
         assert not (claude / 'rules/style-plugin-rules.md').exists()
         assert '--owner=style' not in settings_path.read_text()

@@ -39,8 +39,8 @@ class M3ClaudeProbe(LiveClaudeProbe):
         if result.returncode:raise ValueError('native Claude management failed: '+args[0])
         return result.stdout
 
-    def style_command(self,*args,scope=(),expected=0):
-        result=subprocess.run([str(self.style),*args,*scope,'--json'],cwd=self.work,env=self.live_env,capture_output=True,text=True,timeout=60)
+    def style_command(self,*args,scope=(),expected=0,confirm=False):
+        result=subprocess.run([str(self.style),*args,*scope,'--json'],cwd=self.work,env=self.live_env,input='y\n' if confirm else '',capture_output=True,text=True,timeout=60)
         if result.returncode!=expected:raise ValueError('STYLE management failed: '+args[0])
         return json.loads(result.stdout)
 

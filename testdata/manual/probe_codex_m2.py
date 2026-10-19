@@ -127,7 +127,7 @@ def run(probe, route, report):
     checks = report["checks"]
 
     def install(path):
-        return probe.style_command("install", str(path), "--harness", "codex", "--route", "codex=" + route, "--yes")
+        return probe.style_command("install", str(path), "--harness", "codex", "--route", "codex=" + route, confirm=True)
 
     def register():
         if route == "codex-plugin":
@@ -136,7 +136,7 @@ def run(probe, route, report):
     def uninstall():
         if route == "codex-plugin":
             unregister_plugin(probe)
-        probe.style_command("uninstall", "--all", "--yes")
+        probe.style_command("uninstall", "--all", confirm=True)
         assert config.read_bytes() == baseline, "configuration bytes differ after uninstall"
         assert config.stat().st_mode & 0o777 == permissions
         assert not (probe.home / "hooks.json").exists()

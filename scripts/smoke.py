@@ -54,8 +54,9 @@ def run(argv, env, stdin=None):
     return subprocess.run(argv, input=stdin, capture_output=True, text=True, env=env, timeout=60)
 
 
-def style(binary, env, *args):
-    result = run([binary, *args], env)
+def style(binary, env, *args, confirm=False):
+    # confirm answers the y/N prompt of a mutating command.
+    result = run([binary, *args], env, "y\n" if confirm else "")
     if result.returncode != 0:
         sys.stderr.write(result.stdout + result.stderr)
     return result
@@ -134,7 +135,7 @@ def main():
             check(result.returncode == 0 and parsed, f"plan {name} --json")
 
         result = style(binary, env, "install", str(EXAMPLE), "--harness", "codex,claude-code",
-                       "--route", "codex=codex-user", "--yes")
+                       "--route", "codex=codex-user", confirm=True)
         check(result.returncode == 0, "install terse-reviewer for codex-user and claude-user")
         if result.returncode != 0:
             return
@@ -156,7 +157,7 @@ def main():
         manifest.write_text(manifest.read_text().replace("name: terse-reviewer\n",
                                                         "name: terse-reviewer-copy\n", 1))
         result = style(binary, env, "install", str(duplicate), "--harness", "codex,claude-code",
-                       "--yes", "--json")
+                       "--json", confirm=True)
         combined = json.loads(result.stdout)
         alias_reports = [r for r in combined["reports"] if r["plan"]["package"] == "terse-reviewer-copy"]
         check(result.returncode == 0 and len(alias_reports) == 2 and
@@ -202,14 +203,14 @@ def main():
               session_stats["totals"] == rule_stats["totals"],
               "stats session grouping preserves hook counts and estimates")
 
-        result = style(binary, env, "uninstall", "terse-reviewer-copy", "--yes")
+        result = style(binary, env, "uninstall", "terse-reviewer-copy", confirm=True)
         check(result.returncode == 0 and
               json.loads((home / ".style" / "build" / "index.json").read_text()) == baseline_index,
               "uninstalling an alias preserves canonical placements")
 
         result = style(binary, env, "sync", "--json")
         check(result.returncode == 0, "sync")
-        result = style(binary, env, "uninstall", "--all", "--yes")
+        result = style(binary, env, "uninstall", "--all", confirm=True)
         check(result.returncode == 0, "uninstall --all")
         leftovers = [path for path in (home / ".codex" / "hooks.json", home / ".claude" / "settings.json",
                                        home / ".codex" / "config.toml", home / ".claude" / "CLAUDE.md",

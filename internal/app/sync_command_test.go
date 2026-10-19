@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"io"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -20,10 +21,11 @@ func TestRunSyncAndTrustExitCodesAndDiffOutput(t *testing.T) {
 	t.Setenv("STYLE_HOME", home)
 	writeSyncFile(t, filepath.Join(source, "rules", "shell.md"), strings.ReplaceAll(syncRule, "Original", "Reviewed"))
 	var stdout, stderr bytes.Buffer
+	var input io.Reader
 	run := func(args ...string) int {
 		stdout.Reset()
 		stderr.Reset()
-		return RunWithService(context.Background(), service, source, args, &stdout, &stderr)
+		return RunWithServiceInput(context.Background(), service, source, args, input, &stdout, &stderr)
 	}
 	if code := run("sync", "--json"); code != ExitSyncChanged {
 		t.Fatalf("sync code=%d stdout=%s stderr=%s", code, stdout.String(), stderr.String())
@@ -33,13 +35,14 @@ func TestRunSyncAndTrustExitCodesAndDiffOutput(t *testing.T) {
 		t.Fatalf("sync JSON = %s, %v", stdout.String(), err)
 	}
 	before := installedTree(t, home, config)
-	if code := run("trust", "editable"); code != ExitInvalid || !strings.Contains(stdout.String(), "Source diff:") || !strings.Contains(stdout.String(), "Rendered diff") || !strings.Contains(stderr.String(), "--yes") {
+	if code := run("trust", "editable"); code != ExitInvalid || !strings.Contains(stdout.String(), "Source diff:") || !strings.Contains(stdout.String(), "Rendered diff") || !strings.Contains(stderr.String(), "trust canceled") {
 		t.Fatalf("preview code=%d stdout=%s stderr=%s", code, stdout.String(), stderr.String())
 	}
 	if !reflect.DeepEqual(before, installedTree(t, home, config)) {
 		t.Fatal("CLI preview mutated files")
 	}
-	if code := run("trust", "editable", "--yes", "--json"); code != ExitOK {
+	input = approve()
+	if code := run("trust", "editable", "--json"); code != ExitOK {
 		t.Fatalf("trust code=%d stdout=%s stderr=%s", code, stdout.String(), stderr.String())
 	}
 	if err := json.Unmarshal(stdout.Bytes(), &result); err != nil || !result.Changed || result.ApprovalTarget != "editable" || result.Changes[0].NeedsTrust {
@@ -48,7 +51,7 @@ func TestRunSyncAndTrustExitCodesAndDiffOutput(t *testing.T) {
 	if code := run("sync"); code != ExitOK || !strings.Contains(stdout.String(), "changed=false") {
 		t.Fatalf("idempotent sync code=%d stdout=%s stderr=%s", code, stdout.String(), stderr.String())
 	}
-	for _, args := range [][]string{{"sync", "extra"}, {"sync", "--yes"}, {"trust"}, {"trust", "editable", "extra"}, {"trust", "editable", "--unknown"}, {"trust", "missing", "--yes"}} {
+	for _, args := range [][]string{{"sync", "extra"}, {"sync", "--yes"}, {"trust", "editable", "--yes"}, {"trust"}, {"trust", "editable", "extra"}, {"trust", "editable", "--unknown"}, {"trust", "missing"}} {
 		if code := run(args...); code != ExitInvalid {
 			t.Fatalf("%v code=%d", args, code)
 		}
@@ -63,7 +66,8 @@ func TestRunSyncAndTrustExitCodesAndDiffOutput(t *testing.T) {
 	definition.Limits.Input = tokens.InputLimit{Value: 1, Unit: tokens.CharsUnit}
 	service.definitions[adapter.ProviderID("codex")] = definition
 	before = installedTree(t, home, config)
-	if code := run("trust", "editable", "--yes"); code != ExitBlocked || !strings.Contains(stderr.String(), "T003") {
+	input = approve()
+	if code := run("trust", "editable"); code != ExitBlocked || !strings.Contains(stderr.String(), "T003") {
 		t.Fatalf("blocked trust code=%d stdout=%s stderr=%s", code, stdout.String(), stderr.String())
 	}
 	if !reflect.DeepEqual(before, installedTree(t, home, config)) {
