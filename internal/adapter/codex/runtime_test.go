@@ -232,9 +232,9 @@ func TestEnricherMapsToolInputPatchFieldsAndMCP(t *testing.T) {
 }
 
 func TestEnricherMapsImplicitSkillAndPostOutput(t *testing.T) {
-	event := runtimeEvent(agenthooks.KindToolPost, "PostToolUse", `{"session_id":"s4","tool_name":"shell","tool_input":{"command":"cat /repo/.agents/skills/review/SKILL.md"},"tool_response":"manifest body"}`)
+	event := runtimeEvent(agenthooks.KindToolPost, "PostToolUse", `{"session_id":"s4","tool_name":"Bash","tool_input":{"command":"cat /repo/.agents/skills/review/SKILL.md"},"tool_response":"manifest body"}`)
 	tool := agenthooks.ToolCall{
-		Name: "shell", Canonical: agenthooks.ToolShell,
+		Name: "Bash", Canonical: agenthooks.ToolShell,
 		Input:    json.RawMessage(`{"command":"cat /repo/.agents/skills/review/SKILL.md"}`),
 		RawInput: json.RawMessage(`{"command":"cat /repo/.agents/skills/review/SKILL.md"}`),
 	}
@@ -330,8 +330,8 @@ func TestEnricherTrimsShellOutputTrailingWhitespace(t *testing.T) {
 
 func TestEnrichKeepsShellCharactersInToolInput(t *testing.T) {
 	raw := `{"command":"cd repo && git push > out.log 2<&1","nested":{"q":"a&b<c>"}}`
-	event := runtimeEvent(agenthooks.KindToolPre, "PreToolUse", `{"session_id":"s9","tool_name":"shell","tool_input":`+raw+`}`)
-	pre := &agenthooks.ToolPreEvent{Event: *event, Tool: agenthooks.ToolCall{Name: "shell", Input: json.RawMessage(raw)}}
+	event := runtimeEvent(agenthooks.KindToolPre, "PreToolUse", `{"session_id":"s9","tool_name":"Bash","tool_input":`+raw+`}`)
+	pre := &agenthooks.ToolPreEvent{Event: *event, Tool: agenthooks.ToolCall{Name: "Bash", Canonical: agenthooks.ToolShell, Input: json.RawMessage(raw)}}
 	input, _, err := NewEnricher().Enrich(event, pre, state.Session{}, state.Scope{SessionID: "s9", AgentID: "main"})
 	if err != nil {
 		t.Fatal(err)
