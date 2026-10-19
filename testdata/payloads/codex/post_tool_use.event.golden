@@ -8,34 +8,37 @@
     "WorkspaceRoots": [
       "/work/repo"
     ],
-    "TranscriptPath": "",
-    "Model": "",
+    "TranscriptPath": "/work/home/.codex/sessions/2026/10/19/rollout-2026-10-19T12-54-00-sess-codex-1.jsonl",
+    "Model": "test-model",
     "Effort": "",
     "EffortRaw": "",
     "EffortApprox": null,
     "HarnessVersion": "",
-    "PermissionMode": "",
+    "PermissionMode": "default",
     "UserEmail": ""
   },
   "variables": {
     "harness.agent": "main",
     "harness.cwd": "/work/repo",
     "harness.name": "codex",
+    "harness.permission_mode": "default",
     "harness.session_id": "sess-codex-1",
     "harness.turn_id": "turn-42",
-    "harness.version": "0.159.3"
+    "harness.version": "0.159.3",
+    "model": "test-model"
   },
   "points": [
     {
       "name": "tool.post",
       "canonical": "shell",
-      "tool": "shell",
+      "tool": "Bash",
       "fields": {
         "cwd": "/work/repo",
-        "tool.input": "{\"command\":[\"bash\",\"-lc\",\"ls -la\"]}",
-        "tool.input.command": "[\"bash\",\"-lc\",\"ls -la\"]",
-        "tool.output": "{\"exit_code\":0,\"stdout\":\"total 8\\n\"}"
+        "tool.input": "{\"command\":\"echo \\\"hello world\\\" \u0026\u0026 printf 'a\\\\nb\\\\n'\"}",
+        "tool.input.command": "echo \"hello world\" \u0026\u0026 printf 'a\\nb\\n'",
+        "tool.output": "hello world\na\nb\n"
       }
     }
-  ]
+  ],
+  "persisted_model": "test-model"
 }
