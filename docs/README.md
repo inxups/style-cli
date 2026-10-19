@@ -8,8 +8,8 @@
 |---|---|---|---|
 | [_template.md](_template.md) | 标准页面模板 | — | 已完成 |
 | [style-yaml/overview.md](style-yaml/overview.md) | 包的形态（目录包、单文件包）、加载流程、默认值合并顺序 | — | 已完成 |
-| `style-yaml/package.md` | 包级元数据 | `spec` `name` `version` `description` `authors` `priority` | 待写 |
-| `style-yaml/requires.md` | 依赖、设置与推荐 | `requires` `settings` `recommends` | 待写 |
+| [style-yaml/package.md](style-yaml/package.md) | 包级元数据 | `spec` `name` `version` `description` `authors` `priority` | 已完成 |
+| [style-yaml/requires.md](style-yaml/requires.md) | 依赖、设置与推荐 | `requires` `settings` `recommends` | 已完成 |
 | `style-yaml/budget.md` | token 预算 | `budget`（`per_rule` `per_event` `always_on` `on`） | 待写 |
 | [style-yaml/defaults.md](style-yaml/defaults.md) | 包级默认值与推导默认值 | `defaults` | 已完成 |
 | `style-yaml/rules.md` | 规则来源与正文 | `rules` `id` `file` `text` `from` `model_text` `enabled` `priority` `max_tokens` `reason` | 待写 |
