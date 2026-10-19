@@ -30,17 +30,22 @@ func TestValidateConditionSelectorsAndOptionalFields(t *testing.T) {
 		},
 		{
 			name: "empty not_contains pattern",
-			rule: "  - id: base\n    target: tool\n    tool: shell\n    text: body\n    when:\n      conditions:\n        - field: tool.input\n          op: not_contains\n          pattern: \"\"\n",
+			rule: "  - id: base\n    target: tool\n    tool: shell\n    text: body\n    when:\n      conditions:\n        - field: tool.input.command\n          op: not_contains\n          pattern: \"\"\n",
 			want: "empty-pattern", severity: SeverityError,
 		},
 		{
 			name: "empty contains pattern",
-			rule: "  - id: base\n    target: tool\n    tool: shell\n    text: body\n    when:\n      conditions:\n        - field: tool.input\n          op: contains\n          pattern: \"\"\n",
+			rule: "  - id: base\n    target: tool\n    tool: shell\n    text: body\n    when:\n      conditions:\n        - field: tool.input.command\n          op: contains\n          pattern: \"\"\n",
 			want: "empty-pattern", severity: SeverityError,
 		},
 		{
 			name: "empty equals pattern stays valid",
-			rule: "  - id: base\n    target: tool\n    tool: shell\n    text: body\n    when:\n      conditions:\n        - field: tool.input\n          op: equals\n          pattern: \"\"\n",
+			rule: "  - id: base\n    target: tool\n    tool: shell\n    text: body\n    when:\n      conditions:\n        - field: tool.input.command\n          op: equals\n          pattern: \"\"\n",
+		},
+		{
+			name: "whole tool input",
+			rule: "  - id: base\n    target: tool\n    tool: shell\n    text: body\n    when:\n      conditions:\n        - field: tool.input\n          op: contains\n          pattern: git push --force\n",
+			want: "whole-tool-input", severity: SeverityWarning,
 		},
 		{
 			name: "tool added on mcp rule",

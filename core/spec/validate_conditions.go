@@ -175,6 +175,11 @@ func (v *validator) validateConditions(value any, rule Rule, source string) {
 		} else if op == "not_contains" && v.conditionFieldOptional(field, rule) {
 			v.warn("negated-optional-field", conditionSource, fmt.Sprintf("%s may be unavailable; not_contains will not match when it is missing", field))
 		}
+		if field == "tool.input" {
+			// The whole input is compact JSON: quotes, newlines and backslashes stay
+			// escaped, key names are part of the text, and anchors see the braces.
+			v.warn("whole-tool-input", conditionSource, "tool.input is the whole input as JSON text; match a decoded value such as tool.input.command instead")
+		}
 	}
 }
 
