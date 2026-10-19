@@ -78,7 +78,7 @@ native_hooks:
 | 可选值 | `skip` / `error` |
 | 可写入 defaults | 否（`defaults` 只作用于规则） |
 
-原生 hook 没有降级路径。adapter 无法写入该 hook 时，`skip` 跳过它，`error` 拒绝安装整个包。
+原生 hook 没有降级路径。adapter 无法写入该 hook 时，`skip` 跳过它，`error` 拒绝安装整个包。hook 没有当前 harness 的映射时总是跳过，与 `fallback` 无关。
 
 约束：
 
