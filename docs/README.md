@@ -18,7 +18,7 @@
 | [style-yaml/fallback.md](style-yaml/fallback.md) | 落点不可用时的处理与降级路径 | `fallback`（`degrade` `skip` `error`） | 已完成 |
 | [style-yaml/when.md](style-yaml/when.md) | 条件匹配 | `when`（`model` `thinking_effort` `thinking_effort_approx` `harness` `agent` `conditions` `provider`） | 已完成 |
 | [style-yaml/native-hooks.md](style-yaml/native-hooks.md) | 原生 hook 声明 | `native_hooks`（`event` `matcher` `command` `timeout`） | 已完成 |
-| `style-yaml/diagnostics.md` | 诊断码总表 | — | 待写 |
+| [style-yaml/diagnostics.md](style-yaml/diagnostics.md) | 诊断码总表 | — | 已完成 |
 
 ## 写作约定
 
