@@ -106,11 +106,8 @@ func (s *Service) Install(ctx context.Context, request InstallRequest) (final In
 	if strings.TrimSpace(request.Source) == "" {
 		return InstallResult{}, &UsageError{Message: "package source is required"}
 	}
-	if len(request.ProjectSources) > 0 && (s.project == nil || request.Link || len(request.ProjectSources) > 63) {
-		return InstallResult{}, &UsageError{Message: "--project-source requires --project, at most 64 sources, and copied packages"}
-	}
-	if len(request.ProjectSources) == 0 && len(request.ProjectSettings) > 0 {
-		return InstallResult{}, &UsageError{Message: "--project-set requires --project-source"}
+	if err := s.checkProjectSources(request); err != nil {
+		return InstallResult{}, err
 	}
 	home, err := s.resolveStyleHome(request.Home)
 	if err != nil {

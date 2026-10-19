@@ -317,3 +317,27 @@ func TestHookInvocationsNeverExitUsage(t *testing.T) {
 		}
 	}
 }
+
+// Each --project-source usage error names the one condition that failed.
+func TestProjectSourceUsageNamesOneCondition(t *testing.T) {
+	s, base, root, source := a6Setup(t)
+	many := []string{"install", source, "--project", root}
+	for range 64 {
+		many = append(many, "--project-source", source)
+	}
+	for _, test := range []struct {
+		args []string
+		want string
+	}{
+		{[]string{"install", source, "--project-source", source}, "--project-source requires --project\n"},
+		{[]string{"install", source, "--project", root, "--project-source", source, "--link"}, "--project-source cannot be combined with --link\n"},
+		{many, "--project-source accepts at most 63 sources (64 packages with the main source)\n"},
+		{[]string{"install", source, "--project", root, "--project-set", "x.k=v"}, "--project-set requires --project-source\n"},
+	} {
+		var out, errOut bytes.Buffer
+		exit := RunWithServiceInput(context.Background(), s, base, test.args, strings.NewReader(""), &out, &errOut)
+		if exit != ExitUsage || !strings.HasPrefix(errOut.String(), "style install: "+test.want) {
+			t.Errorf("%v: exit=%d stdout=%q stderr=%q", test.args[2:min(len(test.args), 6)], exit, &out, &errOut)
+		}
+	}
+}

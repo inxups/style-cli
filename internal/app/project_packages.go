@@ -23,17 +23,33 @@ type ProjectPackagePreview struct {
 	Replace  bool          `json:"replace"`
 }
 
+// maxProjectSources bounds the extra sources; with the main source a project
+// installation holds at most 64 packages.
+const maxProjectSources = 63
+
+// checkProjectSources rejects --project-source and --project-set combinations
+// the command line cannot satisfy, one condition per message.
+func (s *Service) checkProjectSources(request InstallRequest) error {
+	switch {
+	case len(request.ProjectSources) == 0 && len(request.ProjectSettings) > 0:
+		return &UsageError{Message: "--project-set requires --project-source"}
+	case len(request.ProjectSources) == 0:
+		return nil
+	case s.project == nil:
+		return &UsageError{Message: "--project-source requires --project"}
+	case request.Link:
+		return &UsageError{Message: "--project-source cannot be combined with --link"}
+	case len(request.ProjectSources) > maxProjectSources:
+		return &UsageError{Message: fmt.Sprintf("--project-source accepts at most %d sources (%d packages with the main source)", maxProjectSources, maxProjectSources+1)}
+	}
+	return nil
+}
+
 // Extra sources make a multi-package clone reviewable as one candidate and one
 // transaction. Their settings use explicit package-qualified names.
 func (s *Service) captureProjectPackages(ctx context.Context, request InstallRequest, home string, lock lockDocument, adapters []installAdapter, first lockPackage) ([]installPackage, []ProjectPackagePreview, error) {
 	if len(request.ProjectSources) == 0 {
-		if len(request.ProjectSettings) > 0 {
-			return nil, nil, &UsageError{Message: "--project-set requires --project-source"}
-		}
 		return nil, nil, nil
-	}
-	if s.project == nil || request.Link || len(request.ProjectSources) > 63 {
-		return nil, nil, &UsageError{Message: "--project-source requires --project, at most 64 sources, and copied packages"}
 	}
 	if len(lock.Packages) > 0 {
 		return nil, nil, &RejectedError{Message: "--project-source requires a fresh project installation"}
