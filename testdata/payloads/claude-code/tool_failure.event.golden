@@ -8,23 +8,26 @@
     "WorkspaceRoots": [
       "/work/repo"
     ],
-    "TranscriptPath": "",
-    "Model": "test-model",
+    "TranscriptPath": "/work/home/.claude/projects/-work-repo/conformance.jsonl",
+    "Model": "",
     "Effort": "",
-    "EffortRaw": "",
+    "EffortRaw": "medium",
     "EffortApprox": null,
     "HarnessVersion": "",
-    "PermissionMode": "",
+    "PermissionMode": "default",
     "UserEmail": ""
   },
   "variables": {
     "harness.agent": "main",
     "harness.cwd": "/work/repo",
     "harness.name": "claude-code",
+    "harness.permission_mode": "default",
     "harness.session_id": "conformance",
     "harness.turn_id": "prompt-1",
     "harness.version": "2.1.315",
-    "model": "test-model"
+    "thinking_effort": "medium",
+    "thinking_effort_approx": "false",
+    "thinking_effort_raw": "medium"
   },
   "points": [
     {
@@ -33,9 +36,9 @@
       "tool": "Bash",
       "fields": {
         "cwd": "/work/repo",
-        "tool.input": "{\"command\":\"false\"}",
-        "tool.input.command": "false",
-        "tool.output": "exit 1"
+        "tool.input": "{\"command\":\"echo out-line; echo err-line \u003e\u00262; exit 3\",\"description\":\"Print to stdout and stderr, exit 3\"}",
+        "tool.input.command": "echo out-line; echo err-line \u003e\u00262; exit 3",
+        "tool.output": "Exit code 3\nout-line\nerr-line"
       }
     },
     {
@@ -44,11 +47,10 @@
       "tool": "Bash",
       "fields": {
         "cwd": "/work/repo",
-        "tool.input": "{\"command\":\"false\"}",
-        "tool.input.command": "false",
-        "tool.output": "exit 1"
+        "tool.input": "{\"command\":\"echo out-line; echo err-line \u003e\u00262; exit 3\",\"description\":\"Print to stdout and stderr, exit 3\"}",
+        "tool.input.command": "echo out-line; echo err-line \u003e\u00262; exit 3",
+        "tool.output": "out-line\nerr-line"
       }
     }
-  ],
-  "persisted_model": "test-model"
+  ]
 }
