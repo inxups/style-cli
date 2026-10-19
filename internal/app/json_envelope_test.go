@@ -27,7 +27,7 @@ func TestJSONEnvelopeWrapsEveryReport(t *testing.T) {
 		{[]string{"validate", "demo", "--json"}, ExitOK, "ok", ""},
 		{[]string{"list", "--json"}, ExitOK, "ok", ""},
 		{[]string{"plan", "demo", "--harness=codex", "--json"}, ExitOK, "ok", ""},
-		{[]string{"trust", "missing", "--json"}, ExitInvalid, "error", "command-failed"},
+		{[]string{"trust", "missing", "--json"}, ExitInvalid, "error", "request-rejected"},
 	} {
 		t.Run(strings.Join(test.args, " "), func(t *testing.T) {
 			var out, errOut bytes.Buffer
@@ -116,6 +116,17 @@ func objectKeys(t *testing.T, data []byte) []string {
 	return keys
 }
 
+func TestWrapReportFallsBackToStderrFailures(t *testing.T) {
+	envelope, err := wrapReport("export", ExitInvalid, envelopeScope{Kind: "user"}, nil, []string{"disk full"})
+	if err != nil || len(envelope.Diagnostics) != 1 || !bytes.Contains(envelope.Diagnostics[0], []byte(`"code":"command-failed"`)) || string(envelope.Result) != "null" {
+		t.Fatalf("envelope = %+v, %v", envelope, err)
+	}
+	envelope, _ = wrapReport("export", ExitOK, envelopeScope{Kind: "user"}, nil, []string{"ignored"})
+	if len(envelope.Diagnostics) != 0 {
+		t.Fatalf("successful command diagnostics = %s", envelope.Diagnostics)
+	}
+}
+
 func TestEnvelopeStatusMirrorsExitCode(t *testing.T) {
 	for code, want := range map[int]string{ExitOK: "ok", ExitInvalid: "error", ExitSyncChanged: "needs-trust", ExitBlocked: "blocked"} {
 		if got := envelopeStatus(code); got != want {
@@ -155,6 +166,35 @@ func TestUsageAndRejectedErrorsExitCodes(t *testing.T) {
 		var out, errOut bytes.Buffer
 		if code := RunWithServiceInput(context.Background(), service, root, test.args, strings.NewReader("y\n"), &out, &errOut); code != test.code {
 			t.Fatalf("%v exit = %d, want %d; stderr=%s", test.args, code, test.code, &errOut)
+		}
+	}
+}
+
+func TestJSONFailuresKeepTheirCodes(t *testing.T) {
+	service := testService(t)
+	root := t.TempDir()
+	t.Setenv("STYLE_HOME", filepath.Join(root, "home"))
+	if code := RunWithService(context.Background(), service, root, []string{"init", "demo"}, &bytes.Buffer{}, &bytes.Buffer{}); code != ExitOK {
+		t.Fatalf("init exit = %d", code)
+	}
+	for _, test := range []struct {
+		args []string
+		code string
+	}{
+		{[]string{"install", "git+https://example.invalid/repo.git?x=1", "--json"}, "source-invalid"},
+		{[]string{"install", "missing", "--json"}, "invalid-package"},
+		{[]string{"plan", "missing", "--json"}, "invalid-package"},
+		{[]string{"install", "demo", "--harness", "codex", "--set", "unknown=v", "--json"}, "request-rejected"},
+		{[]string{"trust", "missing", "--json"}, "request-rejected"},
+		{[]string{"uninstall", "missing", "--json"}, "conflict"},
+	} {
+		var out, errOut bytes.Buffer
+		if code := RunWithServiceInput(context.Background(), service, root, test.args, strings.NewReader("y\n"), &out, &errOut); code != ExitInvalid {
+			t.Fatalf("%v exit = %d; stderr=%s", test.args, code, &errOut)
+		}
+		var diagnostics []Diagnostic
+		if err := decodeReport(out.Bytes(), &diagnostics); err != nil || len(diagnostics) != 1 || diagnostics[0].Code != test.code {
+			t.Fatalf("%v diagnostics = %+v, %v; want %s", test.args, diagnostics, err, test.code)
 		}
 	}
 }

@@ -43,7 +43,7 @@ func runSync(ctx context.Context, service *Service, command string, args []strin
 				writeDiagnostics(out, validation.Diagnostics)
 			}
 		} else {
-			fmt.Fprintf(errOut, "style %s: %v\n", command, err)
+			commandFailure(out, errOut, jsonOutput, command, err)
 		}
 		return commandExit(err)
 	}

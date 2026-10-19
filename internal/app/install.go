@@ -143,7 +143,10 @@ func (s *Service) Install(ctx context.Context, request InstallRequest) (final In
 		}
 	} else {
 		if err = localSourceOptions(request.Ref, request.Path); err == nil {
-			files, single, sourcePath, err = snapshotPackage(request.Source)
+			if files, single, sourcePath, err = snapshotPackage(request.Source); err != nil {
+				// plan reports the same failure as invalid-package.
+				err = &codedError{Code: "invalid-package", Err: err}
+			}
 		}
 	}
 	if err != nil {

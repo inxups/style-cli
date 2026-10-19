@@ -3,10 +3,14 @@ package app
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"sort"
 	"strings"
+
+	"github.com/inxups/style-cli/core/spec"
+	"github.com/inxups/style-cli/internal/source"
 )
 
 // envelopeFormat versions the --json envelope itself; command reports keep
@@ -132,6 +136,48 @@ func splitDiagnostics(report []byte) (json.RawMessage, []json.RawMessage, error)
 	}
 	result.WriteByte('}')
 	return result.Bytes(), diagnostics, nil
+}
+
+// commandFailure reports a command's error on stderr and, with --json, as a
+// report diagnostic so the envelope keeps the error's own code.
+func commandFailure(out, errOut io.Writer, jsonMode bool, command string, err error) {
+	fmt.Fprintf(errOut, "style %s: %v\n", command, err)
+	if jsonMode {
+		_ = encodeJSON(out, map[string][]Diagnostic{"diagnostics": {failureDiagnostic(err)}})
+	}
+}
+
+// codedError gives an error a diagnostic code without changing its text.
+type codedError struct {
+	Code string
+	Err  error
+}
+
+func (e *codedError) Error() string { return e.Err.Error() }
+func (e *codedError) Unwrap() error { return e.Err }
+
+// failureDiagnostic classifies an error by its package or source code, then by
+// its type; anything else stays command-failed.
+func failureDiagnostic(err error) Diagnostic {
+	if spec.ErrorCode(err) != "" || source.Code(err) != "" {
+		return parseDiagnostic(err)
+	}
+	var coded *codedError
+	var rejected *RejectedError
+	var conflict *ConflictError
+	var blocked *BlockedError
+	code := "command-failed"
+	switch {
+	case errors.As(err, &coded):
+		code = coded.Code
+	case errors.As(err, &rejected):
+		code = "request-rejected"
+	case errors.As(err, &conflict):
+		code = "conflict"
+	case errors.As(err, &blocked):
+		code = "blocked"
+	}
+	return Diagnostic{Code: code, Severity: spec.SeverityError, Message: err.Error()}
 }
 
 // failureLines forwards stderr and remembers "style <command>: ..." errors.
