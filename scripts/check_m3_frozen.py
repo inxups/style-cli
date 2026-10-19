@@ -108,7 +108,7 @@ def main():
             record(cases, route, "repeat", zero_installation_changes=True)
             for flags in (("source",), ("--ref=refs/heads/main",), ("--set=k=v",),
                           ("--route=x",), ("--frozen",), ("--project",)):
-                invalid = run(new, env, "restore", *flags, want=1)
+                invalid = run(new, env, "restore", *flags, want=2)
                 assert invalid.stdout == "" and invalid.stderr
             assert snapshot(*roots) == before
             record(cases, route, "usage-refusal", combinations=6)

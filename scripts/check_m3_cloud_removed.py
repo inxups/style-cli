@@ -36,7 +36,8 @@ def main():
         for command in (("export", "--help"),
                         ("export", "--target=claude-cloud", "--yes", "--json"),
                         ("export", "--target=claude-cloud", "--project", project, "--yes", "--json")):
-            result = run(binary, env, *command, want=1)
+            # Unknown commands are usage errors (exit 2).
+            result = run(binary, env, *command, want=2)
             assert result.stderr and snapshot(root) == before
         record(cases, "removed", "export-rejected-without-writes", commands=3)
         source = root / "source"

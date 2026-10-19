@@ -152,7 +152,7 @@ def main():
             record(cases, route, "single-error-json", unchanged=True)
             for args_bad in (("--json",), ("first", "--all", "--json"),
                              ("--all", "--ref=refs/heads/main", "--json")):
-                result = run(new, env, "update", *args_bad, want=1)
+                result = run(new, env, "update", *args_bad, want=2)
                 assert result.stdout == "" and result.stderr
             record(cases, route, "usage-errors", stdout_empty=True, combinations=3)
             payload = json.dumps({"session_id": "a4-wire", "hook_event_name": "PreToolUse",
