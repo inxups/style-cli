@@ -70,7 +70,7 @@
       "required": ["var"],
       "additionalProperties": false,
       "properties": {
-        "var": {"type": "string", "pattern": "^[A-Za-z_][A-Za-z0-9_.]*$", "anyOf": [{"not": {"pattern": "^event\\."}}, {"pattern": "^event\\.(prompt|tool\\.(name|input(\\.[A-Za-z0-9_]+)*|added|output)|mcp\\.(server|tool)|skill\\.name)$"}]},
+        "var": {"type": "string", "pattern": "^[A-Za-z_][A-Za-z0-9_.]*$", "anyOf": [{"not": {"pattern": "^event\\."}}, {"pattern": "^event\\.(prompt|tool\\.(name|input(\\.[A-Za-z0-9_]+)*|added|output(\\.[A-Za-z0-9_]+)*)|mcp\\.(server|tool)|skill\\.name)$"}]},
         "default": {"type": "string"}
       }
     },

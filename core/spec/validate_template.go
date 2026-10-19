@@ -26,7 +26,7 @@ func (v *validator) validateTemplate(text, source string, rule Rule) {
 
 func (v *validator) validateTemplateName(name string, hasDefault bool, source string, rule Rule) {
 	for _, eventName := range eventTemplateNames {
-		if name == eventName || eventName == "tool.input" && strings.HasPrefix(name, "tool.input.") {
+		if name == eventName || (eventName == "tool.input" || eventName == "tool.output") && strings.HasPrefix(name, eventName+".") {
 			v.add("event-var-in-template", source, name+" cannot be used in a template")
 			return
 		}

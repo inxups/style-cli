@@ -25,10 +25,16 @@ func EventFieldKnown(field string) bool {
 	case "prompt", "tool.name", "tool.input", "tool.added", "tool.output", "mcp.server", "mcp.tool", "skill.name":
 		return true
 	}
-	if !strings.HasPrefix(field, "tool.input.") {
+	var path string
+	switch {
+	case strings.HasPrefix(field, "tool.input."):
+		path = strings.TrimPrefix(field, "tool.input.")
+	case strings.HasPrefix(field, "tool.output."):
+		path = strings.TrimPrefix(field, "tool.output.")
+	default:
 		return false
 	}
-	for _, segment := range strings.Split(strings.TrimPrefix(field, "tool.input."), ".") {
+	for _, segment := range strings.Split(path, ".") {
 		if segment == "" {
 			return false
 		}

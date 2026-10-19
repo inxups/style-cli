@@ -16,6 +16,9 @@ func TestM3A10EventValidation(t *testing.T) {
 		{"wrong point", strings.ReplaceAll(rules, "event: prompt.submitted", "event: tool.pre"), "event-var-unavailable"},
 		{"warn implicit", strings.ReplaceAll(rules, "target: event", "action: warn, target: event"), "event-warn-model-text"},
 		{"warn explicit", strings.ReplaceAll(rules, "target: event", "action: warn, model_text: 'Review {{event.prompt}}', target: event"), ""},
+		{"output path", "  - {id: r, target: event, event: tool.post, text: '{{event.tool.output.stdout}}'}\n", ""},
+		{"bare output path", "  - {id: r, target: event, event: tool.post, text: '{{tool.output.stdout}}'}\n", "event-var-in-template"},
+		{"output path before tool", "  - {id: r, target: event, event: tool.pre, text: '{{event.tool.output.stdout}}'}\n", "event-var-unavailable"},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			ds := loadAndValidate(t, testManifest("event-fixture", "", tc.rules), nil)

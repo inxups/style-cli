@@ -58,12 +58,12 @@ func TestM3A10EventTemplateDefaultsAndClassification(t *testing.T) {
 	if got := tpl.Render(map[string]string{"event.prompt": ""}); strings.Contains(got, `\u003c`) || !strings.Contains(got, "\n\"\"\n") {
 		t.Fatal(got)
 	}
-	for _, name := range []string{"event.prompt", "event.tool.input.0.arg", "event.skill.name"} {
+	for _, name := range []string{"event.prompt", "event.tool.input.0.arg", "event.tool.output.stdout", "event.skill.name"} {
 		if !IsEventVariable(name) {
 			t.Fatal(name)
 		}
 	}
-	for _, name := range []string{"event.cwd", "event.tool.input.", "event.tool.input..arg", "prompt", "event.tool.canonical"} {
+	for _, name := range []string{"event.cwd", "event.tool.input.", "event.tool.input..arg", "event.tool.output.", "event.tool.output..stdout", "prompt", "event.tool.canonical"} {
 		if IsEventVariable(name) {
 			t.Fatal(name)
 		}

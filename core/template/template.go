@@ -147,7 +147,7 @@ func IsRuntimeVariable(name string) bool {
 		"mcp.server", "mcp.tool", "skill.name":
 		return true
 	}
-	return strings.HasPrefix(name, "harness.") || strings.HasPrefix(name, "tool.input.") || IsEventVariable(name)
+	return strings.HasPrefix(name, "harness.") || strings.HasPrefix(name, "tool.input.") || strings.HasPrefix(name, "tool.output.") || IsEventVariable(name)
 }
 
 // Render renders the template with values from context. A missing value uses

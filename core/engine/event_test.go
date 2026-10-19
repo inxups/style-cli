@@ -57,6 +57,23 @@ func TestM3A10EventFieldIsolationCapAndPrivacy(t *testing.T) {
 		t.Fatal(out, err)
 	}
 }
+func TestEventToolOutputPathRendersDecodedValue(t *testing.T) {
+	entry := testEntry("pkg/event", "tool.post", "event", "inject", "", 1)
+	entry.Body = compile.Body{Parts: []compile.Fragment{{Variable: &compile.Variable{Name: "event.tool.output.stdout"}}}}
+	index := testIndex(map[string][]compile.Entry{"tool.post": {entry}})
+	index.Format = 3
+	core, err := New(index, newTestStore(t))
+	if err != nil {
+		t.Fatal(err)
+	}
+	input := testInput("tool.post")
+	input.Points[0].When.Fields = when.FieldMap{"tool.output": `{"stdout":"a\nb"}`, "tool.output.stdout": "a\nb"}
+	out, err := core.Process(input, tokens.InputLimit{})
+	if err != nil || out.AdditionalContext != template.FenceEvent("event.tool.output.stdout", "a\nb") {
+		t.Fatal(out, err)
+	}
+}
+
 func TestM3A10EventWarnCannotCutFence(t *testing.T) {
 	entry := testEntry("pkg/warn", "prompt.submitted", "event", "warn", "", 1)
 	entry.Body = compile.Body{Parts: []compile.Fragment{{Variable: &compile.Variable{Name: "event.prompt"}}}}
