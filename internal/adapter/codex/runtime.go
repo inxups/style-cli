@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"unicode"
 
 	"github.com/inxups/style-cli/core/compile"
 	"github.com/inxups/style-cli/core/engine"
@@ -340,6 +341,11 @@ func toolPoint(event *agenthooks.Event, tool *agenthooks.ToolCall, post *agentho
 			// tool.output keeps the response text as sent.
 			flattenJSONFields(fields, "tool.output", post.Output)
 			fields["tool.output"] = output
+			if fields["tool.canonical"] == string(agenthooks.ToolShell) {
+				// Claude Code trims trailing whitespace from command output and
+				// Codex does not; trim here so ends_with and equals agree.
+				fields["tool.output"] = strings.TrimRightFunc(output, unicode.IsSpace)
+			}
 		}
 	}
 	if event.Session.CWD != "" || hasRawField(event, "cwd") {

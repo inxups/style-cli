@@ -8,6 +8,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"unicode"
 
 	"github.com/inxups/style-cli/core/compile"
 	"github.com/inxups/style-cli/core/engine"
@@ -366,6 +367,12 @@ func claudeToolPoint(event *agenthooks.Event, pointName string, tool *agenthooks
 				// only the output, matching Codex; tool.error keeps the error.
 				fields["tool.output"] = claudeExitCodePrefix.ReplaceAllString(post.Error, "")
 			}
+		}
+		// Claude Code 2.1.301 already trims trailing whitespace from stdout;
+		// also trim appended stderr and failure text so shell output ends the
+		// same way on every adapter.
+		if output, ok := fields["tool.output"]; ok && pointName == plan.ToolPost && fields["tool.canonical"] == string(agenthooks.ToolShell) {
+			fields["tool.output"] = strings.TrimRightFunc(output, unicode.IsSpace)
 		}
 	}
 	if event.Session.CWD != "" || hasRawField(event, "cwd") {

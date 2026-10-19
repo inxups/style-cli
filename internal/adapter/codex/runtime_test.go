@@ -303,6 +303,31 @@ func TestEnricherRejectsMismatchedEventsAndProviders(t *testing.T) {
 	}
 }
 
+func TestEnricherTrimsShellOutputTrailingWhitespace(t *testing.T) {
+	for _, tc := range []struct {
+		name      string
+		canonical agenthooks.CanonicalTool
+		response  string
+		want      string
+	}{
+		// Codex 0.159.3 keeps the trailing newline; Claude Code trims it.
+		{"Bash", agenthooks.ToolShell, `"  lead\nmid\n\n\n  \n"`, "  lead\nmid"},
+		{"Bash", agenthooks.ToolShell, `"err-line\nout-line\n"`, "err-line\nout-line"},
+		{"mcp__docs__search", agenthooks.ToolMCP, `"result\n"`, "result\n"},
+	} {
+		event := runtimeEvent(agenthooks.KindToolPost, "PostToolUse", `{"session_id":"s10","tool_name":"`+tc.name+`","tool_input":{"command":"x"},"tool_response":`+tc.response+`}`)
+		tool := agenthooks.ToolCall{Name: tc.name, Canonical: tc.canonical, Input: json.RawMessage(`{"command":"x"}`)}
+		post := &agenthooks.ToolPostEvent{Event: *event, Tool: tool, Output: json.RawMessage(tc.response)}
+		input, _, err := NewEnricher().Enrich(event, post, state.Session{}, state.Scope{SessionID: "s10", AgentID: "main"})
+		if err != nil {
+			t.Fatal(err)
+		}
+		if got, ok := input.Points[0].When.Fields.ReadConditionField("tool.output"); !ok || got != tc.want {
+			t.Errorf("%s tool.output for %s = %q, %v; want %q", tc.name, tc.response, got, ok, tc.want)
+		}
+	}
+}
+
 func TestEnrichKeepsShellCharactersInToolInput(t *testing.T) {
 	raw := `{"command":"cd repo && git push > out.log 2<&1","nested":{"q":"a&b<c>"}}`
 	event := runtimeEvent(agenthooks.KindToolPre, "PreToolUse", `{"session_id":"s9","tool_name":"shell","tool_input":`+raw+`}`)

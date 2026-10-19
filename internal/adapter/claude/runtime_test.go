@@ -232,6 +232,7 @@ func TestEnricherMapsClaudeToolFieldsAddedMCPAndOutput(t *testing.T) {
 		for _, tc := range []struct{ response, want string }{
 			{`{"stdout":"out","stderr":"err"}`, "out\nerr"},
 			{`{"stdout":"","stderr":"err"}`, "err"},
+			{`{"stdout":"  out","stderr":"err\n \n"}`, "  out\nerr"},
 			{`"plain text"`, "plain text"},
 		} {
 			event := claudeRuntimeEvent(agenthooks.KindToolPost, "PostToolUse", `{"session_id":"s7","tool_name":"Bash","tool_input":{"command":"x"},"tool_response":`+tc.response+`}`)
@@ -265,6 +266,7 @@ func TestEnricherMapsClaudeToolFieldsAddedMCPAndOutput(t *testing.T) {
 		for _, tc := range []struct{ errorText, want string }{
 			{"Exit code 3\nout-line\nerr-line", "out-line\nerr-line"},
 			{"Exit code 7", ""},
+			{"Exit code 4\nx\n\n", "x"},
 			{"Command timed out", "Command timed out"},
 		} {
 			event := claudeRuntimeEvent(agenthooks.KindToolError, "PostToolUseFailure", `{"session_id":"s8","tool_name":"Bash","tool_input":{"command":"x"}}`)

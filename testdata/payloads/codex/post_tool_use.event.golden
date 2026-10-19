@@ -36,7 +36,7 @@
         "cwd": "/work/repo",
         "tool.input": "{\"command\":\"echo \\\"hello world\\\" \u0026\u0026 printf 'a\\\\nb\\\\n'\"}",
         "tool.input.command": "echo \"hello world\" \u0026\u0026 printf 'a\\nb\\n'",
-        "tool.output": "hello world\na\nb\n"
+        "tool.output": "hello world\na\nb"
       }
     }
   ],
