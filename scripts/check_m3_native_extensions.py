@@ -9,6 +9,7 @@ from pathlib import Path
 import shutil
 import tempfile
 from check_m3_update import fixture, manifest, record, run, sha, snapshot
+from style_json import report as style_report
 
 
 def legacy_manifest(name):
@@ -42,7 +43,7 @@ def main():
             source_file.write_text(legacy_manifest('native-compat'))
             scope = ('--project', project) if route.endswith('-project') else ()
             selected = ('--harness=' + provider, '--route=' + provider + '=' + route)
-            installed = json.loads(run(runner, env, 'install', source, *scope, *selected, '--yes', '--json').stdout)
+            installed = style_report(run(runner, env, 'install', source, *scope, *selected, '--yes', '--json').stdout)
             home = Path(installed['scope']['home']) if scope else base
             if route == 'codex-plugin':
                 hooks = home / 'adapters/codex/plugin/hooks/hooks.json'
@@ -78,10 +79,10 @@ def main():
                 assert 'native-format-removed' in output and 'native_hooks' in output and 'uninstall' in output, output
                 assert snapshot(home, codex, claude, project) == before, operation
                 record(cases, route, 'legacy-rejected-without-writes', command=operation[0])
-            listed = json.loads(run(runner, env, 'list', *scope, '--json').stdout)
+            listed = style_report(run(runner, env, 'list', *scope, '--json').stdout)
             assert len(listed['packages']) == 2
             assert all('native-format-removed' in item['error'] for item in listed['packages'])
-            doctor = json.loads(run(runner, env, 'doctor', *scope, '--json', want=1).stdout)
+            doctor = style_report(run(runner, env, 'doctor', *scope, '--json', want=1).stdout)
             assert any(d['code'] == 'native-format-removed' for d in doctor['diagnostics'])
             record(cases, route, 'legacy-visible-in-list-and-doctor')
             # Migrating upstream does not bypass the old authenticated approval.
@@ -99,7 +100,7 @@ def main():
             assert 'native-compat/executable' not in run(runner, env, 'stats', *scope, '--json').stdout
             index = (home / 'build/index.json').read_text()
             assert 'NATIVE-' not in index and 'native-compat/executable' not in index
-            planned = json.loads(run(runner, env, 'plan', source, '--harness=' + provider, '--json').stdout)
+            planned = style_report(run(runner, env, 'plan', source, '--harness=' + provider, '--json').stdout)
             assert 'NATIVE-' not in json.dumps(planned)
             record(cases, route, 'reinstall-recovers-and-excludes-hooks-from-runtime')
             candidate = root / 'candidate'

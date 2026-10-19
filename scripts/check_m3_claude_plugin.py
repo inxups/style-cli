@@ -8,6 +8,7 @@ from pathlib import Path
 import subprocess
 import tempfile
 from check_m3_update import fixture, manifest, run, snapshot, record, sha
+from style_json import report as style_report
 
 
 def main():
@@ -27,11 +28,11 @@ def main():
         (source / 'STYLE.yaml').write_text(manifest('plugin-rules', 'Plugin.', native=True))
         selection = ('--harness=claude-code', '--route=claude-code=claude-plugin')
         before = snapshot(base, codex, claude)
-        preview = json.loads(run(binary, env, 'install', source, *selection, '--json', want=1).stdout)
+        preview = style_report(run(binary, env, 'install', source, *selection, '--json', want=1).stdout)
         assert preview['registration'][0]['state'] == 'registration-required'
         assert snapshot(base, codex, claude) == before
         record(cases, 'claude-plugin', 'preview-registration-no-write')
-        installed = json.loads(run(binary, env, 'install', source, *selection, '--json', want=1, confirm=True).stdout)
+        installed = style_report(run(binary, env, 'install', source, *selection, '--json', want=1, confirm=True).stdout)
         registration = installed['registration'][0]
         market = Path(registration['marketplace'])
         plugin = market / 'plugins/style-runtime'
@@ -62,7 +63,7 @@ def main():
         settings = json.loads(settings_path.read_text()) if settings_path.exists() else {}
         settings['enabledPlugins'] = {registration['plugin']: True}
         settings_path.write_text(json.dumps(settings))
-        repeated = json.loads(run(binary, env, 'install', source, *selection, '--json', confirm=True).stdout)
+        repeated = style_report(run(binary, env, 'install', source, *selection, '--json', confirm=True).stdout)
         assert not repeated['changed'] and repeated['registration'][0]['state'] == 'enabled'
         record(cases, 'claude-plugin', 'registered-enabled-observation-not-delivery')
         raw = json.loads((plugin / 'hooks/hooks.json').read_text())

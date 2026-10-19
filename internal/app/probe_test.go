@@ -679,8 +679,8 @@ func TestM3A2CLIUsageJSONAndTerminalSafety(t *testing.T) {
 	var out, stderr bytes.Buffer
 	code := RunWithService(context.Background(), f.service, f.root, []string{"probe", "--json", "--timeout", "1s"}, &out, &stderr)
 	var report ProbeResult
-	decoder := json.NewDecoder(&out)
-	if code != 1 || decoder.Decode(&report) != nil || decoder.Decode(new(any)) != io.EOF || report.Status != "timed-out" || !strings.Contains(stderr.String(), "probe ready:") {
+	decoder := json.NewDecoder(bytes.NewReader(out.Bytes()))
+	if code != 1 || decoder.Decode(new(any)) != nil || decoder.Decode(new(any)) != io.EOF || decodeReport(out.Bytes(), &report) != nil || report.Status != "timed-out" || !strings.Contains(stderr.String(), "probe ready:") {
 		t.Fatalf("JSON streaming: %d %+v %q", code, report, stderr.String())
 	}
 	out.Reset()

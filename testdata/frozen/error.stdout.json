@@ -1,10 +1,11 @@
 {
-  "format": 1,
+  "format": 2,
   "command": "restore",
   "status": "error",
-  "selected": [],
-  "changes": [],
-  "reports": [],
+  "scope": {
+    "home": "$FIXTURE/style",
+    "kind": "user"
+  },
   "diagnostics": [
     {
       "code": "frozen-metadata-incomplete",
@@ -12,10 +13,18 @@
       "message": "a nonempty explicit format 1 or 2 lock is required; use the existing install/sync/trust flow to establish a complete baseline"
     }
   ],
-  "routes": [],
-  "changed": false,
-  "awaiting_confirmation": false,
-  "lock_sha256": "",
-  "locked_source": true,
-  "contents": []
+  "result": {
+    "format": 1,
+    "command": "restore",
+    "status": "error",
+    "selected": [],
+    "changes": [],
+    "reports": [],
+    "routes": [],
+    "changed": false,
+    "awaiting_confirmation": false,
+    "lock_sha256": "",
+    "locked_source": true,
+    "contents": []
+  }
 }

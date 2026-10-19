@@ -91,7 +91,10 @@ func TestM3A5CommandGoldenAndSingleJSON(t *testing.T) {
 				if jsonOutput {
 					decoder := json.NewDecoder(bytes.NewReader(out.Bytes()))
 					var result FrozenResult
-					if err := decoder.Decode(&result); err != nil {
+					if err := decoder.Decode(new(any)); err != nil {
+						t.Fatal(err)
+					}
+					if err := decodeReport(out.Bytes(), &result); err != nil {
 						t.Fatal(err)
 					}
 					if decoder.Decode(new(any)) != io.EOF || result.Format != 1 || result.Command != "restore" || !result.LockedSource || result.LockSHA256 != digest {
@@ -147,7 +150,7 @@ func TestM3A5NativeReplaceAndBlockedCLI(t *testing.T) {
 				want = ExitInvalid
 			}
 			var result FrozenResult
-			if err := json.Unmarshal(out.Bytes(), &result); err != nil || exit != want || result.Status != "error" || result.Changed || errOut.Len() != 0 {
+			if err := decodeReport(out.Bytes(), &result); err != nil || exit != want || result.Status != "error" || result.Changed || errOut.Len() != 0 {
 				t.Fatalf("%s exit=%d stdout=%s stderr=%s err=%v", gate, exit, &out, &errOut, err)
 			}
 			a4AssertState(t, before, home, config)

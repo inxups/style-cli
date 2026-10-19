@@ -1,13 +1,7 @@
 {
-  "changed": true,
-  "remaining": [],
-  "removed": [
-    "project-rules"
-  ],
-  "routes": [
-    "claude-code=claude-project",
-    "codex=codex-project"
-  ],
+  "format": 2,
+  "command": "uninstall",
+  "status": "ok",
   "scope": {
     "base_home": "$FIXTURE/private",
     "budget_scope": "selected installation only; active user packages have a separate budget and state",
@@ -21,5 +15,17 @@
     "home": "$PROJECT_HOME",
     "kind": "project",
     "root": "$FIXTURE/project ' space"
+  },
+  "diagnostics": [],
+  "result": {
+    "removed": [
+      "project-rules"
+    ],
+    "remaining": [],
+    "routes": [
+      "claude-code=claude-project",
+      "codex=codex-project"
+    ],
+    "changed": true
   }
 }

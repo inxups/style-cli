@@ -10,6 +10,7 @@ import tempfile
 from check_m3_update import fixture, run, snapshot, record, sha
 from check_m3_refresh import handler
 from check_m3_project import invoke_hook
+from style_json import report as style_report
 
 MANIFEST = """spec: style/v0.3
 name: service-provider
@@ -46,10 +47,10 @@ def main():
             scope = ('--project', project) if route.endswith('-project') else ()
             selection = ('--harness', provider, '--route', provider + '=' + route)
             before = snapshot(base, codex, claude, project)
-            preview = json.loads(run(binary, env, 'install', source, *scope, *selection, '--json', want=1).stdout)
+            preview = style_report(run(binary, env, 'install', source, *scope, *selection, '--json', want=1).stdout)
             assert preview['awaiting_confirmation'] and snapshot(base, codex, claude, project) == before
             record(cases, route, 'preview-zero-write')
-            installed = json.loads(run(binary, env, 'install', source, *scope, *selection, '--json', confirm=True).stdout)
+            installed = style_report(run(binary, env, 'install', source, *scope, *selection, '--json', confirm=True).stdout)
             home = Path(installed['scope']['home']) if scope else base
             index_path = home / 'build/index.json'
             index = json.loads(index_path.read_text())
@@ -89,7 +90,7 @@ def main():
                                                        payload_sha256='sha256:' + hashlib.sha256(payload.encode()).hexdigest(),
                                                        model_provider=service)))
                 before = snapshot(home / 'state', hook_path.parent)
-                explained = json.loads(run(binary, hook_env, 'explain', '--harness', provider, '--event', 'PreToolUse',
+                explained = style_report(run(binary, hook_env, 'explain', '--harness', provider, '--event', 'PreToolUse',
                                            '--payload', payload_file, '--facts', facts_file, '--index', index_path, '--json').stdout)
                 assert snapshot(home / 'state', hook_path.parent) == before
                 actual = invoke_selected(handler(hook_path, 'PreToolUse'), hook_env, payload, service)
@@ -115,7 +116,7 @@ def main():
             record(cases, route, 'actual-old-runtime-and-management-refuse-zero-write')
             for command in (('sync',), ('update', '--all'), ('restore',)):
                 run(binary, env, *command, *scope, '--json', confirm=True)
-            doctor = json.loads(run(binary, env, 'doctor', *scope, '--json').stdout)
+            doctor = style_report(run(binary, env, 'doctor', *scope, '--json').stdout)
             assert any(d['code'] == 'runtime-index-4' for d in doctor['diagnostics'])
             (home / 'build/index.json').unlink()
             (home / 'build/explain.json').unlink()

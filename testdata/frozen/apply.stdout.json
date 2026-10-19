@@ -1,261 +1,270 @@
 {
-  "format": 1,
+  "format": 2,
   "command": "restore",
-  "status": "applied",
-  "selected": [
-    "first"
-  ],
-  "changes": [
-    {
-      "package": "first",
-      "seq": 1,
-      "before": {
-        "source": {
-          "kind": "dir",
-          "path": "$FIXTURE/source",
-          "link": false
-        },
-        "version": "0.1.0",
-        "content_sha256": "sha256:464247cffef5989ec5aeb92b74be2af522b752c5aaf9f068839217659228525c",
-        "settings": [],
-        "replace": false,
-        "link_trusted": false
-      },
-      "after": {
-        "source": {
-          "kind": "dir",
-          "path": "$FIXTURE/source",
-          "link": false
-        },
-        "version": "0.1.0",
-        "content_sha256": "sha256:464247cffef5989ec5aeb92b74be2af522b752c5aaf9f068839217659228525c",
-        "settings": [],
-        "replace": false,
-        "link_trusted": false
-      },
-      "baseline_available": true,
-      "source_changed": false,
-      "rendered_changed": false,
-      "native_changed": false,
-      "configuration_repair": false,
-      "approval_changed": false,
-      "settings_added": [],
-      "settings_removed": [],
-      "native_before": [
-        {
-          "harness": "codex",
-          "rule": "first/earlier",
-          "event": "PreToolUse",
-          "matcher": "^Bash$",
-          "timeout": 60,
-          "command": "printf earlier",
-          "route": "codex-user",
-          "trust": "preseed",
-          "trust_summary": "Codex hooks.state is pre-seeded"
-        },
-        {
-          "harness": "codex",
-          "rule": "first/later",
-          "event": "PreToolUse",
-          "matcher": "^Bash$",
-          "timeout": 19,
-          "declared_timeout": 19,
-          "command": "printf later",
-          "route": "codex-user",
-          "trust": "preseed",
-          "trust_summary": "Codex hooks.state is pre-seeded"
-        }
-      ],
-      "native_after": [
-        {
-          "harness": "codex",
-          "rule": "first/earlier",
-          "event": "PreToolUse",
-          "matcher": "^Bash$",
-          "timeout": 60,
-          "command": "printf earlier",
-          "route": "codex-user",
-          "trust": "preseed",
-          "trust_summary": "Codex hooks.state is pre-seeded"
-        },
-        {
-          "harness": "codex",
-          "rule": "first/later",
-          "event": "PreToolUse",
-          "matcher": "^Bash$",
-          "timeout": 19,
-          "declared_timeout": 19,
-          "command": "printf later",
-          "route": "codex-user",
-          "trust": "preseed",
-          "trust_summary": "Codex hooks.state is pre-seeded"
-        }
-      ]
-    }
-  ],
-  "reports": [
-    {
-      "package": "first",
-      "provider": "codex",
-      "route": "codex-user",
-      "native_limit": {
-        "value": 2500,
-        "unit": "tokens",
-        "approximate": true,
-        "source": "Codex additionalContext default",
-        "overflow": "file-preview"
-      },
-      "budget": {
-        "per_rule": 400,
-        "per_event": 1200,
-        "always_on": 600
-      },
-      "plan": {
+  "status": "ok",
+  "scope": {
+    "home": "$FIXTURE/style",
+    "kind": "user"
+  },
+  "diagnostics": [],
+  "result": {
+    "format": 1,
+    "command": "restore",
+    "status": "applied",
+    "selected": [
+      "first"
+    ],
+    "changes": [
+      {
         "package": "first",
-        "adapter": "codex",
-        "rules": [
-          {
-            "id": "runtime",
-            "source": "STYLE.yaml#runtime",
-            "target": "tool",
-            "action": "inject",
-            "status": "native",
-            "needs": [
-              "agent"
-            ],
-            "placements": [
-              {
-                "event": "tool.pre",
-                "action": "inject",
-                "status": "native",
-                "capabilities": [
-                  "add-context"
-                ],
-                "repeat": "session"
-              }
-            ]
-          }
-        ],
-        "native_hooks": [
-          {
-            "id": "later",
-            "source": "STYLE.yaml#native_hooks/later",
-            "status": "native-hook",
-            "native": {
-              "event": "PreToolUse",
-              "matcher": "^Bash$",
-              "timeout": 19
-            }
+        "seq": 1,
+        "before": {
+          "source": {
+            "kind": "dir",
+            "path": "$FIXTURE/source",
+            "link": false
           },
-          {
-            "id": "earlier",
-            "source": "STYLE.yaml#native_hooks/earlier",
-            "status": "native-hook",
-            "native": {
-              "event": "PreToolUse",
-              "matcher": "^Bash$",
-              "timeout": 60
-            }
-          }
-        ],
-        "blocked": false
-      },
-      "tokens": {
-        "rules": [
-          {
-            "rule": "runtime",
-            "action": "inject",
-            "status": "native",
-            "estimate": {
-              "tokens": 4,
-              "chars": 11
-            },
-            "events": [
-              "tool.pre"
-            ]
-          }
-        ],
-        "events": [
-          {
-            "key": "codex\u0000PreToolUse Bash",
-            "label": "PreToolUse Bash",
-            "estimate": {
-              "tokens": 4,
-              "chars": 11
-            },
-            "block": {
-              "tokens": 0,
-              "chars": 0
-            },
-            "other": {
-              "tokens": 4,
-              "chars": 11
-            },
-            "other_count": 1
-          }
-        ],
-        "always_on": {
-          "tokens": 0,
-          "chars": 0
+          "version": "0.1.0",
+          "content_sha256": "sha256:464247cffef5989ec5aeb92b74be2af522b752c5aaf9f068839217659228525c",
+          "settings": [],
+          "replace": false,
+          "link_trusted": false
         },
-        "native_unestimated": [
+        "after": {
+          "source": {
+            "kind": "dir",
+            "path": "$FIXTURE/source",
+            "link": false
+          },
+          "version": "0.1.0",
+          "content_sha256": "sha256:464247cffef5989ec5aeb92b74be2af522b752c5aaf9f068839217659228525c",
+          "settings": [],
+          "replace": false,
+          "link_trusted": false
+        },
+        "baseline_available": true,
+        "source_changed": false,
+        "rendered_changed": false,
+        "native_changed": false,
+        "configuration_repair": false,
+        "approval_changed": false,
+        "settings_added": [],
+        "settings_removed": [],
+        "native_before": [
           {
-            "rule": "later",
-            "event": "PreToolUse"
+            "harness": "codex",
+            "rule": "first/earlier",
+            "event": "PreToolUse",
+            "matcher": "^Bash$",
+            "timeout": 60,
+            "command": "printf earlier",
+            "route": "codex-user",
+            "trust": "preseed",
+            "trust_summary": "Codex hooks.state is pre-seeded"
           },
           {
-            "rule": "earlier",
-            "event": "PreToolUse"
+            "harness": "codex",
+            "rule": "first/later",
+            "event": "PreToolUse",
+            "matcher": "^Bash$",
+            "timeout": 19,
+            "declared_timeout": 19,
+            "command": "printf later",
+            "route": "codex-user",
+            "trust": "preseed",
+            "trust_summary": "Codex hooks.state is pre-seeded"
+          }
+        ],
+        "native_after": [
+          {
+            "harness": "codex",
+            "rule": "first/earlier",
+            "event": "PreToolUse",
+            "matcher": "^Bash$",
+            "timeout": 60,
+            "command": "printf earlier",
+            "route": "codex-user",
+            "trust": "preseed",
+            "trust_summary": "Codex hooks.state is pre-seeded"
+          },
+          {
+            "harness": "codex",
+            "rule": "first/later",
+            "event": "PreToolUse",
+            "matcher": "^Bash$",
+            "timeout": 19,
+            "declared_timeout": 19,
+            "command": "printf later",
+            "route": "codex-user",
+            "trust": "preseed",
+            "trust_summary": "Codex hooks.state is pre-seeded"
           }
         ]
-      },
-      "session_cost": {
-        "requests": 60,
-        "triggers": 3,
-        "always_on": 0,
-        "triggered": 17,
-        "total": 17
       }
-    }
-  ],
-  "diagnostics": [],
-  "routes": [
-    "codex=codex-user"
-  ],
-  "native_hooks": [
-    {
-      "harness": "codex",
-      "rule": "first/earlier",
-      "event": "PreToolUse",
-      "matcher": "^Bash$",
-      "timeout": 60,
-      "command": "printf earlier",
-      "route": "codex-user",
-      "trust": "preseed",
-      "trust_summary": "Codex hooks.state is pre-seeded"
-    },
-    {
-      "harness": "codex",
-      "rule": "first/later",
-      "event": "PreToolUse",
-      "matcher": "^Bash$",
-      "timeout": 19,
-      "declared_timeout": 19,
-      "command": "printf later",
-      "route": "codex-user",
-      "trust": "preseed",
-      "trust_summary": "Codex hooks.state is pre-seeded"
-    }
-  ],
-  "changed": true,
-  "awaiting_confirmation": false,
-  "lock_sha256": "$LOCK_SHA256",
-  "locked_source": true,
-  "contents": [
-    {
-      "package": "first",
-      "snapshot": "managed",
-      "storage_repair": false
-    }
-  ]
+    ],
+    "reports": [
+      {
+        "package": "first",
+        "provider": "codex",
+        "route": "codex-user",
+        "native_limit": {
+          "value": 2500,
+          "unit": "tokens",
+          "approximate": true,
+          "source": "Codex additionalContext default",
+          "overflow": "file-preview"
+        },
+        "budget": {
+          "per_rule": 400,
+          "per_event": 1200,
+          "always_on": 600
+        },
+        "plan": {
+          "package": "first",
+          "adapter": "codex",
+          "rules": [
+            {
+              "id": "runtime",
+              "source": "STYLE.yaml#runtime",
+              "target": "tool",
+              "action": "inject",
+              "status": "native",
+              "needs": [
+                "agent"
+              ],
+              "placements": [
+                {
+                  "event": "tool.pre",
+                  "action": "inject",
+                  "status": "native",
+                  "capabilities": [
+                    "add-context"
+                  ],
+                  "repeat": "session"
+                }
+              ]
+            }
+          ],
+          "native_hooks": [
+            {
+              "id": "later",
+              "source": "STYLE.yaml#native_hooks/later",
+              "status": "native-hook",
+              "native": {
+                "event": "PreToolUse",
+                "matcher": "^Bash$",
+                "timeout": 19
+              }
+            },
+            {
+              "id": "earlier",
+              "source": "STYLE.yaml#native_hooks/earlier",
+              "status": "native-hook",
+              "native": {
+                "event": "PreToolUse",
+                "matcher": "^Bash$",
+                "timeout": 60
+              }
+            }
+          ],
+          "blocked": false
+        },
+        "tokens": {
+          "rules": [
+            {
+              "rule": "runtime",
+              "action": "inject",
+              "status": "native",
+              "estimate": {
+                "tokens": 4,
+                "chars": 11
+              },
+              "events": [
+                "tool.pre"
+              ]
+            }
+          ],
+          "events": [
+            {
+              "key": "codex\u0000PreToolUse Bash",
+              "label": "PreToolUse Bash",
+              "estimate": {
+                "tokens": 4,
+                "chars": 11
+              },
+              "block": {
+                "tokens": 0,
+                "chars": 0
+              },
+              "other": {
+                "tokens": 4,
+                "chars": 11
+              },
+              "other_count": 1
+            }
+          ],
+          "always_on": {
+            "tokens": 0,
+            "chars": 0
+          },
+          "native_unestimated": [
+            {
+              "rule": "later",
+              "event": "PreToolUse"
+            },
+            {
+              "rule": "earlier",
+              "event": "PreToolUse"
+            }
+          ]
+        },
+        "session_cost": {
+          "requests": 60,
+          "triggers": 3,
+          "always_on": 0,
+          "triggered": 17,
+          "total": 17
+        }
+      }
+    ],
+    "routes": [
+      "codex=codex-user"
+    ],
+    "native_hooks": [
+      {
+        "harness": "codex",
+        "rule": "first/earlier",
+        "event": "PreToolUse",
+        "matcher": "^Bash$",
+        "timeout": 60,
+        "command": "printf earlier",
+        "route": "codex-user",
+        "trust": "preseed",
+        "trust_summary": "Codex hooks.state is pre-seeded"
+      },
+      {
+        "harness": "codex",
+        "rule": "first/later",
+        "event": "PreToolUse",
+        "matcher": "^Bash$",
+        "timeout": 19,
+        "declared_timeout": 19,
+        "command": "printf later",
+        "route": "codex-user",
+        "trust": "preseed",
+        "trust_summary": "Codex hooks.state is pre-seeded"
+      }
+    ],
+    "changed": true,
+    "awaiting_confirmation": false,
+    "lock_sha256": "$LOCK_SHA256",
+    "locked_source": true,
+    "contents": [
+      {
+        "package": "first",
+        "snapshot": "managed",
+        "storage_repair": false
+      }
+    ]
+  }
 }

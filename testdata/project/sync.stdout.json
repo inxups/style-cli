@@ -1,13 +1,7 @@
 {
-  "awaiting_confirmation": false,
-  "changed": false,
-  "changes": [],
-  "expired_sessions": 0,
-  "needs_trust": [],
-  "routes": [
-    "claude-code=claude-project",
-    "codex=codex-project"
-  ],
+  "format": 2,
+  "command": "sync",
+  "status": "ok",
   "scope": {
     "base_home": "$FIXTURE/private",
     "budget_scope": "selected installation only; active user packages have a separate budget and state",
@@ -21,5 +15,17 @@
     "home": "$PROJECT_HOME",
     "kind": "project",
     "root": "$FIXTURE/project ' space"
+  },
+  "diagnostics": [],
+  "result": {
+    "changed": false,
+    "changes": [],
+    "needs_trust": [],
+    "awaiting_confirmation": false,
+    "routes": [
+      "claude-code=claude-project",
+      "codex=codex-project"
+    ],
+    "expired_sessions": 0
   }
 }

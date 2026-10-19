@@ -3,7 +3,6 @@ package app
 import (
 	"bytes"
 	"context"
-	"encoding/json"
 	"io"
 	"os"
 	"path/filepath"
@@ -31,7 +30,7 @@ func TestRunSyncAndTrustExitCodesAndDiffOutput(t *testing.T) {
 		t.Fatalf("sync code=%d stdout=%s stderr=%s", code, stdout.String(), stderr.String())
 	}
 	var result SyncResult
-	if err := json.Unmarshal(stdout.Bytes(), &result); err != nil || !reflect.DeepEqual(result.NeedsTrust, []string{"editable"}) {
+	if err := decodeReport(stdout.Bytes(), &result); err != nil || !reflect.DeepEqual(result.NeedsTrust, []string{"editable"}) {
 		t.Fatalf("sync JSON = %s, %v", stdout.String(), err)
 	}
 	before := installedTree(t, home, config)
@@ -45,7 +44,7 @@ func TestRunSyncAndTrustExitCodesAndDiffOutput(t *testing.T) {
 	if code := run("trust", "editable", "--json"); code != ExitOK {
 		t.Fatalf("trust code=%d stdout=%s stderr=%s", code, stdout.String(), stderr.String())
 	}
-	if err := json.Unmarshal(stdout.Bytes(), &result); err != nil || !result.Changed || result.ApprovalTarget != "editable" || result.Changes[0].NeedsTrust {
+	if err := decodeReport(stdout.Bytes(), &result); err != nil || !result.Changed || result.ApprovalTarget != "editable" || result.Changes[0].NeedsTrust {
 		t.Fatalf("trust JSON = %s, %v", stdout.String(), err)
 	}
 	if code := run("sync"); code != ExitOK || !strings.Contains(stdout.String(), "changed=false") {

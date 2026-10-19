@@ -14,6 +14,7 @@ import tempfile
 from check_m3_update import fixture, record, run, sha, snapshot
 from check_m3_refresh import handler
 from check_m3_project import invoke_hook
+from style_json import report as style_report
 
 
 def manifest(name,combined):
@@ -42,7 +43,7 @@ def main():
             project=root/"project ' space";project.mkdir();scope=['--project',project] if route.endswith('-project') else []
             source=root/'source';source.mkdir();(source/'STYLE.yaml').write_text(manifest('first',False))
             selection=['--harness',harness,'--route',harness+'='+route]
-            installed=json.loads(run(old,env,'install',source,*scope,*selection,'--yes','--json',want=1 if route=='claude-plugin' else 0).stdout)
+            installed=style_report(run(old,env,'install',source,*scope,*selection,'--yes','--json',want=1 if route=='claude-plugin' else 0).stdout)
             home=Path(installed['scope']['home']) if scope else base
             if route=='codex-plugin':
                 hook_path=home/'adapters/codex/plugin/hooks/hooks.json';env['PLUGIN_ROOT']=str(hook_path.parent.parent)
@@ -79,7 +80,7 @@ def main():
             run(binary,env,'update','--all',*scope,'--json', confirm=True)
             (stub/'style').unlink();(stub/'style').symlink_to(binary)
             alias=root/'alias';alias.mkdir();(alias/'STYLE.yaml').write_text(manifest('second',True))
-            installed=json.loads(run(binary,env,'install',alias,*scope,*selection,'--json', confirm=True).stdout)
+            installed=style_report(run(binary,env,'install',alias,*scope,*selection,'--json', confirm=True).stdout)
             second=next(r for r in installed['reports'] if r['plan']['package']=='second')
             assert all(r.get('deduplicated_into','').startswith('first/') for r in second['plan']['rules'])
             assert second['session_cost']['total']==0
@@ -88,7 +89,7 @@ def main():
             event=root/'event.json';event.write_text(payload('PreToolUse'))
             facts=root/'facts.json';facts.write_text(json.dumps({'format':1,'harness':harness,'payload_sha256':'sha256:'+hashlib.sha256(event.read_bytes()).hexdigest(),'model_provider':'fixture' if harness=='codex' else 'anthropic',('codex_config_effort' if harness=='codex' else 'claude_env_effort'):'future'}))
             before=snapshot(home/'state',hook_path.parent)
-            explain=json.loads(run(binary,env,'explain','--harness',harness,'--event','PreToolUse','--payload',event,'--facts',facts,'--index',index,'--state-dir',home/'state','--json').stdout)
+            explain=style_report(run(binary,env,'explain','--harness',harness,'--event','PreToolUse','--payload',event,'--facts',facts,'--index',index,'--state-dir',home/'state','--json').stdout)
             assert snapshot(home/'state',hook_path.parent)==before
             actual=invoke('PreToolUse');assert actual==explain['wire']['stdout'],(route,actual,explain['wire'])
             assert actual.count('A18_FIRST')==1 and actual.index('A18_FIRST')<actual.index('A18_LAST'),(route,actual)

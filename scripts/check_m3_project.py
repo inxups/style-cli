@@ -12,6 +12,7 @@ import subprocess
 import tempfile
 
 from check_m3_update import fixture, manifest, record, run, sha, snapshot
+from style_json import report as style_report
 
 
 def invoke_hook(hook, env, cwd, payload):
@@ -45,12 +46,12 @@ def main():
             source.mkdir()
             (source / "STYLE.yaml").write_text(manifest("project-rules", "Project.", native=True))
             before = snapshot(base, codex, claude, project)
-            preview = json.loads(run(new, env, "install", source, "--project", project,
+            preview = style_report(run(new, env, "install", source, "--project", project,
                                      "--harness", provider, "--json", want=1).stdout)
             assert preview["scope"]["kind"] == "project" and preview["native_hooks"]
             assert snapshot(base, codex, claude, project) == before
             record(cases, route, "preview-zero-write")
-            installed = json.loads(run(new, env, "install", source, "--project", project,
+            installed = style_report(run(new, env, "install", source, "--project", project,
                                        "--harness", provider, "--json", confirm=True).stdout)
             home = Path(installed["scope"]["home"])
             assert home.parent == base / "projects"
@@ -62,7 +63,7 @@ def main():
             record(cases, route, "install-format3-private-scope")
             for command in (("list",), ("sync",), ("trust", "project-rules"),
                             ("update", "--all"), ("restore",), ("doctor",), ("stats",)):
-                report = json.loads(run(new, env, *command, "--project", project, "--json", confirm=True).stdout)
+                report = style_report(run(new, env, *command, "--project", project, "--json", confirm=True).stdout)
                 assert report["scope"]["home"] == str(home)
             record(cases, route, "management-scope-consistency", commands=7)
             before = snapshot(base, codex, claude, project)
@@ -111,7 +112,7 @@ def main():
             assert result.returncode == 0 and "Project." not in result.stdout and "no local binding" in result.stderr
             assert not (base / "state").exists()
             record(cases, route, "unbound-clone-no-user-fallback")
-            adopted = json.loads(run(new, env, "install", source, "--project", clone,
+            adopted = style_report(run(new, env, "install", source, "--project", clone,
                                      "--harness", provider, "--json", confirm=True).stdout)
             assert adopted["scope"]["home"] != str(home)
             assert adopted["project_adoption"] is True
@@ -124,7 +125,7 @@ def main():
             clone_native = clone / native_path.relative_to(project)
             if clone_native.exists():
                 assert "--owner=style" not in clone_native.read_text()
-            original = json.loads(run(new, env, "list", "--project", project, "--json").stdout)
+            original = style_report(run(new, env, "list", "--project", project, "--json").stdout)
             assert original["packages"][0]["name"] == "project-rules"
             record(cases, route, "clone-uninstall-original-preserved")
     report = {"format": 1, "binary_sha256": sha(new), "old_binary_sha256": sha(old),

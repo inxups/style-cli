@@ -46,7 +46,7 @@ func TestRunInstallSwitchesRoutesWithoutResidueAndKeepsExternalConfig(t *testing
 		args := []string{"install", source, "--harness=codex", "--route=codex=" + route, "--json"}
 		code := RunWithServiceInput(context.Background(), service, root, args, approve(), &stdout, &stderr)
 		var result InstallResult
-		if err := json.Unmarshal(stdout.Bytes(), &result); err != nil || code != 0 || result.Changed != (route != previousRoute) {
+		if err := decodeReport(stdout.Bytes(), &result); err != nil || code != 0 || result.Changed != (route != previousRoute) {
 			t.Fatalf("%s exit=%d err=%v stdout=%s stderr=%s", route, code, err, stdout.String(), stderr.String())
 		}
 		lock, err := loadLock(home)
@@ -73,7 +73,7 @@ func TestRunInstallSwitchesRoutesWithoutResidueAndKeepsExternalConfig(t *testing
 		if code := RunWithServiceInput(context.Background(), service, root, args, approve(), &stdout, &stderr); code != 0 {
 			t.Fatalf("repeat %s: exit=%d %s", route, code, stderr.String())
 		}
-		if err := json.Unmarshal(stdout.Bytes(), &result); err != nil || result.Changed {
+		if err := decodeReport(stdout.Bytes(), &result); err != nil || result.Changed {
 			t.Fatalf("repeat %s changed: %s %v", route, stdout.String(), err)
 		}
 		previousRoute = route

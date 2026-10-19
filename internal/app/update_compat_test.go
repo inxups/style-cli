@@ -326,7 +326,7 @@ func TestM3A4CommandGoldenAndSingleJSON(t *testing.T) {
 				if jsonOutput {
 					decoder := json.NewDecoder(bytes.NewReader(out.Bytes()))
 					var result UpdateResult
-					if err := decoder.Decode(&result); err != nil || decoder.More() || result.Command != "update" || result.Format != 1 {
+					if err := decoder.Decode(new(any)); err != nil || decoder.More() || decodeReport(out.Bytes(), &result) != nil || result.Command != "update" || result.Format != 1 {
 						t.Fatalf("JSON=%s err=%v stderr=%s", &out, err, &errOut)
 					}
 				}

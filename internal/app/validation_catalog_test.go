@@ -3,7 +3,6 @@ package app
 import (
 	"bytes"
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"os"
@@ -401,12 +400,12 @@ func TestM3A0CLIDiagnosticsRetainJSONAndExitContract(t *testing.T) {
 		}
 		var diagnostics []Diagnostic
 		if command == "validate" {
-			if err := json.Unmarshal(stdout.Bytes(), &diagnostics); err != nil {
+			if err := decodeReport(stdout.Bytes(), &diagnostics); err != nil {
 				t.Fatal(err)
 			}
 		} else {
 			var result PlanResult
-			if err := json.Unmarshal(stdout.Bytes(), &result); err != nil || len(result.Reports) != 0 {
+			if err := decodeReport(stdout.Bytes(), &result); err != nil || len(result.Reports) != 0 {
 				t.Fatalf("plan JSON = %s, %v", stdout.String(), err)
 			}
 			diagnostics = result.Diagnostics

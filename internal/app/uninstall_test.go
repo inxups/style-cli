@@ -3,7 +3,6 @@ package app
 import (
 	"bytes"
 	"context"
-	"encoding/json"
 	"errors"
 	"os"
 	"path/filepath"
@@ -153,7 +152,7 @@ func TestRunUninstallAllPreservesLinkedSource(t *testing.T) {
 		Removed []string `json:"removed"`
 		Changed bool     `json:"changed"`
 	}
-	if err := json.Unmarshal(output.Bytes(), &report); err != nil || len(report.Removed) != 1 || report.Removed[0] != "linked" || !report.Changed {
+	if err := decodeReport(output.Bytes(), &report); err != nil || len(report.Removed) != 1 || report.Removed[0] != "linked" || !report.Changed {
 		t.Fatalf("uninstall --all JSON = %q, decoded=%#v, err=%v", output.String(), report, err)
 	}
 	if _, err := os.Stat(filepath.Join(source, "STYLE.yaml")); err != nil {

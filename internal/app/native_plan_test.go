@@ -3,6 +3,7 @@ package app
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"errors"
 	"io/fs"
 	"os"
@@ -84,7 +85,12 @@ func TestA2NativePlanReports(t *testing.T) {
 	if code := RunWithService(context.Background(), service, root, []string{"plan", "testdata/packages/terse-reviewer", "--harness=codex,claude-code", "--json"}, &out, &errOut); code != ExitOK {
 		t.Fatalf("plan --json exit=%d stderr=%s", code, errOut.String())
 	}
-	text := out.String()
+	var envelope jsonEnvelope
+	if err := json.Unmarshal(out.Bytes(), &envelope); err != nil {
+		t.Fatal(err)
+	}
+	// The envelope names the command; the report itself must not carry hook commands.
+	text := string(envelope.Result)
 	for _, forbidden := range []string{"skipped-m2", `"command"`, `"notify"`, "Runs the local notify command"} {
 		if strings.Contains(text, forbidden) {
 			t.Fatalf("plan JSON contains %q", forbidden)

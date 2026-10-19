@@ -86,6 +86,15 @@ func RunWithServiceInput(ctx context.Context, service *Service, workDir string, 
 	if projectInvocation(args) {
 		return runProjectCommand(ctx, service, workDir, args, in, out, errOut)
 	}
+	if jsonRequested(args) {
+		return runJSON(args[0], service.jsonScope(), out, errOut, func(out, errOut io.Writer) int {
+			return runCommand(ctx, service, workDir, args, in, out, errOut)
+		})
+	}
+	return runCommand(ctx, service, workDir, args, in, out, errOut)
+}
+
+func runCommand(ctx context.Context, service *Service, workDir string, args []string, in io.Reader, out, errOut io.Writer) int {
 	switch args[0] {
 	case "init":
 		return runInit(ctx, service, workDir, args[1:], out, errOut)

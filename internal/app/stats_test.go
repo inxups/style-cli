@@ -116,7 +116,7 @@ func TestA5StatsRuleAndSessionGoldens(t *testing.T) {
 		t.Fatalf("dispatch exit=%d stderr=%s", code, &errOut)
 	}
 	var report StatsResult
-	if err := json.Unmarshal(out.Bytes(), &report); err != nil || report.Format != 1 || len(report.Rows) != 1 || report.Rows[0].Provider != "retired-harness" {
+	if err := decodeReport(out.Bytes(), &report); err != nil || report.Format != 1 || len(report.Rows) != 1 || report.Rows[0].Provider != "retired-harness" {
 		t.Fatalf("dispatch JSON: %v %s", err, &out)
 	}
 	if liveResult, err := service.Stats(context.Background(), StatsRequest{Home: liveHome}); err != nil || liveResult.Totals.Outputs != 1 {

@@ -18,6 +18,7 @@ import subprocess
 import sys
 import tempfile
 from pathlib import Path
+from style_json import report as style_report
 
 ROOT = Path(__file__).resolve().parent.parent
 EXAMPLE = ROOT / "testdata" / "packages" / "terse-reviewer"
@@ -118,7 +119,7 @@ def main():
                    PATH=str(stubs) + os.pathsep + env.get("PATH", ""))
 
         result = style(binary, env, "stats", "--json")
-        empty_stats = json.loads(result.stdout)
+        empty_stats = style_report(result.stdout)
         check(result.returncode == 0 and empty_stats["rows"] == [] and
               not (home / ".style").exists(), "stats on empty home creates no state")
 
@@ -128,7 +129,7 @@ def main():
             check(result.returncode == 0 and result.stdout.strip() == "valid", f"validate {name}")
             result = style(binary, env, "plan", str(package), "--harness", "codex,claude-code", "--json")
             try:
-                json.loads(result.stdout)
+                style_report(result.stdout)
                 parsed = True
             except ValueError:
                 parsed = False
@@ -140,11 +141,11 @@ def main():
         if result.returncode != 0:
             return
 
-        listed = json.loads(style(binary, env, "list", "--json").stdout)["packages"]
+        listed = style_report(style(binary, env, "list", "--json").stdout)["packages"]
         check([(p["name"], p["hash_matches"]) for p in listed] == [("terse-reviewer", True)],
               "list shows terse-reviewer with matching hash")
         result = style(binary, env, "doctor", "--json")
-        check(result.returncode == 0 and json.loads(result.stdout)["healthy"] is True, "doctor healthy")
+        check(result.returncode == 0 and style_report(result.stdout)["healthy"] is True, "doctor healthy")
         check("Review code concisely" in (home / ".codex" / "config.toml").read_text(),
               "codex developer_instructions written")
         check("Review code concisely" in (home / ".claude" / "rules" / "style-terse-reviewer.md").read_text(),
@@ -158,7 +159,7 @@ def main():
                                                         "name: terse-reviewer-copy\n", 1))
         result = style(binary, env, "install", str(duplicate), "--harness", "codex,claude-code",
                        "--json", confirm=True)
-        combined = json.loads(result.stdout)
+        combined = style_report(result.stdout)
         alias_reports = [r for r in combined["reports"] if r["plan"]["package"] == "terse-reviewer-copy"]
         check(result.returncode == 0 and len(alias_reports) == 2 and
               all(any(row.get("deduplicated_into") == "terse-reviewer/style"
@@ -174,7 +175,7 @@ def main():
                   for directory, filename in ((".codex", "config.toml"), (".claude", "rules/style-terse-reviewer.md"))),
               "two installed packages keep one set of static and runtime placements")
         result = style(binary, env, "doctor", "--json")
-        check(result.returncode == 0 and json.loads(result.stdout)["healthy"] is True,
+        check(result.returncode == 0 and style_report(result.stdout)["healthy"] is True,
               "doctor accepts cross-package compiled output")
 
         for provider, argv in hook_commands(home).items():
@@ -188,7 +189,7 @@ def main():
                 check(ok, f"{provider} PreToolUse {verdict}: {command}")
 
         result = style(binary, env, "stats", "--by=rule", "--since=24h", "--json")
-        rule_stats = json.loads(result.stdout)
+        rule_stats = style_report(result.stdout)
         check(result.returncode == 0 and len(rule_stats["rows"]) == 2 and
               {row["provider"] for row in rule_stats["rows"]} == {"codex", "claude-code"} and
               all(row["rule"] == "terse-reviewer/no-force-push" and
@@ -197,7 +198,7 @@ def main():
                   for row in rule_stats["rows"]) and not rule_stats["quality"]["partial"],
               "stats groups actual hook records by provider and rule")
         result = style(binary, env, "stats", "--by", "session", "--json")
-        session_stats = json.loads(result.stdout)
+        session_stats = style_report(result.stdout)
         check(result.returncode == 0 and len(session_stats["rows"]) == 2 and
               all(row["session"] == "smoke" for row in session_stats["rows"]) and
               session_stats["totals"] == rule_stats["totals"],
@@ -219,7 +220,7 @@ def main():
         check(not leftovers, "uninstall removes STYLE hooks and static text" +
               ("" if not leftovers else ": " + ", ".join(shlex.quote(str(p)) for p in leftovers)))
         result = style(binary, env, "stats", "--json")
-        check(result.returncode == 0 and json.loads(result.stdout)["rows"] == rule_stats["rows"],
+        check(result.returncode == 0 and style_report(result.stdout)["rows"] == rule_stats["rows"],
               "stats history remains available after uninstall")
 
 

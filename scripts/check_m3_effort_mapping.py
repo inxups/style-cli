@@ -9,6 +9,7 @@ import tempfile
 from check_m3_update import fixture, run, snapshot, record, sha
 from check_m3_refresh import handler
 from check_m3_project import invoke_hook
+from style_json import report as style_report
 
 MANIFEST = """spec: style/v0.3
 name: effort-policy
@@ -46,7 +47,7 @@ def main():
             (source / 'STYLE.yaml').write_text(MANIFEST)
             scope = ('--project', project) if route.endswith('-project') else ()
             selection = ('--harness', provider, '--route', provider + '=' + route)
-            installed = json.loads(run(binary, env, 'install', source, *scope, *selection, '--json', confirm=True).stdout)
+            installed = style_report(run(binary, env, 'install', source, *scope, *selection, '--json', confirm=True).stdout)
             home = Path(installed['scope']['home']) if scope else base
             index_path = home / 'build/index.json'
             assert json.loads(index_path.read_text())['format'] == 1
@@ -54,7 +55,7 @@ def main():
             def config(tier):
                 mapping_file.write_text('format: 1\nharnesses:\n  ' + provider + ': {future: ' + tier + '}\n')
             config('high')
-            planned = json.loads(run(binary, env, 'plan', source, *scope, '--harness', provider, '--json').stdout)
+            planned = style_report(run(binary, env, 'plan', source, *scope, '--harness', provider, '--json').stdout)
             assert any(d['code'] == 'effort-mapping' for d in planned['diagnostics'])
             run(binary, env, 'sync', *scope, '--json')
             index = json.loads(index_path.read_text())
@@ -90,7 +91,7 @@ def main():
             def parity(expected, cached=False):
                 before = snapshot(home / 'state', hook_path.parent)
                 state_flags = ('--state-dir', home / 'state') if cached else ()
-                explained = json.loads(run(binary, env, 'explain', '--harness', provider, '--event', 'PreToolUse',
+                explained = style_report(run(binary, env, 'explain', '--harness', provider, '--event', 'PreToolUse',
                                            '--payload', payload_file, '--facts', facts_file, '--index', index_path,
                                            *state_flags, '--json').stdout)
                 assert snapshot(home / 'state', hook_path.parent) == before
@@ -122,7 +123,7 @@ def main():
             assert json.loads(index_path.read_text()) == index and (home / 'style.lock.yaml').read_text() == lock
             record(cases, route, 'frozen-rebuild-uses-approved-lock-not-live-mapping')
             config('low')
-            doctor = json.loads(run(binary, env, 'doctor', *scope, '--json').stdout)
+            doctor = style_report(run(binary, env, 'doctor', *scope, '--json').stdout)
             assert any(d['code'] == 'effort-mapping-pending' for d in doctor['diagnostics'])
             run(binary, env, 'sync', *scope, '--json')
             parity('Effort=low/raw=future', cached=True)

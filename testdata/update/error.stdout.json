@@ -1,10 +1,11 @@
 {
-  "format": 1,
+  "format": 2,
   "command": "update",
   "status": "error",
-  "selected": [],
-  "changes": [],
-  "reports": [],
+  "scope": {
+    "home": "$FIXTURE/style",
+    "kind": "user"
+  },
   "diagnostics": [
     {
       "code": "source-invalid",
@@ -12,7 +13,15 @@
       "message": "the selected package is not installed"
     }
   ],
-  "routes": [],
-  "changed": false,
-  "awaiting_confirmation": false
+  "result": {
+    "format": 1,
+    "command": "update",
+    "status": "error",
+    "selected": [],
+    "changes": [],
+    "reports": [],
+    "routes": [],
+    "changed": false,
+    "awaiting_confirmation": false
+  }
 }

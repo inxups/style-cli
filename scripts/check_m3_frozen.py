@@ -14,12 +14,13 @@ import shutil
 import tempfile
 
 from check_m3_update import fixture, manifest, record, run, sha, snapshot
+from style_json import report as style_report
 
 
 def document(result):
     # Prompting commands write their preview and y/N prompt to stderr.
     assert result.stderr == "" or result.stderr.endswith(" [y/N] \n"), result.stderr
-    value = json.loads(result.stdout)
+    value = style_report(result.stdout)
     assert value["format"] == 1 and value["command"] == "restore"
     assert value["locked_source"] is True
     return value

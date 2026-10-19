@@ -3,7 +3,6 @@ package app
 import (
 	"bytes"
 	"context"
-	"encoding/json"
 	"os"
 	"path/filepath"
 	"sort"
@@ -89,7 +88,7 @@ func TestA1ValidateExampleAndEveryInvalidFixture(t *testing.T) {
 				}
 				if jsonOutput {
 					var diagnostics []Diagnostic
-					if err := json.Unmarshal(out.Bytes(), &diagnostics); err != nil {
+					if err := decodeReport(out.Bytes(), &diagnostics); err != nil {
 						t.Fatal(err)
 					}
 					found := false
@@ -118,7 +117,7 @@ func TestValidateRejectsRemovedVarsField(t *testing.T) {
 		t.Fatalf("exit=%d stdout=%s stderr=%s", exit, out.String(), errOut.String())
 	}
 	var diagnostics []Diagnostic
-	if err := json.Unmarshal(out.Bytes(), &diagnostics); err != nil {
+	if err := decodeReport(out.Bytes(), &diagnostics); err != nil {
 		t.Fatal(err)
 	}
 	found := map[string]bool{}
@@ -141,7 +140,7 @@ func TestValidateRejectsRemovedReadsField(t *testing.T) {
 		t.Fatalf("exit=%d stdout=%s stderr=%s", exit, out.String(), errOut.String())
 	}
 	var diagnostics []Diagnostic
-	if err := json.Unmarshal(out.Bytes(), &diagnostics); err != nil {
+	if err := decodeReport(out.Bytes(), &diagnostics); err != nil {
 		t.Fatal(err)
 	}
 	var errors []string

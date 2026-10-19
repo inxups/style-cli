@@ -3,7 +3,6 @@ package app
 import (
 	"bytes"
 	"context"
-	"encoding/json"
 	"os"
 	"path/filepath"
 	"strings"
@@ -53,7 +52,7 @@ func TestRunValidateJSONIncludesStableCodesAndExitStatus(t *testing.T) {
 		t.Fatalf("validate exit = %d, stdout=%s stderr=%s", code, output.String(), errorsOut.String())
 	}
 	var diagnostics []Diagnostic
-	if err := json.Unmarshal(output.Bytes(), &diagnostics); err != nil {
+	if err := decodeReport(output.Bytes(), &diagnostics); err != nil {
 		t.Fatalf("validate JSON = %v: %s", err, output.String())
 	}
 	if len(diagnostics) == 0 || diagnostics[0].Code != "dup-id" {
@@ -75,7 +74,7 @@ func TestRunPlanJSONAndArgumentErrors(t *testing.T) {
 		t.Fatalf("plan JSON exit = %d: %s", code, output.String())
 	}
 	var report PlanResult
-	if err := json.Unmarshal(output.Bytes(), &report); err != nil {
+	if err := decodeReport(output.Bytes(), &report); err != nil {
 		t.Fatalf("plan JSON = %v: %s", err, output.String())
 	}
 	if report.Package != "demo" || len(report.Reports) != 1 || report.Reports[0].Provider != "codex" {

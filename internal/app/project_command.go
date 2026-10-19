@@ -1,15 +1,12 @@
 package app
 
 import (
-	"bytes"
 	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
 	"path/filepath"
-	"sort"
-	"strconv"
 	"strings"
 	"time"
 )
@@ -23,25 +20,21 @@ func projectInvocation(args []string) bool {
 	return false
 }
 func runProjectCommand(ctx context.Context, service *Service, workDir string, args []string, in io.Reader, out, errOut io.Writer) int {
-	jsonMode := false
-	for _, arg := range args {
-		if arg == "--json" {
-			jsonMode = true
-		}
-		if value, ok := strings.CutPrefix(arg, "--json="); ok {
-			jsonMode, _ = strconv.ParseBool(value)
-		}
-	}
 	fail := func(err error) int {
-		fmt.Fprintf(errOut, "style %s: %v\n", args[0], err)
-		if jsonMode {
-			_ = encodeJSON(out, map[string]any{"status": "error", "diagnostics": []Diagnostic{{Code: "project-invalid", Severity: "error", Message: err.Error()}}})
-		}
 		var usageErr *UsageError
 		if errors.As(err, &usageErr) {
+			fmt.Fprintf(errOut, "style %s: %v\n", args[0], err)
 			return ExitUsage
 		}
-		return ExitInvalid
+		report := func(out, errOut io.Writer) int {
+			fmt.Fprintf(errOut, "style %s: %v\n", args[0], err)
+			_ = encodeJSON(out, map[string]any{"diagnostics": []Diagnostic{{Code: "project-invalid", Severity: "error", Message: err.Error()}}})
+			return ExitInvalid
+		}
+		if jsonRequested(args) {
+			return runJSON(args[0], map[string]any{"kind": "project"}, out, errOut, report)
+		}
+		return report(io.Discard, errOut)
 	}
 	if command, ok := lookupCommand(args[0]); !ok || !command.Project {
 		return fail(&UsageError{Message: "--project is not supported by this command"})
@@ -82,47 +75,14 @@ func runProjectCommand(ctx context.Context, service *Service, workDir string, ar
 	if err != nil {
 		return fail(err)
 	}
-	scope := map[string]any{"kind": "project", "root": scoped.project.Root, "base_home": scoped.project.Base, "home": scoped.project.Home, "external_prerequisites": []string{"style must be available on the harness PATH", "harness workspace trust remains external", "launch Claude Code at the project root", "launch Codex through the canonical project path"}}
-	coexisting := map[string][]string{}
-	if user, e := loadLock(scoped.project.Base); e == nil {
-		for id := range user.Harnesses {
-			for _, pkg := range user.Packages {
-				coexisting[id] = append(coexisting[id], pkg.Name)
-			}
-			sort.Strings(coexisting[id])
+	if !jsonRequested(args) {
+		// Text output streams, so a confirmation prompt follows its preview.
+		fmt.Fprintf(out, "scope=project root=%s home=%s\n", scoped.project.Root, scoped.project.Home)
+		fmt.Fprintln(out, "prerequisites: style on harness PATH; same STYLE_HOME; external workspace trust; Claude starts at project root; Codex uses canonical path")
+		if coexisting := scoped.jsonScope()["coexisting_user_packages"].(map[string][]string); len(coexisting) > 0 {
+			data, _ := json.Marshal(coexisting)
+			fmt.Fprintf(out, "coexisting user packages: %s (separate budget/state)\n", data)
 		}
-	}
-	scope["coexisting_user_packages"] = coexisting
-	scope["budget_scope"] = "selected installation only; active user packages have a separate budget and state"
-	if jsonMode {
-		var report bytes.Buffer
-		code := RunWithServiceInput(ctx, scoped, workDir, clean, in, &report, errOut)
-		value := map[string]any{}
-		if report.Len() > 0 {
-			var raw any
-			if err = json.Unmarshal(report.Bytes(), &raw); err != nil {
-				return fail(fmt.Errorf("invalid project command report: %w", err))
-			}
-			if object, ok := raw.(map[string]any); ok {
-				value = object
-			} else {
-				value["diagnostics"] = raw
-			}
-		} else if code != ExitOK {
-			value["status"] = "error"
-		}
-		value["scope"] = scope
-		if err = encodeJSON(out, value); err != nil {
-			return ExitInvalid
-		}
-		return code
-	}
-	// Text output streams, so a confirmation prompt follows its preview.
-	fmt.Fprintf(out, "scope=project root=%s home=%s\n", scoped.project.Root, scoped.project.Home)
-	fmt.Fprintln(out, "prerequisites: style on harness PATH; same STYLE_HOME; external workspace trust; Claude starts at project root; Codex uses canonical path")
-	if len(coexisting) > 0 {
-		data, _ := json.Marshal(coexisting)
-		fmt.Fprintf(out, "coexisting user packages: %s (separate budget/state)\n", data)
 	}
 	return RunWithServiceInput(ctx, scoped, workDir, clean, in, out, errOut)
 }

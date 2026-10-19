@@ -91,6 +91,21 @@ writes, so scripts and CI answer explicitly, for example
 `echo y | style install SOURCE --json`. With `--json` the preview and prompt go
 to stderr and stdout carries only the final report.
 
+Every `--json` report is one envelope:
+
+```json
+{"format": 2, "command": "list", "status": "ok", "scope": {"kind": "user", "home": "…"},
+ "diagnostics": [], "result": {"packages": []}}
+```
+
+`status` mirrors the exit code (`ok`, `error`, `needs-trust`, `blocked`).
+`scope` is `user` or `project` (with the project root, homes and
+prerequisites). `diagnostics` holds the report's top-level diagnostics, plus a
+`command-failed` entry for errors otherwise reported only on stderr. `result`
+is the command's report, or `null` when the command failed before producing
+one; reports may keep their own `format` and `status` fields. Usage errors
+(exit `2`) write nothing to stdout.
+
 The following forms were removed without compatibility entry points:
 
 | Removed | Use instead |

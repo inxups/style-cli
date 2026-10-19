@@ -3,7 +3,6 @@ package app
 import (
 	"bytes"
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"os"
@@ -105,7 +104,7 @@ func TestM3A3GitCLIAndLifecycle(t *testing.T) {
 						t.Fatalf("exit=%d out=%s err=%s", exit, &out, &errOut)
 					}
 					var result map[string]any
-					if err := json.Unmarshal(out.Bytes(), &result); err != nil {
+					if err := decodeReport(out.Bytes(), &result); err != nil {
 						t.Fatal(err)
 					}
 					metadata, ok := result["source"].(map[string]any)

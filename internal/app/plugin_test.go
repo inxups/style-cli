@@ -193,7 +193,7 @@ func TestM3A8PluginCLIRegistrationRequired(t *testing.T) {
 		t.Fatal(code, &out, &errOut)
 	}
 	var report InstallResult
-	if json.Unmarshal(out.Bytes(), &report) != nil || !report.Changed || len(report.Registration) != 1 {
+	if decodeReport(out.Bytes(), &report) != nil || !report.Changed || len(report.Registration) != 1 {
 		t.Fatal(&out)
 	}
 	a8Registration(t, report.Registration[0], config, "enabled")

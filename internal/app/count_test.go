@@ -42,7 +42,7 @@ func TestM3A15CountCLIReadOnlyAndInvalidInput(t *testing.T) {
 		}
 		if strings.Contains(strings.Join(args, " "), "--json") {
 			var r struct{ Count tokencount.Result }
-			if json.Unmarshal(out.Bytes(), &r) != nil || r.Count.Tokens <= 0 || r.Count.TextSHA256 != explainSHA([]byte("hello world")) {
+			if decodeReport(out.Bytes(), &r) != nil || r.Count.Tokens <= 0 || r.Count.TextSHA256 != explainSHA([]byte("hello world")) {
 				t.Fatal(out.String())
 			}
 		}
@@ -66,7 +66,8 @@ func TestM3A15CountCLIReadOnlyAndInvalidInput(t *testing.T) {
 				t.Fatal(err)
 			}
 			var out, logs bytes.Buffer
-			if code := RunWithService(context.Background(), s, root, []string{"count", f, "--exact=openai:o200k_base", "--json"}, &out, &logs); code != 1 || out.Len() != 0 {
+			var diagnostics []Diagnostic
+			if code := RunWithService(context.Background(), s, root, []string{"count", f, "--exact=openai:o200k_base", "--json"}, &out, &logs); code != 1 || decodeReport(out.Bytes(), &diagnostics) != nil || len(diagnostics) != 1 || diagnostics[0].Code != "command-failed" {
 				t.Fatal(code, out.String())
 			}
 		})

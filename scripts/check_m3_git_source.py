@@ -14,6 +14,7 @@ import shutil
 import stat
 import subprocess
 import tempfile
+from style_json import report as style_report
 
 
 def digest(path):
@@ -82,7 +83,7 @@ def main():
         before = snapshot(fixture)
         result = run(new, env, ["list", "--json"])
         assert result.returncode == 0, result
-        package = json.loads(result.stdout)["packages"][0]
+        package = style_report(result.stdout)["packages"][0]
         assert package["git"]["commit"] and package["hash_matches"]
         assert before == snapshot(fixture), "new list changed the installation"
         cases.append({"command": "new-list", "exit_code": 0,

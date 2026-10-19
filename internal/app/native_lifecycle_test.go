@@ -61,7 +61,7 @@ func TestA4NativeInstallDisclosesBeforeConfirmationWithoutWriting(t *testing.T) 
 				}
 				if jsonOutput {
 					var preview InstallResult
-					if err := json.Unmarshal(out.Bytes(), &preview); err != nil || !preview.AwaitingConfirmation || len(preview.Native) != 2 {
+					if err := decodeReport(out.Bytes(), &preview); err != nil || !preview.AwaitingConfirmation || len(preview.Native) != 2 {
 						t.Fatalf("preview=%+v err=%v", preview, err)
 					}
 					wantTrust := map[string]string{"codex-plugin": "user-confirmation", "codex-user": "preseed", "claude-user": "workspace"}[route]

@@ -14,6 +14,7 @@ import time
 
 from check_m3_update import fixture, run, snapshot, record, sha
 from check_m3_project import invoke_hook
+from style_json import report as style_report
 
 
 def manifest(n):
@@ -54,11 +55,11 @@ def main():
             scope = ("--project", project) if route.endswith("-project") else ()
             before = snapshot(base, codex, claude, project)
             selection = ("--harness", provider, "--route", provider + "=" + route)
-            preview = json.loads(run(new, env, "install", source, *scope, *selection, "--json", want=1).stdout)
+            preview = style_report(run(new, env, "install", source, *scope, *selection, "--json", want=1).stdout)
             assert preview["awaiting_confirmation"]
             assert snapshot(base, codex, claude, project) == before
             record(cases, route, "preview-zero-write")
-            installed = json.loads(run(new, env, "install", source, *scope, *selection, "--json", confirm=True).stdout)
+            installed = style_report(run(new, env, "install", source, *scope, *selection, "--json", confirm=True).stdout)
             home = Path(installed["scope"]["home"]) if scope else base
             if route == "codex-plugin":
                 env["PLUGIN_ROOT"] = str(home / "adapters/codex/plugin")
@@ -101,7 +102,7 @@ def main():
             payload_file = root / "event.json"
             payload_file.write_text(payload("PreToolUse", "secret-c"))
             before = snapshot(home / "state", hook_path.parent)
-            explained = json.loads(run(new, env, "explain", "--harness", provider, "--event", "PreToolUse",
+            explained = style_report(run(new, env, "explain", "--harness", provider, "--event", "PreToolUse",
                                        "--payload", payload_file, "--index", index_path,
                                        "--state-dir", home / "state", "--json").stdout)
             detail = explained["entries"][0]["refresh"]
@@ -131,7 +132,7 @@ def main():
             record(cases, route, "actual-old-management-conservative-zero-write", commands=4)
             for command in (("sync",), ("trust", "periodic"), ("update", "--all"), ("restore",)):
                 run(new, env, *command, *scope, "--json", confirm=True)
-            doctor = json.loads(run(new, env, "doctor", *scope, "--json").stdout)
+            doctor = style_report(run(new, env, "doctor", *scope, "--json").stdout)
             assert any(d["code"] == "refresh-index-2" for d in doctor["diagnostics"])
             record(cases, route, "new-management-and-upgrade-guidance")
             clock = state_file.read_bytes()

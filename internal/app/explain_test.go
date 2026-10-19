@@ -77,7 +77,7 @@ func TestM3A1CLIContractAndDeterministicReports(t *testing.T) {
 		t.Fatal("report not deterministic")
 	}
 	var result ExplainResult
-	if json.Unmarshal(first.Bytes(), &result) != nil || result.Status != "ok" || len(result.Entries) != 1 || result.Entries[0].Output != "output" || !strings.Contains(result.Wire.Stdout, "Visible rule.") {
+	if decodeReport(first.Bytes(), &result) != nil || result.Status != "ok" || len(result.Entries) != 1 || result.Entries[0].Output != "output" || !strings.Contains(result.Wire.Stdout, "Visible rule.") {
 		t.Fatalf("report %s", first.String())
 	}
 	if bytes.Contains(first.Bytes(), []byte("CANARY_PROMPT")) || bytes.Contains(first.Bytes(), []byte("hello $one")) {
@@ -440,7 +440,7 @@ func TestM3A1InputSizeLimitsAndJSONErrorReports(t *testing.T) {
 				args = append(args, "--facts", request.Facts)
 			}
 			var out, errOut bytes.Buffer
-			if RunWithService(context.Background(), service, filepath.Dir(path), args, &out, &errOut) != 1 || json.Unmarshal(out.Bytes(), &result) != nil || result.Status != "error" {
+			if RunWithService(context.Background(), service, filepath.Dir(path), args, &out, &errOut) != 1 || decodeReport(out.Bytes(), &result) != nil || result.Status != "error" {
 				t.Fatalf("JSON error contract %s %s", out.String(), errOut.String())
 			}
 		})

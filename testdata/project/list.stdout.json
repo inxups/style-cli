@@ -1,17 +1,7 @@
 {
-  "packages": [
-    {
-      "changed_files": [],
-      "hash_matches": true,
-      "link": "no",
-      "name": "project-rules",
-      "native_count": 0,
-      "seq": 1,
-      "source": "$FIXTURE/source",
-      "source_kind": "dir",
-      "version": "1.0.0"
-    }
-  ],
+  "format": 2,
+  "command": "list",
+  "status": "ok",
   "scope": {
     "base_home": "$FIXTURE/private",
     "budget_scope": "selected installation only; active user packages have a separate budget and state",
@@ -25,5 +15,21 @@
     "home": "$PROJECT_HOME",
     "kind": "project",
     "root": "$FIXTURE/project ' space"
+  },
+  "diagnostics": [],
+  "result": {
+    "packages": [
+      {
+        "name": "project-rules",
+        "version": "1.0.0",
+        "seq": 1,
+        "source": "$FIXTURE/source",
+        "source_kind": "dir",
+        "link": "no",
+        "hash_matches": true,
+        "changed_files": [],
+        "native_count": 0
+      }
+    ]
   }
 }

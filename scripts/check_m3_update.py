@@ -14,6 +14,7 @@ import shutil
 import stat
 import subprocess
 import tempfile
+from style_json import report as style_report
 
 
 def sha(path):
@@ -84,7 +85,7 @@ def run(binary, env, *args, want=0, payload=None, confirm=False):
 def document(result):
     # Prompting commands write their preview and y/N prompt to stderr.
     assert result.stderr == "" or result.stderr.endswith(" [y/N] \n"), result.stderr
-    value = json.loads(result.stdout)
+    value = style_report(result.stdout)
     assert value["format"] == 1 and value["command"] == "update", value
     return value
 

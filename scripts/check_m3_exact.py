@@ -8,6 +8,7 @@ import json
 from pathlib import Path
 import tempfile
 from check_m3_update import fixture, manifest, record, run, sha, snapshot
+from style_json import report as style_report
 
 
 def main():
@@ -27,7 +28,7 @@ def main():
             text.write_bytes(item['text'].encode())
             before = snapshot(root)
             for encoding, expected in item['tokens'].items():
-                result = json.loads(run(binary, env, 'count', text, '--exact=openai:'+encoding,
+                result = style_report(run(binary, env, 'count', text, '--exact=openai:'+encoding,
                                         '--json').stdout)['count']
                 assert result['tokens'] == expected and result['text_sha256'] == 'sha256:'+item['sha256']
                 assert result['scope'] == 'utf8-text-encoding' and result['implementation'].endswith('@v0.7.0')
@@ -51,10 +52,10 @@ def main():
                 assert (result.stdout, result.stderr) == (baseline.stdout, baseline.stderr)
                 record(cases, provider, 'plan-default-estimate-byte-compatibility', explicit=bool(mode))
             exact_args = ('--exact=openai:o200k_base',)
-            counted = json.loads(run(binary, env, 'plan', source, '--harness='+provider, *exact_args, '--json').stdout)
+            counted = style_report(run(binary, env, 'plan', source, '--harness='+provider, *exact_args, '--json').stdout)
             report = counted['reports'][0]
             assert len(report.pop('counts')) == 2 and report.pop('count_scope')
-            assert counted == json.loads(baseline.stdout)
+            assert counted == style_report(baseline.stdout)
             record(cases, provider, 'plan-counts-model-text-excludes-native')
             run(old, env, 'install', source, '--harness='+provider, '--yes')
             payload = root / 'payload.json'
@@ -68,10 +69,10 @@ def main():
                 result = run(binary, env, *explain_args, *mode)
                 assert (result.stdout, result.stderr) == (baseline.stdout, baseline.stderr)
                 record(cases, provider, 'explain-default-estimate-byte-compatibility', explicit=bool(mode))
-            result = json.loads(run(binary, env, *explain_args, *exact_args).stdout)
+            result = style_report(run(binary, env, *explain_args, *exact_args).stdout)
             count = result.pop('count')
             assert count['tokens'] == 2 and count['scope'] == 'utf8-text-encoding'
-            assert result == json.loads(baseline.stdout) and snapshot(home, codex, claude, source) == before
+            assert result == style_report(baseline.stdout) and snapshot(home, codex, claude, source) == before
             record(cases, provider, 'explain-final-render-count-wire-and-inputs-unchanged')
             run(old, env, 'uninstall', '--all', '--yes')
     args.report.write_text(json.dumps(dict(format=1, acceptance='M3-A15',

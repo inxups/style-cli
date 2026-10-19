@@ -10,6 +10,7 @@ from check_m3_update import fixture, run, sha
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'testdata/manual'))
 from m3_live_fixture import package
 from m3_probe_support import PrivateBaseline, SourceBinding
+from style_json import report as style_report
 
 
 def main():
@@ -28,7 +29,7 @@ def main():
             binding.add_copy('native_observer_copy',root/'native-observer.py',binding.files['native_observer'])
             run(binary,env,'validate',source,'--json')
             expected=1 if route=='claude-plugin' else 0
-            installed=json.loads(run(binary,env,'install',source,'--harness',harness,'--route',harness+'='+route,*scope,'--json',want=expected, confirm=True).stdout)
+            installed=style_report(run(binary,env,'install',source,'--harness',harness,'--route',harness+'='+route,*scope,'--json',want=expected, confirm=True).stdout)
             assert installed['changed']
             home=Path(installed['scope']['home']) if scope else base
             (home/'effort.yaml').write_text('format: 1\nharnesses:\n  '+harness+': {high: medium, low: high}\n')

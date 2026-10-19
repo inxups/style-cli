@@ -30,13 +30,10 @@ func runValidate(ctx context.Context, service *Service, workDir string, args []s
 		return ExitInvalid
 	}
 	if jsonOutput {
-		var report any = result.Diagnostics
-		if source.Remote(request.Source) {
-			report = struct {
-				Source      *SourceReport `json:"source,omitempty"`
-				Diagnostics []Diagnostic  `json:"diagnostics"`
-			}{result.Source, result.Diagnostics}
-		}
+		report := struct {
+			Source      *SourceReport `json:"source,omitempty"`
+			Diagnostics []Diagnostic  `json:"diagnostics"`
+		}{result.Source, result.Diagnostics}
 		if err := encodeJSON(out, report); err != nil {
 			fmt.Fprintf(errOut, "style validate: encode report: %v\n", err)
 			return ExitInvalid

@@ -13,6 +13,7 @@ import tempfile
 
 from check_m3_project import invoke_hook
 from check_m3_update import fixture, manifest, record, run, sha, snapshot
+from style_json import report as style_report
 
 
 def main():
@@ -43,7 +44,7 @@ def main():
         source = root / "source"
         source.mkdir()
         (source / "STYLE.yaml").write_text(manifest("local", "Local route still works."))
-        installed = json.loads(run(binary, env, "install", source, "--project", project,
+        installed = style_report(run(binary, env, "install", source, "--project", project,
                                    "--harness=claude-code", "--json", confirm=True).stdout)
         home = Path(installed["scope"]["home"])
         assert not (project / ".style/cloud").exists()
@@ -85,7 +86,7 @@ def main():
         run(binary, env, "uninstall", "--all", "--project", project, "--json", want=1)
         assert snapshot(root) == before
         record(cases, "claude-project", "uninstall-still-requires-confirmation")
-        removed = json.loads(run(binary, env, "uninstall", "--all", "--project", project, "--json", confirm=True).stdout)
+        removed = style_report(run(binary, env, "uninstall", "--all", "--project", project, "--json", confirm=True).stdout)
         assert removed["changed"] and "cloud_files" not in removed
         assert "awaiting_confirmation" not in removed
         assert snapshot(project, codex, claude) == original

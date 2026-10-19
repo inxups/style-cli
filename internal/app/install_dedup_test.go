@@ -483,7 +483,7 @@ func TestA6DedupBudgetUsesEffectiveOutputAndRejectsRealGrowth(t *testing.T) {
 			code := RunWithServiceInput(context.Background(), service, root, []string{"install", second, "--harness=codex", "--json"}, approve(), &out, &errOut)
 			if scenario == "identical" {
 				var result InstallResult
-				if err := json.Unmarshal(out.Bytes(), &result); err != nil {
+				if err := decodeReport(out.Bytes(), &result); err != nil {
 					t.Fatalf("decode %s: %v", out.String(), err)
 				}
 				if code != ExitOK || !strings.HasSuffix(errOut.String(), "[y/N] \n") || len(result.Reports) != 2 || result.Reports[1].Tokens.Rules[0].DeduplicatedInto != "first/r" || len(result.Reports[1].Tokens.Events) != 0 {

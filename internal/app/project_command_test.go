@@ -101,7 +101,9 @@ func TestM3A6CommandGolden(t *testing.T) {
 				if phase == "preview" || phase == "error" || phase == "plan" || phase == "list" || phase == "stats" {
 					a4AssertState(t, before, base, root)
 				}
-				if jsonMode {
+				if jsonMode && phase == "error" && out.Len() != 0 {
+					t.Fatal("usage error wrote stdout", &out)
+				} else if jsonMode && phase != "error" {
 					dec := json.NewDecoder(bytes.NewReader(out.Bytes()))
 					var value any
 					if dec.Decode(&value) != nil || dec.Decode(new(any)) != io.EOF {

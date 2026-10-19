@@ -12,6 +12,7 @@ import os
 from pathlib import Path
 import subprocess
 import tempfile
+from style_json import report as style_report
 
 
 def snapshot(*roots, mtime=False):
@@ -71,7 +72,7 @@ def main():
                     exit_code = 4 if fallback == "error" else 0
                     planned = run(binary, env, ["plan", source, "--harness", provider, *flags], exit_code)
                     if json_output:
-                        plan = json.loads(planned.stdout)["reports"][0]["plan"]
+                        plan = style_report(planned.stdout)["reports"][0]["plan"]
                         rule = plan["rules"][0]
                         assert rule["status"] == status and not rule.get("placements"), rule
                         assert plan["blocked"] == (fallback == "error"), plan
@@ -90,7 +91,7 @@ def main():
                         assert snapshot(*roots, mtime=True) == untouched and not style_home.exists(), "blocked installation wrote files"
                     else:
                         if json_output:
-                            rule = json.loads(installed.stdout)["reports"][0]["plan"]["rules"][0]
+                            rule = style_report(installed.stdout)["reports"][0]["plan"]["rules"][0]
                             assert rule["status"] == "skipped" and not rule.get("placements"), rule
                         else:
                             assert "- candidate: skipped" in installed.stdout

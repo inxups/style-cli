@@ -13,6 +13,7 @@ import os
 from pathlib import Path
 import subprocess
 import tempfile
+from style_json import report as style_report
 
 
 def digest(path):
@@ -39,7 +40,7 @@ def run(binary, env, *args, confirm=False):
     result = subprocess.run([str(binary), *map(str, args)], env=env, **stdin,
                             capture_output=True, text=True, timeout=60)
     assert result.returncode == 0, (args, result.returncode, result.stdout, result.stderr)
-    return json.loads(result.stdout)
+    return style_report(result.stdout)
 
 
 def main():
