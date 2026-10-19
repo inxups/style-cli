@@ -134,3 +134,27 @@ func TestSplitDiagnosticsKeepsMemberOrder(t *testing.T) {
 		t.Fatalf("array result=%s diagnostics=%s err=%v", result, diagnostics, err)
 	}
 }
+
+func TestUsageAndRejectedErrorsExitCodes(t *testing.T) {
+	service := testService(t)
+	root := t.TempDir()
+	t.Setenv("STYLE_HOME", filepath.Join(root, "home"))
+	if code := RunWithService(context.Background(), service, root, []string{"init", "demo"}, &bytes.Buffer{}, &bytes.Buffer{}); code != ExitOK {
+		t.Fatalf("init exit = %d", code)
+	}
+	for _, test := range []struct {
+		args []string
+		code int
+	}{
+		{[]string{"install", "demo", "--route", "bogus=x"}, ExitUsage},
+		{[]string{"install", "demo", "--harness", "codex", "--route", "codex=bogus"}, ExitUsage},
+		{[]string{"install", "demo", "--project-set", "demo.k=v"}, ExitUsage},
+		{[]string{"trust", "missing"}, ExitInvalid},
+		{[]string{"install", "demo", "--harness", "codex", "--set", "unknown=v"}, ExitInvalid},
+	} {
+		var out, errOut bytes.Buffer
+		if code := RunWithServiceInput(context.Background(), service, root, test.args, strings.NewReader("y\n"), &out, &errOut); code != test.code {
+			t.Fatalf("%v exit = %d, want %d; stderr=%s", test.args, code, test.code, &errOut)
+		}
+	}
+}

@@ -107,7 +107,7 @@ func (s *Service) Install(ctx context.Context, request InstallRequest) (final In
 		return InstallResult{}, &UsageError{Message: "package source is required"}
 	}
 	if len(request.ProjectSources) > 0 && (s.project == nil || request.Link || len(request.ProjectSources) > 63) {
-		return InstallResult{}, &UsageError{Message: "--project-source requires a fresh project installation, at most 64 sources, and copied packages"}
+		return InstallResult{}, &UsageError{Message: "--project-source requires --project, at most 64 sources, and copied packages"}
 	}
 	if len(request.ProjectSources) == 0 && len(request.ProjectSettings) > 0 {
 		return InstallResult{}, &UsageError{Message: "--project-set requires --project-source"}
@@ -160,7 +160,7 @@ func (s *Service) Install(ctx context.Context, request InstallRequest) (final In
 	name, _ := original.Metadata["name"].(string)
 	version, _ := original.Metadata["version"].(string)
 	if name == "" || version == "" {
-		return InstallResult{}, &UsageError{Message: "package name and version are required"}
+		return InstallResult{}, &RejectedError{Message: "package name and version are required"}
 	}
 	fileHashes, _ := hashPackageFiles(files)
 	if err := validateRuntimeRequirement(original.Metadata["requires"]); err != nil {
@@ -196,7 +196,7 @@ func (s *Service) Install(ctx context.Context, request InstallRequest) (final In
 	}
 	replace := packageUsesReplace(preview)
 	if replace && existingLock == nil && !request.AllowReplace {
-		return InstallResult{}, &UsageError{Message: "package uses mode: replace; pass --allow-replace to confirm"}
+		return InstallResult{}, &RejectedError{Message: "package uses mode: replace; pass --allow-replace to confirm"}
 	}
 	if replace {
 		for _, installed := range lock.Packages {
@@ -399,7 +399,7 @@ func (s *Service) Install(ctx context.Context, request InstallRequest) (final In
 	}
 	if !confirmed {
 		result.AwaitingConfirmation = true
-		return result, &UsageError{Message: "installation requires capability confirmation"}
+		return result, &RejectedError{Message: "installation requires capability confirmation"}
 	}
 	if len(plannedChanges) == 0 {
 		if err = inputs.verify(); err != nil {
@@ -621,11 +621,11 @@ func collectSettings(pkg *spec.Package, supplied map[string]string) (map[string]
 			result[name] = value
 			continue
 		}
-		return nil, nil, &UsageError{Message: fmt.Sprintf("setting %q requires --set %s=value", name, name)}
+		return nil, nil, &RejectedError{Message: fmt.Sprintf("setting %q requires --set %s=value", name, name)}
 	}
 	for name := range supplied {
 		if !declared[name] {
-			return nil, nil, &UsageError{Message: fmt.Sprintf("unknown setting %q", name)}
+			return nil, nil, &RejectedError{Message: fmt.Sprintf("unknown setting %q", name)}
 		}
 	}
 	sort.Strings(names)
@@ -675,7 +675,7 @@ func validateRuntimeRequirement(value any) error {
 	requires, _ := value.(map[string]any)
 	constraint, _ := requires["runtime"].(string)
 	if constraint != "" && !versionSatisfies(styleRuntimeVersion, constraint) {
-		return &UsageError{Message: fmt.Sprintf("STYLE runtime %s does not satisfy requires.runtime %s", styleRuntimeVersion, constraint)}
+		return &RejectedError{Message: fmt.Sprintf("STYLE runtime %s does not satisfy requires.runtime %s", styleRuntimeVersion, constraint)}
 	}
 	return nil
 }
@@ -836,7 +836,7 @@ func (s *Service) installAdapters(ctx context.Context, request InstallRequest, l
 		}
 		if !detected {
 			if requested[provider] || lock.Harnesses[string(provider)].Route != "" {
-				return nil, &UsageError{Message: fmt.Sprintf("harness %s was selected but is not detected", provider)}
+				return nil, &RejectedError{Message: fmt.Sprintf("harness %s was selected but is not detected", provider)}
 			}
 			continue
 		}
@@ -876,7 +876,7 @@ func (s *Service) installAdapters(ctx context.Context, request InstallRequest, l
 				return nil, err
 			}
 			if !available {
-				return nil, &UsageError{Message: fmt.Sprintf("route %s unavailable: %s", chosen.Name(), reason)}
+				return nil, &RejectedError{Message: fmt.Sprintf("route %s unavailable: %s", chosen.Name(), reason)}
 			}
 		} else {
 			for _, candidate := range definition.Routes {
@@ -891,7 +891,7 @@ func (s *Service) installAdapters(ctx context.Context, request InstallRequest, l
 			}
 		}
 		if chosen == nil {
-			return nil, &UsageError{Message: fmt.Sprintf("no available route for %s", provider)}
+			return nil, &RejectedError{Message: fmt.Sprintf("no available route for %s", provider)}
 		}
 		home, err := s.resolveStyleHome(request.Home)
 		if err != nil {

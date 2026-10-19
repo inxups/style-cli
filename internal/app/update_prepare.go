@@ -384,7 +384,7 @@ func (s *Service) captureUpdate(ctx context.Context, home string, item lockPacka
 	}
 	parsed, err := s.parseSnapshotWithSettings(ctx, home, item, files, func() (map[string]string, error) { return supplied, nil })
 	if err != nil {
-		var usage *UsageError
+		var usage *RejectedError
 		if errors.As(err, &usage) && strings.HasPrefix(usage.Message, "setting ") && strings.Contains(usage.Message, " requires --set ") {
 			return candidate, updatePackageFailure("source-invalid", item.Name, usage.Message+"; configure the new package through the existing install/configuration flow before retrying update", err)
 		}

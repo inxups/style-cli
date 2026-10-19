@@ -139,9 +139,9 @@ func TestInstallRequiresExplicitConfirmation(t *testing.T) {
 	root := t.TempDir()
 	service := testCodexInstallService(t, filepath.Join(root, "codex"), filepath.Join(root, "plugin"))
 	_, err := service.Install(context.Background(), InstallRequest{Source: filepath.Join(repositoryRoot(t), "testdata", "packages", "terse-reviewer"), Home: filepath.Join(root, "style")})
-	var usage *UsageError
-	if !errors.As(err, &usage) {
-		t.Fatalf("install without confirmation error = %v, want UsageError", err)
+	var rejected *RejectedError
+	if !errors.As(err, &rejected) {
+		t.Fatalf("install without confirmation error = %v, want RejectedError", err)
 	}
 }
 
@@ -194,8 +194,8 @@ func TestInstallSetRejectsFormerVarsName(t *testing.T) {
 	styleHome := filepath.Join(root, "style")
 	service := testCodexInstallService(t, filepath.Join(root, "codex"), filepath.Join(root, "plugin"))
 	_, err := service.Install(context.Background(), InstallRequest{Source: packageDir, Home: styleHome, Harnesses: []string{"codex"}, Settings: map[string]string{"lang": "zh-CN"}, Yes: true})
-	var usage *UsageError
-	if !errors.As(err, &usage) || !strings.Contains(err.Error(), `unknown setting "lang"`) {
+	var rejected *RejectedError
+	if !errors.As(err, &rejected) || !strings.Contains(err.Error(), `unknown setting "lang"`) {
 		t.Fatalf("install --set lang error = %v", err)
 	}
 	if _, err := os.Stat(filepath.Join(styleHome, "style.lock.yaml")); !errors.Is(err, os.ErrNotExist) {
@@ -209,8 +209,8 @@ func TestInstallRejectsMissingSettingAndRuntimeRequirementWithoutMutation(t *tes
 	missing := writeInstallPackage(t, filepath.Join(root, "missing"), "spec: style/v0.3\nname: missing\nversion: 0.1.0\ndescription: missing\nsettings:\n  - name: voice\nrules:\n  - id: base\n    target: system\n    text: body\n")
 	styleHome := filepath.Join(root, "style")
 	_, err := service.Install(context.Background(), InstallRequest{Source: missing, Home: styleHome, Harnesses: []string{"codex"}, Yes: true})
-	var usage *UsageError
-	if !errors.As(err, &usage) || !strings.Contains(err.Error(), "voice") {
+	var rejected *RejectedError
+	if !errors.As(err, &rejected) || !strings.Contains(err.Error(), "voice") {
 		t.Fatalf("missing setting error = %v", err)
 	}
 	if _, statErr := os.Stat(styleHome); !errors.Is(statErr, os.ErrNotExist) {
@@ -219,7 +219,7 @@ func TestInstallRejectsMissingSettingAndRuntimeRequirementWithoutMutation(t *tes
 
 	incompatible := writeInstallPackage(t, filepath.Join(root, "incompatible"), "spec: style/v0.3\nname: incompatible\nversion: 0.1.0\ndescription: incompatible\nrequires:\n  runtime: '>=9.0.0'\nrules:\n  - id: base\n    target: system\n    text: body\n")
 	_, err = service.Install(context.Background(), InstallRequest{Source: incompatible, Home: filepath.Join(root, "style-2"), Harnesses: []string{"codex"}, Yes: true})
-	if !errors.As(err, &usage) || !strings.Contains(err.Error(), "requires.runtime") {
+	if !errors.As(err, &rejected) || !strings.Contains(err.Error(), "requires.runtime") {
 		t.Fatalf("runtime requirement error = %v", err)
 	}
 }
@@ -230,8 +230,8 @@ func TestInstallRequiresReplaceConfirmationAndCommandYes(t *testing.T) {
 	replace := writeInstallPackage(t, filepath.Join(root, "replace"), "spec: style/v0.3\nname: replace\nversion: 0.1.0\ndescription: replace\nrules:\n  - id: base\n    target: system\n    mode: replace\n    text: body\n")
 	styleHome := filepath.Join(root, "style")
 	_, err := service.Install(context.Background(), InstallRequest{Source: replace, Home: styleHome, Harnesses: []string{"codex"}, Yes: true})
-	var usage *UsageError
-	if !errors.As(err, &usage) || !strings.Contains(err.Error(), "allow-replace") {
+	var rejected *RejectedError
+	if !errors.As(err, &rejected) || !strings.Contains(err.Error(), "allow-replace") {
 		t.Fatalf("replace error = %v", err)
 	}
 	if _, statErr := os.Stat(styleHome); !errors.Is(statErr, os.ErrNotExist) {

@@ -67,7 +67,7 @@ func runPlan(ctx context.Context, service *Service, workDir string, args []strin
 	result, err := service.Plan(ctx, request)
 	if err != nil {
 		fmt.Fprintf(errOut, "style plan: %v\n", err)
-		return ExitInvalid
+		return commandExit(err)
 	}
 	if jsonOutput {
 		if err := encodeJSON(out, result); err != nil {

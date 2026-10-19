@@ -56,7 +56,10 @@ func runInstall(ctx context.Context, service *Service, workDir string, args []st
 		var blockedErr *BlockedError
 		var validationErr *ValidationError
 		switch {
-		case errors.As(err, &usageErr), errors.As(err, &conflictErr):
+		case errors.As(err, &usageErr):
+			fmt.Fprintf(errOut, "style install: %v\n", err)
+			return ExitUsage
+		case errors.As(err, &conflictErr):
 			fmt.Fprintf(errOut, "style install: %v\n", err)
 			return ExitInvalid
 		case errors.As(err, &blockedErr):
@@ -198,13 +201,8 @@ func runUninstall(ctx context.Context, service *Service, args []string, in io.Re
 	}
 	result, err := service.Uninstall(ctx, request)
 	if err != nil {
-		var usageErr *UsageError
-		if errors.As(err, &usageErr) {
-			fmt.Fprintf(errOut, "style uninstall: %v\n", err)
-			return ExitInvalid
-		}
 		fmt.Fprintf(errOut, "style uninstall: %v\n", err)
-		return ExitInvalid
+		return commandExit(err)
 	}
 	if jsonOutput {
 		if err := encodeJSON(out, result); err != nil {

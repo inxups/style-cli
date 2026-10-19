@@ -80,9 +80,11 @@ case and the `claude` alias, and `auto` (the default) selects detected harnesses
 payload and requires exactly one named harness. Unknown names are usage errors.
 
 Exit codes: `0` success, `1` the request was rejected or failed, `2` the command
-line could not be parsed (unknown command or option, missing or malformed
-argument), `3` `sync` found changes awaiting `trust`, `4` blocked by policy or
-budget. Hook invocations never exit `2`, which harnesses treat as a block.
+line could not be parsed (unknown command, option, harness or route; missing,
+malformed or conflicting argument), `3` `sync` found changes awaiting `trust`,
+`4` blocked by policy or budget. A well-formed request that the package, the
+installation or the detected harnesses cannot satisfy (a missing `--set`, an
+undetected harness, a package that is not installed) exits `1`. Hook invocations never exit `2`, which harnesses treat as a block.
 
 `install`, `restore`, `update`, `trust` and `uninstall` print a preview and ask
 `[y/N]` on stderr before changing anything; only `y` or `yes` read from stdin

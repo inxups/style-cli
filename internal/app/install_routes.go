@@ -59,7 +59,7 @@ func planInstallRoutes(ctx context.Context, home string, adapters []installAdapt
 			previous = bindRoute(previous, oldInstallation, home)
 			transition, ok := target.route.(adapter.TransitionPlanner)
 			if !ok {
-				return nil, nil, nil, nil, &UsageError{Message: fmt.Sprintf("route %s cannot switch from %s", target.route.Name(), prior.Route)}
+				return nil, nil, nil, nil, &RejectedError{Message: fmt.Sprintf("route %s cannot switch from %s", target.route.Name(), prior.Route)}
 			}
 			planned, err = transition.PlanTransition(ctx, previous, hooks, blocks)
 		} else {

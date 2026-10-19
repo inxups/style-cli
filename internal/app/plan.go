@@ -2,6 +2,7 @@ package app
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"math"
 	"sort"
@@ -76,11 +77,32 @@ type PlanResult struct {
 	Reports     []PlanReport  `json:"reports"`
 }
 
-// UsageError identifies a plan request that cannot be interpreted without
-// changing the package or consulting a provider.
+// UsageError is a command line that cannot be interpreted on its own: an
+// unknown or malformed option value or a missing or conflicting argument.
+// Commands exit ExitUsage.
 type UsageError struct{ Message string }
 
 func (err *UsageError) Error() string { return err.Message }
+
+// RejectedError is a well-formed request that the package, the installation or
+// the detected harnesses cannot satisfy. Commands exit ExitInvalid.
+type RejectedError struct{ Message string }
+
+func (err *RejectedError) Error() string { return err.Message }
+
+// commandExit maps a service error to the command's exit code.
+func commandExit(err error) int {
+	var usage *UsageError
+	var blocked *BlockedError
+	switch {
+	case errors.As(err, &usage):
+		return ExitUsage
+	case errors.As(err, &blocked):
+		return ExitBlocked
+	default:
+		return ExitInvalid
+	}
+}
 
 // Plan loads, validates, merges, plans, and estimates a package without
 // changing any files.
@@ -282,7 +304,7 @@ func (s *Service) selectProviders(ctx context.Context, values []string) ([]adapt
 		return providers[i] < providers[j]
 	})
 	if len(providers) == 0 {
-		return nil, &UsageError{Message: "no harness selected"}
+		return nil, &RejectedError{Message: "no harness selected"}
 	}
 	return providers, nil
 }

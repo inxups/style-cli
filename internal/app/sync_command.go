@@ -36,7 +36,6 @@ func runSync(ctx context.Context, service *Service, command string, args []strin
 	}
 	if err != nil {
 		var validation *ValidationError
-		var blocked *BlockedError
 		if errors.As(err, &validation) {
 			if jsonOutput {
 				_ = encodeJSON(out, validation.Diagnostics)
@@ -46,10 +45,7 @@ func runSync(ctx context.Context, service *Service, command string, args []strin
 		} else {
 			fmt.Fprintf(errOut, "style %s: %v\n", command, err)
 		}
-		if errors.As(err, &blocked) {
-			return ExitBlocked
-		}
-		return ExitInvalid
+		return commandExit(err)
 	}
 	if jsonOutput {
 		if err := encodeJSON(out, result); err != nil {

@@ -32,8 +32,11 @@ func (s *Service) captureProjectPackages(ctx context.Context, request InstallReq
 		}
 		return nil, nil, nil
 	}
-	if s.project == nil || request.Link || len(lock.Packages) > 0 || len(request.ProjectSources) > 63 {
-		return nil, nil, &UsageError{Message: "--project-source requires a fresh project installation, at most 64 sources, and copied packages"}
+	if s.project == nil || request.Link || len(request.ProjectSources) > 63 {
+		return nil, nil, &UsageError{Message: "--project-source requires --project, at most 64 sources, and copied packages"}
+	}
+	if len(lock.Packages) > 0 {
+		return nil, nil, &RejectedError{Message: "--project-source requires a fresh project installation"}
 	}
 	seen := map[string]bool{first.Name: true}
 	replace := first.Replace
@@ -132,7 +135,7 @@ func (s *Service) captureProjectPackages(ctx context.Context, request InstallReq
 	}
 	for key := range request.ProjectSettings {
 		if !usedSettings[key] {
-			return nil, nil, &UsageError{Message: "unknown package-qualified project setting " + key}
+			return nil, nil, &RejectedError{Message: "unknown package-qualified project setting " + key}
 		}
 	}
 	return result, previews, nil
