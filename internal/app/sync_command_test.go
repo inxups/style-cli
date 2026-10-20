@@ -15,7 +15,7 @@ import (
 	"github.com/inxups/style-cli/internal/adapter"
 )
 
-func TestRunSyncAndTrustExitCodesAndDiffOutput(t *testing.T) {
+func TestRunSyncApprovalExitCodesAndDiffOutput(t *testing.T) {
 	service, home, source, config := syncFixture(t, false)
 	t.Setenv("STYLE_HOME", home)
 	writeSyncFile(t, filepath.Join(source, "rules", "shell.md"), strings.ReplaceAll(syncRule, "Original", "Reviewed"))
@@ -26,44 +26,46 @@ func TestRunSyncAndTrustExitCodesAndDiffOutput(t *testing.T) {
 		stderr.Reset()
 		return RunWithServiceInput(context.Background(), service, source, args, input, &stdout, &stderr)
 	}
-	if code := run("sync", "--json"); code != ExitSyncChanged {
+	before := installedTree(t, home, config)
+	// Without an answer the approval is declined: exit 1, nothing written.
+	if code := run("sync", "--json"); code != ExitInvalid || !strings.Contains(stderr.String(), "Source diff:") || !strings.Contains(stderr.String(), "Approve editable? [y/N]") {
 		t.Fatalf("sync code=%d stdout=%s stderr=%s", code, stdout.String(), stderr.String())
 	}
 	var result SyncResult
-	if err := decodeReport(stdout.Bytes(), &result); err != nil || !reflect.DeepEqual(result.NeedsTrust, []string{"editable"}) {
+	if err := decodeReport(stdout.Bytes(), &result); err != nil || !result.AwaitingConfirmation || len(result.Approved) != 0 || !strings.Contains(stdout.String(), `"confirmation-declined"`) {
 		t.Fatalf("sync JSON = %s, %v", stdout.String(), err)
 	}
-	before := installedTree(t, home, config)
-	if code := run("trust", "editable"); code != ExitInvalid || !strings.Contains(stdout.String(), "Source diff:") || !strings.Contains(stdout.String(), "Rendered diff") || !strings.Contains(stderr.String(), "trust canceled") {
+	if code := run("sync", "editable"); code != ExitInvalid || !strings.Contains(stdout.String(), "Source diff:") || !strings.Contains(stdout.String(), "Rendered diff") || !strings.Contains(stderr.String(), "style sync: confirmation-declined: sync canceled; nothing was changed") {
 		t.Fatalf("preview code=%d stdout=%s stderr=%s", code, stdout.String(), stderr.String())
 	}
 	if !reflect.DeepEqual(before, installedTree(t, home, config)) {
 		t.Fatal("CLI preview mutated files")
 	}
 	input = approve()
-	if code := run("trust", "editable", "--json"); code != ExitOK {
-		t.Fatalf("trust code=%d stdout=%s stderr=%s", code, stdout.String(), stderr.String())
+	if code := run("sync", "--json"); code != ExitOK {
+		t.Fatalf("sync code=%d stdout=%s stderr=%s", code, stdout.String(), stderr.String())
 	}
-	if err := decodeReport(stdout.Bytes(), &result); err != nil || !result.Changed || result.ApprovalTarget != "editable" || result.Changes[0].NeedsTrust {
-		t.Fatalf("trust JSON = %s, %v", stdout.String(), err)
+	if err := decodeReport(stdout.Bytes(), &result); err != nil || !result.Changed || !reflect.DeepEqual(result.Approved, []string{"editable"}) || len(result.NeedsTrust) != 0 || result.Changes[0].NeedsTrust {
+		t.Fatalf("sync JSON = %s, %v", stdout.String(), err)
+	}
+	// An approved package has nothing to confirm.
+	input = nil
+	if code := run("sync", "editable"); code != ExitOK || strings.Contains(stderr.String(), "[y/N]") {
+		t.Fatalf("unchanged sync code=%d stdout=%s stderr=%s", code, stdout.String(), stderr.String())
 	}
 	if code := run("sync"); code != ExitOK || !strings.Contains(stdout.String(), "changed=false") {
 		t.Fatalf("idempotent sync code=%d stdout=%s stderr=%s", code, stdout.String(), stderr.String())
 	}
-	for _, args := range [][]string{{"sync", "extra"}, {"sync", "--yes"}, {"trust", "editable", "--yes"}, {"trust"}, {"trust", "editable", "extra"}, {"trust", "editable", "--unknown"}} {
+	for _, args := range [][]string{{"sync", "editable", "extra"}, {"sync", "--yes"}, {"sync", "editable", "--unknown"}, {"trust", "editable"}} {
 		if code := run(args...); code != ExitUsage {
 			t.Fatalf("%v code=%d", args, code)
 		}
 	}
-	for _, args := range [][]string{{"trust", "missing"}} {
-		if code := run(args...); code != ExitInvalid {
-			t.Fatalf("%v code=%d", args, code)
-		}
+	if code := run("sync", "missing"); code != ExitInvalid || !strings.Contains(stderr.String(), "request-rejected") {
+		t.Fatalf("missing code=%d stderr=%s", code, stderr.String())
 	}
-	for _, command := range []string{"sync", "trust"} {
-		if code := run(command, "--help"); code != 0 || !strings.HasPrefix(stdout.String(), "style "+command) {
-			t.Fatalf("%s help code=%d stdout=%s", command, code, stdout.String())
-		}
+	if code := run("sync", "--help"); code != 0 || !strings.HasPrefix(stdout.String(), "style sync [name]") {
+		t.Fatalf("help code=%d stdout=%s", code, stdout.String())
 	}
 	writeSyncFile(t, filepath.Join(source, "rules", "shell.md"), strings.ReplaceAll(syncRule, "Original", "Huge"))
 	definition := service.definitions[adapter.ProviderID("codex")]
@@ -71,11 +73,52 @@ func TestRunSyncAndTrustExitCodesAndDiffOutput(t *testing.T) {
 	service.definitions[adapter.ProviderID("codex")] = definition
 	before = installedTree(t, home, config)
 	input = approve()
-	if code := run("trust", "editable"); code != ExitBlocked || !strings.Contains(stderr.String(), "T003") {
-		t.Fatalf("blocked trust code=%d stdout=%s stderr=%s", code, stdout.String(), stderr.String())
+	if code := run("sync", "editable"); code != ExitBlocked || !strings.Contains(stderr.String(), "T003") {
+		t.Fatalf("blocked sync code=%d stdout=%s stderr=%s", code, stdout.String(), stderr.String())
 	}
 	if !reflect.DeepEqual(before, installedTree(t, home, config)) {
-		t.Fatal("blocked CLI trust mutated files")
+		t.Fatal("blocked CLI sync mutated files")
+	}
+}
+
+// A bare sync asks for each package that needs approval, one answer line
+// each; a later decline keeps the approvals already applied.
+func TestRunSyncApprovesPackagesOneByOne(t *testing.T) {
+	for _, test := range []struct {
+		answers  string
+		exit     int
+		approved []string
+	}{
+		{"y\ny\n", ExitOK, []string{"editable", "second"}},
+		{"y\nn\n", ExitInvalid, []string{"editable"}},
+	} {
+		t.Run(strings.TrimSpace(strings.ReplaceAll(test.answers, "\n", " ")), func(t *testing.T) {
+			service, home, source, _ := syncFixture(t, false)
+			t.Setenv("STYLE_HOME", home)
+			second := writeInstallPackage(t, filepath.Join(filepath.Dir(home), "second"), a4Manifest("second", "Second body."))
+			if _, err := service.Install(context.Background(), InstallRequest{Home: home, Source: second, Harnesses: []string{"codex"}, Yes: true}); err != nil {
+				t.Fatal(err)
+			}
+			writeSyncFile(t, filepath.Join(source, "rules", "shell.md"), strings.ReplaceAll(syncRule, "Original", "Reviewed"))
+			managed := filepath.Join(home, "packages", "second", "STYLE.yaml")
+			writeSyncFile(t, managed, strings.ReplaceAll(string(readSyncFile(t, managed)), "Second body.", "Second edited."))
+			var stdout, stderr bytes.Buffer
+			code := RunWithServiceInput(context.Background(), service, source, []string{"sync", "--json"}, strings.NewReader(test.answers), &stdout, &stderr)
+			var result SyncResult
+			if err := decodeReport(stdout.Bytes(), &result); code != test.exit || err != nil || !reflect.DeepEqual(result.Approved, test.approved) {
+				t.Fatalf("code=%d result=%+v err=%v\nstderr=%s", code, result, err, stderr.String())
+			}
+			if strings.Count(stderr.String(), "[y/N]") != 2 {
+				t.Fatalf("prompts: %s", stderr.String())
+			}
+			if test.exit != ExitOK && !strings.Contains(stdout.String(), "sync canceled; already approved and applied: editable") {
+				t.Fatalf("decline message: %s", stdout.String())
+			}
+			pending, err := service.Sync(context.Background(), SyncRequest{Home: home})
+			if want := len(test.approved) < 2; err != nil || (len(pending.NeedsTrust) > 0) != want {
+				t.Fatalf("after sync: %+v, %v", pending, err)
+			}
+		})
 	}
 }
 

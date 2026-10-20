@@ -65,7 +65,7 @@ def main():
             "rules: [{id: base, target: system, text: local}]\n")
         commands = [
             ["list", "--json"], ["sync", "--json"],
-            ["trust", "native-test", "--yes", "--json"],
+            ["sync", "native-test", "--yes", "--json"],
             ["uninstall", "--all", "--yes", "--json"],
             ["install", str(local), "--harness", "codex", "--yes", "--json"],
             ["doctor", "--json"],

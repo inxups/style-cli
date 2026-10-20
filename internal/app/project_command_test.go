@@ -55,7 +55,7 @@ func TestM3A6CommandGolden(t *testing.T) {
 			if jsonMode {
 				suffix = "json"
 			}
-			for _, phase := range []string{"plan", "preview", "apply", "list", "sync", "trust", "update", "stats", "uninstall", "error"} {
+			for _, phase := range []string{"plan", "preview", "apply", "list", "sync", "sync-name", "update", "stats", "uninstall", "error"} {
 				args := []string{}
 				switch phase {
 				case "plan":
@@ -66,8 +66,8 @@ func TestM3A6CommandGolden(t *testing.T) {
 					args = []string{"install", source}
 				case "update":
 					args = []string{"update", "--all"}
-				case "trust":
-					args = []string{"trust", "project-rules"}
+				case "sync-name":
+					args = []string{"sync", "project-rules"}
 				case "uninstall":
 					args = []string{"uninstall", "--all"}
 				case "error":
@@ -82,7 +82,7 @@ func TestM3A6CommandGolden(t *testing.T) {
 					args = append(args, "--json")
 				}
 				var input io.Reader
-				if phase == "apply" || phase == "update" || phase == "trust" || phase == "uninstall" {
+				if phase == "apply" || phase == "update" || phase == "sync-name" || phase == "uninstall" {
 					input = approve()
 				}
 				before := a4State(t, base, root)

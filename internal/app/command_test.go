@@ -137,8 +137,8 @@ func TestCommandsShowHelpAndUseStableFailureExitCodes(t *testing.T) {
 			t.Fatalf("%v output=%q stderr=%q, want %q", test.args, output.String(), errOutput.String(), test.want)
 		}
 	}
-	if ExitOK != 0 || ExitInvalid != 1 || ExitUsage != 2 || ExitConflict != 1 || ExitSyncChanged != 3 || ExitBlocked != 4 {
-		t.Fatalf("unexpected public exit code mapping: ok=%d invalid=%d usage=%d conflict=%d sync=%d blocked=%d", ExitOK, ExitInvalid, ExitUsage, ExitConflict, ExitSyncChanged, ExitBlocked)
+	if ExitOK != 0 || ExitInvalid != 1 || ExitUsage != 2 || ExitConflict != 1 || ExitBlocked != 4 {
+		t.Fatalf("unexpected public exit code mapping: ok=%d invalid=%d usage=%d conflict=%d blocked=%d", ExitOK, ExitInvalid, ExitUsage, ExitConflict, ExitBlocked)
 	}
 }
 

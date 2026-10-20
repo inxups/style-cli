@@ -15,10 +15,9 @@ const (
 	ExitInvalid = 1
 	// ExitUsage reports a command line that could not be parsed into a
 	// request. Requests the service rejects use ExitInvalid.
-	ExitUsage       = 2
-	ExitConflict    = ExitInvalid
-	ExitSyncChanged = 3
-	ExitBlocked     = 4
+	ExitUsage    = 2
+	ExitConflict = ExitInvalid
+	ExitBlocked  = 4
 )
 
 // Version is the CLI release; release builds may set it with
@@ -211,8 +210,8 @@ func runCommand(ctx context.Context, service *Service, workDir string, args []st
 		return runRestore(ctx, service, args[1:], in, out, errOut)
 	case "uninstall":
 		return runUninstall(ctx, service, args[1:], in, out, errOut)
-	case "sync", "trust":
-		return runSync(ctx, service, args[0], args[1:], in, out, errOut)
+	case "sync":
+		return runSync(ctx, service, args[1:], in, out, errOut)
 	case "list", "doctor":
 		return runInspect(ctx, service, workDir, args[0], args[1:], in, out, errOut)
 	case "explain":

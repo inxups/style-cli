@@ -204,7 +204,7 @@ def main():
             result = document(run(new, env, "update", "legacy", "--json", confirm=True))
             assert result["status"] == "applied" and result["changed"]
             run(new, env, "sync", "--json")
-            run(new, env, "trust", "legacy", "--json", confirm=True)
+            run(new, env, "sync", "legacy", "--json", confirm=True)
             assert document(run(new, env, "update", "--all", "--json"))["status"] == "unchanged"
             run(new, env, "uninstall", "--all", "--json", confirm=True)
             record(cases, route, "real-old-install-update-lifecycle", legacy_format=1)

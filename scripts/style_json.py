@@ -15,7 +15,7 @@ def envelope(text):
     value = json.loads(text)
     assert isinstance(value, dict) and list(value) == ENVELOPE_KEYS, value
     assert value["format"] == 2 and value["command"] and value["status"] in (
-        "ok", "error", "needs-trust", "blocked"), value
+        "ok", "error", "blocked"), value
     assert isinstance(value["scope"], dict) and value["scope"]["kind"] in ("user", "project"), value
     assert isinstance(value["diagnostics"], list), value
     return value

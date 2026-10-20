@@ -1,6 +1,6 @@
 {
   "format": 2,
-  "command": "trust",
+  "command": "sync",
   "status": "ok",
   "scope": {
     "kind": "project",

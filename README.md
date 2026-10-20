@@ -102,12 +102,11 @@ explicit `--harness` list that leaves claude-code out is a usage error.
 Exit codes: `0` success, `1` the request was rejected or failed, `2` the command
 line could not be parsed (unknown command, option, harness or route; missing,
 malformed or conflicting argument, including a malformed Git source address or
-`--ref`), `3` `sync` found changes awaiting `trust`,
-`4` blocked by policy or budget. A well-formed request that the package, the
+`--ref`), `4` blocked by policy or budget. A well-formed request that the package, the
 installation or the detected harnesses cannot satisfy (a missing `--set`, an
 undetected harness, a package that is not installed) exits `1`. Hook invocations never exit `2`, which harnesses treat as a block.
 
-`install`, `restore`, `update`, `trust` and `uninstall` print a preview and ask
+`install`, `link`, `restore`, `update`, `uninstall` and `sync` (for a change that needs approval) print a preview and ask
 `[y/N]` on stderr before changing anything; only `y` or `yes` read from stdin
 applies the change. No input, end of input or any other answer cancels without
 writes, so scripts and CI answer explicitly, for example
@@ -129,7 +128,7 @@ Every `--json` report is one envelope:
  "diagnostics": [], "result": {"packages": []}}
 ```
 
-`status` mirrors the exit code (`ok`, `error`, `needs-trust`, `blocked`).
+`status` mirrors the exit code (`ok`, `error`, `blocked`).
 `scope` is `user` or `project` (with the project root, homes and
 prerequisites; a project that cannot be bound reports only the requested
 root). `diagnostics` holds the report's top-level diagnostics. A
@@ -151,11 +150,18 @@ The following forms were removed without compatibility entry points:
 | `--count=exact --count-provider=P --encoding=E` / `--count-model=M` | `--exact openai:E` / `--exact anthropic:M` |
 | `install --fail-closed claude-code` | `install --fail-closed` |
 | `--yes` on `install`, `restore`, `update`, `trust`, `uninstall` | answer `y` to the prompt (stdin) |
+| `style trust NAME`, `sync` exit `3` (`needs-trust`) | `style sync NAME`, or `sync` answering each prompt |
 | `--ref R --path P` on `validate`, `plan`, `install` | `git+https://…/repo.git//P?ref=R` |
 | `style COMMAND --project DIR` | `style --project DIR COMMAND` |
 | `style probe` | `style doctor --live` |
 | `style install DIR --link` | `style link DIR` |
 | `install S1 --project-source S2 --project-set P.K=V` | `install S1 S2 --set P.K=V` |
+
+`sync` applies source changes. A change that needs approval (an edited
+installed package, a link's first sync, a changed executable hook) is shown
+with its source, rendered and native diffs and asked for one package at a
+time; each approval is applied before the next question, and a declined one
+stops `sync` with exit `1`. `sync NAME` approves only that package.
 
 `doctor --live` runs the cold checks and then waits, up to `--timeout`
 (default 60s), for a callback from each selected harness; trigger a subscribed

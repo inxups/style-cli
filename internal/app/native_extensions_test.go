@@ -54,9 +54,9 @@ func TestM3A16SixRouteNativeExtensionsRejectBeforeWrites(t *testing.T) {
 				writeSyncFile(t, managed, invalid)
 				writeSyncFile(t, filepath.Join(candidate, "STYLE.yaml"), strings.Replace(invalid, "name: extensions", "name: candidate", 1))
 
-				commands := [][]string{{"validate", source, "--json"}, {"plan", source, "--harness=" + harness, "--json"}, {"install", candidate, "--harness=" + harness, "--route=" + harness + "=" + route, "--json"}, {"update", "--all", "--json"}, {"sync", "--json"}, {"trust", "extensions", "--json"}}
+				commands := [][]string{{"validate", source, "--json"}, {"plan", source, "--harness=" + harness, "--json"}, {"install", candidate, "--harness=" + harness, "--route=" + harness + "=" + route, "--json"}, {"update", "--all", "--json"}, {"sync", "--json"}, {"sync", "extensions", "--json"}}
 				for _, command := range commands {
-					if command[0] == "sync" || command[0] == "trust" {
+					if command[0] == "sync" {
 						writeSyncFile(t, managed, invalid)
 					} else {
 						writeSyncFile(t, managed, manifest)
@@ -68,10 +68,6 @@ func TestM3A16SixRouteNativeExtensionsRejectBeforeWrites(t *testing.T) {
 					expectedDiagnostic := "not supported;"
 					if command[0] == "update" {
 						expectedDiagnostic = "source-invalid"
-					}
-					if command[0] == "sync" {
-						expectedCode = 3
-						expectedDiagnostic = "needs_trust"
 					}
 					if code != expectedCode || !strings.Contains(out.String()+logs.String(), expectedDiagnostic) {
 						t.Fatal(field, command, code, out.String(), logs.String())

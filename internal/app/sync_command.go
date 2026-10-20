@@ -5,72 +5,119 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"slices"
+	"strings"
 )
 
-func runSync(ctx context.Context, service *Service, command string, args []string, in io.Reader, out, errOut io.Writer) int {
-	spec, _ := lookupCommand(command)
-	parsed, err := spec.parse(args)
-	if err == nil && command == "trust" && parsed.Arg(0) == "" {
-		err = errors.New("package name is required")
-	}
+// runSync applies source changes. Changes that need approval are previewed
+// and confirmed one package at a time: "sync NAME" approves that package, and
+// a bare "sync" walks every package that needs approval. Each approval is its
+// own transaction, so what is applied is exactly what was previewed.
+func runSync(ctx context.Context, service *Service, args []string, in io.Reader, out, errOut io.Writer) int {
+	parsed, err := syncCommand.parse(args)
 	if err != nil {
-		return spec.usageError(errOut, err)
+		return syncCommand.usageError(errOut, err)
 	}
-	request := TrustRequest{Name: parsed.Arg(0), AllowReplace: parsed.Bool("--allow-replace")}
-	jsonOutput := parsed.Bool("--json")
-	var result SyncResult
-	previewWritten := false
-	if command == "trust" {
-		request.Confirm = func(preview SyncResult) (bool, error) {
-			previewOut := out
-			if jsonOutput {
-				previewOut = errOut
-			}
-			writeSyncChanges(previewOut, preview, true)
-			previewWritten = !jsonOutput
-			return confirmInput(in, errOut, "Approve this snapshot?"), nil
-		}
-		result, err = service.Trust(ctx, request)
-	} else {
-		result, err = service.Sync(ctx, SyncRequest{})
-	}
-	if err != nil {
+	jsonOutput, named := parsed.Bool("--json"), parsed.Arg(0)
+	fail := func(err error) int {
 		var validation *ValidationError
 		if errors.As(err, &validation) {
 			if jsonOutput {
 				_ = encodeJSON(out, validation.Diagnostics)
 			} else {
-				writeCommandDiagnostics(errOut, command, validation.Diagnostics)
+				writeCommandDiagnostics(errOut, "sync", validation.Diagnostics)
 			}
 		} else {
-			commandFailure(out, errOut, jsonOutput, command, err)
+			commandFailure(out, errOut, jsonOutput, "sync", err)
 		}
 		return commandExit(err)
 	}
+	previewOut := out
 	if jsonOutput {
-		if result.AwaitingConfirmation {
-			result.Diagnostics = append(result.Diagnostics, declinedDiagnostic(command))
+		previewOut = errOut
+	}
+	previewed := false
+	approve := func(name string) (SyncResult, error) {
+		previewed = false
+		return service.Trust(ctx, TrustRequest{Name: name, AllowReplace: parsed.Bool("--allow-replace"), Confirm: func(preview SyncResult) (bool, error) {
+			writeSyncChanges(previewOut, preview, true)
+			previewed = true
+			return confirmInput(in, errOut, "Approve "+name+"?"), nil
+		}})
+	}
+	var result SyncResult
+	var approved []string
+	var approvedChanges []PackageChange
+	changed := false
+	record := func(name string, result SyncResult) {
+		approved = append(approved, name)
+		changed = changed || result.Changed
+		for _, change := range result.Changes {
+			if change.Package == name {
+				approvedChanges = append(approvedChanges, change)
+			}
 		}
-		if err := encodeJSON(out, result); err != nil {
-			fmt.Fprintf(errOut, "style %s: encode report: %v\n", command, err)
-			return ExitInvalid
+	}
+	if named != "" {
+		if result, err = approve(named); err != nil {
+			return fail(err)
+		}
+		if previewed && !result.AwaitingConfirmation {
+			record(named, result)
 		}
 	} else {
-		if !previewWritten {
-			writeSyncChanges(out, result, command == "trust")
-		}
-		if result.AwaitingConfirmation {
-			writeCommandDiagnostics(errOut, command, []Diagnostic{declinedDiagnostic(command)})
-		} else if command == "trust" || len(result.NeedsTrust) == 0 {
-			fmt.Fprintf(out, "%s complete (changed=%t, expired sessions=%d)\n", command, result.Changed, result.ExpiredSessions)
+		for {
+			if result, err = service.Sync(ctx, SyncRequest{}); err != nil {
+				return fail(err)
+			}
+			if len(result.NeedsTrust) == 0 {
+				break
+			}
+			name := result.NeedsTrust[0]
+			if slices.Contains(approved, name) {
+				return fail(&ConflictError{Message: fmt.Sprintf("package %s still needs approval after it was approved", name)})
+			}
+			if result, err = approve(name); err != nil {
+				return fail(err)
+			}
+			if result.AwaitingConfirmation {
+				break
+			}
+			record(name, result)
 		}
 	}
-	if command == "sync" && len(result.NeedsTrust) > 0 {
-		return ExitSyncChanged
-	}
+	result.Approved = approved
+	result.Changed = result.Changed || changed
 	if result.AwaitingConfirmation {
+		declined := declinedDiagnostic("sync")
+		if len(approved) > 0 {
+			declined.Message = fmt.Sprintf("sync canceled; already approved and applied: %s", strings.Join(approved, ", "))
+		}
+		if jsonOutput {
+			result.Diagnostics = append(result.Diagnostics, declined)
+			_ = encodeJSON(out, result)
+		} else {
+			writeCommandDiagnostics(errOut, "sync", []Diagnostic{declined})
+		}
 		return ExitInvalid
 	}
+	if named == "" && len(approvedChanges) > 0 {
+		result.Changes = append(approvedChanges, result.Changes...)
+	}
+	if jsonOutput {
+		if err := encodeJSON(out, result); err != nil {
+			fmt.Fprintf(errOut, "style sync: encode report: %v\n", err)
+			return ExitInvalid
+		}
+		return ExitOK
+	}
+	if !previewed || named == "" {
+		writeSyncChanges(out, result, named != "" && !previewed)
+	}
+	if len(approved) > 0 {
+		fmt.Fprintf(out, "approved: %s\n", strings.Join(approved, ", "))
+	}
+	fmt.Fprintf(out, "sync complete (changed=%t, expired sessions=%d)\n", result.Changed, result.ExpiredSessions)
 	return ExitOK
 }
 
@@ -130,7 +177,7 @@ func writeSyncChanges(out io.Writer, result SyncResult, full bool) {
 	}
 	writeStaticMigrations(out, result.StaticMigrations)
 	for _, name := range result.NeedsTrust {
-		fmt.Fprintf(out, "approval required: style trust %s\n", name)
+		fmt.Fprintf(out, "approval required: style sync %s\n", name)
 	}
 	for _, report := range result.Reports {
 		writePlanText(out, PlanResult{Reports: []PlanReport{report}})

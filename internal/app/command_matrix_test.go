@@ -164,17 +164,17 @@ var commandMatrix = []matrixCase{
 	{name: "uninstall ok", args: []string{"uninstall", "first"}, input: "y\n", exit: ExitOK},
 	{name: "uninstall broken lock", args: []string{"uninstall", "first"}, setup: brokenLock, input: "y\n", exit: ExitInvalid, code: "lock-invalid"},
 
-	{name: "sync extra arg", args: []string{"sync", "x"}, exit: ExitUsage},
+	{name: "sync extra arg", args: []string{"sync", "first", "x"}, exit: ExitUsage},
 	{name: "sync ok", args: []string{"sync"}, exit: ExitOK},
-	{name: "sync needs trust", fixture: "linked", args: []string{"sync"}, setup: changedSource, exit: ExitSyncChanged},
+	{name: "sync declined", fixture: "linked", args: []string{"sync"}, setup: changedSource, input: "n\n", exit: ExitInvalid, code: "confirmation-declined", stderr: "style sync: confirmation-declined: sync canceled; nothing was changed"},
+	{name: "sync approved", fixture: "linked", args: []string{"sync"}, setup: changedSource, input: "y\n", exit: ExitOK},
 	{name: "sync broken lock", args: []string{"sync"}, setup: brokenLock, exit: ExitInvalid, code: "lock-invalid"},
-
-	{name: "trust no name", args: []string{"trust"}, exit: ExitUsage},
-	{name: "trust missing", args: []string{"trust", "missing"}, input: "y\n", exit: ExitInvalid, code: "request-rejected"},
-	{name: "trust declined", fixture: "linked", args: []string{"trust", "first"}, setup: changedSource, input: "n\n", exit: ExitInvalid, code: "confirmation-declined"},
-	{name: "trust unchanged", args: []string{"trust", "first"}, exit: ExitOK},
-	{name: "trust ok", fixture: "linked", args: []string{"trust", "first"}, setup: changedSource, input: "y\n", exit: ExitOK},
-	{name: "trust broken lock", args: []string{"trust", "first"}, setup: brokenLock, input: "y\n", exit: ExitInvalid, code: "lock-invalid"},
+	{name: "sync name missing", args: []string{"sync", "missing"}, input: "y\n", exit: ExitInvalid, code: "request-rejected"},
+	{name: "sync name declined", fixture: "linked", args: []string{"sync", "first"}, setup: changedSource, input: "n\n", exit: ExitInvalid, code: "confirmation-declined"},
+	{name: "sync name unchanged", args: []string{"sync", "first"}, exit: ExitOK},
+	{name: "sync name ok", fixture: "linked", args: []string{"sync", "first"}, setup: changedSource, input: "y\n", exit: ExitOK},
+	{name: "sync name broken lock", args: []string{"sync", "first"}, setup: brokenLock, input: "y\n", exit: ExitInvalid, code: "lock-invalid"},
+	{name: "trust removed", args: []string{"trust", "first"}, exit: ExitUsage, noJSON: true, stderr: `style: unknown command "trust"`},
 
 	{name: "list extra arg", args: []string{"list", "x"}, exit: ExitUsage},
 	{name: "list ok", args: []string{"list"}, exit: ExitOK},
@@ -218,7 +218,7 @@ var commandMatrix = []matrixCase{
 	{name: "project usage after binding", fixture: "project", args: []string{"--project", "$ROOT", "uninstall"}, exit: ExitUsage},
 	{name: "project unbound", fixture: "project", args: []string{"--project", "$WORK/missing", "list"}, exit: ExitInvalid, code: "project-binding-invalid"},
 	{name: "project list ok", fixture: "project", args: []string{"--project", "$ROOT", "list"}, exit: ExitOK},
-	{name: "project trust missing", fixture: "project", args: []string{"--project", "$ROOT", "trust", "missing"}, input: "y\n", exit: ExitInvalid, code: "request-rejected"},
+	{name: "project sync missing", fixture: "project", args: []string{"--project", "$ROOT", "sync", "missing"}, input: "y\n", exit: ExitInvalid, code: "request-rejected"},
 	{name: "project uninstall missing", fixture: "project", args: []string{"--project", "$ROOT", "uninstall", "missing"}, input: "y\n", exit: ExitInvalid, code: "request-rejected"},
 	{name: "project uninstall declined", fixture: "project", args: []string{"--project", "$ROOT", "uninstall", "--all"}, input: "n\n", exit: ExitInvalid, code: "confirmation-declined"},
 }
@@ -314,7 +314,7 @@ func checkMatrixCell(t *testing.T, row matrixCase, args []string, jsonMode bool,
 				report("stdout line has an empty field: %q", line)
 			}
 		}
-		if exit != ExitOK && exit != ExitSyncChanged && strings.TrimSpace(stderr) == "" {
+		if exit != ExitOK && strings.TrimSpace(stderr) == "" {
 			report("text failure wrote nothing to stderr")
 		}
 		// Apart from confirmation prompts (and probe progress, which no row
@@ -329,7 +329,7 @@ func checkMatrixCell(t *testing.T, row matrixCase, args []string, jsonMode bool,
 		}
 		return
 	}
-	if exit != ExitOK && exit != ExitSyncChanged && !strings.Contains(stderr, "style "+command+": ") {
+	if exit != ExitOK && !strings.Contains(stderr, "style "+command+": ") {
 		// --json keeps the report on stdout; stderr still says why it failed.
 		report("json failure wrote no reason to stderr")
 	}
@@ -365,7 +365,7 @@ func checkMatrixCell(t *testing.T, row matrixCase, args []string, jsonMode bool,
 	if string(envelope.Result) == "{}" {
 		report("empty result object")
 	}
-	if exit == ExitOK || exit == ExitSyncChanged {
+	if exit == ExitOK {
 		return
 	}
 	if len(envelope.Diagnostics) == 0 {

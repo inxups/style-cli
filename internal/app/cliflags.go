@@ -227,8 +227,7 @@ var (
 	updateCommand    = commandSpec{Name: "update", Args: "<name|--all>", MaxArgs: 1, Project: true, Flags: []flagSpec{allFlag, refFlag, replaceFlag, jsonFlag}}
 	uninstallCommand = commandSpec{Name: "uninstall", Args: "<name|--all>", MaxArgs: 1, Project: true, Flags: []flagSpec{allFlag, jsonFlag}}
 	listCommand      = commandSpec{Name: "list", Project: true, Flags: []flagSpec{jsonFlag}}
-	syncCommand      = commandSpec{Name: "sync", Project: true, Flags: []flagSpec{jsonFlag}}
-	trustCommand     = commandSpec{Name: "trust", Args: "<name>", MaxArgs: 1, Project: true, Flags: []flagSpec{replaceFlag, jsonFlag}}
+	syncCommand      = commandSpec{Name: "sync", Args: "[name]", MaxArgs: 1, Project: true, Flags: []flagSpec{replaceFlag, jsonFlag}}
 	doctorCommand    = commandSpec{Name: "doctor", Project: true, Flags: []flagSpec{
 		{Name: "--reset-state", Kind: flagBool},
 		{Name: "--live", Kind: flagBool},
@@ -256,7 +255,7 @@ var commandSections = []struct {
 	Commands []commandSpec
 }{
 	{"Authoring", []commandSpec{initCommand, validateCommand, countCommand, planCommand}},
-	{"Installation", []commandSpec{installCommand, linkCommand, restoreCommand, updateCommand, uninstallCommand, syncCommand, trustCommand}},
+	{"Installation", []commandSpec{installCommand, linkCommand, restoreCommand, updateCommand, uninstallCommand, syncCommand}},
 	{"Diagnostics", []commandSpec{listCommand, doctorCommand, statsCommand, explainCommand}},
 }
 

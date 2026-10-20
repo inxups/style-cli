@@ -134,7 +134,7 @@ func (s *Service) prepareSync(ctx context.Context, request TrustRequest) (syncPr
 		}
 		if parsed.lock.Replace {
 			if !item.Replace && !(item.Name == request.Name && request.AllowReplace) {
-				return prepared, &RejectedError{Message: fmt.Sprintf("package %s newly uses replace; run trust %s --allow-replace", item.Name, item.Name)}
+				return prepared, &RejectedError{Message: fmt.Sprintf("package %s newly uses replace; run sync %s --allow-replace", item.Name, item.Name)}
 			}
 			if replaceOwner != "" {
 				return prepared, &ConflictError{Message: fmt.Sprintf("replace mode conflicts between %s and %s", replaceOwner, item.Name)}

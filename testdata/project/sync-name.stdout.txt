@@ -45,4 +45,4 @@ Token (estimated; calibration pending):
   PreToolUse Bash: 9 tokens / 30 chars
   session cost (requests=60 triggers=3): 78.7 always-on + 38.2 triggered = 116.9 units
   scenario only: 1.25x cache write + 0.1x later hits; assumes an eligible unchanged prefix within cache lifetime; not billing
-trust complete (changed=false, expired sessions=0)
+sync complete (changed=false, expired sessions=0)

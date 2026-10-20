@@ -51,7 +51,7 @@ def main():
     args = parser.parse_args()
     old, new = args.old_binary.resolve(), args.binary.resolve()
     cases = []
-    for entrypoint in ("install", "sync", "trust", "uninstall"):
+    for entrypoint in ("install", "sync", "sync-name", "uninstall"):
         for newline, original in (("lf", b"User instructions\n"), ("crlf", "用户\r\n".encode()),
                                   ("no-newline", "用户 instructions".encode()), ("absent", None)):
             with tempfile.TemporaryDirectory(prefix="style-a7-upgrade-") as temporary:
@@ -93,8 +93,8 @@ def main():
                     expected.add("third")
                 elif entrypoint == "sync":
                     command = ("sync", "--json")
-                elif entrypoint == "trust":
-                    command = ("trust", "first", "--json")
+                elif entrypoint == "sync-name":
+                    command = ("sync", "first", "--json")
                 else:
                     command = ("uninstall", "first", "--json")
                     expected.remove("first")

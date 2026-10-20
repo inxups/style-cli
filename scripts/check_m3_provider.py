@@ -110,7 +110,7 @@ def main():
             assert 'Service=' not in rejected.stdout
             assert 'index-invalid' in rejected.stderr or 'index is unavailable' in rejected.stderr
             assert snapshot(base, codex, claude, project) == before
-            for command in (('sync',), ('update', '--all', '--yes'), ('trust', 'service-provider', '--yes'), ('install', '--frozen', '--yes')):
+            for command in (('sync',), ('update', '--all', '--yes'), ('sync', 'service-provider', '--yes'), ('install', '--frozen', '--yes')):
                 run(old, dict(env, STYLE_HOME=str(home)), *command, want=1)
                 assert snapshot(base, codex, claude, project) == before
             record(cases, route, 'actual-old-runtime-and-management-refuse-zero-write')

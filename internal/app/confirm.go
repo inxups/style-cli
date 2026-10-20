@@ -1,7 +1,6 @@
 package app
 
 import (
-	"bufio"
 	"fmt"
 	"io"
 	"os"
@@ -15,7 +14,7 @@ func confirmInput(in io.Reader, errOut io.Writer, question string) bool {
 	fmt.Fprintf(errOut, "%s [y/N] ", question)
 	line := ""
 	if in != nil {
-		line, _ = bufio.NewReader(io.LimitReader(in, 256)).ReadString('\n')
+		line = readLine(in, 256)
 	}
 	// A terminal echoes the typed answer; piped answers are not echoed.
 	if !isTerminal(in) || !strings.HasSuffix(line, "\n") {
@@ -23,6 +22,23 @@ func confirmInput(in io.Reader, errOut io.Writer, question string) bool {
 	}
 	answer := strings.ToLower(strings.TrimSpace(line))
 	return answer == "y" || answer == "yes"
+}
+
+// readLine reads up to limit bytes through the first newline, one byte at a
+// time, so a later prompt still gets the next piped answer.
+func readLine(in io.Reader, limit int) string {
+	var line []byte
+	buffer := make([]byte, 1)
+	for len(line) < limit {
+		if n, _ := in.Read(buffer); n == 0 {
+			break
+		}
+		line = append(line, buffer[0])
+		if buffer[0] == '\n' {
+			break
+		}
+	}
+	return string(line)
 }
 
 func isTerminal(in io.Reader) bool {

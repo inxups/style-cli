@@ -28,7 +28,7 @@ func TestJSONEnvelopeWrapsEveryReport(t *testing.T) {
 		{[]string{"validate", "demo", "--json"}, ExitOK, "ok", ""},
 		{[]string{"list", "--json"}, ExitOK, "ok", ""},
 		{[]string{"plan", "demo", "--harness=codex", "--json"}, ExitOK, "ok", ""},
-		{[]string{"trust", "missing", "--json"}, ExitInvalid, "error", "request-rejected"},
+		{[]string{"sync", "missing", "--json"}, ExitInvalid, "error", "request-rejected"},
 	} {
 		t.Run(strings.Join(test.args, " "), func(t *testing.T) {
 			var out, errOut bytes.Buffer
@@ -129,7 +129,7 @@ func TestWrapReportFallsBackToStderrFailures(t *testing.T) {
 }
 
 func TestEnvelopeStatusMirrorsExitCode(t *testing.T) {
-	for code, want := range map[int]string{ExitOK: "ok", ExitInvalid: "error", ExitSyncChanged: "needs-trust", ExitBlocked: "blocked"} {
+	for code, want := range map[int]string{ExitOK: "ok", ExitInvalid: "error", ExitBlocked: "blocked"} {
 		if got := envelopeStatus(code); got != want {
 			t.Fatalf("status(%d) = %q, want %q", code, got, want)
 		}
@@ -166,7 +166,7 @@ func TestUsageAndRejectedErrorsExitCodes(t *testing.T) {
 		{[]string{"install", "demo", "--harness", "codex", "--route", "codex=bogus"}, ExitUsage},
 		{[]string{"install", "demo", "other", "--set", "k=v"}, ExitUsage},
 		{[]string{"install", "git+https://example.invalid/repo.git?x=1", "--json"}, ExitUsage},
-		{[]string{"trust", "missing"}, ExitInvalid},
+		{[]string{"sync", "missing"}, ExitInvalid},
 		{[]string{"install", "demo", "--harness", "codex", "--set", "unknown=v"}, ExitInvalid},
 	} {
 		var out, errOut bytes.Buffer
@@ -190,7 +190,7 @@ func TestJSONFailuresKeepTheirCodes(t *testing.T) {
 		{[]string{"install", "missing", "--json"}, "invalid-package"},
 		{[]string{"plan", "missing", "--json"}, "invalid-package"},
 		{[]string{"install", "demo", "--harness", "codex", "--set", "unknown=v", "--json"}, "request-rejected"},
-		{[]string{"trust", "missing", "--json"}, "request-rejected"},
+		{[]string{"sync", "missing", "--json"}, "request-rejected"},
 		{[]string{"uninstall", "missing", "--json"}, "request-rejected"},
 	} {
 		var out, errOut bytes.Buffer

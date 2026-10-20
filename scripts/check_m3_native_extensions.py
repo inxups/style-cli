@@ -70,7 +70,7 @@ def main():
             operations = [('validate', source, '--json'),
                           ('plan', source, '--harness=' + provider, '--json'),
                           (*scope, 'sync', '--json'),
-                          (*scope, 'trust', 'native-compat', '--json'),
+                          (*scope, 'sync', 'native-compat', '--json'),
                           (*scope, 'update', '--all', '--json'),
                           (*scope, 'restore', '--json')]
             for operation in operations:

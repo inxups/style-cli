@@ -42,8 +42,6 @@ func envelopeStatus(code int) string {
 	switch code {
 	case ExitOK:
 		return "ok"
-	case ExitSyncChanged:
-		return "needs-trust"
 	case ExitBlocked:
 		return "blocked"
 	default:

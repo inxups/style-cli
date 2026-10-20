@@ -61,13 +61,13 @@ def main():
             assert declaration["effects_sha256"].startswith("sha256:")
             assert str(root) not in json.dumps(declaration)
             record(cases, route, "install-format3-private-scope")
-            for command in (("list",), ("sync",), ("trust", "project-rules"),
+            for command in (("list",), ("sync",), ("sync", "project-rules"),
                             ("update", "--all"), ("restore",), ("doctor",), ("stats",)):
                 report = style_report(run(new, env, "--project", project, *command, "--json", confirm=True).stdout)
                 assert report["scope"]["home"] == str(home)
             record(cases, route, "management-scope-consistency", commands=7)
             before = snapshot(base, codex, claude, project)
-            for command in (("list",), ("sync",), ("trust", "project-rules", "--yes"),
+            for command in (("list",), ("sync",), ("sync", "project-rules", "--yes"),
                             ("uninstall", "--all", "--yes"), ("update", "--all", "--yes"),
                             ("install", "--frozen", "--yes")):
                 result = run(old, {**env, "STYLE_HOME": str(home)}, *command, want=1)

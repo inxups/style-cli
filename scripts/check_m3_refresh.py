@@ -125,12 +125,12 @@ def main():
             # These old operations must compile or authenticate the unsupported
             # source. Pure removal of all packages is intentionally not a
             # recompilation compatibility promise about an immutable old CLI.
-            for command in (("sync",), ("trust", "periodic", "--yes"),
+            for command in (("sync",), ("sync", "periodic", "--yes"),
                             ("update", "--all", "--yes"), ("install", "--frozen", "--yes")):
                 rejected = run(old, {**env, "STYLE_HOME": str(home)}, *command, want=1)
                 assert snapshot(base, codex, claude, project) == before, (command, rejected.stdout, rejected.stderr)
             record(cases, route, "actual-old-management-conservative-zero-write", commands=4)
-            for command in (("sync",), ("trust", "periodic"), ("update", "--all"), ("restore",)):
+            for command in (("sync",), ("sync", "periodic"), ("update", "--all"), ("restore",)):
                 run(new, env, *scope, *command, "--json", confirm=True)
             doctor = style_report(run(new, env, *scope, "doctor", "--json").stdout)
             assert any(d["code"] == "refresh-index-2" for d in doctor["diagnostics"])

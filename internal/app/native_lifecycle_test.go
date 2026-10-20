@@ -126,11 +126,9 @@ func TestA4NativeSourceChangesRequireTrustForOrdinaryAndLinkedPackages(t *testin
 					writeSyncFile(t, filepath.Join(source, "STYLE.yaml"), mutation.change(nativePackageYAML("native-test")))
 					before := installedTree(t, home, config)
 					var out, errOut bytes.Buffer
-					if code := RunWithService(context.Background(), service, source, []string{"sync", "--json"}, &out, &errOut); code != ExitSyncChanged {
+					// Without an answer sync shows the native diff and declines.
+					if code := RunWithService(context.Background(), service, source, []string{"sync", "--json"}, &out, &errOut); code != ExitInvalid || !strings.Contains(errOut.String(), "Native entry diff:") {
 						t.Fatalf("sync exit=%d stdout=%s stderr=%s", code, out.String(), errOut.String())
-					}
-					if strings.Contains(out.String(), "printf") {
-						t.Fatal("sync summary exposed native commands")
 					}
 					preview, err := service.Trust(context.Background(), TrustRequest{Home: home, Name: "native-test"})
 					if err != nil || !preview.AwaitingConfirmation || len(preview.Changes) != 1 || !preview.Changes[0].NativeChanged {
@@ -144,11 +142,11 @@ func TestA4NativeSourceChangesRequireTrustForOrdinaryAndLinkedPackages(t *testin
 					}
 					out.Reset()
 					errOut.Reset()
-					if code := RunWithService(context.Background(), service, source, []string{"trust", "native-test"}, &out, &errOut); code != ExitInvalid || !strings.Contains(out.String(), "Native entry diff:") {
-						t.Fatalf("trust preview exit=%d stdout=%s stderr=%s", code, out.String(), errOut.String())
+					if code := RunWithService(context.Background(), service, source, []string{"sync", "native-test"}, &out, &errOut); code != ExitInvalid || !strings.Contains(out.String(), "Native entry diff:") {
+						t.Fatalf("sync preview exit=%d stdout=%s stderr=%s", code, out.String(), errOut.String())
 					}
 					if !reflect.DeepEqual(before, installedTree(t, home, config)) {
-						t.Fatal("CLI trust preview wrote installation")
+						t.Fatal("CLI sync preview wrote installation")
 					}
 					if result, err := service.Trust(context.Background(), TrustRequest{Home: home, Name: "native-test", Yes: true}); err != nil || !result.Changed {
 						t.Fatalf("trust=%+v err=%v", result, err)

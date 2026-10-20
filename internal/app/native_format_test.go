@@ -67,7 +67,7 @@ func TestNativeFormatRemovedManagementIsAtomic(t *testing.T) {
 			candidate := writeInstallPackage(t, filepath.Join(filepath.Dir(source), "candidate"), a4Manifest("candidate", "Body."))
 			before := a4State(t, home, config)
 			for _, args := range [][]string{
-				{"sync", "--json"}, {"trust", "native-test", "--json"},
+				{"sync", "--json"}, {"sync", "native-test", "--json"},
 				{"update", "--all", "--json"}, {"restore", "--json"},
 				{"install", candidate, "--harness=codex", "--route=codex=codex-user", "--json"},
 			} {

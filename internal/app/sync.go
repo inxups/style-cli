@@ -27,6 +27,7 @@ type PackageChange struct {
 type SyncResult struct {
 	StaticMigrations     []adapter.StaticMigration `json:"static_migrations,omitempty"`
 	ApprovalTarget       string                    `json:"approval_target,omitempty"`
+	Approved             []string                  `json:"approved,omitempty"`
 	Changed              bool                      `json:"changed"`
 	Changes              []PackageChange           `json:"changes"`
 	NeedsTrust           []string                  `json:"needs_trust"`

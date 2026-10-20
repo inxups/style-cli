@@ -82,7 +82,7 @@ def main():
             assert 'Unknown rule' not in rejected.stdout
             assert 'index-invalid' in rejected.stderr or 'index is unavailable' in rejected.stderr
             assert snapshot(base, codex, claude, project) == before
-            for command in (('sync',), ('update', '--all', '--yes'), ('trust', 'missing-data', '--yes'),
+            for command in (('sync',), ('update', '--all', '--yes'), ('sync', 'missing-data', '--yes'),
                             ('install', '--frozen', '--yes'), ('install', source, *selection, '--yes'),
                             ('uninstall', '--all', '--yes')):
                 run(old, dict(env, STYLE_HOME=str(home)), *command, want=1)

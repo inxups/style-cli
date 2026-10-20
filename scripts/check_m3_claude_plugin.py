@@ -45,7 +45,7 @@ def main():
         record(cases, 'claude-plugin', 'generated-private-marketplace-and-format3')
         before = snapshot(base, claude)
         for command in (('sync',), ('update', '--all', '--yes'), ('install', '--frozen', '--yes'),
-                        ('trust', 'plugin-rules', '--yes'), ('uninstall', '--all', '--yes')):
+                        ('sync', 'plugin-rules', '--yes'), ('uninstall', '--all', '--yes')):
             result = run(old, env, *command, want=1)
             assert any(x in result.stdout + result.stderr for x in ('lock format', 'project binding', 'project lock', 'frozen-lock-invalid', 'frozen-metadata-incomplete', 'lock-invalid')), result
             assert snapshot(base, claude) == before
