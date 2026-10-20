@@ -27,7 +27,7 @@ func readPackageFile(root, rel string, files map[string][]byte) ([]byte, error) 
 		info, err := os.Lstat(current)
 		if err != nil {
 			if errors.Is(err, fs.ErrNotExist) {
-				return nil, parseErr("file-not-found", clean, "read package file", err)
+				return nil, parseErr("file-not-found", clean, "file does not exist", nil)
 			}
 			return nil, parseErr("file-read", clean, "inspect package file", err)
 		}

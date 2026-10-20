@@ -106,6 +106,7 @@ var commandMatrix = []matrixCase{
 	{name: "validate extra arg", args: []string{"validate", "a", "b"}, exit: ExitUsage},
 	{name: "validate malformed git", args: []string{"validate", "git+https://example.invalid/r.git?ref=main"}, exit: ExitUsage},
 	{name: "validate missing", args: []string{"validate", "$WORK/missing"}, exit: ExitInvalid, code: "invalid-package", stderr: "/missing: package source does not exist\n"},
+	{name: "validate no manifest", args: []string{"validate", "$WORK/exists"}, exit: ExitInvalid, code: "file-not-found", stderr: "STYLE.yaml: file does not exist\n"},
 	{name: "validate ok", args: []string{"validate", "$SRC"}, exit: ExitOK},
 
 	{name: "count no file", args: []string{"count"}, exit: ExitUsage},
