@@ -30,6 +30,7 @@ type matrixCase struct {
 	setup   func(t *testing.T, f matrixFixture)
 	exit    int
 	code    string // expected JSON diagnostic code when the command fails
+	stderr  string // text stderr must contain this, when set
 	noJSON  bool
 }
 
@@ -172,6 +173,7 @@ var commandMatrix = []matrixCase{
 	{name: "probe broken lock", args: []string{"probe", "--harness", "codex"}, setup: brokenLock, exit: ExitInvalid, code: "lock-invalid"},
 
 	{name: "project missing value", fixture: "project", args: []string{"list", "--project"}, exit: ExitUsage},
+	{name: "style-home without project", args: []string{"list", "--style-home", "$WORK/home"}, exit: ExitUsage, stderr: "style list: --style-home requires --project\n"},
 	{name: "project unsupported", fixture: "project", args: []string{"init", "x", "--project", "$ROOT"}, exit: ExitUsage, noJSON: true},
 	{name: "project usage after binding", fixture: "project", args: []string{"uninstall", "--project", "$ROOT"}, exit: ExitUsage},
 	{name: "project unbound", fixture: "project", args: []string{"list", "--project", "$WORK/missing"}, exit: ExitInvalid, code: "project-binding-invalid"},
@@ -219,6 +221,9 @@ func checkMatrixCell(t *testing.T, row matrixCase, args []string, jsonMode bool,
 	if exit != row.exit {
 		report("exit = %d, want %d", exit, row.exit)
 		return
+	}
+	if !strings.Contains(stderr, row.stderr) {
+		report("stderr lacks %q", row.stderr)
 	}
 	if strings.Contains(stdout+stderr, "app: ") {
 		report("internal package prefix in output")

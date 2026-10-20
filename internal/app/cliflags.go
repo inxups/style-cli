@@ -1,6 +1,7 @@
 package app
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"strings"
@@ -94,6 +95,10 @@ func (c commandSpec) parse(args []string) (parsedArgs, error) {
 		}
 		name, value, inline := strings.Cut(arg, "=")
 		flag, ok := c.flag(name)
+		if !ok && name == "--style-home" && c.Project {
+			// Project invocations consume --style-home before parsing.
+			return parsed, errors.New("--style-home requires --project")
+		}
 		if !ok {
 			return parsed, fmt.Errorf("unknown option %q", name)
 		}
@@ -180,7 +185,7 @@ func (c commandSpec) usage() string {
 	return strings.Join(lines, "\n")
 }
 
-const projectFlagsUsage = "[--project dir] [--style-home dir]"
+const projectFlagsUsage = "[--project dir [--style-home dir]]"
 
 // usageError prints the error and the command usage to errOut.
 func (c commandSpec) usageError(errOut io.Writer, err error) int {
@@ -272,6 +277,7 @@ func printUsage(out io.Writer) {
 	}
 	fmt.Fprintln(out)
 	fmt.Fprintln(out, "Global:")
-	fmt.Fprintln(out, "  "+projectFlagsUsage+" scopes plan, installation and diagnostic commands to a project.")
+	fmt.Fprintln(out, "  "+projectFlagsUsage+" scopes plan, installation and diagnostic commands to a project;")
+	fmt.Fprintln(out, "  --style-home, only with --project, replaces STYLE_HOME as the home the project is bound under.")
 	fmt.Fprintln(out, "  style help <command> (or <command> --help) shows advanced and project options.")
 }
