@@ -130,7 +130,8 @@ var commandMatrix = []matrixCase{
 
 	{name: "update no name", args: []string{"update"}, exit: ExitUsage},
 	{name: "update malformed ref", args: []string{"update", "first", "--ref", "main"}, exit: ExitUsage},
-	{name: "update missing", args: []string{"update", "missing"}, exit: ExitInvalid, code: "request-rejected"},
+	{name: "update missing", args: []string{"update", "missing"}, exit: ExitInvalid, code: "request-rejected", stderr: `style update: request-rejected: package "missing" is not installed`},
+	{name: "update all none installed", args: []string{"update", "--all"}, setup: emptyHome, exit: ExitInvalid, code: "request-rejected", stderr: "style update: request-rejected: no packages are installed"},
 	{name: "update declined", args: []string{"update", "first"}, setup: changedSource, input: "n\n", exit: ExitInvalid, code: "confirmation-declined"},
 	{name: "update ok", args: []string{"update", "first"}, setup: changedSource, input: "y\n", exit: ExitOK},
 	{name: "update broken lock", args: []string{"update", "first"}, setup: brokenLock, exit: ExitInvalid, code: "lock-invalid"},

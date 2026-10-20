@@ -91,11 +91,12 @@ func (s *Service) prepareUpdate(ctx context.Context, request UpdateRequest) (p p
 				Before: updateRevision(item), SettingsAdded: []string{}, SettingsRemoved: []string{}})
 		}
 	}
-	if !request.All && len(p.result.Selected) == 0 {
-		return p, updateFailure("request-rejected", "the selected package is not installed", nil)
-	}
-	if len(ordered) == 0 {
-		return p, nil
+	if len(p.result.Selected) == 0 {
+		// Like uninstall, update names the package or says nothing is installed.
+		if request.All {
+			return p, updateFailure("request-rejected", "no packages are installed", nil)
+		}
+		return p, updateFailure("request-rejected", fmt.Sprintf("package %q is not installed", request.Name), nil)
 	}
 	if err := p.inputs.links(lock); err != nil {
 		return p, updateFailure("installation-changed", "cannot capture linked sources safely", err)

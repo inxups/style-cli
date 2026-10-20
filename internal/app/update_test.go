@@ -154,9 +154,7 @@ func TestM3A4SelectionAndCLIOptions(t *testing.T) {
 		a4ExpectError(t, result, err, "source-invalid")
 	}
 	result, err := s.Update(context.Background(), UpdateRequest{All: true})
-	if err != nil || result.Status != "unchanged" || result.Changed || len(result.Selected) != 0 {
-		t.Fatalf("empty all=%+v %v", result, err)
-	}
+	a4ExpectError(t, result, err, "request-rejected")
 	if _, err := os.Stat(os.Getenv("STYLE_HOME")); !os.IsNotExist(err) {
 		t.Fatal("empty update created an installation")
 	}

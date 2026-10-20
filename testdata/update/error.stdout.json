@@ -10,7 +10,7 @@
     {
       "code": "request-rejected",
       "severity": "error",
-      "message": "the selected package is not installed"
+      "message": "package \"missing\" is not installed"
     }
   ],
   "result": {
