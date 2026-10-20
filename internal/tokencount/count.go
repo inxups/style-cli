@@ -23,25 +23,25 @@ type Options struct{ Mode, Provider, Encoding, Model string }
 func (o Options) Exact() bool { return o.Mode == "exact" }
 func (o Options) Validate() error {
 	if o.Mode != "" && o.Mode != "estimate" && o.Mode != "exact" {
-		return fmt.Errorf("count: mode must be estimate or exact")
+		return fmt.Errorf("mode must be estimate or exact")
 	}
 	if !o.Exact() {
 		if o.Provider != "" || o.Encoding != "" || o.Model != "" {
-			return fmt.Errorf("count: provider, encoding and model require --exact")
+			return fmt.Errorf("provider, encoding and model require --exact")
 		}
 		return nil
 	}
 	switch o.Provider {
 	case "openai":
 		if (o.Encoding != "o200k_base" && o.Encoding != "cl100k_base") || o.Model != "" {
-			return fmt.Errorf("count: local openai requires explicit o200k_base or cl100k_base and no model inference")
+			return fmt.Errorf("local openai requires explicit o200k_base or cl100k_base and no model inference")
 		}
 	case "anthropic":
 		if !modelID.MatchString(o.Model) || o.Encoding != "" {
-			return fmt.Errorf("count: --exact anthropic:<model> requires a valid model id and no encoding")
+			return fmt.Errorf("--exact anthropic:<model> requires a valid model id and no encoding")
 		}
 	default:
-		return fmt.Errorf("count: --exact requires explicit provider openai or anthropic")
+		return fmt.Errorf("--exact requires explicit provider openai or anthropic")
 	}
 	return nil
 }

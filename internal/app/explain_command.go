@@ -61,7 +61,11 @@ func parseExplainArgs(args []string) (ExplainRequest, bool, error) {
 		Index: parsed.String("--index"), StateDir: parsed.String("--state-dir"), Facts: parsed.String("--facts"), Provenance: parsed.String("--provenance"),
 		FailClosed: parsed.Bool("--fail-closed"),
 	}
-	if request.Count, err = countOptions(parsed); err != nil {
+	if request.Count, err = countOptions(parsed); err == nil {
+		// Like count and plan, an invalid --exact value is a usage error.
+		err = request.Count.Validate()
+	}
+	if err != nil {
 		return request, false, err
 	}
 	return request, parsed.Bool("--json"), nil

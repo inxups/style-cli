@@ -106,12 +106,14 @@ var commandMatrix = []matrixCase{
 
 	{name: "count no file", args: []string{"count"}, exit: ExitUsage},
 	{name: "count missing", args: []string{"count", "$WORK/missing.txt"}, exit: ExitInvalid},
+	{name: "count malformed exact", args: []string{"count", "$WORK/text.txt", "--exact", "openai:bogus"}, exit: ExitUsage, stderr: "style count: local openai requires"},
 	{name: "count ok", args: []string{"count", "$WORK/text.txt"}, exit: ExitOK},
 
 	{name: "plan unknown harness", args: []string{"plan", "$SRC", "--harness", "bogus"}, exit: ExitUsage},
 	{name: "plan missing", args: []string{"plan", "$WORK/missing"}, exit: ExitInvalid, code: "invalid-package"},
 	{name: "plan over budget", args: []string{"plan", "$NEW", "--harness", "codex"}, exit: ExitBlocked, code: "blocked",
 		setup: writeMatrixFile("$NEW/STYLE.yaml", a6LongManifest("second", "Second.", "budget: {per_event: 1, on: error}\n", "tool"))},
+	{name: "plan malformed exact", args: []string{"plan", "$SRC", "--exact", "openai:bogus"}, exit: ExitUsage, stderr: "style plan: local openai requires"},
 	{name: "plan ok", args: []string{"plan", "$SRC", "--harness", "codex"}, exit: ExitOK},
 
 	{name: "install no source", args: []string{"install"}, exit: ExitUsage},
@@ -169,6 +171,7 @@ var commandMatrix = []matrixCase{
 	{name: "explain no harness", args: []string{"explain", "--payload", "$WORK/payload.json"}, exit: ExitUsage},
 	{name: "explain auto harness", args: []string{"explain", "--harness", "auto", "--payload", "$WORK/payload.json"}, exit: ExitUsage},
 	{name: "explain missing payload", args: []string{"explain", "--harness", "codex", "--payload", "$WORK/missing.json"}, exit: ExitInvalid},
+	{name: "explain malformed exact", args: []string{"explain", "--harness", "codex", "--payload", "$WORK/payload.json", "--exact", "openai:bogus"}, exit: ExitUsage, stderr: "style explain: local openai requires"},
 	{name: "explain ok", args: []string{"explain", "--harness", "codex", "--payload", "$WORK/payload.json"}, exit: ExitOK},
 
 	{name: "probe unknown harness", args: []string{"probe", "--harness", "bogus"}, exit: ExitUsage},
@@ -229,7 +232,7 @@ func checkMatrixCell(t *testing.T, row matrixCase, args []string, jsonMode bool,
 	if !strings.Contains(stderr, row.stderr) {
 		report("stderr lacks %q", row.stderr)
 	}
-	if strings.Contains(stdout+stderr, "app: ") {
+	if strings.Contains(stdout+stderr, "app: ") || strings.Contains(stderr, ": count: ") {
 		report("internal package prefix in output")
 	}
 	for _, line := range strings.Split(stderr, "\n") {
