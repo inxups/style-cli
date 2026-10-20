@@ -169,6 +169,7 @@ var commandMatrix = []matrixCase{
 	{name: "probe unknown harness", args: []string{"probe", "--harness", "bogus"}, exit: ExitUsage},
 	{name: "probe malformed timeout", args: []string{"probe", "--timeout", "bogus"}, exit: ExitUsage},
 	{name: "probe not installed", args: []string{"probe", "--harness", "claude-code"}, exit: ExitInvalid},
+	{name: "probe broken lock", args: []string{"probe", "--harness", "codex"}, setup: brokenLock, exit: ExitInvalid, code: "lock-invalid"},
 
 	{name: "project missing value", fixture: "project", args: []string{"list", "--project"}, exit: ExitUsage},
 	{name: "project unsupported", fixture: "project", args: []string{"init", "x", "--project", "$ROOT"}, exit: ExitUsage, noJSON: true},

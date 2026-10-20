@@ -151,7 +151,7 @@ func (s *Service) Probe(ctx context.Context, request ProbeRequest) (result Probe
 		err = s.validateScopeLock(home, lock)
 	}
 	if err != nil {
-		return result, fail("probe-not-installed", "Installed STYLE lock is invalid.")
+		return result, fail("lock-invalid", "Installed STYLE lock is invalid.")
 	}
 	harnesses, err := s.parseHarnesses(request.Harnesses)
 	if err != nil {

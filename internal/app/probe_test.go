@@ -378,7 +378,7 @@ func TestM3A2ProbePreflightRefusals(t *testing.T) {
 				expected = "probe-not-installed"
 			case "bad-lock":
 				os.WriteFile(filepath.Join(f.home, "style.lock.yaml"), []byte("["), 0o600)
-				expected = "probe-not-installed"
+				expected = "lock-invalid"
 			case "empty-packages":
 				lock, _ := loadLock(f.home)
 				lock.Packages = nil
