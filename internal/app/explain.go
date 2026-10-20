@@ -454,7 +454,11 @@ func (s *Service) explainProvenance(result *ExplainResult, request ExplainReques
 		p.Status = "invalid"
 	}
 	if p.Status != "matched" {
-		result.Diagnostics = append(result.Diagnostics, ExplainDiagnostic{"provenance-" + p.Status, "warning", "compilation provenance is " + p.Status + "; index-only coverage"})
+		message := "compilation provenance is " + p.Status + "; index-only coverage"
+		if request.Provenance != "" && errors.Is(err, os.ErrNotExist) {
+			message = "provenance file does not exist; index-only coverage"
+		}
+		result.Diagnostics = append(result.Diagnostics, ExplainDiagnostic{"provenance-" + p.Status, "warning", message})
 	}
 	result.CompileProvenance = p
 }

@@ -32,6 +32,7 @@ type matrixCase struct {
 	exit    int
 	code    string // expected JSON diagnostic code when the command fails
 	stderr  string // stderr must contain this in both modes, when set
+	stdout  string // text-mode stdout must contain this, when set
 	noJSON  bool
 }
 
@@ -187,6 +188,7 @@ var commandMatrix = []matrixCase{
 	{name: "explain auto harness", args: []string{"explain", "--harness", "auto", "--payload", "$WORK/payload.json"}, exit: ExitUsage},
 	{name: "explain missing payload", args: []string{"explain", "--harness", "codex", "--payload", "$WORK/missing.json"}, exit: ExitInvalid, stderr: "style explain: payload-invalid: payload must be"},
 	{name: "explain malformed exact", args: []string{"explain", "--harness", "codex", "--payload", "$WORK/payload.json", "--exact", "openai:bogus"}, exit: ExitUsage, stderr: "style explain: local openai requires"},
+	{name: "explain missing provenance", args: []string{"explain", "--harness", "codex", "--payload", "$WORK/payload.json", "--provenance", "$WORK/missing.json"}, exit: ExitOK, stdout: "provenance file does not exist; index-only coverage"},
 	{name: "explain ok", args: []string{"explain", "--harness", "codex", "--payload", "$WORK/payload.json"}, exit: ExitOK},
 
 	{name: "probe unknown harness", args: []string{"probe", "--harness", "bogus"}, exit: ExitUsage},
@@ -246,6 +248,9 @@ func checkMatrixCell(t *testing.T, row matrixCase, args []string, jsonMode bool,
 	}
 	if !strings.Contains(stderr, row.stderr) {
 		report("stderr lacks %q", row.stderr)
+	}
+	if !jsonMode && !strings.Contains(stdout, row.stdout) {
+		report("stdout lacks %q", row.stdout)
 	}
 	if strings.Contains(stdout+stderr, "lstat ") || strings.Contains(stdout+stderr, "no such file or directory") {
 		report("raw system error in output")
