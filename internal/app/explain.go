@@ -194,6 +194,9 @@ func (s *Service) explain(ctx context.Context, request ExplainRequest, ops expla
 	facts := explainFacts{}
 	if request.Facts != "" {
 		data, e := saferead.ReadFile(request.Facts, 1<<20)
+		if errors.Is(e, os.ErrNotExist) {
+			return result, fail("facts-invalid", "facts file does not exist")
+		}
 		if e != nil || !utf8.Valid(data) || decodeExplainJSON(data, &facts) != nil {
 			return result, fail("facts-invalid", "supplementary facts have an invalid format or file type")
 		}
@@ -236,6 +239,9 @@ func (s *Service) explain(ctx context.Context, request ExplainRequest, ops expla
 		request.Index = filepath.Join(home, "build", "index.json")
 	}
 	indexBytes, err := saferead.ReadFile(request.Index, 16<<20)
+	if errors.Is(err, os.ErrNotExist) {
+		return result, fail("index-invalid", "index file does not exist")
+	}
 	if err != nil {
 		return result, fail("index-invalid", "index must be a bounded regular file")
 	}
@@ -256,14 +262,16 @@ func (s *Service) explain(ctx context.Context, request ExplainRequest, ops expla
 	if request.StateDir != "" {
 		snap, e := ops.snapshot(ctx, request.StateDir, storeRoot, sessionID, agentID)
 		if e != nil {
-			code := "state-snapshot-invalid"
-			if errors.Is(e, saferead.ErrChanged) {
-				code = "state-snapshot-changed"
+			code, message := "state-snapshot-invalid", "selected state is not a readable state directory"
+			switch {
+			case ctx.Err() != nil:
+				code, message = "cancelled", "replay was cancelled"
+			case errors.Is(e, saferead.ErrChanged):
+				code, message = "state-snapshot-changed", "selected state changed during capture"
+			case errors.Is(e, os.ErrNotExist):
+				message = "state directory does not exist"
 			}
-			if ctx.Err() != nil {
-				code = "cancelled"
-			}
-			return result, fail(code, "cannot capture the selected state without changes or invalid input")
+			return result, fail(code, message)
 		}
 		result.State.Mode = "snapshot"
 		result.State.Quality = "captured-nonatomic"
