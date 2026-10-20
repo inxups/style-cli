@@ -72,7 +72,11 @@ func parseExplainArgs(args []string) (ExplainRequest, bool, error) {
 }
 func writeExplainText(out io.Writer, result ExplainResult) {
 	quote := func(value string) string { encoded, _ := json.Marshal(value); return string(encoded) }
-	fmt.Fprintf(out, "explain %s %s: %s\n", quote(result.Harness), quote(result.Event), result.Status)
+	event := ""
+	if result.Event != "" {
+		event = " " + quote(result.Event)
+	}
+	fmt.Fprintf(out, "explain %s%s: %s\n", quote(result.Harness), event, result.Status)
 	if inputs := textFields("index", result.Inputs.IndexSHA256, "payload", result.Inputs.PayloadSHA256); inputs != "" {
 		fmt.Fprintf(out, "inputs %s\n", inputs)
 	}

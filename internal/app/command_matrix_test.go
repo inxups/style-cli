@@ -189,6 +189,7 @@ var commandMatrix = []matrixCase{
 	{name: "explain missing payload", args: []string{"explain", "--harness", "codex", "--payload", "$WORK/missing.json"}, exit: ExitInvalid, stderr: "style explain: payload-invalid: payload must be"},
 	{name: "explain malformed exact", args: []string{"explain", "--harness", "codex", "--payload", "$WORK/payload.json", "--exact", "openai:bogus"}, exit: ExitUsage, stderr: "style explain: local openai requires"},
 	{name: "explain missing provenance", args: []string{"explain", "--harness", "codex", "--payload", "$WORK/payload.json", "--provenance", "$WORK/missing.json"}, exit: ExitOK, stdout: "provenance file does not exist; index-only coverage"},
+	{name: "explain fail-closed codex", args: []string{"explain", "--harness", "codex", "--payload", "$WORK/payload.json", "--fail-closed"}, exit: ExitInvalid, code: "fail-closed-unsupported", stdout: "explain \"codex\": error\n"},
 	{name: "explain ok", args: []string{"explain", "--harness", "codex", "--payload", "$WORK/payload.json"}, exit: ExitOK},
 
 	{name: "probe unknown harness", args: []string{"probe", "--harness", "bogus"}, exit: ExitUsage},
