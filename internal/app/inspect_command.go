@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"strconv"
 	"strings"
 )
 
@@ -43,6 +44,8 @@ func runInspect(ctx context.Context, service *Service, workDir, command string, 
 		writeListText(out, result.Packages)
 	case DoctorResult:
 		fmt.Fprintf(out, "healthy=%t\n", result.Healthy)
+		// Problems lead the report so they are not buried under the matrix.
+		writeDiagnostics(out, result.Diagnostics)
 		writeListText(out, result.Packages)
 		writeAdaptersText(out, result.Adapters)
 		for _, native := range result.Native {
@@ -53,14 +56,17 @@ func runInspect(ctx context.Context, service *Service, workDir, command string, 
 			}
 		}
 		for _, effort := range result.Effort {
-			fmt.Fprintf(out, "effort %s: source=%s raw=%q tier=%q; %s\n", effort.Provider, effort.Source, effort.Raw, effort.Tier, effort.Detail)
+			fmt.Fprintf(out, "effort %s: source=%s raw=%q tier=%q%s\n", effort.Provider, effort.Source, effort.Raw, effort.Tier, textReason(effort.Detail))
 		}
-		fmt.Fprintln(out, "Top rules (last 7 days; estimated tokens; calibration pending):")
+		if len(result.TopRules) == 0 {
+			fmt.Fprintln(out, "Top rules (last 7 days): none")
+		} else {
+			fmt.Fprintln(out, "Top rules (last 7 days; estimated tokens; calibration pending):")
+		}
 		for _, cost := range result.TopRules {
 			fmt.Fprintf(out, "  %s %s: %d tokens, %d emits, %d body hashes\n", cost.Provider, cost.Rule, cost.EstimatedTokens, cost.Emits, cost.DistinctBodyHashes)
 		}
 		fmt.Fprintf(out, "state: expired=%d reset=%t; legacy stats without estimate=%d\n", result.ExpiredSessions, result.StateReset, result.LegacyStats)
-		writeDiagnostics(out, result.Diagnostics)
 		if !result.Healthy {
 			// The report stays on stdout; stderr says why the exit code is 1.
 			summary := Diagnostic{Code: "unhealthy", Severity: "error", Message: "the installation is not healthy"}
@@ -96,25 +102,39 @@ func writeListText(out io.Writer, packages []InstalledPackage) {
 
 func writeAdaptersText(out io.Writer, reports []AdapterReport) {
 	for _, report := range reports {
-		fmt.Fprintf(out, "%s: detected=%t version=%s config=%s\n", report.Provider, report.Detected, report.Version, report.ConfigDir)
+		fmt.Fprintf(out, "%s: %s\n", report.Provider, textFields("detected", strconv.FormatBool(report.Detected), "version", report.Version, "config", report.ConfigDir))
 		if report.Error != "" {
 			fmt.Fprintf(out, "  error: %s\n", report.Error)
 		}
 		for _, route := range report.Routes {
-			fmt.Fprintf(out, "  %s: available=%t installed=%t trusted=%t trust=%s stable_key=%t; %s\n", route.Name, route.Available, route.Installed, route.Trusted, route.Trust, route.StableKey, route.Detail)
+			fmt.Fprintf(out, "  %s: available=%t installed=%t trusted=%t trust=%s stable_key=%t%s\n", route.Name, route.Available, route.Installed, route.Trusted, route.Trust, route.StableKey, textReason(route.Detail))
 			if route.Error != "" {
 				fmt.Fprintf(out, "    error: %s\n", route.Error)
 			}
 		}
-		fmt.Fprintf(out, "  limit: %d %s approximate=%t overflow=%s; %s\n", report.Limit.Value, report.Limit.Unit, report.Limit.Approximate, report.Limit.Overflow, report.Limit.Source)
+		fmt.Fprintf(out, "  limit: %d %s approximate=%t overflow=%s%s\n", report.Limit.Value, report.Limit.Unit, report.Limit.Approximate, report.Limit.Overflow, textReason(report.Limit.Source))
 		for _, slot := range report.Static {
-			fmt.Fprintf(out, "  static %s %s: supported=%t; %s\n", slot.Name, slot.Mode, slot.Supported, slot.Reason)
+			fmt.Fprintf(out, "  static %s %s: supported=%t%s\n", slot.Name, slot.Mode, slot.Supported, textReason(slot.Reason))
+		}
+		if !report.Detected {
+			// The per-point matrix of a harness that is not present is noise
+			// here; --json keeps it.
+			fmt.Fprintf(out, "  %d outputs and %d event fields not listed; harness not detected (see --json)\n", len(report.Capabilities), len(report.Fields))
+			continue
 		}
 		for _, capability := range report.Capabilities {
-			fmt.Fprintf(out, "  %s %s: available=%t; %s\n", capability.Point, capability.Name, capability.Available, capability.Reason)
+			fmt.Fprintf(out, "  %s %s: available=%t%s\n", capability.Point, capability.Name, capability.Available, textReason(capability.Reason))
 		}
 		for _, field := range report.Fields {
-			fmt.Fprintf(out, "  %s %s: available=%t approximate=%t source=%s; %s\n", field.Point, field.Name, field.Available, field.Approximate, field.Source, field.Reason)
+			fmt.Fprintf(out, "  %s %s: %s%s\n", field.Point, field.Name, textFields("available", strconv.FormatBool(field.Available), "approximate", strconv.FormatBool(field.Approximate), "source", field.Source), textReason(field.Reason))
 		}
 	}
+}
+
+// textReason appends a "; reason" clause only when there is a reason.
+func textReason(reason string) string {
+	if reason == "" {
+		return ""
+	}
+	return "; " + reason
 }

@@ -170,7 +170,7 @@ func positiveInt(value string) (int, error) {
 
 func writeDiagnostics(out io.Writer, diagnostics []Diagnostic) {
 	for _, diagnostic := range diagnostics {
-		fmt.Fprintln(out, diagnosticLine(diagnostic))
+		fmt.Fprintln(out, diagnostic.Severity, diagnosticLine(diagnostic))
 	}
 }
 

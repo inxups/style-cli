@@ -8,6 +8,7 @@ import (
 	"os"
 	"path/filepath"
 	"reflect"
+	"regexp"
 	"strings"
 	"testing"
 )
@@ -80,6 +81,8 @@ func writeMatrixFile(path, data string) func(*testing.T, matrixFixture) {
 		}
 	}
 }
+
+var emptyTextField = regexp.MustCompile(`(^|\s)[a-z_]+=(\s|$)`)
 
 var (
 	brokenLock    = writeMatrixFile("$HOME/style.lock.yaml", "{ not a lock")
@@ -266,6 +269,12 @@ func checkMatrixCell(t *testing.T, row matrixCase, args []string, jsonMode bool,
 		}
 	}
 	if !jsonMode {
+		// Text reports leave out empty fields and empty reasons.
+		for _, line := range strings.Split(stdout, "\n") {
+			if line != "" && strings.TrimSpace(line) == "" || strings.HasSuffix(line, ";") || strings.HasSuffix(line, "; ") || emptyTextField.MatchString(line) {
+				report("stdout line has an empty field: %q", line)
+			}
+		}
 		if exit != ExitOK && exit != ExitSyncChanged && strings.TrimSpace(stderr) == "" {
 			report("text failure wrote nothing to stderr")
 		}
