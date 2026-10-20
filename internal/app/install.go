@@ -799,6 +799,10 @@ func (s *Service) installAdapters(ctx context.Context, request InstallRequest, l
 		if _, ok := s.definitions[provider]; !ok {
 			return nil, &UsageError{Message: "--fail-closed requires the claude-code adapter"}
 		}
+		if !harnesses.Auto && !requested[provider] {
+			// An explicit harness list is not widened behind the user's back.
+			return nil, &UsageError{Message: "--fail-closed applies to claude-code, which --harness does not select"}
+		}
 		requested[provider] = true
 	}
 	selected := maps.Clone(requested)

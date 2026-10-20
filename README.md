@@ -79,6 +79,8 @@ switches the ref of an installed Git package.
 case and the `claude` alias, and `auto` (the default) selects detected harnesses
 (`plan`, `install`) or every installed one (`probe`). `explain` reads a single
 payload and requires exactly one named harness. Unknown names are usage errors.
+`install --fail-closed` is a Claude Code mode: it selects claude-code, and an
+explicit `--harness` list that leaves claude-code out is a usage error.
 
 Exit codes: `0` success, `1` the request was rejected or failed, `2` the command
 line could not be parsed (unknown command, option, harness or route; missing,

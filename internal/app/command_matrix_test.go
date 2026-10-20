@@ -122,6 +122,7 @@ var commandMatrix = []matrixCase{
 	{name: "install declined", args: []string{"install", "$NEW", "--harness", "codex"}, input: "n\n", exit: ExitInvalid, code: "confirmation-declined"},
 	{name: "install over budget", args: []string{"install", "$NEW", "--harness", "codex"}, input: "y\n", exit: ExitBlocked,
 		setup: writeMatrixFile("$NEW/STYLE.yaml", a6LongManifest("second", "Second.", "budget: {per_event: 1, on: error}\n", "tool"))},
+	{name: "install fail-closed outside harness", args: []string{"install", "$NEW", "--harness", "codex", "--fail-closed"}, exit: ExitUsage, stderr: "style install: --fail-closed applies to claude-code"},
 	{name: "install registration required", args: []string{"install", "$NEW", "--harness", "claude-code", "--route", "claude-code=claude-plugin"}, input: "y\n", exit: ExitInvalid, code: "registration-required", stderr: "style install: registration-required"},
 	{name: "install ok", args: []string{"install", "$NEW", "--harness", "codex"}, input: "y\n", exit: ExitOK},
 
