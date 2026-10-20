@@ -40,7 +40,7 @@ func runValidate(ctx context.Context, service *Service, workDir string, args []s
 		}
 	} else {
 		writeSource(out, result.Source)
-		writeDiagnostics(errOut, result.Diagnostics)
+		writeCommandDiagnostics(errOut, "validate", result.Diagnostics)
 		if len(result.Diagnostics) == 0 {
 			fmt.Fprintln(out, "valid")
 		}
@@ -90,7 +90,7 @@ func runPlan(ctx context.Context, service *Service, workDir string, args []strin
 			return ExitInvalid
 		}
 	} else {
-		writeDiagnostics(errOut, result.Diagnostics)
+		writeCommandDiagnostics(errOut, "plan", result.Diagnostics)
 		if result.Package != "" || len(result.Reports) > 0 {
 			writePlanText(out, result)
 			for _, report := range result.Reports {
@@ -170,23 +170,39 @@ func positiveInt(value string) (int, error) {
 
 func writeDiagnostics(out io.Writer, diagnostics []Diagnostic) {
 	for _, diagnostic := range diagnostics {
-		where := diagnostic.Path
-		if where == "" {
-			where = diagnostic.Rule
+		fmt.Fprintln(out, diagnosticLine(diagnostic))
+	}
+}
+
+// writeCommandDiagnostics is the text-mode stderr form of diagnostics:
+// "style <command>: [<severity> ]<code>[ <where>]: <message>", with the
+// severity named only when it is not an error.
+func writeCommandDiagnostics(errOut io.Writer, command string, diagnostics []Diagnostic) {
+	for _, diagnostic := range diagnostics {
+		severity := ""
+		if diagnostic.Severity != spec.SeverityError {
+			severity = diagnostic.Severity + " "
 		}
-		if diagnostic.Provider != "" {
-			if where != "" {
-				where += " (" + diagnostic.Provider + ")"
-			} else {
-				where = diagnostic.Provider
-			}
-		}
-		if where == "" {
-			fmt.Fprintf(out, "%s: %s\n", diagnostic.Code, diagnostic.Message)
+		fmt.Fprintf(errOut, "style %s: %s%s\n", command, severity, diagnosticLine(diagnostic))
+	}
+}
+
+func diagnosticLine(diagnostic Diagnostic) string {
+	where := diagnostic.Path
+	if where == "" {
+		where = diagnostic.Rule
+	}
+	if diagnostic.Provider != "" {
+		if where != "" {
+			where += " (" + diagnostic.Provider + ")"
 		} else {
-			fmt.Fprintf(out, "%s %s: %s\n", diagnostic.Code, where, diagnostic.Message)
+			where = diagnostic.Provider
 		}
 	}
+	if where == "" {
+		return diagnostic.Code + ": " + diagnostic.Message
+	}
+	return diagnostic.Code + " " + where + ": " + diagnostic.Message
 }
 
 func writePlanText(out io.Writer, result PlanResult) {

@@ -1,2 +1,2 @@
 Apply this update? [y/N] 
-update canceled; nothing was changed
+style update: confirmation-declined: update canceled; nothing was changed

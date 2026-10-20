@@ -10,7 +10,7 @@
     {
       "code": "confirmation-declined",
       "severity": "error",
-      "message": "update was not confirmed; nothing was changed"
+      "message": "update canceled; nothing was changed"
     }
   ],
   "result": {

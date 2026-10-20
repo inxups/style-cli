@@ -146,9 +146,14 @@ func splitDiagnostics(report []byte) (json.RawMessage, []json.RawMessage, error)
 // commandFailure reports a command's error on stderr and, with --json, as a
 // report diagnostic so the envelope keeps the error's own code.
 func commandFailure(out, errOut io.Writer, jsonMode bool, command string, err error) {
-	fmt.Fprintf(errOut, "style %s: %v\n", command, err)
+	diagnostic := failureDiagnostic(err)
+	if diagnostic.Code == "command-failed" {
+		fmt.Fprintf(errOut, "style %s: %v\n", command, err)
+	} else {
+		writeCommandDiagnostics(errOut, command, []Diagnostic{diagnostic})
+	}
 	if jsonMode {
-		_ = encodeJSON(out, map[string][]Diagnostic{"diagnostics": {failureDiagnostic(err)}})
+		_ = encodeJSON(out, map[string][]Diagnostic{"diagnostics": {diagnostic}})
 	}
 }
 

@@ -30,7 +30,7 @@ func runUpdate(ctx context.Context, service *Service, args []string, in io.Reade
 			result.Diagnostics = append(result.Diagnostics, declinedDiagnostic("update"))
 		}
 		if err := encodeJSON(out, result); err != nil {
-			fmt.Fprintf(errOut, "style update: %v\n", err)
+			fmt.Fprintf(errOut, "style update: encode report: %v\n", err)
 			return ExitInvalid
 		}
 	} else {
@@ -39,9 +39,9 @@ func runUpdate(ctx context.Context, service *Service, args []string, in io.Reade
 		}
 		if runErr != nil {
 			// Only the sanitized structured diagnostics go to routine errors.
-			writeDiagnostics(errOut, result.Diagnostics)
+			writeCommandDiagnostics(errOut, "update", result.Diagnostics)
 		} else if result.AwaitingConfirmation {
-			fmt.Fprintln(errOut, "update canceled; nothing was changed")
+			writeCommandDiagnostics(errOut, "update", []Diagnostic{declinedDiagnostic("update")})
 		} else {
 			fmt.Fprintf(out, "update %s (changed=%t)\n", result.Status, result.Changed)
 		}

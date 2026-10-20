@@ -20,7 +20,7 @@
     {
       "code": "confirmation-declined",
       "severity": "error",
-      "message": "install was not confirmed; nothing was changed"
+      "message": "install canceled; nothing was changed"
     }
   ],
   "result": {

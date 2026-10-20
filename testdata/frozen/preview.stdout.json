@@ -10,7 +10,7 @@
     {
       "code": "confirmation-declined",
       "severity": "error",
-      "message": "restore was not confirmed; nothing was changed"
+      "message": "restore canceled; nothing was changed"
     }
   ],
   "result": {

@@ -1,2 +1,2 @@
 Apply this restore? [y/N] 
-restore canceled; nothing was changed
+style restore: confirmation-declined: restore canceled; nothing was changed

@@ -48,7 +48,7 @@ func runInstall(ctx context.Context, service *Service, workDir string, args []st
 				result.Diagnostics = append(result.Diagnostics, declinedDiagnostic("install"))
 				_ = encodeJSON(out, result)
 			} else {
-				fmt.Fprintln(errOut, "install canceled; nothing was changed")
+				writeCommandDiagnostics(errOut, "install", []Diagnostic{declinedDiagnostic("install")})
 			}
 			return ExitInvalid
 		}
@@ -57,7 +57,7 @@ func runInstall(ctx context.Context, service *Service, workDir string, args []st
 			if jsonOutput {
 				_ = encodeJSON(out, validationErr.Diagnostics)
 			} else {
-				writeDiagnostics(errOut, validationErr.Diagnostics)
+				writeCommandDiagnostics(errOut, "install", validationErr.Diagnostics)
 			}
 			return ExitInvalid
 		}
@@ -91,9 +91,7 @@ func runInstall(ctx context.Context, service *Service, workDir string, args []st
 	for _, route := range result.Routes {
 		fmt.Fprintf(out, "route: %s\n", route)
 	}
-	for _, diagnostic := range result.Diagnostics {
-		fmt.Fprintf(out, "warning %s: %s\n", diagnostic.Code, diagnostic.Message)
-	}
+	writeCommandDiagnostics(errOut, "install", result.Diagnostics)
 	if registrationRequired(result.Registration) {
 		return ExitInvalid
 	}
@@ -205,7 +203,7 @@ func runUninstall(ctx context.Context, service *Service, args []string, in io.Re
 				result.Diagnostics = append(result.Diagnostics, declinedDiagnostic("uninstall"))
 				_ = encodeJSON(out, result)
 			} else {
-				fmt.Fprintln(errOut, "uninstall canceled; nothing was changed")
+				writeCommandDiagnostics(errOut, "uninstall", []Diagnostic{declinedDiagnostic("uninstall")})
 			}
 			return ExitInvalid
 		}

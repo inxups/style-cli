@@ -28,11 +28,11 @@ func runProjectCommand(ctx context.Context, service *Service, workDir string, ar
 			return ExitUsage
 		}
 		report := func(out, errOut io.Writer) int {
-			fmt.Fprintf(errOut, "style %s: %v\n", args[0], err)
 			diagnostic := failureDiagnostic(err)
 			if diagnostic.Code == "command-failed" {
 				diagnostic.Code = "project-invalid"
 			}
+			writeCommandDiagnostics(errOut, args[0], []Diagnostic{diagnostic})
 			_ = encodeJSON(out, map[string][]Diagnostic{"diagnostics": {diagnostic}})
 			return ExitInvalid
 		}

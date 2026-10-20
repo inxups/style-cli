@@ -1,2 +1,2 @@
 Install with these capabilities? [y/N]
-install canceled; nothing was changed
+style install: confirmation-declined: install canceled; nothing was changed

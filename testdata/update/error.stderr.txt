@@ -1,1 +1,1 @@
-request-rejected: the selected package is not installed
+style update: request-rejected: the selected package is not installed

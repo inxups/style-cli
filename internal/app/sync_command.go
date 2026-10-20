@@ -40,7 +40,7 @@ func runSync(ctx context.Context, service *Service, command string, args []strin
 			if jsonOutput {
 				_ = encodeJSON(out, validation.Diagnostics)
 			} else {
-				writeDiagnostics(errOut, validation.Diagnostics)
+				writeCommandDiagnostics(errOut, command, validation.Diagnostics)
 			}
 		} else {
 			commandFailure(out, errOut, jsonOutput, command, err)
@@ -52,7 +52,7 @@ func runSync(ctx context.Context, service *Service, command string, args []strin
 			result.Diagnostics = append(result.Diagnostics, declinedDiagnostic(command))
 		}
 		if err := encodeJSON(out, result); err != nil {
-			fmt.Fprintf(errOut, "style %s: %v\n", command, err)
+			fmt.Fprintf(errOut, "style %s: encode report: %v\n", command, err)
 			return ExitInvalid
 		}
 	} else {
@@ -60,7 +60,7 @@ func runSync(ctx context.Context, service *Service, command string, args []strin
 			writeSyncChanges(out, result, command == "trust")
 		}
 		if result.AwaitingConfirmation {
-			fmt.Fprintln(errOut, "trust canceled; nothing was approved")
+			writeCommandDiagnostics(errOut, command, []Diagnostic{declinedDiagnostic(command)})
 		} else if command == "trust" || len(result.NeedsTrust) == 0 {
 			fmt.Fprintf(out, "%s complete (changed=%t, expired sessions=%d)\n", command, result.Changed, result.ExpiredSessions)
 		}

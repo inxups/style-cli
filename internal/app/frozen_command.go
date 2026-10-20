@@ -44,9 +44,9 @@ func runRestore(ctx context.Context, s *Service, args []string, in io.Reader, ou
 			writeFrozenPreview(out, result)
 		}
 		if runErr != nil {
-			writeDiagnostics(errOut, result.Diagnostics)
+			writeCommandDiagnostics(errOut, "restore", result.Diagnostics)
 		} else if result.AwaitingConfirmation {
-			fmt.Fprintln(errOut, "restore canceled; nothing was changed")
+			writeCommandDiagnostics(errOut, "restore", []Diagnostic{declinedDiagnostic("restore")})
 		} else {
 			fmt.Fprintf(out, "restore %s (changed=%t)\n", result.Status, result.Changed)
 		}

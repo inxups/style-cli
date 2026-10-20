@@ -241,6 +241,16 @@ func checkMatrixCell(t *testing.T, row matrixCase, args []string, jsonMode bool,
 		if exit != ExitOK && exit != ExitSyncChanged && strings.TrimSpace(stderr) == "" {
 			report("text failure wrote nothing to stderr")
 		}
+		// Apart from confirmation prompts (and probe progress, which no row
+		// reaches), every text-mode stderr line names the command.
+		for _, line := range strings.Split(stderr, "\n") {
+			if _, answer, prompted := strings.Cut(line, " [y/N] "); prompted {
+				line = answer
+			}
+			if line != "" && !strings.HasPrefix(line, "style "+command+": ") {
+				report("stderr line does not name the command: %q", line)
+			}
+		}
 		return
 	}
 	decoder := json.NewDecoder(strings.NewReader(stdout))
