@@ -64,8 +64,9 @@ continues to use `style/v0.3`; there is no migration command.
 ## Command line
 
 `style --help` lists every command; `style help COMMAND` (or `--help` anywhere
-on a command line) also shows advanced and project options. Boolean flags take
-no value (`--json`, not `--json=true`).
+on a command line) also shows advanced and project options. `style --version`
+prints `style VERSION`. Boolean flags take no value (`--json`, not
+`--json=true`).
 
 A source is a local directory or file, or a Git address in go-getter form:
 `git+https://host/org/repo.git//package/path?ref=refs/tags/v1`. The `//path`

@@ -280,4 +280,5 @@ func printUsage(out io.Writer) {
 	fmt.Fprintln(out, "  "+projectFlagsUsage+" scopes plan, installation and diagnostic commands to a project;")
 	fmt.Fprintln(out, "  --style-home, only with --project, replaces STYLE_HOME as the home the project is bound under.")
 	fmt.Fprintln(out, "  style help <command> (or <command> --help) shows advanced and project options.")
+	fmt.Fprintln(out, "  style --version prints the version.")
 }

@@ -91,6 +91,8 @@ var (
 var commandMatrix = []matrixCase{
 	{name: "unknown command", args: []string{"bogus"}, exit: ExitUsage, noJSON: true},
 	{name: "help unknown", args: []string{"help", "bogus"}, exit: ExitUsage, noJSON: true},
+	{name: "version", args: []string{"--version"}, exit: ExitOK, noJSON: true},
+	{name: "version extra arg", args: []string{"--version", "list"}, exit: ExitUsage, noJSON: true, stderr: "style: --version takes no arguments"},
 
 	{name: "init extra arg", args: []string{"init", "a", "b"}, exit: ExitUsage, noJSON: true},
 	{name: "init malformed name", args: []string{"init", "Bad_Name"}, exit: ExitUsage, noJSON: true},
@@ -237,7 +239,7 @@ func checkMatrixCell(t *testing.T, row matrixCase, args []string, jsonMode bool,
 		if stdout != "" {
 			report("usage error wrote stdout")
 		}
-		if !strings.HasPrefix(stderr, "style "+command+": ") && !strings.HasPrefix(stderr, "style: unknown command") {
+		if !strings.HasPrefix(stderr, "style "+command+": ") && !strings.HasPrefix(stderr, "style: unknown command") && !strings.HasPrefix(stderr, "style: --version ") {
 			report("usage error does not start with the command name")
 		}
 		return

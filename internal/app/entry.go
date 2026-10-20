@@ -19,6 +19,10 @@ const (
 	ExitBlocked     = 4
 )
 
+// Version is the CLI release; release builds may set it with
+// -ldflags "-X github.com/inxups/style-cli/internal/app.Version=…".
+var Version = "0.3.0"
+
 // Run creates the default provider catalog and executes a CLI command.
 func Run(ctx context.Context, args []string, out, errOut io.Writer) int {
 	return RunWithInput(ctx, args, os.Stdin, out, errOut)
@@ -34,6 +38,10 @@ func RunWithInput(ctx context.Context, args []string, in io.Reader, out, errOut 
 	}
 	if isHookInvocation(args) {
 		return runHook(ctx, args, in, out, errOut)
+	}
+	if len(args) > 0 && args[0] == "--version" {
+		// The version needs no harness detection.
+		return runVersion(args[1:], out, errOut)
 	}
 	service, err := DefaultService()
 	if err != nil {
@@ -70,6 +78,9 @@ func RunWithServiceInput(ctx context.Context, service *Service, workDir string, 
 		printUsage(out)
 		return ExitOK
 	}
+	if args[0] == "--version" {
+		return runVersion(args[1:], out, errOut)
+	}
 	if args[0] == "help" {
 		if _, ok := lookupCommand(args[1]); !ok || len(args) > 2 {
 			fmt.Fprintf(errOut, "style help: unknown command %q\n", strings.Join(args[1:], " "))
@@ -92,6 +103,15 @@ func RunWithServiceInput(ctx context.Context, service *Service, workDir string, 
 		})
 	}
 	return runCommand(ctx, service, workDir, args, in, out, errOut)
+}
+
+func runVersion(args []string, out, errOut io.Writer) int {
+	if len(args) > 0 {
+		fmt.Fprintf(errOut, "style: --version takes no arguments, got %q\n", strings.Join(args, " "))
+		return ExitUsage
+	}
+	fmt.Fprintf(out, "style %s\n", Version)
+	return ExitOK
 }
 
 func runCommand(ctx context.Context, service *Service, workDir string, args []string, in io.Reader, out, errOut io.Writer) int {

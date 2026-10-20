@@ -141,3 +141,10 @@ func TestCommandsShowHelpAndUseStableFailureExitCodes(t *testing.T) {
 		t.Fatalf("unexpected public exit code mapping: ok=%d invalid=%d usage=%d conflict=%d sync=%d blocked=%d", ExitOK, ExitInvalid, ExitUsage, ExitConflict, ExitSyncChanged, ExitBlocked)
 	}
 }
+
+func TestVersionPrintsTheRelease(t *testing.T) {
+	var out, errOut bytes.Buffer
+	if exit := RunWithInput(context.Background(), []string{"--version"}, strings.NewReader(""), &out, &errOut); exit != ExitOK || out.String() != "style 0.3.0\n" || errOut.Len() != 0 {
+		t.Fatalf("exit=%d stdout=%q stderr=%q", exit, &out, &errOut)
+	}
+}
