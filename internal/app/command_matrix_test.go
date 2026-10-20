@@ -123,7 +123,7 @@ var commandMatrix = []matrixCase{
 	{name: "restore no lock", args: []string{"restore"}, setup: emptyHome, exit: ExitInvalid, code: "frozen-metadata-incomplete"},
 	{name: "restore declined", args: []string{"restore"}, setup: staleBuild, input: "n\n", exit: ExitInvalid, code: "confirmation-declined"},
 	{name: "restore ok", args: []string{"restore"}, setup: staleBuild, input: "y\n", exit: ExitOK},
-	{name: "restore broken lock", args: []string{"restore"}, setup: brokenLock, exit: ExitInvalid},
+	{name: "restore broken lock", args: []string{"restore"}, setup: brokenLock, exit: ExitInvalid, code: "lock-invalid"},
 
 	{name: "update no name", args: []string{"update"}, exit: ExitUsage},
 	{name: "update malformed ref", args: []string{"update", "first", "--ref", "main"}, exit: ExitUsage},

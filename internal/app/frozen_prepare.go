@@ -51,7 +51,11 @@ func (s *Service) prepareFrozen(ctx context.Context, request FrozenRequest) (p p
 	var header struct {
 		Format int `yaml:"format"`
 	}
-	if yaml.Unmarshal(raw.data, &header) != nil || header.Format != lockFormat && header.Format != gitLockFormat && header.Format != projectLockFormat {
+	if err := yaml.Unmarshal(raw.data, &header); err != nil {
+		// A lock that is not YAML is corrupt, as every other command reports it.
+		return p, updateFailure("lock-invalid", "cannot decode a valid frozen lock", err)
+	}
+	if header.Format != lockFormat && header.Format != gitLockFormat && header.Format != projectLockFormat {
 		return fail("frozen requires an explicit supported lock format", nil)
 	}
 	lock, err := decodeLock(raw.data)
