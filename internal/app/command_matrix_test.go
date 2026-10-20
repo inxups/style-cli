@@ -143,6 +143,7 @@ var commandMatrix = []matrixCase{
 	{name: "update all none installed", args: []string{"update", "--all"}, setup: emptyHome, exit: ExitInvalid, code: "request-rejected", stderr: "style update: request-rejected: no packages are installed"},
 	{name: "update declined", args: []string{"update", "first"}, setup: changedSource, input: "n\n", exit: ExitInvalid, code: "confirmation-declined"},
 	{name: "update ok", args: []string{"update", "first"}, setup: changedSource, input: "y\n", exit: ExitOK},
+	{name: "update unchanged", args: []string{"update", "first"}, exit: ExitOK},
 	{name: "update broken lock", args: []string{"update", "first"}, setup: brokenLock, exit: ExitInvalid, code: "lock-invalid"},
 
 	{name: "uninstall no name", args: []string{"uninstall"}, exit: ExitUsage},

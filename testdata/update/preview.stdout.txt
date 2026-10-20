@@ -52,7 +52,6 @@ Rendered diff (static values substituted; event variables remain runtime fragmen
  }
 \ No newline at end of file
 Plan: first
- 
 
 Harness: codex
 Preferred route: codex-user (availability checked during install)

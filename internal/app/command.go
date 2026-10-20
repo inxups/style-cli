@@ -207,7 +207,9 @@ func diagnosticLine(diagnostic Diagnostic) string {
 
 func writePlanText(out io.Writer, result PlanResult) {
 	writeSource(out, result.Source)
-	fmt.Fprintf(out, "%s %s\n", result.Package, result.Version)
+	if result.Package != "" {
+		fmt.Fprintf(out, "%s %s\n", result.Package, result.Version)
+	}
 	for _, report := range result.Reports {
 		fmt.Fprintf(out, "\nHarness: %s\n", report.Provider)
 		fmt.Fprintf(out, "Preferred route: %s (availability checked during install)\n", report.Route)

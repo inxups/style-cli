@@ -108,11 +108,15 @@ func writeSourceTransactionPreview(out io.Writer, result UpdateResult, heading s
 		if change.NativeChanged {
 			fmt.Fprintln(out, "  native declaration/order/configuration change; renewed approval required")
 		}
-		fmt.Fprintln(out, "Source diff:")
+		if len(change.SourceDiff) > 0 {
+			fmt.Fprintln(out, "Source diff:")
+		}
 		for _, file := range change.SourceDiff {
 			fmt.Fprint(out, file.Diff)
 		}
-		fmt.Fprintln(out, "Rendered diff (static values substituted; event variables remain runtime fragments):")
+		if len(change.RenderedDiff) > 0 {
+			fmt.Fprintln(out, "Rendered diff (static values substituted; event variables remain runtime fragments):")
+		}
 		for _, file := range change.RenderedDiff {
 			fmt.Fprint(out, file.Diff)
 		}

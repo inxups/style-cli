@@ -114,11 +114,15 @@ func writeSyncChanges(out io.Writer, result SyncResult, full bool) {
 			if !change.BaselineAvailable {
 				fmt.Fprintln(out, "previous approved bytes unavailable; showing the complete current source and compiled representation")
 			}
-			fmt.Fprintln(out, "Source diff:")
+			if len(change.SourceDiff) > 0 {
+				fmt.Fprintln(out, "Source diff:")
+			}
 			for _, file := range change.SourceDiff {
 				fmt.Fprint(out, file.Diff)
 			}
-			fmt.Fprintln(out, "Rendered diff (static values substituted; event variables remain runtime fragments):")
+			if len(change.RenderedDiff) > 0 {
+				fmt.Fprintln(out, "Rendered diff (static values substituted; event variables remain runtime fragments):")
+			}
 			for _, file := range change.RenderedDiff {
 				fmt.Fprint(out, file.Diff)
 			}

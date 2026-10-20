@@ -3,10 +3,7 @@ first (seq=1):
   before: version="1.0.0" source="$FIXTURE/source" kind=dir link=false link_trusted=false replace=false content=sha256:47a06c1d6f7ba1f14744af583084fbc4074677fe473c95cab474cea1bf2f2093
   after: version="1.0.0" source="$FIXTURE/source" kind=dir link=false link_trusted=false replace=false content=sha256:47a06c1d6f7ba1f14744af583084fbc4074677fe473c95cab474cea1bf2f2093
   settings added=[] removed=[]; approval_changed=false configuration_repair=false
-Source diff:
-Rendered diff (static values substituted; event variables remain runtime fragments):
 Plan: first
- 
 
 Harness: codex
 Preferred route: codex-user (availability checked during install)

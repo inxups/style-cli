@@ -1,9 +1,6 @@
 scope=project root=$FIXTURE/project ' space home=$PROJECT_HOME
 prerequisites: style on harness PATH; same STYLE_HOME; external workspace trust; Claude starts at project root; Codex uses canonical path
 project-rules (link=false): 0 changed files
-Source diff:
-Rendered diff (static values substituted; event variables remain runtime fragments):
-
 
 Harness: codex
 Preferred route: codex-project (availability checked during install)
@@ -27,7 +24,6 @@ Token (estimated; calibration pending):
   SessionStart: 11 tokens / 37 chars
   session cost (requests=60 triggers=3): 78.7 always-on + 38.2 triggered = 116.9 units
   scenario only: 1.25x cache write + 0.1x later hits; assumes an eligible unchanged prefix within cache lifetime; not billing
-
 
 Harness: claude-code
 Preferred route: claude-project (availability checked during install)
