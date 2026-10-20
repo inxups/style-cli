@@ -1,7 +1,9 @@
 package spec
 
 import (
+	"errors"
 	"fmt"
+	"io/fs"
 	"os"
 	"path/filepath"
 	"strings"
@@ -15,6 +17,9 @@ func Load(source string) (*Package, error) {
 		return nil, parseErr("invalid-package", source, "resolve package path", err)
 	}
 	info, err := os.Lstat(abs)
+	if errors.Is(err, fs.ErrNotExist) {
+		return nil, parseErr("invalid-package", source, "package source does not exist", nil)
+	}
 	if err != nil {
 		return nil, parseErr("invalid-package", source, "open package", err)
 	}

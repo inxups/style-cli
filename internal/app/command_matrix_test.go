@@ -101,7 +101,7 @@ var commandMatrix = []matrixCase{
 
 	{name: "validate extra arg", args: []string{"validate", "a", "b"}, exit: ExitUsage},
 	{name: "validate malformed git", args: []string{"validate", "git+https://example.invalid/r.git?ref=main"}, exit: ExitUsage},
-	{name: "validate missing", args: []string{"validate", "$WORK/missing"}, exit: ExitInvalid, code: "invalid-package"},
+	{name: "validate missing", args: []string{"validate", "$WORK/missing"}, exit: ExitInvalid, code: "invalid-package", stderr: "/missing: package source does not exist\n"},
 	{name: "validate ok", args: []string{"validate", "$SRC"}, exit: ExitOK},
 
 	{name: "count no file", args: []string{"count"}, exit: ExitUsage},
@@ -110,7 +110,7 @@ var commandMatrix = []matrixCase{
 	{name: "count ok", args: []string{"count", "$WORK/text.txt"}, exit: ExitOK},
 
 	{name: "plan unknown harness", args: []string{"plan", "$SRC", "--harness", "bogus"}, exit: ExitUsage},
-	{name: "plan missing", args: []string{"plan", "$WORK/missing"}, exit: ExitInvalid, code: "invalid-package"},
+	{name: "plan missing", args: []string{"plan", "$WORK/missing"}, exit: ExitInvalid, code: "invalid-package", stderr: "/missing: package source does not exist\n"},
 	{name: "plan over budget", args: []string{"plan", "$NEW", "--harness", "codex"}, exit: ExitBlocked, code: "blocked",
 		setup: writeMatrixFile("$NEW/STYLE.yaml", a6LongManifest("second", "Second.", "budget: {per_event: 1, on: error}\n", "tool"))},
 	{name: "plan malformed exact", args: []string{"plan", "$SRC", "--exact", "openai:bogus"}, exit: ExitUsage, stderr: "style plan: local openai requires"},
@@ -118,6 +118,7 @@ var commandMatrix = []matrixCase{
 
 	{name: "install no source", args: []string{"install"}, exit: ExitUsage},
 	{name: "install unknown route", args: []string{"install", "$NEW", "--route", "bogus=x"}, exit: ExitUsage},
+	{name: "install missing", args: []string{"install", "$WORK/missing", "--harness", "codex"}, exit: ExitInvalid, code: "invalid-package", stderr: "/missing: package source does not exist\n"},
 	{name: "install unknown setting", args: []string{"install", "$NEW", "--harness", "codex", "--set", "unknown=v"}, input: "y\n", exit: ExitInvalid, code: "request-rejected"},
 	{name: "install declined", args: []string{"install", "$NEW", "--harness", "codex"}, input: "n\n", exit: ExitInvalid, code: "confirmation-declined"},
 	{name: "install over budget", args: []string{"install", "$NEW", "--harness", "codex"}, input: "y\n", exit: ExitBlocked,

@@ -270,16 +270,21 @@ func snapshotPackage(source string) (map[string][]byte, bool, string, error) {
 	if err != nil {
 		return nil, false, "", err
 	}
+	// Missing and unsupported sources read as they do from spec.Load, so
+	// install, validate and plan agree.
 	info, err := os.Lstat(abs)
+	if errors.Is(err, fs.ErrNotExist) {
+		return nil, false, "", &spec.ParseError{Code: "invalid-package", Path: source, Msg: "package source does not exist"}
+	}
 	if err != nil {
-		return nil, false, "", err
+		return nil, false, "", &spec.ParseError{Code: "invalid-package", Path: source, Msg: "open package", Err: err}
 	}
 	if info.Mode()&os.ModeSymlink != 0 {
 		return nil, false, "", &spec.ParseError{Code: "symlink", Path: source, Msg: "package source is a symbolic link"}
 	}
 	if !info.IsDir() {
 		if !info.Mode().IsRegular() || !strings.HasSuffix(strings.ToLower(info.Name()), ".style.md") {
-			return nil, false, "", fmt.Errorf("expected package directory or .style.md file")
+			return nil, false, "", &spec.ParseError{Code: "invalid-package", Path: source, Msg: "expected a package directory or .style.md file"}
 		}
 		data, err := os.ReadFile(abs)
 		if err != nil {
