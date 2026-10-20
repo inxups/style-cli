@@ -2,6 +2,14 @@
 
 STYLE manages rules and native hooks for registered coding harnesses.
 
+Install on macOS with Homebrew:
+
+```bash
+brew install inxups/tap/style-cli
+```
+
+The formula installs the `style` binary and conflicts with homebrew-core's `style`.
+
 Ordinary `rules` describe behavior compiled by STYLE. Native commands are declared
 separately, inline in the top-level `native_hooks` list in `STYLE.yaml`:
 
