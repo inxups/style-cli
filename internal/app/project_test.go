@@ -221,9 +221,10 @@ func TestM3A6ProjectCLIAndZeroWriteFailures(t *testing.T) {
 		args []string
 		want int
 	}{
-		{[]string{"list", "--project"}, ExitUsage}, {[]string{"list", "--project="}, ExitUsage}, {[]string{"list", "--project", "--json"}, ExitUsage},
-		{[]string{"list", "--project=missing", "--json"}, ExitInvalid}, {[]string{"init", "--project=."}, ExitUsage},
-		{[]string{"validate", "--project=."}, ExitUsage}, {[]string{"list", "--project=.", "--project=."}, ExitUsage},
+		{[]string{"--project"}, ExitUsage}, {[]string{"--project=", "list"}, ExitUsage}, {[]string{"--project", "--json", "list"}, ExitUsage},
+		{[]string{"--project=missing", "list", "--json"}, ExitInvalid}, {[]string{"--project=.", "init"}, ExitUsage},
+		{[]string{"--project=.", "validate"}, ExitUsage}, {[]string{"--project=.", "--project=.", "list"}, ExitUsage},
+		{[]string{"list", "--project=."}, ExitUsage}, {[]string{"--project=."}, ExitUsage},
 	} {
 		args := test.args
 		t.Run(strings.Join(args, " "), func(t *testing.T) {
@@ -238,7 +239,7 @@ func TestM3A6ProjectCLIAndZeroWriteFailures(t *testing.T) {
 	}
 	s, base, root, source := a6Setup(t)
 	var out, errOut bytes.Buffer
-	if code := RunWithServiceInput(context.Background(), s, root, []string{"install", source, "--project", root, "--json"}, approve(), &out, &errOut); code != 0 {
+	if code := RunWithServiceInput(context.Background(), s, root, []string{"--project", root, "install", source, "--json"}, approve(), &out, &errOut); code != 0 {
 		t.Fatal(code, &out, &errOut)
 	}
 	var report map[string]json.RawMessage
@@ -248,7 +249,7 @@ func TestM3A6ProjectCLIAndZeroWriteFailures(t *testing.T) {
 	for _, command := range []string{"list", "doctor", "stats"} {
 		out.Reset()
 		errOut.Reset()
-		if code := RunWithService(context.Background(), s, root, []string{command, "--project=.", "--json"}, &out, &errOut); code != 0 {
+		if code := RunWithService(context.Background(), s, root, []string{"--project=.", command, "--json"}, &out, &errOut); code != 0 {
 			t.Fatal(command, code, &out, &errOut)
 		}
 	}

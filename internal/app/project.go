@@ -106,6 +106,13 @@ func projectFailure(message string) error {
 	return &codedError{Code: "project-binding-invalid", Err: &ConflictError{Message: "project-binding-invalid: " + message}}
 }
 
+// ForHome returns a user-scope service whose home replaces STYLE_HOME.
+func (s *Service) ForHome(home string) *Service {
+	scoped := *s
+	scoped.home = home
+	return &scoped
+}
+
 // ForProject returns an isolated service; it never changes environment or cwd.
 func (s *Service) ForProject(root, base string) (*Service, error) {
 	root, err := canonicalProjectPath(root)
@@ -185,6 +192,9 @@ func checkProjectAncestors(root string) error {
 }
 func (s *Service) resolveStyleHome(explicit string) (string, error) {
 	if s.project == nil {
+		if explicit == "" {
+			explicit = s.home
+		}
 		return resolveStyleHome(explicit)
 	}
 	if explicit != "" {

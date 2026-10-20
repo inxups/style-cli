@@ -44,7 +44,7 @@ def main():
         source = root / "source"
         source.mkdir()
         (source / "STYLE.yaml").write_text(manifest("local", "Local route still works."))
-        installed = style_report(run(binary, env, "install", source, "--project", project,
+        installed = style_report(run(binary, env, "--project", project, "install", source,
                                    "--harness=claude-code", "--json", confirm=True).stdout)
         home = Path(installed["scope"]["home"])
         assert not (project / ".style/cloud").exists()
@@ -83,10 +83,10 @@ def main():
         assert "Local route still works." not in result.stdout
         record(cases, "claude-project", "unbound-local-clone-keeps-binding-requirement")
         before = snapshot(root)
-        run(binary, env, "uninstall", "--all", "--project", project, "--json", want=1)
+        run(binary, env, "--project", project, "uninstall", "--all", "--json", want=1)
         assert snapshot(root) == before
         record(cases, "claude-project", "uninstall-still-requires-confirmation")
-        removed = style_report(run(binary, env, "uninstall", "--all", "--project", project, "--json", confirm=True).stdout)
+        removed = style_report(run(binary, env, "--project", project, "uninstall", "--all", "--json", confirm=True).stdout)
         assert removed["changed"] and "cloud_files" not in removed
         assert "awaiting_confirmation" not in removed
         assert snapshot(project, codex, claude) == original

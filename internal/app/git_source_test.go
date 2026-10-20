@@ -446,7 +446,7 @@ func TestM3A3FlagsFailBeforeAcquisition(t *testing.T) {
 	}
 	for _, args := range [][]string{
 		{"install", testgit.URL, "--link"},
-		{"install", ".", "--project", ".", "--project-source", testgit.URL + "?ref=main"},
+		{"--project", ".", "install", ".", "--project-source", testgit.URL + "?ref=main"},
 		{"install", "http://example.invalid/repo.git"},
 		{"update", "demo", "--ref", "main"},
 	} {

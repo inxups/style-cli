@@ -69,35 +69,35 @@ def main():
             before = snapshot(home, codex, claude, project)
             operations = [('validate', source, '--json'),
                           ('plan', source, '--harness=' + provider, '--json'),
-                          ('sync', *scope, '--json'),
-                          ('trust', 'native-compat', *scope, '--json'),
-                          ('update', '--all', *scope, '--json'),
-                          ('restore', *scope, '--json')]
+                          (*scope, 'sync', '--json'),
+                          (*scope, 'trust', 'native-compat', '--json'),
+                          (*scope, 'update', '--all', '--json'),
+                          (*scope, 'restore', '--json')]
             for operation in operations:
                 result = run(runner, env, *operation, want=1, confirm=True)
                 output = result.stdout + result.stderr
                 assert 'native-format-removed' in output and 'native_hooks' in output and 'uninstall' in output, output
                 assert snapshot(home, codex, claude, project) == before, operation
                 record(cases, route, 'legacy-rejected-without-writes', command=operation[0])
-            listed = style_report(run(runner, env, 'list', *scope, '--json').stdout)
+            listed = style_report(run(runner, env, *scope, 'list', '--json').stdout)
             assert len(listed['packages']) == 2
             assert all('native-format-removed' in item['error'] for item in listed['packages'])
-            doctor = style_report(run(runner, env, 'doctor', *scope, '--json', want=1).stdout)
+            doctor = style_report(run(runner, env, *scope, 'doctor', '--json', want=1).stdout)
             assert any(d['code'] == 'native-format-removed' for d in doctor['diagnostics'])
             record(cases, route, 'legacy-visible-in-list-and-doctor')
             # Migrating upstream does not bypass the old authenticated approval.
             source_file.write_text(manifest('native-compat', 'Native baseline.', native=True))
-            result = run(runner, env, 'update', 'native-compat', *scope, '--json', want=1, confirm=True)
+            result = run(runner, env, *scope, 'update', 'native-compat', '--json', want=1, confirm=True)
             assert 'native-format-removed' in result.stdout + result.stderr
             assert snapshot(home, codex, claude, project) == before
-            result = run(runner, env, 'uninstall', 'native-compat', *scope, '--json', want=1, confirm=True)
+            result = run(runner, env, *scope, 'uninstall', 'native-compat', '--json', want=1, confirm=True)
             assert 'uninstall --all' in result.stdout + result.stderr
             assert snapshot(home, codex, claude, project) == before
-            run(runner, env, 'uninstall', '--all', *scope, '--json', confirm=True)
-            run(runner, env, 'install', source, *scope, *selected, '--json', confirm=True)
-            run(runner, env, 'sync', *scope, '--json')
+            run(runner, env, *scope, 'uninstall', '--all', '--json', confirm=True)
+            run(runner, env, *scope, 'install', source, *selected, '--json', confirm=True)
+            run(runner, env, *scope, 'sync', '--json')
             assert any(group['hooks'] == foreign for group in json.loads(hooks.read_text())['hooks']['Stop'])
-            assert 'native-compat/executable' not in run(runner, env, 'stats', *scope, '--json').stdout
+            assert 'native-compat/executable' not in run(runner, env, *scope, 'stats', '--json').stdout
             index = (home / 'build/index.json').read_text()
             assert 'NATIVE-' not in index and 'native-compat/executable' not in index
             planned = style_report(run(runner, env, 'plan', source, '--harness=' + provider, '--json').stdout)
@@ -110,12 +110,12 @@ def main():
                     'spec: style/v0.3\nname: candidate\nversion: 1.0.0\ndescription: rejection fixture\nnative_hooks:\n'
                     f"  - {{id: hook, {provider}: {{event: Stop, command: 'touch {root / 'NEVER'}', {extension}}}}}\n")
                 before = snapshot(home, codex, claude, project, candidate)
-                result = run(runner, env, 'install', candidate, *scope, *selected, '--json', want=1, confirm=True)
+                result = run(runner, env, *scope, 'install', candidate, *selected, '--json', want=1, confirm=True)
                 output = result.stdout + result.stderr
                 assert 'not supported;' in output and 'PRIVATE_VALUE' not in output
                 assert snapshot(home, codex, claude, project, candidate) == before and not (root / 'NEVER').exists()
                 record(cases, route, 'extension-rejection-zero-write', field=extension.split(':', 1)[0])
-            run(runner, env, 'uninstall', '--all', *scope, '--json', confirm=True)
+            run(runner, env, *scope, 'uninstall', '--all', '--json', confirm=True)
             assert any(group['hooks'] == foreign for group in json.loads(hooks.read_text())['hooks']['Stop'])
             assert '--owner=style' not in hooks.read_text()
             record(cases, route, 'uninstall-preserves-foreign-types-and-fields')

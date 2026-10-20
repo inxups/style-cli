@@ -46,12 +46,12 @@ def main():
             source.mkdir()
             (source / "STYLE.yaml").write_text(manifest("project-rules", "Project.", native=True))
             before = snapshot(base, codex, claude, project)
-            preview = style_report(run(new, env, "install", source, "--project", project,
+            preview = style_report(run(new, env, "--project", project, "install", source,
                                      "--harness", provider, "--json", want=1).stdout)
             assert preview["scope"]["kind"] == "project" and preview["native_hooks"]
             assert snapshot(base, codex, claude, project) == before
             record(cases, route, "preview-zero-write")
-            installed = style_report(run(new, env, "install", source, "--project", project,
+            installed = style_report(run(new, env, "--project", project, "install", source,
                                        "--harness", provider, "--json", confirm=True).stdout)
             home = Path(installed["scope"]["home"])
             assert home.parent == base / "projects"
@@ -63,7 +63,7 @@ def main():
             record(cases, route, "install-format3-private-scope")
             for command in (("list",), ("sync",), ("trust", "project-rules"),
                             ("update", "--all"), ("restore",), ("doctor",), ("stats",)):
-                report = style_report(run(new, env, *command, "--project", project, "--json", confirm=True).stdout)
+                report = style_report(run(new, env, "--project", project, *command, "--json", confirm=True).stdout)
                 assert report["scope"]["home"] == str(home)
             record(cases, route, "management-scope-consistency", commands=7)
             before = snapshot(base, codex, claude, project)
@@ -112,20 +112,20 @@ def main():
             assert result.returncode == 0 and "Project." not in result.stdout and "no local binding" in result.stderr
             assert not (base / "state").exists()
             record(cases, route, "unbound-clone-no-user-fallback")
-            adopted = style_report(run(new, env, "install", source, "--project", clone,
+            adopted = style_report(run(new, env, "--project", clone, "install", source,
                                      "--harness", provider, "--json", confirm=True).stdout)
             assert adopted["scope"]["home"] != str(home)
             assert adopted["project_adoption"] is True
             result = invoke_hook(dynamic, env, clone, payload)
             assert result.returncode == 0 and "Project." in result.stdout
             record(cases, route, "clone-explicit-activation-independent-state", real_git_worktree=True)
-            run(new, env, "uninstall", "--all", "--project", clone, confirm=True)
+            run(new, env, "--project", clone, "uninstall", "--all", confirm=True)
             assert not (clone / ".style/project.json").exists()
             assert not (clone / ".style/hooks/style").exists()
             clone_native = clone / native_path.relative_to(project)
             if clone_native.exists():
                 assert "--owner=style" not in clone_native.read_text()
-            original = style_report(run(new, env, "list", "--project", project, "--json").stdout)
+            original = style_report(run(new, env, "--project", project, "list", "--json").stdout)
             assert original["packages"][0]["name"] == "project-rules"
             record(cases, route, "clone-uninstall-original-preserved")
     report = {"format": 1, "binary_sha256": sha(new), "old_binary_sha256": sha(old),

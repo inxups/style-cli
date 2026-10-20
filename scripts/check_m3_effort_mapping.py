@@ -47,7 +47,7 @@ def main():
             (source / 'STYLE.yaml').write_text(MANIFEST)
             scope = ('--project', project) if route.endswith('-project') else ()
             selection = ('--harness', provider, '--route', provider + '=' + route)
-            installed = style_report(run(binary, env, 'install', source, *scope, *selection, '--json', confirm=True).stdout)
+            installed = style_report(run(binary, env, *scope, 'install', source, *selection, '--json', confirm=True).stdout)
             home = Path(installed['scope']['home']) if scope else base
             index_path = home / 'build/index.json'
             assert json.loads(index_path.read_text())['format'] == 1
@@ -55,9 +55,9 @@ def main():
             def config(tier):
                 mapping_file.write_text('format: 1\nharnesses:\n  ' + provider + ': {future: ' + tier + '}\n')
             config('high')
-            planned = style_report(run(binary, env, 'plan', source, *scope, '--harness', provider, '--json').stdout)
+            planned = style_report(run(binary, env, *scope, 'plan', source, '--harness', provider, '--json').stdout)
             assert any(d['code'] == 'effort-mapping' for d in planned['diagnostics'])
-            run(binary, env, 'sync', *scope, '--json')
+            run(binary, env, *scope, 'sync', '--json')
             index = json.loads(index_path.read_text())
             assert index['format'] == 6 and index['effort_mapping'][provider] == {'future': 'high'}
             lock = (home / 'style.lock.yaml').read_text()
@@ -119,17 +119,17 @@ def main():
             mapping_file.write_text('invalid live mapping')
             (home / 'build/index.json').unlink()
             (home / 'build/explain.json').unlink()
-            run(binary, env, 'restore', *scope, '--json', confirm=True)
+            run(binary, env, *scope, 'restore', '--json', confirm=True)
             assert json.loads(index_path.read_text()) == index and (home / 'style.lock.yaml').read_text() == lock
             record(cases, route, 'frozen-rebuild-uses-approved-lock-not-live-mapping')
             config('low')
-            doctor = style_report(run(binary, env, 'doctor', *scope, '--json').stdout)
+            doctor = style_report(run(binary, env, *scope, 'doctor', '--json').stdout)
             assert any(d['code'] == 'effort-mapping-pending' for d in doctor['diagnostics'])
-            run(binary, env, 'sync', *scope, '--json')
+            run(binary, env, *scope, 'sync', '--json')
             parity('Effort=low/raw=future', cached=True)
             record(cases, route, 'doctor-pending-sync-remaps-cached-raw')
             mapping_file.unlink()
-            run(binary, env, 'sync', *scope, '--json')
+            run(binary, env, *scope, 'sync', '--json')
             assert json.loads(index_path.read_text())['format'] == 1
             assert 'min_index_format' not in (home / 'style.lock.yaml').read_text()
             parity('Effort=missing/raw=future', cached=True)
@@ -141,7 +141,7 @@ def main():
                              '--provider=' + provider, payload=payload)
             assert 'Effort=missing/raw=future' in compatible.stdout and 'level=ERROR' not in compatible.stderr
             record(cases, route, 'removal-clears-tier-approx-provenance-and-old-runtime-management-compatible')
-            run(binary, env, 'uninstall', '--all', *scope, '--json', confirm=True)
+            run(binary, env, *scope, 'uninstall', '--all', '--json', confirm=True)
             record(cases, route, 'uninstall')
     args.report.write_text(json.dumps(dict(format=1, binary_sha256=sha(binary), old_binary_sha256=sha(old),
                                           real_harness=False, cases=cases), indent=2) + '\n')

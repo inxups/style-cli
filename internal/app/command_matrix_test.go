@@ -200,15 +200,19 @@ var commandMatrix = []matrixCase{
 	{name: "probe not installed", args: []string{"probe", "--harness", "claude-code"}, exit: ExitInvalid},
 	{name: "probe broken lock", args: []string{"probe", "--harness", "codex"}, setup: brokenLock, exit: ExitInvalid, code: "lock-invalid"},
 
-	{name: "project missing value", fixture: "project", args: []string{"list", "--project"}, exit: ExitUsage},
-	{name: "style-home without project", args: []string{"list", "--style-home", "$WORK/home"}, exit: ExitUsage, stderr: "style list: --style-home requires --project\n"},
-	{name: "project unsupported", fixture: "project", args: []string{"init", "x", "--project", "$ROOT"}, exit: ExitUsage, noJSON: true},
-	{name: "project usage after binding", fixture: "project", args: []string{"uninstall", "--project", "$ROOT"}, exit: ExitUsage},
-	{name: "project unbound", fixture: "project", args: []string{"list", "--project", "$WORK/missing"}, exit: ExitInvalid, code: "project-binding-invalid"},
-	{name: "project list ok", fixture: "project", args: []string{"list", "--project", "$ROOT"}, exit: ExitOK},
-	{name: "project trust missing", fixture: "project", args: []string{"trust", "missing", "--project", "$ROOT"}, input: "y\n", exit: ExitInvalid, code: "request-rejected"},
-	{name: "project uninstall missing", fixture: "project", args: []string{"uninstall", "missing", "--project", "$ROOT"}, input: "y\n", exit: ExitInvalid, code: "request-rejected"},
-	{name: "project uninstall declined", fixture: "project", args: []string{"uninstall", "--all", "--project", "$ROOT"}, input: "n\n", exit: ExitInvalid, code: "confirmation-declined"},
+	{name: "project missing value", fixture: "project", args: []string{"--project"}, exit: ExitUsage, stderr: "style: missing value for --project\n"},
+	{name: "project without command", fixture: "project", args: []string{"--project", "$ROOT"}, exit: ExitUsage, noJSON: true, stderr: "style: missing command after the global options\n"},
+	{name: "project after command", fixture: "project", args: []string{"list", "--project", "$ROOT"}, exit: ExitUsage, stderr: "style list: --project is a global option; write it before the command: style --project dir list\n"},
+	{name: "style-home user scope", args: []string{"--style-home", "$WORK/home", "list"}, exit: ExitOK, stdout: "No packages installed."},
+	{name: "style-home after command", args: []string{"list", "--style-home", "$WORK/home"}, exit: ExitUsage, stderr: "style list: --style-home is a global option"},
+	{name: "style-home unsupported", args: []string{"--style-home", "$WORK/home", "validate"}, exit: ExitUsage, stderr: "style validate: --style-home is not supported by this command\n"},
+	{name: "project unsupported", fixture: "project", args: []string{"--project", "$ROOT", "init", "x"}, exit: ExitUsage, noJSON: true, stderr: "style init: --project is not supported by this command\n"},
+	{name: "project usage after binding", fixture: "project", args: []string{"--project", "$ROOT", "uninstall"}, exit: ExitUsage},
+	{name: "project unbound", fixture: "project", args: []string{"--project", "$WORK/missing", "list"}, exit: ExitInvalid, code: "project-binding-invalid"},
+	{name: "project list ok", fixture: "project", args: []string{"--project", "$ROOT", "list"}, exit: ExitOK},
+	{name: "project trust missing", fixture: "project", args: []string{"--project", "$ROOT", "trust", "missing"}, input: "y\n", exit: ExitInvalid, code: "request-rejected"},
+	{name: "project uninstall missing", fixture: "project", args: []string{"--project", "$ROOT", "uninstall", "missing"}, input: "y\n", exit: ExitInvalid, code: "request-rejected"},
+	{name: "project uninstall declined", fixture: "project", args: []string{"--project", "$ROOT", "uninstall", "--all"}, input: "n\n", exit: ExitInvalid, code: "confirmation-declined"},
 }
 
 func TestCommandMatrix(t *testing.T) {
@@ -240,9 +244,19 @@ func TestCommandMatrix(t *testing.T) {
 	}
 }
 
+// matrixCommand is the command name after the global options; empty when
+// those options do not parse.
+func matrixCommand(args []string) string {
+	_, rest, err := parseGlobal(args, "/")
+	if err != nil || len(rest) == 0 {
+		return ""
+	}
+	return rest[0]
+}
+
 func checkMatrixCell(t *testing.T, row matrixCase, args []string, jsonMode bool, exit int, stdout, stderr string) {
 	t.Helper()
-	command := args[0]
+	command := matrixCommand(args)
 	report := func(format string, values ...any) {
 		t.Errorf(format+"\nexit=%d\nstdout=%s\nstderr=%s", append(values, exit, stdout, stderr)...)
 	}
@@ -263,7 +277,7 @@ func checkMatrixCell(t *testing.T, row matrixCase, args []string, jsonMode bool,
 		report("internal package prefix in output")
 	}
 	for _, line := range strings.Split(stderr, "\n") {
-		if strings.HasPrefix(line, "style ") && !strings.HasPrefix(line, "style "+command+":") && !strings.HasPrefix(line, "style "+command+" ") {
+		if command != "" && strings.HasPrefix(line, "style ") && !strings.HasPrefix(line, "style "+command+":") && !strings.HasPrefix(line, "style "+command+" ") {
 			report("stderr line names another command: %q", line)
 		}
 	}
@@ -271,7 +285,7 @@ func checkMatrixCell(t *testing.T, row matrixCase, args []string, jsonMode bool,
 		if stdout != "" {
 			report("usage error wrote stdout")
 		}
-		if !strings.HasPrefix(stderr, "style "+command+": ") && !strings.HasPrefix(stderr, "style: unknown command") && !strings.HasPrefix(stderr, "style: --version ") {
+		if !strings.HasPrefix(stderr, "style "+command+": ") && !strings.HasPrefix(stderr, "style: unknown command") && !strings.HasPrefix(stderr, "style: --version ") && !(command == "" && strings.HasPrefix(stderr, "style: ")) {
 			report("usage error does not start with the command name")
 		}
 		if spec, ok := lookupCommand(command); ok && !strings.HasSuffix(stderr, spec.usage()+"\n") {
@@ -392,7 +406,7 @@ func TestHookInvocationsNeverExitUsage(t *testing.T) {
 // Each --project-source usage error names the one condition that failed.
 func TestProjectSourceUsageNamesOneCondition(t *testing.T) {
 	s, base, root, source := a6Setup(t)
-	many := []string{"install", source, "--project", root}
+	many := []string{"--project", root, "install", source}
 	for range 64 {
 		many = append(many, "--project-source", source)
 	}
@@ -401,9 +415,9 @@ func TestProjectSourceUsageNamesOneCondition(t *testing.T) {
 		want string
 	}{
 		{[]string{"install", source, "--project-source", source}, "--project-source requires --project\n"},
-		{[]string{"install", source, "--project", root, "--project-source", source, "--link"}, "--project-source cannot be combined with --link\n"},
+		{[]string{"--project", root, "install", source, "--project-source", source, "--link"}, "--project-source cannot be combined with --link\n"},
 		{many, "--project-source accepts at most 63 sources (64 packages with the main source)\n"},
-		{[]string{"install", source, "--project", root, "--project-set", "x.k=v"}, "--project-set requires --project-source\n"},
+		{[]string{"--project", root, "install", source, "--project-set", "x.k=v"}, "--project-set requires --project-source\n"},
 	} {
 		var out, errOut bytes.Buffer
 		exit := RunWithServiceInput(context.Background(), s, base, test.args, strings.NewReader(""), &out, &errOut)

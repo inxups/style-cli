@@ -71,12 +71,12 @@ func TestM3A6CommandGolden(t *testing.T) {
 				case "uninstall":
 					args = []string{"uninstall", "--all"}
 				case "error":
-					args = []string{"list", "--project="}
+					args = []string{"--project=", "list"}
 				default:
 					args = []string{phase}
 				}
 				if phase != "error" {
-					args = append(args, "--project=.")
+					args = append([]string{"--project=."}, args...)
 				}
 				if jsonMode {
 					args = append(args, "--json")

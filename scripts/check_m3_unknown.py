@@ -40,10 +40,10 @@ def main():
             scope = ('--project', project) if route.endswith('-project') else ()
             selection = ('--harness', provider, '--route', provider + '=' + route)
             before = snapshot(base, codex, claude, project)
-            preview = style_report(run(binary, env, 'install', source, *scope, *selection, '--json', want=1).stdout)
+            preview = style_report(run(binary, env, *scope, 'install', source, *selection, '--json', want=1).stdout)
             assert preview['awaiting_confirmation'] and snapshot(base, codex, claude, project) == before
             record(cases, route, 'preview-zero-write')
-            installed = style_report(run(binary, env, 'install', source, *scope, *selection, '--json', confirm=True).stdout)
+            installed = style_report(run(binary, env, *scope, 'install', source, *selection, '--json', confirm=True).stdout)
             home = Path(installed['scope']['home']) if scope else base
             index_path = home / 'build/index.json'
             index = json.loads(index_path.read_text())
@@ -89,23 +89,23 @@ def main():
                 assert snapshot(base, codex, claude, project) == before
             record(cases, route, 'actual-T42-runtime-six-management-commands-refuse-zero-write')
             for command in (('sync',), ('update', '--all'), ('restore',)):
-                run(binary, env, *command, *scope, '--json', confirm=True)
-            doctor = style_report(run(binary, env, 'doctor', *scope, '--json').stdout)
+                run(binary, env, *scope, *command, '--json', confirm=True)
+            doctor = style_report(run(binary, env, *scope, 'doctor', '--json').stdout)
             assert any(d['code'] == 'runtime-index-5' for d in doctor['diagnostics'])
             (home / 'build/index.json').unlink()
             (home / 'build/explain.json').unlink()
-            run(binary, env, 'restore', *scope, '--json', confirm=True)
+            run(binary, env, *scope, 'restore', '--json', confirm=True)
             assert json.loads(index_path.read_text()) == index
             assert (home / 'style.lock.yaml').read_text() == lock
             record(cases, route, 'new-management-frozen-exact-lock-rebuild-doctor')
             (source / 'STYLE.yaml').write_text(MANIFEST.replace('when: {model: unknown}, ', ''))
-            run(binary, env, 'update', '--all', *scope, '--json', confirm=True)
+            run(binary, env, *scope, 'update', '--all', '--json', confirm=True)
             assert 'min_index_format' not in (home / 'style.lock.yaml').read_text()
             assert json.loads(index_path.read_text())['format'] == 1
             # User lock2 remains legal. Project lock3 was already understood by T42.
             run(old, dict(env, STYLE_HOME=str(home)), 'sync', *scope, '--json')
             record(cases, route, 'remove-last-unknown-clears-marker-old-manager-compatible')
-            run(binary, env, 'uninstall', '--all', *scope, '--json', confirm=True)
+            run(binary, env, *scope, 'uninstall', '--all', '--json', confirm=True)
             record(cases, route, 'uninstall')
     args.report.write_text(json.dumps(dict(format=1, binary_sha256=sha(binary),
                                           old_binary_sha256=sha(old), real_harness=False, cases=cases), indent=2) + '\n')

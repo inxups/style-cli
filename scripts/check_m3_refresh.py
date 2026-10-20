@@ -55,11 +55,11 @@ def main():
             scope = ("--project", project) if route.endswith("-project") else ()
             before = snapshot(base, codex, claude, project)
             selection = ("--harness", provider, "--route", provider + "=" + route)
-            preview = style_report(run(new, env, "install", source, *scope, *selection, "--json", want=1).stdout)
+            preview = style_report(run(new, env, *scope, "install", source, *selection, "--json", want=1).stdout)
             assert preview["awaiting_confirmation"]
             assert snapshot(base, codex, claude, project) == before
             record(cases, route, "preview-zero-write")
-            installed = style_report(run(new, env, "install", source, *scope, *selection, "--json", confirm=True).stdout)
+            installed = style_report(run(new, env, *scope, "install", source, *selection, "--json", confirm=True).stdout)
             home = Path(installed["scope"]["home"]) if scope else base
             if route == "codex-plugin":
                 env["PLUGIN_ROOT"] = str(home / "adapters/codex/plugin")
@@ -131,14 +131,14 @@ def main():
                 assert snapshot(base, codex, claude, project) == before, (command, rejected.stdout, rejected.stderr)
             record(cases, route, "actual-old-management-conservative-zero-write", commands=4)
             for command in (("sync",), ("trust", "periodic"), ("update", "--all"), ("restore",)):
-                run(new, env, *command, *scope, "--json", confirm=True)
-            doctor = style_report(run(new, env, "doctor", *scope, "--json").stdout)
+                run(new, env, *scope, *command, "--json", confirm=True)
+            doctor = style_report(run(new, env, *scope, "doctor", "--json").stdout)
             assert any(d["code"] == "refresh-index-2" for d in doctor["diagnostics"])
             record(cases, route, "new-management-and-upgrade-guidance")
             clock = state_file.read_bytes()
             (home / "build/index.json").unlink()
             (home / "build/explain.json").unlink()
-            run(new, env, "restore", *scope, "--json", confirm=True)
+            run(new, env, *scope, "restore", "--json", confirm=True)
             assert json.loads(index_path.read_text()) == index
             assert state_file.read_bytes() == clock
             record(cases, route, "frozen-exact-policy-clock-preserved")
@@ -152,7 +152,7 @@ def main():
             assert p95 < 50, (route, p95)
             performance.append({"route": route, "samples": len(samples), "p95_ms": round(p95, 3),
                                 "median_ms": round(statistics.median(samples), 3)})
-            run(new, env, "uninstall", "--all", *scope, "--json", confirm=True)
+            run(new, env, *scope, "uninstall", "--all", "--json", confirm=True)
             record(cases, route, "uninstall-and-process-latency")
     report = {"status": "passed", "binary_sha256": sha(new), "old_binary_sha256": sha(old),
               "cases": cases, "performance": performance, "real_harness": False}

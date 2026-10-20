@@ -16,6 +16,7 @@ import (
 type Service struct {
 	counter     *tokencount.Counter
 	project     *projectScope
+	home        string // user scope: replaces STYLE_HOME when set
 	sources     source.Acquirer
 	probeDeps   *probeDependencies
 	definitions map[adapter.ProviderID]adapter.Definition

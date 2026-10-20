@@ -71,7 +71,7 @@ func TestJSONEnvelopeWrapsEveryReport(t *testing.T) {
 			}
 		})
 	}
-	for _, args := range [][]string{{"list", "--bogus", "--json"}, {"export", "--json"}, {"list", "--project", "--json"}} {
+	for _, args := range [][]string{{"list", "--bogus", "--json"}, {"export", "--json"}, {"--project", "--json", "list"}} {
 		var out, errOut bytes.Buffer
 		if code := RunWithService(context.Background(), service, root, args, &out, &errOut); code != ExitUsage || out.Len() != 0 || errOut.Len() == 0 {
 			t.Fatalf("%v exit=%d stdout=%q", args, code, out.String())
@@ -214,7 +214,7 @@ func TestProjectBindingFailuresKeepTheirCode(t *testing.T) {
 	t.Setenv("STYLE_HOME", filepath.Join(root, "home"))
 	missing := filepath.Join(root, "missing")
 	var out, errOut bytes.Buffer
-	if code := RunWithService(context.Background(), service, root, []string{"list", "--project", missing, "--json"}, &out, &errOut); code != ExitInvalid {
+	if code := RunWithService(context.Background(), service, root, []string{"--project", missing, "list", "--json"}, &out, &errOut); code != ExitInvalid {
 		t.Fatalf("exit = %d; stderr=%s", code, &errOut)
 	}
 	var envelope struct {

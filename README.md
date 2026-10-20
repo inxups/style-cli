@@ -68,6 +68,12 @@ on a command line) also shows advanced and project options. `style --version`
 prints `style VERSION`. Boolean flags take no value (`--json`, not
 `--json=true`).
 
+Global options go before the command:
+`style [--project DIR] [--style-home DIR] COMMAND …`. `--project` scopes plan,
+installation and diagnostic commands to a project; `--style-home` replaces
+`STYLE_HOME`, for the user scope or as the home a project is bound under.
+Written after the command name they are usage errors.
+
 A source is a local directory or file, or a Git address in go-getter form:
 `git+https://host/org/repo.git//package/path?ref=refs/tags/v1`. The `//path`
 and `?ref=` selectors are optional (default: repository root and the remote
@@ -134,6 +140,7 @@ The following forms were removed without compatibility entry points:
 | `install --fail-closed claude-code` | `install --fail-closed` |
 | `--yes` on `install`, `restore`, `update`, `trust`, `uninstall` | answer `y` to the prompt (stdin) |
 | `--ref R --path P` on `validate`, `plan`, `install` | `git+https://…/repo.git//P?ref=R` |
+| `style COMMAND --project DIR` | `style --project DIR COMMAND` |
 
 `explain --event` is optional; the event is read from the payload's
 `hook_event_name`, and an explicit `--event` must match it.

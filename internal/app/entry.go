@@ -2,9 +2,11 @@ package app
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"os"
+	"path/filepath"
 	"strings"
 )
 
@@ -74,6 +76,14 @@ func RunWithServiceInput(ctx context.Context, service *Service, workDir string, 
 		fmt.Fprintln(errOut, "style: service is required")
 		return ExitInvalid
 	}
+	global, args, err := parseGlobal(args, workDir)
+	if err == nil && global.set() && len(args) == 0 {
+		err = errors.New("missing command after the global options")
+	}
+	if err != nil {
+		fmt.Fprintf(errOut, "style: %v\nstyle %s <command> ...\n", err, globalFlagsUsage)
+		return ExitUsage
+	}
 	if len(args) == 0 || args[0] == "--help" || args[0] == "-h" || args[0] == "help" && len(args) == 1 {
 		printUsage(out)
 		return ExitOK
@@ -94,15 +104,84 @@ func RunWithServiceInput(ctx context.Context, service *Service, workDir string, 
 		printCommandHelp(out, args[0])
 		return ExitOK
 	}
-	if projectInvocation(args) {
-		return runProjectCommand(ctx, service, workDir, args, in, out, errOut)
+	if global.set() {
+		command, ok := lookupCommand(args[0])
+		if !ok {
+			return runCommand(ctx, service, workDir, args, in, out, errOut)
+		}
+		if !command.Project {
+			return command.usageError(errOut, fmt.Errorf("%s is not supported by this command", global.option()))
+		}
 	}
+	if global.Project != "" {
+		return runProjectCommand(ctx, service, workDir, global, args, in, out, errOut)
+	}
+	if global.Home != "" {
+		service = service.ForHome(global.Home)
+	}
+	return runScoped(ctx, service, workDir, args, in, out, errOut)
+}
+
+// runScoped runs a command against an already scoped service.
+func runScoped(ctx context.Context, service *Service, workDir string, args []string, in io.Reader, out, errOut io.Writer) int {
 	if jsonRequested(args) {
 		return runJSON(args[0], service.jsonScope(), out, errOut, func(out, errOut io.Writer) int {
 			return runCommand(ctx, service, workDir, args, in, out, errOut)
 		})
 	}
 	return runCommand(ctx, service, workDir, args, in, out, errOut)
+}
+
+// globalOptions select the scope. They go before the command name, so every
+// command parser sees only its own options.
+type globalOptions struct {
+	Project string // project root; empty for the user scope
+	Home    string // replaces STYLE_HOME
+}
+
+func (g globalOptions) set() bool { return g.Project != "" || g.Home != "" }
+
+func (g globalOptions) option() string {
+	if g.Project != "" {
+		return "--project"
+	}
+	return "--style-home"
+}
+
+// parseGlobal consumes the leading global options and makes their
+// directories absolute against workDir.
+func parseGlobal(args []string, workDir string) (globalOptions, []string, error) {
+	var global globalOptions
+	seen := map[string]bool{}
+	for len(args) > 0 {
+		name, value, inline := strings.Cut(args[0], "=")
+		if name != "--project" && name != "--style-home" {
+			break
+		}
+		if seen[name] {
+			return global, args, fmt.Errorf("duplicate option %s", name)
+		}
+		seen[name] = true
+		args = args[1:]
+		if !inline {
+			if len(args) == 0 || strings.HasPrefix(args[0], "-") {
+				return global, args, fmt.Errorf("missing value for %s", name)
+			}
+			value, args = args[0], args[1:]
+		}
+		if strings.TrimSpace(value) == "" {
+			return global, args, fmt.Errorf("empty value for %s", name)
+		}
+		if !filepath.IsAbs(value) {
+			value = filepath.Join(workDir, value)
+		}
+		if name == "--project" {
+			global.Project = value
+		} else {
+			global.Home = value
+		}
+	}
+	return global, args, nil
 }
 
 func runVersion(args []string, out, errOut io.Writer) int {

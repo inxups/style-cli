@@ -293,7 +293,7 @@ func TestM3A6ProjectBatchValidationAndJSONDiagnostics(t *testing.T) {
 	writeSyncFile(t, filepath.Join(source, "STYLE.yaml"), "spec: style/v0.3\nname: broken\nversion: 1.0.0\nrules: [{id: invalid, target: missing}]\n")
 	before := a4State(t, base, root)
 	var out, errOut bytes.Buffer
-	if code := RunWithServiceInput(context.Background(), s, root, []string{"install", source, "--project=.", "--json"}, approve(), &out, &errOut); code != 1 {
+	if code := RunWithServiceInput(context.Background(), s, root, []string{"--project=.", "install", source, "--json"}, approve(), &out, &errOut); code != 1 {
 		t.Fatal(code, &out, &errOut)
 	}
 	var report map[string]any

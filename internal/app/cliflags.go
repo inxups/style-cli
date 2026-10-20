@@ -1,7 +1,6 @@
 package app
 
 import (
-	"errors"
 	"fmt"
 	"io"
 	"strings"
@@ -95,9 +94,8 @@ func (c commandSpec) parse(args []string) (parsedArgs, error) {
 		}
 		name, value, inline := strings.Cut(arg, "=")
 		flag, ok := c.flag(name)
-		if !ok && name == "--style-home" && c.Project {
-			// Project invocations consume --style-home before parsing.
-			return parsed, errors.New("--style-home requires --project")
+		if !ok && (name == "--project" || name == "--style-home") {
+			return parsed, fmt.Errorf("%s is a global option; write it before the command: style %s dir %s", name, name, c.Name)
 		}
 		if !ok {
 			return parsed, fmt.Errorf("unknown option %q", name)
@@ -169,23 +167,23 @@ func (c commandSpec) summary() string {
 	return main
 }
 
-// usage is the full per-command help: the main line plus advanced and project groups.
+// usage is the full per-command help: the main line, the advanced and
+// project groups, and the global options the command accepts.
 func (c commandSpec) usage() string {
 	lines := []string{c.summary()}
 	if flags := c.usageLine(groupAdvanced); flags != "" {
 		lines = append(lines, "  advanced: "+flags)
 	}
-	project := c.usageLine(groupProject)
-	if c.Project {
-		project = strings.TrimSpace(projectFlagsUsage + " " + project)
-	}
-	if project != "" {
+	if project := c.usageLine(groupProject); project != "" {
 		lines = append(lines, "  project: "+project)
+	}
+	if c.Project {
+		lines = append(lines, "  global, before the command: "+globalFlagsUsage)
 	}
 	return strings.Join(lines, "\n")
 }
 
-const projectFlagsUsage = "[--project dir [--style-home dir]]"
+const globalFlagsUsage = "[--project dir] [--style-home dir]"
 
 // usageError prints the error and the command usage to errOut.
 func (c commandSpec) usageError(errOut io.Writer, err error) int {
@@ -277,8 +275,9 @@ func printUsage(out io.Writer) {
 	}
 	fmt.Fprintln(out)
 	fmt.Fprintln(out, "Global:")
-	fmt.Fprintln(out, "  "+projectFlagsUsage+" scopes plan, installation and diagnostic commands to a project;")
-	fmt.Fprintln(out, "  --style-home, only with --project, replaces STYLE_HOME as the home the project is bound under.")
+	fmt.Fprintln(out, "  style "+globalFlagsUsage+" <command> ...; global options go before the command.")
+	fmt.Fprintln(out, "  --project scopes plan, installation and diagnostic commands to a project.")
+	fmt.Fprintln(out, "  --style-home replaces STYLE_HOME: the user home, or the home a project is bound under.")
 	fmt.Fprintln(out, "  style help <command> (or <command> --help) shows advanced and project options.")
 	fmt.Fprintln(out, "  style --version prints the version.")
 }

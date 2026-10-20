@@ -6,29 +6,16 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"path/filepath"
-	"strings"
 	"time"
 )
 
-func projectInvocation(args []string) bool {
-	for _, arg := range args[1:] {
-		if arg == "--project" || strings.HasPrefix(arg, "--project=") {
-			return true
-		}
-	}
-	return false
-}
-func runProjectCommand(ctx context.Context, service *Service, workDir string, args []string, in io.Reader, out, errOut io.Writer) int {
-	var root, base string
+func runProjectCommand(ctx context.Context, service *Service, workDir string, global globalOptions, args []string, in io.Reader, out, errOut io.Writer) int {
+	root := global.Project
 	fail := func(err error) int {
 		var usageErr *UsageError
 		if errors.As(err, &usageErr) {
-			if command, ok := lookupCommand(args[0]); ok {
-				return command.usageError(errOut, err)
-			}
-			fmt.Fprintf(errOut, "style %s: %v\n", args[0], err)
-			return ExitUsage
+			command, _ := lookupCommand(args[0])
+			return command.usageError(errOut, err)
 		}
 		report := func(out, errOut io.Writer) int {
 			diagnostic := failureDiagnostic(err)
@@ -44,41 +31,7 @@ func runProjectCommand(ctx context.Context, service *Service, workDir string, ar
 		}
 		return report(io.Discard, errOut)
 	}
-	if command, ok := lookupCommand(args[0]); !ok || !command.Project {
-		return fail(&UsageError{Message: "--project is not supported by this command"})
-	}
-	clean := []string{args[0]}
-	seen := map[string]bool{}
-	for i := 1; i < len(args); i++ {
-		name, value, inline := strings.Cut(args[i], "=")
-		if name != "--project" && name != "--style-home" {
-			clean = append(clean, args[i])
-			continue
-		}
-		if seen[name] {
-			return fail(&UsageError{Message: "duplicate " + name})
-		}
-		seen[name] = true
-		if !inline {
-			if i+1 >= len(args) || strings.HasPrefix(args[i+1], "-") {
-				return fail(&UsageError{Message: name + " requires a directory"})
-			}
-			i++
-			value = args[i]
-		}
-		if strings.TrimSpace(value) == "" {
-			return fail(&UsageError{Message: name + " requires a directory"})
-		}
-		if !filepath.IsAbs(value) {
-			value = filepath.Join(workDir, value)
-		}
-		if name == "--project" {
-			root = value
-		} else {
-			base = value
-		}
-	}
-	scoped, err := service.ForProject(root, base)
+	scoped, err := service.ForProject(root, global.Home)
 	if err != nil {
 		return fail(err)
 	}
@@ -95,7 +48,7 @@ func runProjectCommand(ctx context.Context, service *Service, workDir string, ar
 			}
 		}}
 	}
-	return RunWithServiceInput(ctx, scoped, workDir, clean, in, out, errOut)
+	return runScoped(ctx, scoped, workDir, args, in, out, errOut)
 }
 
 // headerWriter writes header once, before the first write that reaches out.
@@ -115,7 +68,7 @@ func (w *headerWriter) Write(p []byte) (int, error) {
 
 func runScopedStats(ctx context.Context, s *Service, args []string, out, errOut io.Writer) int {
 	if s.project == nil {
-		return runStats(ctx, args, out, errOut)
+		return runStatsAtHome(ctx, args, out, errOut, time.Now(), s.home)
 	}
 	if _, err := s.loadLock(s.project.Home); err != nil {
 		fmt.Fprintln(errOut, "style stats:", err)
