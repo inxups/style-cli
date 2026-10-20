@@ -88,6 +88,10 @@ func writeProbeText(out io.Writer, result ProbeResult) {
 		fmt.Fprintf(out, "  remaining=%s\n", probeQuote(path))
 	}
 	for _, finding := range result.Diagnostics {
-		fmt.Fprintf(out, "%s %s harness=%s: %s\n", finding.Severity, finding.Code, probeQuote(finding.Harness), probeQuote(finding.Message))
+		where := ""
+		if finding.Harness != "" {
+			where = " harness=" + probeQuote(finding.Harness)
+		}
+		fmt.Fprintf(out, "%s %s%s: %s\n", finding.Severity, finding.Code, where, probeQuote(finding.Message))
 	}
 }

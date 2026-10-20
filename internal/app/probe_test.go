@@ -695,4 +695,11 @@ func TestM3A2CLIUsageJSONAndTerminalSafety(t *testing.T) {
 	if strings.ContainsRune(out.String(), '\x1b') || !strings.Contains(out.String(), `\u001b`) {
 		t.Fatal("terminal controls not escaped")
 	}
+	// A finding names its harness only when it has one.
+	report.Diagnostics = []ProbeDiagnostic{{Code: "probe-timeout", Severity: "error", Message: "late"}, {Code: "probe-installation-unavailable", Severity: "error", Message: "off", Harness: "codex"}}
+	out.Reset()
+	writeProbeText(&out, report)
+	if !strings.Contains(out.String(), "\nerror probe-timeout: \"late\"\n") || !strings.Contains(out.String(), "\nerror probe-installation-unavailable harness=\"codex\": \"off\"\n") {
+		t.Fatalf("finding lines: %q", out.String())
+	}
 }
