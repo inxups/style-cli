@@ -67,7 +67,24 @@ func runJSON(command string, scope any, out, errOut io.Writer, run func(out, err
 		fmt.Fprintf(errOut, "style %s: encode report: %v\n", command, err)
 		return ExitInvalid
 	}
+	if (code == ExitInvalid || code == ExitBlocked) && len(failures.messages) == 0 {
+		// Like text mode, stderr says why the command failed, whichever
+		// command produced the report.
+		if diagnostic, ok := firstError(envelope.Diagnostics); ok {
+			writeCommandDiagnostics(errOut, command, []Diagnostic{diagnostic})
+		}
+	}
 	return code
+}
+
+func firstError(diagnostics []json.RawMessage) (Diagnostic, bool) {
+	for _, raw := range diagnostics {
+		var diagnostic Diagnostic
+		if json.Unmarshal(raw, &diagnostic) == nil && diagnostic.Severity == "error" {
+			return diagnostic, true
+		}
+	}
+	return Diagnostic{}, false
 }
 
 func wrapReport(command string, code int, scope any, report []byte, failures []string) (jsonEnvelope, error) {

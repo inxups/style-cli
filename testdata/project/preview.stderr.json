@@ -44,3 +44,4 @@ Token (estimated; calibration pending):
   session cost (requests=60 triggers=3): 78.7 always-on + 38.2 triggered = 116.9 units
   scenario only: 1.25x cache write + 0.1x later hits; assumes an eligible unchanged prefix within cache lifetime; not billing
 Install with these capabilities? [y/N] 
+style install: confirmation-declined: install canceled; nothing was changed

@@ -83,8 +83,9 @@ func TestA1ValidateExampleAndEveryInvalidFixture(t *testing.T) {
 				}
 				var out, errOut bytes.Buffer
 				exit := RunWithService(context.Background(), service, root, args, &out, &errOut)
-				// Text diagnostics go to stderr; --json keeps them in the report.
-				if exit != ExitInvalid || jsonOutput && errOut.Len() > 0 || !jsonOutput && out.Len() > 0 {
+				// Text diagnostics go to stderr; --json keeps them in the report
+				// and writes only the first to stderr.
+				if exit != ExitInvalid || jsonOutput && strings.Count(errOut.String(), "\n") != 1 || !jsonOutput && out.Len() > 0 {
 					t.Fatalf("exit=%d stdout=%s stderr=%s", exit, out.String(), errOut.String())
 				}
 				if jsonOutput {
@@ -114,7 +115,7 @@ func TestValidateRejectsRemovedVarsField(t *testing.T) {
 	service := testService(t)
 	packageDir := writeInstallPackage(t, t.TempDir(), "spec: style/v0.3\nname: removed-vars\nversion: 0.1.0\ndescription: removed vars\nvars:\n  lang: zh-CN\nrules:\n  - id: base\n    target: system\n    text: 'Use {{vars.lang}}.'\n")
 	var out, errOut bytes.Buffer
-	if exit := RunWithService(context.Background(), service, root, []string{"validate", packageDir, "--json"}, &out, &errOut); exit != ExitInvalid || errOut.Len() > 0 {
+	if exit := RunWithService(context.Background(), service, root, []string{"validate", packageDir, "--json"}, &out, &errOut); exit != ExitInvalid || !strings.HasPrefix(errOut.String(), "style validate: invalid-schema ") {
 		t.Fatalf("exit=%d stdout=%s stderr=%s", exit, out.String(), errOut.String())
 	}
 	var diagnostics []Diagnostic
@@ -137,7 +138,7 @@ func TestValidateRejectsRemovedReadsField(t *testing.T) {
 	service := testService(t)
 	packageDir := writeInstallPackage(t, t.TempDir(), "spec: style/v0.3\nname: removed-reads\nversion: 0.1.0\ndescription: removed reads\nreads:\n  model: true\nrules:\n  - id: base\n    target: system\n    text: 'Model {{model | default: \"unknown\"}}.'\n")
 	var out, errOut bytes.Buffer
-	if exit := RunWithService(context.Background(), service, root, []string{"validate", packageDir, "--json"}, &out, &errOut); exit != ExitInvalid || errOut.Len() > 0 {
+	if exit := RunWithService(context.Background(), service, root, []string{"validate", packageDir, "--json"}, &out, &errOut); exit != ExitInvalid || !strings.HasPrefix(errOut.String(), "style validate: invalid-schema ") {
 		t.Fatalf("exit=%d stdout=%s stderr=%s", exit, out.String(), errOut.String())
 	}
 	var diagnostics []Diagnostic

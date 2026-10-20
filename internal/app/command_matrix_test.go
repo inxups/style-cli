@@ -30,7 +30,7 @@ type matrixCase struct {
 	setup   func(t *testing.T, f matrixFixture)
 	exit    int
 	code    string // expected JSON diagnostic code when the command fails
-	stderr  string // text stderr must contain this, when set
+	stderr  string // stderr must contain this in both modes, when set
 	noJSON  bool
 }
 
@@ -259,6 +259,10 @@ func checkMatrixCell(t *testing.T, row matrixCase, args []string, jsonMode bool,
 			}
 		}
 		return
+	}
+	if exit != ExitOK && exit != ExitSyncChanged && !strings.Contains(stderr, "style "+command+": ") {
+		// --json keeps the report on stdout; stderr still says why it failed.
+		report("json failure wrote no reason to stderr")
 	}
 	decoder := json.NewDecoder(strings.NewReader(stdout))
 	var envelope struct {

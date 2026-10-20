@@ -395,7 +395,7 @@ func TestM3A0CLIDiagnosticsRetainJSONAndExitContract(t *testing.T) {
 		if command == "plan" {
 			args = append(args, "--harness=fixture-harness")
 		}
-		if code := RunWithService(context.Background(), service, repositoryRoot(t), args, &stdout, &stderr); code != ExitInvalid || stderr.Len() != 0 {
+		if code := RunWithService(context.Background(), service, repositoryRoot(t), args, &stdout, &stderr); code != ExitInvalid || !strings.HasPrefix(stderr.String(), "style "+command+": ") {
 			t.Fatalf("%s exit=%d stdout=%s stderr=%s", command, code, stdout.String(), stderr.String())
 		}
 		var diagnostics []Diagnostic

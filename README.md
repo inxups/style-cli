@@ -98,7 +98,9 @@ to stderr and stdout carries only the final report.
 In text mode diagnostics and failures go to stderr, one per line, as
 `style COMMAND: [warning ]CODE[ WHERE]: MESSAGE` (the code is left out only
 when the error has none). The reports of `doctor`, `explain` and `probe` stay
-on stdout and stderr gets one such line saying why the command failed.
+on stdout and stderr gets one such line saying why the command failed. With
+`--json` the report goes to stdout and a failed command still writes one such
+line to stderr.
 
 Every `--json` report is one envelope:
 

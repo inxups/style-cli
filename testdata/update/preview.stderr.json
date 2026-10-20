@@ -76,3 +76,4 @@ Token (estimated; calibration pending):
   scenario only: 1.25x cache write + 0.1x later hits; assumes an eligible unchanged prefix within cache lifetime; not billing
 Locked routes: ["codex=codex-user"]
 Apply this update? [y/N] 
+style update: confirmation-declined: update canceled; nothing was changed

@@ -58,7 +58,7 @@ func TestRunValidateJSONIncludesStableCodesAndExitStatus(t *testing.T) {
 	if len(diagnostics) == 0 || diagnostics[0].Code != "dup-id" {
 		t.Fatalf("diagnostics = %#v, want dup-id first", diagnostics)
 	}
-	if errorsOut.Len() != 0 {
+	if !strings.HasPrefix(errorsOut.String(), "style validate: dup-id ") {
 		t.Fatalf("unexpected stderr: %s", errorsOut.String())
 	}
 }

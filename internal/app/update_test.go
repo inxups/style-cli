@@ -707,7 +707,7 @@ func TestM3A4CandidateGatesAndBlockedCLI(t *testing.T) {
 			var out, errOut bytes.Buffer
 			exit := RunWithServiceInput(context.Background(), s, t.TempDir(), []string{"update", "first", "--json"}, approve(), &out, &errOut)
 			var result UpdateResult
-			if err := decodeReport(out.Bytes(), &result); err != nil || errOut.Len() != 0 {
+			if err := decodeReport(out.Bytes(), &result); err != nil || !strings.HasPrefix(errOut.String(), "style update: ") {
 				t.Fatalf("single JSON: %s %s %v", &out, &errOut, err)
 			}
 			want := ExitInvalid

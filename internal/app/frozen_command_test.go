@@ -150,7 +150,7 @@ func TestM3A5NativeReplaceAndBlockedCLI(t *testing.T) {
 				want = ExitInvalid
 			}
 			var result FrozenResult
-			if err := decodeReport(out.Bytes(), &result); err != nil || exit != want || result.Status != "error" || result.Changed || errOut.Len() != 0 {
+			if err := decodeReport(out.Bytes(), &result); err != nil || exit != want || result.Status != "error" || result.Changed || !strings.HasPrefix(errOut.String(), "style restore: ") {
 				t.Fatalf("%s exit=%d stdout=%s stderr=%s err=%v", gate, exit, &out, &errOut, err)
 			}
 			a4AssertState(t, before, home, config)

@@ -49,3 +49,4 @@ Native commands:
     command: printf later
     route: codex-user; trust=preseed; Codex hooks.state is pre-seeded
 Apply this restore? [y/N] 
+style restore: confirmation-declined: restore canceled; nothing was changed
