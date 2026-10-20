@@ -166,7 +166,7 @@
     {
       "code": "provenance-unavailable",
       "severity": "warning",
-      "message": "Compilation provenance is unavailable; index-only coverage."
+      "message": "compilation provenance is unavailable; index-only coverage"
     }
   ]
 }
