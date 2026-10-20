@@ -106,7 +106,9 @@ var commandMatrix = []matrixCase{
 	{name: "validate ok", args: []string{"validate", "$SRC"}, exit: ExitOK},
 
 	{name: "count no file", args: []string{"count"}, exit: ExitUsage},
-	{name: "count missing", args: []string{"count", "$WORK/missing.txt"}, exit: ExitInvalid},
+	{name: "count missing", args: []string{"count", "$WORK/missing.txt"}, exit: ExitInvalid, stderr: "/missing.txt: file does not exist\n"},
+	{name: "count not UTF-8", args: []string{"count", "$WORK/bad.txt"}, setup: writeMatrixFile("$WORK/bad.txt", "\xff"), exit: ExitInvalid, stderr: "/bad.txt: file is not valid UTF-8\n"},
+	{name: "count directory", args: []string{"count", "$WORK/exists"}, exit: ExitInvalid, stderr: "/exists: not a regular file\n"},
 	{name: "count malformed exact", args: []string{"count", "$WORK/text.txt", "--exact", "openai:bogus"}, exit: ExitUsage, stderr: "style count: local openai requires"},
 	{name: "count ok", args: []string{"count", "$WORK/text.txt"}, exit: ExitOK},
 

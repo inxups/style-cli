@@ -2,8 +2,11 @@ package app
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io"
+	"io/fs"
+	"os"
 	"path/filepath"
 	"strings"
 	"unicode/utf8"
@@ -52,12 +55,16 @@ func runCount(ctx context.Context, s *Service, workDir string, args []string, ou
 	if err := options.Validate(); err != nil {
 		return countCommand.usageError(errOut, err)
 	}
+	display := path
 	if !filepath.IsAbs(path) {
 		path = filepath.Join(workDir, path)
 	}
 	data, err := saferead.ReadFile(path, tokencount.MaxTextBytes)
-	if err != nil || !utf8.Valid(data) {
-		return fail(fmt.Errorf("cannot read bounded regular UTF-8 file"))
+	if err != nil {
+		return fail(fmt.Errorf("%s: %s", display, countReadFailure(path, err)))
+	}
+	if !utf8.Valid(data) {
+		return fail(fmt.Errorf("%s: file is not valid UTF-8", display))
 	}
 	result, err := s.countText(ctx, string(data), options)
 	if err != nil {
@@ -92,4 +99,20 @@ func textFields(pairs ...string) string {
 		}
 	}
 	return strings.Join(fields, " ")
+}
+
+// countReadFailure says why a file could not be counted without echoing the
+// underlying system error.
+func countReadFailure(path string, err error) string {
+	info, statErr := os.Lstat(path)
+	switch {
+	case errors.Is(err, fs.ErrNotExist) || errors.Is(statErr, fs.ErrNotExist):
+		return "file does not exist"
+	case statErr == nil && !info.Mode().IsRegular():
+		return "not a regular file"
+	case statErr == nil && info.Size() > tokencount.MaxTextBytes:
+		return fmt.Sprintf("file exceeds %d bytes", tokencount.MaxTextBytes)
+	default:
+		return "cannot read file"
+	}
 }
