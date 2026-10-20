@@ -101,6 +101,7 @@ var commandMatrix = []matrixCase{
 	{name: "init malformed name", args: []string{"init", "Bad_Name"}, exit: ExitUsage, noJSON: true},
 	{name: "init existing", args: []string{"init", "exists"}, exit: ExitInvalid, noJSON: true},
 	{name: "init non-empty directory", args: []string{"init"}, exit: ExitInvalid, noJSON: true, stderr: "style init: init directory is not empty: "},
+	{name: "init empty name", args: []string{"init", ""}, exit: ExitUsage, noJSON: true, stderr: "style init: package name cannot be empty\n"},
 	{name: "init ok", args: []string{"init", "fresh"}, exit: ExitOK, noJSON: true},
 
 	{name: "validate extra arg", args: []string{"validate", "a", "b"}, exit: ExitUsage},
@@ -120,6 +121,7 @@ var commandMatrix = []matrixCase{
 	{name: "plan missing", args: []string{"plan", "$WORK/missing"}, exit: ExitInvalid, code: "invalid-package", stderr: "/missing: package source does not exist\n"},
 	{name: "plan over budget", args: []string{"plan", "$NEW", "--harness", "codex"}, exit: ExitBlocked, code: "blocked",
 		setup: writeMatrixFile("$NEW/STYLE.yaml", a6LongManifest("second", "Second.", "budget: {per_event: 1, on: error}\n", "tool"))},
+	{name: "plan negative requests", args: []string{"plan", "$SRC", "--assume-requests", "-1"}, exit: ExitUsage, stderr: "style plan: --assume-requests requires a positive integer\n"},
 	{name: "plan malformed exact", args: []string{"plan", "$SRC", "--exact", "openai:bogus"}, exit: ExitUsage, stderr: "style plan: local openai requires"},
 	{name: "plan ok", args: []string{"plan", "$SRC", "--harness", "codex"}, exit: ExitOK},
 
@@ -178,6 +180,7 @@ var commandMatrix = []matrixCase{
 
 	{name: "stats unknown by", args: []string{"stats", "--by", "bogus"}, exit: ExitUsage},
 	{name: "stats malformed since", args: []string{"stats", "--since", "bogus"}, exit: ExitUsage},
+	{name: "stats negative since", args: []string{"stats", "--since", "-1h"}, exit: ExitUsage, stderr: "style stats: --since requires a positive duration"},
 	{name: "stats ok", args: []string{"stats"}, exit: ExitOK},
 
 	{name: "explain no harness", args: []string{"explain", "--payload", "$WORK/payload.json"}, exit: ExitUsage},

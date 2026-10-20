@@ -69,6 +69,10 @@ func TestCommandSpecParsing(t *testing.T) {
 			t.Fatalf("%v: err=%v want %q", test.args, err, test.want)
 		}
 	}
+	// A negative number is a value for the flag to check, not a missing one.
+	if parsed, err := spec.parse([]string{"--need", "-1h"}); err != nil || parsed.String("--need") != "-1h" {
+		t.Fatalf("negative value: parsed=%+v err=%v", parsed, err)
+	}
 	if got, want := spec.usage(), "style demo [name] [--json] [--ref ref] [--set k=v]... --need x"; got != want {
 		t.Fatalf("usage = %q want %q", got, want)
 	}

@@ -113,7 +113,7 @@ func (c commandSpec) parse(args []string) (parsedArgs, error) {
 			continue
 		}
 		if !inline {
-			if i+1 >= len(args) || strings.HasPrefix(args[i+1], "-") {
+			if i+1 >= len(args) || strings.HasPrefix(args[i+1], "-") && !negativeValue(args[i+1]) {
 				return parsed, fmt.Errorf("missing value for %s", name)
 			}
 			i++
@@ -281,4 +281,10 @@ func printUsage(out io.Writer) {
 	fmt.Fprintln(out, "  --style-home, only with --project, replaces STYLE_HOME as the home the project is bound under.")
 	fmt.Fprintln(out, "  style help <command> (or <command> --help) shows advanced and project options.")
 	fmt.Fprintln(out, "  style --version prints the version.")
+}
+
+// negativeValue lets "-1" or "-1h" reach the flag's own check, which says
+// what range it accepts, instead of reading as a missing value.
+func negativeValue(arg string) bool {
+	return len(arg) > 1 && arg[1] >= '0' && arg[1] <= '9'
 }
