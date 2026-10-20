@@ -806,10 +806,14 @@ func (s *Service) installAdapters(ctx context.Context, request InstallRequest, l
 	for _, provider := range harnesses.Named {
 		requested[provider] = true
 	}
-	for raw := range request.Routes {
+	for raw, route := range request.Routes {
 		provider := harnessName(raw)
-		if _, ok := s.definitions[provider]; !ok {
+		definition, ok := s.definitions[provider]
+		if !ok {
 			return nil, &UsageError{Message: fmt.Sprintf("unknown harness %q in --route", raw)}
+		}
+		if route != "" && routeByName(definition, route) == nil {
+			return nil, &UsageError{Message: fmt.Sprintf("unknown route %q for %s", route, provider)}
 		}
 		requested[provider] = true
 	}
@@ -889,9 +893,6 @@ func (s *Service) installAdapters(ctx context.Context, request InstallRequest, l
 		requestedRoute := routeRequest(request.Routes, provider)
 		if requestedRoute != "" {
 			chosen = routeByName(definition, requestedRoute)
-			if chosen == nil {
-				return nil, &UsageError{Message: fmt.Sprintf("unknown route %q for %s", requestedRoute, provider)}
-			}
 		} else if previous != "" {
 			chosen = routeByName(definition, previous)
 		}

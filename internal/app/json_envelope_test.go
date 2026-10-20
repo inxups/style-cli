@@ -153,6 +153,10 @@ func TestSplitDiagnosticsKeepsMemberOrder(t *testing.T) {
 
 func TestUsageAndRejectedErrorsExitCodes(t *testing.T) {
 	service := testService(t)
+	for provider, definition := range service.definitions {
+		definition.Detector = undetectedHarness{}
+		service.definitions[provider] = definition
+	}
 	root := t.TempDir()
 	t.Setenv("STYLE_HOME", filepath.Join(root, "home"))
 	if code := RunWithService(context.Background(), service, root, []string{"init", "demo"}, &bytes.Buffer{}, &bytes.Buffer{}); code != ExitOK {
@@ -164,9 +168,13 @@ func TestUsageAndRejectedErrorsExitCodes(t *testing.T) {
 	}{
 		{[]string{"install", "demo", "--route", "bogus=x"}, ExitUsage},
 		{[]string{"install", "demo", "--harness", "codex", "--route", "codex=bogus"}, ExitUsage},
+		{[]string{"install", "demo", "--route", "codex=bogus"}, ExitUsage},
+		{[]string{"install", "demo", "--route", "claude-code=bogus"}, ExitUsage},
+		{[]string{"install", "demo", "--harness", "Claude", "--route", "claude=bogus"}, ExitUsage},
 		{[]string{"install", "demo", "other", "--set", "k=v"}, ExitUsage},
 		{[]string{"install", "git+https://example.invalid/repo.git?x=1", "--json"}, ExitUsage},
 		{[]string{"sync", "missing"}, ExitInvalid},
+		{[]string{"install", "demo", "--route", "codex=codex-user"}, ExitInvalid},
 		{[]string{"install", "demo", "--harness", "codex", "--set", "unknown=v"}, ExitInvalid},
 	} {
 		var out, errOut bytes.Buffer
