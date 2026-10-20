@@ -61,15 +61,16 @@ type ProbeTarget struct {
 	TurnSHA256       string     `json:"turn_sha256,omitempty"`
 	ObservedAt       *time.Time `json:"observed_at,omitempty"`
 }
+
+// ProbeResult is the live part of a doctor report. Doctor moves its
+// diagnostics into the report's own list, so JSON leaves them out here.
 type ProbeResult struct {
-	Format      int               `json:"format"`
-	Command     string            `json:"command"`
 	RunID       string            `json:"run_id"`
 	Status      string            `json:"status"`
 	Timeout     string            `json:"timeout"`
 	Targets     []ProbeTarget     `json:"targets"`
 	Cleanup     probe.Cleanup     `json:"cleanup"`
-	Diagnostics []ProbeDiagnostic `json:"diagnostics"`
+	Diagnostics []ProbeDiagnostic `json:"diagnostics,omitempty"`
 }
 type probeDependencies struct {
 	lookup   probe.ProcessLookup
@@ -113,7 +114,7 @@ func (s *Service) Probe(ctx context.Context, request ProbeRequest) (result Probe
 	if request.Timeout == 0 {
 		request.Timeout = time.Minute
 	}
-	result = ProbeResult{Format: 1, Command: "probe", Status: "error", Timeout: request.Timeout.String(), Targets: []ProbeTarget{}, Cleanup: probe.Cleanup{Complete: true, Remaining: []string{}}, Diagnostics: []ProbeDiagnostic{}}
+	result = ProbeResult{Status: "error", Timeout: request.Timeout.String(), Targets: []ProbeTarget{}, Cleanup: probe.Cleanup{Complete: true, Remaining: []string{}}, Diagnostics: []ProbeDiagnostic{}}
 	add := func(code, severity, message, harness string) {
 		for _, item := range result.Diagnostics {
 			if item.Code == code && item.Harness == harness {

@@ -10,6 +10,7 @@ import (
 	"io"
 	"os"
 	"os/exec"
+	"os/signal"
 	"path/filepath"
 	"strings"
 	"sync"
@@ -58,6 +59,27 @@ func a2HelperEnvironment(f a2ProcessFixture, mode string) []string {
 	return env
 }
 
+// a2RunLive runs only the live part of doctor --live, so the report is the
+// probe's own, diagnostics included.
+func a2RunLive(service *Service, timeout string) int {
+	parsed, err := doctorCommand.parse([]string{"--live", "--timeout=" + timeout})
+	var request *ProbeRequest
+	if err == nil {
+		request, err = liveRequest(parsed, os.Stderr)
+	}
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		return ExitUsage
+	}
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+	defer stop()
+	result, runErr := service.Probe(ctx, *request)
+	if json.NewEncoder(os.Stdout).Encode(result) != nil || runErr != nil {
+		return ExitInvalid
+	}
+	return ExitOK
+}
+
 func TestProbeSubprocessHelper(t *testing.T) {
 	mode := os.Getenv("STYLE_A2_HELPER")
 	if mode == "" {
@@ -73,7 +95,7 @@ func TestProbeSubprocessHelper(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		os.Exit(runProbe(context.Background(), service, []string{"--json", "--timeout=" + f.Timeout}, os.Stdout, os.Stderr))
+		os.Exit(a2RunLive(service, f.Timeout))
 	case "harness", "version", "invalid-hook":
 		if mode == "version" {
 			fmt.Fprintln(os.Stdout, "offline version fixture; no hook")

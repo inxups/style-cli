@@ -4,8 +4,11 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"os"
+	"os/signal"
 	"strconv"
 	"strings"
+	"syscall"
 )
 
 func runInspect(ctx context.Context, service *Service, workDir, command string, args []string, in io.Reader, out, errOut io.Writer) int {
@@ -15,6 +18,16 @@ func runInspect(ctx context.Context, service *Service, workDir, command string, 
 		return spec.usageError(errOut, err)
 	}
 	jsonOutput, reset := parsed.Bool("--json"), parsed.Bool("--reset-state")
+	var live *ProbeRequest
+	if command == "doctor" {
+		live, err = liveRequest(parsed, errOut)
+		if err == nil && live != nil {
+			_, err = service.parseHarnesses(live.Harnesses)
+		}
+		if err != nil {
+			return spec.usageError(errOut, err)
+		}
+	}
 	var value any
 	exit := ExitOK
 	switch command {
@@ -22,7 +35,14 @@ func runInspect(ctx context.Context, service *Service, workDir, command string, 
 		value, err = service.List(ctx, ListRequest{})
 	case "doctor":
 		var result DoctorResult
-		request := DoctorRequest{WorkDir: workDir, ResetState: reset}
+		request := DoctorRequest{WorkDir: workDir, ResetState: reset, Live: live}
+		if live != nil {
+			// An interrupt ends the observation window; the report still says
+			// what was observed and cleaned up.
+			var stop context.CancelFunc
+			ctx, stop = signal.NotifyContext(ctx, os.Interrupt, syscall.SIGTERM)
+			defer stop()
+		}
 		if reset {
 			request.Confirm = func(root string) (bool, error) {
 				return confirmInput(in, errOut, "Remove all runtime state in "+root+", including sessions and rule statistics?"), nil
@@ -73,6 +93,9 @@ func runInspect(ctx context.Context, service *Service, workDir, command string, 
 			fmt.Fprintf(out, "  %s %s: %d tokens, %d emits, %d body hashes\n", cost.Provider, cost.Rule, cost.EstimatedTokens, cost.Emits, cost.DistinctBodyHashes)
 		}
 		fmt.Fprintf(out, "state: expired=%d reset=%t; legacy stats without estimate=%d\n", result.ExpiredSessions, result.StateReset, result.LegacyStats)
+		if result.Live != nil {
+			writeLiveText(out, *result.Live)
+		}
 		if !result.Healthy {
 			// The report stays on stdout; stderr says why the exit code is 1.
 			summary := Diagnostic{Code: "unhealthy", Severity: "error", Message: "the installation is not healthy"}

@@ -197,10 +197,11 @@ var commandMatrix = []matrixCase{
 	{name: "explain fail-closed codex", args: []string{"explain", "--harness", "codex", "--payload", "$WORK/payload.json", "--fail-closed"}, exit: ExitInvalid, code: "fail-closed-unsupported", stdout: "explain \"codex\": error\n"},
 	{name: "explain ok", args: []string{"explain", "--harness", "codex", "--payload", "$WORK/payload.json"}, exit: ExitOK},
 
-	{name: "probe unknown harness", args: []string{"probe", "--harness", "bogus"}, exit: ExitUsage},
-	{name: "probe malformed timeout", args: []string{"probe", "--timeout", "bogus"}, exit: ExitUsage},
-	{name: "probe not installed", args: []string{"probe", "--harness", "claude-code"}, exit: ExitInvalid},
-	{name: "probe broken lock", args: []string{"probe", "--harness", "codex"}, setup: brokenLock, exit: ExitInvalid, code: "lock-invalid"},
+	{name: "doctor live unknown harness", args: []string{"doctor", "--live", "--harness", "bogus"}, exit: ExitUsage},
+	{name: "doctor live malformed timeout", args: []string{"doctor", "--live", "--timeout", "bogus"}, exit: ExitUsage},
+	{name: "doctor timeout without live", args: []string{"doctor", "--timeout", "1s"}, exit: ExitUsage, stderr: "style doctor: --timeout requires --live\n"},
+	{name: "doctor live not installed", args: []string{"doctor", "--live", "--harness", "claude-code"}, exit: ExitInvalid, code: "probe-not-installed", stderr: "style doctor: probe-not-installed"},
+	{name: "doctor live broken lock", args: []string{"doctor", "--live", "--harness", "codex"}, setup: brokenLock, exit: ExitInvalid, code: "lock-invalid"},
 
 	{name: "project missing value", fixture: "project", args: []string{"--project"}, exit: ExitUsage, stderr: "style: missing value for --project\n"},
 	{name: "project without command", fixture: "project", args: []string{"--project", "$ROOT"}, exit: ExitUsage, noJSON: true, stderr: "style: missing command after the global options\n"},

@@ -30,6 +30,8 @@ type DoctorRequest struct {
 	// Confirm approves the state reset; the root is the directory it
 	// removes. Without Confirm the reset proceeds; the CLI always asks.
 	Confirm func(root string) (bool, error)
+	// Live, when set, runs the live callback check after the cold checks.
+	Live *ProbeRequest
 }
 
 type DoctorResult struct {
@@ -43,6 +45,7 @@ type DoctorResult struct {
 	ExpiredSessions int                `json:"expired_sessions"`
 	StateReset      bool               `json:"state_reset"`
 	Native          []NativeHookCheck  `json:"native_hooks,omitempty"`
+	Live            *ProbeResult       `json:"live,omitempty"`
 }
 
 // Doctor checks cold-path integrity. Runtime fail-open behavior never turns a
@@ -227,6 +230,17 @@ func (s *Service) Doctor(ctx context.Context, request DoctorRequest) (DoctorResu
 	}
 	if err := ctx.Err(); err != nil {
 		return DoctorResult{}, err
+	}
+	if request.Live != nil {
+		live, err := s.Probe(ctx, *request.Live)
+		for _, finding := range live.Diagnostics {
+			result.Diagnostics = append(result.Diagnostics, Diagnostic{Code: finding.Code, Severity: finding.Severity, Message: finding.Message, Provider: finding.Harness})
+		}
+		if err != nil && len(live.Diagnostics) == 0 {
+			result.add("probe-failed", "error", err.Error())
+		}
+		live.Diagnostics = nil
+		result.Live = &live
 	}
 	sortDiagnostics(result.Diagnostics)
 	result.Healthy = !hasErrors(result.Diagnostics)

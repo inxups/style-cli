@@ -226,9 +226,15 @@ var (
 	listCommand      = commandSpec{Name: "list", Project: true, Flags: []flagSpec{jsonFlag}}
 	syncCommand      = commandSpec{Name: "sync", Project: true, Flags: []flagSpec{jsonFlag}}
 	trustCommand     = commandSpec{Name: "trust", Args: "<name>", MaxArgs: 1, Project: true, Flags: []flagSpec{replaceFlag, jsonFlag}}
-	doctorCommand    = commandSpec{Name: "doctor", Project: true, Flags: []flagSpec{{Name: "--reset-state", Kind: flagBool}, jsonFlag}}
-	statsCommand     = commandSpec{Name: "stats", Project: true, Flags: []flagSpec{{Name: "--by", Kind: flagString, Value: "rule|session"}, {Name: "--since", Kind: flagString, Value: "<duration|RFC3339>"}, jsonFlag}}
-	explainCommand   = commandSpec{Name: "explain", Project: true, Flags: []flagSpec{
+	doctorCommand    = commandSpec{Name: "doctor", Project: true, Flags: []flagSpec{
+		{Name: "--reset-state", Kind: flagBool},
+		{Name: "--live", Kind: flagBool},
+		jsonFlag,
+		{Name: "--harness", Kind: flagList, Value: "auto|h[,h]", Group: groupAdvanced},
+		{Name: "--timeout", Kind: flagString, Value: "60s", Group: groupAdvanced},
+	}}
+	statsCommand   = commandSpec{Name: "stats", Project: true, Flags: []flagSpec{{Name: "--by", Kind: flagString, Value: "rule|session"}, {Name: "--since", Kind: flagString, Value: "<duration|RFC3339>"}, jsonFlag}}
+	explainCommand = commandSpec{Name: "explain", Project: true, Flags: []flagSpec{
 		{Name: "--harness", Kind: flagList, Value: "h", Required: true},
 		{Name: "--payload", Kind: flagString, Value: "f.json", Required: true},
 		{Name: "--event", Kind: flagString, Value: "NativeEvent"},
@@ -239,7 +245,6 @@ var (
 		{Name: "--facts", Kind: flagString, Value: "f", Group: groupAdvanced},
 		{Name: "--provenance", Kind: flagString, Value: "f", Group: groupAdvanced},
 	}}
-	probeCommand = commandSpec{Name: "probe", Project: true, Flags: []flagSpec{harnessFlag, {Name: "--timeout", Kind: flagString, Value: "60s"}, jsonFlag}}
 )
 
 // commandSections orders the top-level help.
@@ -249,7 +254,7 @@ var commandSections = []struct {
 }{
 	{"Authoring", []commandSpec{initCommand, validateCommand, countCommand, planCommand}},
 	{"Installation", []commandSpec{installCommand, restoreCommand, updateCommand, uninstallCommand, syncCommand, trustCommand}},
-	{"Diagnostics", []commandSpec{listCommand, doctorCommand, probeCommand, statsCommand, explainCommand}},
+	{"Diagnostics", []commandSpec{listCommand, doctorCommand, statsCommand, explainCommand}},
 }
 
 func lookupCommand(name string) (commandSpec, bool) {

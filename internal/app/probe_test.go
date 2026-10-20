@@ -21,6 +21,7 @@ import (
 	"github.com/inxups/style-cli/internal/probe"
 	"github.com/speakeasy-api/agenthooks"
 	"runtime"
+	"slices"
 )
 
 func TestM3ProbeSupportedIndexFormats(t *testing.T) {
@@ -69,6 +70,12 @@ type a2RejectDetector struct{ t *testing.T }
 func (d a2RejectDetector) Detect(context.Context) (adapter.Installation, bool, error) {
 	d.t.Error("probe invoked harness detection")
 	return adapter.Installation{}, false, errors.New("forbidden detector")
+}
+
+type a2AbsentDetector struct{}
+
+func (a2AbsentDetector) Detect(context.Context) (adapter.Installation, bool, error) {
+	return adapter.Installation{}, false, nil
 }
 func a2Install(t *testing.T, selection string) *a2Fixture {
 	t.Helper()
@@ -663,43 +670,55 @@ func TestM3A2CLIUsageJSONAndTerminalSafety(t *testing.T) {
 	for _, args := range [][]string{{"--timeout", "0s"}, {"--timeout", "999ms"}, {"--timeout", "11m"}, {"--timeout", "nonsense"}, {"--timeout"}, {"--harness"}, {"--harness", "missing"}, {"--harness", "codex,"}, {"--json=bad"}, {"--json", "--json"}, {"--unknown"}, {"operand"}, {"--harness="}} {
 		t.Run(strings.Join(args, "_"), func(t *testing.T) {
 			var out, stderr bytes.Buffer
-			code := RunWithService(context.Background(), testService(t), t.TempDir(), append([]string{"probe"}, args...), &out, &stderr)
+			code := RunWithService(context.Background(), testService(t), t.TempDir(), append([]string{"doctor", "--live"}, args...), &out, &stderr)
 			if code != ExitUsage || out.Len() != 0 || stderr.Len() == 0 {
 				t.Fatalf("usage %v: %d %q %q", args, code, out.String(), stderr.String())
 			}
 		})
 	}
+	// The live-check options do nothing without --live.
+	for _, args := range [][]string{{"--timeout", "1s"}, {"--harness", "codex"}} {
+		var out, stderr bytes.Buffer
+		code := RunWithService(context.Background(), testService(t), t.TempDir(), append([]string{"doctor"}, args...), &out, &stderr)
+		if code != ExitUsage || !strings.HasPrefix(stderr.String(), "style doctor: "+args[0]+" requires --live\n") {
+			t.Fatalf("%v: %d %q", args, code, stderr.String())
+		}
+	}
 	for _, duration := range []string{"1s", "10m", "1000ms"} {
-		if _, _, err := parseProbeArgs([]string{"--timeout=" + duration}); err != nil {
+		parsed, err := doctorCommand.parse([]string{"--live", "--timeout=" + duration})
+		if _, err = liveRequest(parsed, io.Discard); err != nil {
 			t.Fatal(duration, err)
 		}
 	}
 	f := a2Install(t, "codex-user")
 	t.Setenv("STYLE_HOME", f.home)
-	var out, stderr bytes.Buffer
-	code := RunWithService(context.Background(), f.service, f.root, []string{"probe", "--json", "--timeout", "1s"}, &out, &stderr)
-	var report ProbeResult
-	decoder := json.NewDecoder(bytes.NewReader(out.Bytes()))
-	if code != 1 || decoder.Decode(new(any)) != nil || decoder.Decode(new(any)) != io.EOF || decodeReport(out.Bytes(), &report) != nil || report.Status != "timed-out" || !strings.Contains(stderr.String(), "probe ready:") {
-		t.Fatalf("JSON streaming: %d %+v %q", code, report, stderr.String())
+	// The cold checks before the live one detect harnesses; the live check
+	// itself still never does.
+	for key, definition := range f.service.definitions {
+		definition.Detector = a2AbsentDetector{}
+		f.service.definitions[key] = definition
 	}
+	var out, stderr bytes.Buffer
+	code := RunWithService(context.Background(), f.service, f.root, []string{"doctor", "--live", "--json", "--timeout", "1s"}, &out, &stderr)
+	var doctor DoctorResult
+	var envelope struct{ Diagnostics []Diagnostic }
+	decoder := json.NewDecoder(bytes.NewReader(out.Bytes()))
+	if code != 1 || decoder.Decode(new(any)) != nil || decoder.Decode(new(any)) != io.EOF || decodeReport(out.Bytes(), &doctor) != nil || json.Unmarshal(out.Bytes(), &envelope) != nil || doctor.Live == nil || doctor.Live.Status != "timed-out" || !strings.Contains(stderr.String(), "probe ready:") {
+		t.Fatalf("JSON streaming: %d %+v %q", code, doctor, stderr.String())
+	}
+	if !slices.ContainsFunc(envelope.Diagnostics, func(d Diagnostic) bool { return d.Code == "probe-timeout" }) || strings.Contains(out.String(), `"live":{"diagnostics"`) {
+		t.Fatalf("live diagnostics not in the envelope: %s", &out)
+	}
+	report := *doctor.Live
 	out.Reset()
 	stderr.Reset()
-	if code = RunWithService(context.Background(), f.service, f.root, []string{"probe", "--help"}, &out, &stderr); code != 0 || !strings.Contains(out.String(), probeCommand.usage()) || stderr.Len() != 0 {
+	if code = RunWithService(context.Background(), f.service, f.root, []string{"doctor", "--help"}, &out, &stderr); code != 0 || !strings.Contains(out.String(), doctorCommand.usage()) || stderr.Len() != 0 {
 		t.Fatal("help failed")
 	}
 	report.Targets = []ProbeTarget{{Harness: "evil\x1b[31m\n", Route: "route\x1b[0m", Status: "unavailable", Origin: "unverified"}}
-	report.Diagnostics = []ProbeDiagnostic{{Code: "safe", Severity: "error", Message: "secret\x1b[31m\n"}}
 	out.Reset()
-	writeProbeText(&out, report)
+	writeLiveText(&out, report)
 	if strings.ContainsRune(out.String(), '\x1b') || !strings.Contains(out.String(), `\u001b`) {
 		t.Fatal("terminal controls not escaped")
-	}
-	// A finding names its harness only when it has one.
-	report.Diagnostics = []ProbeDiagnostic{{Code: "probe-timeout", Severity: "error", Message: "late"}, {Code: "probe-installation-unavailable", Severity: "error", Message: "off", Harness: "codex"}}
-	out.Reset()
-	writeProbeText(&out, report)
-	if !strings.Contains(out.String(), "\nerror probe-timeout: \"late\"\n") || !strings.Contains(out.String(), "\nerror probe-installation-unavailable harness=\"codex\": \"off\"\n") {
-		t.Fatalf("finding lines: %q", out.String())
 	}
 }

@@ -83,7 +83,7 @@ switches the ref of an installed Git package.
 
 `--harness` means the same everywhere: it is repeatable, takes comma lists, any
 case and the `claude` alias, and `auto` (the default) selects detected harnesses
-(`plan`, `install`) or every installed one (`probe`). `explain` reads a single
+(`plan`, `install`) or every installed one (`doctor --live`). `explain` reads a single
 payload and requires exactly one named harness. Unknown names are usage errors.
 `install --fail-closed` is a Claude Code mode: it selects claude-code, and an
 explicit `--harness` list that leaves claude-code out is a usage error.
@@ -106,7 +106,7 @@ to stderr and stdout carries only the final report.
 
 In text mode diagnostics and failures go to stderr, one per line, as
 `style COMMAND: [warning ]CODE[ WHERE]: MESSAGE` (the code is left out only
-when the error has none). The reports of `doctor`, `explain` and `probe` stay
+when the error has none). The reports of `doctor` and `explain` stay
 on stdout and stderr gets one such line saying why the command failed. With
 `--json` the report goes to stdout and a failed command still writes one such
 line to stderr.
@@ -142,6 +142,13 @@ The following forms were removed without compatibility entry points:
 | `--yes` on `install`, `restore`, `update`, `trust`, `uninstall` | answer `y` to the prompt (stdin) |
 | `--ref R --path P` on `validate`, `plan`, `install` | `git+https://…/repo.git//P?ref=R` |
 | `style COMMAND --project DIR` | `style --project DIR COMMAND` |
+| `style probe` | `style doctor --live` |
+
+`doctor --live` runs the cold checks and then waits, up to `--timeout`
+(default 60s), for a callback from each selected harness; trigger a subscribed
+event in a harness session when stderr says the check is ready. The live part
+of the report is the `live` field, and its findings join the doctor
+diagnostics. `--harness` and `--timeout` apply only with `--live`.
 
 `explain --event` is optional; the event is read from the payload's
 `hook_event_name`, and an explicit `--event` must match it.
