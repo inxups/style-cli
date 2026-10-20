@@ -172,7 +172,7 @@ var commandMatrix = []matrixCase{
 
 	{name: "explain no harness", args: []string{"explain", "--payload", "$WORK/payload.json"}, exit: ExitUsage},
 	{name: "explain auto harness", args: []string{"explain", "--harness", "auto", "--payload", "$WORK/payload.json"}, exit: ExitUsage},
-	{name: "explain missing payload", args: []string{"explain", "--harness", "codex", "--payload", "$WORK/missing.json"}, exit: ExitInvalid},
+	{name: "explain missing payload", args: []string{"explain", "--harness", "codex", "--payload", "$WORK/missing.json"}, exit: ExitInvalid, stderr: "style explain: payload-invalid: payload must be"},
 	{name: "explain malformed exact", args: []string{"explain", "--harness", "codex", "--payload", "$WORK/payload.json", "--exact", "openai:bogus"}, exit: ExitUsage, stderr: "style explain: local openai requires"},
 	{name: "explain ok", args: []string{"explain", "--harness", "codex", "--payload", "$WORK/payload.json"}, exit: ExitOK},
 
@@ -250,6 +250,11 @@ func checkMatrixCell(t *testing.T, row matrixCase, args []string, jsonMode bool,
 			report("usage error does not start with the command name")
 		}
 		return
+	}
+	for _, line := range strings.Split(stderr, "\n") {
+		if strings.HasPrefix(line, "style ") && strings.HasSuffix(line, ".") {
+			report("stderr reason ends with a period: %q", line)
+		}
 	}
 	if !jsonMode {
 		if exit != ExitOK && exit != ExitSyncChanged && strings.TrimSpace(stderr) == "" {

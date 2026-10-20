@@ -124,10 +124,10 @@ func (s *Service) Probe(ctx context.Context, request ProbeRequest) (result Probe
 	}
 	fail := func(code, message string) error { add(code, "error", message, ""); return errors.New(code) }
 	if err := checkContext(ctx); err != nil {
-		return result, fail("probe-interrupted", "Probe was interrupted before observation.")
+		return result, fail("probe-interrupted", "probe was interrupted before observation")
 	}
 	if request.Timeout < time.Second || request.Timeout > 10*time.Minute {
-		return result, fail("probe-usage", "Timeout must be between 1s and 10m.")
+		return result, fail("probe-usage", "timeout must be between 1s and 10m")
 	}
 	deps := defaultProbeDependencies()
 	if s.probeDeps != nil {
@@ -135,27 +135,27 @@ func (s *Service) Probe(ctx context.Context, request ProbeRequest) (result Probe
 	}
 	home, err := s.resolveStyleHome(request.Home)
 	if err != nil {
-		return result, fail("probe-not-installed", "Cannot resolve the installation root.")
+		return result, fail("probe-not-installed", "cannot resolve the installation root")
 	}
 	homeRoot, err := saferead.Anchor(home)
 	if err != nil {
-		return result, fail("probe-not-installed", "No readable STYLE installation root.")
+		return result, fail("probe-not-installed", "no readable STYLE installation root")
 	}
 	lockBytes, err := saferead.File(homeRoot, "style.lock.yaml", 16<<20)
 	homeRoot.Close()
 	if err != nil {
-		return result, fail("probe-not-installed", "No readable installed STYLE lock.")
+		return result, fail("probe-not-installed", "no readable installed STYLE lock")
 	}
 	lock, err := decodeLock(lockBytes)
 	if err == nil {
 		err = s.validateScopeLock(home, lock)
 	}
 	if err != nil {
-		return result, fail("lock-invalid", "Installed STYLE lock is invalid.")
+		return result, fail("lock-invalid", "installed STYLE lock is invalid")
 	}
 	harnesses, err := s.parseHarnesses(request.Harnesses)
 	if err != nil {
-		return result, fail("runtime-unavailable", "Harness is not registered for runtime observation.")
+		return result, fail("runtime-unavailable", "harness is not registered for runtime observation")
 	}
 	selected, auto := slices.Clone(harnesses.Named), harnesses.Auto
 	if auto {
@@ -168,13 +168,13 @@ func (s *Service) Probe(ctx context.Context, request ProbeRequest) (result Probe
 		for id, installed := range lock.Harnesses {
 			if installed.Route != "" {
 				if _, ok := s.definitions[adapter.ProviderID(id)]; !ok {
-					return result, fail("runtime-unavailable", "An installed harness has no registered runtime observation adapter.")
+					return result, fail("runtime-unavailable", "an installed harness has no registered runtime observation adapter")
 				}
 			}
 		}
 	}
 	if len(selected) == 0 || len(lock.Packages) == 0 {
-		return result, fail("probe-not-installed", "No installed STYLE runtime targets.")
+		return result, fail("probe-not-installed", "no installed STYLE runtime targets")
 	}
 	bindings := []probeTargetBinding{}
 	unavailable := false
@@ -184,21 +184,21 @@ func (s *Service) Probe(ctx context.Context, request ProbeRequest) (result Probe
 		result.Targets = append(result.Targets, target)
 		index := len(result.Targets) - 1
 		if !ok || installed.Route == "" {
-			add("probe-not-installed", "error", "Harness has no locked STYLE installation.", string(id))
+			add("probe-not-installed", "error", "harness has no locked STYLE installation", string(id))
 			unavailable = true
 			continue
 		}
 		definition := s.definitions[id]
 		route := routeByName(definition, installed.Route)
 		if route == nil {
-			add("runtime-unavailable", "error", "Locked route is unavailable.", string(id))
+			add("runtime-unavailable", "error", "locked route is unavailable", string(id))
 			unavailable = true
 			continue
 		}
 		route = bindRoute(route, adapter.Installation{Provider: id, Version: installed.Version, ConfigDir: installed.ConfigDir}, home, staticStateFor(lock, id))
 		inspector, ok := route.(adapter.ProbeRoute)
 		if !ok {
-			add("runtime-unavailable", "error", "Route does not support runtime origin verification.", string(id))
+			add("runtime-unavailable", "error", "route does not support runtime origin verification", string(id))
 			unavailable = true
 			continue
 		}
@@ -214,27 +214,27 @@ func (s *Service) Probe(ctx context.Context, request ProbeRequest) (result Probe
 			data, bindingErr := capture(filepath.Join(home, "binding.json"))
 			var bound projectBinding
 			if bindingErr != nil || json.Unmarshal(data, &bound) != nil || !reflect.DeepEqual(&bound, lock.Project) {
-				add("project-binding-invalid", "error", "Project runtime binding is missing or differs from the lock.", string(id))
+				add("project-binding-invalid", "error", "project runtime binding is missing or differs from the lock", string(id))
 				unavailable = true
 				continue
 			}
 			declaration, declarationErr := capture(filepath.Join(s.project.Root, projectDeclarationPath))
 			launcher, launcherErr := capture(filepath.Join(s.project.Root, projectLauncherPath))
 			if declarationErr != nil || hashBytes(declaration) != bound.Declaration || launcherErr != nil || string(launcher) != projectLauncher {
-				add("project-binding-invalid", "error", "Project declaration or launcher is missing or changed.", string(id))
+				add("project-binding-invalid", "error", "project declaration or launcher is missing or changed", string(id))
 				unavailable = true
 				continue
 			}
 		}
 		setup, err := inspector.InspectProbe(ctx, capture)
 		if err != nil {
-			add("probe-installation-unavailable", "error", "Runtime configuration, registration, command or trust binding is unavailable or changed.", string(id))
+			add("probe-installation-unavailable", "error", "runtime configuration, registration, command or trust binding is unavailable or changed", string(id))
 			unavailable = true
 			continue
 		}
 		result.Targets[index].Events = setup.Events
 		if len(setup.Events) == 0 {
-			add("probe-no-runtime-hook", "error", "Installation has no STYLE runner subscription.", string(id))
+			add("probe-no-runtime-hook", "error", "installation has no STYLE runner subscription", string(id))
 			unavailable = true
 			continue
 		}
@@ -244,7 +244,7 @@ func (s *Service) Probe(ctx context.Context, request ProbeRequest) (result Probe
 		}
 		runtimeFile, fileErr := captureProbeExecutable(runtimePath, true)
 		if err != nil || fileErr != nil {
-			add("runtime-unavailable", "error", "Installed runtime lacks the observation capability or a verifiable executable.", string(id))
+			add("runtime-unavailable", "error", "installed runtime lacks the observation capability or a verifiable executable", string(id))
 			unavailable = true
 			continue
 		}
@@ -252,20 +252,20 @@ func (s *Service) Probe(ctx context.Context, request ProbeRequest) (result Probe
 			expected, bindingErr := canonicalProjectPath(lock.Project.Runner)
 			actual, actualErr := canonicalProjectPath(runtimePath)
 			if bindingErr != nil || actualErr != nil || expected != actual {
-				add("project-binding-invalid", "error", "PATH runtime differs from the approved project runner.", string(id))
+				add("project-binding-invalid", "error", "PATH runtime differs from the approved project runner", string(id))
 				unavailable = true
 				continue
 			}
 		}
 		harnessPath, err := deps.lookPath(setup.HarnessCommand)
 		if err != nil {
-			add("origin-unverified", "error", "Native harness executable cannot be bound without executing discovery.", string(id))
+			add("origin-unverified", "error", "native harness executable cannot be bound without executing discovery", string(id))
 			unavailable = true
 			continue
 		}
 		harnessFile, err := captureProbeExecutable(harnessPath, false)
 		if err != nil {
-			add("origin-unverified", "error", "Native harness executable cannot be safely captured.", string(id))
+			add("origin-unverified", "error", "native harness executable cannot be safely captured", string(id))
 			unavailable = true
 			continue
 		}
@@ -273,13 +273,13 @@ func (s *Service) Probe(ctx context.Context, request ProbeRequest) (result Probe
 		configRoot, configErr := filepath.EvalSymlinks(setup.ConfigRoot)
 		canonicalHome, homeErr := filepath.EvalSymlinks(home)
 		if rootErr != nil || configErr != nil || homeErr != nil {
-			add("probe-installation-unavailable", "error", "Route roots cannot be bound.", string(id))
+			add("probe-installation-unavailable", "error", "route roots cannot be bound", string(id))
 			unavailable = true
 			continue
 		}
 		_, lockFile, err := captureProbeFile(filepath.Join(home, "style.lock.yaml"), 16<<20)
 		if err != nil || lockFile.sha != probe.Hash(lockBytes) {
-			add("installation-changed", "error", "Installation changed during preflight.", string(id))
+			add("installation-changed", "error", "installation changed during preflight", string(id))
 			unavailable = true
 			continue
 		}
@@ -292,10 +292,10 @@ func (s *Service) Probe(ctx context.Context, request ProbeRequest) (result Probe
 			var captured compile.Index
 			if json.Unmarshal(indexData, &captured) != nil {
 				result.Targets[index].IndexStatus = "invalid"
-				add("probe-index-unavailable", "warning", "Index cannot establish execution success; callback observation remains available.", string(id))
+				add("probe-index-unavailable", "warning", "index cannot establish execution success; callback observation remains available", string(id))
 			}
 		} else {
-			add("probe-index-unavailable", "warning", "Index is unavailable; callback observation does not assess rule execution.", string(id))
+			add("probe-index-unavailable", "warning", "index is unavailable; callback observation does not assess rule execution", string(id))
 		}
 		names := make([]string, 0, len(files))
 		for path := range files {
@@ -316,7 +316,7 @@ func (s *Service) Probe(ctx context.Context, request ProbeRequest) (result Probe
 		return result, errors.New("probe preflight unavailable")
 	}
 	if _, err = deps.lookup(os.Getpid()); err != nil {
-		return result, fail("origin-unverified", "This platform or permission level cannot capture process birth and executable identities.")
+		return result, fail("origin-unverified", "this platform or permission level cannot capture process birth and executable identities")
 	}
 	leases := []probe.Binding{}
 	for _, target := range bindings {
@@ -327,13 +327,13 @@ func (s *Service) Probe(ctx context.Context, request ProbeRequest) (result Probe
 		var beginFailure *probe.BeginError
 		if errors.As(err, &beginFailure) {
 			result.Cleanup = beginFailure.Cleanup
-			add("probe-cleanup-failed", "error", "Initialization left this run residual files; let leases expire before identity-checked recovery.", "")
+			add("probe-cleanup-failed", "error", "initialization left this run residual files; let leases expire before identity-checked recovery", "")
 		}
 		code := "probe-io-error"
 		if errors.Is(err, probe.ErrBusy) {
 			code = "probe-busy"
 		}
-		return result, fail(code, "Cannot acquire all target leases; only this run's acquired leases are rolled back.")
+		return result, fail(code, "cannot acquire all target leases; only this run's acquired leases are rolled back")
 	}
 	result.RunID = session.RunID
 	defer func() {
@@ -341,7 +341,7 @@ func (s *Service) Probe(ctx context.Context, request ProbeRequest) (result Probe
 		session.Close()
 		if !result.Cleanup.Complete {
 			result.Status = "error"
-			add("probe-cleanup-failed", "error", "This run has residual files; let its lease expire and rerun probe for identity-checked recovery.", "")
+			add("probe-cleanup-failed", "error", "this run has residual files; let its lease expire and rerun probe for identity-checked recovery", "")
 			runErr = errors.New("probe cleanup failed")
 		}
 	}()
@@ -351,7 +351,7 @@ func (s *Service) Probe(ctx context.Context, request ProbeRequest) (result Probe
 	}
 	if request.Ready != nil {
 		if err = request.Ready(ready); err != nil {
-			return result, fail("probe-io-error", "Cannot publish the observation readiness notice.")
+			return result, fail("probe-io-error", "cannot publish the observation readiness notice")
 		}
 	}
 	waitCtx, cancel := context.WithTimeout(ctx, request.Timeout)
@@ -359,16 +359,16 @@ func (s *Service) Probe(ctx context.Context, request ProbeRequest) (result Probe
 	for {
 		if ctx.Err() != nil {
 			result.Status = "interrupted"
-			return result, fail("probe-interrupted", "Probe was interrupted; observed targets are preserved.")
+			return result, fail("probe-interrupted", "probe was interrupted; observed targets are preserved")
 		}
 		observed := 0
 		for index, target := range bindings {
 			if !session.Active(target.binding.Harness) {
-				return result, fail("probe-lease-changed", "Probe lease identity changed during observation.")
+				return result, fail("probe-lease-changed", "probe lease identity changed during observation")
 			}
 			if !probeBindingUnchanged(target, false) {
 				result.Targets[index].Status = "installation-changed"
-				return result, fail("installation-changed", "Installation binding changed during observation.")
+				return result, fail("installation-changed", "installation binding changed during observation")
 			}
 			if result.Targets[index].CallbackObserved {
 				observed++
@@ -376,7 +376,7 @@ func (s *Service) Probe(ctx context.Context, request ProbeRequest) (result Probe
 			}
 			receipts, quality := session.Receipts(target.binding.Harness)
 			for _, code := range quality {
-				add(code, "warning", "Invalid, excessive or unreadable receipts were excluded from observation.", target.binding.Harness)
+				add(code, "warning", "invalid, excessive or unreadable receipts were excluded from observation", target.binding.Harness)
 			}
 			for _, receipt := range receipts {
 				if deps.now().Before(receipt.ObservedAt) {
@@ -386,7 +386,7 @@ func (s *Service) Probe(ctx context.Context, request ProbeRequest) (result Probe
 				code := verifyProbeOrigin(target, receipt, deps.lookup)
 				if code != "" {
 					result.Targets[index].Status = "unverified"
-					add(code, "warning", "Callback origin or runtime identity could not be verified.", target.binding.Harness)
+					add(code, "warning", "callback origin or runtime identity could not be verified", target.binding.Harness)
 					continue
 				}
 				result.Targets[index].Status = "callback-observed"
@@ -406,12 +406,12 @@ func (s *Service) Probe(ctx context.Context, request ProbeRequest) (result Probe
 			for index, target := range bindings {
 				if !probeBindingUnchanged(target, true) {
 					result.Targets[index].Status = "installation-changed"
-					return result, fail("installation-changed", "Executable or installation binding changed before completion.")
+					return result, fail("installation-changed", "executable or installation binding changed before completion")
 				}
 			}
 			if ctx.Err() != nil {
 				result.Status = "interrupted"
-				return result, fail("probe-interrupted", "Probe was interrupted before completion.")
+				return result, fail("probe-interrupted", "probe was interrupted before completion")
 			}
 			result.Status = "observed"
 			return result, nil
@@ -427,7 +427,7 @@ func (s *Service) Probe(ctx context.Context, request ProbeRequest) (result Probe
 			// after the loop's first check. It is not an observation timeout.
 			if ctx.Err() != nil {
 				result.Status = "interrupted"
-				return result, fail("probe-interrupted", "Probe was interrupted; observed targets are preserved.")
+				return result, fail("probe-interrupted", "probe was interrupted; observed targets are preserved")
 			}
 			result.Status = "timed-out"
 			if observed > 0 {
@@ -438,15 +438,15 @@ func (s *Service) Probe(ctx context.Context, request ProbeRequest) (result Probe
 					result.Targets[index].Status = "timed-out"
 				}
 			}
-			return result, fail("probe-timeout", "The observation window ended before every target had a verified callback.")
+			return result, fail("probe-timeout", "the observation window ended before every target had a verified callback")
 		}
 		if err = deps.poll(waitCtx); err != nil {
 			if ctx.Err() != nil {
 				result.Status = "interrupted"
-				return result, fail("probe-interrupted", "Probe was interrupted; observed targets are preserved.")
+				return result, fail("probe-interrupted", "probe was interrupted; observed targets are preserved")
 			}
 			if !errors.Is(err, context.DeadlineExceeded) {
-				return result, fail("probe-io-error", "Observation polling failed.")
+				return result, fail("probe-io-error", "observation polling failed")
 			}
 		}
 	}

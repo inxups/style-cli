@@ -144,50 +144,50 @@ func (s *Service) explain(ctx context.Context, request ExplainRequest, ops expla
 		return result, fail("count-options-invalid", err.Error())
 	}
 	if err := checkContext(ctx); err != nil {
-		return result, fail("cancelled", "Replay was cancelled.")
+		return result, fail("cancelled", "replay was cancelled")
 	}
 	if name := string(harnessName(request.Harness)); name != request.Harness {
 		request.Harness = name
 		result.Harness = name
 	}
 	if _, ok := s.definitions[adapter.ProviderID(request.Harness)]; !ok {
-		return result, fail("harness-unknown", "Harness is not registered.")
+		return result, fail("harness-unknown", "harness is not registered")
 	}
 	provider := agenthooks.Provider(request.Harness)
 	if provider != agenthooks.ProviderClaudeCode && provider != agenthooks.ProviderCodex {
-		return result, fail("runtime-unavailable", "Registered harness has no runtime replay adapter.")
+		return result, fail("runtime-unavailable", "registered harness has no runtime replay adapter")
 	}
 	if request.FailClosed && provider != agenthooks.ProviderClaudeCode {
-		return result, fail("fail-closed-unsupported", "Installation fail-closed is available only for Claude Code.")
+		return result, fail("fail-closed-unsupported", "installation fail-closed is available only for Claude Code")
 	}
 	supported := func(event string) bool {
 		return agenthooks.RecognizesNativeEvent(provider, event) || provider == agenthooks.ProviderClaudeCode && event == "PostModelSwitch"
 	}
 	if request.Event != "" && !supported(request.Event) {
-		return result, fail("event-unsupported", "Native event is not supported by the selected runtime.")
+		return result, fail("event-unsupported", "native event is not supported by the selected runtime")
 	}
 	payload, err := saferead.ReadFile(request.Payload, 32<<20)
 	if err != nil {
-		return result, fail("payload-invalid", "Payload must be a bounded regular UTF-8 JSON file.")
+		return result, fail("payload-invalid", "payload must be a bounded regular UTF-8 JSON file")
 	}
 	result.Inputs.PayloadSHA256 = explainSHA(payload)
 	var raw map[string]json.RawMessage
 	if !utf8.Valid(payload) || json.Unmarshal(payload, &raw) != nil || raw == nil {
-		return result, fail("payload-invalid", "Payload must be one UTF-8 JSON object.")
+		return result, fail("payload-invalid", "payload must be one UTF-8 JSON object")
 	}
 	var native, sessionID, agentID, toolName string
 	if json.Unmarshal(raw["hook_event_name"], &native) != nil || native == "" || json.Unmarshal(raw["session_id"], &sessionID) != nil || sessionID == "" {
-		return result, fail("payload-invalid", "Native event and session ID must be nonempty strings.")
+		return result, fail("payload-invalid", "native event and session ID must be nonempty strings")
 	}
 	if request.Event == "" {
 		// The payload is authoritative; an explicit --event only cross-checks it.
 		request.Event, result.Event = native, native
 		if !supported(native) {
-			return result, fail("event-unsupported", "Native event is not supported by the selected runtime.")
+			return result, fail("event-unsupported", "native event is not supported by the selected runtime")
 		}
 	}
 	if native != request.Event {
-		return result, fail("event-mismatch", "Native event differs from the payload event.")
+		return result, fail("event-mismatch", "native event differs from the payload event")
 	}
 	_ = json.Unmarshal(raw["agent_id"], &agentID)
 	_ = json.Unmarshal(raw["tool_name"], &toolName)
@@ -195,38 +195,38 @@ func (s *Service) explain(ctx context.Context, request ExplainRequest, ops expla
 	if request.Facts != "" {
 		data, e := saferead.ReadFile(request.Facts, 1<<20)
 		if e != nil || !utf8.Valid(data) || decodeExplainJSON(data, &facts) != nil {
-			return result, fail("facts-invalid", "Supplementary facts have an invalid format or file type.")
+			return result, fail("facts-invalid", "supplementary facts have an invalid format or file type")
 		}
 		result.Inputs.FactsSHA256 = explainSHA(data)
 		var fields map[string]json.RawMessage
 		if json.Unmarshal(data, &fields) != nil {
-			return result, fail("facts-invalid", "Facts must be one JSON object.")
+			return result, fail("facts-invalid", "facts must be one JSON object")
 		}
 		for _, value := range fields {
 			if bytes.Equal(bytes.TrimSpace(value), []byte("null")) {
-				return result, fail("facts-invalid", "Supplementary facts cannot contain null fields.")
+				return result, fail("facts-invalid", "supplementary facts cannot contain null fields")
 			}
 		}
 		if facts.Format != 1 || facts.Harness != request.Harness || facts.PayloadSHA256 != result.Inputs.PayloadSHA256 {
-			return result, fail("facts-conflict", "Supplementary facts do not match this harness and exact payload.")
+			return result, fail("facts-conflict", "supplementary facts do not match this harness and exact payload")
 		}
 		if provider != agenthooks.ProviderCodex && facts.CodexConfigEffort != nil || provider != agenthooks.ProviderClaudeCode && (facts.ClaudeEnvEffort != nil || facts.ClaudeSkillContent != nil) {
-			return result, fail("facts-conflict", "Supplementary facts belong to another harness.")
+			return result, fail("facts-conflict", "supplementary facts belong to another harness")
 		}
 		if facts.ModelProvider != nil && *facts.ModelProvider != "" && !when.ValidProviderID(*facts.ModelProvider) {
-			return result, fail("facts-invalid", "Provider fact must be a bounded service identifier or empty.")
+			return result, fail("facts-invalid", "provider fact must be a bounded service identifier or empty")
 		}
 		if facts.MCP != nil && (facts.MCP.Server == "" || facts.MCP.Tool == "") {
-			return result, fail("facts-invalid", "MCP facts require server and tool identities.")
+			return result, fail("facts-invalid", "MCP facts require server and tool identities")
 		}
 		if facts.ClaudeSkillContent != nil && (request.Event != "PostToolUse" || !strings.EqualFold(toolName, "Skill") || len(*facts.ClaudeSkillContent) > 65536) {
-			return result, fail("facts-conflict", "Skill content requires a successful Claude Skill PostToolUse event.")
+			return result, fail("facts-conflict", "skill content requires a successful Claude Skill PostToolUse event")
 		}
 	}
 	if request.Index == "" {
 		home, e := s.resolveStyleHome("")
 		if e != nil {
-			return result, fail("index-invalid", "Cannot locate the default index.")
+			return result, fail("index-invalid", "cannot locate the default index")
 		}
 		if s.project != nil {
 			if _, e = s.loadLock(home); e != nil {
@@ -237,20 +237,20 @@ func (s *Service) explain(ctx context.Context, request ExplainRequest, ops expla
 	}
 	indexBytes, err := saferead.ReadFile(request.Index, 16<<20)
 	if err != nil {
-		return result, fail("index-invalid", "Index must be a bounded regular file.")
+		return result, fail("index-invalid", "index must be a bounded regular file")
 	}
 	result.Inputs.IndexSHA256 = explainSHA(indexBytes)
 	private, err := ops.mktemp("", "style-explain-*")
 	if err != nil {
-		return result, fail("temporary-state-error", "Cannot create private replay storage.")
+		return result, fail("temporary-state-error", "cannot create private replay storage")
 	}
 	defer func() {
 		if err := ops.remove(private); err != nil {
-			returned = fail("cleanup-failed", "Cannot remove private replay storage: "+private)
+			returned = fail("cleanup-failed", "cannot remove private replay storage: "+private)
 		}
 	}()
 	if err := os.Chmod(private, 0700); err != nil {
-		return result, fail("temporary-state-error", "Cannot secure private replay storage.")
+		return result, fail("temporary-state-error", "cannot secure private replay storage")
 	}
 	storeRoot := filepath.Join(private, "state")
 	if request.StateDir != "" {
@@ -263,7 +263,7 @@ func (s *Service) explain(ctx context.Context, request ExplainRequest, ops expla
 			if ctx.Err() != nil {
 				code = "cancelled"
 			}
-			return result, fail(code, "Cannot capture the selected state without changes or invalid input.")
+			return result, fail(code, "cannot capture the selected state without changes or invalid input")
 		}
 		result.State.Mode = "snapshot"
 		result.State.Quality = "captured-nonatomic"
@@ -272,21 +272,21 @@ func (s *Service) explain(ctx context.Context, request ExplainRequest, ops expla
 	}
 	store, err := state.New(storeRoot)
 	if err != nil {
-		return result, fail("temporary-state-error", "Cannot initialize private replay state.")
+		return result, fail("temporary-state-error", "cannot initialize private replay state")
 	}
 	previous, before, err := store.Read(sessionID, agentID)
 	if err != nil {
-		return result, fail("state-snapshot-invalid", "Selected state cannot be decoded.")
+		return result, fail("state-snapshot-invalid", "selected state cannot be decoded")
 	}
 	result.State.Before = explainCounters(before)
 	result.State.After = result.State.Before
 	core, err := engine.LoadIndexBytes(indexBytes, store)
 	if err != nil {
-		return result, fail("index-invalid", "Index format, schema or compiled conditions are invalid.")
+		return result, fail("index-invalid", "index format, schema or compiled conditions are invalid")
 	}
 	var index compile.Index
 	if json.Unmarshal(indexBytes, &index) != nil {
-		return result, fail("index-invalid", "Cannot decode the captured index.")
+		return result, fail("index-invalid", "cannot decode the captured index")
 	}
 	s.explainProvenance(&result, request, index, indexBytes)
 	// One bounded recapture tolerates the index/sidecar transaction window.
@@ -331,7 +331,7 @@ func (s *Service) explain(ctx context.Context, request ExplainRequest, ops expla
 	}
 	runtime, err := styleruntime.New(core, store, enricher, provider, request.FailClosed)
 	if err != nil {
-		return result, fail("runtime-unavailable", "Cannot initialize replay runtime.")
+		return result, fail("runtime-unavailable", "cannot initialize replay runtime")
 	}
 	trace := engine.Trace{Points: []engine.PointTrace{}, Entries: []*engine.EntryTrace{}}
 	runtime.Trace = &trace
@@ -355,7 +355,7 @@ func (s *Service) explain(ctx context.Context, request ExplainRequest, ops expla
 	}
 	afterSession, after, e := store.Read(sessionID, agentID)
 	if e != nil {
-		return result, fail("state-error", "Cannot read replay results.")
+		return result, fail("state-error", "cannot read replay results")
 	}
 	result.State.After = explainCounters(after)
 	result.Facts = explainFactMetadata(raw, facts, previous, afterSession, request.Harness)
@@ -389,16 +389,16 @@ func (s *Service) explain(ctx context.Context, request ExplainRequest, ops expla
 		}
 	}
 	if ctx.Err() != nil {
-		return result, fail("cancelled", "Replay was cancelled.")
+		return result, fail("cancelled", "replay was cancelled")
 	}
 	if outcome.ErrorCode != "" {
-		return result, fail(outcome.ErrorCode, "Native replay failed during "+outcome.Stage+".")
+		return result, fail(outcome.ErrorCode, "native replay failed during "+outcome.Stage)
 	}
 	if !outcome.Encoded {
-		return result, fail("runtime-error", "Replay did not reach native output encoding.")
+		return result, fail("runtime-error", "replay did not reach native output encoding")
 	}
 	if len(trace.Points) == 0 && native != "PostModelSwitch" {
-		result.Diagnostics = append(result.Diagnostics, ExplainDiagnostic{"no-style-handler", "info", "Recognized native event has no STYLE evaluation handler."})
+		result.Diagnostics = append(result.Diagnostics, ExplainDiagnostic{"no-style-handler", "info", "recognized native event has no STYLE evaluation handler"})
 	}
 	if request.Count.Exact() {
 		text := modelText(rendered)
