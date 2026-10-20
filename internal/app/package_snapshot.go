@@ -81,7 +81,7 @@ func (s *Service) parseSnapshotWithSettings(ctx context.Context, home string, it
 			supplied[key] = value
 		}
 	}
-	settings, names, err := collectSettings(pkg, supplied)
+	settings, names, err := collectSettings(pkg, supplied, "")
 	if err != nil {
 		return installPackage{}, err
 	}

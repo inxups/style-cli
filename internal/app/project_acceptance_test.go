@@ -385,3 +385,32 @@ func TestM3A6DifferentNamesCoexistAndForeignUserHomeIsRejected(t *testing.T) {
 	}
 	a4AssertState(t, before, filepath.Dir(base), root)
 }
+
+// With several sources one --set list carries every package's settings,
+// the main package's included, and a missing one is named with its package.
+func TestInstallSeveralSourcesQualifiedSettings(t *testing.T) {
+	s, base, root, first := a6Setup(t)
+	writeSyncFile(t, filepath.Join(first, "STYLE.yaml"), strings.Replace(a4Manifest("project-rules", "Say {{settings.tone}}."), "rules:", "settings: [{name: tone}]\nrules:", 1))
+	second := writeInstallPackage(t, filepath.Join(filepath.Dir(root), "second-source"), strings.Replace(a4Manifest("second", "Use {{settings.voice}}."), "rules:", "settings: [{name: voice, default: DefaultVoice}]\nrules:", 1))
+	install := func(settings ...string) (int, string) {
+		args := []string{"--project", root, "install", first, second}
+		for _, setting := range settings {
+			args = append(args, "--set", setting)
+		}
+		var out, errOut bytes.Buffer
+		code := RunWithServiceInput(context.Background(), s, root, args, approve(), &out, &errOut)
+		return code, errOut.String()
+	}
+	if code, stderr := install("second.voice=Loud"); code != ExitInvalid || !strings.Contains(stderr, `setting "tone" requires --set project-rules.tone=value`) {
+		t.Fatalf("missing main setting: %d %s", code, stderr)
+	}
+	if code, stderr := install("project-rules.tone=Calm", "second.voice=Loud"); code != ExitOK {
+		t.Fatalf("install: %d %s", code, stderr)
+	}
+	home := a6Scope(t, s, root, base).project.Home
+	for name, want := range map[string]map[string]string{"project-rules": {"tone": "Calm"}, "second": {"voice": "Loud"}} {
+		if got, err := readSettingValues(home, name); err != nil || !reflect.DeepEqual(got, want) {
+			t.Errorf("%s settings = %v, %v", name, got, err)
+		}
+	}
+}

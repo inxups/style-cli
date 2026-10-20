@@ -411,20 +411,22 @@ func TestHookInvocationsNeverExitUsage(t *testing.T) {
 	}
 }
 
-// Each --project-source usage error names the one condition that failed.
+// Each usage error for several install sources names the one condition that
+// failed.
 func TestProjectSourceUsageNamesOneCondition(t *testing.T) {
 	s, base, root, source := a6Setup(t)
 	many := []string{"--project", root, "install", source}
 	for range 64 {
-		many = append(many, "--project-source", source)
+		many = append(many, source)
 	}
 	for _, test := range []struct {
 		args []string
 		want string
 	}{
-		{[]string{"install", source, "--project-source", source}, "--project-source requires --project\n"},
-		{many, "--project-source accepts at most 63 sources (64 packages with the main source)\n"},
-		{[]string{"--project", root, "install", source, "--project-set", "x.k=v"}, "--project-set requires --project-source\n"},
+		{[]string{"install", source, source}, "installing several sources requires --project\n"},
+		{many, "install accepts at most 64 sources\n"},
+		{[]string{"--project", root, "install", source, source, "--set", "k=v"}, "with several sources, --set needs package.key=value\n"},
+		{[]string{"--project", root, "install", source, source, "--set", ".k=v"}, "with several sources, --set needs package.key=value\n"},
 	} {
 		var out, errOut bytes.Buffer
 		exit := RunWithServiceInput(context.Background(), s, base, test.args, strings.NewReader(""), &out, &errOut)

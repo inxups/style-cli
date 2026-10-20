@@ -19,7 +19,6 @@ type flagGroup int
 const (
 	groupMain flagGroup = iota
 	groupAdvanced
-	groupProject
 )
 
 type flagSpec struct {
@@ -167,15 +166,12 @@ func (c commandSpec) summary() string {
 	return main
 }
 
-// usage is the full per-command help: the main line, the advanced and
-// project groups, and the global options the command accepts.
+// usage is the full per-command help: the main line, the advanced group and
+// the global options the command accepts.
 func (c commandSpec) usage() string {
 	lines := []string{c.summary()}
 	if flags := c.usageLine(groupAdvanced); flags != "" {
 		lines = append(lines, "  advanced: "+flags)
-	}
-	if project := c.usageLine(groupProject); project != "" {
-		lines = append(lines, "  project: "+project)
 	}
 	if c.Project {
 		lines = append(lines, "  global, before the command: "+globalFlagsUsage)
@@ -209,15 +205,15 @@ var (
 		{Name: "--assume-requests", Kind: flagString, Value: "N", Group: groupAdvanced},
 		{Name: "--assume-triggers", Kind: flagString, Value: "N", Group: groupAdvanced},
 	}}
-	installCommand = commandSpec{Name: "install", Args: "<source>", MaxArgs: 1, Project: true, Flags: []flagSpec{
+	// install takes several sources only for a fresh project installation;
+	// the service checks the count.
+	installCommand = commandSpec{Name: "install", Args: "<source>...", MaxArgs: 1 << 10, Project: true, Flags: []flagSpec{
 		harnessFlag,
-		{Name: "--set", Kind: flagList, Value: "k=v"},
+		{Name: "--set", Kind: flagList, Value: "[package.]k=v"},
 		jsonFlag,
 		{Name: "--route", Kind: flagList, Value: "h=r", Group: groupAdvanced},
 		{Name: "--allow-replace", Kind: flagBool, Group: groupAdvanced},
 		{Name: "--fail-closed", Kind: flagBool, Group: groupAdvanced},
-		{Name: "--project-source", Kind: flagList, Value: "source", Group: groupProject},
-		{Name: "--project-set", Kind: flagList, Value: "package.key=value", Group: groupProject},
 	}}
 	linkCommand = commandSpec{Name: "link", Args: "<dir>", MaxArgs: 1, Project: true, Flags: []flagSpec{
 		harnessFlag,
@@ -290,7 +286,7 @@ func printUsage(out io.Writer) {
 	fmt.Fprintln(out, "  style "+globalFlagsUsage+" <command> ...; global options go before the command.")
 	fmt.Fprintln(out, "  --project scopes plan, installation and diagnostic commands to a project.")
 	fmt.Fprintln(out, "  --style-home replaces STYLE_HOME: the user home, or the home a project is bound under.")
-	fmt.Fprintln(out, "  style help <command> (or <command> --help) shows advanced and project options.")
+	fmt.Fprintln(out, "  style help <command> (or <command> --help) shows advanced options.")
 	fmt.Fprintln(out, "  style --version prints the version.")
 }
 

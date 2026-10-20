@@ -78,8 +78,13 @@ A source is a local directory or file, or a Git address in go-getter form:
 `git+https://host/org/repo.git//package/path?ref=refs/tags/v1`. The `//path`
 and `?ref=` selectors are optional (default: repository root and the remote
 HEAD); refs are canonical `refs/heads/…`, `refs/tags/…` or full commit OIDs.
-Each `--project-source` carries its own selectors. `update NAME --ref REF`
-switches the ref of an installed Git package.
+Each source carries its own selectors. `update NAME --ref REF` switches the
+ref of an installed Git package.
+
+`install` takes several sources only for a fresh project installation
+(`style --project DIR install SOURCE…`, at most 64): they are reviewed and
+installed as one transaction. With one source `--set KEY=VALUE` configures it;
+with several, every setting names its package, `--set PACKAGE.KEY=VALUE`.
 
 `link DIR` installs a local package directory as a development link. The
 first `sync` after linking needs approval; after that, edits to its ordinary
@@ -150,6 +155,7 @@ The following forms were removed without compatibility entry points:
 | `style COMMAND --project DIR` | `style --project DIR COMMAND` |
 | `style probe` | `style doctor --live` |
 | `style install DIR --link` | `style link DIR` |
+| `install S1 --project-source S2 --project-set P.K=V` | `install S1 S2 --set P.K=V` |
 
 `doctor --live` runs the cold checks and then waits, up to `--timeout`
 (default 60s), for a callback from each selected harness; trigger a subscribed

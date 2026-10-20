@@ -27,32 +27,33 @@ type ProjectPackagePreview struct {
 // installation holds at most 64 packages.
 const maxProjectSources = 63
 
-// checkProjectSources rejects --project-source and --project-set combinations
+// checkProjectSources rejects requests for several packages that only a fresh
+// project installation can take.
 // the command line cannot satisfy, one condition per message.
 func (s *Service) checkProjectSources(request InstallRequest) error {
 	switch {
 	case len(request.ProjectSources) == 0 && len(request.ProjectSettings) > 0:
-		return &UsageError{Message: "--project-set requires --project-source"}
+		return &UsageError{Message: "package-qualified settings need several sources"}
 	case len(request.ProjectSources) == 0:
 		return nil
 	case s.project == nil:
-		return &UsageError{Message: "--project-source requires --project"}
+		return &UsageError{Message: "installing several sources requires --project"}
 	case request.Link:
-		return &UsageError{Message: "--project-source cannot be combined with --link"}
+		return &UsageError{Message: "several sources cannot be linked"}
 	case len(request.ProjectSources) > maxProjectSources:
-		return &UsageError{Message: fmt.Sprintf("--project-source accepts at most %d sources (%d packages with the main source)", maxProjectSources, maxProjectSources+1)}
+		return &UsageError{Message: fmt.Sprintf("install accepts at most %d sources", maxProjectSources+1)}
 	}
 	return nil
 }
 
 // Extra sources make a multi-package clone reviewable as one candidate and one
-// transaction. Their settings use explicit package-qualified names.
+// transaction. With them, every setting uses a package-qualified name.
 func (s *Service) captureProjectPackages(ctx context.Context, request InstallRequest, home string, lock lockDocument, adapters []installAdapter, first lockPackage) ([]installPackage, []ProjectPackagePreview, error) {
 	if len(request.ProjectSources) == 0 {
 		return nil, nil, nil
 	}
 	if len(lock.Packages) > 0 {
-		return nil, nil, &RejectedError{Message: "--project-source requires a fresh project installation"}
+		return nil, nil, &RejectedError{Message: "installing several sources requires a fresh project installation"}
 	}
 	seen := map[string]bool{first.Name: true}
 	replace := first.Replace
@@ -111,7 +112,7 @@ func (s *Service) captureProjectPackages(ctx context.Context, request InstallReq
 				usedSettings[key] = true
 			}
 		}
-		settings, keys, err := collectSettings(pkg, values)
+		settings, keys, err := collectSettings(pkg, values, name+".")
 		if err != nil {
 			return nil, nil, err
 		}
@@ -150,7 +151,8 @@ func (s *Service) captureProjectPackages(ctx context.Context, request InstallReq
 		previews = append(previews, ProjectPackagePreview{Name: name, Version: version, Source: origin, Git: report, Settings: keys, Replace: isReplace})
 	}
 	for key := range request.ProjectSettings {
-		if !usedSettings[key] {
+		// The main package's qualified settings were applied with it.
+		if !usedSettings[key] && !strings.HasPrefix(key, first.Name+".") {
 			return nil, nil, &RejectedError{Message: "unknown package-qualified project setting " + key}
 		}
 	}

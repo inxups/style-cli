@@ -130,12 +130,14 @@ func parseInstallArgs(spec commandSpec, args []string) (InstallRequest, bool, er
 		return InstallRequest{}, false, err
 	}
 	request := InstallRequest{
-		Source:    parsed.Arg(0),
-		Harnesses: parsed.List("--harness"), ProjectSources: parsed.List("--project-source"),
+		Source: parsed.Arg(0), Harnesses: parsed.List("--harness"),
 		Link: spec.Name == "link", AllowReplace: parsed.Bool("--allow-replace"),
 		Settings: map[string]string{}, Routes: map[string]string{}, ProjectSettings: map[string]string{},
 	}
-	for _, value := range append([]string{request.Source}, request.ProjectSources...) {
+	if len(parsed.Positional) > 1 {
+		request.ProjectSources = parsed.Positional[1:]
+	}
+	for _, value := range parsed.Positional {
 		if err := sourceArgument(value); err != nil {
 			return InstallRequest{}, false, err
 		}
@@ -152,14 +154,17 @@ func parseInstallArgs(spec commandSpec, args []string) (InstallRequest, bool, er
 			return InstallRequest{}, false, err
 		}
 	}
-	for _, option := range []struct {
-		name     string
-		settings map[string]string
-	}{{"--set", request.Settings}, {"--project-set", request.ProjectSettings}} {
-		for _, value := range parsed.List(option.name) {
-			if err := parseSetting(option.settings, value); err != nil {
-				return InstallRequest{}, false, err
+	for _, value := range parsed.List("--set") {
+		settings := request.Settings
+		if len(request.ProjectSources) > 0 {
+			// With several sources every setting names its package.
+			if pkg, _, ok := strings.Cut(value, "."); !ok || pkg == "" || strings.Contains(pkg, "=") {
+				return InstallRequest{}, false, errors.New("with several sources, --set needs package.key=value")
 			}
+			settings = request.ProjectSettings
+		}
+		if err := parseSetting(settings, value); err != nil {
+			return InstallRequest{}, false, err
 		}
 	}
 	return request, parsed.Bool("--json"), nil

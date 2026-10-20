@@ -98,10 +98,16 @@ func TestInstallFailClosedIsClaudeCodeBoolean(t *testing.T) {
 	if request, _, err = parseInstallArgs(installCommand, []string{"pkg"}); err != nil || request.FailClosed != nil {
 		t.Fatalf("default request=%+v err=%v", request, err)
 	}
-	for _, args := range [][]string{{"pkg", "--fail-closed=claude-code"}, {"pkg", "--fail-closed", "claude-code"}, {"pkg", "--fail-closed", "--fail-closed"}} {
+	for _, args := range [][]string{{"pkg", "--fail-closed=claude-code"}, {"pkg", "--fail-closed", "--fail-closed"}} {
 		if _, _, err := parseInstallArgs(installCommand, args); err == nil {
 			t.Fatalf("%v accepted", args)
 		}
+	}
+	// The old "--fail-closed claude-code" form now names a second source,
+	// which the user scope rejects.
+	var out, errOut bytes.Buffer
+	if code := RunWithService(context.Background(), testService(t), t.TempDir(), []string{"install", "pkg", "--fail-closed", "claude-code"}, &out, &errOut); code != ExitUsage || !strings.Contains(errOut.String(), "installing several sources requires --project") {
+		t.Fatalf("old form: %d %s", code, &errOut)
 	}
 }
 

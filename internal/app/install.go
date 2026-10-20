@@ -166,7 +166,11 @@ func (s *Service) Install(ctx context.Context, request InstallRequest) (final In
 	if err := validateRuntimeRequirement(original.Metadata["requires"]); err != nil {
 		return InstallResult{}, err
 	}
-	settings, settingNames, err := collectSettings(original, request.Settings)
+	supplied, qualifier := request.Settings, ""
+	if len(request.ProjectSources) > 0 {
+		supplied, qualifier = qualifiedSettings(request.Settings, request.ProjectSettings, name), name+"."
+	}
+	settings, settingNames, err := collectSettings(original, supplied, qualifier)
 	if err != nil {
 		return InstallResult{}, err
 	}
@@ -600,7 +604,24 @@ func readSettingValues(home, name string) (map[string]string, error) {
 	return values, nil
 }
 
-func collectSettings(pkg *spec.Package, supplied map[string]string) (map[string]string, []string, error) {
+// qualifiedSettings adds the "name.key" entries of qualified to plain, keyed
+// by key.
+func qualifiedSettings(plain, qualified map[string]string, name string) map[string]string {
+	result := maps.Clone(plain)
+	if result == nil {
+		result = map[string]string{}
+	}
+	for key, value := range qualified {
+		if setting, ok := strings.CutPrefix(key, name+"."); ok {
+			result[setting] = value
+		}
+	}
+	return result
+}
+
+// collectSettings resolves a package's declared settings; qualifier is the
+// "name." prefix the --set hint needs when several packages are installed.
+func collectSettings(pkg *spec.Package, supplied map[string]string, qualifier string) (map[string]string, []string, error) {
 	result := make(map[string]string)
 	declared := make(map[string]bool)
 	var names []string
@@ -621,7 +642,7 @@ func collectSettings(pkg *spec.Package, supplied map[string]string) (map[string]
 			result[name] = value
 			continue
 		}
-		return nil, nil, &RejectedError{Message: fmt.Sprintf("setting %q requires --set %s=value", name, name)}
+		return nil, nil, &RejectedError{Message: fmt.Sprintf("setting %q requires --set %s%s=value", name, qualifier, name)}
 	}
 	for name := range supplied {
 		if !declared[name] {
