@@ -73,7 +73,14 @@ func parseExplainArgs(args []string) (ExplainRequest, bool, error) {
 func writeExplainText(out io.Writer, result ExplainResult) {
 	quote := func(value string) string { encoded, _ := json.Marshal(value); return string(encoded) }
 	fmt.Fprintf(out, "explain %s %s: %s\n", quote(result.Harness), quote(result.Event), result.Status)
-	fmt.Fprintf(out, "inputs index=%s payload=%s\nstate %s (%s) before=%+v after=%+v\n", result.Inputs.IndexSHA256, result.Inputs.PayloadSHA256, result.State.Mode, result.State.Quality, result.State.Before, result.State.After)
+	if inputs := textFields("index", result.Inputs.IndexSHA256, "payload", result.Inputs.PayloadSHA256); inputs != "" {
+		fmt.Fprintf(out, "inputs %s\n", inputs)
+	}
+	quality := ""
+	if result.State.Quality != "" {
+		quality = " (" + result.State.Quality + ")"
+	}
+	fmt.Fprintf(out, "state %s%s before=%+v after=%+v\n", result.State.Mode, quality, result.State.Before, result.State.After)
 	for _, fact := range result.Facts {
 		fmt.Fprintf(out, "fact %s: available=%t source=%s\n", quote(fact.Field), fact.Available, fact.Source)
 	}

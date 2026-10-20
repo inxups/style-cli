@@ -78,5 +78,18 @@ func runCount(ctx context.Context, s *Service, workDir string, args []string, ou
 	return ExitOK
 }
 func writeCountText(out io.Writer, r tokencount.Result) {
-	fmt.Fprintf(out, "%d tokens; mode=%s provider=%s scope=%s encoding=%s model=%s\ntext_sha256=%s implementation=%s api_version=%s\n", r.Tokens, r.Mode, r.Provider, r.Scope, r.Encoding, r.Model, r.TextSHA256, r.Implementation, r.APIVersion)
+	fmt.Fprintf(out, "%d tokens; %s\n%s\n", r.Tokens,
+		textFields("mode", r.Mode, "provider", r.Provider, "scope", r.Scope, "encoding", r.Encoding, "model", r.Model),
+		textFields("text_sha256", r.TextSHA256, "implementation", r.Implementation, "api_version", r.APIVersion))
+}
+
+// textFields joins key=value pairs for text reports, leaving out empty values.
+func textFields(pairs ...string) string {
+	fields := make([]string, 0, len(pairs)/2)
+	for i := 0; i+1 < len(pairs); i += 2 {
+		if pairs[i+1] != "" {
+			fields = append(fields, pairs[i]+"="+pairs[i+1])
+		}
+	}
+	return strings.Join(fields, " ")
 }
