@@ -107,6 +107,8 @@ var commandMatrix = []matrixCase{
 
 	{name: "plan unknown harness", args: []string{"plan", "$SRC", "--harness", "bogus"}, exit: ExitUsage},
 	{name: "plan missing", args: []string{"plan", "$WORK/missing"}, exit: ExitInvalid, code: "invalid-package"},
+	{name: "plan over budget", args: []string{"plan", "$NEW", "--harness", "codex"}, exit: ExitBlocked, code: "blocked",
+		setup: writeMatrixFile("$NEW/STYLE.yaml", a6LongManifest("second", "Second.", "budget: {per_event: 1, on: error}\n", "tool"))},
 	{name: "plan ok", args: []string{"plan", "$SRC", "--harness", "codex"}, exit: ExitOK},
 
 	{name: "install no source", args: []string{"install"}, exit: ExitUsage},

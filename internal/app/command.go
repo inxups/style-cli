@@ -69,6 +69,14 @@ func runPlan(ctx context.Context, service *Service, workDir string, args []strin
 		commandFailure(out, errOut, jsonOutput, "plan", err)
 		return commandExit(err)
 	}
+	exit := ExitOK
+	if hasErrors(result.Diagnostics) {
+		exit = ExitInvalid
+	} else if blocks := planBlocks(result.Reports); len(blocks) > 0 {
+		// Like install, a blocked plan explains itself in the top-level diagnostics.
+		exit = ExitBlocked
+		result.Diagnostics = append(result.Diagnostics, blocks...)
+	}
 	if jsonOutput {
 		var report any = result
 		if result.Package == "" && len(result.Reports) == 0 {
@@ -96,20 +104,24 @@ func runPlan(ctx context.Context, service *Service, workDir string, args []strin
 			}
 		}
 	}
-	if hasErrors(result.Diagnostics) {
-		return ExitInvalid
-	}
-	for _, report := range result.Reports {
+	return exit
+}
+
+// planBlocks reports what would block installing the plan, in install's words.
+func planBlocks(reports []PlanReport) []Diagnostic {
+	var blocks []Diagnostic
+	for _, report := range reports {
+		provider := string(report.Provider)
 		if report.Plan.Blocked {
-			return ExitBlocked
+			blocks = append(blocks, Diagnostic{Code: "blocked", Provider: provider, Severity: spec.SeverityError, Message: "plan for " + report.Plan.Package + " is blocked on " + provider})
 		}
-		for _, diagnostic := range report.Tokens.Diagnostics {
-			if diagnostic.Severity == spec.SeverityError {
-				return ExitBlocked
+		for _, finding := range report.Tokens.Diagnostics {
+			if finding.Severity == spec.SeverityError {
+				blocks = append(blocks, Diagnostic{Code: "blocked", Provider: provider, Severity: spec.SeverityError, Message: fmt.Sprintf("%s %s blocks install: %s", finding.Code, finding.Event, finding.Message)})
 			}
 		}
 	}
-	return ExitOK
+	return blocks
 }
 
 func parseValidateArgs(args []string) (ValidateRequest, bool, error) {
