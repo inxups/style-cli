@@ -244,6 +244,9 @@ func checkMatrixCell(t *testing.T, row matrixCase, args []string, jsonMode bool,
 	if !strings.Contains(stderr, row.stderr) {
 		report("stderr lacks %q", row.stderr)
 	}
+	if strings.Contains(stdout+stderr, "lstat ") || strings.Contains(stdout+stderr, "no such file or directory") {
+		report("raw system error in output")
+	}
 	if strings.Contains(stdout+stderr, "app: ") || strings.Contains(stderr, ": count: ") {
 		report("internal package prefix in output")
 	}

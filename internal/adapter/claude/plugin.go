@@ -3,7 +3,9 @@ package claude
 import (
 	"context"
 	"crypto/sha256"
+	"errors"
 	"fmt"
+	"io/fs"
 	"path/filepath"
 	"sort"
 	"strings"
@@ -83,6 +85,10 @@ func (r *route) pluginStatus(ctx context.Context, installation adapter.Installat
 		}
 		return saferead.ReadFile(path, 4<<20)
 	})
+	if errors.Is(err, fs.ErrNotExist) {
+		result.Detail += "; generated artifacts are not installed"
+		return result, nil
+	}
 	if err != nil {
 		result.Detail += "; generated artifacts not verified: " + err.Error()
 		return result, nil
