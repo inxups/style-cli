@@ -97,6 +97,7 @@ var commandMatrix = []matrixCase{
 	{name: "init extra arg", args: []string{"init", "a", "b"}, exit: ExitUsage, noJSON: true},
 	{name: "init malformed name", args: []string{"init", "Bad_Name"}, exit: ExitUsage, noJSON: true},
 	{name: "init existing", args: []string{"init", "exists"}, exit: ExitInvalid, noJSON: true},
+	{name: "init non-empty directory", args: []string{"init"}, exit: ExitInvalid, noJSON: true, stderr: "style init: init directory is not empty: "},
 	{name: "init ok", args: []string{"init", "fresh"}, exit: ExitOK, noJSON: true},
 
 	{name: "validate extra arg", args: []string{"validate", "a", "b"}, exit: ExitUsage},

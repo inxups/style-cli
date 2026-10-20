@@ -105,7 +105,7 @@ func createDirectoryPackage(path, name string, existing bool) error {
 			return fmt.Errorf("read init directory %s: %w", path, err)
 		}
 		if len(entries) != 0 {
-			return &ConflictError{Path: path}
+			return &ConflictError{Path: path, Message: fmt.Sprintf("init directory is not empty: %s", path)}
 		}
 	} else {
 		if _, err := os.Lstat(path); err == nil {
