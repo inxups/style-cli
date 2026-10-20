@@ -214,11 +214,18 @@ var (
 		{Name: "--set", Kind: flagList, Value: "k=v"},
 		jsonFlag,
 		{Name: "--route", Kind: flagList, Value: "h=r", Group: groupAdvanced},
-		{Name: "--link", Kind: flagBool, Group: groupAdvanced},
 		{Name: "--allow-replace", Kind: flagBool, Group: groupAdvanced},
 		{Name: "--fail-closed", Kind: flagBool, Group: groupAdvanced},
 		{Name: "--project-source", Kind: flagList, Value: "source", Group: groupProject},
 		{Name: "--project-set", Kind: flagList, Value: "package.key=value", Group: groupProject},
+	}}
+	linkCommand = commandSpec{Name: "link", Args: "<dir>", MaxArgs: 1, Project: true, Flags: []flagSpec{
+		harnessFlag,
+		{Name: "--set", Kind: flagList, Value: "k=v"},
+		jsonFlag,
+		{Name: "--route", Kind: flagList, Value: "h=r", Group: groupAdvanced},
+		{Name: "--allow-replace", Kind: flagBool, Group: groupAdvanced},
+		{Name: "--fail-closed", Kind: flagBool, Group: groupAdvanced},
 	}}
 	restoreCommand   = commandSpec{Name: "restore", Project: true, Flags: []flagSpec{replaceFlag, jsonFlag}}
 	updateCommand    = commandSpec{Name: "update", Args: "<name|--all>", MaxArgs: 1, Project: true, Flags: []flagSpec{allFlag, refFlag, replaceFlag, jsonFlag}}
@@ -253,7 +260,7 @@ var commandSections = []struct {
 	Commands []commandSpec
 }{
 	{"Authoring", []commandSpec{initCommand, validateCommand, countCommand, planCommand}},
-	{"Installation", []commandSpec{installCommand, restoreCommand, updateCommand, uninstallCommand, syncCommand, trustCommand}},
+	{"Installation", []commandSpec{installCommand, linkCommand, restoreCommand, updateCommand, uninstallCommand, syncCommand, trustCommand}},
 	{"Diagnostics", []commandSpec{listCommand, doctorCommand, statsCommand, explainCommand}},
 }
 

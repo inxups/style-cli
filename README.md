@@ -81,6 +81,12 @@ HEAD); refs are canonical `refs/heads/…`, `refs/tags/…` or full commit OIDs.
 Each `--project-source` carries its own selectors. `update NAME --ref REF`
 switches the ref of an installed Git package.
 
+`link DIR` installs a local package directory as a development link. The
+first `sync` after linking needs approval; after that, edits to its ordinary
+rules take effect on `sync`, and changes to executable hooks need renewed
+approval. It takes the same options as `install`; `uninstall NAME`
+removes a link.
+
 `--harness` means the same everywhere: it is repeatable, takes comma lists, any
 case and the `claude` alias, and `auto` (the default) selects detected harnesses
 (`plan`, `install`) or every installed one (`doctor --live`). `explain` reads a single
@@ -143,6 +149,7 @@ The following forms were removed without compatibility entry points:
 | `--ref R --path P` on `validate`, `plan`, `install` | `git+https://…/repo.git//P?ref=R` |
 | `style COMMAND --project DIR` | `style --project DIR COMMAND` |
 | `style probe` | `style doctor --live` |
+| `style install DIR --link` | `style link DIR` |
 
 `doctor --live` runs the cold checks and then waits, up to `--timeout`
 (default 60s), for a callback from each selected harness; trigger a subscribed

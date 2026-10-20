@@ -91,15 +91,15 @@ func TestTopLevelHelpListsEveryCommandSummary(t *testing.T) {
 }
 
 func TestInstallFailClosedIsClaudeCodeBoolean(t *testing.T) {
-	request, _, err := parseInstallArgs([]string{"pkg", "--fail-closed"})
+	request, _, err := parseInstallArgs(installCommand, []string{"pkg", "--fail-closed"})
 	if err != nil || strings.Join(request.FailClosed, ",") != "claude-code" {
 		t.Fatalf("request=%+v err=%v", request, err)
 	}
-	if request, _, err = parseInstallArgs([]string{"pkg"}); err != nil || request.FailClosed != nil {
+	if request, _, err = parseInstallArgs(installCommand, []string{"pkg"}); err != nil || request.FailClosed != nil {
 		t.Fatalf("default request=%+v err=%v", request, err)
 	}
 	for _, args := range [][]string{{"pkg", "--fail-closed=claude-code"}, {"pkg", "--fail-closed", "claude-code"}, {"pkg", "--fail-closed", "--fail-closed"}} {
-		if _, _, err := parseInstallArgs(args); err == nil {
+		if _, _, err := parseInstallArgs(installCommand, args); err == nil {
 			t.Fatalf("%v accepted", args)
 		}
 	}

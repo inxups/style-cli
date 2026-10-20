@@ -131,7 +131,7 @@ func (s *Service) Install(ctx context.Context, request InstallRequest) (final In
 	var report *SourceReport
 	if source.Remote(request.Source) {
 		if request.Link {
-			return InstallResult{}, &source.Error{Code: "source-invalid", Message: "Git sources cannot use --link"}
+			return InstallResult{}, &source.Error{Code: "source-invalid", Message: "Git sources cannot be linked"}
 		}
 		var snapshot source.Snapshot
 		snapshot, report, err = s.acquireGit(ctx, source.Request{Source: request.Source, Ref: request.Ref, Path: request.Path, Home: home})

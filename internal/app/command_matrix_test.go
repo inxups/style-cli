@@ -137,6 +137,11 @@ var commandMatrix = []matrixCase{
 	{name: "install fail-closed outside harness", args: []string{"install", "$NEW", "--harness", "codex", "--fail-closed"}, exit: ExitUsage, stderr: "style install: --fail-closed applies to claude-code"},
 	{name: "install registration required", args: []string{"install", "$NEW", "--harness", "claude-code", "--route", "claude-code=claude-plugin"}, input: "y\n", exit: ExitInvalid, code: "registration-required", stderr: "style install: registration-required"},
 	{name: "install ok", args: []string{"install", "$NEW", "--harness", "codex"}, input: "y\n", exit: ExitOK},
+	{name: "install link removed", args: []string{"install", "$NEW", "--link"}, exit: ExitUsage, stderr: `style install: unknown option "--link"`},
+	{name: "link no source", args: []string{"link"}, exit: ExitUsage, stderr: "style link: source is required\n"},
+	{name: "link git source", args: []string{"link", "git+https://example.invalid/repo.git"}, exit: ExitUsage, stderr: "style link: source-invalid: link needs a local directory"},
+	{name: "link declined", args: []string{"link", "$NEW", "--harness", "codex"}, input: "n\n", exit: ExitInvalid, code: "confirmation-declined", stderr: "style link: confirmation-declined: link canceled"},
+	{name: "link ok", args: []string{"link", "$NEW", "--harness", "codex"}, input: "y\n", exit: ExitOK, stdout: "linked "},
 
 	{name: "restore extra arg", args: []string{"restore", "x"}, exit: ExitUsage},
 	{name: "restore no lock", args: []string{"restore"}, setup: emptyHome, exit: ExitInvalid, code: "frozen-metadata-incomplete"},
@@ -418,7 +423,6 @@ func TestProjectSourceUsageNamesOneCondition(t *testing.T) {
 		want string
 	}{
 		{[]string{"install", source, "--project-source", source}, "--project-source requires --project\n"},
-		{[]string{"--project", root, "install", source, "--project-source", source, "--link"}, "--project-source cannot be combined with --link\n"},
 		{many, "--project-source accepts at most 63 sources (64 packages with the main source)\n"},
 		{[]string{"--project", root, "install", source, "--project-set", "x.k=v"}, "--project-set requires --project-source\n"},
 	} {

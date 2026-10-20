@@ -11,16 +11,19 @@ import (
 	"github.com/inxups/style-cli/internal/source"
 )
 
-func runInstall(ctx context.Context, service *Service, workDir string, args []string, in io.Reader, out, errOut io.Writer) int {
-	request, jsonOutput, err := parseInstallArgs(args)
+// runInstall runs install, and link, which installs a local directory as a
+// development link.
+func runInstall(ctx context.Context, service *Service, workDir, command string, args []string, in io.Reader, out, errOut io.Writer) int {
+	spec, _ := lookupCommand(command)
+	request, jsonOutput, err := parseInstallArgs(spec, args)
 	if err == nil {
 		_, err = service.parseHarnesses(request.Harnesses)
 	}
 	if err != nil {
-		return installCommand.usageError(errOut, err)
+		return spec.usageError(errOut, err)
 	}
 	if request.Source == "" {
-		return installCommand.usageError(errOut, fmt.Errorf("source is required"))
+		return spec.usageError(errOut, fmt.Errorf("source is required"))
 	}
 	if !source.Remote(request.Source) && !filepath.IsAbs(request.Source) {
 		request.Source = filepath.Join(workDir, request.Source)
@@ -38,16 +41,20 @@ func runInstall(ctx context.Context, service *Service, workDir string, args []st
 		}
 		writeInstallPreview(previewOut, preview)
 		previewWritten = !jsonOutput
-		return confirmInput(in, errOut, "Install with these capabilities?"), nil
+		question := "Install with these capabilities?"
+		if request.Link {
+			question = "Link with these capabilities?"
+		}
+		return confirmInput(in, errOut, question), nil
 	}
 	result, err := service.Install(ctx, request)
 	if err != nil {
 		if result.AwaitingConfirmation {
 			if jsonOutput {
-				result.Diagnostics = append(result.Diagnostics, declinedDiagnostic("install"))
+				result.Diagnostics = append(result.Diagnostics, declinedDiagnostic(command))
 				_ = encodeJSON(out, result)
 			} else {
-				writeCommandDiagnostics(errOut, "install", []Diagnostic{declinedDiagnostic("install")})
+				writeCommandDiagnostics(errOut, command, []Diagnostic{declinedDiagnostic(command)})
 			}
 			return ExitInvalid
 		}
@@ -56,17 +63,17 @@ func runInstall(ctx context.Context, service *Service, workDir string, args []st
 			if jsonOutput {
 				_ = encodeJSON(out, validationErr.Diagnostics)
 			} else {
-				writeCommandDiagnostics(errOut, "install", validationErr.Diagnostics)
+				writeCommandDiagnostics(errOut, command, validationErr.Diagnostics)
 			}
 			return ExitInvalid
 		}
-		commandFailure(out, errOut, jsonOutput, "install", err)
+		commandFailure(out, errOut, jsonOutput, command, err)
 		return commandExit(err)
 	}
 	result.Diagnostics = append(result.Diagnostics, registrationDiagnostics(result.Registration)...)
 	if jsonOutput {
 		if err := encodeJSON(out, result); err != nil {
-			fmt.Fprintf(errOut, "style install: encode report: %v\n", err)
+			fmt.Fprintf(errOut, "style %s: encode report: %v\n", command, err)
 			return ExitInvalid
 		}
 		if registrationRequired(result.Registration) {
@@ -80,18 +87,15 @@ func runInstall(ctx context.Context, service *Service, workDir string, args []st
 	if len(result.Reports) == 0 && len(result.Routes) == 0 && len(result.Diagnostics) > 0 && !result.Changed {
 		fmt.Fprintf(out, "skipped %s %s (no compatible harness)\n", result.Package, result.Version)
 	} else {
-		fmt.Fprintf(out, "installed %s %s\n", result.Package, result.Version)
+		fmt.Fprintf(out, "%s %s %s\n", map[bool]string{false: "installed", true: "linked"}[result.Link], result.Package, result.Version)
 	}
 	if result.Replace {
 		fmt.Fprintln(out, "warning: replace mode is active")
 	}
-	if result.Link {
-		fmt.Fprintln(out, "source: link")
-	}
 	for _, route := range result.Routes {
 		fmt.Fprintf(out, "route: %s\n", route)
 	}
-	writeCommandDiagnostics(errOut, "install", result.Diagnostics)
+	writeCommandDiagnostics(errOut, command, result.Diagnostics)
 	if registrationRequired(result.Registration) {
 		return ExitInvalid
 	}
@@ -120,15 +124,15 @@ func writeInstallPreview(out io.Writer, result InstallResult) {
 	writeNativeHooks(out, result.Native)
 }
 
-func parseInstallArgs(args []string) (InstallRequest, bool, error) {
-	parsed, err := installCommand.parse(args)
+func parseInstallArgs(spec commandSpec, args []string) (InstallRequest, bool, error) {
+	parsed, err := spec.parse(args)
 	if err != nil {
 		return InstallRequest{}, false, err
 	}
 	request := InstallRequest{
 		Source:    parsed.Arg(0),
 		Harnesses: parsed.List("--harness"), ProjectSources: parsed.List("--project-source"),
-		Link: parsed.Bool("--link"), AllowReplace: parsed.Bool("--allow-replace"),
+		Link: spec.Name == "link", AllowReplace: parsed.Bool("--allow-replace"),
 		Settings: map[string]string{}, Routes: map[string]string{}, ProjectSettings: map[string]string{},
 	}
 	for _, value := range append([]string{request.Source}, request.ProjectSources...) {
@@ -137,7 +141,7 @@ func parseInstallArgs(args []string) (InstallRequest, bool, error) {
 		}
 	}
 	if request.Link && source.Remote(request.Source) {
-		return InstallRequest{}, false, errors.New("source-invalid: Git sources cannot use --link")
+		return InstallRequest{}, false, errors.New("source-invalid: link needs a local directory; Git sources cannot be linked")
 	}
 	if parsed.Bool("--fail-closed") {
 		// Fail-closed is a Claude Code installation mode; it also selects that harness.

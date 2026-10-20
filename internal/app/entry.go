@@ -203,8 +203,8 @@ func runCommand(ctx context.Context, service *Service, workDir string, args []st
 		return runCount(ctx, service, workDir, args[1:], out, errOut)
 	case "plan":
 		return runPlan(ctx, service, workDir, args[1:], out, errOut)
-	case "install":
-		return runInstall(ctx, service, workDir, args[1:], in, out, errOut)
+	case "install", "link":
+		return runInstall(ctx, service, workDir, args[0], args[1:], in, out, errOut)
 	case "update":
 		return runUpdate(ctx, service, args[1:], in, out, errOut)
 	case "restore":
