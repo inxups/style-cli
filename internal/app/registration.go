@@ -21,10 +21,17 @@ func registrations(ctx context.Context, targets []installAdapter) ([]adapter.Reg
 	return reports, nil
 }
 func registrationRequired(reports []adapter.RegistrationReport) bool {
+	return len(registrationDiagnostics(reports)) > 0
+}
+
+// registrationDiagnostics explains why an install that generated a plugin
+// still exits 1: the harness loads it only after its native registration.
+func registrationDiagnostics(reports []adapter.RegistrationReport) []Diagnostic {
+	var diagnostics []Diagnostic
 	for _, r := range reports {
 		if r.State != "enabled" {
-			return true
+			diagnostics = append(diagnostics, Diagnostic{Code: "registration-required", Severity: "error", Message: r.Route + ": " + r.State + "; run the listed native registration commands"})
 		}
 	}
-	return false
+	return diagnostics
 }

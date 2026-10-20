@@ -64,6 +64,7 @@ func runInstall(ctx context.Context, service *Service, workDir string, args []st
 		commandFailure(out, errOut, jsonOutput, "install", err)
 		return commandExit(err)
 	}
+	result.Diagnostics = append(result.Diagnostics, registrationDiagnostics(result.Registration)...)
 	if jsonOutput {
 		if err := encodeJSON(out, result); err != nil {
 			fmt.Fprintf(errOut, "style install: encode report: %v\n", err)

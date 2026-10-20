@@ -189,7 +189,7 @@ func TestM3A8PluginCLIRegistrationRequired(t *testing.T) {
 	var out, errOut bytes.Buffer
 	t.Setenv("STYLE_HOME", home)
 	args := []string{"install", source, "--harness=claude-code", "--route=claude-code=claude-plugin", "--json"}
-	if code := RunWithServiceInput(context.Background(), s, filepath.Dir(home), args, approve(), &out, &errOut); code != 1 || !strings.HasSuffix(errOut.String(), "[y/N] \n") {
+	if code := RunWithServiceInput(context.Background(), s, filepath.Dir(home), args, approve(), &out, &errOut); code != 1 || !strings.Contains(errOut.String(), "[y/N] \nstyle install: registration-required") {
 		t.Fatal(code, &out, &errOut)
 	}
 	var report InstallResult
