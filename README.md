@@ -1,17 +1,88 @@
 # STYLE
 
-STYLE manages rules and native hooks for registered coding harnesses.
+English | [简体中文](README.zh_CN.md)
 
-Install on macOS with Homebrew:
+STYLE is a command-line tool that bundles coding-style rules and native hooks into a STYLE and installs it into coding agents (harnesses) such as Codex and Claude Code.
+
+## About
+
+STYLE uses one standardized configuration to quickly make a harness *yours*: it writes code the way you like, reminds you at the moments you care about, and guards your work with your own scripts.
+
+Out of the box, a harness knows nothing about your preferences, and every harness puts its rule files, hook events and configuration in different places. Getting Codex and Claude Code to follow the same conventions usually means learning each one and maintaining several configurations by hand, then doing it all again on a new machine or project.
+
+STYLE pulls those differences into a single `STYLE.yaml`:
+
+- **Declare once**: write rules (when, for which tool, what to say) and native hooks (which command to run on which event) in one format
+- **Adapt automatically**: STYLE compiles them into each harness's native configuration, and `plan` shows how every rule lands and how many tokens it costs before you install
+- **Fully managed**: STYLE handles approval, installation, sync, updates and removal; after an edit, `sync` applies it, with no files to patch by hand
+- **Reuse anywhere**: keep the configuration in a local directory or a Git repository, install it for your user or a single project, and stay consistent across machines and projects
+
+Whether you want to carry your personal habits into every agent or share one set of coding conventions across a team, it starts with a single `STYLE.yaml`.
+
+## Quick Start
+
+### Prerequisites
+
+- macOS (install with Homebrew), or Go 1.25 or later (build from source)
+- At least one installed harness: Codex or Claude Code
+
+### Installation
+
+On macOS, use Homebrew:
 
 ```bash
 brew install inxups/tap/style-cli
 ```
 
-The formula installs the `style` binary and conflicts with homebrew-core's `style`.
+The formula installs the `style` binary and conflicts with homebrew-core's `style`; the two cannot be installed together.
 
-Ordinary `rules` describe behavior compiled by STYLE. Native commands are declared
-separately, inline in the top-level `native_hooks` list in `STYLE.yaml`:
+Build from source:
+
+```bash
+git clone https://github.com/inxups/style-cli.git
+cd style-cli
+go build -o style ./cmd/style
+```
+
+### Usage
+
+Create a STYLE, check it, and preview how it lands in each harness:
+
+```bash
+style init demo
+style validate demo
+style plan demo
+```
+
+`style init demo` creates `demo/STYLE.yaml`, `demo/prompts/default.md` and `demo/rules/review.md`; `validate` prints `valid`; `plan` lists, for each detected harness, how every rule is placed and its estimated token cost, for example:
+
+```text
+Harness: claude-code
+Preferred route: claude-user (availability checked during install)
+Package: demo
+Adapter: claude-code
+- style: native (inject system)
+  ...
+```
+
+When it looks right, install it. STYLE prints a preview first and asks `[y/N]` on stderr; it writes only when you answer `y` or `yes`:
+
+```bash
+style install demo
+```
+
+## Features
+
+- **Native hook management**: declare harness-native commands under `native_hooks`; STYLE discloses, approves and installs them, while the harness still runs them
+- **Development links**: `style link` links a local directory as a development package, and `sync` applies your edits
+- **Diagnostics**: `list`, `doctor` (including live callback checks with `--live`), `stats` and `explain`
+- **Machine-readable output**: every command except `init` supports `--json` and emits one common JSON envelope
+
+## Examples
+
+### Writing a STYLE
+
+A directory package may contain ordinary rules (`rules`), native hooks (`native_hooks`), or both; IDs must be unique across both lists:
 
 ```yaml
 spec: style/v0.3
@@ -37,145 +108,129 @@ native_hooks:
       timeout: 10
 ```
 
-A directory package may contain rules, hooks, or both. IDs must be unique across
-both lists. Hooks accept `id`, `description`, `enabled`, `priority`, `fallback`,
-and registered harness mappings. Each mapping accepts only `event`, `matcher`,
-`command`, and `timeout`. Hooks default to enabled, priority 50 (or the package
-priority), and `fallback: skip`; `fallback: error` blocks installation when a
-mapping cannot be installed. A missing harness mapping is always skipped.
-Ordinary rule `defaults` do not apply to hooks. Single-file `.style.md` packages
-only support ordinary rules.
+- Hooks accept `id`, `description`, `enabled`, `priority`, `fallback` and per-harness mappings; each mapping accepts only `event`, `matcher`, `command` and `timeout`
+- Hooks default to enabled, priority 50 (or the package priority) and `fallback: skip`; `fallback: error` blocks installation when a mapping cannot be installed; a missing harness mapping is always skipped
+- Ordinary rule `defaults` do not apply to hooks, and hooks do not enter STYLE's rule engine, templates, deduplication, runtime statistics or token budgets
+- Single-file `.style.md` packages (`style init NAME --single`) support only ordinary rules
 
-STYLE manages hook approval, installation, checks, sync, update and removal.
-Harnesses execute native commands; hooks do not enter STYLE's rule engine,
-templates, deduplication, runtime statistics or token budgets. `description` is
-plain explanatory text. Development links require renewed approval when their
-executable hook declarations change; editing only `description` does not require
-execution approval. The ordinary rule plan status `native` still means the
-harness supports that rule directly.
+### Installing from Git
 
-`target: native` has been removed without a compatibility entry point. To migrate
-an existing installation:
+Git sources use the go-getter form; the `//path` and `?ref=` selectors are optional (defaulting to the repository root and the remote HEAD):
 
-1. Move each declaration into `STYLE.yaml` under `native_hooks`, remove `target`,
-   and move any Markdown notes into `description`.
-2. Run `style uninstall PACKAGE` in the original scope and answer `y`. If
-   remaining old packages prevent rebuilding, use `style uninstall --all`.
-3. Reinstall the migrated sources with `style install SOURCE` and the same
-   harness, route and project options; review the disclosed native commands
-   before answering `y`.
+```bash
+style install 'git+https://host/org/repo.git//package/path?ref=refs/tags/v1'
+```
 
-Old installed source or approval snapshots produce `native-format-removed` and
-require reinstalling. `list` and `doctor` keep those packages visible. This change
-continues to use `style/v0.3`; there is no migration command.
+Refs must be canonical: `refs/heads/…`, `refs/tags/…` or a full commit OID. `style update NAME --ref REF` switches the ref of an installed Git package.
 
-## Command line
-
-`style --help` lists every command; `style help COMMAND` (or `--help` anywhere
-on a command line) also shows advanced and project options. `style --version`
-prints `style VERSION`. Boolean flags take no value (`--json`, not
-`--json=true`).
+### Installing into a project
 
 Global options go before the command:
-`style [--project DIR] [--style-home DIR] COMMAND …`. `--project` scopes plan,
-installation and diagnostic commands to a project; `--style-home` replaces
-`STYLE_HOME`, for the user scope or as the home a project is bound under.
-Written after the command name they are usage errors.
 
-A source is a local directory or file, or a Git address in go-getter form:
-`git+https://host/org/repo.git//package/path?ref=refs/tags/v1`. The `//path`
-and `?ref=` selectors are optional (default: repository root and the remote
-HEAD); refs are canonical `refs/heads/…`, `refs/tags/…` or full commit OIDs.
-Each source carries its own selectors. `update NAME --ref REF` switches the
-ref of an installed Git package.
+```bash
+style --project . install SOURCE_A SOURCE_B --set SOURCE_A_NAME.KEY=VALUE
+```
 
-`install` takes several sources only for a fresh project installation
-(`style --project DIR install SOURCE…`, at most 64): they are reviewed and
-installed as one transaction. With one source `--set KEY=VALUE` configures it;
-with several, every setting names its package, `--set PACKAGE.KEY=VALUE`.
+Several sources (at most 64) are accepted only for a fresh project installation, and they are reviewed and installed as one transaction. With one source use `--set KEY=VALUE`; with several, every setting names its package: `--set PACKAGE.KEY=VALUE`.
 
-`link DIR` installs a local package directory as a development link. The
-first `sync` after linking needs approval; after that, edits to its ordinary
-rules take effect on `sync`, and changes to executable hooks need renewed
-approval. It takes the same options as `install`; `uninstall NAME`
-removes a link.
+### Local development
 
-`--harness` means the same everywhere: it is repeatable, takes comma lists, any
-case and the `claude` alias, and `auto` (the default) selects detected harnesses
-(`plan`, `install`) or every installed one (`doctor --live`). `explain` reads a single
-payload and requires exactly one named harness. Unknown names are usage errors.
-`install --fail-closed` is a Claude Code mode: it selects claude-code, and an
-explicit `--harness` list that leaves claude-code out is a usage error.
+```bash
+style link ./my-package
+style sync
+```
 
-Exit codes: `0` success, `1` the request was rejected or failed, `2` the command
-line could not be parsed (unknown command, option, harness or route; missing,
-malformed or conflicting argument, including a malformed Git source address or
-`--ref`), `4` blocked by policy or budget. A well-formed request that the package, the
-installation or the detected harnesses cannot satisfy (a missing `--set`, an
-undetected harness, a package that is not installed) exits `1`. Hook invocations never exit `2`, which harnesses treat as a block.
+The first `sync` after linking needs approval. After that, edits to ordinary rules take effect on `sync`, while changes to executable hook declarations need renewed approval (editing only `description` does not). `sync` shows the source, rendered and native diffs and asks one package at a time; declining one stops `sync` with exit code `1`. `sync NAME` approves only that package. `style uninstall NAME` removes a link.
 
-`install`, `link`, `restore`, `update`, `uninstall` and `sync` (for a change that needs approval) print a preview and ask
-`[y/N]` on stderr before changing anything; only `y` or `yes` read from stdin
-applies the change. No input, end of input or any other answer cancels without
-writes, so scripts and CI answer explicitly, for example
-`echo y | style install SOURCE --json`. `doctor --reset-state` asks the same
-way before it removes the runtime state. With `--json` the preview and prompt go
-to stderr and stdout carries only the final report.
+### Diagnostics
 
-In text mode diagnostics and failures go to stderr, one per line, as
-`style COMMAND: [warning ]CODE[ WHERE]: MESSAGE` (the code is left out only
-when the error has none). The reports of `doctor` and `explain` stay
-on stdout and stderr gets one such line saying why the command failed. With
-`--json` the report goes to stdout and a failed command still writes one such
-line to stderr.
+```bash
+style list
+style doctor
+style doctor --live --timeout 60s
+style explain --harness claude-code --payload payload.json
+```
 
-Every `--json` report is one envelope:
+`doctor --live` runs the static checks and then waits for a callback from each selected harness; once stderr says the check is ready, trigger a subscribed event in a harness session. `explain` reads a single payload and requires exactly one harness; the event defaults to the payload's `hook_event_name`.
+
+### Scripts and CI
+
+Commands that change state cancel without writing when there is no input, input ends, or the answer is anything other than `y`/`yes`, so scripts must answer explicitly:
+
+```bash
+echo y | style install SOURCE --json
+```
+
+With `--json`, the preview and prompt go to stderr and stdout carries only the final report, always wrapped in one envelope:
 
 ```json
 {"format": 2, "command": "list", "status": "ok", "scope": {"kind": "user", "home": "…"},
  "diagnostics": [], "result": {"packages": []}}
 ```
 
-`status` mirrors the exit code (`ok`, `error`, `blocked`).
-`scope` is `user` or `project` (with the project root, homes and
-prerequisites; a project that cannot be bound reports only the requested
-root). `diagnostics` holds the report's top-level diagnostics. A
-failed command adds one entry carrying the error's own code (for example
-`source-invalid`, `invalid-package`, `request-rejected`, `conflict`), or
-`command-failed` when the error has none. A preview that was not confirmed
-exits `1` with `confirmation-declined`, and the preview stays the result. `result`
-is the command's report, or `null` when the report holds nothing beyond
-diagnostics (for example a command that failed before producing one); reports
-may keep their own `format` and `status` fields. Usage errors
-(exit `2`) write nothing to stdout.
+`status` mirrors the exit code (`ok`, `error`, `blocked`). Exit codes:
 
-The following forms were removed without compatibility entry points:
+| Code | Meaning |
+|---|---|
+| `0` | Success |
+| `1` | The request was rejected or failed, including a missing `--set`, an undetected harness, a package that is not installed, or an unconfirmed preview (`confirmation-declined`) |
+| `2` | The command line could not be parsed: unknown command, option, harness or route; missing, malformed or conflicting argument (including a malformed Git address or `--ref`); nothing is written to stdout |
+| `4` | Blocked by policy or budget |
 
-| Removed | Use instead |
-| --- | --- |
-| `style install --frozen` | `style restore` |
-| `style adapters` | `style doctor` (text and JSON include the adapter inventory) |
-| `--count=exact --count-provider=P --encoding=E` / `--count-model=M` | `--exact openai:E` / `--exact anthropic:M` |
-| `install --fail-closed claude-code` | `install --fail-closed` |
-| `--yes` on `install`, `restore`, `update`, `trust`, `uninstall` | answer `y` to the prompt (stdin) |
-| `style trust NAME`, `sync` exit `3` (`needs-trust`) | `style sync NAME`, or `sync` answering each prompt |
-| `--ref R --path P` on `validate`, `plan`, `install` | `git+https://…/repo.git//P?ref=R` |
-| `style COMMAND --project DIR` | `style --project DIR COMMAND` |
-| `style probe` | `style doctor --live` |
-| `style install DIR --link` | `style link DIR` |
-| `install S1 --project-source S2 --project-set P.K=V` | `install S1 S2 --set P.K=V` |
+Hook invocations never exit `2`, which harnesses treat as a block.
 
-`sync` applies source changes. A change that needs approval (an edited
-installed package, a link's first sync, a changed executable hook) is shown
-with its source, rendered and native diffs and asked for one package at a
-time; each approval is applied before the next question, and a declined one
-stops `sync` with exit `1`. `sync NAME` approves only that package.
+## Configuration
 
-`doctor --live` runs the cold checks and then waits, up to `--timeout`
-(default 60s), for a callback from each selected harness; trigger a subscribed
-event in a harness session when stderr says the check is ready. The live part
-of the report is the `live` field, and its findings join the doctor
-diagnostics. `--harness` and `--timeout` apply only with `--live`.
+| Name | Description | Default |
+|---|---|---|
+| `STYLE_HOME` | STYLE home for the user scope, and the home a project is bound under | `~/.style` |
+| `--style-home DIR` | Global option that replaces `STYLE_HOME` | None |
+| `--project DIR` | Global option that scopes plan, installation and diagnostic commands to a project | None (user scope) |
+| `--harness` | Selects harnesses; repeatable, takes comma lists, case-insensitive, `claude` is an alias for `claude-code` | `auto`: detected harnesses for `plan` and `install`, every installed one for `doctor --live` |
+| `CODEX_HOME` | Codex configuration directory; affects harness detection | Codex's own default |
+| `CLAUDE_CONFIG_DIR` | Claude Code configuration directory; affects harness detection | Claude Code's own default |
 
-`explain --event` is optional; the event is read from the payload's
-`hook_event_name`, and an explicit `--event` must match it.
+`style --help` lists every command; `style help COMMAND` or `COMMAND --help` also shows advanced and project options. Boolean flags take no value (`--json`, not `--json=true`).
+
+## Project Structure
+
+| Directory | Description |
+|---|---|
+| `cmd/style` | CLI entry point |
+| `core` | Core logic: package spec parsing, compilation, planning, templates, token counting |
+| `internal/app` | Command implementations and lifecycle management such as install and sync |
+| `internal/adapter` | Harness adapters (`codex`, `claude`) |
+| `internal/source` | Resolution and caching of local and Git sources |
+| `agenthooks` | Vendored harness hook codec and routing library (a separate Go module) |
+| `schema` | Index JSON Schema |
+| `scripts` | Smoke tests and acceptance check scripts |
+| `testdata` | Test fixtures and golden files |
+| `third_party` | Third-party license notes |
+
+## Development
+
+Run tests and vet (these use temporary Go caches and unset `CODEX_HOME` and `CODEX_SANDBOX`, which would otherwise affect harness detection):
+
+```bash
+make test-go
+make vet-go
+```
+
+Smoke-test a built binary:
+
+```bash
+go build -o /tmp/style ./cmd/style
+python3 scripts/smoke.py /tmp/style
+```
+
+CI is defined in [.github/workflows/ci.yml](.github/workflows/ci.yml) and covers Linux, macOS and Windows.
+
+## FAQ
+
+### `brew install` reports a conflict with `style`
+
+homebrew-core has a different formula named `style`. Both install a `style` binary, so uninstall one before installing the other.
+
+## License
+
+This project is licensed under the [MIT](LICENSE) License. Licenses for bundled third-party dependencies are listed in [third_party/README.md](third_party/README.md).
