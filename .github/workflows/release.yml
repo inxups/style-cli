@@ -1,0 +1,114 @@
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  version:
+    name: Check tag matches Version
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.check.outputs.version }}
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Compare tag with internal/app/entry.go
+        id: check
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          if ! [[ "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error::tag $TAG is not vX.Y.Z"; exit 1
+          fi
+          tag_version=${TAG#v}
+          source_version=$(sed -n 's/^var Version = "\(.*\)"$/\1/p' internal/app/entry.go)
+          if [ "$tag_version" != "$source_version" ]; then
+            echo "::error file=internal/app/entry.go::tag $TAG does not match Version \"$source_version\""
+            exit 1
+          fi
+          echo "version=$tag_version" >> "$GITHUB_OUTPUT"
+
+  # Same gate as pushes to main: isolated Go caches, CODEX_HOME/CODEX_SANDBOX unset.
+  ci:
+    name: CI
+    needs: version
+    permissions:
+      contents: read
+    uses: ./.github/workflows/ci.yml
+
+  release:
+    name: GitHub Release
+    needs: [version, ci]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Create release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            echo "release $TAG already exists"
+          else
+            gh release create "$TAG" --verify-tag --title "$TAG" --generate-notes
+          fi
+
+  homebrew:
+    name: Update Homebrew tap
+    needs: [version, release]
+    runs-on: ubuntu-latest
+    env:
+      TAG: ${{ github.ref_name }}
+      VERSION: ${{ needs.version.outputs.version }}
+      FORMULA: Formula/style-cli.rb
+    steps:
+      - name: Compute source tarball sha256
+        id: tarball
+        run: |
+          url="https://github.com/${GITHUB_REPOSITORY}/archive/refs/tags/${TAG}.tar.gz"
+          curl -fsSL --retry 5 --retry-delay 5 --retry-all-errors -o "$RUNNER_TEMP/source.tar.gz" "$url"
+          sha256=$(sha256sum "$RUNNER_TEMP/source.tar.gz" | cut -d' ' -f1)
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+          echo "sha256=$sha256" >> "$GITHUB_OUTPUT"
+          echo "$url $sha256"
+
+      - uses: actions/checkout@v6
+        with:
+          repository: inxups/homebrew-tap
+          token: ${{ secrets.HOMEBREW_TAP_TOKEN }}
+          path: tap
+
+      - name: Update formula
+        working-directory: tap
+        env:
+          URL: ${{ steps.tarball.outputs.url }}
+          SHA256: ${{ steps.tarball.outputs.sha256 }}
+        run: |
+          sed -i -E \
+            -e "s|^  url \".*\"$|  url \"${URL}\"|" \
+            -e "s|^  sha256 \".*\"$|  sha256 \"${SHA256}\"|" \
+            "$FORMULA"
+          grep -Fxq "  url \"${URL}\"" "$FORMULA"
+          grep -Fxq "  sha256 \"${SHA256}\"" "$FORMULA"
+          git diff -- "$FORMULA"
+
+      - name: Commit and push
+        working-directory: tap
+        run: |
+          if git diff --quiet -- "$FORMULA"; then
+            echo "$FORMULA already points at $TAG"; exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "style-cli ${VERSION}" -- "$FORMULA"
+          git push origin HEAD
