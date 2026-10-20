@@ -24,6 +24,9 @@ func runProjectCommand(ctx context.Context, service *Service, workDir string, ar
 	fail := func(err error) int {
 		var usageErr *UsageError
 		if errors.As(err, &usageErr) {
+			if command, ok := lookupCommand(args[0]); ok {
+				return command.usageError(errOut, err)
+			}
 			fmt.Fprintf(errOut, "style %s: %v\n", args[0], err)
 			return ExitUsage
 		}

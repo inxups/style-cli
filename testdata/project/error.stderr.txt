@@ -1,1 +1,3 @@
 style list: --project requires a directory
+style list [--json]
+  project: [--project dir [--style-home dir]]

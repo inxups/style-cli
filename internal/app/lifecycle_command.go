@@ -20,8 +20,7 @@ func runInstall(ctx context.Context, service *Service, workDir string, args []st
 		return installCommand.usageError(errOut, err)
 	}
 	if request.Source == "" {
-		fmt.Fprintln(errOut, "style install: source is required")
-		return ExitUsage
+		return installCommand.usageError(errOut, fmt.Errorf("source is required"))
 	}
 	if !source.Remote(request.Source) && !filepath.IsAbs(request.Source) {
 		request.Source = filepath.Join(workDir, request.Source)

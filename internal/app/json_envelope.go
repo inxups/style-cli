@@ -169,6 +169,11 @@ func commandFailure(out, errOut io.Writer, jsonMode bool, command string, err er
 	} else {
 		writeCommandDiagnostics(errOut, command, []Diagnostic{diagnostic})
 	}
+	var usage *UsageError
+	if command, ok := lookupCommand(command); ok && errors.As(err, &usage) {
+		// Like a parse failure, a usage error from the service shows usage.
+		fmt.Fprintln(errOut, command.usage())
+	}
 	if jsonMode {
 		_ = encodeJSON(out, map[string][]Diagnostic{"diagnostics": {diagnostic}})
 	}

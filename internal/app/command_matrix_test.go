@@ -121,6 +121,7 @@ var commandMatrix = []matrixCase{
 
 	{name: "install no source", args: []string{"install"}, exit: ExitUsage},
 	{name: "install unknown route", args: []string{"install", "$NEW", "--route", "bogus=x"}, exit: ExitUsage},
+	{name: "install unknown route name", args: []string{"install", "$NEW", "--harness", "codex", "--route", "codex=bogus"}, exit: ExitUsage, stderr: `style install: unknown route "bogus" for codex`},
 	{name: "install missing", args: []string{"install", "$WORK/missing", "--harness", "codex"}, exit: ExitInvalid, code: "invalid-package", stderr: "/missing: package source does not exist\n"},
 	{name: "install unknown setting", args: []string{"install", "$NEW", "--harness", "codex", "--set", "unknown=v"}, input: "y\n", exit: ExitInvalid, code: "request-rejected"},
 	{name: "install declined", args: []string{"install", "$NEW", "--harness", "codex"}, input: "n\n", exit: ExitInvalid, code: "confirmation-declined"},
@@ -252,6 +253,9 @@ func checkMatrixCell(t *testing.T, row matrixCase, args []string, jsonMode bool,
 		}
 		if !strings.HasPrefix(stderr, "style "+command+": ") && !strings.HasPrefix(stderr, "style: unknown command") && !strings.HasPrefix(stderr, "style: --version ") {
 			report("usage error does not start with the command name")
+		}
+		if spec, ok := lookupCommand(command); ok && !strings.HasSuffix(stderr, spec.usage()+"\n") {
+			report("usage error does not end with the usage")
 		}
 		return
 	}
