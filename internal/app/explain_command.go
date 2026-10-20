@@ -109,7 +109,11 @@ func writeExplainText(out io.Writer, result ExplainResult) {
 	}
 	fmt.Fprintf(out, "compilation %s coverage=%s\n", result.CompileProvenance.Status, result.CompileProvenance.Coverage)
 	for _, rule := range result.CompileProvenance.Rules {
-		fmt.Fprintf(out, "rule %s: %s into=%s\n", quote(rule.Rule), quote(rule.Status), quote(rule.DeduplicatedInto))
+		into := ""
+		if rule.DeduplicatedInto != "" {
+			into = " into=" + quote(rule.DeduplicatedInto)
+		}
+		fmt.Fprintf(out, "rule %s: %s%s\n", quote(rule.Rule), quote(rule.Status), into)
 	}
 	for _, item := range result.CompileProvenance.Static {
 		fmt.Fprintf(out, "static %s slot=%s: %s\n", quote(item.Rule), quote(item.Slot), item.Status)

@@ -83,7 +83,7 @@ func writeMatrixFile(path, data string) func(*testing.T, matrixFixture) {
 	}
 }
 
-var emptyTextField = regexp.MustCompile(`(^|\s)[a-z_]+=(\s|$)`)
+var emptyTextField = regexp.MustCompile(`(^|\s)[a-z_]+=(""|\s|$)`)
 
 var (
 	brokenLock    = writeMatrixFile("$HOME/style.lock.yaml", "{ not a lock")
@@ -285,9 +285,10 @@ func checkMatrixCell(t *testing.T, row matrixCase, args []string, jsonMode bool,
 		}
 	}
 	if !jsonMode {
-		// Text reports leave out empty fields and empty reasons.
+		// Text reports leave out empty fields and empty reasons; wire lines
+		// quote the hook's exact output, empty or not.
 		for _, line := range strings.Split(stdout, "\n") {
-			if line != "" && strings.TrimSpace(line) == "" || strings.HasSuffix(line, ";") || strings.HasSuffix(line, "; ") || emptyTextField.MatchString(line) {
+			if line != "" && strings.TrimSpace(line) == "" || strings.HasSuffix(line, ";") || strings.HasSuffix(line, "; ") || emptyTextField.MatchString(line) && !strings.HasPrefix(line, "wire ") {
 				report("stdout line has an empty field: %q", line)
 			}
 		}

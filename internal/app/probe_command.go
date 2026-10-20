@@ -78,7 +78,11 @@ func probeQuote(value string) string { encoded, _ := json.Marshal(value); return
 func writeProbeText(out io.Writer, result ProbeResult) {
 	fmt.Fprintf(out, "probe %s: %s (timeout=%s)\n", probeQuote(result.RunID), result.Status, result.Timeout)
 	for _, target := range result.Targets {
-		fmt.Fprintf(out, "%s route=%s: %s origin=%s callback_observed=%t\n", probeQuote(target.Harness), probeQuote(target.Route), target.Status, target.Origin, target.CallbackObserved)
+		route := ""
+		if target.Route != "" {
+			route = " route=" + probeQuote(target.Route)
+		}
+		fmt.Fprintf(out, "%s%s: %s origin=%s callback_observed=%t\n", probeQuote(target.Harness), route, target.Status, target.Origin, target.CallbackObserved)
 		if target.CallbackObserved {
 			fmt.Fprintf(out, "  event=%s session_sha256=%s; rule execution and model delivery remain unassessed.\n", probeQuote(target.Event), target.SessionSHA256)
 		}

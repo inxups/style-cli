@@ -56,7 +56,7 @@ func runInspect(ctx context.Context, service *Service, workDir, command string, 
 			}
 		}
 		for _, effort := range result.Effort {
-			fmt.Fprintf(out, "effort %s: source=%s raw=%q tier=%q%s\n", effort.Provider, effort.Source, effort.Raw, effort.Tier, textReason(effort.Detail))
+			fmt.Fprintf(out, "effort %s: %s%s\n", effort.Provider, textFields("source", effort.Source, "raw", quoteNonEmpty(effort.Raw), "tier", quoteNonEmpty(effort.Tier)), textReason(effort.Detail))
 		}
 		if len(result.TopRules) == 0 {
 			fmt.Fprintln(out, "Top rules (last 7 days): none")
@@ -137,4 +137,13 @@ func textReason(reason string) string {
 		return ""
 	}
 	return "; " + reason
+}
+
+// quoteNonEmpty quotes a value for a text field, leaving an empty one empty
+// so textFields drops it.
+func quoteNonEmpty(value string) string {
+	if value == "" {
+		return ""
+	}
+	return strconv.Quote(value)
 }
