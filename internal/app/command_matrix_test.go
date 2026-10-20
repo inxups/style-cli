@@ -150,6 +150,7 @@ var commandMatrix = []matrixCase{
 	{name: "trust no name", args: []string{"trust"}, exit: ExitUsage},
 	{name: "trust missing", args: []string{"trust", "missing"}, input: "y\n", exit: ExitInvalid, code: "request-rejected"},
 	{name: "trust declined", fixture: "linked", args: []string{"trust", "first"}, setup: changedSource, input: "n\n", exit: ExitInvalid, code: "confirmation-declined"},
+	{name: "trust unchanged", args: []string{"trust", "first"}, exit: ExitOK},
 	{name: "trust ok", fixture: "linked", args: []string{"trust", "first"}, setup: changedSource, input: "y\n", exit: ExitOK},
 	{name: "trust broken lock", args: []string{"trust", "first"}, setup: brokenLock, input: "y\n", exit: ExitInvalid, code: "lock-invalid"},
 

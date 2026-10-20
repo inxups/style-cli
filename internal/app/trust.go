@@ -22,6 +22,10 @@ func (s *Service) Trust(ctx context.Context, request TrustRequest) (SyncResult, 
 	if err != nil {
 		return prepared.result, err
 	}
+	if len(prepared.files) == 0 && !packageNeedsTrust(prepared.result, request.Name) {
+		// Like an unchanged update, an approved snapshot has nothing to confirm.
+		return prepared.result, nil
+	}
 	confirmed := request.Yes
 	if !confirmed && request.Confirm != nil {
 		// Serialize the public value to keep callback mutation separate from
