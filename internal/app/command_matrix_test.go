@@ -177,6 +177,8 @@ var commandMatrix = []matrixCase{
 
 	{name: "doctor extra arg", args: []string{"doctor", "x"}, exit: ExitUsage},
 	{name: "doctor ok", args: []string{"doctor"}, exit: ExitOK},
+	{name: "doctor reset declined", args: []string{"doctor", "--reset-state"}, input: "n\n", exit: ExitInvalid, code: "confirmation-declined", stderr: "style doctor: confirmation-declined: doctor canceled; nothing was changed"},
+	{name: "doctor reset confirmed", args: []string{"doctor", "--reset-state"}, input: "y\n", exit: ExitOK},
 	{name: "doctor broken lock", args: []string{"doctor"}, setup: brokenLock, exit: ExitInvalid, code: "lock-invalid"},
 
 	{name: "stats unknown by", args: []string{"stats", "--by", "bogus"}, exit: ExitUsage},

@@ -214,7 +214,7 @@ func runCommand(ctx context.Context, service *Service, workDir string, args []st
 	case "sync", "trust":
 		return runSync(ctx, service, args[0], args[1:], in, out, errOut)
 	case "list", "doctor":
-		return runInspect(ctx, service, workDir, args[0], args[1:], out, errOut)
+		return runInspect(ctx, service, workDir, args[0], args[1:], in, out, errOut)
 	case "probe":
 		return runProbe(ctx, service, args[1:], out, errOut)
 	case "explain":

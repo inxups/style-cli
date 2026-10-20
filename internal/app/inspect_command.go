@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-func runInspect(ctx context.Context, service *Service, workDir, command string, args []string, out, errOut io.Writer) int {
+func runInspect(ctx context.Context, service *Service, workDir, command string, args []string, in io.Reader, out, errOut io.Writer) int {
 	spec, _ := lookupCommand(command)
 	parsed, err := spec.parse(args)
 	if err != nil {
@@ -22,7 +22,13 @@ func runInspect(ctx context.Context, service *Service, workDir, command string, 
 		value, err = service.List(ctx, ListRequest{})
 	case "doctor":
 		var result DoctorResult
-		result, err = service.Doctor(ctx, DoctorRequest{WorkDir: workDir, ResetState: reset})
+		request := DoctorRequest{WorkDir: workDir, ResetState: reset}
+		if reset {
+			request.Confirm = func(root string) (bool, error) {
+				return confirmInput(in, errOut, "Remove all runtime state in "+root+", including sessions and rule statistics?"), nil
+			}
+		}
+		result, err = service.Doctor(ctx, request)
 		value = result
 		if !result.Healthy {
 			exit = ExitInvalid
@@ -71,9 +77,12 @@ func runInspect(ctx context.Context, service *Service, workDir, command string, 
 			// The report stays on stdout; stderr says why the exit code is 1.
 			summary := Diagnostic{Code: "unhealthy", Severity: "error", Message: "the installation is not healthy"}
 			for _, diagnostic := range result.Diagnostics {
-				if diagnostic.Severity == "error" {
+				if diagnostic.Code == "confirmation-declined" {
 					summary = diagnostic
 					break
+				}
+				if diagnostic.Severity == "error" && summary.Code == "unhealthy" {
+					summary = diagnostic
 				}
 			}
 			writeCommandDiagnostics(errOut, "doctor", []Diagnostic{summary})

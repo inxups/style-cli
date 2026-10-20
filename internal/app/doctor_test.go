@@ -181,6 +181,15 @@ func TestDoctorStateExpiryResetAndSymlinkBoundary(t *testing.T) {
 	if _, err := os.Stat(recent); err != nil {
 		t.Fatal(err)
 	}
+	asked := ""
+	declined := func(root string) (bool, error) { asked = root; return false, nil }
+	result, err = service.Doctor(context.Background(), DoctorRequest{Home: home, ResetState: true, Confirm: declined})
+	if err != nil || result.StateReset || result.Healthy || !doctorHas(result, "confirmation-declined") || asked != root {
+		t.Fatalf("declined reset = %+v, %v (asked %q)", result, err, asked)
+	}
+	if _, err := os.Stat(recent); err != nil {
+		t.Fatalf("declined reset changed state: %v", err)
+	}
 	result, err = service.Doctor(context.Background(), DoctorRequest{Home: home, ResetState: true})
 	if err != nil || !result.StateReset {
 		t.Fatalf("reset = %+v, %v", result, err)

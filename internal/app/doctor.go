@@ -27,6 +27,9 @@ type DoctorRequest struct {
 	WorkDir    string
 	ResetState bool
 	Shell      string
+	// Confirm approves the state reset; the root is the directory it
+	// removes. Without Confirm the reset proceeds; the CLI always asks.
+	Confirm func(root string) (bool, error)
 }
 
 type DoctorResult struct {
@@ -207,8 +210,16 @@ func (s *Service) Doctor(ctx context.Context, request DoctorRequest) (DoctorResu
 				result.add("repeat-unchanged", "warning", rule.Provider+" "+rule.Rule+": repeated output has the same body hash; check repeat")
 			}
 		}
-		result.ExpiredSessions, err = maintainState(root, request.ResetState)
-		if err != nil {
+		confirmed := true
+		if request.ResetState && request.Confirm != nil {
+			if confirmed, err = request.Confirm(root); err != nil {
+				return DoctorResult{}, err
+			}
+		}
+		if !confirmed {
+			// A declined reset changes nothing, expired sessions included.
+			result.Diagnostics = append(result.Diagnostics, declinedDiagnostic("doctor"))
+		} else if result.ExpiredSessions, err = maintainState(root, request.ResetState); err != nil {
 			result.add("state-cleanup", "error", err.Error())
 		} else {
 			result.StateReset = request.ResetState

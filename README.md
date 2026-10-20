@@ -100,7 +100,8 @@ undetected harness, a package that is not installed) exits `1`. Hook invocations
 `[y/N]` on stderr before changing anything; only `y` or `yes` read from stdin
 applies the change. No input, end of input or any other answer cancels without
 writes, so scripts and CI answer explicitly, for example
-`echo y | style install SOURCE --json`. With `--json` the preview and prompt go
+`echo y | style install SOURCE --json`. `doctor --reset-state` asks the same
+way before it removes the runtime state. With `--json` the preview and prompt go
 to stderr and stdout carries only the final report.
 
 In text mode diagnostics and failures go to stderr, one per line, as
