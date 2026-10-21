@@ -35,3 +35,10 @@ func (r *route) VerifyProbeOrigin(origin adapter.ProbeOrigin) bool {
 	}
 	return origin.PluginRootSHA256 == ""
 }
+
+// ResolveHarnessExecutable binds the process that actually runs hooks. The
+// npm package installs a Node launcher that spawns a platform binary, so the
+// launcher itself never appears as the hook's harness ancestor.
+func (r *route) ResolveHarnessExecutable(path string) (string, error) {
+	return resolveNPMLauncher(path)
+}
