@@ -38,6 +38,8 @@ const (
 type Target struct {
 	// LocalMarketplaceName opts Claude plugin targets into a portable launcher
 	// and an explicit local directory marketplace, owned by this renderer.
+	// Codex plugin targets use it to render the local marketplace catalog
+	// that native `codex plugin add` installs from.
 	LocalMarketplaceName string
 	LocalMarketplaceDir  string
 	Provider             agenthooks.Provider
@@ -432,6 +434,9 @@ func (s *pairSort) Swap(i, j int) {
 
 func renderedRoot(t Target, path string) string {
 	if t.Provider == agenthooks.ProviderClaudeCode && t.Scope == ScopePlugin && t.LocalMarketplaceName != "" && path == ".claude-plugin/marketplace.json" {
+		return t.LocalMarketplaceDir
+	}
+	if t.Provider == agenthooks.ProviderCodex && t.Scope == ScopePlugin && t.LocalMarketplaceName != "" && path == codexMarketplacePath {
 		return t.LocalMarketplaceDir
 	}
 	if t.Provider == agenthooks.ProviderCodex && (t.Scope == ScopePlugin || t.Scope == ScopeProject) && path == "config.toml" {

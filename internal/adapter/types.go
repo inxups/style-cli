@@ -320,6 +320,10 @@ type RegistrationReport struct {
 	Enabled     bool     `json:"enabled"`
 	Commands    []string `json:"commands"`
 	Residue     []string `json:"native_residue,omitempty"`
+	// Advisory marks a route whose missing registration only disables
+	// runtime hooks: static rules still apply, so it is reported as a
+	// warning instead of failing the command.
+	Advisory bool `json:"advisory,omitempty"`
 }
 type RegistrationInspector interface {
 	Registration(context.Context, func(string) ([]byte, error)) (*RegistrationReport, error)

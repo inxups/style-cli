@@ -159,6 +159,77 @@ func TestCodexPluginStatusDoesNotClaimTrustBeforeConfirmation(t *testing.T) {
 	}
 }
 
+func TestCodexPluginRegistrationGatesDelivery(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		t.Skip("D11: POSIX plugin route unavailable on Windows")
+	}
+	root := t.TempDir()
+	codexHome := filepath.Join(root, "codex-home")
+	pluginDir := filepath.Join(root, "plugin")
+	route := NewPluginRouteForCommand(pluginDir, codexHome, "/tmp/style", nil)
+	changes, err := route.Plan(context.Background(), Surface(), nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := route.Apply(context.Background(), changes); err != nil {
+		t.Fatal(err)
+	}
+	catalog, err := os.ReadFile(filepath.Join(root, ".agents", "plugins", "marketplace.json"))
+	if err != nil || !strings.Contains(string(catalog), `"path": "./plugin"`) {
+		t.Fatalf("catalog=%s err=%v", catalog, err)
+	}
+	inspector := route.(adapter.RegistrationInspector)
+	report, err := inspector.Registration(context.Background(), nil)
+	if err != nil || report.State != "registration-required" || !report.Advisory || report.Marketplace != root || len(report.Commands) != 4 {
+		t.Fatalf("unregistered report=%+v err=%v", report, err)
+	}
+
+	// Stand in for `codex plugin marketplace add` and `codex plugin add`.
+	source, _ := json.Marshal(root)
+	config := filepath.Join(codexHome, "config.toml")
+	existing, err := os.ReadFile(config)
+	if err != nil {
+		t.Fatal(err)
+	}
+	registered := append(existing, []byte("\n[marketplaces.style]\nsource_type = \"local\"\nsource = "+string(source)+"\n\n[plugins.\"style-runtime@style\"]\nenabled = true\n")...)
+	if err := os.WriteFile(config, registered, 0o600); err != nil {
+		t.Fatal(err)
+	}
+	cache := filepath.Join(codexHome, "plugins", "cache", "style", "style-runtime", "0.1.0")
+	for _, name := range []string{"hooks/hooks.json", "bin/style", ".codex-plugin/plugin.json"} {
+		data, err := os.ReadFile(filepath.Join(pluginDir, filepath.FromSlash(name)))
+		if err != nil {
+			t.Fatal(err)
+		}
+		path := filepath.Join(cache, filepath.FromSlash(name))
+		if err := os.MkdirAll(filepath.Dir(path), 0o700); err != nil {
+			t.Fatal(err)
+		}
+		if err := os.WriteFile(path, data, 0o700); err != nil {
+			t.Fatal(err)
+		}
+	}
+	report, err = inspector.Registration(context.Background(), nil)
+	if err != nil || report.State != "enabled" || !report.Registered || !report.Enabled {
+		t.Fatalf("registered report=%+v err=%v", report, err)
+	}
+	status, err := route.Status(context.Background(), adapter.Installation{Provider: ProviderName, ConfigDir: codexHome})
+	if err != nil || !status.Installed || !status.Trusted || !strings.HasPrefix(status.Detail, "enabled: ") {
+		t.Fatalf("registered status=%#v err=%v", status, err)
+	}
+
+	removed, err := route.Remove(context.Background(), "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := route.Apply(context.Background(), removed); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := os.Stat(filepath.Join(root, ".agents", "plugins", "marketplace.json")); !os.IsNotExist(err) {
+		t.Fatalf("catalog survived removal: %v", err)
+	}
+}
+
 func TestCodexPluginRoutePlansStaticAndHookConfigAtomically(t *testing.T) {
 	if runtime.GOOS == "windows" {
 		t.Skip("D11: POSIX plugin launcher fixture")

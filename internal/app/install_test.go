@@ -324,3 +324,49 @@ func TestRunInstallPrintsCapabilityAndCostReport(t *testing.T) {
 		t.Fatal("install report leaked rule body")
 	}
 }
+
+func TestRunInstallCodexPluginRegistrationIsAdvisory(t *testing.T) {
+	requirePOSIXFixture(t, "POSIX plugin route")
+	root := t.TempDir()
+	styleHome := filepath.Join(root, "style")
+	t.Setenv("STYLE_HOME", styleHome)
+	service := testCodexInstallService(t, filepath.Join(root, "codex"), filepath.Join(root, "plugin"))
+	var stdout, stderr bytes.Buffer
+	args := []string{"install", "testdata/packages/terse-reviewer", "--harness", "codex", "--route", "codex=codex-plugin", "--json"}
+	if code := RunWithServiceInput(context.Background(), service, repositoryRoot(t), args, approve(), &stdout, &stderr); code != ExitOK {
+		t.Fatalf("unregistered Codex plugin install exit=%d stdout=%s stderr=%s", code, stdout.String(), stderr.String())
+	}
+	var result InstallResult
+	if err := decodeReport(stdout.Bytes(), &result); err != nil {
+		t.Fatal(err)
+	}
+	if len(result.Registration) != 1 || result.Registration[0].State != "registration-required" || !result.Registration[0].Advisory || len(result.Registration[0].Commands) != 4 || !strings.Contains(result.Registration[0].Commands[0], "codex plugin marketplace add") {
+		t.Fatalf("registration=%+v", result.Registration)
+	}
+	warned := false
+	for _, d := range result.Diagnostics {
+		if d.Code == "registration-required" {
+			warned = d.Severity == "warning"
+		}
+	}
+	if !warned {
+		t.Fatalf("registration diagnostic is not a warning: %+v", result.Diagnostics)
+	}
+	if _, err := os.Stat(filepath.Join(root, ".agents", "plugins", "marketplace.json")); err != nil {
+		t.Fatalf("local marketplace catalog was not generated: %v", err)
+	}
+}
+
+func TestRegistrationSeverityKeepsClaudeStrict(t *testing.T) {
+	reports := []adapter.RegistrationReport{{Route: "codex-plugin", State: "registration-required", Advisory: true}}
+	if registrationRequired(reports) || registrationDiagnostics(reports)[0].Severity != "warning" {
+		t.Fatalf("advisory registration failed the command: %+v", registrationDiagnostics(reports))
+	}
+	reports = append(reports, adapter.RegistrationReport{Route: "claude-plugin", State: "registration-required"})
+	if !registrationRequired(reports) || registrationDiagnostics(reports)[1].Severity != "error" {
+		t.Fatalf("required registration was not an error: %+v", registrationDiagnostics(reports))
+	}
+	if registrationRequired([]adapter.RegistrationReport{{Route: "claude-plugin", State: "enabled"}}) {
+		t.Fatal("enabled registration reported as required")
+	}
+}

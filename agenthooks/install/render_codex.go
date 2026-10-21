@@ -131,6 +131,13 @@ func renderCodex(m Manifest, t Target) (fs.FS, error) {
 		files[filepath.ToSlash(filepath.Join(".codex-plugin", "plugin.json"))] = pluginJSON
 		files[filepath.ToSlash(filepath.Join("hooks", "hooks.json"))] = hooksJSON
 		files[filepath.ToSlash(filepath.Join("bin", "style"))] = []byte(codexPluginLauncher(m.Command))
+		if t.LocalMarketplaceName != "" {
+			market, err := codexMarketplaceJSON(m, t)
+			if err != nil {
+				return nil, err
+			}
+			files[codexMarketplacePath] = market
+		}
 	} else {
 		files["hooks.json"] = hooksJSON
 	}
@@ -140,6 +147,34 @@ func renderCodex(m Manifest, t Target) (fs.FS, error) {
 		}), nil
 	}
 	return memFS(files), nil
+}
+
+// codexMarketplacePath is the catalog Codex reads from a local marketplace
+// root. It is rendered under Target.LocalMarketplaceDir, not Target.Dir.
+const codexMarketplacePath = ".agents/plugins/marketplace.json"
+
+// codexMarketplaceJSON renders the local marketplace that lets
+// `codex plugin add` find the plugin. Codex only accepts "./"-relative
+// plugin paths inside the marketplace root, so the plugin directory must be
+// a direct child of LocalMarketplaceDir.
+func codexMarketplaceJSON(m Manifest, t Target) ([]byte, error) {
+	name, marketplace, _ := strings.Cut(m.Identity.PluginID, "@")
+	if name != m.Identity.Name || marketplace != t.LocalMarketplaceName || !probeCacheComponent(marketplace) {
+		return nil, fmt.Errorf("install: Codex marketplace %q does not match Identity.PluginID %q", t.LocalMarketplaceName, m.Identity.PluginID)
+	}
+	if t.LocalMarketplaceDir == "" || filepath.Dir(filepath.Clean(t.Dir)) != filepath.Clean(t.LocalMarketplaceDir) {
+		return nil, fmt.Errorf("install: Codex plugin directory must be a direct child of the local marketplace")
+	}
+	return jsonFile(map[string]any{
+		"name":      marketplace,
+		"interface": map[string]string{"displayName": "STYLE"},
+		"plugins": []map[string]any{{
+			"name":     name,
+			"source":   map[string]string{"source": "local", "path": "./" + filepath.Base(filepath.Clean(t.Dir))},
+			"policy":   map[string]string{"installation": "AVAILABLE", "authentication": "ON_INSTALL"},
+			"category": "Developer Tools",
+		}},
+	})
 }
 
 func codexTrustKey(m Manifest, t Target, event string, group int) string {

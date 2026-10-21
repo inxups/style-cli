@@ -77,6 +77,40 @@ type a2AbsentDetector struct{}
 func (a2AbsentDetector) Detect(context.Context) (adapter.Installation, bool, error) {
 	return adapter.Installation{}, false, nil
 }
+
+// registerCodexPluginFixture stands in for `codex plugin marketplace add`
+// followed by `codex plugin add style-runtime@style`: it records the local
+// marketplace and enablement in config.toml and copies the plugin into the
+// native cache Codex loads hooks from.
+func registerCodexPluginFixture(t *testing.T, config, marketplace, plugin string) {
+	t.Helper()
+	path := filepath.Join(config, "config.toml")
+	source, err := json.Marshal(marketplace)
+	if err != nil {
+		t.Fatal(err)
+	}
+	data := append(readSyncFile(t, path), []byte("\n\n[marketplaces.style]\nsource_type = \"local\"\nsource = "+string(source)+"\n\n[plugins.\"style-runtime@style\"]\nenabled = true\n")...)
+	if err := os.WriteFile(path, data, 0o600); err != nil {
+		t.Fatal(err)
+	}
+	cache := codexPluginCache(config)
+	for _, name := range []string{"hooks/hooks.json", "bin/style", ".codex-plugin/plugin.json"} {
+		target := filepath.Join(cache, filepath.FromSlash(name))
+		if err := os.MkdirAll(filepath.Dir(target), 0o700); err != nil {
+			t.Fatal(err)
+		}
+		if err := os.WriteFile(target, readSyncFile(t, filepath.Join(plugin, filepath.FromSlash(name))), 0o700); err != nil {
+			t.Fatal(err)
+		}
+	}
+}
+
+// codexPluginCache is where Codex copies the registered plugin and the
+// root its hooks run from (PLUGIN_ROOT).
+func codexPluginCache(config string) string {
+	return filepath.Join(config, "plugins", "cache", "style", "style-runtime", "0.1.0")
+}
+
 func a2Install(t *testing.T, selection string) *a2Fixture {
 	t.Helper()
 	requireFixtureRoute(t, selection)
@@ -123,10 +157,7 @@ func a2Install(t *testing.T, selection string) *a2Fixture {
 		t.Fatal(err)
 	}
 	if selection == "codex-plugin" {
-		path := filepath.Join(fixture.codexConfig, "config.toml")
-		data := readSyncFile(t, path)
-		data = append(data, []byte("\n\n[plugins.\"style-runtime@style\"]\nenabled = true\n")...)
-		os.WriteFile(path, data, 0o600)
+		registerCodexPluginFixture(t, fixture.codexConfig, fixture.root, fixture.plugin)
 	}
 	for key, definition := range service.definitions {
 		definition.Detector = a2RejectDetector{t}
@@ -183,7 +214,7 @@ func (f *a2Fixture) emit(t *testing.T, harness string, change func(*probe.Receip
 	}
 	receipt := probe.Receipt{Format: 1, Protocol: probe.Protocol, RunID: lease.RunID, Harness: harness, HomeSHA256: lease.Binding.HomeSHA256, HarnessHomeSHA256: lease.Binding.HarnessHomeSHA256, Event: event, SessionSHA256: probe.HashString("SESSION_CANARY\x1b[31m"), AgentSHA256: probe.HashString("AGENT_CANARY"), TurnSHA256: probe.HashString("TURN_CANARY"), ObservedAt: lease.Started, Processes: []probe.Process{{PID: 300, ParentPID: pid, Birth: "hook-birth", ExecutableID: lease.Binding.RuntimeID}, {PID: pid, ParentPID: 1, Birth: "harness-birth", ExecutableID: lease.Binding.HarnessID}}}
 	if lease.Binding.Route == "codex-plugin" {
-		root, err := filepath.EvalSymlinks(f.plugin)
+		root, err := filepath.EvalSymlinks(codexPluginCache(f.codexConfig))
 		if err != nil {
 			t.Fatal(err)
 		}
