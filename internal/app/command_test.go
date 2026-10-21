@@ -144,7 +144,7 @@ func TestCommandsShowHelpAndUseStableFailureExitCodes(t *testing.T) {
 
 func TestVersionPrintsTheRelease(t *testing.T) {
 	var out, errOut bytes.Buffer
-	if exit := RunWithInput(context.Background(), []string{"--version"}, strings.NewReader(""), &out, &errOut); exit != ExitOK || out.String() != "style 0.3.0\n" || errOut.Len() != 0 {
+	if exit := RunWithInput(context.Background(), []string{"--version"}, strings.NewReader(""), &out, &errOut); exit != ExitOK || out.String() != "style 0.3.1\n" || errOut.Len() != 0 {
 		t.Fatalf("exit=%d stdout=%q stderr=%q", exit, &out, &errOut)
 	}
 }
