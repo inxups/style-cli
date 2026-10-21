@@ -23,7 +23,7 @@ Whether you want to carry your personal habits into every agent or share one set
 
 ### Prerequisites
 
-- macOS (install with Homebrew), or Go 1.25 or later (build from source)
+- macOS (install with Homebrew), Windows (download a release zip), or Go 1.25 or later (build from source)
 - At least one installed harness: Codex or Claude Code
 
 ### Installation
@@ -35,6 +35,8 @@ brew install inxups/tap/style-cli
 ```
 
 The formula installs the `style` binary and conflicts with homebrew-core's `style`; the two cannot be installed together.
+
+On Windows, download `style-cli_<version>_windows_amd64.zip` (or `_arm64.zip` on ARM devices) from [GitHub Releases](https://github.com/inxups/style-cli/releases), extract it, and add the folder containing `style.exe` to `PATH`. Each release also publishes `style-cli_<version>_windows_checksums.txt` with SHA-256 checksums. The Windows builds have not been tested on real Windows machines: amd64 only runs in CI on GitHub-hosted Windows runners, and arm64 is cross-compiled without being run.
 
 Build from source:
 

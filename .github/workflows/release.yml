@@ -63,6 +63,57 @@ jobs:
             gh release create "$TAG" --verify-tag --title "$TAG" --generate-notes
           fi
 
+  windows:
+    name: Windows binaries
+    needs: [version, release]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      TAG: ${{ github.ref_name }}
+      VERSION: ${{ needs.version.outputs.version }}
+      GOFLAGS: -mod=readonly
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-go@v6
+        with:
+          go-version-file: go.mod
+          cache: false
+
+      - name: Build and package
+        run: |
+          style_go_temp=$(mktemp -d "$RUNNER_TEMP/style-go.XXXXXX")
+          export GOPATH="$style_go_temp/gopath" GOMODCACHE="$style_go_temp/gomodcache" GOCACHE="$style_go_temp/gocache"
+          scripts/package_windows.sh "$VERSION" "$RUNNER_TEMP/dist"
+          ls -l "$RUNNER_TEMP/dist"
+
+      - name: Upload release assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: gh release upload "$TAG" "$RUNNER_TEMP"/dist/* --clobber
+
+      # Windows builds are only exercised on GitHub-hosted runners; say so on every release.
+      - name: Add Windows notice to release notes
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          marker="<!-- windows-untested -->"
+          body=$(gh release view "$TAG" --json body --jq .body)
+          if grep -qF "$marker" <<<"$body"; then
+            echo "release notes already carry the Windows notice"; exit 0
+          fi
+          {
+            echo "$marker"
+            echo "> [!WARNING]"
+            echo "> The Windows zips have not been tested on real Windows machines. The amd64 build only runs in CI on GitHub-hosted Windows runners, and the arm64 build is cross-compiled without being run. Please report problems in [Issues](https://github.com/${GH_REPO}/issues)."
+            echo
+            printf '%s\n' "$body"
+          } > "$RUNNER_TEMP/notes.md"
+          gh release edit "$TAG" --notes-file "$RUNNER_TEMP/notes.md"
+
   homebrew:
     name: Update Homebrew tap
     needs: [version, release]

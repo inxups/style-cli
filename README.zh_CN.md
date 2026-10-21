@@ -23,7 +23,7 @@ STYLE 把这些差异收拢到一个 `STYLE.yaml` 里：
 
 ### 环境要求
 
-- macOS（通过 Homebrew 安装），或 Go 1.25 及以上（从源码构建）
+- macOS（通过 Homebrew 安装）、Windows（下载 release 压缩包），或 Go 1.25 及以上（从源码构建）
 - 至少一个已安装的 harness：Codex 或 Claude Code
 
 ### 安装
@@ -35,6 +35,8 @@ brew install inxups/tap/style-cli
 ```
 
 该 formula 安装 `style` 可执行文件，与 homebrew-core 中的 `style` 冲突，两者不能同时安装。
+
+Windows 从 [GitHub Releases](https://github.com/inxups/style-cli/releases) 下载 `style-cli_<version>_windows_amd64.zip`（ARM 设备选 `_arm64.zip`），解压后把 `style.exe` 所在目录加入 `PATH`。每个 release 还附带 `style-cli_<version>_windows_checksums.txt`，包含 SHA-256 校验值。Windows 版本未经过实机测试：amd64 只在 GitHub 托管的 Windows runner 上跑过 CI，arm64 仅交叉编译，没有运行过。
 
 从源码构建：
 
