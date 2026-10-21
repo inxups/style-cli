@@ -12,6 +12,7 @@ import (
 	"strings"
 
 	"github.com/inxups/style-cli/internal/adapter"
+	"github.com/inxups/style-cli/internal/saferead"
 	"github.com/pelletier/go-toml/v2"
 	"github.com/speakeasy-api/agenthooks/install"
 )
@@ -78,7 +79,9 @@ func (r *route) Trust() adapter.TrustInfo {
 		return adapter.TrustInfo{Kind: adapter.TrustWorkspace, StableKey: true, Summary: "project trust and hook definition trust are separate; STYLE never grants project trust; start from the canonical project path"}
 	}
 	if r.scope == install.ScopePlugin {
-		return adapter.TrustInfo{Kind: adapter.TrustUserConfirmation, StableKey: true, Summary: "trust the style-runtime plugin once"}
+		// Plugin hook state is keyed by plugin id, so the pre-seeded hashes
+		// apply once Codex has registered and cached the plugin.
+		return adapter.TrustInfo{Kind: adapter.TrustPreseed, StableKey: true, Summary: "register the local marketplace plugin; Codex hooks.state is pre-seeded"}
 	}
 	return adapter.TrustInfo{Kind: adapter.TrustPreseed, StableKey: true, Summary: "Codex hooks.state is pre-seeded"}
 }
@@ -103,15 +106,66 @@ func (r *route) Status(ctx context.Context, installation adapter.Installation) (
 			break
 		}
 	}
-	// A plugin route needs an explicit user confirmation that cannot be
-	// inferred from the presence of generated files. User-level preseed trust
-	// is established by the managed config itself once the route is installed.
+	// User-level preseed trust is established by the managed config itself
+	// once the route is installed. Plugin hooks load only from the native
+	// cache, so the pre-seeded state applies only after registration.
 	trusted := installed && r.scope == install.ScopeUser
+	if r.scope == install.ScopePlugin {
+		registration, err := r.Registration(ctx, nil)
+		if err != nil {
+			return adapter.RouteStatus{Available: true, Detail: err.Error()}, nil
+		}
+		detail = registration.State + ": " + detail
+		trusted = installed && registration.State == "enabled"
+	}
 	return adapter.RouteStatus{Available: true, Installed: installed, Trusted: trusted, Detail: detail}, nil
 }
 
+// Registration reports whether Codex registered the local marketplace and
+// cached the current plugin. Generated files are not delivery: Codex loads
+// plugin hooks only from its own cache.
+func (r *route) Registration(ctx context.Context, read func(string) ([]byte, error)) (*adapter.RegistrationReport, error) {
+	if r.scope != install.ScopePlugin {
+		return nil, nil
+	}
+	if err := ctx.Err(); err != nil {
+		return nil, err
+	}
+	if read == nil {
+		read = r.registrationRead
+	}
+	native, err := r.installedNative()
+	if err != nil {
+		return nil, err
+	}
+	v, err := install.InspectCodexRegistration(r.manifest(native), r.target(), read)
+	return &adapter.RegistrationReport{Route: r.name, State: v.State, Marketplace: v.Marketplace, Plugin: v.Plugin, Registered: v.Registered, Enabled: v.Enabled, Commands: v.Commands, Advisory: true}, err
+}
+
+func (r *route) registrationRead(path string) ([]byte, error) {
+	if err := install.CheckPath(r.configDir, path); err != nil {
+		return nil, err
+	}
+	return saferead.ReadFile(path, 4<<20)
+}
+
 func (r *route) target() install.Target {
-	return install.Target{Provider: ProviderName, Scope: r.scope, Dir: r.dir, ConfigDir: r.configDir}
+	t := install.Target{Provider: ProviderName, Scope: r.scope, Dir: r.dir, ConfigDir: r.configDir}
+	if r.scope == install.ScopePlugin {
+		t.LocalMarketplaceName = pluginMarketplace
+		t.LocalMarketplaceDir = r.marketplaceRoot()
+	}
+	return t
+}
+
+// pluginMarketplace is the marketplace half of the runtime plugin id
+// style-runtime@style.
+const pluginMarketplace = "style"
+
+// marketplaceRoot holds the generated marketplace catalog; the plugin
+// directory is its direct child so the catalog can reference "./<plugin>".
+func (r *route) marketplaceRoot() string {
+	return filepath.Dir(filepath.Clean(r.dir))
 }
 
 func (r *route) manifest(requests ...[]adapter.HookSpec) install.Manifest {
@@ -374,6 +428,9 @@ func defaultPluginDir() string {
 
 func (r *route) splitDestination(destination string) (root, relative string, err error) {
 	candidates := []string{r.configDir, r.dir}
+	if r.scope == install.ScopePlugin {
+		candidates = append(candidates, r.marketplaceRoot())
+	}
 	sort.SliceStable(candidates, func(i, j int) bool { return len(candidates[i]) > len(candidates[j]) })
 	for _, candidate := range candidates {
 		if candidate == "" {

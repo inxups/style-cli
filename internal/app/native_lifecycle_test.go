@@ -64,7 +64,7 @@ func TestA4NativeInstallDisclosesBeforeConfirmationWithoutWriting(t *testing.T) 
 					if err := decodeReport(out.Bytes(), &preview); err != nil || !preview.AwaitingConfirmation || len(preview.Native) != 2 {
 						t.Fatalf("preview=%+v err=%v", preview, err)
 					}
-					wantTrust := map[string]string{"codex-plugin": "user-confirmation", "codex-user": "preseed", "claude-user": "workspace"}[route]
+					wantTrust := map[string]string{"codex-plugin": "preseed", "codex-user": "preseed", "claude-user": "workspace"}[route]
 					if string(preview.Native[0].Trust) != wantTrust || preview.Native[0].TrustSummary == "" || preview.Native[0].Timeout != 60 {
 						t.Fatalf("native disclosure=%+v", preview.Native)
 					}

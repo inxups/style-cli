@@ -18,3 +18,10 @@ type ProbeRoute interface {
 	InspectProbe(context.Context, func(string) ([]byte, error)) (ProbeInstallation, error)
 	VerifyProbeOrigin(ProbeOrigin) bool
 }
+
+// HarnessExecutableResolver maps the harness command found on PATH to the
+// executable that actually runs as a hook ancestor, for launchers that
+// spawn a separate native binary. It reads files only and never executes.
+type HarnessExecutableResolver interface {
+	ResolveHarnessExecutable(path string) (string, error)
+}

@@ -2,6 +2,7 @@ package codex
 
 import (
 	"context"
+	"errors"
 
 	"github.com/inxups/style-cli/internal/adapter"
 	"github.com/speakeasy-api/agenthooks/install"
@@ -11,6 +12,15 @@ func (r *route) InspectProbe(ctx context.Context, read func(string) ([]byte, err
 	result := adapter.ProbeInstallation{Root: r.dir, ConfigRoot: r.configRoot(), RuntimeCommand: adapter.HookCommand(r.command), HarnessCommand: "codex", Events: []string{}}
 	if err := ctx.Err(); err != nil {
 		return result, err
+	}
+	if r.scope == install.ScopePlugin {
+		registration, err := r.Registration(ctx, read)
+		if err != nil {
+			return result, err
+		}
+		if registration.State != "enabled" {
+			return result, errors.New("registration-required: plugin is not registered, enabled and cached")
+		}
 	}
 	status, err := install.InspectRuntime(r.manifest(), r.target(), read)
 	result.Events = status.Events
@@ -24,4 +34,11 @@ func (r *route) VerifyProbeOrigin(origin adapter.ProbeOrigin) bool {
 		return origin.PluginRootSHA256 != "" && origin.PluginRootSHA256 == origin.RouteRootSHA256
 	}
 	return origin.PluginRootSHA256 == ""
+}
+
+// ResolveHarnessExecutable binds the process that actually runs hooks. The
+// npm package installs a Node launcher that spawns a platform binary, so the
+// launcher itself never appears as the hook's harness ancestor.
+func (r *route) ResolveHarnessExecutable(path string) (string, error) {
+	return resolveNPMLauncher(path)
 }

@@ -195,6 +195,9 @@ func InspectRuntime(m Manifest, t Target, read func(string) ([]byte, error)) (Ru
 	if t.Scope == ScopePlugin {
 		sourceFiles := map[string][]byte{"hooks/hooks.json": raw}
 		artifacts := []string{"bin/style", ".codex-plugin/plugin.json"}
+		if t.Provider == agenthooks.ProviderCodex && t.LocalMarketplaceName != "" {
+			artifacts = append(artifacts, codexMarketplacePath)
+		}
 		if t.Provider == agenthooks.ProviderClaudeCode {
 			artifacts = []string{".claude-plugin/plugin.json"}
 			if t.LocalMarketplaceName != "" {

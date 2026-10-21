@@ -264,6 +264,14 @@ func (s *Service) Probe(ctx context.Context, request ProbeRequest) (result Probe
 			unavailable = true
 			continue
 		}
+		if resolver, ok := route.(adapter.HarnessExecutableResolver); ok {
+			harnessPath, err = resolver.ResolveHarnessExecutable(harnessPath)
+			if err != nil {
+				add("origin-unverified", "error", "native harness executable behind its launcher cannot be bound", string(id))
+				unavailable = true
+				continue
+			}
+		}
 		harnessFile, err := captureProbeExecutable(harnessPath, false)
 		if err != nil {
 			add("origin-unverified", "error", "native harness executable cannot be safely captured", string(id))

@@ -29,6 +29,9 @@ import (
 // provide no evidence for M3-B1/C1 or model delivery.
 type a2ProcessFixture struct {
 	Home, Runtime, Codex, Claude, Plugin, CodexConfig, ClaudeConfig, Route, Timeout string
+	// PluginRoot is where the harness runs plugin hooks from; Codex runs
+	// the registered copy in its cache, not the generated plugin directory.
+	PluginRoot string
 }
 
 func a2ProcessService(f a2ProcessFixture) (*Service, error) {
@@ -54,7 +57,7 @@ func a2HelperEnvironment(f a2ProcessFixture, mode string) []string {
 	}
 	env = append(env, "STYLE_A2_HELPER="+mode, "STYLE_A2_FIXTURE="+string(data), "STYLE_HOME="+f.Home, "PATH="+filepath.Join(filepath.Dir(f.Home), "bin"))
 	if f.Route == "codex-plugin" {
-		env = append(env, "PLUGIN_ROOT="+f.Plugin)
+		env = append(env, "PLUGIN_ROOT="+f.PluginRoot)
 	}
 	return env
 }
@@ -167,7 +170,7 @@ func a2ProcessInstall(t *testing.T, route string) a2ProcessFixture {
 			t.Fatal(err)
 		}
 	}
-	return a2ProcessFixture{fixture.home, fixture.runtime, fixture.codexExe, fixture.claudeExe, fixture.plugin, fixture.codexConfig, fixture.claudeConfig, route, "3s"}
+	return a2ProcessFixture{fixture.home, fixture.runtime, fixture.codexExe, fixture.claudeExe, fixture.plugin, fixture.codexConfig, fixture.claudeConfig, route, "3s", codexPluginCache(fixture.codexConfig)}
 }
 
 type a2ProcessStream struct {
