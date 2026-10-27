@@ -290,7 +290,11 @@ func (r *route) Remove(_ context.Context, owner adapter.Owner) (adapter.Changese
 	}
 	if owner == "" || owner == adapter.Owner(Owner) {
 		config, changed, err := r.configChange(planned, func(after []byte) ([]byte, error) {
-			return removeStaticTOML(after, string(owner))
+			updated, err := removeStaticTOML(after, string(owner))
+			if err != nil || r.scope != install.ScopePlugin {
+				return updated, err
+			}
+			return r.removePluginRegistration(updated)
 		})
 		if err != nil {
 			return adapter.Changeset{}, err

@@ -229,6 +229,9 @@ func runUninstall(ctx context.Context, service *Service, args []string, in io.Re
 	for _, name := range result.Removed {
 		fmt.Fprintf(out, "uninstalled %s\n", name)
 	}
+	if len(result.Removed) == 0 && result.Changed {
+		fmt.Fprintln(out, "cleaned residual STYLE installation")
+	}
 	writeStaticMigrations(out, result.StaticMigrations)
 	for _, route := range result.Routes {
 		fmt.Fprintf(out, "route updated: %s\n", route)
@@ -237,7 +240,11 @@ func runUninstall(ctx context.Context, service *Service, args []string, in io.Re
 }
 
 func writeUninstallPreview(out io.Writer, preview UninstallResult) {
-	fmt.Fprintf(out, "Uninstall: remove %s\n", strings.Join(preview.Removed, ", "))
+	if len(preview.Removed) == 0 {
+		fmt.Fprintln(out, "Uninstall: clean residual STYLE installation")
+	} else {
+		fmt.Fprintf(out, "Uninstall: remove %s\n", strings.Join(preview.Removed, ", "))
+	}
 	if len(preview.Remaining) > 0 {
 		fmt.Fprintf(out, "remaining: %s\n", strings.Join(preview.Remaining, ", "))
 	}

@@ -10,6 +10,7 @@ import (
 	"strings"
 
 	"github.com/inxups/style-cli/internal/adapter"
+	"github.com/inxups/style-cli/internal/adapter/codex"
 	"github.com/speakeasy-api/agenthooks/install"
 	"gopkg.in/yaml.v3"
 )
@@ -66,10 +67,7 @@ func (s *Service) Uninstall(ctx context.Context, request UninstallRequest) (fina
 			removeSet[item.Name] = true
 		}
 	}
-	if len(removeSet) == 0 {
-		if request.All {
-			return UninstallResult{}, &RejectedError{Message: "no packages are installed"}
-		}
+	if len(removeSet) == 0 && !request.All {
 		return UninstallResult{}, &RejectedError{Message: fmt.Sprintf("package %q is not installed", request.Name)}
 	}
 	result := UninstallResult{Removed: make([]string, 0, len(removeSet)), Remaining: make([]string, 0), Routes: make([]string, 0)}
@@ -97,8 +95,44 @@ func (s *Service) Uninstall(ctx context.Context, request UninstallRequest) (fina
 	if err != nil {
 		return UninstallResult{}, err
 	}
+	if len(lock.Packages) == 0 && len(lock.Harnesses) == 0 && s.project == nil {
+		// An older uninstall may have deleted the lock while leaving Codex's
+		// native registration/cache. Recover the plugin route from discovery.
+		if definition, ok := s.definitions[codex.ProviderName]; ok {
+			if route := routeByName(definition, codex.PluginRouteName); route != nil {
+				installation, _, err := definition.Detect(ctx)
+				if err != nil {
+					return UninstallResult{}, err
+				}
+				adapters = append(adapters, installAdapter{provider: codex.ProviderName, definition: definition, installation: installation,
+					route: bindRoute(route, installation, home)})
+			}
+		}
+	}
 	if err = inputs.routes(adapters); err != nil {
 		return UninstallResult{}, err
+	}
+	var storageRemovals []string
+	if len(remainingLock.Packages) == 0 {
+		for _, target := range adapters {
+			if storage, ok := target.route.(adapter.UninstallStorage); ok {
+				paths, err := storage.UninstallStorage(ctx)
+				if err != nil {
+					return UninstallResult{}, err
+				}
+				for _, path := range paths {
+					if err := inputs.add(path); err != nil {
+						return UninstallResult{}, err
+					}
+					if _, err := os.Lstat(path); errors.Is(err, os.ErrNotExist) {
+						continue
+					} else if err != nil {
+						return UninstallResult{}, err
+					}
+					storageRemovals = append(storageRemovals, path)
+				}
+			}
+		}
 	}
 	packages, err := s.loadInstalledPackages(ctx, home, remainingLock)
 	if err != nil {
@@ -206,6 +240,10 @@ func (s *Service) Uninstall(ctx context.Context, request UninstallRequest) (fina
 	if err = inputs.planned(changes); err != nil {
 		return result, err
 	}
+	if len(changes) == 0 && len(storageRemovals) == 0 && len(removedPackages) == 0 {
+		result.Routes = []string{}
+		return result, nil
+	}
 	sort.Strings(result.Routes)
 	confirmed := request.Yes
 	if !confirmed && request.Confirm != nil {
@@ -237,6 +275,15 @@ func (s *Service) Uninstall(ctx context.Context, request UninstallRequest) (fina
 		swap, err := stagePackageRemoval(path)
 		if err != nil {
 			return UninstallResult{}, err
+		}
+		if swap != nil {
+			swaps = append(swaps, swap)
+		}
+	}
+	for _, path := range storageRemovals {
+		swap, err := stagePackageRemoval(path)
+		if err != nil {
+			return result, err
 		}
 		if swap != nil {
 			swaps = append(swaps, swap)

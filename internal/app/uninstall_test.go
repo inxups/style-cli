@@ -6,9 +6,214 @@ import (
 	"errors"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"testing"
 )
+
+func registerUninstallPlugin(t *testing.T, config, plugin string) string {
+	t.Helper()
+	path := filepath.Join(config, "config.toml")
+	data := readSyncFile(t, path)
+	data = append(data, []byte("\n[marketplaces.style]\nsource_type = 'local'\nsource = "+strconv.Quote(filepath.Dir(plugin))+"\n\n[plugins.\"style-runtime@style\"]\nenabled = true\n")...)
+	writeSyncFile(t, path, string(data))
+	cache := filepath.Dir(codexPluginCache(config))
+	for _, version := range []string{"0.1.0", "old-version"} {
+		writeSyncFile(t, filepath.Join(cache, version, "hooks/hooks.json"), "cached hooks")
+		writeSyncFile(t, filepath.Join(cache, version, "bin/style"), "cached launcher")
+	}
+	return cache
+}
+
+func TestUninstallLastPackageCleansCodexPlugin(t *testing.T) {
+	requireFixtureRoute(t, "codex-plugin")
+	for _, all := range []bool{false, true} {
+		t.Run(strconv.FormatBool(all), func(t *testing.T) {
+			root := t.TempDir()
+			home, config, plugin := filepath.Join(root, "style"), filepath.Join(root, "codex"), filepath.Join(root, "plugin")
+			service := testCodexInstallService(t, config, plugin)
+			userConfig := "# user config\nmodel = 'keep'\n\n[plugins.\"other@elsewhere\"]\nenabled = true\n"
+			writeSyncFile(t, filepath.Join(config, "config.toml"), userConfig)
+			source := writeInstallPackage(t, filepath.Join(root, "source"), a4Manifest("first", "First."))
+			if _, err := service.Install(context.Background(), InstallRequest{Source: source, Home: home, Harnesses: []string{"codex"}, Yes: true}); err != nil {
+				t.Fatal(err)
+			}
+			cache := registerUninstallPlugin(t, config, plugin)
+			otherCache := filepath.Join(config, "plugins/cache/style/other/0.1.0/hooks.json")
+			writeSyncFile(t, otherCache, "other plugin")
+			before := a4State(t, home, config)
+			request := UninstallRequest{Home: home, All: all}
+			if !all {
+				request.Name = "first"
+			}
+			if result, err := service.Uninstall(context.Background(), request); err == nil || !result.AwaitingConfirmation {
+				t.Fatalf("unconfirmed uninstall: %+v %v", result, err)
+			}
+			a4AssertState(t, before, home, config)
+			request.Yes = true
+			if result, err := service.Uninstall(context.Background(), request); err != nil || !result.Changed || len(result.Remaining) != 0 {
+				t.Fatalf("uninstall: %+v %v", result, err)
+			}
+			for _, path := range []string{cache, filepath.Join(home, "style.lock.yaml"), filepath.Join(plugin, ".codex-plugin/plugin.json")} {
+				if _, err := os.Stat(path); !errors.Is(err, os.ErrNotExist) {
+					t.Fatalf("uninstall left %s: %v", path, err)
+				}
+			}
+			got := readSyncFile(t, filepath.Join(config, "config.toml"))
+			if !bytes.HasPrefix(got, []byte(userConfig)) || bytes.Contains(got, []byte("style-runtime@style")) || bytes.Contains(got, []byte("marketplaces.style")) {
+				t.Fatalf("remaining config: %s", got)
+			}
+			if string(readSyncFile(t, otherCache)) != "other plugin" {
+				t.Fatal("other cache changed")
+			}
+		})
+	}
+}
+
+func TestUninstallKeepsCodexPluginWhilePackagesRemain(t *testing.T) {
+	requireFixtureRoute(t, "codex-plugin")
+	root := t.TempDir()
+	home, config, plugin := filepath.Join(root, "style"), filepath.Join(root, "codex"), filepath.Join(root, "plugin")
+	service := testCodexInstallService(t, config, plugin)
+	for _, name := range []string{"first", "second"} {
+		source := writeInstallPackage(t, filepath.Join(root, name), a4Manifest(name, name))
+		if _, err := service.Install(context.Background(), InstallRequest{Source: source, Home: home, Harnesses: []string{"codex"}, Yes: true}); err != nil {
+			t.Fatal(err)
+		}
+	}
+	cache := registerUninstallPlugin(t, config, plugin)
+	cacheBefore := a4State(t, cache, cache)
+	if result, err := service.Uninstall(context.Background(), UninstallRequest{Home: home, Name: "first", Yes: true}); err != nil || len(result.Remaining) != 1 || result.Remaining[0] != "second" {
+		t.Fatalf("partial uninstall: %+v %v", result, err)
+	}
+	a4AssertState(t, cacheBefore, cache, cache)
+	got := readSyncFile(t, filepath.Join(config, "config.toml"))
+	if !bytes.Contains(got, []byte("style-runtime@style")) || !bytes.Contains(got, []byte("marketplaces.style")) {
+		t.Fatalf("plugin registration removed: %s", got)
+	}
+	readSyncFile(t, filepath.Join(plugin, ".codex-plugin/plugin.json"))
+}
+
+func TestUninstallAllCleansResidualCodexPlugin(t *testing.T) {
+	requireFixtureRoute(t, "codex-plugin")
+	for _, mode := range []string{"no-lock", "empty-lock", "cache-only"} {
+		t.Run(mode, func(t *testing.T) {
+			root := t.TempDir()
+			home, config, plugin := filepath.Join(root, "style"), filepath.Join(root, "codex"), filepath.Join(root, "plugin")
+			t.Setenv("STYLE_HOME", home)
+			service := testCodexInstallService(t, config, plugin)
+			writeSyncFile(t, filepath.Join(config, "config.toml"), "# keep user config\n")
+			cache := registerUninstallPlugin(t, config, plugin)
+			if mode == "empty-lock" {
+				writeSyncFile(t, filepath.Join(home, "style.lock.yaml"), "format: 1\npackages: []\n")
+			}
+			if mode == "cache-only" {
+				if err := os.Remove(filepath.Join(config, "config.toml")); err != nil {
+					t.Fatal(err)
+				}
+			}
+			before := a4State(t, home, config)
+			var out, errOut bytes.Buffer
+			args := []string{"uninstall", "--all", "--json"}
+			if code := RunWithServiceInput(context.Background(), service, root, args, strings.NewReader("n\n"), &out, &errOut); code != ExitInvalid {
+				t.Fatalf("declined cleanup: %d %s %s", code, out.String(), errOut.String())
+			}
+			a4AssertState(t, before, home, config)
+			out.Reset()
+			errOut.Reset()
+			if code := RunWithServiceInput(context.Background(), service, root, args, approve(), &out, &errOut); code != ExitOK {
+				t.Fatalf("cleanup: %d %s %s", code, out.String(), errOut.String())
+			}
+			var result UninstallResult
+			if err := decodeReport(out.Bytes(), &result); err != nil || !result.Changed || len(result.Removed) != 0 {
+				t.Fatalf("cleanup report: %+v %v", result, err)
+			}
+			if _, err := os.Stat(cache); !errors.Is(err, os.ErrNotExist) {
+				t.Fatalf("cache remains: %v", err)
+			}
+			if mode != "cache-only" && string(readSyncFile(t, filepath.Join(config, "config.toml"))) != "# keep user config\n\n" {
+				t.Fatal("user config changed")
+			}
+			if result, err := service.Uninstall(context.Background(), UninstallRequest{Home: home, All: true, Yes: true}); err != nil || result.Changed {
+				t.Fatalf("repeated cleanup: %+v %v", result, err)
+			}
+		})
+	}
+}
+
+func TestUninstallPluginCleanupRejectsChangedInputs(t *testing.T) {
+	requireFixtureRoute(t, "codex-plugin")
+	for _, mode := range []string{"cache", "registration", "foreign-marketplace"} {
+		t.Run(mode, func(t *testing.T) {
+			root := t.TempDir()
+			home, config, plugin := filepath.Join(root, "style"), filepath.Join(root, "codex"), filepath.Join(root, "plugin")
+			service := testCodexInstallService(t, config, plugin)
+			source := writeInstallPackage(t, filepath.Join(root, "source"), a4Manifest("first", "First."))
+			if _, err := service.Install(context.Background(), InstallRequest{Source: source, Home: home, Harnesses: []string{"codex"}, Yes: true}); err != nil {
+				t.Fatal(err)
+			}
+			cache := registerUninstallPlugin(t, config, plugin)
+			configPath := filepath.Join(config, "config.toml")
+			if mode == "foreign-marketplace" {
+				data := readSyncFile(t, configPath)
+				writeSyncFile(t, configPath, strings.Replace(string(data), strconv.Quote(filepath.Dir(plugin)), "'/different/style'", 1))
+				before := a4State(t, home, config)
+				if result, err := service.Uninstall(context.Background(), UninstallRequest{Home: home, All: true, Yes: true}); err == nil || result.Changed || !strings.Contains(err.Error(), "does not belong") {
+					t.Fatalf("foreign cleanup: %+v %v", result, err)
+				}
+				a4AssertState(t, before, home, config)
+				return
+			}
+			var afterConfirmation map[string]a4FileState
+			result, err := service.Uninstall(context.Background(), UninstallRequest{Home: home, All: true, Confirm: func(UninstallResult) (bool, error) {
+				path := configPath
+				if mode == "cache" {
+					path = filepath.Join(cache, "0.1.0/hooks/hooks.json")
+				}
+				writeSyncFile(t, path, string(readSyncFile(t, path))+"\n# updated during confirmation\n")
+				afterConfirmation = a4State(t, home, config)
+				return true, nil
+			}})
+			if !errors.Is(err, errManagementChanged) || result.Changed {
+				t.Fatalf("changed inputs accepted: %+v %v", result, err)
+			}
+			a4AssertState(t, afterConfirmation, home, config)
+		})
+	}
+}
+
+func TestUninstallPluginCleanupCancellationRestoresStorage(t *testing.T) {
+	requireFixtureRoute(t, "codex-plugin")
+	setup := func(t *testing.T) (*Service, string, string) {
+		t.Helper()
+		root := t.TempDir()
+		home, config, plugin := filepath.Join(root, "style"), filepath.Join(root, "codex"), filepath.Join(root, "plugin")
+		service := testCodexInstallService(t, config, plugin)
+		source := writeInstallPackage(t, filepath.Join(root, "source"), a4Manifest("first", "First."))
+		if _, err := service.Install(context.Background(), InstallRequest{Source: source, Home: home, Harnesses: []string{"codex"}, Yes: true}); err != nil {
+			t.Fatal(err)
+		}
+		registerUninstallPlugin(t, config, plugin)
+		return service, home, config
+	}
+	service, home, _ := setup(t)
+	count := &a4CancelAt{Context: context.Background(), at: 1000000}
+	if _, err := service.Uninstall(count, UninstallRequest{Home: home, All: true, Yes: true}); err != nil {
+		t.Fatal(err)
+	}
+	for at := 1; at <= count.checks; at++ {
+		t.Run(strconv.Itoa(at), func(t *testing.T) {
+			service, home, config := setup(t)
+			before := a4State(t, home, config)
+			fault := &a4CancelAt{Context: context.Background(), at: at}
+			result, err := service.Uninstall(fault, UninstallRequest{Home: home, All: true, Yes: true})
+			if !errors.Is(err, context.Canceled) || result.Changed || !fault.reached {
+				t.Fatalf("cancellation: %+v %v fault=%+v", result, err, fault)
+			}
+			a4AssertState(t, before, home, config)
+		})
+	}
+}
 
 func TestUninstallRemovesOnlyStyleOwnerAndRestoresLastRoute(t *testing.T) {
 	root := t.TempDir()
