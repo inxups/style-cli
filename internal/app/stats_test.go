@@ -218,8 +218,13 @@ func TestA5StatsQualityPrivacyAndDoctorContinues(t *testing.T) {
 			t.Fatalf("missing quality text: %s", &out)
 		}
 	}
+	// Doctor uses the process clock, so keep its records inside the live window
+	// without changing the fixed-clock stats assertions above and below.
+	liveHome := t.TempDir()
+	liveData := bytes.ReplaceAll([]byte(data), []byte(statsClock().Format(time.RFC3339Nano)), []byte(time.Now().Add(-time.Second).UTC().Format(time.RFC3339Nano)))
+	putAppStats(t, liveHome, liveData)
 	service, _ := New()
-	result, err := service.Doctor(context.Background(), DoctorRequest{Home: home})
+	result, err := service.Doctor(context.Background(), DoctorRequest{Home: liveHome})
 	if err != nil || !doctorHas(result, "stats-invalid") || len(result.TopRules) != 1 || result.TopRules[0].EstimatedTokens != 24 || result.TopRules[0].Emits != 2 {
 		t.Fatalf("doctor=%+v err=%v", result, err)
 	}
