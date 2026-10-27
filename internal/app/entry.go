@@ -22,7 +22,7 @@ const (
 
 // Version is the CLI release; release builds may set it with
 // -ldflags "-X github.com/inxups/style-cli/internal/app.Version=…".
-var Version = "0.3.1"
+var Version = "0.3.2"
 
 // Run creates the default provider catalog and executes a CLI command.
 func Run(ctx context.Context, args []string, out, errOut io.Writer) int {
